@@ -3,7 +3,7 @@ FROM quay.io/ukhomeofficedigital/openjdk8
 
 ENV USER user_hocs_casework
 ENV GROUP group_hocs_casework
-ENV NAME hocs_casework
+ENV NAME hocs-casework
 ENV JAR_PATH build/libs
 
 RUN yum update -y glibc && \
@@ -18,12 +18,13 @@ RUN groupadd -r ${GROUP} && \
     chown -R ${USER}:${GROUP} /app
 
 COPY ${JAR_PATH}/${NAME}*.jar /app
-COPY run.sh /app
 
-RUN chmod a+x /app/run.sh
+ADD scripts /app/scripts
 
-EXPOSE 8081
+RUN chmod a+x /app/scripts/*
+
+EXPOSE 8000
 
 USER ${USER}
 
-ENTRYPOINT /app/run.sh
+CMD /app/scripts/run.sh
