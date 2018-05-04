@@ -25,7 +25,7 @@ pipeline:
       - docker_password
     commands:
       - docker login -u="ukhomeofficedigital+hocs_casework" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag pttg-ip-audit quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
+      - docker tag hocs-casework quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
       - docker push quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
     when:
       branch: master
@@ -39,7 +39,7 @@ pipeline:
       - docker_password
     commands:
       - docker login -u="ukhomeofficedigital+hocs_casework" -p=$${DOCKER_PASSWORD} quay.io
-      - docker tag pttg-ip-audit quay.io/ukhomeofficedigital/hocs-casework:$${DRONE_TAG}
+      - docker tag hocs-casework quay.io/ukhomeofficedigital/hocs-casework:$${DRONE_TAG}
       - docker push quay.io/ukhomeofficedigital/hocs-casework:$${DRONE_TAG}
     when:
       event: tag
