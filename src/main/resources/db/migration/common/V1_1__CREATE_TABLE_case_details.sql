@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS case_details
 (
-  ref             BIGSERIAL PRIMARY KEY,
---   id               BIGSERIAL,
+  id               BIGSERIAL PRIMARY KEY,
+  ref              BIGSERIAL,
   case_type        VARCHAR(255) NOT NULL,
   stage            VARCHAR(255) NOT NULL,
   workflow_version INT,

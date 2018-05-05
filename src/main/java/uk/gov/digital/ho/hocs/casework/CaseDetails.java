@@ -1,8 +1,7 @@
 package uk.gov.digital.ho.hocs.casework;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -10,21 +9,22 @@ import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "case_details")
 @Getter
+@Setter
+@Builder
 public class CaseDetails implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ref_generator")
-    @SequenceGenerator(name = "ref_generator", sequenceName = "ref_seq", allocationSize = 1)
-    @Column(name = "ref", nullable = false, unique = true)
-    @JsonProperty(value = "ref")
-    private int ref;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, unique = true)
+    @JsonProperty(value = "id")
+    private int id;
 
-//    @Id
-//    @Column(name = "id")
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    private Long id;
+
+    @Column(name = "ref")
+    private Long ref;
 
     @Column(name = "case_type")
     @JsonProperty(value = "caseType", required = true)
@@ -47,7 +47,6 @@ public class CaseDetails implements Serializable {
     private String allocatedUser;
 
     @Column(name = "case_created")
-    @JsonProperty(value = "caseCreated", required = true)
     private LocalDateTime caseCreated;
 
     @Column(name = "case_data")

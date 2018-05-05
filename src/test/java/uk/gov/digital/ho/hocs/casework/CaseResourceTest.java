@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(org.mockito.junit.MockitoJUnitRunner.Silent.class)
 public class CaseResourceTest {
 
     private static final CaseDetails CASE_DETAILS = new CaseDetails();
@@ -32,7 +32,7 @@ public class CaseResourceTest {
         when(mockService.create(CASE_DETAILS)).thenReturn("TYPE/1000010/18");
 
         verify(mockService, times(1)).create(CASE_DETAILS);
-
+        assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
