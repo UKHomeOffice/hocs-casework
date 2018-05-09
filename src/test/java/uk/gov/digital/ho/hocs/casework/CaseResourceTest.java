@@ -28,18 +28,18 @@ public class CaseResourceTest {
 
     @Test
     public void shouldCallCreateCaseOnce() {
-        ResponseEntity httpResponse = resource.createCase(CASE_DETAILS);
-        when(mockService.create(CASE_DETAILS)).thenReturn("TYPE/1000010/18");
+        ResponseEntity httpResponse = resource.createCase("type",CASE_DETAILS);
+        when(mockService.create("type",CASE_DETAILS)).thenReturn("TYPE/1000010/18");
 
-        verify(mockService, times(1)).create(CASE_DETAILS);
+        verify(mockService, times(1)).create("type",CASE_DETAILS);
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     public void shouldReturnOKWhenAbleCreate()  {
 
-        ResponseEntity httpResponse = resource.createCase(CASE_DETAILS);
+        ResponseEntity httpResponse = resource.createCase("type",CASE_DETAILS);
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        verify(mockService).create(CASE_DETAILS);
+        verify(mockService).create("type",CASE_DETAILS);
     }
 }

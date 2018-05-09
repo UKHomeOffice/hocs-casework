@@ -18,8 +18,9 @@ public class CaseService {
         this.caseRepository = caseRepository;
     }
 
-    public String create(CaseDetails caseDetails) {
+    public String create(String caseType, CaseDetails caseDetails) {
         caseDetails.setStage("Created");
+        caseDetails.setCaseType(caseType);
         caseDetails.setCaseCreated(LocalDateTime.now());
         caseDetails.setRef(caseRepository.getNextSeriesId());
         caseRepository.save(caseDetails);

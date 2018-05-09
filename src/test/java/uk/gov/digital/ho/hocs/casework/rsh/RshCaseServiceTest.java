@@ -1,10 +1,13 @@
-package uk.gov.digital.ho.hocs.casework;
+package uk.gov.digital.ho.hocs.casework.rsh;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.CaseRepository;
+import uk.gov.digital.ho.hocs.casework.CaseService;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +16,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
-public class CaseServiceTest {
+public class RshCaseServiceTest {
 
     private static final CaseDetails CASE_DETAILS =
             CaseDetails.builder()
