@@ -37,5 +37,9 @@ public class RshCaseService {
         RshCaseDetails rshCaseDetails = rshCaseRepository.findByUuid(uuid);
         return rshCaseDetails;
     }
+
+   // public RshCaseDetails[] findCases(String data) {
+//
+   // }
 }
 
