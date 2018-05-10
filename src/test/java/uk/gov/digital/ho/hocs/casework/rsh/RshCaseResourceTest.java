@@ -6,9 +6,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.CaseDetails;
-import uk.gov.digital.ho.hocs.casework.CaseResource;
-import uk.gov.digital.ho.hocs.casework.CaseService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -31,9 +28,9 @@ public class RshCaseResourceTest {
     @Test
     public void shouldCallCreateCaseOnce() {
         ResponseEntity httpResponse = resource.rshCreateCase(CASE_DETAILS);
-        when(mockService.rshCreate("type",CASE_DETAILS)).thenReturn("TYPE/1000010/18");
+        when(mockService.createRSHCase("type",CASE_DETAILS)).thenReturn("TYPE/1000010/18");
 
-        verify(mockService, times(1)).rshCreate("type",CASE_DETAILS);
+        verify(mockService, times(1)).createRSHCase("type",CASE_DETAILS);
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -42,6 +39,6 @@ public class RshCaseResourceTest {
 
         ResponseEntity httpResponse = resource.rshCreateCase(CASE_DETAILS);
         assertThat(httpResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        verify(mockService).rshCreate("type",CASE_DETAILS);
+        verify(mockService).createRSHCase("type",CASE_DETAILS);
     }
 }

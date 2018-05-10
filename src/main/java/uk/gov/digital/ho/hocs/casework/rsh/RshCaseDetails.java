@@ -1,61 +1,48 @@
 package uk.gov.digital.ho.hocs.casework.rsh;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "rsh_case_details")
+@Table(name = "rsh_case")
 @Getter
-@Setter
-@Builder
+@NoArgsConstructor
 public class RshCaseDetails implements Serializable {
 
+    public RshCaseDetails(String type, Long caseNumber, String caseData) {
+        LocalDateTime now = LocalDateTime.now();
+        this.caseType = type;
+        this.caseReference = String.format("%s/%07d/%s", type, caseNumber,now.format(DateTimeFormatter.ofPattern("yy")));
+        this.uuid = UUID.randomUUID().toString();
+        this.caseCreated = now;
+        this.caseData = caseData;
+    }
+
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, unique = true)
-    @JsonProperty(value = "id")
     private int id;
 
-    @Column(name = "ref")
-    private Long ref;
-
-    @Column(name = "uuid")
-    private UUID uuid;
-
-    @Column(name = "case_reference")
-    private String caseReference;
-
-    @Column(name = "leg_ref")
-    private String legRef;
-
-    @Column(name = "dob")
-    private LocalDate dob;
-
-    @Column(name = "forename")
-    private String forename;
-
-    @Column(name = "surname")
-    private String surname;
-
-    @Column(name = "case_type")
-    @JsonProperty(value = "caseType", required = true)
+    @Column(name = "type")
     private String caseType;
 
-    @Column(name = "case_created")
+    @Column(name = "reference")
+    private String caseReference;
+
+    @Column(name = "uuid")
+    private String uuid;
+
+    @Column(name = "created")
     private LocalDateTime caseCreated;
 
-    @Column(name = "last_modified")
-    private LocalDateTime lastModified;
-
-    @Column(name = "case_data")
-    @JsonProperty(value = "caseData", required = true)
+    @Column(name = "data")
+    @Setter
     private String caseData;
 }

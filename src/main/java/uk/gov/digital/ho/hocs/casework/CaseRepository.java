@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface CaseRepository extends CrudRepository<CaseDetails, String> {
 
-    @Query(value = "SELECT nextval('ref_seq')" , nativeQuery =
+    @Query(value = "SELECT nextval('case_ref')" , nativeQuery =
             true)
     Long getNextSeriesId();
 }
