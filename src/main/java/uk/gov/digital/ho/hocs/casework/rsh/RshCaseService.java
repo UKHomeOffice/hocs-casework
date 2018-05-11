@@ -48,21 +48,21 @@ public class RshCaseService {
 
     List<RshCaseDetails> findCases(SearchRequest searchRequest){
 
-        ArrayList<RshCaseDetails> rshCaseDetailsList = new ArrayList<>();
+        ArrayList<RshCaseDetails> results = new ArrayList<>();
         if(searchRequest.getCaseReference() != null)
         {
             RshCaseDetails result = rshCaseRepository.findByCaseReference(searchRequest.getCaseReference());
             if(result != null){
-                rshCaseDetailsList.add(result);
+                results.add(result);
             }
         }
-        if (searchRequest.getCaseData() != null)
+        if (results.size() == 0 && searchRequest.getCaseData() != null)
         {
             Map<String, String> searchdata =  searchRequest.getCaseData().entrySet().stream().collect(Collectors.toMap(es -> es.getKey(), es-> toJson(es)));
-            Set<RshCaseDetails> results = rshCaseRepository.findByNameOrDob(searchdata.get("firstname"),searchdata.get("lastname"), searchdata.get("dob"));
-            rshCaseDetailsList.addAll(results);
+            Set<RshCaseDetails> resultList = rshCaseRepository.findByNameOrDob(searchdata.get("first-name"),searchdata.get("last-name"), searchdata.get("dob"));
+            results.addAll(resultList);
         }
-        return rshCaseDetailsList;
+        return results;
     }
 
     private String toJson(Map.Entry<String,String> entry){
