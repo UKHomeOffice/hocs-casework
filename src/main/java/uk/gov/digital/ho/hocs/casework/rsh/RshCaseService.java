@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.dto.CaseSaveRequest;
 import uk.gov.digital.ho.hocs.casework.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.dto.SearchResponse;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -65,18 +66,20 @@ public class RshCaseService {
         return rshCaseDetails;
     }
 
-    List<RshCaseDetails> findCases(SearchRequest searchRequest) {
+    List<SearchResponse> findCases(SearchRequest searchRequest){
 
-        ArrayList<RshCaseDetails> results = new ArrayList<>();
-        if (searchRequest.getCaseReference() != null) {
-            RshCaseDetails result = rshCaseRepository.findByCaseReference(searchRequest.getCaseReference());
-            if (result != null) {
+        ArrayList<SearchResponse> results = new ArrayList<>();
+        if(searchRequest.getCaseReference() != null)
+        {
+            SearchResponse result = rshCaseRepository.findByCaseReference(searchRequest.getCaseReference());
+            if(result != null){
                 results.add(result);
             }
         }
-        if (results.size() == 0 && searchRequest.getCaseData() != null) {
-            Map<String, String> searchdata = searchRequest.getCaseData().entrySet().stream().collect(Collectors.toMap(es -> es.getKey(), es -> toJson(es)));
-            Set<RshCaseDetails> resultList = rshCaseRepository.findByNameOrDob(searchdata.get("first-name"), searchdata.get("last-name"), searchdata.get("dob"));
+        if (results.size() == 0 && searchRequest.getCaseData() != null)
+        {
+            Map<String, String> searchdata = searchRequest.getCaseData().entrySet().stream().collect(Collectors.toMap(es -> es.getKey(), es-> toJson(es)));
+            Set<SearchResponse> resultList = rshCaseRepository.findByNameOrDob(searchdata.get("first-name"),searchdata.get("last-name"), searchdata.get("dob"));
             results.addAll(resultList);
         }
         return results;
