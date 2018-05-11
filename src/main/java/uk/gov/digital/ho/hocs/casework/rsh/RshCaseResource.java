@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.rsh;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,7 +9,6 @@ import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.dto.CaseSaveRequest;
 import uk.gov.digital.ho.hocs.casework.dto.CaseSaveResponse;
 import uk.gov.digital.ho.hocs.casework.dto.SearchRequest;
-import uk.gov.digital.ho.hocs.casework.dto.SearchResponse;
 
 import java.util.List;
 
@@ -28,14 +28,26 @@ public class RshCaseResource {
 
     @RequestMapping(value = "/rsh/create", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public Mono<ResponseEntity<CaseSaveResponse>> rshCreateCase(@RequestBody CaseSaveRequest request, @RequestHeader("X-Auth-Username") String username) {
-        RshCaseDetails rshCaseDetails = rshCaseService.createRSHCase(request.getCaseData());
+        RshCaseDetails rshCaseDetails = null;
+        try {
+            rshCaseDetails = rshCaseService.createRSHCase(request.getCaseData());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Mono.justOrEmpty(ResponseEntity.badRequest().build());
+        }
         auditService.createAuditEntry(rshCaseDetails.getUuid(), "CREATE", username, request.getCaseData());
         return Mono.justOrEmpty(ResponseEntity.ok(CaseSaveResponse.from(rshCaseDetails)));
     }
 
     @RequestMapping(value = "/rsh/case/{uuid}", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public Mono<ResponseEntity<CaseSaveResponse>> rshUpdateCase(@PathVariable String uuid, @RequestBody CaseSaveRequest request, @RequestHeader("X-Auth-Username") String username) {
-        RshCaseDetails rshCaseDetails = rshCaseService.updateRSHCase(uuid, request.getCaseData());
+        RshCaseDetails rshCaseDetails = null;
+        try {
+            rshCaseDetails = rshCaseService.updateRSHCase(uuid,request.getCaseData());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Mono.justOrEmpty(ResponseEntity.badRequest().build());
+        }
         auditService.createAuditEntry(rshCaseDetails.getUuid(), "UPDATE", username, request.getCaseData());
         return Mono.justOrEmpty(ResponseEntity.ok(CaseSaveResponse.from(rshCaseDetails)));
     }
@@ -49,7 +61,7 @@ public class RshCaseResource {
 
     @RequestMapping(value = "/rsh/search", method = RequestMethod.POST, produces = APPLICATION_JSON_UTF8_VALUE)
     public Mono<ResponseEntity<List<SearchResponse>>> rshSearch(@RequestBody SearchRequest data, @RequestHeader("X-Auth-Username") String username) {
-        List<SearchResponse> searchResponses = rshCaseService.findCases(data);
+        List<RshCaseDetails> searchResponses = rshCaseService.findCases(data);
         auditService.createAuditEntry(data.getCaseReference(), "SEARCH", username, data.getCaseData().toString());
         return Mono.justOrEmpty(ResponseEntity.ok(searchResponses));
     }

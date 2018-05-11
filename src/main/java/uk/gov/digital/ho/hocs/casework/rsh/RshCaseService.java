@@ -8,13 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.dto.CaseSaveRequest;
 import uk.gov.digital.ho.hocs.casework.dto.SearchRequest;
-import uk.gov.digital.ho.hocs.casework.dto.SearchResponse;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 
 @Service
 @Slf4j
@@ -41,9 +39,9 @@ public class RshCaseService {
         client = new NotificationClient(apiKey);
     }
 
-    RshCaseDetails createRSHCase(CaseSaveRequest caseSaveRequest) {
+    RshCaseDetails createRSHCase(Map<String,String> caseData) throws JsonProcessingException {
 
-        RshCaseDetails rshCaseDetails = new RshCaseDetails("RSH", rshCaseRepository.getNextSeriesId(), caseSaveRequest.getCaseData());
+        RshCaseDetails rshCaseDetails = new RshCaseDetails("RSH",rshCaseRepository.getNextSeriesId(), objectMapper.writeValueAsString(caseData));
         rshCaseRepository.save(rshCaseDetails);
         if (caseSaveRequest.getNotifyEmail() != null && !caseSaveRequest.getNotifyEmail().isEmpty()) {
             sendEmail(rshCaseDetails.getUuid(), caseSaveRequest.getNotifyEmail(), caseSaveRequest.getNotifyTeamName());
@@ -51,9 +49,9 @@ public class RshCaseService {
         return rshCaseDetails;
     }
 
-    RshCaseDetails updateRSHCase(String uuid, CaseSaveRequest caseSaveRequest) {
+    RshCaseDetails updateRSHCase(String uuid, Map<String,String> caseData) throws JsonProcessingException {
         RshCaseDetails rshCaseDetails = rshCaseRepository.findByUuid(uuid);
-        rshCaseDetails.setCaseData(caseSaveRequest.getCaseData());
+        rshCaseDetails.setCaseData(objectMapper.writeValueAsString(caseData));
         rshCaseRepository.save(rshCaseDetails);
         if (caseSaveRequest.getNotifyEmail() != null && !caseSaveRequest.getNotifyEmail().isEmpty()) {
             sendEmail(rshCaseDetails.getUuid(), caseSaveRequest.getNotifyEmail(), caseSaveRequest.getNotifyTeamName());
@@ -66,34 +64,23 @@ public class RshCaseService {
         return rshCaseDetails;
     }
 
-    List<SearchResponse> findCases(SearchRequest searchRequest){
+    List<RshCaseDetails> findCases(SearchRequest searchRequest){
 
-        ArrayList<SearchResponse> results = new ArrayList<>();
+        ArrayList<RshCaseDetails> results = new ArrayList<>();
         if(searchRequest.getCaseReference() != null)
         {
-            SearchResponse result = rshCaseRepository.findByCaseReference(searchRequest.getCaseReference());
+            RshCaseDetails result = rshCaseRepository.findByCaseReference(searchRequest.getCaseReference());
             if(result != null){
                 results.add(result);
             }
         }
         if (results.size() == 0 && searchRequest.getCaseData() != null)
         {
-            Map<String, String> searchdata = searchRequest.getCaseData().entrySet().stream().collect(Collectors.toMap(es -> es.getKey(), es-> toJson(es)));
-            Set<SearchResponse> resultList = rshCaseRepository.findByNameOrDob(searchdata.get("first-name"),searchdata.get("last-name"), searchdata.get("dob"));
+            Map<String, String> searchdata = searchRequest.getCaseData();
+            Set<RshCaseDetails> resultList = rshCaseRepository.findByNameOrDob(searchdata.get("first-name"),searchdata.get("last-name"), searchdata.get("date-of-birth"));
             results.addAll(resultList);
         }
         return results;
-    }
-
-    private String toJson(Map.Entry<String, String> entry) {
-
-        String value = "{}";
-        try {
-            value = objectMapper.writeValueAsString(entry);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return value;
     }
 
     private void sendEmail(String uuid, String emailAddress, String teamName) {
@@ -106,5 +93,6 @@ public class RshCaseService {
             e.printStackTrace();
         }
     }
+
 }
 

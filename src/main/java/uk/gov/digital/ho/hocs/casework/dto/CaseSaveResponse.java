@@ -16,5 +16,4 @@ public class CaseSaveResponse {
     public static CaseSaveResponse from(RshCaseDetails caseDetails) {
         return new CaseSaveResponse(caseDetails.getCaseReference(), caseDetails.getUuid());
     }
-
 }
