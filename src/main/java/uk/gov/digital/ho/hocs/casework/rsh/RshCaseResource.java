@@ -4,10 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-import uk.gov.digital.ho.hocs.casework.dto.CaseSummaryResponse;
+import uk.gov.digital.ho.hocs.casework.dto.CaseSaveRequest;
+import uk.gov.digital.ho.hocs.casework.dto.CaseSaveResponse;
 import uk.gov.digital.ho.hocs.casework.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.dto.SearchResponse;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -22,15 +25,15 @@ public class RshCaseResource {
     }
 
     @RequestMapping(value = "/rsh/create", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public Mono<ResponseEntity<CaseSummaryResponse>> rshCreateCase(@RequestBody String data) {
-        RshCaseDetails rshCaseDetails = rshCaseService.createRSHCase(data);
-        return Mono.justOrEmpty(ResponseEntity.ok(CaseSummaryResponse.from(rshCaseDetails)));
+    public Mono<ResponseEntity<CaseSaveResponse>> rshCreateCase(@RequestBody CaseSaveRequest request) {
+        RshCaseDetails rshCaseDetails = rshCaseService.createRSHCase(request.getData());
+        return Mono.justOrEmpty(ResponseEntity.ok(CaseSaveResponse.from(rshCaseDetails)));
     }
 
     @RequestMapping(value = "/rsh/case/{uuid}", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public Mono<ResponseEntity<CaseSummaryResponse>> rshUpdateCase(@PathVariable String uuid, @RequestBody String data) {
-        RshCaseDetails rshCaseDetails = rshCaseService.updateRSHCase(uuid,data);
-        return Mono.justOrEmpty(ResponseEntity.ok(CaseSummaryResponse.from(rshCaseDetails)));
+    public Mono<ResponseEntity<CaseSaveResponse>> rshUpdateCase(@PathVariable String uuid, @RequestBody CaseSaveRequest request) {
+        RshCaseDetails rshCaseDetails = rshCaseService.updateRSHCase(uuid,request.getData());
+        return Mono.justOrEmpty(ResponseEntity.ok(CaseSaveResponse.from(rshCaseDetails)));
     }
 
     @RequestMapping(value = "/rsh/case/{uuid}", method = RequestMethod.GET, produces = APPLICATION_JSON_UTF8_VALUE)
@@ -40,8 +43,9 @@ public class RshCaseResource {
     }
 
     @RequestMapping(value = "/rsh/search", method = RequestMethod.POST, produces = APPLICATION_JSON_UTF8_VALUE)
-    public Mono<ResponseEntity<List<RshCaseDetails>>> rshSearch(@RequestBody SearchRequest data) {
+    public Mono<ResponseEntity<List<SearchResponse>>> rshSearch(@RequestBody SearchRequest data) {
         List<RshCaseDetails> caseDetails = rshCaseService.findCases(data);
-        return Mono.justOrEmpty(ResponseEntity.ok(caseDetails));
+        List<SearchResponse> searchResponses = caseDetails.stream().map(cd -> SearchResponse.from(cd)).collect(Collectors.toList());
+        return Mono.justOrEmpty(ResponseEntity.ok(searchResponses));
     }
 }
