@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.dto.CaseSummaryResponse;
 import uk.gov.digital.ho.hocs.casework.dto.SearchRequest;
 
@@ -15,15 +16,18 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 public class RshCaseResource {
 
     private final RshCaseService rshCaseService;
+    private final AuditService auditService;
 
     @Autowired
-    public RshCaseResource(RshCaseService rshCaseService) {
+    public RshCaseResource(RshCaseService rshCaseService, AuditService auditService) {
         this.rshCaseService = rshCaseService;
+        this.auditService = auditService;
     }
 
     @RequestMapping(value = "/rsh/create", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public Mono<ResponseEntity<CaseSummaryResponse>> rshCreateCase(@RequestBody String data) {
         RshCaseDetails rshCaseDetails = rshCaseService.createRSHCase(data);
+        this.auditService.createAuditEntry(rshCaseDetails.getUuid(), "CREATE", data);
         return Mono.justOrEmpty(ResponseEntity.ok(CaseSummaryResponse.from(rshCaseDetails)));
     }
 
