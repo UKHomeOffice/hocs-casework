@@ -45,7 +45,7 @@ public class RshCaseService {
         RshCaseDetails rshCaseDetails = new RshCaseDetails("RSH", rshCaseRepository.getNextSeriesId(), caseSaveRequest.getCaseData());
         rshCaseRepository.save(rshCaseDetails);
         if (caseSaveRequest.getNotifyEmail() != null && !caseSaveRequest.getNotifyEmail().isEmpty()) {
-            sendEmail(rshCaseDetails.getUuid(), caseSaveRequest.getNotifyEmail());
+            sendEmail(rshCaseDetails.getUuid(), caseSaveRequest.getNotifyEmail(), caseSaveRequest.getNotifyTeamName());
         }
         return rshCaseDetails;
     }
@@ -55,7 +55,7 @@ public class RshCaseService {
         rshCaseDetails.setCaseData(caseSaveRequest.getCaseData());
         rshCaseRepository.save(rshCaseDetails);
         if (caseSaveRequest.getNotifyEmail() != null && !caseSaveRequest.getNotifyEmail().isEmpty()) {
-            sendEmail(rshCaseDetails.getUuid(), caseSaveRequest.getNotifyEmail());
+            sendEmail(rshCaseDetails.getUuid(), caseSaveRequest.getNotifyEmail(), caseSaveRequest.getNotifyTeamName());
         }
         return rshCaseDetails;
     }
@@ -93,8 +93,9 @@ public class RshCaseService {
         return value;
     }
 
-    private void sendEmail(String uuid, String emailAddress) {
+    private void sendEmail(String uuid, String emailAddress, String teamName) {
         HashMap<String, String> personalisation = new HashMap<>();
+        personalisation.put("team", teamName);
         personalisation.put("link", url + "/rsh/case/" + uuid);
         try {
             client.sendEmail(rshTemplateId, emailAddress, personalisation, null, null);
