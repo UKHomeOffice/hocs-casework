@@ -13,7 +13,7 @@ public class AuditEntry {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(name = "uuid", nullable = false)
+    @Column(name = "uuid")
     private String uuid;
 
     @Column(name = "timestamp", nullable = false)
@@ -25,7 +25,7 @@ public class AuditEntry {
     @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(name = "caseData", nullable = false)
+    @Column(name = "caseData")
     private String caseData;
 
     public AuditEntry(String uuid, String timestamp, String action, String username, String caseData) {
