@@ -26,13 +26,13 @@ public class RshCaseResource {
 
     @RequestMapping(value = "/rsh/create", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public Mono<ResponseEntity<CaseSaveResponse>> rshCreateCase(@RequestBody CaseSaveRequest request) {
-        RshCaseDetails rshCaseDetails = rshCaseService.createRSHCase(request.getCaseData());
+        RshCaseDetails rshCaseDetails = rshCaseService.createRSHCase(request);
         return Mono.justOrEmpty(ResponseEntity.ok(CaseSaveResponse.from(rshCaseDetails)));
     }
 
     @RequestMapping(value = "/rsh/case/{uuid}", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public Mono<ResponseEntity<CaseSaveResponse>> rshUpdateCase(@PathVariable String uuid, @RequestBody CaseSaveRequest request) {
-        RshCaseDetails rshCaseDetails = rshCaseService.updateRSHCase(uuid,request.getCaseData());
+        RshCaseDetails rshCaseDetails = rshCaseService.updateRSHCase(uuid,request);
         return Mono.justOrEmpty(ResponseEntity.ok(CaseSaveResponse.from(rshCaseDetails)));
     }
 
