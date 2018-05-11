@@ -11,5 +11,5 @@ public class CaseSaveRequest {
 
     private String notifyEmail;
 
-    private String data;
+    private String caseData;
 }
