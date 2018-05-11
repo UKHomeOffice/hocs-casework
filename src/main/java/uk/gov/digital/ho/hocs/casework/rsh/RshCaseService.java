@@ -6,13 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.dto.SearchRequest;
-import uk.gov.digital.ho.hocs.casework.dto.SearchResponse;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -28,16 +26,16 @@ public class RshCaseService {
         this.rshCaseRepository = rshCaseRepository;
     }
 
-    RshCaseDetails createRSHCase(String caseData) {
+    RshCaseDetails createRSHCase(Map<String,String> caseData) throws JsonProcessingException {
 
-        RshCaseDetails rshCaseDetails = new RshCaseDetails("RSH",rshCaseRepository.getNextSeriesId(), caseData);
+        RshCaseDetails rshCaseDetails = new RshCaseDetails("RSH",rshCaseRepository.getNextSeriesId(), objectMapper.writeValueAsString(caseData));
         rshCaseRepository.save(rshCaseDetails);
         return rshCaseDetails;
     }
 
-    RshCaseDetails updateRSHCase(String uuid, String data) {
+    RshCaseDetails updateRSHCase(String uuid, Map<String,String> caseData) throws JsonProcessingException {
         RshCaseDetails rshCaseDetails = rshCaseRepository.findByUuid(uuid);
-        rshCaseDetails.setCaseData(data);
+        rshCaseDetails.setCaseData(objectMapper.writeValueAsString(caseData));
         rshCaseRepository.save(rshCaseDetails);
         return rshCaseDetails;
     }
@@ -47,34 +45,23 @@ public class RshCaseService {
         return rshCaseDetails;
     }
 
-    List<SearchResponse> findCases(SearchRequest searchRequest){
+    List<RshCaseDetails> findCases(SearchRequest searchRequest){
 
-        ArrayList<SearchResponse> results = new ArrayList<>();
+        ArrayList<RshCaseDetails> results = new ArrayList<>();
         if(searchRequest.getCaseReference() != null)
         {
-            SearchResponse result = rshCaseRepository.findByCaseReference(searchRequest.getCaseReference());
+            RshCaseDetails result = rshCaseRepository.findByCaseReference(searchRequest.getCaseReference());
             if(result != null){
                 results.add(result);
             }
         }
         if (results.size() == 0 && searchRequest.getCaseData() != null)
         {
-            Map<String, String> searchdata = searchRequest.getCaseData().entrySet().stream().collect(Collectors.toMap(es -> es.getKey(), es-> toJson(es)));
-            Set<SearchResponse> resultList = rshCaseRepository.findByNameOrDob(searchdata.get("first-name"),searchdata.get("last-name"), searchdata.get("dob"));
+            Map<String, String> searchdata = searchRequest.getCaseData();
+            Set<RshCaseDetails> resultList = rshCaseRepository.findByNameOrDob(searchdata.get("first-name"),searchdata.get("last-name"), searchdata.get("date-of-birth"));
             results.addAll(resultList);
         }
         return results;
-    }
-
-    private String toJson(Map.Entry<String,String> entry){
-
-        String value = "{}";
-        try {
-            value = objectMapper.writeValueAsString(entry);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return value;
     }
 }
 
