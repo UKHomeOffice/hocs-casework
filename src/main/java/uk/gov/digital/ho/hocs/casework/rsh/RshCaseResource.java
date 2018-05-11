@@ -10,7 +10,6 @@ import uk.gov.digital.ho.hocs.casework.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.dto.SearchResponse;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -44,8 +43,7 @@ public class RshCaseResource {
 
     @RequestMapping(value = "/rsh/search", method = RequestMethod.POST, produces = APPLICATION_JSON_UTF8_VALUE)
     public Mono<ResponseEntity<List<SearchResponse>>> rshSearch(@RequestBody SearchRequest data) {
-        List<RshCaseDetails> caseDetails = rshCaseService.findCases(data);
-        List<SearchResponse> searchResponses = caseDetails.stream().map(cd -> SearchResponse.from(cd)).collect(Collectors.toList());
+        List<SearchResponse> searchResponses = rshCaseService.findCases(data);
         return Mono.justOrEmpty(ResponseEntity.ok(searchResponses));
     }
 }
