@@ -22,13 +22,17 @@ public class AuditEntry {
     @Column(name = "action", nullable = false)
     private String action;
 
+    @Column(name = "username", nullable = false)
+    private String username;
+
     @Column(name = "caseData", nullable = false)
     private String caseData;
 
-    public AuditEntry(String uuid, String timestamp, String action, String caseData) {
+    public AuditEntry(String uuid, String timestamp, String action, String username, String caseData) {
         this.uuid = uuid;
         this.timestamp = timestamp;
         this.action = action;
+        this.username = username;
         this.caseData = caseData;
     }
 }

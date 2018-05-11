@@ -14,12 +14,12 @@ public class AuditService {
     private final AuditRepository auditRepository;
 
     @Autowired
-    AuditService(AuditRepository auditRepository) {
+    public AuditService(AuditRepository auditRepository) {
         this.auditRepository = auditRepository;
     }
 
-    public void createAuditEntry(String uuid, String action, String caseData) {
-        this.auditRepository.save(new AuditEntry(uuid, LocalDateTime.now().toString(), action, caseData));
+    public void createAuditEntry(String uuid, String action, String username, String caseData) {
+        this.auditRepository.save(new AuditEntry(uuid, LocalDateTime.now().toString(), action, username, caseData));
     }
 }
 
