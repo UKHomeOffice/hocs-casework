@@ -18,8 +18,8 @@ public class AuditService {
         this.auditRepository = auditRepository;
     }
 
-    public void createAuditEntry(String uuid, String action, String username, String caseData) {
-        this.auditRepository.save(new AuditEntry(uuid, LocalDateTime.now().toString(), action, username, caseData));
+    public void createAuditEntry(String uuid, String action, String username, String data) {
+        this.auditRepository.save(new AuditEntry(uuid, LocalDateTime.now().toString(), action, username, data));
     }
 }
 

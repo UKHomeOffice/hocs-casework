@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS rsh_case
+CREATE TABLE IF NOT EXISTS audit
 (
   id        BIGSERIAL PRIMARY KEY,
   uuid      TEXT,

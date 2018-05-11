@@ -21,7 +21,7 @@ public class AuditEntryTest {
         assertThat(entry.getAction()).isEqualTo(action);
         assertThat(entry.getTimestamp()).isEqualTo(timestamp);
         assertThat(entry.getUsername()).isEqualTo(username);
-        assertThat(entry.getCaseData()).isEqualTo(caseData);
+        assertThat(entry.getData()).isEqualTo(caseData);
     }
 
 }
