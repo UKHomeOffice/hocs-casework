@@ -4,48 +4,33 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.dto.CaseSaveRequest;
 import uk.gov.digital.ho.hocs.casework.dto.SearchRequest;
-import uk.gov.service.notify.NotificationClient;
-import uk.gov.service.notify.NotificationClientException;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @Slf4j
 public class RshCaseService {
 
-    private final String apiKey;
-    private final String rshTemplateId;
-    private final String url;
 
-    NotificationClient client;
-    ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     private final RshCaseRepository rshCaseRepository;
 
     @Autowired
-    public RshCaseService(@Value("${notify.apiKey}") String apiKey,
-                          @Value("${notify.rshTemplateId}") String rshTemplateId,
-                          @Value("${env.url}") String url,
-                          RshCaseRepository rshCaseRepository) {
-        this.apiKey = apiKey;
-        this.rshTemplateId = rshTemplateId;
-        this.url = url;
+    public RshCaseService(RshCaseRepository rshCaseRepository) {
+
         this.rshCaseRepository = rshCaseRepository;
-        client = new NotificationClient(apiKey);
     }
 
     RshCaseDetails createRSHCase(Map<String,String> caseData) throws JsonProcessingException {
 
         RshCaseDetails rshCaseDetails = new RshCaseDetails("RSH",rshCaseRepository.getNextSeriesId(), objectMapper.writeValueAsString(caseData));
         rshCaseRepository.save(rshCaseDetails);
-        if (caseSaveRequest.getNotifyEmail() != null && !caseSaveRequest.getNotifyEmail().isEmpty()) {
-            sendEmail(rshCaseDetails.getUuid(), caseSaveRequest.getNotifyEmail(), caseSaveRequest.getNotifyTeamName());
-        }
         return rshCaseDetails;
     }
 
@@ -53,9 +38,6 @@ public class RshCaseService {
         RshCaseDetails rshCaseDetails = rshCaseRepository.findByUuid(uuid);
         rshCaseDetails.setCaseData(objectMapper.writeValueAsString(caseData));
         rshCaseRepository.save(rshCaseDetails);
-        if (caseSaveRequest.getNotifyEmail() != null && !caseSaveRequest.getNotifyEmail().isEmpty()) {
-            sendEmail(rshCaseDetails.getUuid(), caseSaveRequest.getNotifyEmail(), caseSaveRequest.getNotifyTeamName());
-        }
         return rshCaseDetails;
     }
 
@@ -81,17 +63,6 @@ public class RshCaseService {
             results.addAll(resultList);
         }
         return results;
-    }
-
-    private void sendEmail(String uuid, String emailAddress, String teamName) {
-        HashMap<String, String> personalisation = new HashMap<>();
-        personalisation.put("team", teamName);
-        personalisation.put("link", url + "/rsh/case/" + uuid);
-        try {
-            client.sendEmail(rshTemplateId, emailAddress, personalisation, null, null);
-        } catch (NotificationClientException e) {
-            e.printStackTrace();
-        }
     }
 
 }
