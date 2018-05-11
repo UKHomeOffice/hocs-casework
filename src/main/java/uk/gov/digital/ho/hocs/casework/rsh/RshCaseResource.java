@@ -31,11 +31,11 @@ public class RshCaseResource {
         RshCaseDetails rshCaseDetails = null;
         try {
             rshCaseDetails = rshCaseService.createRSHCase(request.getCaseData());
+            auditService.createAuditEntry(rshCaseDetails.getUuid(), "CREATE", username, request.getCaseData());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Mono.justOrEmpty(ResponseEntity.badRequest().build());
         }
-        auditService.createAuditEntry(rshCaseDetails.getUuid(), "CREATE", username, request.getCaseData());
         return Mono.justOrEmpty(ResponseEntity.ok(CaseSaveResponse.from(rshCaseDetails)));
     }
 
@@ -44,25 +44,35 @@ public class RshCaseResource {
         RshCaseDetails rshCaseDetails = null;
         try {
             rshCaseDetails = rshCaseService.updateRSHCase(uuid,request.getCaseData());
+            auditService.createAuditEntry(rshCaseDetails.getUuid(), "UPDATE", username, request.getCaseData());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Mono.justOrEmpty(ResponseEntity.badRequest().build());
         }
-        auditService.createAuditEntry(rshCaseDetails.getUuid(), "UPDATE", username, request.getCaseData());
         return Mono.justOrEmpty(ResponseEntity.ok(CaseSaveResponse.from(rshCaseDetails)));
     }
 
     @RequestMapping(value = "/rsh/case/{uuid}", method = RequestMethod.GET, produces = APPLICATION_JSON_UTF8_VALUE)
     public Mono<ResponseEntity<RshCaseDetails>> rshGetCase(@PathVariable String uuid, @RequestHeader("X-Auth-Username") String username) {
         RshCaseDetails caseDetails = rshCaseService.getRSHCase(uuid);
-        auditService.createAuditEntry(uuid, "RETRIEVE", username, null);
+        try {
+            auditService.createAuditEntry(uuid, "RETRIEVE", username, null);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Mono.justOrEmpty(ResponseEntity.badRequest().build());
+        }
         return Mono.justOrEmpty(ResponseEntity.ok(caseDetails));
     }
 
     @RequestMapping(value = "/rsh/search", method = RequestMethod.POST, produces = APPLICATION_JSON_UTF8_VALUE)
-    public Mono<ResponseEntity<List<SearchResponse>>> rshSearch(@RequestBody SearchRequest data, @RequestHeader("X-Auth-Username") String username) {
+    public Mono<ResponseEntity<List<RshCaseDetails>>> rshSearch(@RequestBody SearchRequest data, @RequestHeader("X-Auth-Username") String username) {
         List<RshCaseDetails> searchResponses = rshCaseService.findCases(data);
-        auditService.createAuditEntry(data.getCaseReference(), "SEARCH", username, data.getCaseData().toString());
+        try {
+            auditService.createAuditEntry(data.getCaseReference(), "SEARCH", username, data.getCaseData());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Mono.justOrEmpty(ResponseEntity.badRequest().build());
+        }
         return Mono.justOrEmpty(ResponseEntity.ok(searchResponses));
     }
 }
