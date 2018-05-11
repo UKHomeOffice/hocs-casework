@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.dto.SearchResponse;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,20 +47,20 @@ public class RshCaseService {
         return rshCaseDetails;
     }
 
-    List<RshCaseDetails> findCases(SearchRequest searchRequest){
+    List<SearchResponse> findCases(SearchRequest searchRequest){
 
-        ArrayList<RshCaseDetails> results = new ArrayList<>();
+        ArrayList<SearchResponse> results = new ArrayList<>();
         if(searchRequest.getCaseReference() != null)
         {
-            RshCaseDetails result = rshCaseRepository.findByCaseReference(searchRequest.getCaseReference());
+            SearchResponse result = rshCaseRepository.findByCaseReference(searchRequest.getCaseReference());
             if(result != null){
                 results.add(result);
             }
         }
         if (results.size() == 0 && searchRequest.getCaseData() != null)
         {
-            Map<String, String> searchdata =  searchRequest.getCaseData().entrySet().stream().collect(Collectors.toMap(es -> es.getKey(), es-> toJson(es)));
-            Set<RshCaseDetails> resultList = rshCaseRepository.findByNameOrDob(searchdata.get("first-name"),searchdata.get("last-name"), searchdata.get("dob"));
+            Map<String, String> searchdata = searchRequest.getCaseData().entrySet().stream().collect(Collectors.toMap(es -> es.getKey(), es-> toJson(es)));
+            Set<SearchResponse> resultList = rshCaseRepository.findByNameOrDob(searchdata.get("first-name"),searchdata.get("last-name"), searchdata.get("dob"));
             results.addAll(resultList);
         }
         return results;
