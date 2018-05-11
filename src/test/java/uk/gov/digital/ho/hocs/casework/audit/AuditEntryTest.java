@@ -3,6 +3,9 @@ package uk.gov.digital.ho.hocs.casework.audit;
 
 import org.junit.Test;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AuditEntryTest {
@@ -11,7 +14,7 @@ public class AuditEntryTest {
     public void createAuditEntry() {
         String uuid = "1234";
         String action = "TEST";
-        String timestamp = "01/01/2018";
+        LocalDateTime timestamp = LocalDateTime.now();
         String username = "Test User";
         String caseData = "{test: value}";
 

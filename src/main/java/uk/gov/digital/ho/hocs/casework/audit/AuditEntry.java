@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.audit;
 import lombok.Getter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "audit")
@@ -18,7 +19,7 @@ public class AuditEntry {
     private String uuid;
 
     @Column(name = "timestamp", nullable = false)
-    private String timestamp;
+    private LocalDateTime timestamp;
 
     @Column(name = "action", nullable = false)
     private String action;
@@ -29,7 +30,7 @@ public class AuditEntry {
     @Column(name = "data")
     private String data;
 
-    public AuditEntry(String uuid, String timestamp, String action, String username, String data) {
+    public AuditEntry(String uuid, LocalDateTime timestamp, String action, String username, String data) {
         this.uuid = uuid;
         this.timestamp = timestamp;
         this.action = action;
