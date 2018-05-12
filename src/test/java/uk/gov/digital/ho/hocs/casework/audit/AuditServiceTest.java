@@ -1,10 +1,14 @@
 package uk.gov.digital.ho.hocs.casework.audit;
 
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.verify;
@@ -23,11 +27,12 @@ public class AuditServiceTest {
     }
 
     @Test
-    public void createAuditEntry() {
+    public void createAuditEntry() throws JsonProcessingException {
         String uuid = "1234";
         String action = "TEST";
         String username = "Test User";
-        String caseData = "{test: value}";
+        Map<String,String> caseData = new HashMap<>();
+        caseData.put("Test","Value");
 
         this.auditService.createAuditEntry(uuid, action, username, caseData);
 
