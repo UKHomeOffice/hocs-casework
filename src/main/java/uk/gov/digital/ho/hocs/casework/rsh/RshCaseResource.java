@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.dto.CaseSaveRequest;
 import uk.gov.digital.ho.hocs.casework.dto.CaseSaveResponse;
 import uk.gov.digital.ho.hocs.casework.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.notify.NotifyService;
 
 import java.util.List;
 
@@ -19,11 +20,13 @@ public class RshCaseResource {
 
     private final RshCaseService rshCaseService;
     private final AuditService auditService;
+    private final NotifyService notifyService;
 
     @Autowired
-    public RshCaseResource(RshCaseService rshCaseService, AuditService auditService) {
+    public RshCaseResource(RshCaseService rshCaseService, AuditService auditService, NotifyService notifyService) {
         this.rshCaseService = rshCaseService;
         this.auditService = auditService;
+        this.notifyService = notifyService;
     }
 
     @RequestMapping(value = "/rsh/create", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
@@ -32,6 +35,7 @@ public class RshCaseResource {
         try {
             rshCaseDetails = rshCaseService.createRSHCase(request.getCaseData());
             auditService.createAuditEntry(rshCaseDetails.getUuid(), "CREATE", username, request.getCaseData());
+            notifyService.determineNotificationRequired(request.getNotifyEmail(),request.getNotifyTeamName(),rshCaseDetails.getUuid());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Mono.justOrEmpty(ResponseEntity.badRequest().build());
@@ -45,6 +49,7 @@ public class RshCaseResource {
         try {
             rshCaseDetails = rshCaseService.updateRSHCase(uuid,request.getCaseData());
             auditService.createAuditEntry(rshCaseDetails.getUuid(), "UPDATE", username, request.getCaseData());
+            notifyService.determineNotificationRequired(request.getNotifyEmail(),request.getNotifyTeamName(),rshCaseDetails.getUuid());
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             return Mono.justOrEmpty(ResponseEntity.badRequest().build());

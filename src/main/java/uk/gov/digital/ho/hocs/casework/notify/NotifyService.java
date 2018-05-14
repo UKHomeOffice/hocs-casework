@@ -22,13 +22,13 @@ public class NotifyService {
     @Autowired
     public NotifyService(@Value("${notify.apiKey}") String apiKey,
                          @Value("${notify.rshTemplateId}") String rshTemplateId,
-                         @Value("${frontend.url}") String frontEndUrl) {
+                         @Value("${notify.frontend.url}") String frontEndUrl) {
         this.rshTemplateId = rshTemplateId;
         this.frontEndUrl = frontEndUrl;
         client = new NotificationClient(apiKey);
     }
 
-    public void createAuditEntry(String notifyEmail, String notifyTeamName, String caseUUID) {
+    public void determineNotificationRequired (String notifyEmail, String notifyTeamName, String caseUUID) {
         if (notifyEmail != null && !notifyEmail.isEmpty()) {
             sendEmail(notifyEmail, notifyTeamName,caseUUID);
         }
