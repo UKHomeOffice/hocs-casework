@@ -17,6 +17,6 @@ public interface RshCaseRepository extends CrudRepository<RshCaseDetails, String
     @Query(value = "SELECT * from rsh_case rc where rc.reference = ?1 or rc.data->>'legacy-reference' = ?1", nativeQuery = true)
     RshCaseDetails findByCaseReference(String caseReference);
 
-    @Query(value = "SELECT * from rsh_case rc where (rc.data->>'first-name' = ?1 and rc.data->>'last-name' = ?2) or rc.data->>'date-of-birth' = ?3", nativeQuery = true)
+    @Query(value = "SELECT * from rsh_case rc where (LOWER(CAST(rc.data->>'first-name' as text)) = LOWER(?1) and LOWER(CAST(rc.data->>'last-name' as text)) = LOWER(?2)) or rc.data->>'date-of-birth' = ?3", nativeQuery = true)
     Set<RshCaseDetails> findByNameOrDob(String firstName, String lastName, String dob);
 }
