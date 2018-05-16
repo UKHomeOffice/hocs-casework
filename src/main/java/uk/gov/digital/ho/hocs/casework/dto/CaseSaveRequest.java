@@ -19,5 +19,5 @@ public class CaseSaveRequest {
     private String notifyTeamName;
 
     @JsonProperty("caseData")
-    private Map<String,String> caseData;
+    private Map<String,Object> caseData;
 }

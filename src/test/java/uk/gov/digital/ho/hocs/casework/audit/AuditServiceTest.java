@@ -31,7 +31,7 @@ public class AuditServiceTest {
         String uuid = "1234";
         String action = "TEST";
         String username = "Test User";
-        Map<String,String> caseData = new HashMap<>();
+        Map<String,Object> caseData = new HashMap<>();
         caseData.put("Test","Value");
 
         this.auditService.createAuditEntry(uuid, action, username, caseData);

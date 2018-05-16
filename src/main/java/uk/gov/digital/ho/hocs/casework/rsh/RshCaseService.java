@@ -27,14 +27,14 @@ public class RshCaseService {
         this.rshCaseRepository = rshCaseRepository;
     }
 
-    RshCaseDetails createRSHCase(Map<String,String> caseData) throws JsonProcessingException {
+    RshCaseDetails createRSHCase(Map<String,Object> caseData) throws JsonProcessingException {
 
         RshCaseDetails rshCaseDetails = new RshCaseDetails("RSH",rshCaseRepository.getNextSeriesId(), objectMapper.writeValueAsString(caseData));
         rshCaseRepository.save(rshCaseDetails);
         return rshCaseDetails;
     }
 
-    RshCaseDetails updateRSHCase(String uuid, Map<String,String> caseData) throws JsonProcessingException {
+    RshCaseDetails updateRSHCase(String uuid, Map<String,Object> caseData) throws JsonProcessingException {
         RshCaseDetails rshCaseDetails = rshCaseRepository.findByUuid(uuid);
         rshCaseDetails.setCaseData(objectMapper.writeValueAsString(caseData));
         rshCaseRepository.save(rshCaseDetails);
@@ -58,8 +58,8 @@ public class RshCaseService {
         }
         if (results.size() == 0 && searchRequest.getCaseData() != null)
         {
-            Map<String, String> searchdata = searchRequest.getCaseData();
-            Set<RshCaseDetails> resultList = rshCaseRepository.findByNameOrDob(searchdata.get("first-name"),searchdata.get("last-name"), searchdata.get("date-of-birth"));
+            Map<String, Object> searchData = searchRequest.getCaseData();
+            Set<RshCaseDetails> resultList = rshCaseRepository.findByNameOrDob((String)searchData.get("first-name"),(String)searchData.get("last-name"), (String)searchData.get("date-of-birth"));
             results.addAll(resultList);
         }
         return results;
