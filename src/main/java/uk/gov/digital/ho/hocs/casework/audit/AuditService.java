@@ -23,7 +23,7 @@ public class AuditService {
         this.auditRepository = auditRepository;
     }
 
-    public void createAuditEntry(String uuid, String action, String username, Map<String,String> caseData) throws JsonProcessingException {
+    public void createAuditEntry(String uuid, String action, String username, Map<String,Object> caseData) throws JsonProcessingException {
         this.auditRepository.save(new AuditEntry(uuid, LocalDateTime.now(), action, username, objectMapper.writeValueAsString(caseData)));
     }
 }
