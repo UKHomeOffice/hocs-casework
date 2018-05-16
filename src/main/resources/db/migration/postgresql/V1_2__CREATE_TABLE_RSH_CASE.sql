@@ -6,5 +6,4 @@ CREATE TABLE IF NOT EXISTS rsh_case
   uuid      TEXT      NOT NULL,
   created   TIMESTAMP NOT NULL,
   data      JSONB     NOT NULL
-
 );

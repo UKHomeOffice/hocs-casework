@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.rsh;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uk.gov.digital.ho.hocs.casework.model.StageDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,9 +15,9 @@ import java.util.UUID;
 @Table(name = "rsh_case")
 @Getter
 @NoArgsConstructor
-public class RshCaseDetails implements Serializable {
+public class CaseDetails implements Serializable {
 
-    public RshCaseDetails(String type, Long caseNumber, String caseData) {
+    public CaseDetails(String type, Long caseNumber, StageDetails stageDetails) {
         LocalDateTime now = LocalDateTime.now();
         this.caseType = type;
         this.caseReference = String.format("%s/%07d/%s", type, caseNumber,now.format(DateTimeFormatter.ofPattern("yy")));

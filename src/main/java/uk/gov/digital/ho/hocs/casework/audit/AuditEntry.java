@@ -1,9 +1,11 @@
 package uk.gov.digital.ho.hocs.casework.audit;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "audit")
@@ -15,26 +17,48 @@ public class AuditEntry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "uuid")
-    private String uuid;
-
-    @Column(name = "timestamp", nullable = false)
-    private LocalDateTime timestamp;
-
-    @Column(name = "action", nullable = false)
-    private String action;
-
-    @Column(name = "username", nullable = false)
+    @Column(name = "case_username", nullable = false)
     private String username;
 
-    @Column(name = "data")
-    private String data;
+    @Column(name = "case_uuid", nullable = false)
+    private String caseUUID;
 
-    public AuditEntry(String uuid, LocalDateTime timestamp, String action, String username, String data) {
-        this.uuid = uuid;
-        this.timestamp = timestamp;
-        this.action = action;
+    @Column(name = "case_type", nullable = false)
+    private String caseType;
+
+    @Column(name = "case_type", nullable = false)
+    private String caseStage;
+
+    @Column(name = "event_uuid", nullable = false)
+    private String eventUUID;
+
+    @Column(name = "event_timestamp", nullable = false)
+    private LocalDateTime eventTimestamp;
+
+    @Column(name = "event_action", nullable = false)
+    private String eventAction;
+
+
+    @Column(name = "event_data")
+    private String eventData;
+
+    public AuditEntry(String username,
+                      UUID caseUUID,
+                      String caseType,
+                      String caseStage,
+                      UUID eventUUID,
+                      LocalDateTime eventTimestamp,
+                      AuditAction eventAction,
+                      String caseData) {
         this.username = username;
-        this.data = data;
+        this.caseType = caseType;
+        this.caseUUID = caseUUID.toString();
+        this.caseStage = caseStage;
+        this.eventUUID = eventUUID.toString();
+        this.eventTimestamp = eventTimestamp;
+        this.eventAction = eventAction.toString();
+        this.eventData = caseData;
+
+
     }
 }

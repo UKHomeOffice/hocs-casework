@@ -1,11 +1,11 @@
 package uk.gov.digital.ho.hocs.casework.rsh;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.model.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.model.StageDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,31 +27,30 @@ public class RshCaseService {
         this.rshCaseRepository = rshCaseRepository;
     }
 
-    RshCaseDetails createRSHCase(Map<String,String> caseData) throws JsonProcessingException {
-
-        RshCaseDetails rshCaseDetails = new RshCaseDetails("RSH",rshCaseRepository.getNextSeriesId(), objectMapper.writeValueAsString(caseData));
+    CaseDetails createRSHCase(String caseType, StageDetails stageDetails) {
+        CaseDetails rshCaseDetails = new CaseDetails(caseType,rshCaseRepository.getNextSeriesId(), stageDetails);
         rshCaseRepository.save(rshCaseDetails);
         return rshCaseDetails;
     }
 
-    RshCaseDetails updateRSHCase(String uuid, Map<String,String> caseData) throws JsonProcessingException {
-        RshCaseDetails rshCaseDetails = rshCaseRepository.findByUuid(uuid);
+    CaseDetails updateRSHCase(String uuid, Map<String,String> caseData) {
+        CaseDetails rshCaseDetails = rshCaseRepository.findByUuid(uuid);
         rshCaseDetails.setCaseData(objectMapper.writeValueAsString(caseData));
         rshCaseRepository.save(rshCaseDetails);
         return rshCaseDetails;
     }
 
-    RshCaseDetails getRSHCase(String uuid) {
-        RshCaseDetails rshCaseDetails = rshCaseRepository.findByUuid(uuid);
+    CaseDetails getRSHCase(String uuid) {
+        CaseDetails rshCaseDetails = rshCaseRepository.findByUuid(uuid);
         return rshCaseDetails;
     }
 
-    List<RshCaseDetails> findCases(SearchRequest searchRequest){
+    List<CaseDetails> findCases(SearchRequest searchRequest){
 
-        ArrayList<RshCaseDetails> results = new ArrayList<>();
+        ArrayList<CaseDetails> results = new ArrayList<>();
         if(searchRequest.getCaseReference() != null)
         {
-            RshCaseDetails result = rshCaseRepository.findByCaseReference(searchRequest.getCaseReference());
+            CaseDetails result = rshCaseRepository.findByCaseReference(searchRequest.getCaseReference());
             if(result != null){
                 results.add(result);
             }
@@ -59,7 +58,7 @@ public class RshCaseService {
         if (results.size() == 0 && searchRequest.getCaseData() != null)
         {
             Map<String, String> searchdata = searchRequest.getCaseData();
-            Set<RshCaseDetails> resultList = rshCaseRepository.findByNameOrDob(searchdata.get("first-name"),searchdata.get("last-name"), searchdata.get("date-of-birth"));
+            Set<CaseDetails> resultList = rshCaseRepository.findByNameOrDob(searchdata.get("first-name"),searchdata.get("last-name"), searchdata.get("date-of-birth"));
             results.addAll(resultList);
         }
         return results;

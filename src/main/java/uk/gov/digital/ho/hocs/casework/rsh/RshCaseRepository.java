@@ -7,16 +7,16 @@ import org.springframework.stereotype.Repository;
 import java.util.Set;
 
 @Repository
-public interface RshCaseRepository extends CrudRepository<RshCaseDetails, String> {
+public interface RshCaseRepository extends CrudRepository<CaseDetails, String> {
 
     @Query(value = "SELECT nextval('case_ref')" , nativeQuery = true)
     Long getNextSeriesId();
 
-    RshCaseDetails findByUuid(String uuid);
+    CaseDetails findByUuid(String uuid);
 
     @Query(value = "SELECT * from rsh_case rc where rc.reference = ?1 or rc.data->>'legacy-reference' = ?1", nativeQuery = true)
-    RshCaseDetails findByCaseReference(String caseReference);
+    CaseDetails findByCaseReference(String caseReference);
 
     @Query(value = "SELECT * from rsh_case rc where (LOWER(CAST(rc.data->>'first-name' as text)) = LOWER(?1) and LOWER(CAST(rc.data->>'last-name' as text)) = LOWER(?2)) or rc.data->>'date-of-birth' = ?3", nativeQuery = true)
-    Set<RshCaseDetails> findByNameOrDob(String firstName, String lastName, String dob);
+    Set<CaseDetails> findByNameOrDob(String firstName, String lastName, String dob);
 }

@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.dto;
+package uk.gov.digital.ho.hocs.casework.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -10,14 +10,15 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class CaseSaveRequest {
+public class StageDetails {
 
-    @JsonProperty("notify-email")
-    private String notifyEmail;
-
-    @JsonProperty("notify-team")
-    private String notifyTeamName;
+    @JsonProperty("stageName")
+    private String stageName;
 
     @JsonProperty("caseData")
     private Map<String,String> caseData;
+
+    public static StageDetails from(String stageName, Map<String,String> caseData){
+        return new StageDetails(stageName, caseData);
+    }
 }

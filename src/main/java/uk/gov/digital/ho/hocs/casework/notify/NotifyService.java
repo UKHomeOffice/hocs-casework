@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.model.NotifyDetails;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -28,9 +29,9 @@ public class NotifyService {
         client = new NotificationClient(apiKey);
     }
 
-    public void determineNotificationRequired (String notifyEmail, String notifyTeamName, String caseUUID) {
-        if (notifyEmail != null && !notifyEmail.isEmpty()) {
-            sendEmail(notifyEmail, notifyTeamName,caseUUID);
+    public void determineNotificationRequired (NotifyDetails notifyDetails, String caseUUID) {
+        if (notifyDetails.getNotifyEmail() != null && !notifyDetails.getNotifyEmail().isEmpty()) {
+            sendEmail(notifyDetails.getNotifyEmail(), notifyDetails.getNotifyTeamName(),caseUUID);
         }
     }
 
