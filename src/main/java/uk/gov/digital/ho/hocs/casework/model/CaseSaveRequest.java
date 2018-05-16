@@ -22,15 +22,12 @@ public class CaseSaveRequest {
     @JsonProperty("caseType")
     private String caseType;
 
-    @JsonProperty("notifyDetails")
-    private NotifyDetails notifyDetails;
 
     @JsonProperty("stageDetails")
     private StageDetails stageDetails;
 
     public static CaseSaveRequest from(UUID requestUUID, LocalDateTime requestTimestamp, String caseType, String stageName, RshCaseSaveRequest rshCaseSaveRequest){
-        NotifyDetails notifyDetails = NotifyDetails.from(rshCaseSaveRequest.getNotifyEmail(), rshCaseSaveRequest.getNotifyTeamName());
         StageDetails stageDetails = StageDetails.from(stageName, rshCaseSaveRequest.getCaseData());
-        return new CaseSaveRequest(requestUUID.toString(), requestTimestamp.toString(), caseType, notifyDetails, stageDetails);
+        return new CaseSaveRequest(requestUUID.toString(), requestTimestamp.toString(), caseType, stageDetails);
     }
 }

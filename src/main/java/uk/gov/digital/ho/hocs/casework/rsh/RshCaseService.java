@@ -4,13 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.model.CaseSaveRequest;
 import uk.gov.digital.ho.hocs.casework.model.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.model.StageDetails;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -28,8 +27,21 @@ public class RshCaseService {
     }
 
     CaseDetails createRSHCase(String caseType, StageDetails stageDetails) {
+        // This stuff should be set by the client
+        UUID requestUUID = UUID.randomUUID();
+        LocalDateTime requestTimestamp = LocalDateTime.now();
+        String stageName = "onlyStage";
+        String caseType = "RSH";
+        CaseSaveRequest caseSaveRequest = CaseSaveRequest.from(requestUUID, requestTimestamp, caseType, stageName, request);
+
         CaseDetails rshCaseDetails = new CaseDetails(caseType,rshCaseRepository.getNextSeriesId(), stageDetails);
         rshCaseRepository.save(rshCaseDetails);
+        return rshCaseDetails;
+    }
+
+    CaseDetails createCase(String caseType, CaseDetails caseDetails) {
+        CaseDetails rshCaseDetails = new CaseDetails(caseType,rshCaseRepository.getNextSeriesId(), stageDetails);
+        rshCaseRepository.save(caseDetails);
         return rshCaseDetails;
     }
 

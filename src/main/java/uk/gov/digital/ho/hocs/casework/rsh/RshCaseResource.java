@@ -35,20 +35,21 @@ public class RshCaseResource {
 
     @RequestMapping(value = "/rsh/create", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public Mono<ResponseEntity<CaseSaveResponse>> rshCreateCase(@RequestBody RshCaseSaveRequest request, @RequestHeader("X-Auth-Username") String username) {
-        // This stuff should be set by the client
-        UUID requestUUID = UUID.randomUUID();
-        LocalDateTime requestTimestamp = LocalDateTime.now();
-        String stageName = "onlyStage";
-        String caseType = "RSH";
-        CaseSaveRequest caseSaveRequest = CaseSaveRequest.from(requestUUID, requestTimestamp, caseType, stageName, request);
-        return createCase(caseSaveRequest,username);
+        try {
+            caseDetails = rshCaseService.createRSHCase(request);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return Mono.justOrEmpty(ResponseEntity.badRequest().build());
+        }
+
+        return Mono.justOrEmpty(ResponseEntity.ok(CaseSaveResponse.from(caseDetails)));
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public Mono<ResponseEntity<CaseSaveResponse>> createCase(@RequestBody CaseSaveRequest request, @RequestHeader("X-Auth-Username") String username) {
         CaseDetails caseDetails;
         try {
-            caseDetails = rshCaseService.createRSHCase(request);
+            caseDetails = rshCaseService.createCase(request);
             auditService.createAuditEntry(caseDetails.getUuid(), AuditAction.CREATE, username, request.getCaseData());
             notifyService.determineNotificationRequired(request.getNotifyDetails(),caseDetails.getUuid());
         } catch (JsonProcessingException e) {
