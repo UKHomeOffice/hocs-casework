@@ -28,24 +28,24 @@ public class AuditService {
 
     public void createAuditEntry(UUID uuid, AuditAction action, String username, String caseData){
 
-            AuditEntry auditEntry = auditRepository.findByUUID(uuid);
-            if(auditEntry == null){
+          //  AuditEntry auditEntry = auditRepository.findByUUID(uuid);
+           // if(auditEntry == null){
                 try {
-                auditRepository.save(new AuditEntry(uuid, action, username, caseData));
+                //auditRepository.save(new AuditEntry(uuid, action, username, caseData));
                 } catch (DataIntegrityViolationException e) {
                     if (e.getCause() instanceof ConstraintViolationException &&
                             (((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase().contains("audit_id_idempotent"))) {
                         // Do Nothing.
-                        log.info("Received duplicate message {}, {}", auditEntry.getEventUUID(), auditEntry.getEventTimestamp());
+             //           log.info("Received duplicate message {}, {}", auditEntry.getEventUUID(), auditEntry.getEventTimestamp());
                     } else {
                         throw e;
                     }
                 }
-            }
-            else
+
+           // else
 
 
-            log.error("Failed to write audit line {}", caseData);
+            //log.error("Failed to write audit line {}", caseData);
 
     }
 }

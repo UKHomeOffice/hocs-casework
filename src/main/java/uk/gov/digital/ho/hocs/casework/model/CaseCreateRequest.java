@@ -4,14 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import uk.gov.digital.ho.hocs.casework.rsh.StageDetails;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class CaseSaveRequest {
+public class CaseCreateRequest {
 
     @JsonProperty("requestUUID")
     private String requestUUID;
@@ -21,13 +23,4 @@ public class CaseSaveRequest {
 
     @JsonProperty("caseType")
     private String caseType;
-
-
-    @JsonProperty("stageDetails")
-    private StageDetails stageDetails;
-
-    public static CaseSaveRequest from(UUID requestUUID, LocalDateTime requestTimestamp, String caseType, String stageName, RshCaseSaveRequest rshCaseSaveRequest){
-        StageDetails stageDetails = StageDetails.from(stageName, rshCaseSaveRequest.getCaseData());
-        return new CaseSaveRequest(requestUUID.toString(), requestTimestamp.toString(), caseType, stageDetails);
-    }
 }

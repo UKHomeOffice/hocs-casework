@@ -26,7 +26,7 @@ public class AuditEntry {
     @Column(name = "case_type", nullable = false)
     private String caseType;
 
-    @Column(name = "case_type", nullable = false)
+    @Column(name = "case_Stage", nullable = false)
     private String caseStage;
 
     @Column(name = "event_uuid", nullable = false)

@@ -15,6 +15,6 @@ CREATE TABLE IF NOT EXISTS audit
   CONSTRAINT audit_id_idempotent UNIQUE (event_uuid, event_timestamp)
 );
 
-CREATE INDEX idx_audit_username ON audit (case_uuid);
+CREATE INDEX idx_audit_uuid ON audit (case_uuid);
 CREATE INDEX idx_audit_username ON audit (case_username);
 CREATE INDEX idx_audit_timestamp ON audit (event_timestamp);

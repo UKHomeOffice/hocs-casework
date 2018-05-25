@@ -16,5 +16,5 @@ public class SearchRequest {
     private String caseReference;
 
     @JsonProperty("caseData")
-    private Map<String, String> caseData;
+    private Map<String, Object> caseData;
 }

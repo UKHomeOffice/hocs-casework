@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AuditRepository extends CrudRepository<AuditEntry, Long> {
 
-    AuditEntry findByUUID(String uuid);
 }

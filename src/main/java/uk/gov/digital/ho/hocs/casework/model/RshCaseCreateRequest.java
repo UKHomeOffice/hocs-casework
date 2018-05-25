@@ -10,7 +10,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class RshCaseSaveRequest {
+public class RshCaseCreateRequest {
 
     @JsonProperty("notify-email")
     private String notifyEmail;
@@ -19,5 +19,5 @@ public class RshCaseSaveRequest {
     private String notifyTeamName;
 
     @JsonProperty("caseData")
-    private Map<String,String> caseData;
+    private Map<String,Object> caseData;
 }
