@@ -22,12 +22,13 @@ public class StageDetails implements Serializable {
 
     public StageDetails(UUID caseUUID, String name, int schemaVersion, String data) {
         LocalDateTime now = LocalDateTime.now();
-        this.uuid = UUID.randomUUID().toString();
+        this.uuid = UUID.randomUUID();
         this.name = name;
         this.data = data;
         this.caseUUID = caseUUID;
         this.schemaVersion = schemaVersion;
         this.created = now;
+        this.updated = now;
     }
 
     @Id
@@ -36,7 +37,7 @@ public class StageDetails implements Serializable {
     private int id;
 
     @Column(name ="uuid")
-    private String uuid;
+    private UUID uuid;
 
     @Column(name ="name")
     private String name;
@@ -54,4 +55,8 @@ public class StageDetails implements Serializable {
 
     @Column(name = "created")
     private LocalDateTime created;
+
+    @Setter
+    @Column(name = "updated")
+    private LocalDateTime updated;
 }

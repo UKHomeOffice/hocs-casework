@@ -9,6 +9,7 @@ import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 
 @Service
@@ -29,18 +30,24 @@ public class NotifyService {
         client = new NotificationClient(apiKey);
     }
 
-    public void determineNotificationRequired (NotifyDetails notifyDetails, String caseUUID) {
+    public void sendRshNotify(NotifyDetails notifyDetails, UUID caseUUID) {
         if (notifyDetails.getNotifyEmail() != null && !notifyDetails.getNotifyEmail().isEmpty()) {
-            sendEmail(notifyDetails.getNotifyEmail(), notifyDetails.getNotifyTeamName(),caseUUID);
+            sendEmail(notifyDetails.getNotifyEmail(), notifyDetails.getNotifyTeamName(),caseUUID, rshTemplateId);
         }
     }
 
-    private void sendEmail(String emailAddress, String teamName,String caseUUID) {
+    public void sendNotify(NotifyDetails notifyDetails, UUID caseUUID) {
+        if (notifyDetails.getNotifyEmail() != null && !notifyDetails.getNotifyEmail().isEmpty()) {
+            sendEmail(notifyDetails.getNotifyEmail(), notifyDetails.getNotifyTeamName(),caseUUID, "");
+        }
+    }
+
+    private void sendEmail(String emailAddress, String teamName,UUID caseUUID, String templateId) {
         HashMap<String, String> personalisation = new HashMap<>();
         personalisation.put("team", teamName);
         personalisation.put("link", frontEndUrl + "/rsh/case/" + caseUUID);
         try {
-            client.sendEmail(rshTemplateId, emailAddress, personalisation, null, null);
+            client.sendEmail(templateId, emailAddress, personalisation, null, null);
         } catch (NotificationClientException e) {
             e.printStackTrace();
         }

@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS stage_details
   case_uuid       UUID      NOT NULL,
   schema_version  INT       NOT NULL,
   created         TIMESTAMP NOT NULL,
+  updated         TIMESTAMP NOT NULL,
 
   CONSTRAINT stage_id_idempotent UNIQUE (uuid),
   CONSTRAINT fk_stage_id FOREIGN KEY (case_uuid) REFERENCES case_details(uuid)
@@ -37,3 +38,4 @@ CREATE TABLE IF NOT EXISTS stage_details
 CREATE INDEX idx_stage_details_case_id ON stage_details (case_uuid);
 CREATE INDEX idx_stage_details_uuid ON stage_details (uuid);
 CREATE INDEX idx_stage_details_created ON stage_details (created);
+CREATE INDEX idx_stage_details_updated ON stage_details (updated);

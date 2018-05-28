@@ -1,6 +1,8 @@
 package uk.gov.digital.ho.hocs.casework.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,12 +17,15 @@ import java.util.UUID;
 @Getter
 public class CaseCreateRequest {
 
-    @JsonProperty("requestUUID")
-    private String requestUUID;
-
-    @JsonProperty("requestTimestamp")
-    private String requestTimestamp;
-
     @JsonProperty("caseType")
     private String caseType;
+
+    public String toJsonString(ObjectMapper objectMapper){
+        try {
+            return objectMapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

@@ -7,6 +7,10 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.model.CorrelationDetails;
+import uk.gov.digital.ho.hocs.casework.model.RshCaseCreateRequest;
+import uk.gov.digital.ho.hocs.casework.rsh.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.rsh.StageDetails;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -17,8 +21,6 @@ import java.util.UUID;
 @Slf4j
 public class AuditService {
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     private final AuditRepository auditRepository;
 
     @Autowired
@@ -26,27 +28,29 @@ public class AuditService {
         this.auditRepository = auditRepository;
     }
 
-    public void createAuditEntry(UUID uuid, AuditAction action, String username, String caseData){
+    public void createAuditEntry(CaseDetails caseDetails, AuditAction auditAction, CorrelationDetails correlationDetails, String request){
+        AuditEntry auditEntry = new AuditEntry(correlationDetails, caseDetails.getUuid(), "CREATE", auditAction, request);
+        createAuditEntry(auditEntry);
+    }
 
-          //  AuditEntry auditEntry = auditRepository.findByUUID(uuid);
-           // if(auditEntry == null){
-                try {
-                //auditRepository.save(new AuditEntry(uuid, action, username, caseData));
-                } catch (DataIntegrityViolationException e) {
-                    if (e.getCause() instanceof ConstraintViolationException &&
-                            (((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase().contains("audit_id_idempotent"))) {
-                        // Do Nothing.
-             //           log.info("Received duplicate message {}, {}", auditEntry.getEventUUID(), auditEntry.getEventTimestamp());
-                    } else {
-                        throw e;
-                    }
-                }
+    public void createAuditEntry(StageDetails stageDetails, AuditAction auditAction, CorrelationDetails correlationDetails, String request) {
+        AuditEntry auditEntry = new AuditEntry(correlationDetails, stageDetails.getCaseUUID(), stageDetails.getName(), auditAction, request);
+        createAuditEntry(auditEntry);
+    }
 
-           // else
-
-
-            //log.error("Failed to write audit line {}", caseData);
-
+    private void createAuditEntry(AuditEntry auditEntry) {
+        try {
+        auditRepository.save(auditEntry);
+        log.info("Saved message {}, {}", auditEntry.getEventUUID(), auditEntry.getEventTimestamp());
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause() instanceof ConstraintViolationException &&
+                    (((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase().contains("audit_id_idempotent"))) {
+                // Do Nothing.
+                log.info("Duplicate message {}, {}", auditEntry.getEventUUID(), auditEntry.getEventTimestamp());
+            } else {
+                throw e;
+            }
+        }
     }
 }
 

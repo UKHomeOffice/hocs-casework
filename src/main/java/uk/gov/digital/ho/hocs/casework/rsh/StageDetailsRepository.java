@@ -11,7 +11,4 @@ import java.util.UUID;
 public interface StageDetailsRepository extends CrudRepository<StageDetails, String> {
 
     StageDetails findByUuid(UUID uuid);
-
-    @Query(value = "SELECT * from case_details rc where (LOWER(CAST(rc.data->>'first-name' as text)) = LOWER(?1) and LOWER(CAST(rc.data->>'last-name' as text)) = LOWER(?2)) or rc.data->>'date-of-birth' = ?3", nativeQuery = true)
-    Set<CaseDetails> findByNameOrDob(String firstName, String lastName, String dob);
 }
