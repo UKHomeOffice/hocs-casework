@@ -1,10 +1,9 @@
-package uk.gov.digital.ho.hocs.casework.rsh;
+package uk.gov.digital.ho.hocs.casework.caseDetails;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 

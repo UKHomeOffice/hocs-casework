@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.rsh;
+package uk.gov.digital.ho.hocs.casework.caseDetails;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

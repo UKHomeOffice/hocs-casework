@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.model.NotifyDetails;
+import uk.gov.digital.ho.hocs.casework.model.NotifyRequest;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -30,22 +30,20 @@ public class NotifyService {
         client = new NotificationClient(apiKey);
     }
 
-    public void sendRshNotify(NotifyDetails notifyDetails, UUID caseUUID) {
-        if (notifyDetails.getNotifyEmail() != null && !notifyDetails.getNotifyEmail().isEmpty()) {
-            sendEmail(notifyDetails.getNotifyEmail(), notifyDetails.getNotifyTeamName(),caseUUID, rshTemplateId);
-        }
+    public void sendRshNotify(NotifyRequest notifyRequest, UUID caseUUID) {
+        sendNotify(notifyRequest, caseUUID, rshTemplateId);
     }
 
-    public void sendNotify(NotifyDetails notifyDetails, UUID caseUUID) {
-        if (notifyDetails.getNotifyEmail() != null && !notifyDetails.getNotifyEmail().isEmpty()) {
-            sendEmail(notifyDetails.getNotifyEmail(), notifyDetails.getNotifyTeamName(),caseUUID, "");
+    public void sendNotify(NotifyRequest notifyRequest, UUID caseUUID, String templateId) {
+        if (notifyRequest.getNotifyEmail() != null && !notifyRequest.getNotifyEmail().isEmpty()) {
+            sendEmail(notifyRequest.getNotifyEmail(), notifyRequest.getNotifyTeamName(),caseUUID, templateId);
         }
     }
 
     private void sendEmail(String emailAddress, String teamName,UUID caseUUID, String templateId) {
         HashMap<String, String> personalisation = new HashMap<>();
         personalisation.put("team", teamName);
-        personalisation.put("link", frontEndUrl + "/rsh/case/" + caseUUID);
+        personalisation.put("link", frontEndUrl + "/caseDetails/case/" + caseUUID);
         try {
             client.sendEmail(templateId, emailAddress, personalisation, null, null);
         } catch (NotificationClientException e) {

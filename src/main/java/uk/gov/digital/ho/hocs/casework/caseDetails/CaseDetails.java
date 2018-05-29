@@ -1,7 +1,8 @@
-package uk.gov.digital.ho.hocs.casework.rsh;
+package uk.gov.digital.ho.hocs.casework.caseDetails;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import uk.gov.digital.ho.hocs.casework.caseDetails.StageDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;

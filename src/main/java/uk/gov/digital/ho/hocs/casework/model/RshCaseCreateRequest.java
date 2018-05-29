@@ -14,11 +14,8 @@ import java.util.Map;
 @Getter
 public class RshCaseCreateRequest {
 
-    @JsonProperty("notify-email")
-    private String notifyEmail;
-
-    @JsonProperty("notify-team")
-    private String notifyTeamName;
+    @JsonProperty("notifyRequest")
+    private NotifyRequest notifyRequest;
 
     @JsonProperty("caseData")
     private Map<String,Object> caseData;

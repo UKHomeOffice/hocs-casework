@@ -1,8 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.audit;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.model.CorrelationDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -21,17 +19,14 @@ public class AuditEntry {
     @Column(name = "username", nullable = false)
     private String username;
 
-    @Column(name = "case_uuid", nullable = false)
+    @Column(name = "case_uuid")
     private UUID caseUUID;
 
-    @Column(name = "case_Stage", nullable = false)
+    @Column(name = "case_Stage")
     private String caseStage;
 
-    @Column(name = "event_uuid", nullable = false)
-    private UUID eventUUID;
-
-    @Column(name = "event_timestamp", nullable = false)
-    private LocalDateTime eventTimestamp;
+    @Column(name = "timestamp", nullable = false)
+    private LocalDateTime timestamp;
 
     @Column(name = "event_action", nullable = false)
     private String eventAction;
@@ -39,19 +34,16 @@ public class AuditEntry {
     @Column(name = "event_data")
     private String eventData;
 
-    public AuditEntry(CorrelationDetails correlationDetails,
+    public AuditEntry(String username,
                       UUID caseUUID,
                       String caseStage,
                       AuditAction eventAction,
                       String caseData) {
-        this.username = correlationDetails.getUserName();
-        this.eventUUID = correlationDetails.getCorrelationID();
-        this.eventTimestamp = correlationDetails.getTimestamp();
+        this.username = username;
         this.caseUUID = caseUUID;
         this.caseStage = caseStage;
+        this.timestamp = LocalDateTime.now();
         this.eventAction = eventAction.toString();
         this.eventData = caseData;
-
-
     }
 }

@@ -8,15 +8,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class NotifyDetails {
+public class NotifyRequest {
 
     @JsonProperty("notifyEmail")
     private String notifyEmail;
 
     @JsonProperty("notifyTeam")
     private String notifyTeamName;
-
-    public static NotifyDetails from(String notifyEmail, String notifyTeamName){
-        return new NotifyDetails(notifyEmail, notifyTeamName);
-    }
 }

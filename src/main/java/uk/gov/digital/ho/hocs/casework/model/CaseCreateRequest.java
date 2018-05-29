@@ -6,11 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.rsh.StageDetails;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor

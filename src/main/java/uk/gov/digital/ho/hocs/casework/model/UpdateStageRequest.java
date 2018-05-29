@@ -16,12 +16,6 @@ import java.util.UUID;
 @Getter
 public class UpdateStageRequest {
 
-    @JsonProperty("requestUUID")
-    private String requestUUID;
-
-    @JsonProperty("requestTimestamp")
-    private String requestTimestamp;
-
     @JsonProperty("stageUUID")
     private UUID stageUUID;
 

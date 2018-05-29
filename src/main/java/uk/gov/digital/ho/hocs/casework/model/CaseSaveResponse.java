@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.model;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.rsh.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
 
 import java.util.UUID;
 
