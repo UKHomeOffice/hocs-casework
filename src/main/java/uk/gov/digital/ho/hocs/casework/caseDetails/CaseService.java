@@ -40,17 +40,19 @@ public class CaseService {
         this.objectMapper = objectMapper;
     }
 
-    CaseDetails createRshCase(Map<String, Object> caseData, NotifyRequest notifyRequest, String username) {
+    CaseDetails createRshCase(Map<String, Object> caseData, List<NotifyRequest> notifyRequests, String username) {
         CaseDetails caseDetails = createCase("RSH",  username);
         createStage(caseDetails.getUuid(),"OnlyStage", 0, caseData, username);
 
         if(caseDetails.getId() != 0) {
-            notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid());
+            for(NotifyRequest notifyRequest : notifyRequests) {
+                notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid());
+            }
         }
         return caseDetails;
     }
 
-    CaseDetails updateRshCase(UUID caseUUID, Map<String, Object> caseData, NotifyRequest notifyRequest, String username) {
+    CaseDetails updateRshCase(UUID caseUUID, Map<String, Object> caseData, List<NotifyRequest> notifyRequests, String username) {
         CaseDetails caseDetails = getRSHCase(caseUUID, username);
         if(!caseDetails.getStages().isEmpty()) {
             StageDetails stageDetails = caseDetails.getStages().iterator().next();
@@ -58,7 +60,9 @@ public class CaseService {
         }
 
         if(caseDetails.getId() != 0) {
-            notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid());
+            for(NotifyRequest notifyRequest : notifyRequests) {
+                notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid());
+            }
         }
         return caseDetails;
     }

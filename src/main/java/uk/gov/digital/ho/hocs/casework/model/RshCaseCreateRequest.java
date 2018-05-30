@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -15,7 +16,7 @@ import java.util.Map;
 public class RshCaseCreateRequest {
 
     @JsonProperty("notifyRequest")
-    private NotifyRequest notifyRequest;
+    private List<NotifyRequest> notifyRequest;
 
     @JsonProperty("caseData")
     private Map<String,Object> caseData;
