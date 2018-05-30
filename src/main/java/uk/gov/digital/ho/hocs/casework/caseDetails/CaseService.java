@@ -124,7 +124,7 @@ public class CaseService {
     @Transactional
     List<CaseDetails> findCases(SearchRequest searchRequest, String username){
         String request = searchRequest.toJsonString(objectMapper);
-        log.info("Requesting Search : {}, User: {}", request, username);
+        log.info("Requesting Search, User: {}", username);
         ArrayList<CaseDetails> results = new ArrayList<>();
         if(searchRequest.getCaseReference() != null){
             Set<CaseDetails> result = caseDetailsRepository.findByCaseReference(searchRequest.getCaseReference());

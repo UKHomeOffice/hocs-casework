@@ -8,6 +8,8 @@ import uk.gov.digital.ho.hocs.casework.model.NotifyRequest;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -24,10 +26,19 @@ public class NotifyService {
     @Autowired
     public NotifyService(@Value("${notify.apiKey}") String apiKey,
                          @Value("${notify.rshTemplateId}") String rshTemplateId,
-                         @Value("${notify.frontend.url}") String frontEndUrl) {
+                         @Value("${notify.frontend.url}") String frontEndUrl,
+                         @Value("${notify.proxy.host}") String proxyHost,
+                         @Value("${notify.proxy.port}") Integer proxyPort) {
         this.rshTemplateId = rshTemplateId;
         this.frontEndUrl = frontEndUrl;
-        client = new NotificationClient(apiKey);
+
+        if (proxyHost != null && proxyPort != null) {
+            Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
+            client = new NotificationClient(apiKey, proxy);
+        } else {
+            client = new NotificationClient(apiKey);
+        }
+
     }
 
     public void sendRshNotify(NotifyRequest notifyRequest, UUID caseUUID) {
