@@ -64,6 +64,6 @@ public class RshCaseResource {
 
     @RequestMapping(value = "/rsh/report/cutoff/{cutoff}", method = RequestMethod.GET, produces = "text/csv;charset=UTF-8")
     public ResponseEntity<String> rshReportCutoff(@PathVariable("cutoff") String cutoff, @RequestHeader("X-Auth-Username") String username) {
-        return ResponseEntity.ok("HELLO!, Cutoff!");
+        return ResponseEntity.ok("HELLO!!");
     }
 }
