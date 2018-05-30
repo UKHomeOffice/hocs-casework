@@ -13,7 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "case_details")
+@Table(name = "case_data")
 @Getter
 @NoArgsConstructor
 public class CaseDetails implements Serializable {

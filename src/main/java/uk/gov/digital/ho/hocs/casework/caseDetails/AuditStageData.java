@@ -10,19 +10,22 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "stage_data")
+@Table(name = "audit_stage_data")
 @Getter
 @NoArgsConstructor
-public class StageDetails implements Serializable {
+public class AuditStageData implements Serializable {
 
-    public StageDetails(UUID caseUUID, String name, int schemaVersion, String data) {
-        LocalDateTime now = LocalDateTime.now();
-        this.uuid = UUID.randomUUID();
+    public AuditStageData(String name, String data, int schemaVersion, UUID caseUUID) {
+        this(UUID.randomUUID(), name, data, caseUUID, schemaVersion, LocalDateTime.now());
+    }
+
+    private AuditStageData(UUID stageUUID, String name, String data, UUID caseUUID, int schemaVersion, LocalDateTime created) {
+        this.uuid = stageUUID;
         this.name = name;
         this.data = data;
         this.caseUUID = caseUUID;
         this.schemaVersion = schemaVersion;
-        this.created = now;
+        this.created = created;
     }
 
     @Id
@@ -49,4 +52,9 @@ public class StageDetails implements Serializable {
 
     @Column(name = "created")
     private LocalDateTime created;
+
+    public static AuditStageData from(StageDetails stageDetails)
+    {
+        return new AuditStageData(stageDetails.getUuid(), stageDetails.getName(), stageDetails.getData(), stageDetails.getCaseUUID(), stageDetails.getSchemaVersion(), stageDetails.getCreated());
+    }
 }
