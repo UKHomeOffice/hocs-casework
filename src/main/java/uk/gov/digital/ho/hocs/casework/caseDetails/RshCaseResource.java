@@ -39,7 +39,7 @@ public class RshCaseResource {
     }
 
     @RequestMapping(value = "/rsh/case/{caseUUID}", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity rshUpdateCase(@PathVariable UUID caseUUID, @RequestBody RshCaseCreateRequest request, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity<CaseSaveResponse> rshUpdateCase(@PathVariable UUID caseUUID, @RequestBody RshCaseCreateRequest request, @RequestHeader("X-Auth-Username") String username) {
         CaseDetails caseDetails = caseService.updateRshCase(caseUUID, request.getCaseData(), request.getNotifyRequest(), username);
         return ResponseEntity.ok(CaseSaveResponse.from(caseDetails));
     }
