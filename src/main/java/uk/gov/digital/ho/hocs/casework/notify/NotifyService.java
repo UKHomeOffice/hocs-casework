@@ -35,8 +35,10 @@ public class NotifyService {
         if (proxyHost != null && proxyPort != null) {
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
             client = new NotificationClient(apiKey, proxy);
+            log.info("Using proxy notify");
         } else {
             client = new NotificationClient(apiKey);
+            log.info("Not using proxy notify");
         }
 
     }
@@ -46,12 +48,14 @@ public class NotifyService {
     }
 
     public void sendNotify(NotifyRequest notifyRequest, UUID caseUUID, String templateId) {
+        log.info("Received request to email {} {}, templateId {}", notifyRequest.getNotifyEmail(), notifyRequest.getNotifyEmail(), templateId);
         if (notifyRequest.getNotifyEmail() != null && !notifyRequest.getNotifyEmail().isEmpty()) {
             sendEmail(notifyRequest.getNotifyEmail(), notifyRequest.getNotifyTeamName(),caseUUID, templateId);
         }
     }
 
     private void sendEmail(String emailAddress, String teamName,UUID caseUUID, String templateId) {
+        log.info("Sending email to {} {}, templateId {}", emailAddress, teamName, templateId);
         HashMap<String, String> personalisation = new HashMap<>();
         personalisation.put("team", teamName);
         personalisation.put("link", frontEndUrl + "/case/" + caseUUID);
