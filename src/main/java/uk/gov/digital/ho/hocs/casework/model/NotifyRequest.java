@@ -1,23 +1,18 @@
-package uk.gov.digital.ho.hocs.casework.dto;
+package uk.gov.digital.ho.hocs.casework.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class CaseSaveRequest {
+public class NotifyRequest {
 
-    @JsonProperty("notify-email")
+    @JsonProperty("notifyEmail")
     private String notifyEmail;
 
-    @JsonProperty("notify-team")
+    @JsonProperty("notifyTeam")
     private String notifyTeamName;
-
-    @JsonProperty("caseData")
-    private Map<String,Object> caseData;
 }
