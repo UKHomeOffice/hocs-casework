@@ -45,11 +45,7 @@ public class CaseService {
         createStage(caseDetails.getUuid(),"OnlyStage", 0, caseData, username);
 
         if(caseDetails.getId() != 0) {
-            try {
-                notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid());
-            }catch (Exception e) {
-                // Do nothing.
-            }
+            notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid());
         }
         return caseDetails;
     }
@@ -62,11 +58,7 @@ public class CaseService {
         }
 
         if(caseDetails.getId() != 0) {
-            try {
-                notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid());
-            }catch (Exception e) {
-                // Do nothing.
-            }
+            notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid());
         }
         return caseDetails;
     }
