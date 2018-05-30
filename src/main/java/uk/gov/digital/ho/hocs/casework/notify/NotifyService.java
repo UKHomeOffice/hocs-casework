@@ -43,7 +43,7 @@ public class NotifyService {
     private void sendEmail(String emailAddress, String teamName,UUID caseUUID, String templateId) {
         HashMap<String, String> personalisation = new HashMap<>();
         personalisation.put("team", teamName);
-        personalisation.put("link", frontEndUrl + "/caseDetails/case/" + caseUUID);
+        personalisation.put("link", frontEndUrl + "/case/" + caseUUID);
         try {
             client.sendEmail(templateId, emailAddress, personalisation, null, null);
         } catch (NotificationClientException e) {
