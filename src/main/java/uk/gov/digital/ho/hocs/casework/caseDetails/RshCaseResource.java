@@ -1,19 +1,12 @@
 package uk.gov.digital.ho.hocs.casework.caseDetails;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.model.*;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -22,13 +15,10 @@ public class RshCaseResource {
 
     private final CaseService caseService;
 
-    private CsvMapper csvMapper;
-
     @Autowired
     public RshCaseResource(CaseService caseService) {
 
         this.caseService = caseService;
-        this.csvMapper = new CsvMapper();
     }
 
     @RequestMapping(value = "/rsh/create", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)

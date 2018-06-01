@@ -2,12 +2,10 @@ package uk.gov.digital.ho.hocs.casework.caseDetails;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
@@ -24,7 +22,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -42,7 +39,6 @@ public class CaseService {
     private final AuditCaseDetailsRepository auditCaseDetailsRepository;
     private final AuditStageDetailsRepository auditStageDetailsRepository;
     private final ObjectMapper objectMapper;
-    private final CsvMapper csvMapper;
 
     @Autowired
     public CaseService( NotifyService notifyService, CaseDetailsRepository caseDetailsRepository, StageDetailsRepository stageDetailsRepository, AuditRepository auditRepository, AuditCaseDetailsRepository auditCaseDetailsRepository, AuditStageDetailsRepository auditStageDetailsRepository) {
@@ -56,13 +52,12 @@ public class CaseService {
         this.auditStageDetailsRepository = auditStageDetailsRepository;
 
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
-        this.csvMapper = new CsvMapper();
 
     }
 
     CaseDetails createRshCase(Map<String, Object> caseData, NotifyRequest notifyRequest, String username) {
         CaseDetails caseDetails = createCase("RSH",  username);
-        createStage(caseDetails.getUuid(),"Stage", 0, caseData, username);
+        createStage(caseDetails.getUuid(),"OnlyStage", 0, caseData, username);
 
         if(caseDetails.getId() != 0) {
             notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid());
@@ -170,27 +165,34 @@ public class CaseService {
         Set<AuditCaseData> auditCaseData = auditCaseDetailsRepository.getAllByTimestampBetweenAndCorrespondenceTypeIn(startDate, endDate, types);
         Set<AuditStageData> auditStageData = auditStageDetailsRepository.getAllByTimestampBetweenAndCorrespondenceTypeIn(startDate, endDate, types);
 
-        List<RshReportLine> reportLines = auditCaseData.stream().map( c ->  {
+        List<Map<String,String>> reportLines = auditCaseData.stream().map( c ->  {
            Map<String,String> ret =  new HashMap<>();
            ret.putAll(caseToMap(c));
            ret.putAll(stagesToMap(auditStageData.stream().filter(s -> c.getUuid().equals(s.getCaseUUID()))));
            return ret;
-            }).map(RshReportLine::from).collect(Collectors.toList());
+            }).map(l -> RshReportLine.from(l).getLineSchema()).collect(Collectors.toList());
 
-        CsvSchema schema = csvMapper.schemaFor(RshReportLine.class).withHeader();
-        String value;
+        StringBuilder sb = new StringBuilder();
         try {
-            value = csvMapper.writer(schema).writeValueAsString(reportLines);
-        } catch (JsonProcessingException e) {
-            return "";
+            CSVPrinter printer = new CSVPrinter(sb, CSVFormat.DEFAULT);
+            printer.printRecord(reportLines.get(0).keySet());
+            reportLines.stream().forEach(l -> {
+                try {
+                    printer.printRecord(l.values());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         log.info("Returned Extract, Found: {}, User: {}", auditCaseData.size(), username);
-        return value;
-    }
+            return sb.toString();
+        }
 
-    private Map<String,String> caseToMap(AuditCaseData auditCaseData){
-        Map<String,String> caseMap = new LinkedHashMap<>();
+        private Map<String,String> caseToMap(AuditCaseData auditCaseData){
+        Map<String,String> caseMap = new HashMap<>();
 
         String name = "Case";
         caseMap.put(stageNameFormat(name, "Type"), auditCaseData.getType());
@@ -202,7 +204,7 @@ public class CaseService {
     }
 
     private Map<String,String> stagesToMap(Stream<AuditStageData> auditStageDataList){
-        Map<String,String> stageMap = new LinkedHashMap<>();
+        Map<String,String> stageMap = new HashMap<>();
 
         auditStageDataList.forEach( auditStageData -> {
             String stageName = auditStageData.getName();
