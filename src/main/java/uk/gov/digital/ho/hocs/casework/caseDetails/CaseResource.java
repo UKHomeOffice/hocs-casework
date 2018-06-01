@@ -1,10 +1,8 @@
 package uk.gov.digital.ho.hocs.casework.caseDetails;
 
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.model.*;
 
 import java.util.UUID;
@@ -16,14 +14,11 @@ public class CaseResource {
 
     private final CaseService caseService;
 
-    private CsvMapper csvMapper;
 
 
     @Autowired
     public CaseResource(CaseService caseService) {
         this.caseService = caseService;
-        this.csvMapper = new CsvMapper();
-        HocsCaseServiceConfiguration.initialiseObjectMapper(this.csvMapper);
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
