@@ -170,11 +170,12 @@ public class CaseService {
         Set<AuditCaseData> auditCaseData = auditCaseDetailsRepository.getAllByTimestampBetweenAndCorrespondenceTypeIn(startDate, endDate, types);
         Set<AuditStageData> auditStageData = auditStageDetailsRepository.getAllByTimestampBetweenAndCorrespondenceTypeIn(startDate, endDate, types);
 
-        Map<UUID,Map<String,String>> groupedCases = auditCaseData.stream().collect(Collectors.toMap(e -> e.getUuid(), this::caseToMap));
-
-        groupedCases.forEach((k,v) -> v.putAll(stageToMap(auditStageData.stream().filter(s -> s.getCaseUUID().equals(k)).collect(Collectors.toList()))));
-
-        Set<RshReportLine> reportLines = groupedCases.values().stream().map(RshReportLine::from).collect(Collectors.toSet());
+        List<RshReportLine> reportLines = auditCaseData.stream().map( c ->  {
+           Map<String,String> ret =  new HashMap<>();
+           ret.putAll(caseToMap(c));
+           ret.putAll(stagesToMap(auditStageData.stream().filter(s -> c.getUuid().equals(s.getCaseUUID()))));
+           return ret;
+            }).map(RshReportLine::from).collect(Collectors.toList());
 
         CsvSchema schema = csvMapper.schemaFor(RshReportLine.class).withHeader();
         String value;
@@ -200,10 +201,10 @@ public class CaseService {
         return caseMap;
     }
 
-    private  Map<String,String> stageToMap(List<AuditStageData> auditStageDataList){
+    private Map<String,String> stagesToMap(Stream<AuditStageData> auditStageDataList){
         Map<String,String> stageMap = new LinkedHashMap<>();
 
-        for(AuditStageData auditStageData : auditStageDataList) {
+        auditStageDataList.forEach( auditStageData -> {
             String stageName = auditStageData.getName();
             stageMap.put(stageNameFormat(stageName, "UUID"), auditStageData.getUuid().toString());
             stageMap.put(stageNameFormat(stageName, "Name"), auditStageData.getName());
@@ -211,12 +212,13 @@ public class CaseService {
             stageMap.put(stageNameFormat(stageName, "SchemaVersion"), auditStageData.getSchemaVersion() + "");
             stageMap.put(stageNameFormat(stageName, "Created"), auditStageData.getCreated().toString());
             try {
-                Map<String,String> dataMap = objectMapper.readValue(auditStageData.getData(), new TypeReference<HashMap<String, String>>() {});
-                dataMap.forEach((key, value) -> stageMap.put(stageNameFormat(stageName,key),value));
+                Map<String, String> dataMap = objectMapper.readValue(auditStageData.getData(), new TypeReference<HashMap<String, String>>() {
+                });
+                dataMap.forEach((key, value) -> stageMap.put(stageNameFormat(stageName, key), value));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        });
 
         return stageMap;
     }
