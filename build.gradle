@@ -32,7 +32,7 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-webflux')
 	compile('org.flywaydb:flyway-core')
 
-	compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
+	compile('org.apache.commons:commons-csv:1.5')
 	compile('uk.gov.service.notify:notifications-java-client:3.9.1-RELEASE')
 
 	runtime('org.postgresql:postgresql')

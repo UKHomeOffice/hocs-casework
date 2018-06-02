@@ -28,6 +28,13 @@ import static org.mockito.Mockito.*;
 public class CaseServiceTest {
 
 
+
+    @Mock
+    private AuditStageDetailsRepository auditStageDetailsRepository;
+
+    @Mock
+    private AuditCaseDetailsRepository auditCaseDetailsRepository;
+
     @Mock
     private AuditRepository auditRepository;
     @Mock
@@ -53,7 +60,8 @@ public class CaseServiceTest {
                 caseDetailsRepository,
                 stageDetailsRepository,
                 auditRepository,
-                new ObjectMapper()
+                auditCaseDetailsRepository,
+                auditStageDetailsRepository
         );
     }
 
