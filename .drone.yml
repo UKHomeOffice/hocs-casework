@@ -87,7 +87,7 @@ pipeline:
     image: quay.io/ukhomeofficedigital/kd:v0.8.0
     environment:
       - KUBE_NAMESPACE=cs-prod
-      - ENVIRONMENT=pr
+      - ENVIRONMENT=prod
       - VERSION=${IMAGE_VERSION}
       - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
     secrets:
@@ -97,4 +97,4 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: pr
+      environment: prod
