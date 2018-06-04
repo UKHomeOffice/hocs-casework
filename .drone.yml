@@ -91,7 +91,7 @@ pipeline:
       - VERSION=${IMAGE_VERSION}
       - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_casework_pr
+      - hocs_casework_prod
     commands:
       - cd kube-hocs-casework
       - ./deploy.sh
