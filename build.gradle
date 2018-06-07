@@ -25,13 +25,14 @@ repositories {
 }
 
 dependencies {
+	compile('net.logstash.logback:logstash-logback-encoder:5.1')
 	compile('org.springframework.boot:spring-boot-starter-json')
 	compile('org.springframework.boot:spring-boot-starter-actuator')
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-webflux')
 	compile('org.flywaydb:flyway-core')
 
-	compile 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv'
+	compile('org.apache.commons:commons-csv:1.5')
 	compile('uk.gov.service.notify:notifications-java-client:3.9.1-RELEASE')
 
 	runtime('org.postgresql:postgresql')

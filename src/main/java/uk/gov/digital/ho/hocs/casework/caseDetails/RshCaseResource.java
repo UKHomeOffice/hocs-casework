@@ -1,15 +1,12 @@
 package uk.gov.digital.ho.hocs.casework.caseDetails;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.model.*;
 
-import java.util.List;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -18,17 +15,10 @@ public class RshCaseResource {
 
     private final CaseService caseService;
 
-    private CsvMapper csvMapper;
-
-    private ObjectMapper objectMapper;
-
     @Autowired
-    public RshCaseResource(CaseService caseService, ObjectMapper objectMapper) {
+    public RshCaseResource(CaseService caseService) {
 
         this.caseService = caseService;
-        this.objectMapper = objectMapper;
-        this.csvMapper = new CsvMapper();
-        HocsCaseServiceConfiguration.initialiseObjectMapper(this.csvMapper);
     }
 
     @RequestMapping(value = "/rsh/create", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
@@ -58,12 +48,14 @@ public class RshCaseResource {
 
     @RequestMapping(value = "/rsh/report/current", method = RequestMethod.GET, produces = "text/csv;charset=UTF-8")
     public ResponseEntity<String> rshReportCurrent(@RequestHeader("X-Auth-Username") String username) {
-
-        return ResponseEntity.ok("HELLO!");
+        String value = caseService.extractData(new String[]{"RSH"}, LocalDate.now(), username);
+        return ResponseEntity.ok(value);
     }
 
-    @RequestMapping(value = "/rsh/report/cutoff/{cutoff}", method = RequestMethod.GET, produces = "text/csv;charset=UTF-8")
+        @RequestMapping(value = "/rsh/report/{cutoff}", method = RequestMethod.GET, produces = "text/csv;charset=UTF-8")
     public ResponseEntity<String> rshReportCutoff(@PathVariable("cutoff") String cutoff, @RequestHeader("X-Auth-Username") String username) {
-        return ResponseEntity.ok("HELLO!");
+        LocalDate cutoffDate = LocalDate.parse(cutoff);
+        String value = caseService.extractData(new String[]{"RSH"}, cutoffDate, username);
+        return ResponseEntity.ok(value);
     }
 }

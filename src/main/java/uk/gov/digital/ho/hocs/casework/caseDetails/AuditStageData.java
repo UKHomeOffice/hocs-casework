@@ -15,10 +15,6 @@ import java.util.UUID;
 @NoArgsConstructor
 public class AuditStageData implements Serializable {
 
-    public AuditStageData(String name, String data, int schemaVersion, UUID caseUUID) {
-        this(UUID.randomUUID(), name, data, caseUUID, schemaVersion, LocalDateTime.now());
-    }
-
     private AuditStageData(UUID stageUUID, String name, String data, UUID caseUUID, int schemaVersion, LocalDateTime created) {
         this.uuid = stageUUID;
         this.name = name;

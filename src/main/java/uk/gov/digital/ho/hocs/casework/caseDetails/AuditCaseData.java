@@ -1,5 +1,8 @@
 package uk.gov.digital.ho.hocs.casework.caseDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -7,9 +10,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -17,10 +18,6 @@ import java.util.stream.Collectors;
 @Getter
 @NoArgsConstructor
 public class AuditCaseData implements Serializable {
-
-    public AuditCaseData(String type, Long caseNumber) {
-        this(type, String.format("%s/%07d/%s", type, caseNumber, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy"))), UUID.randomUUID(), LocalDateTime.now(), new HashSet<>());
-    }
 
     private AuditCaseData(String type, String reference, UUID uuid, LocalDateTime created, Set<AuditStageData> stages) {
         this.type = type;
@@ -47,8 +44,9 @@ public class AuditCaseData implements Serializable {
     @Column(name = "created")
     private LocalDateTime created;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name ="case_id", referencedColumnName = "id")
+    @JsonIgnore
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name ="case_uuid", referencedColumnName = "uuid")
     private Set<AuditStageData> stages = new HashSet<>();
 
     public static AuditCaseData from(CaseDetails caseDetails) {
