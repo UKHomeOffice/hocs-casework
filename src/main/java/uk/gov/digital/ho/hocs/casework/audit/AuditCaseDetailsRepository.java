@@ -1,12 +1,12 @@
-package uk.gov.digital.ho.hocs.casework.caseDetails;
+package uk.gov.digital.ho.hocs.casework.audit;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import uk.gov.digital.ho.hocs.casework.audit.AuditCaseData;
 
 import java.time.LocalDateTime;
 import java.util.Set;
-import java.util.UUID;
 
 @Repository
 public interface AuditCaseDetailsRepository extends CrudRepository<AuditCaseData, String> {

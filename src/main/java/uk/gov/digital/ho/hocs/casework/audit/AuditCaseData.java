@@ -1,15 +1,13 @@
-package uk.gov.digital.ho.hocs.casework.caseDetails;
+package uk.gov.digital.ho.hocs.casework.audit;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 

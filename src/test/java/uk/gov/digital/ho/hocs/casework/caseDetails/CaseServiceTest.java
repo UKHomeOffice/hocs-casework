@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.caseDetails;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,11 +7,9 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.audit.AuditAction;
-import uk.gov.digital.ho.hocs.casework.audit.AuditEntry;
-import uk.gov.digital.ho.hocs.casework.audit.AuditRepository;
-import uk.gov.digital.ho.hocs.casework.model.NotifyRequest;
-import uk.gov.digital.ho.hocs.casework.model.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.audit.*;
+import uk.gov.digital.ho.hocs.casework.notify.NotifyRequest;
+import uk.gov.digital.ho.hocs.casework.search.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.notify.NotifyService;
 
 import java.time.LocalDateTime;

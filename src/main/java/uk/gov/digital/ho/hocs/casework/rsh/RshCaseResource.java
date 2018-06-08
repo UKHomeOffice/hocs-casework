@@ -1,9 +1,12 @@
-package uk.gov.digital.ho.hocs.casework.caseDetails;
+package uk.gov.digital.ho.hocs.casework.rsh;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.model.*;
+import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.CaseSaveResponse;
+import uk.gov.digital.ho.hocs.casework.caseDetails.CaseService;
+import uk.gov.digital.ho.hocs.casework.search.*;
 
 import java.time.LocalDate;
 import java.util.*;

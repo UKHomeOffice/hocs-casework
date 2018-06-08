@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.model;
+package uk.gov.digital.ho.hocs.casework.caseDetails;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -7,22 +7,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
-import java.util.UUID;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class UpdateStageRequest {
+public class CaseCreateRequest {
 
-    @JsonProperty("stageUUID")
-    private UUID stageUUID;
-
-    @JsonProperty("schemaVersion")
-    private int schemaVersion;
-
-    @JsonProperty("stageData")
-    private Map<String,Object> stageData;
+    @JsonProperty("caseType")
+    private String caseType;
 
     public String toJsonString(ObjectMapper objectMapper){
         try {

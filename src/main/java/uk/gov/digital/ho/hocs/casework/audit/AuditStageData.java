@@ -1,8 +1,9 @@
-package uk.gov.digital.ho.hocs.casework.caseDetails;
+package uk.gov.digital.ho.hocs.casework.audit;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uk.gov.digital.ho.hocs.casework.caseDetails.StageDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;

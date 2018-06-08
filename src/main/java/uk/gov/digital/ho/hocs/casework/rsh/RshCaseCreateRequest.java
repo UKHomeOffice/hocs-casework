@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.model;
+package uk.gov.digital.ho.hocs.casework.rsh;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -6,14 +6,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import uk.gov.digital.ho.hocs.casework.notify.NotifyRequest;
+
+import java.util.Map;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class CaseCreateRequest {
+public class RshCaseCreateRequest {
 
-    @JsonProperty("caseType")
-    private String caseType;
+    @JsonProperty("notifyRequest")
+    private NotifyRequest notifyRequest;
+
+    @JsonProperty("caseData")
+    private Map<String,Object> caseData;
 
     public String toJsonString(ObjectMapper objectMapper){
         try {

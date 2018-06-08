@@ -1,8 +1,9 @@
-package uk.gov.digital.ho.hocs.casework.caseDetails;
+package uk.gov.digital.ho.hocs.casework.audit;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import uk.gov.digital.ho.hocs.casework.audit.AuditStageData;
 
 import java.time.LocalDateTime;
 import java.util.Set;

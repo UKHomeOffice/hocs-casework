@@ -9,11 +9,10 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
-import uk.gov.digital.ho.hocs.casework.audit.AuditAction;
-import uk.gov.digital.ho.hocs.casework.audit.AuditEntry;
-import uk.gov.digital.ho.hocs.casework.audit.AuditRepository;
-import uk.gov.digital.ho.hocs.casework.model.NotifyRequest;
-import uk.gov.digital.ho.hocs.casework.model.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.audit.*;
+import uk.gov.digital.ho.hocs.casework.notify.NotifyRequest;
+import uk.gov.digital.ho.hocs.casework.rsh.RshReportLine;
+import uk.gov.digital.ho.hocs.casework.search.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.notify.NotifyService;
 
 import javax.transaction.Transactional;
@@ -55,7 +54,7 @@ public class CaseService {
 
     }
 
-    CaseDetails createRshCase(Map<String, Object> caseData, NotifyRequest notifyRequest, String username) {
+    public CaseDetails createRshCase(Map<String, Object> caseData, NotifyRequest notifyRequest, String username) {
         CaseDetails caseDetails = createCase("RSH",  username);
         createStage(caseDetails.getUuid(),"OnlyStage", 0, caseData, username);
 
@@ -65,7 +64,7 @@ public class CaseService {
         return caseDetails;
     }
 
-    CaseDetails updateRshCase(UUID caseUUID, Map<String, Object> caseData, NotifyRequest notifyRequest, String username) {
+    public CaseDetails updateRshCase(UUID caseUUID, Map<String, Object> caseData, NotifyRequest notifyRequest, String username) {
         CaseDetails caseDetails = getRSHCase(caseUUID, username);
         if(!caseDetails.getStages().isEmpty()) {
             StageDetails stageDetails = caseDetails.getStages().iterator().next();
@@ -79,7 +78,7 @@ public class CaseService {
     }
 
     @Transactional
-    CaseDetails createCase(String caseType, String username) {
+    public CaseDetails createCase(String caseType, String username) {
         log.info("Requesting Create Case, Type: {}, User: {}", caseType, username);
         CaseDetails caseDetails = new CaseDetails(caseType, caseDetailsRepository.getNextSeriesId());
         AuditEntry auditEntry = new AuditEntry(username, caseDetails, null, AuditAction.CREATE_CASE);
@@ -90,7 +89,7 @@ public class CaseService {
     }
 
     @Transactional
-    StageDetails createStage(UUID caseUUID, String stageName, int schemaVersion, Map<String,Object> stageData, String username) {
+    public StageDetails createStage(UUID caseUUID, String stageName, int schemaVersion, Map<String,Object> stageData, String username) {
         log.info("Requesting Create Stage, Name: {}, Case UUID: {}, User: {}", stageName, caseUUID, username);
         String data = getDataString(stageData);
         StageDetails stageDetails = new StageDetails(caseUUID, stageName, schemaVersion, data);
@@ -102,7 +101,7 @@ public class CaseService {
     }
 
     @Transactional
-    StageDetails updateStage(UUID stageUUID, int schemaVersion, Map<String,Object> stageData, String username) {
+    public StageDetails updateStage(UUID stageUUID, int schemaVersion, Map<String,Object> stageData, String username) {
         log.info("Requesting Update Stage, uuid: {}, User: {}", stageUUID, username);
         StageDetails stageDetails = stageDetailsRepository.findByUuid(stageUUID);
         if(stageDetails != null) {
@@ -118,7 +117,7 @@ public class CaseService {
     }
 
     @Transactional
-    CaseDetails getRSHCase(UUID uuid, String username) {
+    public CaseDetails getRSHCase(UUID uuid, String username) {
         log.info("Requesting Case, UUID: {}, User: {}", uuid, username);
         CaseDetails caseDetails = caseDetailsRepository.findByUuid(uuid);
         AuditEntry auditEntry = new AuditEntry(username, uuid.toString(), AuditAction.GET_CASE);
@@ -129,7 +128,7 @@ public class CaseService {
 
 
     @Transactional
-    List<CaseDetails> findCases(SearchRequest searchRequest, String username){
+   public List<CaseDetails> findCases(SearchRequest searchRequest, String username){
         String request = searchRequest.toJsonString(objectMapper);
         log.info("Requesting Search, User: {}", username);
         ArrayList<CaseDetails> results = new ArrayList<>();
@@ -154,7 +153,7 @@ public class CaseService {
 
 
     @Transactional
-    String extractData(String[] types, LocalDate cutoff, String username) {
+    public String extractData(String[] types, LocalDate cutoff, String username) {
         log.info("Requesting Extract, Types: \"{}\",  Cutoff: {}, User: {}", Arrays.toString(types), cutoff, username);
 
         int monthsBack = 4;

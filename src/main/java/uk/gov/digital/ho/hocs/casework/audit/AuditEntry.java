@@ -2,9 +2,7 @@ package uk.gov.digital.ho.hocs.casework.audit;
 
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
-import uk.gov.digital.ho.hocs.casework.caseDetails.AuditCaseData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.StageDetails;
-import uk.gov.digital.ho.hocs.casework.caseDetails.AuditStageData;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

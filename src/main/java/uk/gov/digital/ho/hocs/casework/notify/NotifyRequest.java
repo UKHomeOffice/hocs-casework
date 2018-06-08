@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.model;
+package uk.gov.digital.ho.hocs.casework.notify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.model;
+package uk.gov.digital.ho.hocs.casework.search;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
