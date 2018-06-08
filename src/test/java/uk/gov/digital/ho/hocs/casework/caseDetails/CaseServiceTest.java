@@ -8,14 +8,9 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.*;
-import uk.gov.digital.ho.hocs.casework.notify.NotifyRequest;
-import uk.gov.digital.ho.hocs.casework.search.SearchRequest;
-import uk.gov.digital.ho.hocs.casework.notify.NotifyService;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,22 +19,12 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseServiceTest {
 
-
-
-    @Mock
-    private AuditStageDetailsRepository auditStageDetailsRepository;
-
-    @Mock
-    private AuditCaseDetailsRepository auditCaseDetailsRepository;
-
     @Mock
     private AuditRepository auditRepository;
     @Mock
     private CaseDetailsRepository caseDetailsRepository;
     @Mock
     private StageDetailsRepository stageDetailsRepository;
-    @Mock
-    private NotifyService notifyService;
 
     private CaseService caseService;
 
@@ -53,29 +38,10 @@ public class CaseServiceTest {
     @Before
     public void setUp() {
         this.caseService = new CaseService(
-                notifyService,
                 caseDetailsRepository,
                 stageDetailsRepository,
                 auditRepository
         );
-    }
-
-    @Test
-    public void shouldCreateRshCase() {
-        when(caseDetailsRepository.getNextSeriesId()).thenReturn(123L);
-        CaseDetails caseDetails = caseService.createRshCase(
-                new HashMap<>(),
-                new NotifyRequest(
-                        "SomeTestEmail@SomeDomain.com",
-                        "Some Team Name"
-                ),
-                testUser
-        );
-
-        assertThat(caseDetails).isNotNull();
-        verify(caseDetailsRepository).save(isA(CaseDetails.class));
-        verify(stageDetailsRepository).save(isA(StageDetails.class));
-        verify(auditRepository, times(2)).save(isA(AuditEntry.class));
     }
 
     @Test

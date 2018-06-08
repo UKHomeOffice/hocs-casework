@@ -14,30 +14,30 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 @RestController
 public class RshCaseResource {
 
-    private final CaseService caseService;
+    private final RshCaseService rshCaseService;
 
     @Autowired
-    public RshCaseResource(CaseService caseService) {
+    public RshCaseResource(RshCaseService rshCaseService) {
 
-        this.caseService = caseService;
+        this.rshCaseService = rshCaseService;
     }
 
     @RequestMapping(value = "/rsh/create", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CaseSaveResponse> rshCreateCase(@RequestBody RshCaseCreateRequest request, @RequestHeader("X-Auth-Username") String username) {
-        CaseDetails caseDetails = caseService.createRshCase(request.getCaseData(), request.getNotifyRequest(), username);
+        CaseDetails caseDetails = rshCaseService.createRshCase(request.getCaseData(), request.getNotifyRequest(), username);
 
         return ResponseEntity.ok(CaseSaveResponse.from(caseDetails));
     }
 
     @RequestMapping(value = "/rsh/case/{caseUUID}", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CaseSaveResponse> rshUpdateCase(@PathVariable UUID caseUUID, @RequestBody RshCaseCreateRequest request, @RequestHeader("X-Auth-Username") String username) {
-        CaseDetails caseDetails = caseService.updateRshCase(caseUUID, request.getCaseData(), request.getNotifyRequest(), username);
+        CaseDetails caseDetails = rshCaseService.updateRshCase(caseUUID, request.getCaseData(), request.getNotifyRequest(), username);
         return ResponseEntity.ok(CaseSaveResponse.from(caseDetails));
     }
 
     @RequestMapping(value = "/rsh/case/{caseUUID}", method = RequestMethod.GET, produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CaseDetails> rshGetCase(@PathVariable UUID caseUUID, @RequestHeader("X-Auth-Username") String username) {
-        CaseDetails caseDetails = caseService.getRSHCase(caseUUID,username);
+        CaseDetails caseDetails = rshCaseService.getRSHCase(caseUUID,username);
         return ResponseEntity.ok(caseDetails);
     }
 }
