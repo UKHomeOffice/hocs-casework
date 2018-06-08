@@ -20,9 +20,9 @@ public class SearchRequest {
     @JsonProperty("caseData")
     private Map<String, Object> caseData;
 
-    public String toJsonString(ObjectMapper objectMapper){
+    public static String toJsonString(ObjectMapper objectMapper, SearchRequest searchRequest){
         try {
-            return objectMapper.writeValueAsString(this);
+            return objectMapper.writeValueAsString(searchRequest);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
