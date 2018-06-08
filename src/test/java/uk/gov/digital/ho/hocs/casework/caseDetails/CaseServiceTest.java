@@ -56,9 +56,7 @@ public class CaseServiceTest {
                 notifyService,
                 caseDetailsRepository,
                 stageDetailsRepository,
-                auditRepository,
-                auditCaseDetailsRepository,
-                auditStageDetailsRepository
+                auditRepository
         );
     }
 
@@ -160,60 +158,6 @@ public class CaseServiceTest {
         assertThat(auditEntry.getQueryData()).isNull();
         assertThat(auditEntry.getStageInstance().getCaseUUID()).isEqualTo(uuid);
         assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.UPDATE_STAGE.toString());
-    }
-
-    @Test
-    public void shouldFindCasesByReference() {
-        List<CaseDetails> cases = caseService.findCases(
-                new SearchRequest("CaseRef", null),
-                testUser
-        );
-
-        assertThat(cases).isNotNull();
-        verify(caseDetailsRepository).findByCaseReference(isA(String.class));
-        verify(caseDetailsRepository, times(0)).findByNameOrDob(any(), any(), any());
-
-        verify(auditRepository).save(isA(AuditEntry.class));
-        verify(auditRepository).save(auditEntryArgumentCaptor.capture());
-        AuditEntry auditEntry = auditEntryArgumentCaptor.getValue();
-        assertThat(auditEntry).isNotNull();
-        assertThat(auditEntry.getUsername()).isEqualTo(testUser);
-        assertThat(auditEntry.getCreated()).isNotNull().isInstanceOf(LocalDateTime.class);
-        assertThat(auditEntry.getQueryData()).isNotNull();
-        assertThat(auditEntry.getCaseInstance()).isNull();
-        assertThat(auditEntry.getStageInstance()).isNull();
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.SEARCH.toString());
-    }
-
-    @Test
-    public void shouldFindCasesByNameOrDob() {
-        Map<String, Object> caseData = new HashMap<>();
-        caseData.put("first-name", "Rick");
-        caseData.put("last-name", "Sanchez");
-        caseData.put("first-name", "1960-01-01");
-        List<CaseDetails> cases = caseService.findCases(
-                new SearchRequest(null, caseData),
-                testUser
-        );
-
-        assertThat(cases).isNotNull();
-        verify(caseDetailsRepository, times(0)).findByCaseReference(any());
-        verify(caseDetailsRepository).findByNameOrDob(isA(String.class), isA(String.class), isA(String.class));
-        verify(auditRepository).save(isA(AuditEntry.class));
-    }
-
-    @Test
-    public void shouldReturnEmptyWhenNoParamsPassed() {
-        List<CaseDetails> cases = caseService.findCases(
-                new SearchRequest(null, null),
-                testUser
-        );
-
-        assertThat(cases).isNotNull();
-        assertThat(cases).isEmpty();
-        verify(caseDetailsRepository, times(0)).findByCaseReference(any());
-        verify(caseDetailsRepository, times(0)).findByNameOrDob(any(), any(), any());
-        verify(auditRepository).save(isA(AuditEntry.class));
     }
 
 }
