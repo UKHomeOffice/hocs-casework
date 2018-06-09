@@ -9,7 +9,7 @@ import java.util.UUID;
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
-public class CaseResource {
+class CaseResource {
 
     private final CaseService caseService;
 

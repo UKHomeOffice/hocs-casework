@@ -3,18 +3,11 @@ package uk.gov.digital.ho.hocs.casework.audit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseSaveResponse;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseService;
-import uk.gov.digital.ho.hocs.casework.rsh.RshCaseCreateRequest;
 
 import java.time.LocalDate;
-import java.util.UUID;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
-public class AuditResource {
+class AuditResource {
 
     private final AuditService auditService;
 

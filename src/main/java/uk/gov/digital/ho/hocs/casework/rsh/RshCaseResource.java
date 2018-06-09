@@ -5,14 +5,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseSaveResponse;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseService;
 
-import java.util.*;
+import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @RestController
-public class RshCaseResource {
+class RshCaseResource {
 
     private final RshCaseService rshCaseService;
 

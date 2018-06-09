@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class CaseCreateRequest {
+class CaseCreateRequest {
 
     @JsonProperty("caseType")
     private String caseType;

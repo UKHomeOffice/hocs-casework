@@ -32,7 +32,7 @@ public class NotifyServiceTest {
     private final String team = "Test Team";
 
     @Before
-    public void setUp() throws NotificationClientException {
+    public void setUp() {
         this.notifyService = new NotifyService(
                 notifyClient, templateId, frontendUrl
         );

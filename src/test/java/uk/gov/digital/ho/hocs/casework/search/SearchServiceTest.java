@@ -7,16 +7,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.audit.*;
-import uk.gov.digital.ho.hocs.casework.caseDetails.*;
-import uk.gov.digital.ho.hocs.casework.notify.NotifyRequest;
-import uk.gov.digital.ho.hocs.casework.notify.NotifyService;
+import uk.gov.digital.ho.hocs.casework.audit.AuditAction;
+import uk.gov.digital.ho.hocs.casework.audit.AuditEntry;
+import uk.gov.digital.ho.hocs.casework.audit.AuditRepository;
+import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetailsRepository;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -73,7 +73,7 @@ public class SearchServiceTest {
         Map<String, Object> caseData = new HashMap<>();
         caseData.put("first-name", "Rick");
         caseData.put("last-name", "Sanchez");
-        caseData.put("first-name", "1960-01-01");
+        caseData.put("dob", "1960-01-01");
         List<CaseDetails> cases = searchService.findCases(
                 new SearchRequest(null, caseData),
                 testUser

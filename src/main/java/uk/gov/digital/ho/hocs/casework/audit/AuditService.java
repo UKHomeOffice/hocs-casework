@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.audit;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -9,12 +8,6 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetailsRepository;
-import uk.gov.digital.ho.hocs.casework.caseDetails.StageDetails;
-import uk.gov.digital.ho.hocs.casework.caseDetails.StageDetailsRepository;
-import uk.gov.digital.ho.hocs.casework.notify.NotifyRequest;
-import uk.gov.digital.ho.hocs.casework.notify.NotifyService;
 import uk.gov.digital.ho.hocs.casework.rsh.RshReportLine;
 
 import javax.transaction.Transactional;
@@ -28,25 +21,14 @@ import java.util.stream.Stream;
 
 @Service
 @Slf4j
-public class AuditService {
+class AuditService {
 
-    private final NotifyService notifyService;
-
-    private final AuditRepository auditRepository;
-    private final CaseDetailsRepository caseDetailsRepository;
-    private final StageDetailsRepository stageDetailsRepository;
     private final AuditCaseDetailsRepository auditCaseDetailsRepository;
     private final AuditStageDetailsRepository auditStageDetailsRepository;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public AuditService(NotifyService notifyService, CaseDetailsRepository caseDetailsRepository, StageDetailsRepository stageDetailsRepository, AuditRepository auditRepository, AuditCaseDetailsRepository auditCaseDetailsRepository, AuditStageDetailsRepository auditStageDetailsRepository) {
-
-        this.notifyService = notifyService;
-
-        this.caseDetailsRepository = caseDetailsRepository;
-        this.stageDetailsRepository = stageDetailsRepository;
-        this.auditRepository = auditRepository;
+    public AuditService(AuditCaseDetailsRepository auditCaseDetailsRepository, AuditStageDetailsRepository auditStageDetailsRepository) {
         this.auditCaseDetailsRepository = auditCaseDetailsRepository;
         this.auditStageDetailsRepository = auditStageDetailsRepository;
 
@@ -77,13 +59,13 @@ public class AuditService {
         try {
             CSVPrinter printer = new CSVPrinter(sb, CSVFormat.DEFAULT);
             printer.printRecord(reportLines.get(0).keySet());
-            reportLines.stream().forEach(l -> {
+            for (Map<String, String> l : reportLines) {
                 try {
                     printer.printRecord(l.values());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            });
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

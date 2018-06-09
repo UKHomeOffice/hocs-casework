@@ -3,11 +3,10 @@ package uk.gov.digital.ho.hocs.casework.caseDetails;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.audit.*;
+import uk.gov.digital.ho.hocs.casework.audit.AuditEntry;
+import uk.gov.digital.ho.hocs.casework.audit.AuditRepository;
 import uk.gov.digital.ho.hocs.casework.notify.NotifyRequest;
 import uk.gov.digital.ho.hocs.casework.notify.NotifyService;
 import uk.gov.digital.ho.hocs.casework.rsh.RshCaseService;
@@ -33,8 +32,6 @@ public class RshCaseServiceTest {
     private NotifyService notifyService;
 
     private RshCaseService rshCaseService;
-
-    private final String testUser = "Test User";
 
     @Before
     public void setUp() {
@@ -63,7 +60,7 @@ public class RshCaseServiceTest {
                         "SomeTestEmail@SomeDomain.com",
                         "Some Team Name"
                 ),
-                testUser
+                "Test User"
         );
 
         assertThat(caseDetails).isNotNull();

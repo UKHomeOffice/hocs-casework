@@ -18,7 +18,7 @@ public class AuditEntry {
     private Long id;
 
     @Column(name = "username", nullable = false)
-    private String username;
+    private final String username;
 
     @Column(name = "query_data")
     private String queryData;
@@ -32,10 +32,10 @@ public class AuditEntry {
     private AuditStageData stageInstance;
 
     @Column(name = "created", nullable = false)
-    private LocalDateTime created;
+    private final LocalDateTime created;
 
     @Column(name = "event_action", nullable = false)
-    private String eventAction;
+    private final String eventAction;
 
     public AuditEntry(String username,
                       CaseDetails caseInstance,

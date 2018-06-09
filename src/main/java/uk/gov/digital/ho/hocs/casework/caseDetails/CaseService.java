@@ -6,11 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
-import uk.gov.digital.ho.hocs.casework.audit.*;
-import uk.gov.digital.ho.hocs.casework.notify.NotifyService;
+import uk.gov.digital.ho.hocs.casework.audit.AuditAction;
+import uk.gov.digital.ho.hocs.casework.audit.AuditEntry;
+import uk.gov.digital.ho.hocs.casework.audit.AuditRepository;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -64,10 +66,12 @@ public class CaseService {
             String data = getDataString(stageData, objectMapper);
             stageDetails.setData(data);
             stageDetailsRepository.save(stageDetails);
+
+            AuditEntry auditEntry = new AuditEntry(username, null, stageDetails, AuditAction.UPDATE_STAGE);
+            auditRepository.save(auditEntry);
+            log.info("Updated Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getName(), stageDetails.getUuid(), stageDetails.getCaseUUID(), auditEntry.getUsername());
+
         }
-        AuditEntry auditEntry = new AuditEntry(username, null, stageDetails, AuditAction.UPDATE_STAGE);
-        auditRepository.save(auditEntry);
-        log.info("Updated Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getName(), stageDetails.getUuid(), stageDetails.getCaseUUID(), auditEntry.getUsername());
         return stageDetails;
     }
 

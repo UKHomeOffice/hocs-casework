@@ -1,8 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.caseDetails;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class UpdateStageRequest {
+class UpdateStageRequest {
 
     @JsonProperty("stageUUID")
     private UUID stageUUID;
@@ -23,13 +21,4 @@ public class UpdateStageRequest {
 
     @JsonProperty("stageData")
     private Map<String,Object> stageData;
-
-    public String toJsonString(ObjectMapper objectMapper){
-        try {
-            return objectMapper.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
 }

@@ -12,7 +12,7 @@ import java.net.Proxy;
 
 @Service
 @Slf4j
-public class NotifyClient {
+class NotifyClient {
 
     @Getter
     private final NotificationClient client;

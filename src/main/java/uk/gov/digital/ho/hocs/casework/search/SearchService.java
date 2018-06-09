@@ -1,35 +1,25 @@
 package uk.gov.digital.ho.hocs.casework.search;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
-import uk.gov.digital.ho.hocs.casework.audit.*;
+import uk.gov.digital.ho.hocs.casework.audit.AuditAction;
+import uk.gov.digital.ho.hocs.casework.audit.AuditEntry;
+import uk.gov.digital.ho.hocs.casework.audit.AuditRepository;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetailsRepository;
-import uk.gov.digital.ho.hocs.casework.caseDetails.StageDetails;
-import uk.gov.digital.ho.hocs.casework.caseDetails.StageDetailsRepository;
-import uk.gov.digital.ho.hocs.casework.notify.NotifyRequest;
-import uk.gov.digital.ho.hocs.casework.notify.NotifyService;
-import uk.gov.digital.ho.hocs.casework.rsh.RshReportLine;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @Slf4j
-public class SearchService {
+class SearchService {
 
     private final AuditRepository auditRepository;
     private final CaseDetailsRepository caseDetailsRepository;

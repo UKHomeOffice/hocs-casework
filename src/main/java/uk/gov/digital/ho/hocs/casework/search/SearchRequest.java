@@ -12,7 +12,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class SearchRequest {
+class SearchRequest {
 
     @JsonProperty("caseReference")
     private String caseReference;
