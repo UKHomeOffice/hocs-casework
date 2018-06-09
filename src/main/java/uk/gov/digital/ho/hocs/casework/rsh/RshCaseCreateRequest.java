@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.notify.NotifyRequest;
+import uk.gov.digital.ho.hocs.casework.email.SendEmailRequest;
 
 import java.util.Map;
 
@@ -13,8 +13,8 @@ import java.util.Map;
 @Getter
 class RshCaseCreateRequest {
 
-    @JsonProperty("notifyRequest")
-    private NotifyRequest notifyRequest;
+    @JsonProperty("sendEmailRequest")
+    private SendEmailRequest notifyRequest;
 
     @JsonProperty("caseData")
     private Map<String,Object> caseData;

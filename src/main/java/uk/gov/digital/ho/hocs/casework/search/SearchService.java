@@ -1,72 +1,77 @@
 package uk.gov.digital.ho.hocs.casework.search;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
-import uk.gov.digital.ho.hocs.casework.audit.AuditAction;
-import uk.gov.digital.ho.hocs.casework.audit.AuditEntry;
-import uk.gov.digital.ho.hocs.casework.audit.AuditRepository;
+import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetailsRepository;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
+import static uk.gov.digital.ho.hocs.casework.HocsCaseApplication.isNullOrEmpty;
 
 @Service
 @Slf4j
 class SearchService {
 
-    private final AuditRepository auditRepository;
+    private final AuditService auditService;
     private final CaseDetailsRepository caseDetailsRepository;
-    private final ObjectMapper objectMapper;
 
     @Autowired
-    public SearchService(CaseDetailsRepository caseDetailsRepository, AuditRepository auditRepository) {
-
+    public SearchService(AuditService auditService, CaseDetailsRepository caseDetailsRepository) {
+        this.auditService = auditService;
         this.caseDetailsRepository = caseDetailsRepository;
-        this.auditRepository = auditRepository;
-
-        this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
-
     }
 
-    @Transactional
-   public List<CaseDetails> findCases(SearchRequest searchRequest, String username){
-        String request = SearchRequest.toJsonString(objectMapper, searchRequest);
-        log.info("Requesting Search, User: {}", username);
-        ArrayList<CaseDetails> results = new ArrayList<>();
-        if(searchRequest.getCaseReference() != null){
-            Set<CaseDetails> result = caseDetailsRepository.findByCaseReference(searchRequest.getCaseReference());
-            if(result != null){
-                results.addAll(result);
-            }
-        }
-        if (results.size() == 0 && searchRequest.getCaseData() != null){
-            Map<String, Object> searchData = searchRequest.getCaseData();
-            Set<CaseDetails> resultList = caseDetailsRepository.findByNameOrDob(getFieldString(searchData,"first-name"), getFieldString(searchData,"last-name"), getFieldString(searchData,"date-of-birth"));
-            results.addAll(resultList);
-        }
-
-        AuditEntry auditEntry = new AuditEntry(username, request, AuditAction.SEARCH);
-        auditRepository.save(auditEntry);
-        log.info("Returned Search, Found: {}, User: {}", results.size(), username);
-        return results;
-    }
-
-    private static String getFieldString(Map<String, Object> stageData, String key) {
+    private static String getFieldString(Map<String, String> stageData, String key) {
         String ret = "";
-        if(stageData.containsKey(key)){
-            String val = stageData.get(key).toString();
-            if(val != null) {
+        if (stageData != null && stageData.containsKey(key)) {
+            String val = stageData.get(key);
+            if (val != null) {
                 ret = val;
             }
         }
         return ret;
     }
-}
 
+    @Transactional
+    public List<CaseDetails> findCases(SearchRequest searchRequest, String username) {
+        auditService.writeSearchEvent(username, searchRequest);
+        log.info("Requesting Search, User: {}", username);
+
+        List<CaseDetails> results = new ArrayList<>(findByCaseReference(searchRequest.getCaseReference()));
+
+        if (results.isEmpty()) {
+            results.addAll(findByNameOrDob(searchRequest.getCaseData()));
+        }
+
+        log.info("Returned Search, Found: {}, User: {}", results.size(), username);
+        return results;
+    }
+
+    private Set<CaseDetails> findByCaseReference(String caseReference) {
+        Set<CaseDetails> returnResults = new HashSet<>();
+
+        if (!isNullOrEmpty(caseReference)) {
+            Set<CaseDetails> results = caseDetailsRepository.findByCaseReference(caseReference);
+            if (results != null && results.isEmpty()) {
+                returnResults.addAll(results);
+            }
+        }
+        return returnResults;
+    }
+
+    private Set<CaseDetails> findByNameOrDob(Map<String, String> searchMap) {
+        Set<CaseDetails> returnResults = new HashSet<>();
+
+        if (searchMap != null && !searchMap.isEmpty()) {
+            Set<CaseDetails> results = caseDetailsRepository.findByNameOrDob(getFieldString(searchMap, "first-name"), getFieldString(searchMap, "last-name"), getFieldString(searchMap, "date-of-birth"));
+            if (results != null && results.isEmpty()) {
+                returnResults.addAll(results);
+            }
+        }
+        return returnResults;
+    }
+}

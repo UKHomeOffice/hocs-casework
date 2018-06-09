@@ -14,7 +14,7 @@ import java.util.UUID;
 @Table(name = "audit_stage_data")
 @Getter
 @NoArgsConstructor
-public class AuditStageData implements Serializable {
+class AuditStageData implements Serializable {
 
     private AuditStageData(UUID stageUUID, String name, String data, UUID caseUUID, int schemaVersion, LocalDateTime created) {
         this.uuid = stageUUID;

@@ -8,7 +8,11 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
+import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.StageDetails;
+import uk.gov.digital.ho.hocs.casework.email.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.rsh.RshReportLine;
+import uk.gov.digital.ho.hocs.casework.search.SearchRequest;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
@@ -21,19 +25,60 @@ import java.util.stream.Stream;
 
 @Service
 @Slf4j
-class AuditService {
+public class AuditService {
 
+    private final AuditRepository auditRepository;
     private final AuditCaseDetailsRepository auditCaseDetailsRepository;
     private final AuditStageDetailsRepository auditStageDetailsRepository;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public AuditService(AuditCaseDetailsRepository auditCaseDetailsRepository, AuditStageDetailsRepository auditStageDetailsRepository) {
+    public AuditService(AuditRepository auditRepository, AuditCaseDetailsRepository auditCaseDetailsRepository, AuditStageDetailsRepository auditStageDetailsRepository) {
+        this.auditRepository = auditRepository;
         this.auditCaseDetailsRepository = auditCaseDetailsRepository;
         this.auditStageDetailsRepository = auditStageDetailsRepository;
 
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
 
+    }
+
+    private static Map<String, String> caseToMap(AuditCaseData auditCaseData) {
+        Map<String, String> caseMap = new HashMap<>();
+
+        String name = "Case";
+        caseMap.put(stageNameFormat(name, "Type"), auditCaseData.getType());
+        caseMap.put(stageNameFormat(name, "Reference"), auditCaseData.getReference());
+        caseMap.put(stageNameFormat(name, "UUID"), auditCaseData.getUuid().toString());
+        caseMap.put(stageNameFormat(name, "Created"), auditCaseData.getCreated().toString());
+
+        return caseMap;
+    }
+
+    public void writeSearchEvent(String username, SearchRequest searchRequest) {
+        String request = SearchRequest.toJsonString(objectMapper, searchRequest);
+        AuditEntry auditEntry = new AuditEntry(username, request, AuditAction.SEARCH);
+        auditRepository.save(auditEntry);
+    }
+
+    public void writeSendEmailEvent(String username, SendEmailRequest sendEmailRequest) {
+        String request = SendEmailRequest.toJsonString(objectMapper, sendEmailRequest);
+        AuditEntry auditEntry = new AuditEntry(username, request, AuditAction.SEND_EMAIL);
+        auditRepository.save(auditEntry);
+    }
+
+    public void writeGetCaseEvent(String username, UUID caseUuid) {
+        AuditEntry auditEntry = new AuditEntry(username, caseUuid.toString(), AuditAction.GET_CASE);
+        auditRepository.save(auditEntry);
+    }
+
+    public void writeCreateCaseEvent(String username, CaseDetails caseDetails) {
+        AuditEntry auditEntry = new AuditEntry(username, caseDetails, null, AuditAction.CREATE_CASE);
+        auditRepository.save(auditEntry);
+    }
+
+    public void writeCreateStageEvent(String username, StageDetails stageDetails) {
+        AuditEntry auditEntry = new AuditEntry(username, null, stageDetails, AuditAction.CREATE_STAGE);
+        auditRepository.save(auditEntry);
     }
 
     @Transactional
@@ -74,16 +119,9 @@ class AuditService {
             return sb.toString();
         }
 
-     private static Map<String,String> caseToMap(AuditCaseData auditCaseData){
-        Map<String,String> caseMap = new HashMap<>();
-
-        String name = "Case";
-        caseMap.put(stageNameFormat(name, "Type"), auditCaseData.getType());
-        caseMap.put(stageNameFormat(name, "Reference"), auditCaseData.getReference());
-        caseMap.put(stageNameFormat(name, "UUID"), auditCaseData.getUuid().toString());
-        caseMap.put(stageNameFormat(name, "Created"), auditCaseData.getCreated().toString());
-
-        return caseMap;
+    public void writeUpdateStageEvent(String username, StageDetails stageDetails) {
+        AuditEntry auditEntry = new AuditEntry(username, null, stageDetails, AuditAction.UPDATE_STAGE);
+        auditRepository.save(auditEntry);
     }
 
     private static Map<String,String> stagesToMap(Stream<AuditStageData> auditStageDataList, ObjectMapper objectMapper){

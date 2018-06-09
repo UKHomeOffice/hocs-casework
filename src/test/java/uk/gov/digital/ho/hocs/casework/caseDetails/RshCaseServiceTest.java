@@ -5,10 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.audit.AuditEntry;
-import uk.gov.digital.ho.hocs.casework.audit.AuditRepository;
-import uk.gov.digital.ho.hocs.casework.notify.NotifyRequest;
-import uk.gov.digital.ho.hocs.casework.notify.NotifyService;
+import uk.gov.digital.ho.hocs.casework.audit.AuditService;
+import uk.gov.digital.ho.hocs.casework.email.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.rsh.RshCaseService;
 
 import java.util.HashMap;
@@ -21,15 +19,13 @@ public class RshCaseServiceTest {
 
 
     @Mock
-    private AuditRepository auditRepository;
+    private AuditService auditService;
     @Mock
     private CaseDetailsRepository caseDetailsRepository;
     @Mock
     private StageDetailsRepository stageDetailsRepository;
     @Mock
     private CaseService caseService;
-    @Mock
-    private NotifyService notifyService;
 
     private RshCaseService rshCaseService;
 
@@ -39,15 +35,13 @@ public class RshCaseServiceTest {
         this.caseService = new CaseService(
                 caseDetailsRepository,
                 stageDetailsRepository,
-                auditRepository
+                auditService
         );
 
         this.rshCaseService = new RshCaseService(
-                notifyService,
                 caseService,
                 caseDetailsRepository,
-                stageDetailsRepository,
-                auditRepository
+                auditService
         );
     }
 
@@ -56,7 +50,7 @@ public class RshCaseServiceTest {
         when(caseDetailsRepository.getNextSeriesId()).thenReturn(123L);
         CaseDetails caseDetails = rshCaseService.createRshCase(
                 new HashMap<>(),
-                new NotifyRequest(
+                new SendEmailRequest(
                         "SomeTestEmail@SomeDomain.com",
                         "Some Team Name"
                 ),
@@ -66,6 +60,7 @@ public class RshCaseServiceTest {
         assertThat(caseDetails).isNotNull();
         verify(caseDetailsRepository).save(isA(CaseDetails.class));
         verify(stageDetailsRepository).save(isA(StageDetails.class));
-        verify(auditRepository, times(2)).save(isA(AuditEntry.class));
+        verify(auditService, times(1)).writeCreateCaseEvent("Test User", caseDetails);
+        verify(auditService, times(1)).writeCreateStageEvent(anyString(), any(StageDetails.class));
     }
 }

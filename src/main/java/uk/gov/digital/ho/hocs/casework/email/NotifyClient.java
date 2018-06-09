@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.notify;
+package uk.gov.digital.ho.hocs.casework.email;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -18,16 +18,17 @@ class NotifyClient {
     private final NotificationClient client;
 
     @Autowired
-    public NotifyClient(@Value("${notify.apiKey}") String apiKey,
-                         @Value("${notify.proxy.host}") String proxyHost,
-                         @Value("${notify.proxy.port}") Integer proxyPort) {
+    public NotifyClient(@Value("${email.apiKey}") String apiKey,
+                        @Value("${email.proxy.host}") String proxyHost,
+                        @Value("${email.proxy.port}") Integer proxyPort) {
 
         if (proxyHost != null && proxyPort != null) {
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));
             client = new NotificationClient(apiKey, proxy);
-            log.info("Proxy configuration applied to Notify client");
+            log.info("Creating Notify client with proxy configuration");
         } else {
             client = new NotificationClient(apiKey);
+            log.info("Creating Notify client without proxy configuration");
         }
     }
 

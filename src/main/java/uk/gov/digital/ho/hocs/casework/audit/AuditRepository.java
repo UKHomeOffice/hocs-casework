@@ -4,6 +4,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AuditRepository extends CrudRepository<AuditEntry, Long> {
+interface AuditRepository extends CrudRepository<AuditEntry, Long> {
 
 }

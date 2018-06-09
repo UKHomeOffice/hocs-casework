@@ -3,17 +3,12 @@ package uk.gov.digital.ho.hocs.casework.search;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.audit.AuditAction;
-import uk.gov.digital.ho.hocs.casework.audit.AuditEntry;
-import uk.gov.digital.ho.hocs.casework.audit.AuditRepository;
+import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetailsRepository;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +20,7 @@ import static org.mockito.Mockito.*;
 public class SearchServiceTest {
 
     @Mock
-    private AuditRepository auditRepository;
+    private AuditService auditService;
     @Mock
     private CaseDetailsRepository caseDetailsRepository;
 
@@ -33,31 +28,29 @@ public class SearchServiceTest {
 
     private final String testUser = "Test User";
 
-    @Captor
-    private ArgumentCaptor<AuditEntry> auditEntryArgumentCaptor;
+    //@Captor
+    //private ArgumentCaptor<AuditEntry> auditEntryArgumentCaptor;
 
 
     @Before
     public void setUp() {
         this.searchService = new SearchService(
-                caseDetailsRepository,
-                auditRepository
+                auditService,
+                caseDetailsRepository
         );
     }
 
     @Test
     public void shouldFindCasesByReference() {
-        List<CaseDetails> cases = searchService.findCases(
-                new SearchRequest("CaseRef", null),
-                testUser
-        );
+        SearchRequest searchRequest = new SearchRequest("CaseRef", null);
+        List<CaseDetails> cases = searchService.findCases(searchRequest, testUser);
 
         assertThat(cases).isNotNull();
         verify(caseDetailsRepository).findByCaseReference(isA(String.class));
         verify(caseDetailsRepository, times(0)).findByNameOrDob(any(), any(), any());
 
-        verify(auditRepository).save(isA(AuditEntry.class));
-        verify(auditRepository).save(auditEntryArgumentCaptor.capture());
+        verify(auditService).writeSearchEvent(testUser, searchRequest);
+/*        verify(auditRepository).save(auditEntryArgumentCaptor.capture());
         AuditEntry auditEntry = auditEntryArgumentCaptor.getValue();
         assertThat(auditEntry).isNotNull();
         assertThat(auditEntry.getUsername()).isEqualTo(testUser);
@@ -65,30 +58,32 @@ public class SearchServiceTest {
         assertThat(auditEntry.getQueryData()).isNotNull();
         assertThat(auditEntry.getCaseInstance()).isNull();
         assertThat(auditEntry.getStageInstance()).isNull();
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.SEARCH.toString());
+        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.SEARCH.toString());*/
     }
 
     @Test
     public void shouldFindCasesByNameOrDob() {
-        Map<String, Object> caseData = new HashMap<>();
+        Map<String, String> caseData = new HashMap<>();
         caseData.put("first-name", "Rick");
         caseData.put("last-name", "Sanchez");
         caseData.put("dob", "1960-01-01");
+        SearchRequest searchRequest = new SearchRequest(null, caseData);
         List<CaseDetails> cases = searchService.findCases(
-                new SearchRequest(null, caseData),
+                searchRequest,
                 testUser
         );
 
         assertThat(cases).isNotNull();
         verify(caseDetailsRepository, times(0)).findByCaseReference(any());
         verify(caseDetailsRepository).findByNameOrDob(isA(String.class), isA(String.class), isA(String.class));
-        verify(auditRepository).save(isA(AuditEntry.class));
+        verify(auditService).writeSearchEvent(testUser, searchRequest);
     }
 
     @Test
     public void shouldReturnEmptyWhenNoParamsPassed() {
+        SearchRequest searchRequest = new SearchRequest(null, null);
         List<CaseDetails> cases = searchService.findCases(
-                new SearchRequest(null, null),
+                searchRequest,
                 testUser
         );
 
@@ -96,7 +91,7 @@ public class SearchServiceTest {
         assertThat(cases).isEmpty();
         verify(caseDetailsRepository, times(0)).findByCaseReference(any());
         verify(caseDetailsRepository, times(0)).findByNameOrDob(any(), any(), any());
-        verify(auditRepository).save(isA(AuditEntry.class));
+        verify(auditService).writeSearchEvent(testUser, searchRequest);
     }
 
 }

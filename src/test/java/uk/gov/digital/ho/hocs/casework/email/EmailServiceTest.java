@@ -1,10 +1,11 @@
-package uk.gov.digital.ho.hocs.casework.notify;
+package uk.gov.digital.ho.hocs.casework.email;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -15,10 +16,12 @@ import java.util.UUID;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NotifyServiceTest {
+public class EmailServiceTest {
 
-    private NotifyService notifyService;
+    private EmailService emailService;
 
+    @Mock
+    private AuditService auditService;
     @Mock
     private NotifyClient notifyClient;
     @Mock
@@ -33,9 +36,8 @@ public class NotifyServiceTest {
 
     @Before
     public void setUp() {
-        this.notifyService = new NotifyService(
-                notifyClient, templateId, frontendUrl
-        );
+        this.emailService = new EmailService(
+                notifyClient, templateId, frontendUrl, auditService);
     }
 
     @Test
@@ -48,7 +50,7 @@ public class NotifyServiceTest {
                 any(),
                 any()
         )).thenReturn(null);
-        notifyService.sendRshNotify(new NotifyRequest(email, team), uuid);
+        EmailService.sendRshNotify(new SendEmailRequest(email, team), uuid, email);
 
         final Map<String, String> personalisation = new HashMap<>();
         personalisation.put("team", team);
@@ -61,33 +63,6 @@ public class NotifyServiceTest {
                 null,
                 null
         );
-
-    }
-
-    @Test
-    public void shouldSendEmail() throws NotificationClientException {
-        when(notifyClient.getClient()).thenReturn(mockNotify);
-        when(mockNotify.sendEmail(
-                anyString(),
-                anyString(),
-                anyMap(),
-                any(),
-                any()
-        )).thenReturn(null);
-        notifyService.sendNotify(new NotifyRequest(email, team), uuid, templateId);
-
-        final Map<String, String> personalisation = new HashMap<>();
-        personalisation.put("team", team);
-        personalisation.put("link", String.format("%s/case/%s", frontendUrl, uuid));
-
-        verify(mockNotify).sendEmail(
-                templateId,
-                email,
-                personalisation,
-                null,
-                null
-        );
-
     }
 
 }

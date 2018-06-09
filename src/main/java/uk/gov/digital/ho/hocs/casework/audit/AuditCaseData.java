@@ -8,14 +8,16 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "audit_case_data")
 @Getter
 @NoArgsConstructor
-public class AuditCaseData implements Serializable {
+class AuditCaseData implements Serializable {
 
     private AuditCaseData(String type, String reference, UUID uuid, LocalDateTime created, Set<AuditStageData> stages) {
         this.type = type;

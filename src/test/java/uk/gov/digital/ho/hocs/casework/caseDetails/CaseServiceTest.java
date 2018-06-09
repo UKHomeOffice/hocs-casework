@@ -3,13 +3,10 @@ package uk.gov.digital.ho.hocs.casework.caseDetails;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.audit.*;
+import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -20,7 +17,7 @@ import static org.mockito.Mockito.*;
 public class CaseServiceTest {
 
     @Mock
-    private AuditRepository auditRepository;
+    private AuditService auditService;
     @Mock
     private CaseDetailsRepository caseDetailsRepository;
     @Mock
@@ -31,8 +28,8 @@ public class CaseServiceTest {
     private final String testUser = "Test User";
     private final UUID uuid = UUID.randomUUID();
 
-    @Captor
-    private ArgumentCaptor<AuditEntry> auditEntryArgumentCaptor;
+    //@Captor
+    //private ArgumentCaptor<AuditEntry> auditEntryArgumentCaptor;
 
 
     @Before
@@ -40,7 +37,7 @@ public class CaseServiceTest {
         this.caseService = new CaseService(
                 caseDetailsRepository,
                 stageDetailsRepository,
-                auditRepository
+                auditService
         );
     }
 
@@ -54,8 +51,8 @@ public class CaseServiceTest {
         assertThat(caseDetails).isNotNull();
         verify(caseDetailsRepository).save(isA(CaseDetails.class));
 
-        verify(auditRepository).save(isA(AuditEntry.class));
-        verify(auditRepository).save(auditEntryArgumentCaptor.capture());
+        verify(auditService).writeCreateCaseEvent(testUser, caseDetails);
+/*        verify(auditService).save(auditEntryArgumentCaptor.capture());
         AuditEntry auditEntry = auditEntryArgumentCaptor.getValue();
         assertThat(auditEntry).isNotNull();
         assertThat(auditEntry.getUsername()).isEqualTo(testUser);
@@ -64,7 +61,7 @@ public class CaseServiceTest {
         assertThat(auditEntry.getCreated()).isNotNull().isInstanceOf(LocalDateTime.class);
         assertThat(auditEntry.getQueryData()).isNull();
         assertThat(auditEntry.getCaseInstance().getUuid()).isNotNull().isInstanceOf(UUID.class);
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.CREATE_CASE.toString());
+        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.CREATE_CASE.toString());*/
     }
 
     @Test
@@ -80,8 +77,8 @@ public class CaseServiceTest {
         assertThat(stageDetails).isNotNull();
         verify(stageDetailsRepository).save(isA(StageDetails.class));
 
-        verify(auditRepository).save(isA(AuditEntry.class));
-        verify(auditRepository).save(auditEntryArgumentCaptor.capture());
+        verify(auditService).writeCreateStageEvent(testUser, stageDetails);
+/*        verify(auditRepository).save(auditEntryArgumentCaptor.capture());
         AuditEntry auditEntry = auditEntryArgumentCaptor.getValue();
         assertThat(auditEntry).isNotNull();
         assertThat(auditEntry.getUsername()).isEqualTo(testUser);
@@ -90,7 +87,7 @@ public class CaseServiceTest {
         assertThat(auditEntry.getCreated()).isNotNull().isInstanceOf(LocalDateTime.class);
         assertThat(auditEntry.getQueryData()).isNull();
         assertThat(auditEntry.getStageInstance().getCaseUUID()).isEqualTo(uuid);
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.CREATE_STAGE.toString());
+        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.CREATE_STAGE.toString());*/
     }
 
     @Test
@@ -113,8 +110,8 @@ public class CaseServiceTest {
         verify(stageDetailsRepository).findByUuid(uuid);
         verify(stageDetailsRepository).save(isA(StageDetails.class));
 
-        verify(auditRepository).save(isA(AuditEntry.class));
-        verify(auditRepository).save(auditEntryArgumentCaptor.capture());
+        verify(auditService).writeUpdateStageEvent(testUser, stageDetails);
+/*        verify(auditRepository).save(auditEntryArgumentCaptor.capture());
         AuditEntry auditEntry = auditEntryArgumentCaptor.getValue();
         assertThat(auditEntry).isNotNull();
         assertThat(auditEntry.getUsername()).isEqualTo(testUser);
@@ -123,7 +120,7 @@ public class CaseServiceTest {
         assertThat(auditEntry.getCreated()).isNotNull().isInstanceOf(LocalDateTime.class);
         assertThat(auditEntry.getQueryData()).isNull();
         assertThat(auditEntry.getStageInstance().getCaseUUID()).isEqualTo(uuid);
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.UPDATE_STAGE.toString());
+        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.UPDATE_STAGE.toString());*/
     }
 
 }

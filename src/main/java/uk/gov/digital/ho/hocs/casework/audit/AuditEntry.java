@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "audit")
 @Getter
-public class AuditEntry {
+class AuditEntry {
 
     @Id
     @Column(name = "id")
@@ -37,10 +37,10 @@ public class AuditEntry {
     @Column(name = "event_action", nullable = false)
     private final String eventAction;
 
-    public AuditEntry(String username,
-                      CaseDetails caseInstance,
-                      StageDetails stageInstance,
-                      AuditAction eventAction) {
+    AuditEntry(String username,
+               CaseDetails caseInstance,
+               StageDetails stageInstance,
+               AuditAction eventAction) {
         this.username = username;
         if(caseInstance != null) {
             this.caseInstance = AuditCaseData.from(caseInstance);
@@ -52,9 +52,9 @@ public class AuditEntry {
         this.eventAction = eventAction.toString();
     }
 
-    public AuditEntry(String username,
-                      String queryData,
-                      AuditAction eventAction) {
+    AuditEntry(String username,
+               String queryData,
+               AuditAction eventAction) {
         this.username = username;
         this.queryData = queryData;
         this.created = LocalDateTime.now();
