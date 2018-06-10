@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.caseDetails;
+package uk.gov.digital.ho.hocs.casework.rsh;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
+import uk.gov.digital.ho.hocs.casework.caseDetails.*;
 import uk.gov.digital.ho.hocs.casework.email.SendEmailRequest;
-import uk.gov.digital.ho.hocs.casework.rsh.RshCaseService;
 
 import java.util.HashMap;
 
@@ -39,9 +39,7 @@ public class RshCaseServiceTest {
         );
 
         this.rshCaseService = new RshCaseService(
-                caseService,
-                caseDetailsRepository,
-                auditService
+                caseService
         );
     }
 

@@ -18,9 +18,9 @@ class NotifyClient {
     private final NotificationClient client;
 
     @Autowired
-    public NotifyClient(@Value("${email.apiKey}") String apiKey,
-                        @Value("${email.proxy.host}") String proxyHost,
-                        @Value("${email.proxy.port}") Integer proxyPort) {
+    public NotifyClient(@Value("${notify.apiKey}") String apiKey,
+                        @Value("${notify.proxy.host}") String proxyHost,
+                        @Value("${notify.proxy.port}") Integer proxyPort) {
 
         if (proxyHost != null && proxyPort != null) {
             Proxy proxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort));

@@ -34,28 +34,28 @@ public class CaseService {
 
     @Transactional
     public CaseDetails createCase(String caseType, String username) {
-        log.info("Requesting Create Case, Type: {}, User: {}", caseType, username);
+        log.info("CREATE CASE: Requesting Create Case, Type: {}, User: {}", caseType, username);
         CaseDetails caseDetails = new CaseDetails(caseType, caseDetailsRepository.getNextSeriesId());
         auditService.writeCreateCaseEvent(username, caseDetails);
         caseDetailsRepository.save(caseDetails);
-        log.info("Created Case, Reference: {}, UUID: {} User: {}", caseDetails.getReference(), caseDetails.getUuid(), username);
+        log.info("CREATE CASE: Created Case, Reference: {}, UUID: {} User: {}", caseDetails.getReference(), caseDetails.getUuid(), username);
         return caseDetails;
     }
 
     @Transactional
     public StageDetails createStage(UUID caseUUID, String stageName, int schemaVersion, Map<String,Object> stageData, String username) {
-        log.info("Requesting Create Stage, Name: {}, Case UUID: {}, User: {}", stageName, caseUUID, username);
+        log.info("CREATE STAGE: Requesting Create Stage, Name: {}, Case UUID: {}, User: {}", stageName, caseUUID, username);
         String data = getDataString(stageData, objectMapper);
         StageDetails stageDetails = new StageDetails(caseUUID, stageName, schemaVersion, data);
         auditService.writeCreateStageEvent(username, stageDetails);
         stageDetailsRepository.save(stageDetails);
-        log.info("Created Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getName(), stageDetails.getUuid(), stageDetails.getCaseUUID(), username);
+        log.info("CREATE STAGE: Created Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getName(), stageDetails.getUuid(), stageDetails.getCaseUUID(), username);
         return stageDetails;
     }
 
     @Transactional
     public StageDetails updateStage(UUID stageUUID, int schemaVersion, Map<String,Object> stageData, String username) {
-        log.info("Requesting Update Stage, uuid: {}, User: {}", stageUUID, username);
+        log.info("UPDATE STAGE: Requesting Update Stage, uuid: {}, User: {}", stageUUID, username);
         StageDetails stageDetails = stageDetailsRepository.findByUuid(stageUUID);
         if(stageDetails != null) {
             stageDetails.setSchemaVersion(schemaVersion);
@@ -63,9 +63,18 @@ public class CaseService {
             stageDetails.setData(data);
             auditService.writeUpdateStageEvent(username, stageDetails);
             stageDetailsRepository.save(stageDetails);
-            log.info("Updated Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getName(), stageDetails.getUuid(), stageDetails.getCaseUUID(), username);
+            log.info("UPDATE STAGE: Updated Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getName(), stageDetails.getUuid(), stageDetails.getCaseUUID(), username);
         }
         return stageDetails;
+    }
+
+    @Transactional
+    public CaseDetails getCase(UUID uuid, String username) {
+        auditService.writeGetCaseEvent(username, uuid);
+        log.info("GET CASE: Requesting Case, UUID: {}, User: {}", uuid, username);
+        CaseDetails caseDetails = caseDetailsRepository.findByUuid(uuid);
+        log.info("GET CASE: Found Case, Reference: {} ({}), User: {}", caseDetails.getReference(), caseDetails.getUuid(), username);
+        return caseDetails;
     }
 
     private static String getDataString(Map<String, Object> stageData, ObjectMapper objectMapper) {

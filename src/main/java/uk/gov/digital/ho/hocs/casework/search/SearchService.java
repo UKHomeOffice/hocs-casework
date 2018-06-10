@@ -39,7 +39,7 @@ class SearchService {
     @Transactional
     public List<CaseDetails> findCases(SearchRequest searchRequest, String username) {
         auditService.writeSearchEvent(username, searchRequest);
-        log.info("Requesting Search, User: {}", username);
+        log.info("SEARCH: Requesting Search, User: {}", username);
 
         List<CaseDetails> results = new ArrayList<>(findByCaseReference(searchRequest.getCaseReference()));
 
@@ -47,7 +47,7 @@ class SearchService {
             results.addAll(findByNameOrDob(searchRequest.getCaseData()));
         }
 
-        log.info("Returned Search, Found: {}, User: {}", results.size(), username);
+        log.info("SEARCH: Returned Search, Found: {}, User: {}", results.size(), username);
         return results;
     }
 
@@ -68,7 +68,7 @@ class SearchService {
 
         if (searchMap != null && !searchMap.isEmpty()) {
             Set<CaseDetails> results = caseDetailsRepository.findByNameOrDob(getFieldString(searchMap, "first-name"), getFieldString(searchMap, "last-name"), getFieldString(searchMap, "date-of-birth"));
-            if (results != null && results.isEmpty()) {
+            if (results != null && !results.isEmpty()) {
                 returnResults.addAll(results);
             }
         }

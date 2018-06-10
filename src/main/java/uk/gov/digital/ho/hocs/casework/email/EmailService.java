@@ -17,29 +17,29 @@ import static uk.gov.digital.ho.hocs.casework.HocsCaseApplication.isNullOrEmpty;
 @Slf4j
 public class EmailService {
 
-    private static AuditService auditService;
+    private final AuditService auditService;
 
-    private static NotifyClient notifyClient;
+    private final NotifyClient notifyClient;
 
-    private static String rshTemplateId;
-    private static String frontEndUrl;
+    private final String rshTemplateId;
+    private final String frontEndUrl;
 
     @Autowired
     public EmailService(NotifyClient notifyClient,
-                        @Value("${email.rshTemplateId}") String rshTemplateId,
-                        @Value("${email.frontend.url}") String frontEndUrl,
+                        @Value("${notify.rshTemplateId}") String rshTemplateId,
+                        @Value("${notify.frontend.url}") String frontEndUrl,
                         AuditService auditService) {
-        EmailService.notifyClient = notifyClient;
-        EmailService.rshTemplateId = rshTemplateId;
-        EmailService.frontEndUrl = frontEndUrl;
-        EmailService.auditService = auditService;
+        this.notifyClient = notifyClient;
+        this.rshTemplateId = rshTemplateId;
+        this.frontEndUrl = frontEndUrl;
+        this.auditService = auditService;
     }
 
-    public static void sendRshNotify(SendEmailRequest notifyRequest, UUID caseUUID, String userName) {
+    public void sendRshNotify(SendEmailRequest notifyRequest, UUID caseUUID, String userName) {
         sendNotify(notifyRequest, caseUUID, rshTemplateId, userName);
     }
 
-    private static void sendNotify(SendEmailRequest notifyRequest, UUID caseUUID, String templateId, String username) {
+    private void sendNotify(SendEmailRequest notifyRequest, UUID caseUUID, String templateId, String username) {
         if (notifyRequest != null) {
             auditService.writeSendEmailEvent(username, notifyRequest);
             if (!isNullOrEmpty(notifyRequest.getEmail()) && !isNullOrEmpty(notifyRequest.getTeamName())) {
@@ -53,7 +53,7 @@ public class EmailService {
         }
     }
 
-    private static void sendEmail(String emailAddress, String teamName, UUID caseUUID, String templateId) {
+    private void sendEmail(String emailAddress, String teamName, UUID caseUUID, String templateId) {
         HashMap<String, String> personalisation = new HashMap<>();
         personalisation.put("team", teamName);
         personalisation.put("link", frontEndUrl + "/case/" + caseUUID);
