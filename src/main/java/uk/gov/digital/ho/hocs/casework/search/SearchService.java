@@ -26,17 +26,6 @@ class SearchService {
         this.caseDataRepository = caseDataRepository;
     }
 
-    private static String getFieldString(Map<String, String> stageData, String key) {
-        String ret = "";
-        if (stageData != null && stageData.containsKey(key)) {
-            String val = stageData.get(key);
-            if (val != null) {
-                ret = val;
-            }
-        }
-        return ret;
-    }
-
     @Transactional
     public List<CaseData> findCases(SearchRequest searchRequest, String username) {
         auditService.writeSearchEvent(username, searchRequest);
@@ -50,6 +39,17 @@ class SearchService {
 
         log.info("SEARCH: Returned Search, Found: {}, User: {}", results.size(), username);
         return results;
+    }
+
+    private static String getFieldString(Map<String, String> stageData, String key) {
+        String ret = "";
+        if (stageData != null && stageData.containsKey(key)) {
+            String val = stageData.get(key);
+            if (val != null) {
+                ret = val;
+            }
+        }
+        return ret;
     }
 
     private Set<CaseData> findByCaseReference(String caseReference) {
