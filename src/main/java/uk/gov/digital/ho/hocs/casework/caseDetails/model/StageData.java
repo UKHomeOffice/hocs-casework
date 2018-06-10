@@ -13,9 +13,9 @@ import java.util.UUID;
 @Table(name = "stage_data")
 @Getter
 @NoArgsConstructor
-public class StageDetails implements Serializable {
+public class StageData implements Serializable {
 
-    public StageDetails(UUID caseUUID, String name, int schemaVersion, String data) {
+    public StageData(UUID caseUUID, String name, int schemaVersion, String data) {
         LocalDateTime now = LocalDateTime.now();
         this.uuid = UUID.randomUUID();
         this.name = name;

@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.search;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import java.util.List;
@@ -22,8 +22,8 @@ class SearchResource {
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.POST, produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<CaseDetails>> search(@RequestBody SearchRequest data, @RequestHeader("X-Auth-Username") String username) {
-        List<CaseDetails> searchResponses = searchService.findCases(data, username);
+    public ResponseEntity<List<CaseData>> search(@RequestBody SearchRequest data, @RequestHeader("X-Auth-Username") String username) {
+        List<CaseData> searchResponses = searchService.findCases(data, username);
         return ResponseEntity.ok(searchResponses);
     }
 }

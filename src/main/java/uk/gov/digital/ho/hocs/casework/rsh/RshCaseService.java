@@ -3,9 +3,9 @@ package uk.gov.digital.ho.hocs.casework.rsh;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseService;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.email.EmailService;
 import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 
@@ -17,22 +17,21 @@ import java.util.UUID;
 @Slf4j
 public class RshCaseService {
 
-    private final CaseService caseService;
+    private final CaseDataService caseDataService;
     private final EmailService emailService;
 
     @Autowired
-    public RshCaseService(CaseService caseService, EmailService emailService) {
-
-        this.caseService = caseService;
+    public RshCaseService(CaseDataService caseDataService, EmailService emailService) {
+        this.caseDataService = caseDataService;
         this.emailService = emailService;
     }
 
     @Transactional
-    CaseDetails createRshCase(Map<String, Object> caseData, SendEmailRequest notifyRequest, String username) {
-        CaseDetails caseDetails = caseService.createCase("RSH",  username);
+    CaseData createRshCase(Map<String, Object> caseData, SendEmailRequest notifyRequest, String username) {
+        CaseData caseDetails = caseDataService.createCase("RSH", username);
         if (caseDetails != null) {
-            StageDetails stageDetails = caseService.createStage(caseDetails.getUuid(), "Stage", 0, caseData, username);
-            if (stageDetails != null) {
+            StageData stageData = caseDataService.createStage(caseDetails.getUuid(), "Stage", 0, caseData, username);
+            if (stageData != null) {
                 emailService.sendRshNotify(notifyRequest, caseDetails.getUuid(), username);
                 return caseDetails;
             }
@@ -41,12 +40,12 @@ public class RshCaseService {
 
     }
 
-    CaseDetails updateRshCase(UUID caseUUID, Map<String, Object> caseData, SendEmailRequest notifyRequest, String username) {
-        CaseDetails caseDetails = caseService.getCase(caseUUID, username);
+    CaseData updateRshCase(UUID caseUUID, Map<String, Object> caseData, SendEmailRequest notifyRequest, String username) {
+        CaseData caseDetails = caseDataService.getCase(caseUUID, username);
         if (caseDetails != null && !caseDetails.getStages().isEmpty()) {
-            StageDetails stageDetails = caseDetails.getStages().iterator().next();
-            if (stageDetails != null) {
-                caseService.updateStage(stageDetails.getUuid(), 0, caseData, username);
+            StageData stageData = caseDetails.getStages().iterator().next();
+            if (stageData != null) {
+                caseDataService.updateStage(stageData.getUuid(), 0, caseData, username);
                 emailService.sendRshNotify(notifyRequest, caseDetails.getUuid(), username);
                 return caseDetails;
             }
@@ -54,7 +53,7 @@ public class RshCaseService {
         return null;
     }
 
-    CaseDetails getRSHCase(UUID caseUUID, String username) {
-        return caseService.getCase(caseUUID, username);
+    CaseData getRSHCase(UUID caseUUID, String username) {
+        return caseDataService.getCase(caseUUID, username);
     }
 }

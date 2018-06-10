@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,9 +14,9 @@ import java.util.UUID;
 @Table(name = "audit_stage_data")
 @Getter
 @NoArgsConstructor
-public class AuditStageData implements Serializable {
+public class StageDataAudit implements Serializable {
 
-    private AuditStageData(UUID stageUUID, String name, String data, UUID caseUUID, int schemaVersion, LocalDateTime created) {
+    private StageDataAudit(UUID stageUUID, String name, String data, UUID caseUUID, int schemaVersion, LocalDateTime created) {
         this.uuid = stageUUID;
         this.name = name;
         this.data = data;
@@ -50,8 +50,8 @@ public class AuditStageData implements Serializable {
     @Column(name = "created")
     private LocalDateTime created;
 
-    public static AuditStageData from(StageDetails stageDetails)
+    public static StageDataAudit from(StageData stageData)
     {
-        return new AuditStageData(stageDetails.getUuid(), stageDetails.getName(), stageDetails.getData(), stageDetails.getCaseUUID(), stageDetails.getSchemaVersion(), stageDetails.getCreated());
+        return new StageDataAudit(stageData.getUuid(), stageData.getName(), stageData.getData(), stageData.getCaseUUID(), stageData.getSchemaVersion(), stageData.getCreated());
     }
 }

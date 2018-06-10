@@ -9,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
-import uk.gov.digital.ho.hocs.casework.audit.model.AuditCaseData;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
-import uk.gov.digital.ho.hocs.casework.audit.model.AuditStageData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
+import uk.gov.digital.ho.hocs.casework.audit.model.CaseDataAudit;
+import uk.gov.digital.ho.hocs.casework.audit.model.StageDataAudit;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.rsh.model.RshReportLine;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
@@ -32,28 +32,28 @@ import java.util.stream.Stream;
 public class AuditService {
 
     private final AuditRepository auditRepository;
-    private final AuditCaseDetailsRepository auditCaseDetailsRepository;
-    private final AuditStageDetailsRepository auditStageDetailsRepository;
+    private final CaseDataAuditRepository caseDataAuditRepository;
+    private final StageDataAuditRepository stageDataAuditRepository;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public AuditService(AuditRepository auditRepository, AuditCaseDetailsRepository auditCaseDetailsRepository, AuditStageDetailsRepository auditStageDetailsRepository) {
+    public AuditService(AuditRepository auditRepository, CaseDataAuditRepository caseDataAuditRepository, StageDataAuditRepository stageDataAuditRepository) {
         this.auditRepository = auditRepository;
-        this.auditCaseDetailsRepository = auditCaseDetailsRepository;
-        this.auditStageDetailsRepository = auditStageDetailsRepository;
+        this.caseDataAuditRepository = caseDataAuditRepository;
+        this.stageDataAuditRepository = stageDataAuditRepository;
 
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
 
     }
 
-    private static Map<String, String> caseToMap(AuditCaseData auditCaseData) {
+    private static Map<String, String> caseToMap(CaseDataAudit caseDataAudit) {
         Map<String, String> caseMap = new HashMap<>();
 
         String name = "Case";
-        caseMap.put(stageNameFormat(name, "Type"), auditCaseData.getType());
-        caseMap.put(stageNameFormat(name, "Reference"), auditCaseData.getReference());
-        caseMap.put(stageNameFormat(name, "UUID"), auditCaseData.getUuid().toString());
-        caseMap.put(stageNameFormat(name, "Created"), auditCaseData.getCreated().toString());
+        caseMap.put(stageNameFormat(name, "Type"), caseDataAudit.getType());
+        caseMap.put(stageNameFormat(name, "Reference"), caseDataAudit.getReference());
+        caseMap.put(stageNameFormat(name, "UUID"), caseDataAudit.getUuid().toString());
+        caseMap.put(stageNameFormat(name, "Created"), caseDataAudit.getCreated().toString());
 
         return caseMap;
     }
@@ -75,32 +75,66 @@ public class AuditService {
         auditRepository.save(auditEntry);
     }
 
-    public void writeCreateCaseEvent(String username, CaseDetails caseDetails) {
-        AuditEntry auditEntry = new AuditEntry(username, caseDetails, null, AuditAction.CREATE_CASE);
+    private static Map<String, String> stagesToMap(Stream<StageDataAudit> auditStageDataList, ObjectMapper objectMapper) {
+        Map<String, String> stageMap = new HashMap<>();
+
+        auditStageDataList.forEach(auditStageData -> {
+            String stageName = auditStageData.getName();
+            stageMap.put(stageNameFormat(stageName, "UUID"), auditStageData.getUuid().toString());
+            stageMap.put(stageNameFormat(stageName, "Name"), auditStageData.getName());
+            stageMap.put(stageNameFormat(stageName, "CaseUUID"), auditStageData.getCaseUUID().toString());
+            stageMap.put(stageNameFormat(stageName, "SchemaVersion"), auditStageData.getSchemaVersion() + "");
+            stageMap.put(stageNameFormat(stageName, "Created"), auditStageData.getCreated().toString());
+            try {
+                Map<String, String> dataMap = objectMapper.readValue(auditStageData.getData(), new TypeReference<HashMap<String, String>>() {
+                });
+                dataMap.forEach((key, value) -> stageMap.put(stageNameFormat(stageName, key), value));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        return stageMap;
+    }
+
+    public void writeCreateCaseEvent(String username, CaseData caseData) {
+        AuditEntry auditEntry = new AuditEntry(username, caseData, null, AuditAction.CREATE_CASE);
         auditRepository.save(auditEntry);
     }
 
-    public void writeCreateStageEvent(String username, StageDetails stageDetails) {
-        AuditEntry auditEntry = new AuditEntry(username, null, stageDetails, AuditAction.CREATE_STAGE);
+    public void writeCreateStageEvent(String username, StageData stageData) {
+        AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.CREATE_STAGE);
+        auditRepository.save(auditEntry);
+    }
+
+    public void writeExtractEvent(String username, String params) {
+        AuditEntry auditEntry = new AuditEntry(username, params, AuditAction.CSV_EXTRACT);
+        auditRepository.save(auditEntry);
+    }
+
+    public void writeUpdateStageEvent(String username, StageData stageData) {
+        AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.UPDATE_STAGE);
         auditRepository.save(auditEntry);
     }
 
     @Transactional
     public String extractData(String[] types, LocalDate cutoff, String username) {
-        log.info("Requesting Extract, Types: \"{}\",  Cutoff: {}, User: {}", Arrays.toString(types), cutoff, username);
+        String typesAuditString = Arrays.toString(types).concat(cutoff.toString());
+        writeExtractEvent(username, typesAuditString);
+        log.info("Requesting Extract, Values: \"{}\",  User: {}", typesAuditString, cutoff, username);
 
         int monthsBack = 4;
         // Start at the first day of the month
         LocalDateTime startDate = LocalDateTime.of(cutoff.minusMonths(monthsBack).getYear(),cutoff.minusMonths(monthsBack).getMonth(),1,0,0);
         LocalDateTime endDate = LocalDateTime.of(cutoff, LocalTime.MAX);
 
-        Set<AuditCaseData> auditCaseData = auditCaseDetailsRepository.getAllByTimestampBetweenAndCorrespondenceTypeIn(startDate, endDate, types);
-        Set<AuditStageData> auditStageData = auditStageDetailsRepository.getAllByTimestampBetweenAndCorrespondenceTypeIn(startDate, endDate, types);
+        Set<CaseDataAudit> caseDatumAudits = caseDataAuditRepository.getAllByTimestampBetweenAndCorrespondenceTypeIn(startDate, endDate, types);
+        Set<StageDataAudit> stageDatumAudits = stageDataAuditRepository.getAllByTimestampBetweenAndCorrespondenceTypeIn(startDate, endDate, types);
 
-        List<Map<String,String>> reportLines = auditCaseData.stream().map( c ->  {
+        List<Map<String, String>> reportLines = caseDatumAudits.stream().map(c -> {
            Map<String,String> ret =  new HashMap<>();
            ret.putAll(caseToMap(c));
-           ret.putAll(stagesToMap(auditStageData.stream().filter(s -> c.getUuid().equals(s.getCaseUUID())), objectMapper));
+            ret.putAll(stagesToMap(stageDatumAudits.stream().filter(s -> c.getUuid().equals(s.getCaseUUID())), objectMapper));
            return ret;
             }).map(l -> RshReportLine.from(l).getLineSchema()).collect(Collectors.toList());
 
@@ -119,36 +153,9 @@ public class AuditService {
             e.printStackTrace();
         }
 
-        log.info("Returned Extract, Found: {}, User: {}", auditCaseData.size(), username);
+        log.info("Returned Extract, Found: {}, User: {}", caseDatumAudits.size(), username);
             return sb.toString();
         }
-
-    public void writeUpdateStageEvent(String username, StageDetails stageDetails) {
-        AuditEntry auditEntry = new AuditEntry(username, null, stageDetails, AuditAction.UPDATE_STAGE);
-        auditRepository.save(auditEntry);
-    }
-
-    private static Map<String,String> stagesToMap(Stream<AuditStageData> auditStageDataList, ObjectMapper objectMapper){
-        Map<String,String> stageMap = new HashMap<>();
-
-        auditStageDataList.forEach( auditStageData -> {
-            String stageName = auditStageData.getName();
-            stageMap.put(stageNameFormat(stageName, "UUID"), auditStageData.getUuid().toString());
-            stageMap.put(stageNameFormat(stageName, "Name"), auditStageData.getName());
-            stageMap.put(stageNameFormat(stageName, "CaseUUID"), auditStageData.getCaseUUID().toString());
-            stageMap.put(stageNameFormat(stageName, "SchemaVersion"), auditStageData.getSchemaVersion() + "");
-            stageMap.put(stageNameFormat(stageName, "Created"), auditStageData.getCreated().toString());
-            try {
-                Map<String, String> dataMap = objectMapper.readValue(auditStageData.getData(), new TypeReference<HashMap<String, String>>() {
-                });
-                dataMap.forEach((key, value) -> stageMap.put(stageNameFormat(stageName, key), value));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        return stageMap;
-    }
 
     private static String stageNameFormat(String prefix, String suffix){
         return String.format("%s_%s", prefix, suffix);

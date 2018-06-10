@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetailsRepository;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import java.util.HashMap;
@@ -23,7 +23,7 @@ public class SearchServiceTest {
     @Mock
     private AuditService auditService;
     @Mock
-    private CaseDetailsRepository caseDetailsRepository;
+    private CaseDataRepository caseDataRepository;
 
     private SearchService searchService;
 
@@ -37,18 +37,18 @@ public class SearchServiceTest {
     public void setUp() {
         this.searchService = new SearchService(
                 auditService,
-                caseDetailsRepository
+                caseDataRepository
         );
     }
 
     @Test
     public void shouldFindCasesByReference() {
         SearchRequest searchRequest = new SearchRequest("CaseRef", null);
-        List<CaseDetails> cases = searchService.findCases(searchRequest, testUser);
+        List<CaseData> cases = searchService.findCases(searchRequest, testUser);
 
         assertThat(cases).isNotNull();
-        verify(caseDetailsRepository).findByCaseReference(isA(String.class));
-        verify(caseDetailsRepository, times(0)).findByNameOrDob(any(), any(), any());
+        verify(caseDataRepository).findByCaseReference(isA(String.class));
+        verify(caseDataRepository, times(0)).findByNameOrDob(any(), any(), any());
 
         verify(auditService).writeSearchEvent(testUser, searchRequest);
 /*        verify(auditRepository).save(auditEntryArgumentCaptor.capture());
@@ -69,29 +69,29 @@ public class SearchServiceTest {
         caseData.put("last-name", "Sanchez");
         caseData.put("dob", "1960-01-01");
         SearchRequest searchRequest = new SearchRequest(null, caseData);
-        List<CaseDetails> cases = searchService.findCases(
+        List<CaseData> cases = searchService.findCases(
                 searchRequest,
                 testUser
         );
 
         assertThat(cases).isNotNull();
-        verify(caseDetailsRepository, times(0)).findByCaseReference(any());
-        verify(caseDetailsRepository).findByNameOrDob(isA(String.class), isA(String.class), isA(String.class));
+        verify(caseDataRepository, times(0)).findByCaseReference(any());
+        verify(caseDataRepository).findByNameOrDob(isA(String.class), isA(String.class), isA(String.class));
         verify(auditService).writeSearchEvent(testUser, searchRequest);
     }
 
     @Test
     public void shouldReturnEmptyWhenNoParamsPassed() {
         SearchRequest searchRequest = new SearchRequest(null, null);
-        List<CaseDetails> cases = searchService.findCases(
+        List<CaseData> cases = searchService.findCases(
                 searchRequest,
                 testUser
         );
 
         assertThat(cases).isNotNull();
         assertThat(cases).isEmpty();
-        verify(caseDetailsRepository, times(0)).findByCaseReference(any());
-        verify(caseDetailsRepository, times(0)).findByNameOrDob(any(), any(), any());
+        verify(caseDataRepository, times(0)).findByCaseReference(any());
+        verify(caseDataRepository, times(0)).findByNameOrDob(any(), any(), any());
         verify(auditService).writeSearchEvent(testUser, searchRequest);
     }
 

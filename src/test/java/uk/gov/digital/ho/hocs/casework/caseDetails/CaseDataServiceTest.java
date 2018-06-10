@@ -6,8 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -16,16 +16,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CaseServiceTest {
+public class CaseDataServiceTest {
 
     @Mock
     private AuditService auditService;
     @Mock
-    private CaseDetailsRepository caseDetailsRepository;
+    private CaseDataRepository caseDataRepository;
     @Mock
-    private StageDetailsRepository stageDetailsRepository;
+    private StageDataRepository stageDataRepository;
 
-    private CaseService caseService;
+    private CaseDataService caseDataService;
 
     private final String testUser = "Test User";
     private final UUID uuid = UUID.randomUUID();
@@ -36,9 +36,9 @@ public class CaseServiceTest {
 
     @Before
     public void setUp() {
-        this.caseService = new CaseService(
-                caseDetailsRepository,
-                stageDetailsRepository,
+        this.caseDataService = new CaseDataService(
+                caseDataRepository,
+                stageDataRepository,
                 auditService
         );
     }
@@ -47,18 +47,18 @@ public class CaseServiceTest {
     public void shouldCreateCase() {
         final Long caseID = 12345L;
 
-        when(caseDetailsRepository.getNextSeriesId()).thenReturn(caseID);
-        CaseDetails caseDetails = caseService.createCase("Type", testUser);
+        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+        CaseData caseData = caseDataService.createCase("Type", testUser);
 
-        assertThat(caseDetails).isNotNull();
-        verify(caseDetailsRepository).save(isA(CaseDetails.class));
+        assertThat(caseData).isNotNull();
+        verify(caseDataRepository).save(isA(CaseData.class));
 
-        verify(auditService).writeCreateCaseEvent(testUser, caseDetails);
+        verify(auditService).writeCreateCaseEvent(testUser, caseData);
 /*        verify(auditService).save(auditEntryArgumentCaptor.capture());
         AuditEntry auditEntry = auditEntryArgumentCaptor.getValue();
         assertThat(auditEntry).isNotNull();
         assertThat(auditEntry.getUsername()).isEqualTo(testUser);
-        assertThat(auditEntry.getCaseInstance()).isNotNull().isInstanceOf(AuditCaseData.class);
+        assertThat(auditEntry.getCaseInstance()).isNotNull().isInstanceOf(CaseDataAudit.class);
         assertThat(auditEntry.getStageInstance()).isNull();
         assertThat(auditEntry.getCreated()).isNotNull().isInstanceOf(LocalDateTime.class);
         assertThat(auditEntry.getQueryData()).isNull();
@@ -68,7 +68,7 @@ public class CaseServiceTest {
 
     @Test
     public void shouldCreateStage() {
-        StageDetails stageDetails = caseService.createStage(
+        StageData stageData = caseDataService.createStage(
                 uuid,
                 "CREATE",
                 1,
@@ -76,16 +76,16 @@ public class CaseServiceTest {
                 testUser
         );
 
-        assertThat(stageDetails).isNotNull();
-        verify(stageDetailsRepository).save(isA(StageDetails.class));
+        assertThat(stageData).isNotNull();
+        verify(stageDataRepository).save(isA(StageData.class));
 
-        verify(auditService).writeCreateStageEvent(testUser, stageDetails);
+        verify(auditService).writeCreateStageEvent(testUser, stageData);
 /*        verify(auditRepository).save(auditEntryArgumentCaptor.capture());
         AuditEntry auditEntry = auditEntryArgumentCaptor.getValue();
         assertThat(auditEntry).isNotNull();
         assertThat(auditEntry.getUsername()).isEqualTo(testUser);
         assertThat(auditEntry.getCaseInstance()).isNull();
-        assertThat(auditEntry.getStageInstance()).isNotNull().isInstanceOf(AuditStageData.class);
+        assertThat(auditEntry.getStageInstance()).isNotNull().isInstanceOf(StageDataAudit.class);
         assertThat(auditEntry.getCreated()).isNotNull().isInstanceOf(LocalDateTime.class);
         assertThat(auditEntry.getQueryData()).isNull();
         assertThat(auditEntry.getStageInstance().getCaseUUID()).isEqualTo(uuid);
@@ -94,31 +94,31 @@ public class CaseServiceTest {
 
     @Test
     public void shouldUpdateStage() {
-        when(stageDetailsRepository.findByUuid(any())).thenReturn(new StageDetails(
+        when(stageDataRepository.findByUuid(any())).thenReturn(new StageData(
                 uuid,
                 "CREATE",
                 1,
                 "Some data"
         ));
 
-        StageDetails stageDetails = caseService.updateStage(
+        StageData stageData = caseDataService.updateStage(
                 uuid,
                 1,
                 new HashMap<>(),
                 testUser
         );
 
-        assertThat(stageDetails).isNotNull();
-        verify(stageDetailsRepository).findByUuid(uuid);
-        verify(stageDetailsRepository).save(isA(StageDetails.class));
+        assertThat(stageData).isNotNull();
+        verify(stageDataRepository).findByUuid(uuid);
+        verify(stageDataRepository).save(isA(StageData.class));
 
-        verify(auditService).writeUpdateStageEvent(testUser, stageDetails);
+        verify(auditService).writeUpdateStageEvent(testUser, stageData);
 /*        verify(auditRepository).save(auditEntryArgumentCaptor.capture());
         AuditEntry auditEntry = auditEntryArgumentCaptor.getValue();
         assertThat(auditEntry).isNotNull();
         assertThat(auditEntry.getUsername()).isEqualTo(testUser);
         assertThat(auditEntry.getCaseInstance()).isNull();
-        assertThat(auditEntry.getStageInstance()).isNotNull().isInstanceOf(AuditStageData.class);
+        assertThat(auditEntry.getStageInstance()).isNotNull().isInstanceOf(StageDataAudit.class);
         assertThat(auditEntry.getCreated()).isNotNull().isInstanceOf(LocalDateTime.class);
         assertThat(auditEntry.getQueryData()).isNull();
         assertThat(auditEntry.getStageInstance().getCaseUUID()).isEqualTo(uuid);

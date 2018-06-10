@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 
 import javax.transaction.Transactional;
 import java.util.Map;
@@ -16,18 +16,18 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-public class CaseService {
+public class CaseDataService {
 
     private final AuditService auditService;
-    private final CaseDetailsRepository caseDetailsRepository;
-    private final StageDetailsRepository stageDetailsRepository;
+    private final CaseDataRepository caseDataRepository;
+    private final StageDataRepository stageDataRepository;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public CaseService(CaseDetailsRepository caseDetailsRepository, StageDetailsRepository stageDetailsRepository, AuditService auditService) {
+    public CaseDataService(CaseDataRepository caseDataRepository, StageDataRepository stageDataRepository, AuditService auditService) {
 
-        this.caseDetailsRepository = caseDetailsRepository;
-        this.stageDetailsRepository = stageDetailsRepository;
+        this.caseDataRepository = caseDataRepository;
+        this.stageDataRepository = stageDataRepository;
         this.auditService = auditService;
 
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
@@ -35,48 +35,48 @@ public class CaseService {
     }
 
     @Transactional
-    public CaseDetails createCase(String caseType, String username) {
+    public CaseData createCase(String caseType, String username) {
         log.info("CREATE CASE: Requesting Create Case, Type: {}, User: {}", caseType, username);
-        CaseDetails caseDetails = new CaseDetails(caseType, caseDetailsRepository.getNextSeriesId());
-        auditService.writeCreateCaseEvent(username, caseDetails);
-        caseDetailsRepository.save(caseDetails);
-        log.info("CREATE CASE: Created Case, Reference: {}, UUID: {} User: {}", caseDetails.getReference(), caseDetails.getUuid(), username);
-        return caseDetails;
+        CaseData caseData = new CaseData(caseType, caseDataRepository.getNextSeriesId());
+        auditService.writeCreateCaseEvent(username, caseData);
+        caseDataRepository.save(caseData);
+        log.info("CREATE CASE: Created Case, Reference: {}, UUID: {} User: {}", caseData.getReference(), caseData.getUuid(), username);
+        return caseData;
     }
 
     @Transactional
-    public StageDetails createStage(UUID caseUUID, String stageName, int schemaVersion, Map<String,Object> stageData, String username) {
+    public StageData createStage(UUID caseUUID, String stageName, int schemaVersion, Map<String, Object> stageData, String username) {
         log.info("CREATE STAGE: Requesting Create Stage, Name: {}, Case UUID: {}, User: {}", stageName, caseUUID, username);
         String data = getDataString(stageData, objectMapper);
-        StageDetails stageDetails = new StageDetails(caseUUID, stageName, schemaVersion, data);
+        StageData stageDetails = new StageData(caseUUID, stageName, schemaVersion, data);
         auditService.writeCreateStageEvent(username, stageDetails);
-        stageDetailsRepository.save(stageDetails);
+        stageDataRepository.save(stageDetails);
         log.info("CREATE STAGE: Created Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getName(), stageDetails.getUuid(), stageDetails.getCaseUUID(), username);
         return stageDetails;
     }
 
     @Transactional
-    public StageDetails updateStage(UUID stageUUID, int schemaVersion, Map<String,Object> stageData, String username) {
+    public StageData updateStage(UUID stageUUID, int schemaVersion, Map<String, Object> stageData, String username) {
         log.info("UPDATE STAGE: Requesting Update Stage, uuid: {}, User: {}", stageUUID, username);
-        StageDetails stageDetails = stageDetailsRepository.findByUuid(stageUUID);
+        StageData stageDetails = stageDataRepository.findByUuid(stageUUID);
         if(stageDetails != null) {
             stageDetails.setSchemaVersion(schemaVersion);
             String data = getDataString(stageData, objectMapper);
             stageDetails.setData(data);
             auditService.writeUpdateStageEvent(username, stageDetails);
-            stageDetailsRepository.save(stageDetails);
+            stageDataRepository.save(stageDetails);
             log.info("UPDATE STAGE: Updated Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getName(), stageDetails.getUuid(), stageDetails.getCaseUUID(), username);
         }
         return stageDetails;
     }
 
     @Transactional
-    public CaseDetails getCase(UUID uuid, String username) {
+    public CaseData getCase(UUID uuid, String username) {
         auditService.writeGetCaseEvent(username, uuid);
         log.info("GET CASE: Requesting Case, UUID: {}, User: {}", uuid, username);
-        CaseDetails caseDetails = caseDetailsRepository.findByUuid(uuid);
-        log.info("GET CASE: Found Case, Reference: {} ({}), User: {}", caseDetails.getReference(), caseDetails.getUuid(), username);
-        return caseDetails;
+        CaseData caseData = caseDataRepository.findByUuid(uuid);
+        log.info("GET CASE: Found Case, Reference: {} ({}), User: {}", caseData.getReference(), caseData.getUuid(), username);
+        return caseData;
     }
 
     private static String getDataString(Map<String, Object> stageData, ObjectMapper objectMapper) {

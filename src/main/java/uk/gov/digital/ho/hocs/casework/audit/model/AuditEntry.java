@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -25,11 +25,11 @@ public class AuditEntry {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name ="case_id", referencedColumnName = "id")
-    private AuditCaseData caseInstance;
+    private CaseDataAudit caseInstance;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name ="stage_id", referencedColumnName = "id")
-    private AuditStageData stageInstance;
+    private StageDataAudit stageInstance;
 
     @Column(name = "created", nullable = false)
     private final LocalDateTime created;
@@ -38,15 +38,15 @@ public class AuditEntry {
     private final String eventAction;
 
     public AuditEntry(String username,
-                      CaseDetails caseInstance,
-                      StageDetails stageInstance,
+                      CaseData caseInstance,
+                      StageData stageInstance,
                       AuditAction eventAction) {
         this.username = username;
         if(caseInstance != null) {
-            this.caseInstance = AuditCaseData.from(caseInstance);
+            this.caseInstance = CaseDataAudit.from(caseInstance);
         }
         if(stageInstance != null) {
-            this.stageInstance = AuditStageData.from(stageInstance);
+            this.stageInstance = StageDataAudit.from(stageInstance);
         }
         this.created = LocalDateTime.now();
         this.eventAction = eventAction.toString();

@@ -11,7 +11,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-class RshCaseCreateRequest {
+public class CreateRshCaseRequest {
 
     @JsonProperty("sendEmailRequest")
     private SendEmailRequest notifyRequest;
