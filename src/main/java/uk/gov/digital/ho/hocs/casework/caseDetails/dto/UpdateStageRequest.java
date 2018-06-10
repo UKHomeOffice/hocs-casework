@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.caseDetails;
+package uk.gov.digital.ho.hocs.casework.caseDetails.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-class UpdateStageRequest {
+public class UpdateStageRequest {
 
     @JsonProperty("stageUUID")
     private UUID stageUUID;

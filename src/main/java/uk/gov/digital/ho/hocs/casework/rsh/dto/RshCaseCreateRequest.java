@@ -1,10 +1,10 @@
-package uk.gov.digital.ho.hocs.casework.rsh;
+package uk.gov.digital.ho.hocs.casework.rsh.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.email.SendEmailRequest;
+import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 
 import java.util.Map;
 

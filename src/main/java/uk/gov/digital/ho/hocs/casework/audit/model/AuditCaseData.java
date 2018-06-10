@@ -1,9 +1,9 @@
-package uk.gov.digital.ho.hocs.casework.audit;
+package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Table(name = "audit_case_data")
 @Getter
 @NoArgsConstructor
-class AuditCaseData implements Serializable {
+public class AuditCaseData implements Serializable {
 
     private AuditCaseData(String type, String reference, UUID uuid, LocalDateTime created, Set<AuditStageData> stages) {
         this.type = type;

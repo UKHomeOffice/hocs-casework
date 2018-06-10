@@ -1,8 +1,8 @@
-package uk.gov.digital.ho.hocs.casework.audit;
+package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
-import uk.gov.digital.ho.hocs.casework.caseDetails.StageDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "audit")
 @Getter
-class AuditEntry {
+public class AuditEntry {
 
     @Id
     @Column(name = "id")
@@ -37,10 +37,10 @@ class AuditEntry {
     @Column(name = "event_action", nullable = false)
     private final String eventAction;
 
-    AuditEntry(String username,
-               CaseDetails caseInstance,
-               StageDetails stageInstance,
-               AuditAction eventAction) {
+    public AuditEntry(String username,
+                      CaseDetails caseInstance,
+                      StageDetails stageInstance,
+                      AuditAction eventAction) {
         this.username = username;
         if(caseInstance != null) {
             this.caseInstance = AuditCaseData.from(caseInstance);
@@ -52,9 +52,9 @@ class AuditEntry {
         this.eventAction = eventAction.toString();
     }
 
-    AuditEntry(String username,
-               String queryData,
-               AuditAction eventAction) {
+    public AuditEntry(String username,
+                      String queryData,
+                      AuditAction eventAction) {
         this.username = username;
         this.queryData = queryData;
         this.created = LocalDateTime.now();

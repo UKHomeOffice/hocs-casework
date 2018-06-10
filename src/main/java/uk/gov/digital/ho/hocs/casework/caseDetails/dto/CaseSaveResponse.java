@@ -1,8 +1,9 @@
-package uk.gov.digital.ho.hocs.casework.caseDetails;
+package uk.gov.digital.ho.hocs.casework.caseDetails.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
 
 import java.util.UUID;
 

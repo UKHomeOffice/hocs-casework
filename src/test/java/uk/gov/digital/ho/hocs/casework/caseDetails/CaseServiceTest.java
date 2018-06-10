@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
 
 import java.util.HashMap;
 import java.util.UUID;

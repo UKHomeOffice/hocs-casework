@@ -7,6 +7,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CaseCreateRequest;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CaseSaveResponse;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.UpdateStageRequest;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
 
 import java.util.HashMap;
 import java.util.Map;

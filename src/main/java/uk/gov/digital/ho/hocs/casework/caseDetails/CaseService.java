@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
 
 import javax.transaction.Transactional;
 import java.util.Map;

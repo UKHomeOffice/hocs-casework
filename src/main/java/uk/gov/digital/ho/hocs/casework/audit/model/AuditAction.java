@@ -1,6 +1,6 @@
-package uk.gov.digital.ho.hocs.casework.audit;
+package uk.gov.digital.ho.hocs.casework.audit.model;
 
-enum AuditAction {
+public enum AuditAction {
     CREATE_CASE,
     CREATE_STAGE,
     UPDATE_CASE,

@@ -6,8 +6,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
-import uk.gov.digital.ho.hocs.casework.caseDetails.*;
-import uk.gov.digital.ho.hocs.casework.email.SendEmailRequest;
+import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetailsRepository;
+import uk.gov.digital.ho.hocs.casework.caseDetails.CaseService;
+import uk.gov.digital.ho.hocs.casework.caseDetails.StageDetailsRepository;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
+import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 
 import java.util.HashMap;
 

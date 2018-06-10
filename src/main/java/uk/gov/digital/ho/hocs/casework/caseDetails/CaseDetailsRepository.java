@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.caseDetails;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
 
 import java.util.Set;
 import java.util.UUID;

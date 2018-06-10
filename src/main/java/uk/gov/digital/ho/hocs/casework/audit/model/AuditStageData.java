@@ -1,9 +1,9 @@
-package uk.gov.digital.ho.hocs.casework.audit;
+package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.digital.ho.hocs.casework.caseDetails.StageDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Table(name = "audit_stage_data")
 @Getter
 @NoArgsConstructor
-class AuditStageData implements Serializable {
+public class AuditStageData implements Serializable {
 
     private AuditStageData(UUID stageUUID, String name, String data, UUID caseUUID, int schemaVersion, LocalDateTime created) {
         this.uuid = stageUUID;

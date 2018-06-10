@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.rsh;
+package uk.gov.digital.ho.hocs.casework.rsh.model;
 
 import lombok.Getter;
 

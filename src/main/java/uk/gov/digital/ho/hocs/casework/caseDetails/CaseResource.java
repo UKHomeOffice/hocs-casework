@@ -3,6 +3,10 @@ package uk.gov.digital.ho.hocs.casework.caseDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CaseCreateRequest;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CaseSaveResponse;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.UpdateStageRequest;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
 
 import java.util.UUID;
 

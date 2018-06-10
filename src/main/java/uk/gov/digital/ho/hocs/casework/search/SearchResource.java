@@ -3,7 +3,8 @@ package uk.gov.digital.ho.hocs.casework.search;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import java.util.List;
 

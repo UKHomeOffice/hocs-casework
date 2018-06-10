@@ -3,11 +3,11 @@ package uk.gov.digital.ho.hocs.casework.rsh;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseService;
-import uk.gov.digital.ho.hocs.casework.caseDetails.StageDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageDetails;
 import uk.gov.digital.ho.hocs.casework.email.EmailService;
-import uk.gov.digital.ho.hocs.casework.email.SendEmailRequest;
+import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 
 import javax.transaction.Transactional;
 import java.util.Map;

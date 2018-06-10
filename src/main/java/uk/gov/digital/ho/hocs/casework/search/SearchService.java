@@ -4,8 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetails;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDetailsRepository;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseDetails;
+import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import javax.transaction.Transactional;
 import java.util.*;

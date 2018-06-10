@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.email;
+package uk.gov.digital.ho.hocs.casework.search.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -7,20 +7,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class SendEmailRequest {
+public class SearchRequest {
 
-    @JsonProperty("email")
-    private String email;
+    @JsonProperty("caseReference")
+    private String caseReference;
 
-    @JsonProperty("teamName")
-    private String teamName;
+    @JsonProperty("caseData")
+    private Map<String, String> caseData;
 
-    public static String toJsonString(ObjectMapper objectMapper, SendEmailRequest sendEmailRequest) {
+    public static String toJsonString(ObjectMapper objectMapper, SearchRequest searchRequest){
         try {
-            return objectMapper.writeValueAsString(sendEmailRequest);
+            return objectMapper.writeValueAsString(searchRequest);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
