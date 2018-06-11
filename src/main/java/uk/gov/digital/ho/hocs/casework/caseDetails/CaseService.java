@@ -60,7 +60,7 @@ public class CaseService {
         createStage(caseDetails.getUuid(),"OnlyStage", 0, caseData, username);
 
         if(caseDetails.getId() != 0) {
-            notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid());
+            notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome").toString());
         }
         return caseDetails;
     }
@@ -73,7 +73,7 @@ public class CaseService {
         }
 
         if(caseDetails.getId() != 0) {
-            notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid());
+            notifyService.sendRshNotify(notifyRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome").toString());
         }
         return caseDetails;
     }
