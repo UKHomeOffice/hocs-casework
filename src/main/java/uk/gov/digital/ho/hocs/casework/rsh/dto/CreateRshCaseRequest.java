@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -14,8 +15,8 @@ import java.util.Map;
 public class CreateRshCaseRequest {
 
     @JsonProperty("sendEmailRequest")
-    private SendEmailRequest sendEmailRequest;
+    private SendEmailRequest sendEmailRequest = new SendEmailRequest();
 
     @JsonProperty("caseData")
-    private Map<String, String> caseData;
+    private Map<String, String> caseData = new HashMap<>();
 }

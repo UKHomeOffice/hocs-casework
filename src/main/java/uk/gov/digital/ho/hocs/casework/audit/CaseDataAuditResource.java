@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.audit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.rsh.model.RshReportLine;
+import uk.gov.digital.ho.hocs.casework.audit.model.ExportLine;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -25,8 +25,8 @@ class CaseDataAuditResource {
     }
 
     @RequestMapping(value = "/report/{unit}/current/json", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<List<RshReportLine>> getReportCurrentJson(@PathVariable("unit") String unit, @RequestHeader("X-Auth-Username") String username) {
-        List<RshReportLine> value = caseDataAuditService.getReportingDataAsJson(unit, LocalDate.now(), username);
+    public ResponseEntity<List<ExportLine>> getReportCurrentJson(@PathVariable("unit") String unit, @RequestHeader("X-Auth-Username") String username) {
+        List<ExportLine> value = caseDataAuditService.getReportingDataAsJson(unit, LocalDate.now(), username);
         return ResponseEntity.ok(value);
     }
 
@@ -38,9 +38,9 @@ class CaseDataAuditResource {
     }
 
     @RequestMapping(value = "/report/{unit}/{cutoff}/json", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<List<RshReportLine>> getReportCutoffJson(@PathVariable("unit") String unit, @PathVariable("cutoff") String cutoff, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity<List<ExportLine>> getReportCutoffJson(@PathVariable("unit") String unit, @PathVariable("cutoff") String cutoff, @RequestHeader("X-Auth-Username") String username) {
         LocalDate cutoffDate = LocalDate.parse(cutoff);
-        List<RshReportLine> value = caseDataAuditService.getReportingDataAsJson(unit, cutoffDate, username);
+        List<ExportLine> value = caseDataAuditService.getReportingDataAsJson(unit, cutoffDate, username);
         return ResponseEntity.ok(value);
     }
 }

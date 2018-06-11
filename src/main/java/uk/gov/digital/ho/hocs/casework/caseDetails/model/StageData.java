@@ -25,9 +25,10 @@ public class StageData implements Serializable {
     private int id;
 
     @Column(name ="uuid")
-    private UUID uuid;
+    private UUID uuid = UUID.randomUUID();
+
     @Column(name = "timestamp")
-    private LocalDateTime timestamp;
+    private LocalDateTime timestamp = LocalDateTime.now();
 
     @Setter
     @Column(name ="data")
@@ -37,10 +38,8 @@ public class StageData implements Serializable {
     private UUID caseUUID;
 
     public StageData(UUID caseUUID, String type, String data) {
-        this.uuid = UUID.randomUUID();
         this.type = type;
         this.data = data;
         this.caseUUID = caseUUID;
-        this.timestamp = LocalDateTime.now();
     }
 }

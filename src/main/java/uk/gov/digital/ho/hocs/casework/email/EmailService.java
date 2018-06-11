@@ -36,7 +36,7 @@ public class EmailService {
         this.auditService = auditService;
     }
 
-    public void sendRshNotify(SendEmailRequest notifyRequest, UUID caseUUID, String userName) {
+    public void sendRshEmail(SendEmailRequest notifyRequest, UUID caseUUID, String userName) {
         sendNotify(notifyRequest, caseUUID, rshTemplateId, userName);
     }
 

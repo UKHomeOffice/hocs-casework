@@ -9,8 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.audit.model.CaseDataAudit;
+import uk.gov.digital.ho.hocs.casework.audit.model.ExportLine;
 import uk.gov.digital.ho.hocs.casework.audit.model.StageDataAudit;
-import uk.gov.digital.ho.hocs.casework.rsh.model.RshReportLine;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -104,13 +104,13 @@ public class CaseDataAuditService {
 
     String getReportingDataAsCSV(String unit, LocalDate cutoff, String username) {
         if (caseTypesMapping.containsKey(unit)) {
-            List<RshReportLine> reportLines = getReportingData(unit, cutoff, username);
+            List<ExportLine> exportLines = getReportingData(unit, cutoff, username);
 
             StringBuilder sb = new StringBuilder();
             try {
                 CSVPrinter printer = new CSVPrinter(sb, CSVFormat.DEFAULT);
                 printer.printRecord(caseSchemaMapping.get(unit));
-                reportLines.forEach(l -> {
+                exportLines.forEach(l -> {
                     try {
                         printer.printRecord(l.getLineSchema().values());
                     } catch (IOException e) {
@@ -127,7 +127,7 @@ public class CaseDataAuditService {
         }
     }
 
-    List<RshReportLine> getReportingDataAsJson(String unit, LocalDate cutoff, String username) {
+    List<ExportLine> getReportingDataAsJson(String unit, LocalDate cutoff, String username) {
         if (caseTypesMapping.containsKey(unit)) {
             return getReportingData(unit, cutoff, username);
         } else {
@@ -135,7 +135,7 @@ public class CaseDataAuditService {
         }
     }
 
-    private List<RshReportLine> getReportingData(String unit, LocalDate cutoff, String username) {
+    private List<ExportLine> getReportingData(String unit, LocalDate cutoff, String username) {
         String[] types = caseTypesMapping.get(unit);
         String typesAuditString = Arrays.toString(types).concat(cutoff.toString());
         auditService.writeExtractEvent(username, typesAuditString);
@@ -149,13 +149,13 @@ public class CaseDataAuditService {
 
         Map<UUID, List<StageDataAudit>> groupedStages = stageDatumAudits.stream().collect(Collectors.groupingBy(StageDataAudit::getCaseUUID));
 
-        Stream<RshReportLine> reportLines = caseDatumAudits.stream().map(c -> {
+        Stream<ExportLine> reportLines = caseDatumAudits.stream().map(c -> {
             Map<String, String> ret = new HashMap<>(caseToMap(c));
             if (groupedStages.containsKey(c.getUuid())) {
                 ret.putAll(stagesToMap(groupedStages.get(c.getUuid()), objectMapper));
             }
             return ret;
-        }).map(l -> RshReportLine.from(caseSchemaMapping.get(unit), l));
+        }).map(l -> ExportLine.from(caseSchemaMapping.get(unit), l));
 
         log.info("Returned Extract, Found: {}, User: {}", caseDatumAudits.size(), username);
         return reportLines.collect(Collectors.toList());

@@ -51,7 +51,7 @@ public class EmailServiceTest {
                 any(),
                 any()
         )).thenReturn(null);
-        emailService.sendRshNotify(new SendEmailRequest(email, team), uuid, email);
+        emailService.sendRshEmail(new SendEmailRequest(email, team), uuid, email);
 
         final Map<String, String> personalisation = new HashMap<>();
         personalisation.put("team", team);

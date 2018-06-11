@@ -1,16 +1,16 @@
-package uk.gov.digital.ho.hocs.casework.rsh.model;
+package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import lombok.Getter;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class RshReportLine {
+public class ExportLine {
 
     @Getter
     private final LinkedHashMap<String, String> lineSchema = new LinkedHashMap<>();
 
-    private RshReportLine(String schema) {
+    private ExportLine(String schema) {
         String[] headers = schema.split(",");
         for (String h : headers) {
             lineSchema.put(h, "");
@@ -21,9 +21,9 @@ public class RshReportLine {
         values.forEach(lineSchema::replace);
     }
 
-    public static RshReportLine from(String schema, Map<String, String> map) {
-        RshReportLine reportLine = new RshReportLine(schema);
-        reportLine.applyData(map);
-        return reportLine;
+    public static ExportLine from(String schema, Map<String, String> map) {
+        ExportLine exportLine = new ExportLine(schema);
+        exportLine.applyData(map);
+        return exportLine;
     }
 }

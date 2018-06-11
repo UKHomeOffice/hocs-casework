@@ -35,18 +35,14 @@ public class CaseData implements Serializable {
     private String reference;
 
     @Column(name = "uuid")
-    private UUID uuid;
+    private UUID uuid = UUID.randomUUID();
 
     @Column(name = "timestamp")
-    private LocalDateTime timestamp;
+    private LocalDateTime timestamp = LocalDateTime.now();
 
     public CaseData(String type, Long caseNumber) {
-        LocalDateTime now = LocalDateTime.now();
         this.type = type;
-        this.reference = String.format("%s/%07d/%s", type, caseNumber, now.format(DateTimeFormatter.ofPattern("yy")));
-        this.uuid = UUID.randomUUID();
-        this.timestamp = now;
-        this.stages = new HashSet<>();
+        this.reference = String.format("%s/%07d/%s", type, caseNumber, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy")));
     }
 
     }

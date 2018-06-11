@@ -121,10 +121,11 @@ public class CaseDataService {
         auditService.writeGetCaseEvent(username, uuid);
         log.info("Requesting Case, UUID: {}, User: {}", uuid, username);
         CaseData caseData = caseDataRepository.findByUuid(uuid);
-        if (caseData == null) {
+        if (caseData != null) {
+            log.info("Found Case, Reference: {} ({}), User: {}", caseData.getReference(), caseData.getUuid(), username);
+            return caseData;
+        } else {
             throw new EntityNotFoundException("Case not Found!");
         }
-        log.info("Found Case, Reference: {} ({}), User: {}", caseData.getReference(), caseData.getUuid(), username);
-        return caseData;
     }
 }

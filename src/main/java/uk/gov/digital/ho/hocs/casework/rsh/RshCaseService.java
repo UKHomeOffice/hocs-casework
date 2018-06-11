@@ -15,6 +15,8 @@ import javax.transaction.Transactional;
 import java.util.Map;
 import java.util.UUID;
 
+import static uk.gov.digital.ho.hocs.casework.HocsCaseApplication.isNullOrEmpty;
+
 @Service
 @Slf4j
 public class RshCaseService {
@@ -29,22 +31,43 @@ public class RshCaseService {
     }
 
     @Transactional
-    CaseData createRshCase(Map<String, String> caseData, SendEmailRequest notifyRequest, String username) throws EntityCreationException {
-        CaseData caseDetails = caseDataService.createCase("RSH", username);
-        StageData stageData = caseDataService.createStage(caseDetails.getUuid(), "Stage", caseData, username);
-        emailService.sendRshNotify(notifyRequest, caseDetails.getUuid(), username);
-        return caseDetails;
+    CaseData createRshCase(Map<String, String> caseData, SendEmailRequest emailRequest, String username) throws EntityCreationException {
+        if (caseData != null) {
+            CaseData caseDetails = caseDataService.createCase("RSH", username);
+            caseDataService.createStage(caseDetails.getUuid(), "Stage", caseData, username);
+            emailService.sendRshEmail(emailRequest, caseDetails.getUuid(), username);
+            return caseDetails;
+        } else {
+            throw new EntityCreationException("Failed to create case, no caseData!");
+        }
     }
 
-    CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendEmailRequest notifyRequest, String username) throws EntityCreationException, EntityNotFoundException {
-        CaseData caseDetails = caseDataService.getCase(caseUUID, username);
-        StageData stageData = caseDetails.getStages().iterator().next();
-        caseDataService.updateStage(caseUUID, stageData.getUuid(), "Stage", caseData, username);
-        emailService.sendRshNotify(notifyRequest, caseDetails.getUuid(), username);
-        return caseDetails;
+    CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendEmailRequest emailRequest, String username) throws EntityCreationException, EntityNotFoundException {
+        if (!isNullOrEmpty(caseUUID) && caseData != null) {
+            CaseData caseDetails = caseDataService.getCase(caseUUID, username);
+            if (!caseDetails.getStages().isEmpty()) {
+                StageData stageData = caseDetails.getStages().iterator().next();
+                caseDataService.updateStage(caseUUID, stageData.getUuid(), "Stage", caseData, username);
+                emailService.sendRshEmail(emailRequest, caseDetails.getUuid(), username);
+                return caseDetails;
+            } else {
+                throw new EntityCreationException("Failed to update case, case has no stages!");
+            }
+        } else {
+            throw new EntityCreationException("Failed to update case, no caseUUID or caseData!");
+        }
     }
 
     CaseData getRSHCase(UUID caseUUID, String username) throws EntityNotFoundException {
-        return caseDataService.getCase(caseUUID, username);
+        if (!isNullOrEmpty(caseUUID)) {
+            CaseData caseData = caseDataService.getCase(caseUUID, username);
+            if (caseData != null) {
+                return caseData;
+            } else {
+                throw new EntityNotFoundException("Case not found!");
+            }
+        } else {
+            throw new EntityNotFoundException("Failed to get case, no caseUUID!");
+        }
     }
 }
