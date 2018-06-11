@@ -19,11 +19,12 @@ public class SendEmailRequest {
     private String teamName;
 
     public static String toJsonString(ObjectMapper objectMapper, SendEmailRequest sendEmailRequest) {
+        String ret = "";
         try {
-            return objectMapper.writeValueAsString(sendEmailRequest);
+            ret = objectMapper.writeValueAsString(sendEmailRequest);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        return null;
+        return ret;
     }
 }

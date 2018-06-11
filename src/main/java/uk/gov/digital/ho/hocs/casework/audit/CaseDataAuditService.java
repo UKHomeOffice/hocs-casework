@@ -129,8 +129,7 @@ public class CaseDataAuditService {
 
     List<RshReportLine> getReportingDataAsJson(String unit, LocalDate cutoff, String username) {
         if (caseTypesMapping.containsKey(unit)) {
-            List<RshReportLine> lines = getReportingData(unit, cutoff, username);
-            return lines;
+            return getReportingData(unit, cutoff, username);
         } else {
             return new ArrayList<>();
         }
@@ -151,8 +150,7 @@ public class CaseDataAuditService {
         Map<UUID, List<StageDataAudit>> groupedStages = stageDatumAudits.stream().collect(Collectors.groupingBy(StageDataAudit::getCaseUUID));
 
         Stream<RshReportLine> reportLines = caseDatumAudits.stream().map(c -> {
-            Map<String, String> ret = new HashMap<>();
-            ret.putAll(caseToMap(c));
+            Map<String, String> ret = new HashMap<>(caseToMap(c));
             if (groupedStages.containsKey(c.getUuid())) {
                 ret.putAll(stagesToMap(groupedStages.get(c.getUuid()), objectMapper));
             }

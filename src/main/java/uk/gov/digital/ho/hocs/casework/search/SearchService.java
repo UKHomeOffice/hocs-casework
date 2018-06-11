@@ -9,7 +9,9 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static uk.gov.digital.ho.hocs.casework.HocsCaseApplication.isNullOrEmpty;
 
@@ -27,19 +29,19 @@ class SearchService {
     }
 
     @Transactional
-    public List<CaseData> findCases(SearchRequest searchRequest, String username) {
+    public Set<CaseData> findCases(SearchRequest searchRequest, String username) {
         auditService.writeSearchEvent(username, searchRequest);
-        log.info("SEARCH: Requesting Search, User: {}", username);
+        log.info("Requesting Search, User: {}", username);
 
 
-        List<CaseData> results = new ArrayList<>(findByCaseReference(searchRequest.getCaseReference()));
+        Set<CaseData> results = new HashSet<>(findByCaseReference(searchRequest.getCaseReference()));
 
         // If we find an exact match by Case Reference then don't search further.
         if (results.isEmpty()) {
             results.addAll(findByNameOrDob(searchRequest.getCaseData()));
         }
 
-        log.info("SEARCH: Returned Search, Found: {}, User: {}", results.size(), username);
+        log.info("Returned Search, Found: {}, User: {}", results.size(), username);
         return results;
     }
 
@@ -59,7 +61,7 @@ class SearchService {
 
         if (!isNullOrEmpty(caseReference)) {
             Set<CaseData> results = caseDataRepository.findByCaseReference(caseReference);
-            if (results != null && results.isEmpty()) {
+            if (results != null && !results.isEmpty()) {
                 returnResults.addAll(results);
             }
         }

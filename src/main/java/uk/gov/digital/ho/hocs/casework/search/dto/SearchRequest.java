@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -15,17 +16,18 @@ import java.util.Map;
 public class SearchRequest {
 
     @JsonProperty("caseReference")
-    private String caseReference;
+    private String caseReference = "";
 
     @JsonProperty("caseData")
-    private Map<String, String> caseData;
+    private Map<String, String> caseData = new HashMap<>();
 
     public static String toJsonString(ObjectMapper objectMapper, SearchRequest searchRequest){
+        String ret = "";
         try {
-            return objectMapper.writeValueAsString(searchRequest);
+            ret = objectMapper.writeValueAsString(searchRequest);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-        return null;
+        return ret;
     }
 }

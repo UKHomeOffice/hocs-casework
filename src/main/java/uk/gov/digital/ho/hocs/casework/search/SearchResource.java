@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -22,8 +22,8 @@ class SearchResource {
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.POST, produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<List<CaseData>> search(@RequestBody SearchRequest data, @RequestHeader("X-Auth-Username") String username) {
-        List<CaseData> searchResponses = searchService.findCases(data, username);
+    ResponseEntity<Set<CaseData>> search(@RequestBody SearchRequest searchRequest, @RequestHeader("X-Auth-Username") String username) {
+        Set<CaseData> searchResponses = searchService.findCases(searchRequest, username);
         return ResponseEntity.ok(searchResponses);
     }
 }
