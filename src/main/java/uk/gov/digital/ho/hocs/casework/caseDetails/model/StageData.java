@@ -15,15 +15,9 @@ import java.util.UUID;
 @NoArgsConstructor
 public class StageData implements Serializable {
 
-    public StageData(UUID caseUUID, String name, int schemaVersion, String data) {
-        LocalDateTime now = LocalDateTime.now();
-        this.uuid = UUID.randomUUID();
-        this.name = name;
-        this.data = data;
-        this.caseUUID = caseUUID;
-        this.schemaVersion = schemaVersion;
-        this.created = now;
-    }
+    @Setter
+    @Column(name = "type")
+    private String type;
 
     @Id
     @Column(name = "id")
@@ -32,9 +26,8 @@ public class StageData implements Serializable {
 
     @Column(name ="uuid")
     private UUID uuid;
-
-    @Column(name ="name")
-    private String name;
+    @Column(name = "timestamp")
+    private LocalDateTime timestamp;
 
     @Setter
     @Column(name ="data")
@@ -43,10 +36,11 @@ public class StageData implements Serializable {
     @Column(name = "case_uuid")
     private UUID caseUUID;
 
-    @Setter
-    @Column(name = "schema_version")
-    private int schemaVersion;
-
-    @Column(name = "created")
-    private LocalDateTime created;
+    public StageData(UUID caseUUID, String type, String data) {
+        this.uuid = UUID.randomUUID();
+        this.type = type;
+        this.data = data;
+        this.caseUUID = caseUUID;
+        this.timestamp = LocalDateTime.now();
+    }
 }

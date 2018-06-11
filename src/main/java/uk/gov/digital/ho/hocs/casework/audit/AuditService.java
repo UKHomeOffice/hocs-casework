@@ -51,6 +51,11 @@ public class AuditService {
         auditRepository.save(auditEntry);
     }
 
+    public void writeUpdateCaseEvent(String username, CaseData caseData) {
+        AuditEntry auditEntry = new AuditEntry(username, caseData, null, AuditAction.UPDATE_CASE);
+        auditRepository.save(auditEntry);
+    }
+
     public void writeCreateStageEvent(String username, StageData stageData) {
         AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.CREATE_STAGE);
         auditRepository.save(auditEntry);

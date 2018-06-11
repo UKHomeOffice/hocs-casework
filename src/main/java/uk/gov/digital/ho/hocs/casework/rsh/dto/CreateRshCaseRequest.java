@@ -14,8 +14,8 @@ import java.util.Map;
 public class CreateRshCaseRequest {
 
     @JsonProperty("sendEmailRequest")
-    private SendEmailRequest notifyRequest;
+    private SendEmailRequest sendEmailRequest;
 
     @JsonProperty("caseData")
-    private Map<String,Object> caseData;
+    private Map<String, String> caseData;
 }

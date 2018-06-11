@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.caseDetails.StageDataRepository;
+import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.email.EmailService;
@@ -52,7 +53,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test
-    public void shouldCreateRshCase() {
+    public void shouldCreateRshCase() throws EntityCreationException {
         when(caseDataRepository.getNextSeriesId()).thenReturn(123L);
         CaseData caseData = rshCaseService.createRshCase(
                 new HashMap<>(),

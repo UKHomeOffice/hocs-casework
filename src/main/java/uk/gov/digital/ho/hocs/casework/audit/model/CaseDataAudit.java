@@ -38,20 +38,20 @@ public class CaseDataAudit implements Serializable {
     @Column(name = "uuid")
     private UUID uuid;
 
-    @Column(name = "created")
-    private LocalDateTime created;
+    @Column(name = "timestamp")
+    private LocalDateTime timestamp;
 
-    private CaseDataAudit(String type, String reference, UUID uuid, LocalDateTime created, Set<StageDataAudit> stages) {
+    private CaseDataAudit(String type, String reference, UUID uuid, LocalDateTime timestamp, Set<StageDataAudit> stages) {
         this.type = type;
         this.reference = reference;
         this.uuid = uuid;
-        this.created = created;
+        this.timestamp = timestamp;
         this.stages = stages;
     }
 
     public static CaseDataAudit from(CaseData caseData) {
         Set<StageDataAudit> stageAudits = caseData.getStages().stream().map(StageDataAudit::from).collect(Collectors.toSet());
-        return new CaseDataAudit(caseData.getType(), caseData.getReference(), caseData.getUuid(), caseData.getCreated(), stageAudits);
+        return new CaseDataAudit(caseData.getType(), caseData.getReference(), caseData.getUuid(), caseData.getTimestamp(), stageAudits);
     }
 
 }

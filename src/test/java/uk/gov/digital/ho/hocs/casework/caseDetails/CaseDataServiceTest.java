@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
+import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 
@@ -44,7 +46,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldCreateCase() {
+    public void shouldCreateCase() throws EntityCreationException {
         final Long caseID = 12345L;
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
@@ -67,11 +69,10 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldCreateStage() {
+    public void shouldCreateStage() throws EntityCreationException {
         StageData stageData = caseDataService.createStage(
                 uuid,
                 "CREATE",
-                1,
                 new HashMap<>(),
                 testUser
         );
@@ -93,17 +94,19 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldUpdateStage() {
+    public void shouldUpdateStage() throws EntityCreationException, EntityNotFoundException {
+        UUID caseUUID = UUID.randomUUID();
+
         when(stageDataRepository.findByUuid(any())).thenReturn(new StageData(
                 uuid,
                 "CREATE",
-                1,
                 "Some data"
         ));
 
         StageData stageData = caseDataService.updateStage(
+                caseUUID,
                 uuid,
-                1,
+                "CREATE",
                 new HashMap<>(),
                 testUser
         );

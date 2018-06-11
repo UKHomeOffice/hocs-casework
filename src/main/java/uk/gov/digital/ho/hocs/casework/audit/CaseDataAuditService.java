@@ -37,7 +37,7 @@ public class CaseDataAuditService {
         caseTypesMapping.put("HMPOCOL", new String[]{"COL"});
 
         caseSchemaMapping = new HashMap<>();
-        caseSchemaMapping.put("RSH", "Case_Type,Case_Reference,Case_UUID,Case_Created,Stage_legacy-reference,Stage_Name,Stage_UUID,Stage_SchemaVersion,Stage_Created,Stage_who-calling,Stage_rep-first-name,Stage_rep-last-name,Stage_rep-org,Stage_rep-relationship,Stage_rep-calledfrom,Stage_contact-method-helpline,Stage_contact-method-method-mp,Stage_contact-method-media,Stage_contact-method-ie,Stage_contact-method-email,Stage_contact-method-als,Stage_contact-method-internal,Stage_contact-method-external,Stage_call-regarding-citizenship,Stage_call-regarding-settled,Stage_call-regarding-compensation,Stage_call-regarding-other,Stage_first-name,Stage_middle-name,Stage_last-name,Stage_date-of-birth,Stage_nationality-birth,Stage_nationality-current,Stage_address-1,Stage_address-2,Stage_address-town,Stage_post-code,Stage_dependents,Stage_dependents-how-many,Stage_high-profile,Stage_safeguarding,Stage_share-data,Stage_landing-date-day,Stage_landing-date-month,Stage_landing-date-year,Stage_cohort,Stage_date-left,Stage_country-based,Stage_date-last-travelled,Stage_nino,Stage_employment,Stage_education,Stage_tax,Stage_health,Stage_id-docs,Stage_travel-to-psc,Stage_psc-location,Stage_psc-date,Stage_psc-outcome,Stage_psc-followup,Stage_mp,Stage_media,Stage_outcome,Stage_notify-email");
+        caseSchemaMapping.put("RSH", "Case_Type,Case_Reference,Case_UUID,Case_Timestamp,Stage_legacy-reference,Stage_Name,Stage_UUID,Stage_SchemaVersion,Stage_Timestamp,Stage_who-calling,Stage_rep-first-name,Stage_rep-last-name,Stage_rep-org,Stage_rep-relationship,Stage_rep-calledfrom,Stage_contact-method-helpline,Stage_contact-method-method-mp,Stage_contact-method-media,Stage_contact-method-ie,Stage_contact-method-email,Stage_contact-method-als,Stage_contact-method-internal,Stage_contact-method-external,Stage_call-regarding-citizenship,Stage_call-regarding-settled,Stage_call-regarding-compensation,Stage_call-regarding-other,Stage_first-name,Stage_middle-name,Stage_last-name,Stage_date-of-birth,Stage_nationality-birth,Stage_nationality-current,Stage_address-1,Stage_address-2,Stage_address-town,Stage_post-code,Stage_dependents,Stage_dependents-how-many,Stage_high-profile,Stage_safeguarding,Stage_share-data,Stage_landing-date-day,Stage_landing-date-month,Stage_landing-date-year,Stage_cohort,Stage_date-left,Stage_country-based,Stage_date-last-travelled,Stage_nino,Stage_employment,Stage_education,Stage_tax,Stage_health,Stage_id-docs,Stage_travel-to-psc,Stage_psc-location,Stage_psc-date,Stage_psc-outcome,Stage_psc-followup,Stage_mp,Stage_media,Stage_outcome,Stage_notify-email");
     }
 
     private final AuditService auditService;
@@ -62,7 +62,7 @@ public class CaseDataAuditService {
         caseMap.put(stageNameFormat(name, "Type"), caseDataAudit.getType());
         caseMap.put(stageNameFormat(name, "Reference"), caseDataAudit.getReference());
         caseMap.put(stageNameFormat(name, "UUID"), caseDataAudit.getUuid().toString());
-        caseMap.put(stageNameFormat(name, "Created"), caseDataAudit.getCreated().toString());
+        caseMap.put(stageNameFormat(name, "Timestamp"), caseDataAudit.getTimestamp().toString());
 
         return caseMap;
     }
@@ -71,12 +71,11 @@ public class CaseDataAuditService {
         Map<String, String> stageMap = new HashMap<>();
 
         auditStageDataList.forEach(auditStageData -> {
-            String stageName = auditStageData.getName();
+            String stageName = auditStageData.getType();
             stageMap.put(stageNameFormat(stageName, "UUID"), auditStageData.getUuid().toString());
-            stageMap.put(stageNameFormat(stageName, "Name"), auditStageData.getName());
+            stageMap.put(stageNameFormat(stageName, "Type"), auditStageData.getType());
             stageMap.put(stageNameFormat(stageName, "CaseUUID"), auditStageData.getCaseUUID().toString());
-            stageMap.put(stageNameFormat(stageName, "SchemaVersion"), auditStageData.getSchemaVersion() + "");
-            stageMap.put(stageNameFormat(stageName, "Created"), auditStageData.getCreated().toString());
+            stageMap.put(stageNameFormat(stageName, "Timestamp"), auditStageData.getTimestamp().toString());
             try {
                 Map<String, String> dataMap = objectMapper.readValue(auditStageData.getData(), new TypeReference<HashMap<String, String>>() {
                 });

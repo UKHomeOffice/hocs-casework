@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.caseDetails.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -27,6 +28,7 @@ public class CaseData implements Serializable {
     private int id;
 
     @Column(name = "type")
+    @Setter
     private String type;
 
     @Column(name = "reference")
@@ -35,15 +37,15 @@ public class CaseData implements Serializable {
     @Column(name = "uuid")
     private UUID uuid;
 
-    @Column(name = "created")
-    private LocalDateTime created;
+    @Column(name = "timestamp")
+    private LocalDateTime timestamp;
 
     public CaseData(String type, Long caseNumber) {
         LocalDateTime now = LocalDateTime.now();
         this.type = type;
         this.reference = String.format("%s/%07d/%s", type, caseNumber, now.format(DateTimeFormatter.ofPattern("yy")));
         this.uuid = UUID.randomUUID();
-        this.created = now;
+        this.timestamp = now;
         this.stages = new HashSet<>();
     }
 

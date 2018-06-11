@@ -31,8 +31,10 @@ class SearchService {
         auditService.writeSearchEvent(username, searchRequest);
         log.info("SEARCH: Requesting Search, User: {}", username);
 
+
         List<CaseData> results = new ArrayList<>(findByCaseReference(searchRequest.getCaseReference()));
 
+        // If we find an exact match by Case Reference then don't search further.
         if (results.isEmpty()) {
             results.addAll(findByNameOrDob(searchRequest.getCaseData()));
         }

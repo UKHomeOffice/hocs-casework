@@ -31,8 +31,8 @@ public class AuditEntry {
     @JoinColumn(name ="stage_id", referencedColumnName = "id")
     private StageDataAudit stageInstance;
 
-    @Column(name = "created", nullable = false)
-    private final LocalDateTime created;
+    @Column(name = "timestamp", nullable = false)
+    private final LocalDateTime timestamp;
 
     @Column(name = "event_action", nullable = false)
     private final String eventAction;
@@ -48,7 +48,7 @@ public class AuditEntry {
         if(stageInstance != null) {
             this.stageInstance = StageDataAudit.from(stageInstance);
         }
-        this.created = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now();
         this.eventAction = eventAction.toString();
     }
 
@@ -57,7 +57,7 @@ public class AuditEntry {
                       AuditAction eventAction) {
         this.username = username;
         this.queryData = queryData;
-        this.created = LocalDateTime.now();
+        this.timestamp = LocalDateTime.now();
         this.eventAction = eventAction.toString();
     }
 }

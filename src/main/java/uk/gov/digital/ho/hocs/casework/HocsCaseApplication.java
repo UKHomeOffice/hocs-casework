@@ -3,6 +3,8 @@ package uk.gov.digital.ho.hocs.casework;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.UUID;
+
 @SpringBootApplication
 public class HocsCaseApplication {
 
@@ -16,5 +18,9 @@ public class HocsCaseApplication {
 		} else if (value.equals("")) {
 			return true;
 		} else return value.trim().equals("");
+	}
+
+	public static boolean isNullOrEmpty(UUID value) {
+		return value == null;
 	}
 }

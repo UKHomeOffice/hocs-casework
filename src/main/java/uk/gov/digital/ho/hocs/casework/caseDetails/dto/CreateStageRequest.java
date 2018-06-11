@@ -10,7 +10,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class UpdateStageRequest {
+public class CreateStageRequest {
 
     @JsonProperty("stageType")
     private String stageType;

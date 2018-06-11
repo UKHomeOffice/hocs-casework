@@ -16,14 +16,8 @@ import java.util.UUID;
 @NoArgsConstructor
 public class StageDataAudit implements Serializable {
 
-    private StageDataAudit(UUID stageUUID, String name, String data, UUID caseUUID, int schemaVersion, LocalDateTime created) {
-        this.uuid = stageUUID;
-        this.name = name;
-        this.data = data;
-        this.caseUUID = caseUUID;
-        this.schemaVersion = schemaVersion;
-        this.created = created;
-    }
+    @Column(name = "type")
+    private String type;
 
     @Id
     @Column(name = "id")
@@ -32,9 +26,8 @@ public class StageDataAudit implements Serializable {
 
     @Column(name ="uuid")
     private UUID uuid;
-
-    @Column(name ="name")
-    private String name;
+    @Column(name = "timestamp")
+    private LocalDateTime timestamp;
 
     @Setter
     @Column(name ="data")
@@ -43,15 +36,16 @@ public class StageDataAudit implements Serializable {
     @Column(name = "case_uuid")
     private UUID caseUUID;
 
-    @Setter
-    @Column(name = "schema_version")
-    private int schemaVersion;
-
-    @Column(name = "created")
-    private LocalDateTime created;
+    private StageDataAudit(UUID stageUUID, String type, String data, UUID caseUUID, LocalDateTime timestamp) {
+        this.uuid = stageUUID;
+        this.type = type;
+        this.data = data;
+        this.caseUUID = caseUUID;
+        this.timestamp = timestamp;
+    }
 
     public static StageDataAudit from(StageData stageData)
     {
-        return new StageDataAudit(stageData.getUuid(), stageData.getName(), stageData.getData(), stageData.getCaseUUID(), stageData.getSchemaVersion(), stageData.getCreated());
+        return new StageDataAudit(stageData.getUuid(), stageData.getType(), stageData.getData(), stageData.getCaseUUID(), stageData.getTimestamp());
     }
 }

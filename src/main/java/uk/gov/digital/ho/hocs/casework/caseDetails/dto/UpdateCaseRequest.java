@@ -5,16 +5,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class UpdateStageRequest {
+public class UpdateCaseRequest {
 
-    @JsonProperty("stageType")
-    private String stageType;
+    @JsonProperty("caseType")
+    private String caseType;
 
-    @JsonProperty("stageData")
-    private Map<String, String> stageData;
 }
