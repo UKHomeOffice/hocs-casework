@@ -57,7 +57,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(1)).createCase("RSH", testUser);
         verify(caseDataService, times(1)).createStage(caseData.getUuid(), "Stage", data, testUser);
-        verify(emailService, times(1)).sendRshEmail(sendEmailRequest, caseData.getUuid(), testUser);
+        verify(emailService, times(1)).sendRshEmail(sendEmailRequest, caseData.getUuid(), caseData.getReference(), null, testUser);
     }
 
     @Test(expected = EntityCreationException.class)
@@ -74,7 +74,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(0)).createCase(anyString(), anyString());
         verify(caseDataService, times(0)).createStage(any(UUID.class), anyString(), anyMap(), anyString());
-        verify(emailService, times(0)).sendRshEmail(null, any(UUID.class), anyString());
+        verify(emailService, times(0)).sendRshEmail(null, any(UUID.class), anyString(), anyString(), anyString());
     }
 
     @Test()
@@ -92,7 +92,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(1)).createCase("RSH", testUser);
         verify(caseDataService, times(1)).createStage(caseData.getUuid(), "Stage", data, testUser);
-        verify(emailService, times(1)).sendRshEmail(null, caseData.getUuid(), testUser);
+        verify(emailService, times(1)).sendRshEmail(null, caseData.getUuid(), caseData.getReference(), null, testUser);
     }
 
     @Test
@@ -116,7 +116,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(1)).getCase(caseData.getUuid(), testUser);
         verify(caseDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", data, testUser);
-        verify(emailService, times(1)).sendRshEmail(sendEmailRequest, caseData.getUuid(), testUser);
+        verify(emailService, times(1)).sendRshEmail(sendEmailRequest, caseData.getUuid(), caseData.getReference(), null, testUser);
     }
 
     @Test(expected = EntityCreationException.class)
@@ -136,7 +136,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(0)).getCase(caseData.getUuid(), testUser);
         verify(caseDataService, times(0)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", data, testUser);
-        verify(emailService, times(0)).sendRshEmail(null, any(UUID.class), anyString());
+        verify(emailService, times(0)).sendRshEmail(null, any(UUID.class), anyString(), anyString(), anyString());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -157,7 +157,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(0)).getCase(caseData.getUuid(), testUser);
         verify(caseDataService, times(0)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", data, testUser);
-        verify(emailService, times(0)).sendRshEmail(null, any(UUID.class), anyString());
+        verify(emailService, times(0)).sendRshEmail(null, any(UUID.class), anyString(), anyString(), anyString());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -176,7 +176,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(0)).getCase(caseData.getUuid(), testUser);
         verify(caseDataService, times(0)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", null, testUser);
-        verify(emailService, times(0)).sendRshEmail(null, any(UUID.class), anyString());
+        verify(emailService, times(0)).sendRshEmail(null, any(UUID.class), anyString(), anyString(), anyString());
     }
 
     @Test()
@@ -199,6 +199,6 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(1)).getCase(caseData.getUuid(), testUser);
         verify(caseDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", data, testUser);
-        verify(emailService, times(1)).sendRshEmail(null, caseData.getUuid(), testUser);
+        verify(emailService, times(1)).sendRshEmail(null, caseData.getUuid(), caseData.getReference(), null, testUser);
     }
 }

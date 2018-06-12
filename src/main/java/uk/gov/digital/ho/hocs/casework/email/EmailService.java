@@ -36,16 +36,16 @@ public class EmailService {
         this.auditService = auditService;
     }
 
-    public void sendRshEmail(SendEmailRequest notifyRequest, UUID caseUUID, String userName) {
-        sendNotify(notifyRequest, caseUUID, rshTemplateId, userName);
+    public void sendRshEmail(SendEmailRequest notifyRequest, UUID caseUUID, String reference, String caseStatus, String userName) {
+        sendNotify(notifyRequest, caseUUID, rshTemplateId, reference, caseStatus, userName);
     }
 
-    private void sendNotify(SendEmailRequest notifyRequest, UUID caseUUID, String templateId, String username) {
+    private void sendNotify(SendEmailRequest notifyRequest, UUID caseUUID, String templateId, String reference, String caseStatus, String username) {
         if (notifyRequest != null) {
             auditService.writeSendEmailEvent(username, notifyRequest);
             if (!isNullOrEmpty(notifyRequest.getEmail()) && !isNullOrEmpty(notifyRequest.getTeamName())) {
                 log.info("Received request to email {} {}, templateId {}", notifyRequest.getEmail(), notifyRequest.getTeamName(), templateId);
-                sendEmail(notifyRequest.getEmail(), notifyRequest.getTeamName(), caseUUID, templateId);
+                sendEmail(notifyRequest.getEmail(), notifyRequest.getTeamName(), caseUUID, reference, caseStatus, templateId);
             } else {
                 log.warn("Received request to email templateId {}, but params were null!", templateId);
             }
@@ -54,10 +54,12 @@ public class EmailService {
         }
     }
 
-    private void sendEmail(String emailAddress, String teamName, UUID caseUUID, String templateId) {
+    private void sendEmail(String emailAddress, String teamName, UUID caseUUID, String reference, String caseStatus, String templateId) {
         HashMap<String, String> personalisation = new HashMap<>();
         personalisation.put("team", teamName);
         personalisation.put("link", frontEndUrl + "/case/" + caseUUID);
+        personalisation.put("reference", reference);
+        personalisation.put("caseStatus", caseStatus);
         try {
             log.debug("Sending email to {} {}, templateId {}", emailAddress, teamName, templateId);
             notifyClient.getClient().sendEmail(templateId, emailAddress, personalisation, null, null);

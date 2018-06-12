@@ -35,7 +35,7 @@ public class RshCaseService {
         if (caseData != null) {
             CaseData caseDetails = caseDataService.createCase("RSH", username);
             caseDataService.createStage(caseDetails.getUuid(), "Stage", caseData, username);
-            emailService.sendRshEmail(emailRequest, caseDetails.getUuid(), username);
+            emailService.sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"), username);
             return caseDetails;
         } else {
             throw new EntityCreationException("Failed to create case, no caseData!");
@@ -48,7 +48,7 @@ public class RshCaseService {
             if (!caseDetails.getStages().isEmpty()) {
                 StageData stageData = caseDetails.getStages().iterator().next();
                 caseDataService.updateStage(caseUUID, stageData.getUuid(), "Stage", caseData, username);
-                emailService.sendRshEmail(emailRequest, caseDetails.getUuid(), username);
+                emailService.sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"), username);
                 return caseDetails;
             } else {
                 throw new EntityCreationException("Failed to update case, case has no stages!");

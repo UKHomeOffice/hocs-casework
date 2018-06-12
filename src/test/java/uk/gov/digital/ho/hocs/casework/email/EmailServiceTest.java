@@ -51,12 +51,13 @@ public class EmailServiceTest {
                 any(),
                 any()
         )).thenReturn(null);
-        emailService.sendRshEmail(new SendEmailRequest(email, team), uuid, email);
+        emailService.sendRshEmail(new SendEmailRequest(email, team), uuid, "Ref", "CaseStatus", email);
 
         final Map<String, String> personalisation = new HashMap<>();
         personalisation.put("team", team);
         personalisation.put("link", String.format("%s/case/%s", frontendUrl, uuid));
-
+        personalisation.put("reference", "Ref");
+        personalisation.put("caseStatus", "CaseStatus");
         verify(mockNotify).sendEmail(
                 templateId,
                 email,
