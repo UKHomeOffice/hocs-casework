@@ -7,9 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.email.dto.model.Email;
-import uk.gov.digital.ho.hocs.casework.rsh.dto.SendRshEmailRequest;
 
-import java.util.UUID;
+import java.util.HashMap;
 
 import static org.mockito.Mockito.*;
 
@@ -21,59 +20,60 @@ public class EmailServiceTest {
     @Mock
     private AuditService mockAuditService;
     @Mock
-    private NotifyClient mockNotifyClient;
+    private ProxyingNotificationClient mockNotifyClient;
 
     private final String templateId = "TEMPLATE_ID";
-    private final String frontendUrl = "FRONTEND_URL";
 
-    private final UUID uuid = UUID.randomUUID();
     private final String emailAddress = "email.user@test.com";
-    private final String team = "Test Team";
     private final String testUser = "test user";
+
 
     @Before
     public void setUp() {
         this.emailService = new EmailService(
-                mockNotifyClient, templateId, frontendUrl, mockAuditService);
+                mockNotifyClient, mockAuditService);
     }
 
     @Test
-    public void shouldSendRshNotify() {
-        String reference = String.format("%s/case/%s", frontendUrl, uuid);
+    public void shouldSendEmail() {
+        doNothing().when(mockNotifyClient).sendEmail(any(Email.class));
 
-        doNothing().when(mockNotifyClient).sendEmail(any(Email.class), anyString());
+        Email email = new Email(emailAddress, templateId, new HashMap<>());
+        emailService.sendEmail(email, testUser);
 
-        emailService.sendRshEmail(new SendRshEmailRequest(emailAddress, team), uuid, reference, "CaseStatus", testUser);
-
-        verify(mockNotifyClient, times(1)).sendEmail(any(Email.class), eq(frontendUrl));
+        verify(mockNotifyClient, times(1)).sendEmail(any(Email.class));
     }
 
     @Test
-    public void shouldSendRshNotifyNullEmail() {
-        String reference = String.format("%s/case/%s", frontendUrl, uuid);
+    public void shouldSendEmailNullEmailAddress() {
+        Email email = new Email(null, templateId, new HashMap<>());
+        emailService.sendEmail(email, testUser);
 
-        emailService.sendRshEmail(new SendRshEmailRequest(null, team), uuid, reference, "CaseStatus", testUser);
-
-        verify(mockNotifyClient, times(0)).sendEmail(any(Email.class), eq(frontendUrl));
+        verify(mockNotifyClient, times(0)).sendEmail(any(Email.class));
     }
 
     @Test
-    public void shouldSendRshNotifyNullTeamName() {
-        String reference = String.format("%s/case/%s", frontendUrl, uuid);
-        Email email = new Email("", "", UUID.randomUUID(), "", "", "");
+    public void shouldSendEmailNullTeamName() {
+        Email email = new Email(emailAddress, null, new HashMap<>());
+        emailService.sendEmail(email, testUser);
 
-        emailService.sendRshEmail(new SendRshEmailRequest(emailAddress, null), uuid, reference, "CaseStatus", testUser);
-
-        verify(mockNotifyClient, times(0)).sendEmail(any(Email.class), eq(frontendUrl));
+        verify(mockNotifyClient, times(1)).sendEmail(any(Email.class));
     }
 
     @Test
-    public void shouldSendRshNotifyNullNotifyRequest() {
-        String reference = String.format("%s/case/%s", frontendUrl, uuid);
+    public void shouldSendEmailNullPersonalisation() {
+        Email email = new Email(emailAddress, templateId, null);
+        emailService.sendEmail(email, testUser);
 
-        emailService.sendRshEmail(null, uuid, reference, "CaseStatus", testUser);
-
-        verify(mockNotifyClient, times(0)).sendEmail(any(Email.class), eq(frontendUrl));
+        verify(mockNotifyClient, times(1)).sendEmail(any(Email.class));
     }
+
+    @Test
+    public void shouldSendEmailNullNotifyRequest() {
+        emailService.sendEmail(null, testUser);
+
+        verify(mockNotifyClient, times(0)).sendEmail(any(Email.class));
+    }
+
 
 }
