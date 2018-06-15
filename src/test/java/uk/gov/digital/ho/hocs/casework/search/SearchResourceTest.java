@@ -23,6 +23,7 @@ public class SearchResourceTest {
     private final String testUser = "Test User";
     @Mock
     private SearchService mockSearchService;
+
     private SearchResource searchResource;
 
     private static Set<CaseData> getValidSet() {
