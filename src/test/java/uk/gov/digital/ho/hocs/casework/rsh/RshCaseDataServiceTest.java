@@ -11,7 +11,7 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundExcep
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.email.EmailService;
-import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
+import uk.gov.digital.ho.hocs.casework.rsh.dto.SendRshEmailRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -47,7 +47,7 @@ public class RshCaseDataServiceTest {
         when(caseDataService.createCase(anyString(), anyString())).thenReturn(caseData);
 
         Map<String, String> data = new HashMap<>();
-        SendEmailRequest sendEmailRequest = new SendEmailRequest();
+        SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
         CaseData caseDataReturn = rshCaseService.createRshCase(
                 data,
                 sendEmailRequest,
@@ -64,7 +64,7 @@ public class RshCaseDataServiceTest {
     public void shouldCreateRshCaseNullData() throws EntityCreationException {
         CaseData caseData = new CaseData();
 
-        SendEmailRequest sendEmailRequest = new SendEmailRequest();
+        SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
         CaseData caseDataReturn = rshCaseService.createRshCase(
                 null,
                 sendEmailRequest,
@@ -105,7 +105,7 @@ public class RshCaseDataServiceTest {
         when(caseDataService.updateStage(any(UUID.class), any(UUID.class), anyString(), anyMap(), anyString())).thenReturn(stageData);
 
         Map<String, String> data = new HashMap<>();
-        SendEmailRequest sendEmailRequest = new SendEmailRequest();
+        SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
         CaseData caseDataReturn = rshCaseService.updateRshCase(
                 caseData.getUuid(),
                 data,
@@ -125,7 +125,7 @@ public class RshCaseDataServiceTest {
         StageData stageData = new StageData();
 
         Map<String, String> data = new HashMap<>();
-        SendEmailRequest sendEmailRequest = new SendEmailRequest();
+        SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
         CaseData caseDataReturn = rshCaseService.updateRshCase(
                 null,
                 data,
@@ -146,7 +146,7 @@ public class RshCaseDataServiceTest {
         when(caseDataService.getCase(any(UUID.class), anyString())).thenReturn(caseData);
 
         Map<String, String> data = new HashMap<>();
-        SendEmailRequest sendEmailRequest = new SendEmailRequest();
+        SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
         CaseData caseDataReturn = rshCaseService.updateRshCase(
                 caseData.getUuid(),
                 data,
@@ -165,7 +165,7 @@ public class RshCaseDataServiceTest {
         CaseData caseData = new CaseData();
         StageData stageData = new StageData();
 
-        SendEmailRequest sendEmailRequest = new SendEmailRequest();
+        SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
         CaseData caseDataReturn = rshCaseService.updateRshCase(
                 caseData.getUuid(),
                 null,

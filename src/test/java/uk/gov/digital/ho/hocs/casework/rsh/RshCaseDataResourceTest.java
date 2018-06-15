@@ -11,8 +11,8 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseRequest;
+import uk.gov.digital.ho.hocs.casework.rsh.dto.SendRshEmailRequest;
 
 import java.util.UUID;
 
@@ -39,7 +39,7 @@ public class RshCaseDataResourceTest {
     @Test
     public void shouldCreateCase() throws EntityCreationException {
         CaseData caseData = new CaseData();
-        when(mockRshCaseService.createRshCase(anyMap(), any(SendEmailRequest.class), anyString())).thenReturn(caseData);
+        when(mockRshCaseService.createRshCase(anyMap(), any(SendRshEmailRequest.class), anyString())).thenReturn(caseData);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
         ResponseEntity<CreateCaseResponse> response = rshCaseResource.rshCreateCase(request, testUser);
@@ -54,7 +54,7 @@ public class RshCaseDataResourceTest {
     @Test
     public void shouldCreateCaseCreateException() throws EntityCreationException {
         CaseData caseData = new CaseData();
-        when(mockRshCaseService.createRshCase(anyMap(), any(SendEmailRequest.class), anyString())).thenThrow(EntityCreationException.class);
+        when(mockRshCaseService.createRshCase(anyMap(), any(SendRshEmailRequest.class), anyString())).thenThrow(EntityCreationException.class);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
         ResponseEntity<CreateCaseResponse> response = rshCaseResource.rshCreateCase(request, testUser);
@@ -67,7 +67,7 @@ public class RshCaseDataResourceTest {
     @Test
     public void shouldUpdateCase() throws EntityCreationException, EntityNotFoundException {
         CaseData caseData = new CaseData();
-        when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any(SendEmailRequest.class), anyString())).thenReturn(caseData);
+        when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any(SendRshEmailRequest.class), anyString())).thenReturn(caseData);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
         ResponseEntity<CreateCaseResponse> response = rshCaseResource.rshUpdateCase(caseData.getUuid(), request, testUser);
@@ -82,7 +82,7 @@ public class RshCaseDataResourceTest {
     @Test
     public void shouldUpdateCaseCreateException() throws EntityCreationException, EntityNotFoundException {
         CaseData caseData = new CaseData();
-        when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any(SendEmailRequest.class), anyString())).thenThrow(EntityCreationException.class);
+        when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any(SendRshEmailRequest.class), anyString())).thenThrow(EntityCreationException.class);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
         ResponseEntity<CreateCaseResponse> response = rshCaseResource.rshUpdateCase(caseData.getUuid(), request, testUser);
@@ -95,7 +95,7 @@ public class RshCaseDataResourceTest {
     @Test
     public void shouldUpdateCaseFoundException() throws EntityCreationException, EntityNotFoundException {
         CaseData caseData = new CaseData();
-        when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any(SendEmailRequest.class), anyString())).thenThrow(EntityNotFoundException.class);
+        when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any(SendRshEmailRequest.class), anyString())).thenThrow(EntityNotFoundException.class);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
         ResponseEntity<CreateCaseResponse> response = rshCaseResource.rshUpdateCase(caseData.getUuid(), request, testUser);

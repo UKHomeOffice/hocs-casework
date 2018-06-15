@@ -6,7 +6,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
-import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
+import uk.gov.digital.ho.hocs.casework.email.dto.model.Email;
+import uk.gov.digital.ho.hocs.casework.rsh.dto.SendRshEmailRequest;
 
 import java.util.UUID;
 
@@ -26,8 +27,9 @@ public class EmailServiceTest {
     private final String frontendUrl = "FRONTEND_URL";
 
     private final UUID uuid = UUID.randomUUID();
-    private final String email = "email.user@test.com";
+    private final String emailAddress = "email.user@test.com";
     private final String team = "Test Team";
+    private final String testUser = "test user";
 
     @Before
     public void setUp() {
@@ -39,78 +41,39 @@ public class EmailServiceTest {
     public void shouldSendRshNotify() {
         String reference = String.format("%s/case/%s", frontendUrl, uuid);
 
-        doNothing().when(mockNotifyClient).sendEmail(
-                anyString(),
-                anyString(),
-                anyString(),
-                any(UUID.class),
-                anyString(),
-                anyString(),
-                anyString()
-        );
+        doNothing().when(mockNotifyClient).sendEmail(any(Email.class), anyString());
 
-        emailService.sendRshEmail(new SendEmailRequest(email, team), uuid, reference, "CaseStatus", email);
+        emailService.sendRshEmail(new SendRshEmailRequest(emailAddress, team), uuid, reference, "CaseStatus", testUser);
 
-        verify(mockNotifyClient, times(1)).sendEmail(
-                email,
-                team,
-                frontendUrl,
-                uuid,
-                reference,
-                "CaseStatus",
-                templateId
-        );
+        verify(mockNotifyClient, times(1)).sendEmail(any(Email.class), eq(frontendUrl));
     }
 
     @Test
     public void shouldSendRshNotifyNullEmail() {
         String reference = String.format("%s/case/%s", frontendUrl, uuid);
 
-        emailService.sendRshEmail(new SendEmailRequest(null, team), uuid, reference, "CaseStatus", email);
+        emailService.sendRshEmail(new SendRshEmailRequest(null, team), uuid, reference, "CaseStatus", testUser);
 
-        verify(mockNotifyClient, times(0)).sendEmail(
-                email,
-                team,
-                frontendUrl,
-                uuid,
-                reference,
-                "CaseStatus",
-                templateId
-        );
+        verify(mockNotifyClient, times(0)).sendEmail(any(Email.class), eq(frontendUrl));
     }
 
     @Test
-    public void shouldSendRshNotifyNullNotify() {
+    public void shouldSendRshNotifyNullTeamName() {
         String reference = String.format("%s/case/%s", frontendUrl, uuid);
+        Email email = new Email("", "", UUID.randomUUID(), "", "", "");
 
-        emailService.sendRshEmail(new SendEmailRequest(email, null), uuid, reference, "CaseStatus", email);
+        emailService.sendRshEmail(new SendRshEmailRequest(emailAddress, null), uuid, reference, "CaseStatus", testUser);
 
-        verify(mockNotifyClient, times(0)).sendEmail(
-                email,
-                team,
-                frontendUrl,
-                uuid,
-                reference,
-                "CaseStatus",
-                templateId
-        );
+        verify(mockNotifyClient, times(0)).sendEmail(any(Email.class), eq(frontendUrl));
     }
 
     @Test
     public void shouldSendRshNotifyNullNotifyRequest() {
         String reference = String.format("%s/case/%s", frontendUrl, uuid);
 
-        emailService.sendRshEmail(null, uuid, reference, "CaseStatus", email);
+        emailService.sendRshEmail(null, uuid, reference, "CaseStatus", testUser);
 
-        verify(mockNotifyClient, times(0)).sendEmail(
-                email,
-                team,
-                frontendUrl,
-                uuid,
-                reference,
-                "CaseStatus",
-                templateId
-        );
+        verify(mockNotifyClient, times(0)).sendEmail(any(Email.class), eq(frontendUrl));
     }
 
 }

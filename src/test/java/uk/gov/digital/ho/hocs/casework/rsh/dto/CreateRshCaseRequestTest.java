@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.rsh.dto;
 
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +19,7 @@ public class CreateRshCaseRequestTest {
 
     @Test
     public void testCreateWithEntities() {
-        SendEmailRequest sendEmailRequest = new SendEmailRequest();
+        SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
 
         Map<String, String> caseData = new HashMap<>();
         caseData.put("key", "value");

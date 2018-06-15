@@ -15,12 +15,13 @@ public class HocsCaseApplication {
 	public static boolean isNullOrEmpty(String value) {
 		if (value == null) {
 			return true;
-		} else if (value.equals("")) {
-			return true;
-		} else return value.trim().equals("");
+        } else {
+            return value.trim().equals("");
+        }
 	}
 
 	public static boolean isNullOrEmpty(UUID value) {
 		return value == null;
 	}
+
 }

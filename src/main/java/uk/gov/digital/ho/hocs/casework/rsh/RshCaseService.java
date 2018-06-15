@@ -9,7 +9,7 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundExcep
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.email.EmailService;
-import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
+import uk.gov.digital.ho.hocs.casework.rsh.dto.SendRshEmailRequest;
 
 import javax.transaction.Transactional;
 import java.util.Map;
@@ -31,10 +31,11 @@ public class RshCaseService {
     }
 
     @Transactional
-    CaseData createRshCase(Map<String, String> caseData, SendEmailRequest emailRequest, String username) throws EntityCreationException {
+    CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest, String username) throws EntityCreationException {
         if (caseData != null) {
             CaseData caseDetails = caseDataService.createCase("RSH", username);
             caseDataService.createStage(caseDetails.getUuid(), "Stage", caseData, username);
+
             emailService.sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"), username);
             return caseDetails;
         } else {
@@ -42,7 +43,7 @@ public class RshCaseService {
         }
     }
 
-    CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendEmailRequest emailRequest, String username) throws EntityCreationException, EntityNotFoundException {
+    CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendRshEmailRequest emailRequest, String username) throws EntityCreationException, EntityNotFoundException {
         if (!isNullOrEmpty(caseUUID) && caseData != null) {
             CaseData caseDetails = caseDataService.getCase(caseUUID, username);
             if (!caseDetails.getStages().isEmpty()) {
