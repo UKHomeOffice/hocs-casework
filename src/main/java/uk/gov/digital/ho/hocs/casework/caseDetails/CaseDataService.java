@@ -36,13 +36,13 @@ public class CaseDataService {
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
     }
 
-    private static String getDataString(Map<String, String> stageData, ObjectMapper objectMapper) {
+    private static String getDataString(Map<String, String> stageData, ObjectMapper objectMapper) throws EntityCreationException {
         String data = "";
         if (stageData != null) {
             try {
                 data = objectMapper.writeValueAsString(stageData);
             } catch (JsonProcessingException e) {
-                e.printStackTrace();
+                throw new EntityCreationException("Object Mapper failed to parse!");
             }
         }
 
