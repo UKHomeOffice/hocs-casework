@@ -38,12 +38,15 @@ public class CaseDataService {
     }
 
     private static String getDataString(Map<String, String> stageData, ObjectMapper objectMapper) {
-        String data = null;
-        try {
-            data = objectMapper.writeValueAsString(stageData);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+        String data = "";
+        if (stageData != null) {
+            try {
+                data = objectMapper.writeValueAsString(stageData);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
+
         return data;
     }
 

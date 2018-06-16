@@ -50,47 +50,55 @@ public class CaseDataServiceTest {
         final Long caseID = 12345L;
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+
         CaseData caseData = caseDataService.createCase("Type", testUser);
 
-        assertThat(caseData).isNotNull();
-        verify(caseDataRepository).save(isA(CaseData.class));
+        verify(auditService, times(1)).writeCreateCaseEvent(testUser, caseData);
+        verify(caseDataRepository, times(1)).save(isA(CaseData.class));
 
-        verify(auditService).writeCreateCaseEvent(testUser, caseData);
-/*        verify(auditService).save(auditEntryArgumentCaptor.capture());
-        AuditEntry auditEntry = auditEntryArgumentCaptor.getValue();
-        assertThat(auditEntry).isNotNull();
-        assertThat(auditEntry.getUsername()).isEqualTo(testUser);
-        assertThat(auditEntry.getCaseInstance()).isNotNull().isInstanceOf(CaseDataAudit.class);
-        assertThat(auditEntry.getStageInstance()).isNull();
-        assertThat(auditEntry.getCreated()).isNotNull().isInstanceOf(LocalDateTime.class);
-        assertThat(auditEntry.getQueryData()).isNull();
-        assertThat(auditEntry.getCaseInstance().getUuid()).isNotNull().isInstanceOf(UUID.class);
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.CREATE_CASE.toString());*/
+        assertThat(caseData).isNotNull();
+        assertThat(caseData.getType()).isEqualTo("Type");
+    }
+
+    @Test(expected = EntityCreationException.class)
+    public void shouldCreateCaseCreateException() throws EntityCreationException {
+        caseDataService.createCase(null, testUser);
     }
 
     @Test
     public void shouldCreateStage() throws EntityCreationException {
-        StageData stageData = caseDataService.createStage(
-                uuid,
-                "CREATE",
-                new HashMap<>(),
-                testUser
-        );
-
-        assertThat(stageData).isNotNull();
-        verify(stageDataRepository).save(isA(StageData.class));
+        StageData stageData = caseDataService.createStage(uuid, "CREATE", new HashMap<>(), testUser);
 
         verify(auditService).writeCreateStageEvent(testUser, stageData);
-/*        verify(auditRepository).save(auditEntryArgumentCaptor.capture());
-        AuditEntry auditEntry = auditEntryArgumentCaptor.getValue();
-        assertThat(auditEntry).isNotNull();
-        assertThat(auditEntry.getUsername()).isEqualTo(testUser);
-        assertThat(auditEntry.getCaseInstance()).isNull();
-        assertThat(auditEntry.getStageInstance()).isNotNull().isInstanceOf(StageDataAudit.class);
-        assertThat(auditEntry.getCreated()).isNotNull().isInstanceOf(LocalDateTime.class);
-        assertThat(auditEntry.getQueryData()).isNull();
-        assertThat(auditEntry.getStageInstance().getCaseUUID()).isEqualTo(uuid);
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.CREATE_STAGE.toString());*/
+        verify(stageDataRepository).save(isA(StageData.class));
+
+        assertThat(stageData).isNotNull();
+        assertThat(stageData.getType()).isEqualTo("CREATE");
+        assertThat(stageData.getCaseUUID()).isEqualTo(uuid);
+    }
+
+    @Test(expected = EntityCreationException.class)
+    public void shouldCreateStageMissingUUIDException() throws EntityCreationException {
+        StageData stageData = caseDataService.createStage(null, "CREATE", new HashMap<>(), testUser);
+
+        verify(auditService).writeCreateStageEvent(testUser, stageData);
+        verify(stageDataRepository).save(isA(StageData.class));
+
+        assertThat(stageData).isNotNull();
+        assertThat(stageData.getType()).isEqualTo("CREATE");
+        assertThat(stageData.getCaseUUID()).isEqualTo(uuid);
+    }
+
+    @Test(expected = EntityCreationException.class)
+    public void shouldCreateStageMissingTypeException() throws EntityCreationException {
+        StageData stageData = caseDataService.createStage(uuid, null, new HashMap<>(), testUser);
+
+        verify(auditService).writeCreateStageEvent(testUser, stageData);
+        verify(stageDataRepository).save(isA(StageData.class));
+
+        assertThat(stageData).isNotNull();
+        assertThat(stageData.getType()).isEqualTo("CREATE");
+        assertThat(stageData.getCaseUUID()).isEqualTo(uuid);
     }
 
     @Test
