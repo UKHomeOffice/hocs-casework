@@ -13,4 +13,5 @@ public class SendRshEmailRequest {
 
     @JsonProperty("teamName")
     private String teamName;
+
 }

@@ -11,7 +11,7 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundExcep
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.email.EmailService;
-import uk.gov.digital.ho.hocs.casework.email.dto.model.Email;
+import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.SendRshEmailRequest;
 
 import java.util.HashMap;
@@ -60,7 +60,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(1)).createCase("RSH", testUser);
         verify(caseDataService, times(1)).createStage(caseData.getUuid(), "Stage", data, testUser);
-        verify(emailService, times(1)).sendEmail(any(Email.class), anyString());
+        verify(emailService, times(1)).sendRshEmail(any(SendEmailRequest.class), anyString());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -76,7 +76,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(0)).createCase(anyString(), anyString());
         verify(caseDataService, times(0)).createStage(any(UUID.class), anyString(), anyMap(), anyString());
-        verify(emailService, times(0)).sendEmail(any(Email.class), anyString());
+        verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class), anyString());
     }
 
     @Test()
@@ -94,7 +94,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(1)).createCase("RSH", testUser);
         verify(caseDataService, times(1)).createStage(caseData.getUuid(), "Stage", data, testUser);
-        verify(emailService, times(0)).sendEmail(any(Email.class), anyString());
+        verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class), anyString());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(1)).getCase(caseData.getUuid(), testUser);
         verify(caseDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", data, testUser);
-        verify(emailService, times(1)).sendEmail(any(Email.class), anyString());
+        verify(emailService, times(1)).sendRshEmail(any(SendEmailRequest.class), anyString());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -138,7 +138,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(0)).getCase(caseData.getUuid(), testUser);
         verify(caseDataService, times(0)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", data, testUser);
-        verify(emailService, times(0)).sendEmail(any(Email.class), anyString());
+        verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class), anyString());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -159,7 +159,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(0)).getCase(caseData.getUuid(), testUser);
         verify(caseDataService, times(0)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", data, testUser);
-        verify(emailService, times(0)).sendEmail(any(Email.class), anyString());
+        verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class), anyString());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -178,7 +178,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(0)).getCase(caseData.getUuid(), testUser);
         verify(caseDataService, times(0)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", null, testUser);
-        verify(emailService, times(0)).sendEmail(any(Email.class), anyString());
+        verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class), anyString());
     }
 
     @Test()
@@ -201,7 +201,7 @@ public class RshCaseDataServiceTest {
 
         verify(caseDataService, times(1)).getCase(caseData.getUuid(), testUser);
         verify(caseDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", data, testUser);
-        verify(emailService, times(0)).sendEmail(any(Email.class), anyString());
+        verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class), anyString());
     }
 
     @Test

@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.email;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.email.dto.model.Email;
+import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -17,16 +17,18 @@ class ProxyingNotificationClient extends NotificationClient {
     ProxyingNotificationClient(@Value("${notify.apiKey}") String apiKey,
                                @Value("${notify.proxy.host}") String proxyHost,
                                @Value("${notify.proxy.port}") Integer proxyPort) {
-        super(apiKey, new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)));
+        super(apiKey,
+                proxyHost != null ?
+                        new Proxy(Proxy.Type.HTTP, new InetSocketAddress(proxyHost, proxyPort)) :
+                        null);
     }
 
-    void sendEmail(Email email) {
+    void sendEmail(SendEmailRequest sendEmailRequest, String templateId) {
         try {
-            sendEmail(email.getTemplateId(), email.getEmailAddress(), email.getPersonalisation(), null, null);
+            sendEmail(templateId, sendEmailRequest.getEmailAddress(), sendEmailRequest.getPersonalisation(), null, null);
         } catch (NotificationClientException e) {
             e.printStackTrace();
         }
     }
-
 
 }

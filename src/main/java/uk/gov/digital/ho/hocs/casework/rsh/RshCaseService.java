@@ -10,7 +10,7 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundExcep
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.email.EmailService;
-import uk.gov.digital.ho.hocs.casework.email.dto.model.Email;
+import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.SendRshEmailRequest;
 
 import javax.transaction.Transactional;
@@ -41,14 +41,14 @@ public class RshCaseService {
         this.rshTemplateId = rshTemplateId;
     }
 
-    private static Email createRshEmail(String emailAddress, String rshTemplateId, String teamName, String frontEndUrl, UUID caseUUID, String caseReference, String caseStatus) {
+    private static SendEmailRequest createRshEmail(String emailAddress, String teamName, String frontEndUrl, UUID caseUUID, String caseReference, String caseStatus) {
         Map<String, String> personalisation = new HashMap<>();
         personalisation.put("team", teamName);
         personalisation.put("link", frontEndUrl + "/case/" + caseUUID);
         personalisation.put("reference", caseReference);
         personalisation.put("caseStatus", caseStatus);
 
-        return new Email(emailAddress, rshTemplateId, personalisation);
+        return new SendEmailRequest(emailAddress, personalisation);
     }
 
     @Transactional
@@ -94,8 +94,8 @@ public class RshCaseService {
 
     private void sendRshEmail(SendRshEmailRequest emailRequest, UUID caseUUID, String caseReference, String caseStatus, String userName) {
         if (emailRequest != null) {
-            Email email = createRshEmail(emailRequest.getEmail(), rshTemplateId, emailRequest.getTeamName(), frontendUrl, caseUUID, caseReference, caseStatus);
-            emailService.sendEmail(email, userName);
+            SendEmailRequest sendEmailRequest = createRshEmail(emailRequest.getEmail(), emailRequest.getTeamName(), frontendUrl, caseUUID, caseReference, caseStatus);
+            emailService.sendRshEmail(sendEmailRequest, userName);
         } else {
             log.warn("Received request to email, but notify request was null!");
         }

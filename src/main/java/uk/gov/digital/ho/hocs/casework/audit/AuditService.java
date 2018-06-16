@@ -9,7 +9,7 @@ import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
-import uk.gov.digital.ho.hocs.casework.email.dto.model.Email;
+import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import java.util.UUID;
@@ -35,9 +35,8 @@ public class AuditService {
         auditRepository.save(auditEntry);
     }
 
-    public void writeSendEmailEvent(String username, Email email) {
-        String request = Email.toJsonString(objectMapper, email);
-        AuditEntry auditEntry = new AuditEntry(username, request, AuditAction.SEND_EMAIL);
+    public void writeSendEmailEvent(String username, SendEmailRequest sendEmailRequest) {
+        AuditEntry auditEntry = new AuditEntry(username, sendEmailRequest.getEmailAddress(), AuditAction.SEND_EMAIL);
         auditRepository.save(auditEntry);
     }
 
