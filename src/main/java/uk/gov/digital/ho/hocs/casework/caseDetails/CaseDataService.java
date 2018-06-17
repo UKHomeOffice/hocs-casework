@@ -37,7 +37,7 @@ public class CaseDataService {
     }
 
     private static String getDataString(Map<String, String> stageData, ObjectMapper objectMapper) throws EntityCreationException {
-        String data = "";
+        String data = "{ }";
         if (stageData != null) {
             try {
                 data = objectMapper.writeValueAsString(stageData);

@@ -82,6 +82,7 @@ public class CaseDataServiceTest {
 
         assertThat(stageData).isNotNull();
         assertThat(stageData.getType()).isEqualTo("CREATE");
+        assertThat(stageData.getData()).isEqualTo("{ }");
         assertThat(stageData.getCaseUUID()).isEqualTo(uuid);
     }
 

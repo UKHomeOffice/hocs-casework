@@ -43,12 +43,14 @@ public class CaseDataResourceTest {
 
         when(caseDataService.createCase(any(), any())).thenReturn(new CaseData(caseType, 1234L));
         CreateCaseRequest request = new CreateCaseRequest(caseType);
-        ResponseEntity response = caseDataResource.createCase(request, testUser);
+        ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request, testUser);
 
         verify(caseDataService, times(1)).createCase(caseType, testUser);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getUuid()).isNotNull();
+        assertThat(response.getBody().getCaseReference()).isNotNull();
         assertThat(response.getBody()).isInstanceOf(CreateCaseResponse.class);
     }
 
@@ -78,8 +80,7 @@ public class CaseDataResourceTest {
         verify(caseDataService, times(1)).updateCase(caseUUID, caseType, testUser);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody()).isInstanceOf(UpdateCaseResponse.class);
+        assertThat(response.getBody()).isNull();
     }
 
     @Test
@@ -116,12 +117,13 @@ public class CaseDataResourceTest {
         when(caseDataService.createStage(any(UUID.class), anyString(), anyMap(), anyString())).thenReturn(new StageData(uuid, stageType, ""));
         CreateStageRequest request = new CreateStageRequest(stageType, data);
 
-        ResponseEntity response = caseDataResource.createStage(uuid, request, testUser);
+        ResponseEntity<CreateStageResponse> response = caseDataResource.createStage(uuid, request, testUser);
 
         verify(caseDataService, times(1)).createStage(uuid, stageType, new HashMap<>(), testUser);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getUuid()).isNotNull();
         assertThat(response.getBody()).isInstanceOf(CreateStageResponse.class);
     }
 
@@ -153,8 +155,7 @@ public class CaseDataResourceTest {
         verify(caseDataService, times(1)).updateStage(caseUUID, uuid, stageType, data, testUser);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody()).isInstanceOf(UpdateStageResponse.class);
+        assertThat(response.getBody()).isNull();
     }
 
     @Test

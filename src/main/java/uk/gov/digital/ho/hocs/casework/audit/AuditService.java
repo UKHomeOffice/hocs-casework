@@ -26,7 +26,6 @@ public class AuditService {
         this.auditRepository = auditRepository;
 
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
-
     }
 
     public void writeSearchEvent(String username, SearchRequest searchRequest) {
