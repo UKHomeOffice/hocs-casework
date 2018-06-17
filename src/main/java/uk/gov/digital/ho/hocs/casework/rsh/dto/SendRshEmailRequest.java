@@ -2,9 +2,7 @@ package uk.gov.digital.ho.hocs.casework.rsh.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @Getter
 public class SendRshEmailRequest {
 

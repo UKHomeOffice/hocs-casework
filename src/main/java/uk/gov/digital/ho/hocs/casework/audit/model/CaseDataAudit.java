@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 
 import javax.persistence.*;
@@ -15,13 +14,12 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "audit_case_data")
-@Getter
-@NoArgsConstructor
 public class CaseDataAudit implements Serializable {
 
     @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
+    @Getter
     private Set<StageDataAudit> stages = new HashSet<>();
 
     @Id
@@ -30,15 +28,19 @@ public class CaseDataAudit implements Serializable {
     private int id;
 
     @Column(name = "type")
+    @Getter
     private String type;
 
     @Column(name = "reference")
+    @Getter
     private String reference;
 
     @Column(name = "uuid")
+    @Getter
     private UUID uuid;
 
     @Column(name = "timestamp")
+    @Getter
     private LocalDateTime timestamp;
 
     private CaseDataAudit(String type, String reference, UUID uuid, LocalDateTime timestamp, Set<StageDataAudit> stages) {

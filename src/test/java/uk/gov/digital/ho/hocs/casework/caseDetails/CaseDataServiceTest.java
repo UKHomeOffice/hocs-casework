@@ -283,7 +283,7 @@ public class CaseDataServiceTest {
     public void shouldGetCase() throws EntityNotFoundException {
         UUID caseUUID = UUID.randomUUID();
 
-        when(caseDataRepository.findByUuid(any())).thenReturn(new CaseData());
+        when(caseDataRepository.findByUuid(any())).thenReturn(new CaseData("", 1L));
 
         CaseData caseData = caseDataService.getCase(caseUUID, testUser);
 

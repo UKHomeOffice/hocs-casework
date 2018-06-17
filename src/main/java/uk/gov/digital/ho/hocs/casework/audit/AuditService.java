@@ -59,13 +59,13 @@ public class AuditService {
         auditRepository.save(auditEntry);
     }
 
-    public void writeExtractEvent(String username, String params) {
-        AuditEntry auditEntry = new AuditEntry(username, params, AuditAction.CSV_EXTRACT);
+    public void writeUpdateStageEvent(String username, StageData stageData) {
+        AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.UPDATE_STAGE);
         auditRepository.save(auditEntry);
     }
 
-    public void writeUpdateStageEvent(String username, StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.UPDATE_STAGE);
+    public void writeExtractEvent(String username, String params) {
+        AuditEntry auditEntry = new AuditEntry(username, params, AuditAction.CSV_EXTRACT);
         auditRepository.save(auditEntry);
     }
 }

@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.audit.model;
 
-import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 
@@ -9,7 +8,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "audit")
-@Getter
 public class AuditEntry {
 
     @Id
@@ -37,10 +35,7 @@ public class AuditEntry {
     @Column(name = "event_action", nullable = false)
     private final String eventAction;
 
-    public AuditEntry(String username,
-                      CaseData caseInstance,
-                      StageData stageInstance,
-                      AuditAction eventAction) {
+    public AuditEntry(String username, CaseData caseInstance, StageData stageInstance, AuditAction eventAction) {
         this.username = username;
         if(caseInstance != null) {
             this.caseInstance = CaseDataAudit.from(caseInstance);
@@ -52,9 +47,7 @@ public class AuditEntry {
         this.eventAction = eventAction.toString();
     }
 
-    public AuditEntry(String username,
-                      String queryData,
-                      AuditAction eventAction) {
+    public AuditEntry(String username, String queryData, AuditAction eventAction) {
         this.username = username;
         this.queryData = queryData;
         this.timestamp = LocalDateTime.now();
