@@ -7,8 +7,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 
-import java.util.UUID;
-
 import static uk.gov.digital.ho.hocs.casework.HocsCaseApplication.isNullOrEmpty;
 
 
@@ -18,39 +16,35 @@ public class EmailService {
 
     private final AuditService auditService;
 
-    private final NotifyClient notifyClient;
+    private final ProxyingNotificationClient notifyClient;
 
-    private final String rshTemplateId;
-    private final String frontEndUrl;
+    private final String rshTemplate;
+
 
     @Autowired
-    public EmailService(NotifyClient notifyClient,
-                        @Value("${notify.rshTemplateId}") String rshTemplateId,
-                        @Value("${notify.frontend.url}") String frontEndUrl,
-                        AuditService auditService) {
+    public EmailService(ProxyingNotificationClient notifyClient,
+                        AuditService auditService,
+                        @Value("${notify.rshTemplateId}") String rshTemplateId) {
         this.notifyClient = notifyClient;
-        this.rshTemplateId = rshTemplateId;
-        this.frontEndUrl = frontEndUrl;
         this.auditService = auditService;
+        this.rshTemplate = rshTemplateId;
     }
 
-    public void sendRshEmail(SendEmailRequest notifyRequest, UUID caseUUID, String reference, String caseStatus, String userName) {
-        sendNotify(notifyRequest, caseUUID, rshTemplateId, reference, caseStatus, userName);
+    public void sendRshEmail(SendEmailRequest sendEmailRequest, String username) {
+        sendEmail(sendEmailRequest, rshTemplate, username);
     }
 
-    private void sendNotify(SendEmailRequest emailRequest, UUID caseUUID, String templateId, String reference, String caseStatus, String username) {
-        if (emailRequest != null) {
-            auditService.writeSendEmailEvent(username, emailRequest);
-            if (!isNullOrEmpty(emailRequest.getEmail()) && !isNullOrEmpty(emailRequest.getTeamName())) {
-                log.info("Received request to email {} {}, templateId {}", emailRequest.getEmail(), emailRequest.getTeamName(), templateId);
-                notifyClient.sendEmail(emailRequest.getEmail(), emailRequest.getTeamName(), frontEndUrl, caseUUID, reference, caseStatus, templateId);
+    private void sendEmail(SendEmailRequest sendEmailRequest, String templateId, String username) {
+        if (sendEmailRequest != null) {
+            if (!isNullOrEmpty(sendEmailRequest.getEmailAddress())) {
+                log.info("Received request to sendEmailRequest {}, templateId {}", sendEmailRequest.getEmailAddress(), templateId);
+                auditService.writeSendEmailEvent(username, sendEmailRequest);
+                notifyClient.sendEmail(sendEmailRequest, templateId);
             } else {
-                log.warn("Received request to email templateId {}, but params were null!", templateId);
+                log.warn("Received request to sendEmailRequest templateId {}, but params were null!", templateId);
             }
         } else {
-            log.warn("Received request to email, but request was null!");
+            log.warn("Received request to sendEmailRequest, but request was null!");
         }
     }
-
-
 }

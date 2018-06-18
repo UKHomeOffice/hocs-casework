@@ -1,30 +1,28 @@
 package uk.gov.digital.ho.hocs.casework.email.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
+import java.util.HashMap;
+import java.util.Map;
+
 @Getter
 public class SendEmailRequest {
 
-    @JsonProperty("email")
-    private String email;
+    @JsonProperty("emailAddress")
+    private String emailAddress = "";
 
-    @JsonProperty("teamName")
-    private String teamName;
+    @JsonProperty("personalisation")
+    private Map<String, String> personalisation = new HashMap<>();
 
-    public static String toJsonString(ObjectMapper objectMapper, SendEmailRequest sendEmailRequest) {
-        String ret = "";
-        try {
-            ret = objectMapper.writeValueAsString(sendEmailRequest);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
+    public SendEmailRequest(String emailAddress, Map<String, String> personalisation) {
+        if (emailAddress != null) {
+            this.emailAddress = emailAddress;
         }
-        return ret;
+        if (personalisation != null) {
+            this.personalisation = personalisation;
+        }
     }
 }
+
+

@@ -26,7 +26,6 @@ public class AuditService {
         this.auditRepository = auditRepository;
 
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
-
     }
 
     public void writeSearchEvent(String username, SearchRequest searchRequest) {
@@ -36,8 +35,7 @@ public class AuditService {
     }
 
     public void writeSendEmailEvent(String username, SendEmailRequest sendEmailRequest) {
-        String request = SendEmailRequest.toJsonString(objectMapper, sendEmailRequest);
-        AuditEntry auditEntry = new AuditEntry(username, request, AuditAction.SEND_EMAIL);
+        AuditEntry auditEntry = new AuditEntry(username, sendEmailRequest.getEmailAddress(), AuditAction.SEND_EMAIL);
         auditRepository.save(auditEntry);
     }
 
@@ -61,13 +59,13 @@ public class AuditService {
         auditRepository.save(auditEntry);
     }
 
-    public void writeExtractEvent(String username, String params) {
-        AuditEntry auditEntry = new AuditEntry(username, params, AuditAction.CSV_EXTRACT);
+    public void writeUpdateStageEvent(String username, StageData stageData) {
+        AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.UPDATE_STAGE);
         auditRepository.save(auditEntry);
     }
 
-    public void writeUpdateStageEvent(String username, StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.UPDATE_STAGE);
+    public void writeExtractEvent(String username, String params) {
+        AuditEntry auditEntry = new AuditEntry(username, params, AuditAction.CSV_EXTRACT);
         auditRepository.save(auditEntry);
     }
 }

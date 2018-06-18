@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.search;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,9 +11,8 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,10 +47,11 @@ public class SearchServiceTest {
     }
 
     @Test
-    public void shouldFindCasesByReference() {
+    public void shouldFindCasesByReference() throws IOException {
         when(mockCaseDataRepository.findByCaseReference(anyString())).thenReturn(getValidSet());
 
-        SearchRequest searchRequest = new SearchRequest("NotMatter", null);
+        ObjectMapper objectMapper = new ObjectMapper();
+        SearchRequest searchRequest = objectMapper.readValue("{ \"caseReference\" : \"fsfd\" }", SearchRequest.class);
         Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
 
         assertThat(cases).isNotEmpty();
@@ -62,10 +63,11 @@ public class SearchServiceTest {
     }
 
     @Test
-    public void shouldFindCasesByReferenceNoResults() {
+    public void shouldFindCasesByReferenceNoResults() throws IOException {
         when(mockCaseDataRepository.findByCaseReference(anyString())).thenReturn(null);
 
-        SearchRequest searchRequest = new SearchRequest("NotMatter", null);
+        ObjectMapper objectMapper = new ObjectMapper();
+        SearchRequest searchRequest = objectMapper.readValue("{ \"caseReference\" : \"fsfd\" }", SearchRequest.class);
         Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
 
         assertThat(cases).isEmpty();
@@ -77,14 +79,11 @@ public class SearchServiceTest {
     }
 
     @Test
-    public void shouldFindCasesByNameOrDob() {
+    public void shouldFindCasesByNameOrDob() throws IOException {
         when(mockCaseDataRepository.findByNameOrDob(anyString(), anyString(), anyString())).thenReturn(getValidSet());
 
-        Map<String, String> caseData = new HashMap<>();
-        caseData.put("first-name", "Rick");
-        caseData.put("last-name", "Sanchez");
-        caseData.put("dob", "1960-01-01");
-        SearchRequest searchRequest = new SearchRequest(null, caseData);
+        ObjectMapper objectMapper = new ObjectMapper();
+        SearchRequest searchRequest = objectMapper.readValue("{\"caseData\" : { \"first-name\" : \"Rick\", \"last-name\" : \"Sanchez\", \"dob\" : \"1960-01-01\"} }", SearchRequest.class);
         Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
 
         assertThat(cases).isNotEmpty();
@@ -96,14 +95,12 @@ public class SearchServiceTest {
     }
 
     @Test
-    public void shouldFindCasesByNameOrDobNoResults() {
+    public void shouldFindCasesByNameOrDobNoResults() throws IOException {
         when(mockCaseDataRepository.findByNameOrDob(anyString(), anyString(), anyString())).thenReturn(null);
 
-        Map<String, String> caseData = new HashMap<>();
-        caseData.put("first-name", "Rick");
-        caseData.put("last-name", "Sanchez");
-        caseData.put("dob", "1960-01-01");
-        SearchRequest searchRequest = new SearchRequest(null, caseData);
+        ObjectMapper objectMapper = new ObjectMapper();
+        SearchRequest searchRequest = objectMapper.readValue("{\"caseData\" : { \"first-name\" : \"Rick\", \"last-name\" : \"Sanchez\", \"dob\" : \"1960-01-01\"} }", SearchRequest.class);
+
         Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
 
         assertThat(cases).isEmpty();
@@ -116,7 +113,7 @@ public class SearchServiceTest {
 
     @Test
     public void shouldReturnEmptyWhenNoParamsPassed() {
-        SearchRequest searchRequest = new SearchRequest(null, null);
+        SearchRequest searchRequest = new SearchRequest();
         Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
 
         assertThat(cases).isEmpty();
@@ -128,13 +125,10 @@ public class SearchServiceTest {
     }
 
     @Test
-    public void shouldReturnEmptyWhenAllParamsPassed() {
-        Map<String, String> caseData = new HashMap<>();
-        caseData.put("first-name", "Rick");
-        caseData.put("last-name", "Sanchez");
-        caseData.put("dob", "1960-01-01");
+    public void shouldReturnEmptyWhenAllParamsPassed() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        SearchRequest searchRequest = objectMapper.readValue("{ \"caseReference\" : \"fsfd\", \"caseData\" : { \"first-name\" : \"Rick\", \"last-name\" : \"Sanchez\", \"dob\" : \"1960-01-01\"} }", SearchRequest.class);
 
-        SearchRequest searchRequest = new SearchRequest("NoMatter", caseData);
         Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
 
         assertThat(cases).isEmpty();

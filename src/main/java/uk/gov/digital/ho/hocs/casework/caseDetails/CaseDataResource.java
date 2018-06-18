@@ -35,10 +35,10 @@ class CaseDataResource {
     }
 
     @RequestMapping(value = "/case/{caseUuid}", method = RequestMethod.PUT, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<UpdateCaseResponse> updateCase(@PathVariable UUID caseUuid, @RequestBody UpdateCaseRequest request, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity updateCase(@PathVariable UUID caseUuid, @RequestBody UpdateCaseRequest request, @RequestHeader("X-Auth-Username") String username) {
         try {
-            CaseData caseData = caseDataService.updateCase(caseUuid, request.getCaseType(), username);
-            return ResponseEntity.ok(UpdateCaseResponse.from(caseData));
+            caseDataService.updateCase(caseUuid, request.getCaseType(), username);
+            return ResponseEntity.ok().build();
         } catch (EntityCreationException | EntityNotFoundException e) {
             return ResponseEntity.badRequest().build();
         }
@@ -55,10 +55,10 @@ class CaseDataResource {
     }
 
     @RequestMapping(value = "/case/{caseUuid}/stage/{stageUuid}", method = RequestMethod.PUT, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<UpdateStageResponse> updateStage(@PathVariable UUID caseUuid, @PathVariable UUID stageUuid, @RequestBody UpdateStageRequest request, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity updateStage(@PathVariable UUID caseUuid, @PathVariable UUID stageUuid, @RequestBody UpdateStageRequest request, @RequestHeader("X-Auth-Username") String username) {
         try {
-            StageData stageData = caseDataService.updateStage(caseUuid, stageUuid, request.getStageType(), request.getStageData(), username);
-            return ResponseEntity.ok(UpdateStageResponse.from(stageData));
+            caseDataService.updateStage(caseUuid, stageUuid, request.getStageType(), request.getStageData(), username);
+            return ResponseEntity.ok().build();
         } catch (EntityNotFoundException | EntityCreationException e) {
             return ResponseEntity.badRequest().build();
         }

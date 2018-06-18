@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,18 +19,18 @@ public class SearchRequestTest {
         SearchRequest searchRequest = new SearchRequest();
 
         assertThat(searchRequest.getCaseData()).isEmpty();
-        assertThat(searchRequest.getCaseReference()).isEmpty();
+        assertThat(searchRequest.getCaseReference()).isNotNull();
     }
 
     @Test
-    public void testCreateWithEntities() {
+    public void testCreateWithEntities() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        SearchRequest searchRequest = objectMapper.readValue("{ \"caseReference\" : \"fsfd\", \"caseData\" : { \"key\" : \"value\"} }", SearchRequest.class);
+
         Map<String, String> caseData = new HashMap<>();
         caseData.put("key", "value");
-        String reference = "reference";
-        SearchRequest searchRequest = new SearchRequest(reference, caseData);
-
         assertThat(searchRequest.getCaseData()).isEqualTo(caseData);
-        assertThat(searchRequest.getCaseReference()).isEqualTo(reference);
+        assertThat(searchRequest.getCaseReference()).isEqualTo("fsfd");
     }
 
     @Test
@@ -46,7 +47,7 @@ public class SearchRequestTest {
         Map<String, String> caseData = new HashMap<>();
         caseData.put("key", "value");
         String reference = "reference";
-        SearchRequest searchRequest = new SearchRequest(reference, caseData);
+        SearchRequest searchRequest = new SearchRequest();
 
         ObjectMapper om = spy(new ObjectMapper());
         when(om.writeValueAsString(searchRequest)).thenThrow(new JsonProcessingException("") {
