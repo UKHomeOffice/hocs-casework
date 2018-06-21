@@ -24,10 +24,12 @@ class ProxyingNotificationClient extends NotificationClient {
     }
 
     void sendEmail(SendEmailRequest sendEmailRequest, String templateId) {
-        try {
-            sendEmail(templateId, sendEmailRequest.getEmailAddress(), sendEmailRequest.getPersonalisation(), null);
-        } catch (NotificationClientException e) {
-            e.printStackTrace();
+        if (sendEmailRequest != null && templateId != null) {
+            try {
+                sendEmail(templateId, sendEmailRequest.getEmailAddress(), sendEmailRequest.getPersonalisation(), null);
+            } catch (NotificationClientException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -30,7 +30,6 @@ public class StageDataAudit implements Serializable {
     @Getter
     private LocalDateTime timestamp;
 
-
     @Column(name ="data")
     @Setter
     @Getter
