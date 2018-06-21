@@ -20,6 +20,11 @@ public class CaseData implements Serializable {
     @Getter
     private Set<StageData> stages = new HashSet<>();
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
+    @Getter
+    private Set<Document> documents = new HashSet<>();
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
