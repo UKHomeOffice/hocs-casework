@@ -23,6 +23,16 @@ public class SearchRequestTest {
     }
 
     @Test
+    public void testCreateNull() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        SearchRequest searchRequest = objectMapper.readValue("{}", SearchRequest.class);
+
+        Map<String, String> caseData = new HashMap<>();
+        assertThat(searchRequest.getCaseData()).isEqualTo(caseData);
+        assertThat(searchRequest.getCaseReference()).isEqualTo("");
+    }
+
+    @Test
     public void testCreateWithEntities() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         SearchRequest searchRequest = objectMapper.readValue("{ \"caseReference\" : \"fsfd\", \"caseData\" : { \"key\" : \"value\"} }", SearchRequest.class);

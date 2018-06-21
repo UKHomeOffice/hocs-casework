@@ -66,21 +66,19 @@ public class RshCaseDataServiceTest {
     @Test(expected = EntityCreationException.class)
     public void shouldCreateRshCaseNullData1() throws EntityCreationException {
 
-        SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
         rshCaseService.createRshCase(
                 null,
-                sendEmailRequest,
+                new SendRshEmailRequest(),
                 testUser);
     }
 
     @Test
     public void shouldCreateRshCaseNullData2() throws EntityCreationException {
 
-        SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
         try {
             rshCaseService.createRshCase(
                     null,
-                    sendEmailRequest,
+                    new SendRshEmailRequest(),
                     testUser);
         } catch (EntityCreationException e) {
             //Do nothing.
@@ -96,16 +94,15 @@ public class RshCaseDataServiceTest {
         CaseData caseData = new CaseData("", 1L);
         when(caseDataService.createCase(anyString(), anyString())).thenReturn(caseData);
 
-        Map<String, String> data = new HashMap<>();
         CaseData caseDataReturn = rshCaseService.createRshCase(
-                data,
+                new HashMap<>(),
                 null,
                 testUser);
 
         assertThat(caseDataReturn).isNotNull();
 
         verify(caseDataService, times(1)).createCase("RSH", testUser);
-        verify(caseDataService, times(1)).createStage(caseData.getUuid(), "Stage", data, testUser);
+        verify(caseDataService, times(1)).createStage(caseData.getUuid(), "Stage", new HashMap<>(), testUser);
         verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class), anyString());
     }
 
