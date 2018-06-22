@@ -125,6 +125,21 @@ public class SearchServiceTest {
     }
 
     @Test
+    public void shouldReturnEmptyWhenNull() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        SearchRequest searchRequest = objectMapper.readValue("{}", SearchRequest.class);
+
+        Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
+
+        assertThat(cases).isEmpty();
+
+        verify(mockCaseDataRepository, times(0)).findByCaseReference(any());
+        verify(mockCaseDataRepository, times(0)).findByNameOrDob(any(), any(), any());
+
+        verify(mockAuditService, times(1)).writeSearchEvent(testUser, searchRequest);
+    }
+
+    @Test
     public void shouldReturnEmptyWhenAllParamsPassed() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         SearchRequest searchRequest = objectMapper.readValue("{ \"caseReference\" : \"fsfd\", \"caseData\" : { \"first-name\" : \"Rick\", \"last-name\" : \"Sanchez\", \"dob\" : \"1960-01-01\"} }", SearchRequest.class);
