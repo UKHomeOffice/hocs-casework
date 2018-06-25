@@ -23,7 +23,7 @@ public class CaseData implements Serializable {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
     @Getter
-    private Set<Document> documents = new HashSet<>();
+    private Set<DocumentData> documentData = new HashSet<>();
 
     @Id
     @Column(name = "id")

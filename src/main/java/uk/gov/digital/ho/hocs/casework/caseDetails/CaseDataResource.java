@@ -34,30 +34,30 @@ class CaseDataResource {
         }
     }
 
-    @RequestMapping(value = "/case/{caseUuid}", method = RequestMethod.PUT, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity updateCase(@PathVariable UUID caseUuid, @RequestBody UpdateCaseRequest request, @RequestHeader("X-Auth-Username") String username) {
+    @RequestMapping(value = "/case/{caseUUID}", method = RequestMethod.PUT, consumes = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity updateCase(@PathVariable UUID caseUUID, @RequestBody UpdateCaseRequest request, @RequestHeader("X-Auth-Username") String username) {
         try {
-            caseDataService.updateCase(caseUuid, request.getCaseType(), username);
+            caseDataService.updateCase(caseUUID, request.getCaseType(), username);
             return ResponseEntity.ok().build();
         } catch (EntityCreationException | EntityNotFoundException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @RequestMapping(value = "/case/{caseUuid}/stage", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUuid, @RequestBody CreateStageRequest request, @RequestHeader("X-Auth-Username") String username) {
+    @RequestMapping(value = "/case/{caseUUID}/stage", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request, @RequestHeader("X-Auth-Username") String username) {
         try {
-            StageData stageData = caseDataService.createStage(caseUuid, request.getStageType(), request.getStageData(), username);
+            StageData stageData = caseDataService.createStage(caseUUID, request.getStageType(), request.getStageData(), username);
             return ResponseEntity.ok(CreateStageResponse.from(stageData));
         } catch (EntityCreationException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
-    @RequestMapping(value = "/case/{caseUuid}/stage/{stageUuid}", method = RequestMethod.PUT, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity updateStage(@PathVariable UUID caseUuid, @PathVariable UUID stageUuid, @RequestBody UpdateStageRequest request, @RequestHeader("X-Auth-Username") String username) {
+    @RequestMapping(value = "/case/{caseUUID}/stage/{stageUuid}", method = RequestMethod.PUT, consumes = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity updateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUuid, @RequestBody UpdateStageRequest request, @RequestHeader("X-Auth-Username") String username) {
         try {
-            caseDataService.updateStage(caseUuid, stageUuid, request.getStageType(), request.getStageData(), username);
+            caseDataService.updateStage(caseUUID, stageUuid, request.getStageType(), request.getStageData(), username);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException | EntityCreationException e) {
             return ResponseEntity.badRequest().build();

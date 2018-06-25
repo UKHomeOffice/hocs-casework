@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.Document;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentStatus;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentType;
 
 import javax.transaction.Transactional;
 import java.util.UUID;
@@ -27,54 +29,77 @@ public class DocumentService {
     }
 
     @Transactional
-    public void createDocument(Document document, String userName) throws EntityCreationException {
-        log.info("Requesting Create Document: {} for case {}, User: {}", document.getDocumentUUID(), document.getCaseUUID(), userName);
-        if (!isNullOrEmpty(document.getCaseUUID()) && !isNullOrEmpty(document.getDocumentUUID())) {
-            documentRepository.save(document);
-            log.info("Created Document {} for case {}", document.getDocumentUUID(), document.getCaseUUID());
+    public DocumentData addDocument(UUID caseUUID, UUID documentUUID, String documentDisplayName, DocumentType documentType, String username) throws EntityCreationException {
+        log.info("Requesting Create DocumentData: {} for case {}, User: {}", documentUUID, caseUUID, username);
+        if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(documentUUID)) {
+            DocumentData documentData = new DocumentData(caseUUID, documentUUID, documentDisplayName, documentType, DocumentStatus.PENDING, Boolean.FALSE);
+            documentRepository.save(documentData);
+            auditService.writeAddDocumentEvent(username, documentData);
+            log.info("Created DocumentData {} for case {}", documentData.getDocumentUUID(), documentData.getCaseUUID());
+            return documentData;
         } else {
-            throw new EntityCreationException("Failed to create document details, CaseUUID was null");
+            throw new EntityCreationException("Failed to create documentData details, CaseUUID was null");
         }
     }
 
     @Transactional
-    public Document updateDocument(UUID caseUUID, UUID documentUUID, String s3OrigLink, String s3PdfLink, String status, String userName) throws EntityCreationException, EntityNotFoundException {
-        log.info("Requesting Update Case Document: {} for case {}, User: {}", documentUUID, caseUUID, userName);
+    public DocumentData updateDocument(UUID caseUUID, UUID documentUUID, String s3OrigLink, String s3PdfLink, DocumentStatus status, String username) throws EntityCreationException, EntityNotFoundException {
+        log.info("Requesting Update Case DocumentData: {} for case {}, User: {}", documentUUID, caseUUID, username);
         if (!isNullOrEmpty(documentUUID) && !isNullOrEmpty(documentUUID)) {
-            Document document = documentRepository.findByDocumentUuid(documentUUID);
-            if (document != null) {
-                document.setS3OrigLink(s3OrigLink);
-                document.setS3PdfLink(s3PdfLink);
-                document.setStatus(status);
-                documentRepository.save(document);
-                log.info("Update Document {} for case {}", document.getDocumentUUID(), document.getCaseUUID());
-                return document;
+            DocumentData documentData = documentRepository.findByDocumentUUID(documentUUID);
+            if (documentData != null) {
+                documentData.setS3OrigLink(s3OrigLink);
+                documentData.setS3PdfLink(s3PdfLink);
+                documentData.setStatus(status);
+                documentRepository.save(documentData);
+                auditService.writeUpdateDocumentEvent(username, documentData);
+                log.info("Update DocumentData {} for case {}", documentData.getDocumentUUID(), documentData.getCaseUUID());
+                return documentData;
             } else {
-                throw new EntityNotFoundException("Document not found!");
+                throw new EntityNotFoundException("DocumentData not found!");
             }
         } else {
             throw new EntityCreationException("Failed to create document details, CaseUUID was null");
         }
-
     }
 
     @Transactional
-    public Document DeleteCaseDocument(UUID caseUUID, UUID documentUUID, String userName) throws
+    public DocumentData deleteDocument(UUID caseUUID, UUID documentUUID, String username) throws
             EntityCreationException, EntityNotFoundException {
-        log.info("Requesting Delete Document: {} for case {}, User: {}", documentUUID, caseUUID, userName);
+        log.info("Requesting Delete DocumentData: {} for case {}, User: {}", documentUUID, caseUUID, username);
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(documentUUID)) {
-            Document document = documentRepository.findByDocumentUuid(documentUUID);
-            if (document != null) {
-                document.setDeleted(Boolean.TRUE);
-                documentRepository.save(document);
-                log.info("Set Deleted to TRUE for Document {} for case {}", document.getDocumentUUID(), document.getCaseUUID());
-                return document;
+            DocumentData documentData = documentRepository.findByDocumentUUID(documentUUID);
+            if (documentData != null) {
+                documentData.setDeleted(Boolean.TRUE);
+                documentRepository.save(documentData);
+                auditService.writeDeleteDocumentEvent(username, documentData);
+                log.info("Set Deleted to TRUE for DocumentData {} for case {}", documentData.getDocumentUUID(), documentData.getCaseUUID());
+                return documentData;
             } else {
-                throw new EntityNotFoundException("Document not found!");
+                throw new EntityNotFoundException("DocumentData not found!");
             }
         } else {
             throw new EntityCreationException("Failed to delete document details, CaseUUID or DocumentUUID was null");
         }
+    }
 
+    @Transactional
+    public DocumentData unDeleteDocument(UUID caseUUID, UUID documentUUID, String username) throws
+            EntityCreationException, EntityNotFoundException {
+        log.info("Requesting unDelete DocumentData: {} for case {}, User: {}", documentUUID, caseUUID, username);
+        if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(documentUUID)) {
+            DocumentData documentData = documentRepository.findByDocumentUUID(documentUUID);
+            if (documentData != null) {
+                documentData.setDeleted(Boolean.FALSE);
+                documentRepository.save(documentData);
+                auditService.writeUndeleteDocumentEvent(username, documentData);
+                log.info("Set Deleted to FALSE for DocumentData {} for case {}", documentData.getDocumentUUID(), documentData.getCaseUUID());
+                return documentData;
+            } else {
+                throw new EntityNotFoundException("DocumentData not found!");
+            }
+        } else {
+            throw new EntityCreationException("Failed to unDelete document details, CaseUUID or DocumentUUID was null");
+        }
     }
 }

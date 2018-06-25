@@ -79,10 +79,10 @@ public class CaseDataService {
     }
 
     @Transactional
-    public CaseData updateCase(UUID caseUuid, String caseType, String username) throws EntityCreationException, EntityNotFoundException {
-        log.info("Requesting Update Case: {}, Type: {}, User: {}", caseUuid, caseType, username);
-        if (!isNullOrEmpty(caseUuid) && !isNullOrEmpty(caseType)) {
-            CaseData caseData = caseDataRepository.findByUuid(caseUuid);
+    public CaseData updateCase(UUID caseUUID, String caseType, String username) throws EntityCreationException, EntityNotFoundException {
+        log.info("Requesting Update Case: {}, Type: {}, User: {}", caseUUID, caseType, username);
+        if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(caseType)) {
+            CaseData caseData = caseDataRepository.findByUuid(caseUUID);
             if (caseData != null) {
                 caseData.setType(caseType);
                 caseDataRepository.save(caseData);
@@ -125,7 +125,7 @@ public class CaseDataService {
             CaseData caseData = caseDataRepository.findByUuid(uuid);
             auditService.writeGetCaseEvent(username, uuid);
             if (caseData != null) {
-                log.info("Found Case, Reference: {} ({}), User: {}", caseData.getReference(), caseData.getUuid(), username);
+                log.info("Found Case, Reference: {} ({}), UseFr: {}", caseData.getReference(), caseData.getUuid(), username);
                 return caseData;
             } else {
                 throw new EntityNotFoundException("Case not Found!");

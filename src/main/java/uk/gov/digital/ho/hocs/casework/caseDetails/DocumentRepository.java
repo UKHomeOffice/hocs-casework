@@ -1,11 +1,11 @@
 package uk.gov.digital.ho.hocs.casework.caseDetails;
 
 import org.springframework.data.repository.CrudRepository;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.Document;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
 
 import java.util.UUID;
 
-public interface DocumentRepository extends CrudRepository<Document, String> {
+public interface DocumentRepository extends CrudRepository<DocumentData, String> {
 
-    Document findByDocumentUuid(UUID uuid);
+    DocumentData findByDocumentUUID(UUID uuid);
 }

@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "case_document")
 @Where(clause = "deleted = FALSE")
-public class Document implements Serializable {
+public class DocumentData implements Serializable {
 
     @Id
     @Column(name = "id")
@@ -29,18 +29,15 @@ public class Document implements Serializable {
 
     @Column(name = "document_display_name")
     @Getter
-    @NonNull
     private String documentDisplayName;
 
     @Column(name = "document_type")
     @Getter
-    @NonNull
-    private String documentType;
+    private DocumentType documentType;
 
     @Column(name = "timestamp")
     @Getter
-    @NonNull
-    private LocalDateTime timestamp;
+    private LocalDateTime timestamp = LocalDateTime.now();
 
     @Column(name = "s3_orig_link")
     @Getter
@@ -55,21 +52,18 @@ public class Document implements Serializable {
     @Column(name = "status")
     @Getter
     @Setter
-    @NonNull
-    private String status;
+    private DocumentStatus status;
 
     @Column(name = "deleted")
     @Getter
     @Setter
-    @NonNull
     private Boolean deleted;
 
-    public Document(UUID caseUUID, UUID documentUUID, String documentDisplayName, String documentType, LocalDateTime timestamp, String status, Boolean deleted) {
+    public DocumentData(UUID caseUUID, UUID documentUUID, String documentDisplayName, DocumentType documentType, DocumentStatus status, Boolean deleted) {
         this.caseUUID = caseUUID;
         this.documentUUID = documentUUID;
         this.documentDisplayName = documentDisplayName;
         this.documentType = documentType;
-        this.timestamp = timestamp;
         this.status = status;
         this.deleted = deleted;
     }

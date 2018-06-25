@@ -8,6 +8,7 @@ import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
@@ -39,28 +40,48 @@ public class AuditService {
         auditRepository.save(auditEntry);
     }
 
-    public void writeGetCaseEvent(String username, UUID caseUuid) {
-        AuditEntry auditEntry = new AuditEntry(username, caseUuid.toString(), AuditAction.GET_CASE);
+    public void writeGetCaseEvent(String username, UUID caseUUID) {
+        AuditEntry auditEntry = new AuditEntry(username, caseUUID.toString(), AuditAction.GET_CASE);
         auditRepository.save(auditEntry);
     }
 
     public void writeCreateCaseEvent(String username, CaseData caseData) {
-        AuditEntry auditEntry = new AuditEntry(username, caseData, null, AuditAction.CREATE_CASE);
+        AuditEntry auditEntry = new AuditEntry(username, caseData, null, null,AuditAction.CREATE_CASE);
         auditRepository.save(auditEntry);
     }
 
     public void writeUpdateCaseEvent(String username, CaseData caseData) {
-        AuditEntry auditEntry = new AuditEntry(username, caseData, null, AuditAction.UPDATE_CASE);
+        AuditEntry auditEntry = new AuditEntry(username, caseData, null, null, AuditAction.UPDATE_CASE);
         auditRepository.save(auditEntry);
     }
 
     public void writeCreateStageEvent(String username, StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.CREATE_STAGE);
+        AuditEntry auditEntry = new AuditEntry(username, null, stageData,null, AuditAction.CREATE_STAGE);
         auditRepository.save(auditEntry);
     }
 
     public void writeUpdateStageEvent(String username, StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.UPDATE_STAGE);
+        AuditEntry auditEntry = new AuditEntry(username, null, stageData, null,AuditAction.UPDATE_STAGE);
+        auditRepository.save(auditEntry);
+    }
+
+    public void writeAddDocumentEvent(String username, DocumentData documentData) {
+        AuditEntry auditEntry = new AuditEntry(username, null, null, documentData,AuditAction.DOCUMENT_ADD);
+        auditRepository.save(auditEntry);
+    }
+
+    public void writeUpdateDocumentEvent(String username, DocumentData documentData) {
+        AuditEntry auditEntry = new AuditEntry(username, null, null, documentData,AuditAction.UPDATE_DOCUMENT);
+        auditRepository.save(auditEntry);
+    }
+
+    public void writeDeleteDocumentEvent(String username, DocumentData documentData) {
+        AuditEntry auditEntry = new AuditEntry(username, null, null, documentData,AuditAction.DOCUMENT_DELETE);
+        auditRepository.save(auditEntry);
+    }
+
+    public void writeUndeleteDocumentEvent(String username, DocumentData documentData) {
+        AuditEntry auditEntry = new AuditEntry(username, null, null, documentData,AuditAction.DOCUMENT_UNDELETE);
         auditRepository.save(auditEntry);
     }
 
