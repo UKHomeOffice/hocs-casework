@@ -46,42 +46,42 @@ public class AuditService {
     }
 
     public void writeCreateCaseEvent(String username, CaseData caseData) {
-        AuditEntry auditEntry = new AuditEntry(username, caseData, null, null,AuditAction.CREATE_CASE);
+        AuditEntry auditEntry = new AuditEntry(username, caseData, null, AuditAction.CREATE_CASE);
         auditRepository.save(auditEntry);
     }
 
     public void writeUpdateCaseEvent(String username, CaseData caseData) {
-        AuditEntry auditEntry = new AuditEntry(username, caseData, null, null, AuditAction.UPDATE_CASE);
+        AuditEntry auditEntry = new AuditEntry(username, caseData, null,  AuditAction.UPDATE_CASE);
         auditRepository.save(auditEntry);
     }
 
     public void writeCreateStageEvent(String username, StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(username, null, stageData,null, AuditAction.CREATE_STAGE);
+        AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.CREATE_STAGE);
         auditRepository.save(auditEntry);
     }
 
     public void writeUpdateStageEvent(String username, StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(username, null, stageData, null,AuditAction.UPDATE_STAGE);
+        AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.UPDATE_STAGE);
         auditRepository.save(auditEntry);
     }
 
     public void writeAddDocumentEvent(String username, DocumentData documentData) {
-        AuditEntry auditEntry = new AuditEntry(username, null, null, documentData,AuditAction.DOCUMENT_ADD);
+        AuditEntry auditEntry = new AuditEntry(username,  documentData,AuditAction.ADD_DOCUMENT);
         auditRepository.save(auditEntry);
     }
 
     public void writeUpdateDocumentEvent(String username, DocumentData documentData) {
-        AuditEntry auditEntry = new AuditEntry(username, null, null, documentData,AuditAction.UPDATE_DOCUMENT);
+        AuditEntry auditEntry = new AuditEntry(username,  documentData,AuditAction.UPDATE_DOCUMENT);
         auditRepository.save(auditEntry);
     }
 
     public void writeDeleteDocumentEvent(String username, DocumentData documentData) {
-        AuditEntry auditEntry = new AuditEntry(username, null, null, documentData,AuditAction.DOCUMENT_DELETE);
+        AuditEntry auditEntry = new AuditEntry(username,  documentData,AuditAction.DELETE_DOCUMENT);
         auditRepository.save(auditEntry);
     }
 
     public void writeUndeleteDocumentEvent(String username, DocumentData documentData) {
-        AuditEntry auditEntry = new AuditEntry(username, null, null, documentData,AuditAction.DOCUMENT_UNDELETE);
+        AuditEntry auditEntry = new AuditEntry(username,  documentData,AuditAction.UNDELETE_DOCUMENT);
         auditRepository.save(auditEntry);
     }
 

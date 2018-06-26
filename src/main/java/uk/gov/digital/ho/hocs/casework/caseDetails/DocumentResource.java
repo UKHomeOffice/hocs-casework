@@ -3,10 +3,8 @@ package uk.gov.digital.ho.hocs.casework.caseDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CreateStageRequest;
-import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CreateStageResponse;
-import uk.gov.digital.ho.hocs.casework.caseDetails.dto.DocumentRequest;
-import uk.gov.digital.ho.hocs.casework.caseDetails.dto.DocumentResponse;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentRequest;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentResponse;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
 
@@ -25,10 +23,10 @@ public class DocumentResource {
     }
 
     @RequestMapping(value = "/case/{caseUUID}/document", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<DocumentResponse> AddDocument(@PathVariable UUID caseUUID, @RequestBody DocumentRequest request, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity<AddDocumentResponse> AddDocument(@PathVariable UUID caseUUID, @RequestBody AddDocumentRequest request, @RequestHeader("X-Auth-Username") String username) {
         try {
             DocumentData documentData = documentService.addDocument(caseUUID, request.getDocumentUUID(), request.getDocumentDisplayName(), request.getDocumentType(), username);
-            return ResponseEntity.ok(DocumentResponse.from(documentData));
+            return ResponseEntity.ok(AddDocumentResponse.from(documentData));
         } catch (EntityCreationException e) {
             return ResponseEntity.badRequest().build();
         }

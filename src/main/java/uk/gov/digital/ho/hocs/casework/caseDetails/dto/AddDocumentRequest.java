@@ -10,9 +10,9 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
-public class DocumentRequest {
+public class AddDocumentRequest {
 
-    @JsonProperty("DocumentUUID")
+    @JsonProperty("documentUUID")
     private UUID documentUUID;
 
     @JsonProperty("documentDisplayName")

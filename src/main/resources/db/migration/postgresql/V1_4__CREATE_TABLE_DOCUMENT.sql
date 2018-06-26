@@ -13,10 +13,11 @@ CREATE TABLE IF NOT EXISTS documentData
 
   CONSTRAINT document_uuid_idempotent UNIQUE (document_uuid),
 
-  CONSTRAINT fk_stage_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)
+  CONSTRAINT fk_document_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)
 );
 
-CREATE INDEX idx_document_uuid  ON documentData (document_uuid);
+CREATE INDEX idx_document_document_uuid  ON documentData (document_uuid);
+CREATE INDEX idx_document_casd_uuid  ON documentData (case_uuid);
 
 DROP TABLE IF EXISTS audit_document;
 
@@ -37,4 +38,5 @@ CREATE TABLE IF NOT EXISTS audit_document
 CREATE INDEX idx_audit_document_document_type ON audit_document (document_type);
 CREATE INDEX idx_audit_document_status ON audit_document (status);
 CREATE INDEX idx_audit_document_document_uuid ON audit_document (document_uuid);
+CREATE INDEX idx_audit_document_case_uuid ON audit_document (case_uuid);
 CREATE INDEX idx_audit_document_timestamp ON audit_document (timestamp);

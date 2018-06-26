@@ -73,7 +73,7 @@ public class DocumentServiceTest {
 
     @Test
     public void shouldUpdateDocument() throws EntityCreationException, EntityNotFoundException {
-        when(documentRepository.findByDocumentUUID(any())).thenReturn(new DocumentData(uuid, uuid, DOCUMENT_DISPLAY_NAME, DocumentType.ORIGINAL, DocumentStatus.PENDING, Boolean.FALSE));
+        when(documentRepository.findByDocumentUUID(any())).thenReturn(new DocumentData(uuid, uuid, DOCUMENT_DISPLAY_NAME, DocumentType.ORIGINAL));
 
     DocumentData documentData = documentService.updateDocument(uuid, uuid, S3_LINK, S3_LINK, DocumentStatus.UPLOADED, testUser);
 
@@ -109,7 +109,7 @@ public class DocumentServiceTest {
 
     @Test
     public void shouldOnDeleteDocumentSetDeleteToTrue() throws EntityCreationException, EntityNotFoundException {
-        when(documentRepository.findByDocumentUUID(any())).thenReturn(new DocumentData(uuid, uuid, DOCUMENT_DISPLAY_NAME, DocumentType.ORIGINAL, DocumentStatus.UPLOADED, Boolean.FALSE));
+        when(documentRepository.findByDocumentUUID(any())).thenReturn(new DocumentData(uuid, uuid, DOCUMENT_DISPLAY_NAME, DocumentType.ORIGINAL));
 
         DocumentData documentData = documentService.deleteDocument(uuid, uuid,testUser);
 
@@ -146,7 +146,7 @@ public class DocumentServiceTest {
 
     @Test
     public void shouldOnUndeleteDocumentSetDeleteToFalse() throws EntityCreationException, EntityNotFoundException {
-        when(documentRepository.findByDocumentUUID(any())).thenReturn(new DocumentData(uuid, uuid, DOCUMENT_DISPLAY_NAME, DocumentType.ORIGINAL, DocumentStatus.PENDING, Boolean.FALSE));
+        when(documentRepository.findByDocumentUUID(any())).thenReturn(new DocumentData(uuid, uuid, DOCUMENT_DISPLAY_NAME, DocumentType.ORIGINAL));
 
         DocumentData documentData = documentService.unDeleteDocument(uuid, uuid,testUser);
 
