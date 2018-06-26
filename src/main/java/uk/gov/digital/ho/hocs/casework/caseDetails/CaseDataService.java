@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentToCaseRequest;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
@@ -50,6 +51,13 @@ public class CaseDataService {
     }
 
     @Transactional
+    public void addDocumentToCase(AddDocumentToCaseRequest document) {
+        log.info("Adding document to case {}", document.getCaseUUID());
+
+    }
+
+
+    @Transactional
     public CaseData createCase(String caseType, String username) throws EntityCreationException {
         log.info("Requesting Create Case, Type: {}, User: {}", caseType, username);
         if (!isNullOrEmpty(caseType)) {
@@ -79,10 +87,10 @@ public class CaseDataService {
     }
 
     @Transactional
-    public CaseData updateCase(UUID caseUuid, String caseType, String username) throws EntityCreationException, EntityNotFoundException {
-        log.info("Requesting Update Case: {}, Type: {}, User: {}", caseUuid, caseType, username);
-        if (!isNullOrEmpty(caseUuid) && !isNullOrEmpty(caseType)) {
-            CaseData caseData = caseDataRepository.findByUuid(caseUuid);
+    public CaseData updateCase(UUID caseUUID, String caseType, String username) throws EntityCreationException, EntityNotFoundException {
+        log.info("Requesting Update Case: {}, Type: {}, User: {}", caseUUID, caseType, username);
+        if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(caseType)) {
+            CaseData caseData = caseDataRepository.findByUuid(caseUUID);
             if (caseData != null) {
                 caseData.setType(caseType);
                 caseDataRepository.save(caseData);
@@ -125,7 +133,7 @@ public class CaseDataService {
             CaseData caseData = caseDataRepository.findByUuid(uuid);
             auditService.writeGetCaseEvent(username, uuid);
             if (caseData != null) {
-                log.info("Found Case, Reference: {} ({}), User: {}", caseData.getReference(), caseData.getUuid(), username);
+                log.info("Found Case, Reference: {} ({}), UseFr: {}", caseData.getReference(), caseData.getUuid(), username);
                 return caseData;
             } else {
                 throw new EntityNotFoundException("Case not Found!");

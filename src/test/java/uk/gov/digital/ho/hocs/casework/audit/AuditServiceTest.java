@@ -6,8 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.*;
 import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
@@ -91,6 +90,42 @@ public class AuditServiceTest {
         StageData stageData = new StageData(UUID.randomUUID(), "", "");
 
         auditService.writeUpdateStageEvent(testUser, stageData);
+
+        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
+    }
+
+    @Test
+    public void shouldWriteAddDocumentEvent() {
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL);
+
+        auditService.writeAddDocumentEvent(testUser, documentData);
+
+        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
+    }
+
+    @Test
+    public void shouldWriteUpdateDocumentEvent() {
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL);
+
+        auditService.writeUpdateDocumentEvent(testUser, documentData);
+
+        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
+    }
+
+    @Test
+    public void shouldWriteDeleteDocumentEvent() {
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL);
+
+        auditService.writeDeleteDocumentEvent(testUser, documentData);
+
+        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
+    }
+
+    @Test
+    public void shouldWriteUndeleteDocumentEvent() {
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL);
+
+        auditService.writeUndeleteDocumentEvent(testUser, documentData);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }

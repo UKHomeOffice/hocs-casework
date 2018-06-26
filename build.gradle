@@ -1,6 +1,7 @@
 buildscript {
 	ext {
 		springBootVersion = '2.0.1.RELEASE'
+		camelVersion = '2.18.1'
 	}
 	repositories {
 		mavenCentral()
@@ -32,6 +33,12 @@ dependencies {
 	compile('org.springframework.boot:spring-boot-starter-webflux')
 	compile('org.flywaydb:flyway-core')
 
+	compile group: 'org.apache.camel', name: 'camel-spring-boot', version: camelVersion
+	compile group: 'org.apache.camel', name: 'camel-jackson', version: camelVersion
+	compile group: 'org.apache.camel', name: 'camel-aws', version: camelVersion
+	compile group: 'org.apache.camel', name: 'camel-gson', version: camelVersion
+	compile group: 'org.apache.camel', name: 'camel-rabbitmq', version: camelVersion
+
 	compile('org.apache.commons:commons-csv:1.5')
 	compile('uk.gov.service.notify:notifications-java-client:3.9.1-RELEASE')
 
@@ -39,6 +46,7 @@ dependencies {
 
 	compileOnly('org.projectlombok:lombok')
 
+	testCompile group: 'org.apache.camel', name: 'camel-test-spring', version: camelVersion
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	testCompile('io.projectreactor:reactor-test')
 	testCompile('org.assertj:assertj-core')
