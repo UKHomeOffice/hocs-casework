@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentToCaseRequest;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
@@ -48,6 +49,13 @@ public class CaseDataService {
 
         return data;
     }
+
+    @Transactional
+    public void addDocumentToCase(AddDocumentToCaseRequest document) {
+        log.info("Adding document to case {}", document.getCaseUUID());
+
+    }
+
 
     @Transactional
     public CaseData createCase(String caseType, String username) throws EntityCreationException {
