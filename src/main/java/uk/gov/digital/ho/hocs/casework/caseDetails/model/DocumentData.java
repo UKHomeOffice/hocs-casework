@@ -52,19 +52,25 @@ public class DocumentData implements Serializable {
     @Column(name = "status")
     @Getter
     @Setter
-    private DocumentStatus status;
+    private DocumentStatus status = DocumentStatus.PENDING;
 
     @Column(name = "deleted")
     @Getter
     @Setter
-    private Boolean deleted;
+    private Boolean deleted = Boolean.FALSE;
 
-    public DocumentData(UUID caseUUID, UUID documentUUID, String documentDisplayName, DocumentType documentType, DocumentStatus status, Boolean deleted) {
+    public void setDeleted() {
+        this.deleted = Boolean.TRUE;
+    }
+
+    public void setUnDeleted() {
+        this.deleted = Boolean.FALSE;
+    }
+
+    public DocumentData(UUID caseUUID, UUID documentUUID, String documentDisplayName, DocumentType documentType) {
         this.caseUUID = caseUUID;
         this.documentUUID = documentUUID;
         this.documentDisplayName = documentDisplayName;
         this.documentType = documentType;
-        this.status = status;
-        this.deleted = deleted;
     }
 }

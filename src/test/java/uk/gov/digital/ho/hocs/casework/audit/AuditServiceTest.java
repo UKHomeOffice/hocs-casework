@@ -96,7 +96,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteAddDocumentEvent() {
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL,DocumentStatus.PENDING,Boolean.FALSE);
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL);
 
         auditService.writeAddDocumentEvent(testUser, documentData);
 
@@ -105,7 +105,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUpdateDocumentEvent() {
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL,DocumentStatus.UPLOADED,Boolean.FALSE);
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL);
 
         auditService.writeUpdateDocumentEvent(testUser, documentData);
 
@@ -114,7 +114,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteDeleteDocumentEvent() {
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL,DocumentStatus.UPLOADED,Boolean.FALSE);
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL);
 
         auditService.writeDeleteDocumentEvent(testUser, documentData);
 
@@ -123,7 +123,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUndeleteDocumentEvent() {
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL,DocumentStatus.UPLOADED,Boolean.FALSE);
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL);
 
         auditService.writeUndeleteDocumentEvent(testUser, documentData);
 

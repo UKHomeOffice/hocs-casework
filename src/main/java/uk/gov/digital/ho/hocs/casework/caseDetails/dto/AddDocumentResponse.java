@@ -9,11 +9,11 @@ import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class DocumentResponse {
+public class AddDocumentResponse {
 
     private final UUID uuid;
 
-    public static DocumentResponse from(DocumentData documentData) {
-        return new DocumentResponse(documentData.getDocumentUUID());
+    public static AddDocumentResponse from(DocumentData documentData) {
+        return new AddDocumentResponse(documentData.getDocumentUUID());
     }
 }

@@ -32,13 +32,13 @@ public class DocumentService {
     public DocumentData addDocument(UUID caseUUID, UUID documentUUID, String documentDisplayName, DocumentType documentType, String username) throws EntityCreationException {
         log.info("Requesting Create DocumentData: {} for case {}, User: {}", documentUUID, caseUUID, username);
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(documentUUID)) {
-            DocumentData documentData = new DocumentData(caseUUID, documentUUID, documentDisplayName, documentType, DocumentStatus.PENDING, Boolean.FALSE);
+            DocumentData documentData = new DocumentData(caseUUID, documentUUID, documentDisplayName, documentType);
             documentRepository.save(documentData);
             auditService.writeAddDocumentEvent(username, documentData);
             log.info("Created DocumentData {} for case {}", documentData.getDocumentUUID(), documentData.getCaseUUID());
             return documentData;
         } else {
-            throw new EntityCreationException("Failed to create documentData details, CaseUUID was null");
+            throw new EntityCreationException("Failed to create documentData details, CaseUUID or DocumentUUID was null");
         }
     }
 
@@ -59,7 +59,7 @@ public class DocumentService {
                 throw new EntityNotFoundException("DocumentData not found!");
             }
         } else {
-            throw new EntityCreationException("Failed to create document details, CaseUUID was null");
+            throw new EntityCreationException("Failed to create document details, CaseUUID or DocumentUUID was null");
         }
     }
 
@@ -70,7 +70,7 @@ public class DocumentService {
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(documentUUID)) {
             DocumentData documentData = documentRepository.findByDocumentUUID(documentUUID);
             if (documentData != null) {
-                documentData.setDeleted(Boolean.TRUE);
+                documentData.setDeleted();
                 documentRepository.save(documentData);
                 auditService.writeDeleteDocumentEvent(username, documentData);
                 log.info("Set Deleted to TRUE for DocumentData {} for case {}", documentData.getDocumentUUID(), documentData.getCaseUUID());
@@ -90,7 +90,7 @@ public class DocumentService {
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(documentUUID)) {
             DocumentData documentData = documentRepository.findByDocumentUUID(documentUUID);
             if (documentData != null) {
-                documentData.setDeleted(Boolean.FALSE);
+                documentData.setUnDeleted();
                 documentRepository.save(documentData);
                 auditService.writeUndeleteDocumentEvent(username, documentData);
                 log.info("Set Deleted to FALSE for DocumentData {} for case {}", documentData.getDocumentUUID(), documentData.getCaseUUID());

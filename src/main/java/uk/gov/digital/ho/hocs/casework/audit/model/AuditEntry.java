@@ -40,7 +40,7 @@ public class AuditEntry {
     @Column(name = "event_action", nullable = false)
     private final String eventAction;
 
-    public AuditEntry(String username, CaseData caseInstance, StageData stageInstance, DocumentData documentDataInstance, AuditAction eventAction) {
+    public AuditEntry(String username, CaseData caseInstance, StageData stageInstance, AuditAction eventAction) {
         this.username = username;
         if(caseInstance != null) {
             this.caseInstance = CaseDataAudit.from(caseInstance);
@@ -48,8 +48,14 @@ public class AuditEntry {
         if(stageInstance != null) {
             this.stageInstance = StageDataAudit.from(stageInstance);
         }
-        if(documentDataInstance != null) {
-            this.documentInstance = DocumentAudit.from(documentDataInstance);
+        this.timestamp = LocalDateTime.now();
+        this.eventAction = eventAction.toString();
+    }
+
+    public AuditEntry(String username, DocumentData documentInstance, AuditAction eventAction) {
+        this.username = username;
+        if(documentInstance != null) {
+            this.documentInstance = DocumentAudit.from(documentInstance);
         }
         this.timestamp = LocalDateTime.now();
         this.eventAction = eventAction.toString();
