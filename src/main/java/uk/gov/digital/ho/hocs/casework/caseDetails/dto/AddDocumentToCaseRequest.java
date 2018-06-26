@@ -7,7 +7,7 @@ import lombok.Getter;
 
 
 @Getter
-@EqualsAndHashCode (of="caseUUID,documentUUID")
+@EqualsAndHashCode (of="caseUUID, documentUUID")
 public class AddDocumentToCaseRequest {
 
     private final String caseUUID;
