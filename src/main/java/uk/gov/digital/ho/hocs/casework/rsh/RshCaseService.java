@@ -54,8 +54,8 @@ public class RshCaseService {
     @Transactional
     CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest, String username) throws EntityCreationException {
         if (caseData != null) {
-            CaseData caseDetails = caseDataService.createCase("RSH", username);
-            caseDataService.createStage(caseDetails.getUuid(), "Stage", caseData, username);
+            CaseData caseDetails = caseDataService.createCase("RSH");
+            caseDataService.createStage(caseDetails.getUuid(), "Stage", caseData);
             sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"), username);
             return caseDetails;
         } else {
@@ -65,7 +65,7 @@ public class RshCaseService {
 
     CaseData getRSHCase(UUID caseUUID, String username) throws EntityNotFoundException {
         if (!isNullOrEmpty(caseUUID)) {
-            CaseData caseData = caseDataService.getCase(caseUUID, username);
+            CaseData caseData = caseDataService.getCase(caseUUID);
             if (caseData != null) {
                 return caseData;
             } else {
@@ -78,10 +78,10 @@ public class RshCaseService {
 
     CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendRshEmailRequest emailRequest, String username) throws EntityCreationException, EntityNotFoundException {
         if (!isNullOrEmpty(caseUUID) && caseData != null) {
-            CaseData caseDetails = caseDataService.getCase(caseUUID, username);
+            CaseData caseDetails = caseDataService.getCase(caseUUID);
             if (!caseDetails.getStages().isEmpty()) {
                 StageData stageData = caseDetails.getStages().iterator().next();
-                caseDataService.updateStage(caseUUID, stageData.getUuid(), "Stage", caseData, username);
+                caseDataService.updateStage(caseUUID, stageData.getUuid(), "Stage", caseData);
                 sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"), username);
                 return caseDetails;
             } else {
