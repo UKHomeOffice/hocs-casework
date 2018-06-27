@@ -7,9 +7,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentToCaseRequest;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentStatus;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentType;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 
 import java.util.HashMap;
@@ -341,6 +344,17 @@ public class CaseDataServiceTest {
 
         verify(caseDataRepository, times(1)).findByUuid(any());
         verify(auditService, times(1)).writeGetCaseEvent(any(), any());
+    }
+
+    @Test
+    public void shouldAddDocumentToCase() throws EntityCreationException, EntityNotFoundException {
+        AddDocumentToCaseRequest document = new AddDocumentToCaseRequest(UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(), "Test Document", DocumentType.DRAFT,
+                "a link", "an original link", DocumentStatus.UPLOADED);
+
+
+        caseDataService.addDocumentToCase(document);
+        verify(documentService,times(1)).updateDocument(any(), any(), any(), any(), any(), any());
     }
 
 }
