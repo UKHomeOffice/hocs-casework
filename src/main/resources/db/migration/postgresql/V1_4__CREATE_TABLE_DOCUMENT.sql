@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS documentData
+CREATE TABLE IF NOT EXISTS document_data
 (
   id                    BIGSERIAL PRIMARY KEY,
   case_uuid             UUID      NOT NULL,
@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS documentData
   CONSTRAINT fk_document_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)
 );
 
-CREATE INDEX idx_document_document_uuid  ON documentData (document_uuid);
-CREATE INDEX idx_document_casd_uuid  ON documentData (case_uuid);
+CREATE INDEX idx_document_document_uuid  ON document_data (document_uuid);
+CREATE INDEX idx_document_case_uuid  ON document_data (case_uuid);
 
 DROP TABLE IF EXISTS audit_document;
 

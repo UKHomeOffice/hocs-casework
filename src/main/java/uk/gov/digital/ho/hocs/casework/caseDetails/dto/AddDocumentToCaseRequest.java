@@ -4,28 +4,30 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentStatus;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentType;
 
 
 @Getter
-@EqualsAndHashCode (of="caseUUID,documentUUID")
+@EqualsAndHashCode (of="caseUUID, documentUUID")
 public class AddDocumentToCaseRequest {
 
     private final String caseUUID;
     private final String documentUUID;
     private final String documentDisplayName;
-    private final String documentType;
+    private final DocumentType documentType;
     private final String s3OrigLink;
     private final String s3PdfLink;
-    private final String status;
+    private final DocumentStatus status;
 
     @JsonCreator
     public AddDocumentToCaseRequest(@JsonProperty("caseUUID") String caseUUID,
                                     @JsonProperty("documentUUID") String documentUUID,
-                                    @JsonProperty("documentType") String documentDisplayName,
-                                    @JsonProperty("documentDisplayName") String documentType,
+                                    @JsonProperty("documentDisplayName") String documentDisplayName,
+                                    @JsonProperty("documentType") DocumentType documentType,
                                     @JsonProperty("s3OrigLink") String s3OrigLink,
                                     @JsonProperty("s3PdfLink") String s3PdfLink,
-                                    @JsonProperty("status") String status) {
+                                    @JsonProperty("status") DocumentStatus status) {
         this.caseUUID = caseUUID;
         this.documentUUID = documentUUID;
         this.documentDisplayName = documentDisplayName;

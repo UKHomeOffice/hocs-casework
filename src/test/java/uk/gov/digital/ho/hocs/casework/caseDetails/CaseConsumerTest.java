@@ -9,6 +9,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentToCaseRequest;
+import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentStatus;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentType;
+
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -32,11 +38,11 @@ public class CaseConsumerTest extends CamelTestSupport {
     }
 
     @Test
-    public void shouldCallAddDocumentToCaseService() throws JsonProcessingException, InterruptedException {
+    public void shouldCallAddDocumentToCaseService() throws JsonProcessingException, InterruptedException, EntityCreationException, EntityNotFoundException {
 
         AddDocumentToCaseRequest document = new AddDocumentToCaseRequest("UUID",
-                "docUUID", "Test Document", "PDF",
-                "a link", "an original link", "ACTIVE");
+                "docUUID", "Test Document", DocumentType.DRAFT,
+                "a link", "an original link", DocumentStatus.UPLOADED);
 
         String json = mapper.writeValueAsString(document);
 
@@ -44,7 +50,7 @@ public class CaseConsumerTest extends CamelTestSupport {
 
         assertMockEndpointsSatisfied();
 
-        verify(mockDataService, times(1)).addDocumentToCase(document);
+        verify(mockDataService, times(1)).addDocumentToCase(any(AddDocumentToCaseRequest.class));
     }
 
 }
