@@ -15,6 +15,7 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentStatus;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentType;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -45,12 +46,17 @@ public class CaseConsumerTest extends CamelTestSupport {
                 "a link", "an original link", DocumentStatus.UPLOADED);
 
         String json = mapper.writeValueAsString(document);
-
         template.sendBody(caseQueue, json);
-
         assertMockEndpointsSatisfied();
+        verify(mockDataService, times(1)).addDocumentToCase(document);
+    }
 
-        verify(mockDataService, times(1)).addDocumentToCase(any(AddDocumentToCaseRequest.class));
+    @Test
+    public void shouldNotProcessMessgeWhenMarshellingFails() throws JsonProcessingException, InterruptedException, EntityCreationException, EntityNotFoundException {
+        String json = mapper.writeValueAsString("{invalid:invalid}");
+        template.sendBody(caseQueue, json);
+        assertMockEndpointsSatisfied();
+        verify(mockDataService, never()).addDocumentToCase(any(AddDocumentToCaseRequest.class));
     }
 
 }
