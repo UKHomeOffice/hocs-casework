@@ -41,12 +41,10 @@ public class RequestData implements HandlerInterceptor {
         return StringUtils.isNotBlank(userId) ? userId : "anonymous";
     }
 
-
     public String correlationId() {
         return MDC.get(CORRELATION_ID_HEADER);
     }
 
-    public String userId() { return MDC.get(USER_ID_HEADER); }
-
-
+    public String userId() {
+        return StringUtils.isNotBlank(MDC.get(USER_ID_HEADER)) ? MDC.get(USER_ID_HEADER) : "anonymous"; }
 }
