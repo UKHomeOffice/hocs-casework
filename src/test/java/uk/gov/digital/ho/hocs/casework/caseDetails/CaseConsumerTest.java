@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundExcep
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentStatus;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentType;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -49,7 +50,7 @@ public class CaseConsumerTest extends CamelTestSupport {
 
         assertMockEndpointsSatisfied();
 
-        verify(mockDataService, times(1)).addDocumentToCase(document);
+        verify(mockDataService, times(1)).addDocumentToCase(any(AddDocumentToCaseRequest.class));
     }
 
 }

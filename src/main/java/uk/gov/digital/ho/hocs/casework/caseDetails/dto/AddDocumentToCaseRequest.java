@@ -23,8 +23,8 @@ public class AddDocumentToCaseRequest {
     @JsonCreator
     public AddDocumentToCaseRequest(@JsonProperty("caseUUID") String caseUUID,
                                     @JsonProperty("documentUUID") String documentUUID,
-                                    @JsonProperty("documentType") String documentDisplayName,
-                                    @JsonProperty("documentDisplayName") DocumentType documentType,
+                                    @JsonProperty("documentDisplayName") String documentDisplayName,
+                                    @JsonProperty("documentType") DocumentType documentType,
                                     @JsonProperty("s3OrigLink") String s3OrigLink,
                                     @JsonProperty("s3PdfLink") String s3PdfLink,
                                     @JsonProperty("status") DocumentStatus status) {
