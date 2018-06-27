@@ -1,4 +1,6 @@
-CREATE TABLE IF NOT EXISTS documentData
+DROP TABLE IF EXISTS document_data cascade;
+
+CREATE TABLE IF NOT EXISTS document_data
 (
   id                    BIGSERIAL PRIMARY KEY,
   case_uuid             UUID      NOT NULL,
@@ -16,12 +18,14 @@ CREATE TABLE IF NOT EXISTS documentData
   CONSTRAINT fk_document_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)
 );
 
-CREATE INDEX idx_document_document_uuid  ON documentData (document_uuid);
-CREATE INDEX idx_document_casd_uuid  ON documentData (case_uuid);
+CREATE INDEX idx_document_document_uuid  ON document_data (document_uuid);
+CREATE INDEX idx_document_case_uuid  ON document_data (case_uuid);
+CREATE INDEX idx_document_document_type ON document_data (document_type);
+CREATE INDEX idx_document_deleted  ON document_data (deleted);
 
-DROP TABLE IF EXISTS audit_document;
+DROP TABLE IF EXISTS audit_document_data;
 
-CREATE TABLE IF NOT EXISTS audit_document
+CREATE TABLE IF NOT EXISTS audit_document_data
 (
   id                    BIGSERIAL PRIMARY KEY,
   case_uuid             UUID      NOT NULL,
@@ -35,8 +39,6 @@ CREATE TABLE IF NOT EXISTS audit_document
   deleted               BOOLEAN   NOT NULL
 );
 
-CREATE INDEX idx_audit_document_document_type ON audit_document (document_type);
-CREATE INDEX idx_audit_document_status ON audit_document (status);
-CREATE INDEX idx_audit_document_document_uuid ON audit_document (document_uuid);
-CREATE INDEX idx_audit_document_case_uuid ON audit_document (case_uuid);
-CREATE INDEX idx_audit_document_timestamp ON audit_document (timestamp);
+CREATE INDEX idx_audit_document_document_uuid ON audit_document_data (document_uuid);
+CREATE INDEX idx_audit_document_case_uuid ON audit_document_data (case_uuid);
+CREATE INDEX idx_audit_document_timestamp ON audit_document_data (timestamp);

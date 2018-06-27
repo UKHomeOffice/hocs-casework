@@ -10,8 +10,9 @@ import java.util.UUID;
 
 
 @Entity
-@Table(name = "case_document")
-@Where(clause = "deleted = FALSE")
+@Table(name = "document_data")
+@Where(clause = "not deleted")
+@NoArgsConstructor
 public class DocumentData implements Serializable {
 
     @Id
