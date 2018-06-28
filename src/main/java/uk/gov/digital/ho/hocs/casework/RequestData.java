@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework;
 
+import org.apache.camel.Processor;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -41,10 +42,20 @@ public class RequestData implements HandlerInterceptor {
         return StringUtils.isNotBlank(userId) ? userId : "anonymous";
     }
 
+
     public String correlationId() {
         return MDC.get(CORRELATION_ID_HEADER);
     }
 
-    public String userId() {
-        return StringUtils.isNotBlank(MDC.get(USER_ID_HEADER)) ? MDC.get(USER_ID_HEADER) : "anonymous"; }
+    public String userId() { return MDC.get(USER_ID_HEADER); }
+
+
+    public static Processor transferHeadersToMDC() {
+        return ex -> {
+            MDC.put(CORRELATION_ID_HEADER, ex.getIn().getHeader(CORRELATION_ID_HEADER, String.class));
+            MDC.put(USER_ID_HEADER, ex.getIn().getHeader(USER_ID_HEADER, String.class));
+        };
+    }
+
+
 }
