@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.caseDetails;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
-import org.apache.camel.InvalidPayloadException;
+
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.aws.sqs.SqsConstants;
@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentToCaseRequest;
+
+import static uk.gov.digital.ho.hocs.casework.RequestData.transferHeadersToMDC;
 
 @Component
 public class CaseConsumer extends RouteBuilder {
@@ -40,29 +42,20 @@ public class CaseConsumer extends RouteBuilder {
     @Override
     public void configure() {
 
-        onException(JsonMappingException.class)
-                .handled(true)
-                .log(LoggingLevel.ERROR, "Unable to process the message: ${body}");
-
-        onException(InvalidPayloadException.class)
-                .handled(true)
-                .log(LoggingLevel.ERROR, "payload exception: ${body}")
-                .useOriginalMessage()
-                .to(dlq);
-
-        onException(RuntimeException.class)
-                .log(LoggingLevel.ERROR, "Failed to run the command after configured back-off.")
+        errorHandler(deadLetterChannel(dlq)
+                .loggingLevel(LoggingLevel.ERROR)
+                .log("Failed to add document after configured back-off.")
                 .useOriginalMessage()
                 .retryAttemptedLogLevel(LoggingLevel.WARN)
                 .maximumRedeliveries(maximumRedeliveries)
                 .redeliveryDelay(redeliveryDelay)
                 .backOffMultiplier(backOffMultiplier)
                 .asyncDelayedRedelivery()
-                .logRetryStackTrace(true);
-
+                .logRetryStackTrace(true));
 
         from(caseQueue)
                 .setProperty(SqsConstants.RECEIPT_HANDLE, header(SqsConstants.RECEIPT_HANDLE))
+                .process(transferHeadersToMDC())
                 .log("Add Document to Case Request received: ${body}")
                 .unmarshal().json(JsonLibrary.Jackson, AddDocumentToCaseRequest.class)
                 .log("Add Document to Case unmarshalled")
