@@ -38,12 +38,12 @@ public class DocumentResourceTest {
     @Test
     public void shouldAddDocument() throws EntityCreationException {
         String documentDisplayName = "A DOC";
-        when(documentService.addDocument(uuid, uuid,documentDisplayName, DocumentType.ORIGINAL,testUser)).thenReturn(new DocumentData(uuid,uuid, documentDisplayName, DocumentType.ORIGINAL));
+        when(documentService.addDocument(uuid, uuid,documentDisplayName, DocumentType.ORIGINAL)).thenReturn(new DocumentData(uuid,uuid, documentDisplayName, DocumentType.ORIGINAL));
         AddDocumentRequest request = new AddDocumentRequest(uuid, documentDisplayName, DocumentType.ORIGINAL);
 
-        ResponseEntity<AddDocumentResponse> response = documentResource.AddDocument(uuid, request, testUser);
+        ResponseEntity<AddDocumentResponse> response = documentResource.AddDocument(uuid, request);
 
-        verify(documentService, times(1)).addDocument(uuid, uuid, documentDisplayName, DocumentType.ORIGINAL, testUser);
+        verify(documentService, times(1)).addDocument(uuid, uuid, documentDisplayName, DocumentType.ORIGINAL);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
@@ -55,12 +55,12 @@ public class DocumentResourceTest {
     public void shouldCreateStageException() throws EntityCreationException {
         String documentDisplayName = "A DOC";
 
-        when(documentService.addDocument(uuid, uuid,documentDisplayName, DocumentType.ORIGINAL,testUser)).thenThrow(EntityCreationException.class);
+        when(documentService.addDocument(uuid, uuid,documentDisplayName, DocumentType.ORIGINAL)).thenThrow(EntityCreationException.class);
         AddDocumentRequest request = new AddDocumentRequest(uuid, documentDisplayName, DocumentType.ORIGINAL);
 
-        ResponseEntity<AddDocumentResponse> response = documentResource.AddDocument(uuid, request, testUser);
+        ResponseEntity<AddDocumentResponse> response = documentResource.AddDocument(uuid, request);
 
-        verify(documentService, times(1)).addDocument(uuid, uuid, documentDisplayName, DocumentType.ORIGINAL, testUser);
+        verify(documentService, times(1)).addDocument(uuid, uuid, documentDisplayName, DocumentType.ORIGINAL);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }

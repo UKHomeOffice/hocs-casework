@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
@@ -27,11 +28,10 @@ public class SearchServiceTest {
 
     @Mock
     private CaseDataRepository mockCaseDataRepository;
+    @Mock
+    private RequestData mockRequestData;
 
     private SearchService searchService;
-
-    private final String testUser = "Test User";
-
     private static Set<CaseData> getValidSet() {
         Set<CaseData> hashSet = new HashSet<>();
         hashSet.add(new CaseData("REF", 0L));
@@ -42,7 +42,8 @@ public class SearchServiceTest {
     public void setUp() {
         this.searchService = new SearchService(
                 mockAuditService,
-                mockCaseDataRepository
+                mockCaseDataRepository,
+                mockRequestData
         );
     }
 
@@ -52,14 +53,14 @@ public class SearchServiceTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         SearchRequest searchRequest = objectMapper.readValue("{ \"caseReference\" : \"fsfd\" }", SearchRequest.class);
-        Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
+        Set<CaseData> cases = searchService.findCases(searchRequest);
 
         assertThat(cases).isNotEmpty();
 
         verify(mockCaseDataRepository, times(1)).findByCaseReference(anyString());
         verify(mockCaseDataRepository, times(0)).findByNameOrDob(any(), any(), any());
 
-        verify(mockAuditService).writeSearchEvent(testUser, searchRequest);
+        verify(mockAuditService).writeSearchEvent(searchRequest);
     }
 
     @Test
@@ -68,14 +69,14 @@ public class SearchServiceTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         SearchRequest searchRequest = objectMapper.readValue("{ \"caseReference\" : \"fsfd\" }", SearchRequest.class);
-        Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
+        Set<CaseData> cases = searchService.findCases(searchRequest);
 
         assertThat(cases).isEmpty();
 
         verify(mockCaseDataRepository, times(1)).findByCaseReference(anyString());
         verify(mockCaseDataRepository, times(0)).findByNameOrDob(any(), any(), any());
 
-        verify(mockAuditService, times(1)).writeSearchEvent(testUser, searchRequest);
+        verify(mockAuditService, times(1)).writeSearchEvent(searchRequest);
     }
 
     @Test
@@ -84,14 +85,14 @@ public class SearchServiceTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         SearchRequest searchRequest = objectMapper.readValue("{\"caseData\" : { \"first-name\" : \"Rick\", \"last-name\" : \"Sanchez\", \"dob\" : \"1960-01-01\"} }", SearchRequest.class);
-        Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
+        Set<CaseData> cases = searchService.findCases(searchRequest);
 
         assertThat(cases).isNotEmpty();
 
         verify(mockCaseDataRepository, times(0)).findByCaseReference(any());
         verify(mockCaseDataRepository, times(1)).findByNameOrDob(anyString(), anyString(), anyString());
 
-        verify(mockAuditService, times(1)).writeSearchEvent(testUser, searchRequest);
+        verify(mockAuditService, times(1)).writeSearchEvent(searchRequest);
     }
 
     @Test
@@ -101,27 +102,27 @@ public class SearchServiceTest {
         ObjectMapper objectMapper = new ObjectMapper();
         SearchRequest searchRequest = objectMapper.readValue("{\"caseData\" : { \"first-name\" : \"Rick\", \"last-name\" : \"Sanchez\", \"dob\" : \"1960-01-01\"} }", SearchRequest.class);
 
-        Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
+        Set<CaseData> cases = searchService.findCases(searchRequest);
 
         assertThat(cases).isEmpty();
 
         verify(mockCaseDataRepository, times(0)).findByCaseReference(any());
         verify(mockCaseDataRepository, times(1)).findByNameOrDob(anyString(), anyString(), anyString());
 
-        verify(mockAuditService, times(1)).writeSearchEvent(testUser, searchRequest);
+        verify(mockAuditService, times(1)).writeSearchEvent(searchRequest);
     }
 
     @Test
     public void shouldReturnEmptyWhenNoParamsPassed() {
         SearchRequest searchRequest = new SearchRequest();
-        Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
+        Set<CaseData> cases = searchService.findCases(searchRequest);
 
         assertThat(cases).isEmpty();
 
         verify(mockCaseDataRepository, times(0)).findByCaseReference(any());
         verify(mockCaseDataRepository, times(0)).findByNameOrDob(any(), any(), any());
 
-        verify(mockAuditService, times(1)).writeSearchEvent(testUser, searchRequest);
+        verify(mockAuditService, times(1)).writeSearchEvent(searchRequest);
     }
 
     @Test
@@ -129,14 +130,14 @@ public class SearchServiceTest {
         ObjectMapper objectMapper = new ObjectMapper();
         SearchRequest searchRequest = objectMapper.readValue("{}", SearchRequest.class);
 
-        Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
+        Set<CaseData> cases = searchService.findCases(searchRequest);
 
         assertThat(cases).isEmpty();
 
         verify(mockCaseDataRepository, times(0)).findByCaseReference(any());
         verify(mockCaseDataRepository, times(0)).findByNameOrDob(any(), any(), any());
 
-        verify(mockAuditService, times(1)).writeSearchEvent(testUser, searchRequest);
+        verify(mockAuditService, times(1)).writeSearchEvent(searchRequest);
     }
 
     @Test
@@ -144,14 +145,14 @@ public class SearchServiceTest {
         ObjectMapper objectMapper = new ObjectMapper();
         SearchRequest searchRequest = objectMapper.readValue("{ \"caseReference\" : \"fsfd\", \"caseData\" : { \"first-name\" : \"Rick\", \"last-name\" : \"Sanchez\", \"dob\" : \"1960-01-01\"} }", SearchRequest.class);
 
-        Set<CaseData> cases = searchService.findCases(searchRequest, testUser);
+        Set<CaseData> cases = searchService.findCases(searchRequest);
 
         assertThat(cases).isEmpty();
 
         verify(mockCaseDataRepository, times(1)).findByCaseReference(any());
         verify(mockCaseDataRepository, times(1)).findByNameOrDob(any(), any(), any());
 
-        verify(mockAuditService, times(1)).writeSearchEvent(testUser, searchRequest);
+        verify(mockAuditService, times(1)).writeSearchEvent(searchRequest);
     }
 
 }

@@ -59,7 +59,7 @@ public class CaseDataServiceTest {
 
         CaseData caseData = caseDataService.createCase("Type");
 
-        verify(auditService, times(1)).writeCreateCaseEvent(any(), eq(caseData));
+        verify(auditService, times(1)).writeCreateCaseEvent(eq(caseData));
         verify(caseDataRepository, times(1)).save(isA(CaseData.class));
 
         assertThat(caseData).isNotNull();
@@ -78,7 +78,7 @@ public class CaseDataServiceTest {
         } catch (EntityCreationException e) {
             // Do nothing.
         }
-        verify(auditService, times(0)).writeCreateCaseEvent(anyString(), any(CaseData.class));
+        verify(auditService, times(0)).writeCreateCaseEvent(any(CaseData.class));
         verify(caseDataRepository, times(0)).save(any(CaseData.class));
 
     }
@@ -87,7 +87,7 @@ public class CaseDataServiceTest {
     public void shouldCreateStage() throws EntityCreationException {
         StageData stageData = caseDataService.createStage(uuid, "CREATE", new HashMap<>());
 
-        verify(auditService).writeCreateStageEvent(any(), eq(stageData));
+        verify(auditService).writeCreateStageEvent(eq(stageData));
         verify(stageDataRepository).save(isA(StageData.class));
 
         assertThat(stageData).isNotNull();
@@ -108,7 +108,7 @@ public class CaseDataServiceTest {
         } catch (EntityCreationException e) {
             // Do nothing.
         }
-        verify(auditService, times(0)).writeCreateStageEvent(any(), any());
+        verify(auditService, times(0)).writeCreateStageEvent(any());
         verify(stageDataRepository, times(0)).save(any(StageData.class));
     }
 
@@ -124,7 +124,7 @@ public class CaseDataServiceTest {
         } catch (EntityCreationException e) {
             // Do nothing.
         }
-        verify(auditService, times(0)).writeCreateStageEvent(any(), any());
+        verify(auditService, times(0)).writeCreateStageEvent(any());
         verify(stageDataRepository, times(0)).save(any(StageData.class));
     }
 
@@ -138,7 +138,7 @@ public class CaseDataServiceTest {
 
         verify(caseDataRepository, times(1)).findByUuid(caseUUID);
         verify(caseDataRepository, times(1)).save(isA(CaseData.class));
-        verify(auditService, times(1)).writeUpdateCaseEvent(any(), eq(caseData));
+        verify(auditService, times(1)).writeUpdateCaseEvent(eq(caseData));
 
         assertThat(caseData).isNotNull();
     }
@@ -158,7 +158,7 @@ public class CaseDataServiceTest {
 
         verify(caseDataRepository, times(0)).findByUuid(any());
         verify(caseDataRepository, times(0)).save(any(CaseData.class));
-        verify(auditService, times(0)).writeUpdateCaseEvent(any(), any());
+        verify(auditService, times(0)).writeUpdateCaseEvent(any());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -179,7 +179,7 @@ public class CaseDataServiceTest {
 
         verify(caseDataRepository, times(0)).findByUuid(any());
         verify(caseDataRepository, times(0)).save(any(CaseData.class));
-        verify(auditService, times(0)).writeUpdateCaseEvent(any(), any());
+        verify(auditService, times(0)).writeUpdateCaseEvent(any());
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -204,7 +204,7 @@ public class CaseDataServiceTest {
         }
         verify(caseDataRepository, times(1)).findByUuid(any());
         verify(caseDataRepository, times(0)).save(any(CaseData.class));
-        verify(auditService, times(0)).writeUpdateCaseEvent(any(), any());
+        verify(auditService, times(0)).writeUpdateCaseEvent(any());
     }
 
     @Test
@@ -217,7 +217,7 @@ public class CaseDataServiceTest {
 
         verify(stageDataRepository, times(1)).findByUuid(uuid);
         verify(stageDataRepository, times(1)).save(isA(StageData.class));
-        verify(auditService, times(1)).writeUpdateStageEvent(any(), eq(stageData));
+        verify(auditService, times(1)).writeUpdateStageEvent(eq(stageData));
 
         assertThat(stageData).isNotNull();
     }
@@ -240,7 +240,7 @@ public class CaseDataServiceTest {
 
         verify(stageDataRepository, times(0)).findByUuid(any());
         verify(stageDataRepository, times(0)).save(any(StageData.class));
-        verify(auditService, times(0)).writeUpdateStageEvent(any(), any());
+        verify(auditService, times(0)).writeUpdateStageEvent(any());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -261,7 +261,7 @@ public class CaseDataServiceTest {
 
         verify(stageDataRepository, times(0)).findByUuid(any());
         verify(stageDataRepository, times(0)).save(any(StageData.class));
-        verify(auditService, times(0)).writeUpdateStageEvent(any(), any());
+        verify(auditService, times(0)).writeUpdateStageEvent(any());
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -286,7 +286,7 @@ public class CaseDataServiceTest {
         }
         verify(stageDataRepository, times(1)).findByUuid(any());
         verify(stageDataRepository, times(0)).save(any(StageData.class));
-        verify(auditService, times(0)).writeUpdateStageEvent(any(), any());
+        verify(auditService, times(0)).writeUpdateStageEvent(any());
     }
 
     @Test
@@ -298,7 +298,7 @@ public class CaseDataServiceTest {
         CaseData caseData = caseDataService.getCase(caseUUID);
 
         verify(caseDataRepository, times(1)).findByUuid(any());
-        verify(auditService, times(1)).writeGetCaseEvent(any(), any());
+        verify(auditService, times(1)).writeGetCaseEvent(any());
 
         assertThat(caseData).isNotNull();
     }
@@ -318,7 +318,7 @@ public class CaseDataServiceTest {
         }
 
         verify(caseDataRepository, times(0)).findByUuid(any());
-        verify(auditService, times(0)).writeGetCaseEvent(any(), any());
+        verify(auditService, times(0)).writeGetCaseEvent(any());
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -343,7 +343,7 @@ public class CaseDataServiceTest {
         }
 
         verify(caseDataRepository, times(1)).findByUuid(any());
-        verify(auditService, times(1)).writeGetCaseEvent(any(), any());
+        verify(auditService, times(1)).writeGetCaseEvent(any());
     }
 
     @Test
@@ -354,7 +354,7 @@ public class CaseDataServiceTest {
 
 
         caseDataService.addDocumentToCase(document);
-        verify(documentService,times(1)).updateDocument(any(), any(), any(), any(), any(), any());
+        verify(documentService,times(1)).updateDocument(any(), any(), any(), any(), any());
     }
 
 }

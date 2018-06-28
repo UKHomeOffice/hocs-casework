@@ -20,7 +20,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class SearchResourceTest {
 
-    private final String testUser = "Test User";
     @Mock
     private SearchService mockSearchService;
 
@@ -39,12 +38,12 @@ public class SearchResourceTest {
 
     @Test
     public void shouldRetrieveAllEntities() {
-        when(mockSearchService.findCases(any(SearchRequest.class), anyString())).thenReturn(getValidSet());
+        when(mockSearchService.findCases(any(SearchRequest.class))).thenReturn(getValidSet());
 
         SearchRequest searchRequest = new SearchRequest();
-        ResponseEntity<Set<CaseData>> responseEntity = searchResource.search(searchRequest, testUser);
+        ResponseEntity<Set<CaseData>> responseEntity = searchResource.search(searchRequest);
 
-        verify(mockSearchService, times(1)).findCases(searchRequest, testUser);
+        verify(mockSearchService, times(1)).findCases(searchRequest);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).hasSize(1);
@@ -53,12 +52,12 @@ public class SearchResourceTest {
 
     @Test
     public void shouldRetrieveAllEntitiesEmpty() {
-        when(mockSearchService.findCases(any(SearchRequest.class), anyString())).thenReturn(new HashSet<>());
+        when(mockSearchService.findCases(any(SearchRequest.class))).thenReturn(new HashSet<>());
 
         SearchRequest searchRequest = new SearchRequest();
-        ResponseEntity<Set<CaseData>> responseEntity = searchResource.search(searchRequest, testUser);
+        ResponseEntity<Set<CaseData>> responseEntity = searchResource.search(searchRequest);
 
-        verify(mockSearchService, times(1)).findCases(searchRequest, testUser);
+        verify(mockSearchService, times(1)).findCases(searchRequest);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).hasSize(0);
@@ -66,11 +65,11 @@ public class SearchResourceTest {
 
     @Test
     public void shouldRetrieveAllEntitiesNull() {
-        when(mockSearchService.findCases(null, testUser)).thenReturn(new HashSet<>());
+        when(mockSearchService.findCases(null)).thenReturn(new HashSet<>());
 
-        ResponseEntity<Set<CaseData>> responseEntity = searchResource.search(null, testUser);
+        ResponseEntity<Set<CaseData>> responseEntity = searchResource.search(null);
 
-        verify(mockSearchService, times(1)).findCases(null, testUser);
+        verify(mockSearchService, times(1)).findCases(null);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(responseEntity.getBody()).hasSize(0);

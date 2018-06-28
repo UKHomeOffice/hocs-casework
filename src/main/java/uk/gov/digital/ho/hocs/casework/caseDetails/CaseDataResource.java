@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.caseDetails;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
+@Slf4j
 @RestController
 class CaseDataResource {
 
@@ -25,7 +27,7 @@ class CaseDataResource {
     }
 
     @RequestMapping(value = "/case", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         try {
             CaseData caseData = caseDataService.createCase(request.getCaseType());
             return ResponseEntity.ok(CreateCaseResponse.from(caseData));
@@ -45,7 +47,7 @@ class CaseDataResource {
     }
 
     @RequestMapping(value = "/case/{caseUUID}/stage", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
         try {
             StageData stageData = caseDataService.createStage(caseUUID, request.getStageType(), request.getStageData());
             return ResponseEntity.ok(CreateStageResponse.from(stageData));
@@ -55,7 +57,7 @@ class CaseDataResource {
     }
 
     @RequestMapping(value = "/case/{caseUUID}/stage/{stageUuid}", method = RequestMethod.PUT, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity updateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUuid, @RequestBody UpdateStageRequest request, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity updateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUuid, @RequestBody UpdateStageRequest request) {
         try {
             caseDataService.updateStage(caseUUID, stageUuid, request.getStageType(), request.getStageData());
             return ResponseEntity.ok().build();

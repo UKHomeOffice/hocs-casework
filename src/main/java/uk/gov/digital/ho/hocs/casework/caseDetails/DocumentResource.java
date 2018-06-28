@@ -23,9 +23,9 @@ public class DocumentResource {
     }
 
     @RequestMapping(value = "/case/{caseUUID}/document", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<AddDocumentResponse> AddDocument(@PathVariable UUID caseUUID, @RequestBody AddDocumentRequest request, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity<AddDocumentResponse> AddDocument(@PathVariable UUID caseUUID, @RequestBody AddDocumentRequest request) {
         try {
-            DocumentData documentData = documentService.addDocument(caseUUID, request.getDocumentUUID(), request.getDocumentDisplayName(), request.getDocumentType(), username);
+            DocumentData documentData = documentService.addDocument(caseUUID, request.getDocumentUUID(), request.getDocumentDisplayName(), request.getDocumentType());
             return ResponseEntity.ok(AddDocumentResponse.from(documentData));
         } catch (EntityCreationException e) {
             return ResponseEntity.badRequest().build();

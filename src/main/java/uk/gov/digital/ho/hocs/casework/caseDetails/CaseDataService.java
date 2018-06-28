@@ -72,20 +72,19 @@ public class CaseDataService {
                 UUID.fromString(document.getDocumentUUID()),
                 document.getS3OrigLink(),
                 document.getS3PdfLink(),
-                document.getStatus(),
-                requestData.userId());
+                document.getStatus());
 
     }
 
 
     @Transactional
     public CaseData createCase(String caseType) throws EntityCreationException {
-        log.info("Requesting Create Case, Type: {}, User: {}", caseType, requestData.userId());
+        log.info("Requesting Create Case, Type: {}, User: {}", caseType, requestData.username());
         if (!isNullOrEmpty(caseType)) {
             CaseData caseData = new CaseData(caseType, caseDataRepository.getNextSeriesId());
             caseDataRepository.save(caseData);
-            auditService.writeCreateCaseEvent(requestData.userId(), caseData);
-            log.info("Created Case, Reference: {}, UUID: {} User: {}", caseData.getReference(), caseData.getUuid(), requestData.userId());
+            auditService.writeCreateCaseEvent(caseData);
+            log.info("Created Case, Reference: {}, UUID: {} User: {}", caseData.getReference(), caseData.getUuid(), requestData.username());
             return caseData;
         } else {
             throw new EntityCreationException("Failed to create case, invalid caseType!");
@@ -94,13 +93,13 @@ public class CaseDataService {
 
     @Transactional
     public StageData createStage(UUID caseUUID, String stageType, Map<String, String> stageData) throws EntityCreationException {
-        log.info("Requesting Create Stage, Type: {}, Case UUID: {}, User: {}", stageType, caseUUID, requestData.userId());
+        log.info("Requesting Create Stage, Type: {}, Case UUID: {}, User: {}", stageType, caseUUID, requestData.username());
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(stageType)) {
             String data = getDataString(stageData, objectMapper);
             StageData stageDetails = new StageData(caseUUID, stageType, data);
             stageDataRepository.save(stageDetails);
-            auditService.writeCreateStageEvent(requestData.userId(), stageDetails);
-            log.info("Created Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getType(), stageDetails.getUuid(), stageDetails.getCaseUUID(), requestData.userId());
+            auditService.writeCreateStageEvent(stageDetails);
+            log.info("Created Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getType(), stageDetails.getUuid(), stageDetails.getCaseUUID(), requestData.username());
             return stageDetails;
         } else {
             throw new EntityCreationException("Failed to create stage, invalid stageType or caseUUID!");
@@ -109,14 +108,14 @@ public class CaseDataService {
 
     @Transactional
     public CaseData updateCase(UUID caseUUID, String caseType) throws EntityCreationException, EntityNotFoundException {
-        log.info("Requesting Update Case: {}, Type: {}, User: {}", caseUUID, caseType, requestData.userId());
+        log.info("Requesting Update Case: {}, Type: {}, User: {}", caseUUID, caseType, requestData.username());
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(caseType)) {
             CaseData caseData = caseDataRepository.findByUuid(caseUUID);
             if (caseData != null) {
                 caseData.setType(caseType);
                 caseDataRepository.save(caseData);
-                auditService.writeUpdateCaseEvent(requestData.userId(), caseData);
-                log.info("Updated Case, Reference: {}, UUID: {} User: {}", caseData.getReference(), caseData.getUuid(), requestData.userId());
+                auditService.writeUpdateCaseEvent(caseData);
+                log.info("Updated Case, Reference: {}, UUID: {} User: {}", caseData.getReference(), caseData.getUuid(), requestData.username());
                 return caseData;
             } else {
                 throw new EntityNotFoundException("Case not found!");
@@ -128,7 +127,7 @@ public class CaseDataService {
 
     @Transactional
     public StageData updateStage(UUID caseUUID, UUID stageUUID, String stageType, Map<String, String> stageData) throws EntityNotFoundException, EntityCreationException {
-        log.info("Requesting Update Stage, uuid: {}, User: {}", stageUUID, requestData.userId());
+        log.info("Requesting Update Stage, uuid: {}, User: {}", stageUUID, requestData.username());
         if (!isNullOrEmpty(stageUUID) && !isNullOrEmpty(stageType)) {
             StageData stageDetails = stageDataRepository.findByUuid(stageUUID);
             if (stageDetails != null) {
@@ -136,8 +135,8 @@ public class CaseDataService {
                 stageDetails.setType(stageType);
                 stageDetails.setData(data);
                 stageDataRepository.save(stageDetails);
-                auditService.writeUpdateStageEvent(requestData.userId(), stageDetails);
-                log.info("Updated Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getType(), stageDetails.getUuid(), stageDetails.getCaseUUID(), requestData.userId());
+                auditService.writeUpdateStageEvent(stageDetails);
+                log.info("Updated Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getType(), stageDetails.getUuid(), stageDetails.getCaseUUID(), requestData.username());
                 return stageDetails;
             } else {
                 throw new EntityNotFoundException("Stage not found!");
@@ -149,12 +148,12 @@ public class CaseDataService {
 
     @Transactional
     public CaseData getCase(UUID uuid) throws EntityNotFoundException {
-        log.info("Requesting Case, UUID: {}, User: {}", uuid, requestData.userId());
+        log.info("Requesting Case, UUID: {}, User: {}", uuid, requestData.username());
         if (uuid != null) {
             CaseData caseData = caseDataRepository.findByUuid(uuid);
-            auditService.writeGetCaseEvent(requestData.userId(), uuid);
+            auditService.writeGetCaseEvent( uuid);
             if (caseData != null) {
-                log.info("Found Case, Reference: {} ({}), UseFr: {}", caseData.getReference(), caseData.getUuid(), requestData.userId());
+                log.info("Found Case, Reference: {} ({}), UseFr: {}", caseData.getReference(), caseData.getUuid(), requestData.username());
                 return caseData;
             } else {
                 throw new EntityNotFoundException("Case not Found!");

@@ -26,9 +26,9 @@ class RshCaseResource {
     }
 
     @RequestMapping(value = "/rsh/case", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CreateCaseResponse> rshCreateCase(@RequestBody CreateRshCaseRequest request, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity<CreateCaseResponse> rshCreateCase(@RequestBody CreateRshCaseRequest request) {
         try {
-            CaseData caseData = rshCaseService.createRshCase(request.getCaseData(), request.getSendEmailRequest(), username);
+            CaseData caseData = rshCaseService.createRshCase(request.getCaseData(), request.getSendEmailRequest());
             return ResponseEntity.ok(CreateCaseResponse.from(caseData));
         } catch (EntityCreationException e) {
             return ResponseEntity.badRequest().build();
@@ -36,9 +36,9 @@ class RshCaseResource {
     }
 
     @RequestMapping(value = "/rsh/case/{caseUUID}", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CreateCaseResponse> rshUpdateCase(@PathVariable UUID caseUUID, @RequestBody CreateRshCaseRequest request, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity<CreateCaseResponse> rshUpdateCase(@PathVariable UUID caseUUID, @RequestBody CreateRshCaseRequest request) {
         try {
-            CaseData caseData = rshCaseService.updateRshCase(caseUUID, request.getCaseData(), request.getSendEmailRequest(), username);
+            CaseData caseData = rshCaseService.updateRshCase(caseUUID, request.getCaseData(), request.getSendEmailRequest());
             return ResponseEntity.ok(CreateCaseResponse.from(caseData));
         } catch (EntityCreationException | EntityNotFoundException e) {
             return ResponseEntity.badRequest().build();
@@ -46,9 +46,9 @@ class RshCaseResource {
     }
 
     @RequestMapping(value = "/rsh/case/{caseUUID}", method = RequestMethod.GET, produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CaseData> rshGetCase(@PathVariable UUID caseUUID, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity<CaseData> rshGetCase(@PathVariable UUID caseUUID) {
         try {
-            CaseData caseData = rshCaseService.getRSHCase(caseUUID, username);
+            CaseData caseData = rshCaseService.getRSHCase(caseUUID);
             return ResponseEntity.ok(caseData);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().build();

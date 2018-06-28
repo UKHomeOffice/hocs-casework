@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
+import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
@@ -21,72 +22,73 @@ public class AuditService {
 
     private final AuditRepository auditRepository;
     private final ObjectMapper objectMapper;
+    private final RequestData requestData;
 
     @Autowired
-    public AuditService(AuditRepository auditRepository) {
+    public AuditService(AuditRepository auditRepository, RequestData requestData) {
         this.auditRepository = auditRepository;
-
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
+        this.requestData = requestData;
     }
 
-    public void writeSearchEvent(String username, SearchRequest searchRequest) {
+    public void writeSearchEvent(SearchRequest searchRequest) {
         String request = SearchRequest.toJsonString(objectMapper, searchRequest);
-        AuditEntry auditEntry = new AuditEntry(username, request, AuditAction.SEARCH);
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), request, AuditAction.SEARCH);
         auditRepository.save(auditEntry);
     }
 
-    public void writeSendEmailEvent(String username, SendEmailRequest sendEmailRequest) {
-        AuditEntry auditEntry = new AuditEntry(username, sendEmailRequest.getEmailAddress(), AuditAction.SEND_EMAIL);
+    public void writeSendEmailEvent(SendEmailRequest sendEmailRequest) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), sendEmailRequest.getEmailAddress(), AuditAction.SEND_EMAIL);
         auditRepository.save(auditEntry);
     }
 
-    public void writeGetCaseEvent(String username, UUID caseUUID) {
-        AuditEntry auditEntry = new AuditEntry(username, caseUUID.toString(), AuditAction.GET_CASE);
+    public void writeGetCaseEvent(UUID caseUUID) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), caseUUID.toString(), AuditAction.GET_CASE);
         auditRepository.save(auditEntry);
     }
 
-    public void writeCreateCaseEvent(String username, CaseData caseData) {
-        AuditEntry auditEntry = new AuditEntry(username, caseData, null, AuditAction.CREATE_CASE);
+    public void writeCreateCaseEvent(CaseData caseData) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), caseData, null, AuditAction.CREATE_CASE);
         auditRepository.save(auditEntry);
     }
 
-    public void writeUpdateCaseEvent(String username, CaseData caseData) {
-        AuditEntry auditEntry = new AuditEntry(username, caseData, null,  AuditAction.UPDATE_CASE);
+    public void writeUpdateCaseEvent(CaseData caseData) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), caseData, null, AuditAction.UPDATE_CASE);
         auditRepository.save(auditEntry);
     }
 
-    public void writeCreateStageEvent(String username, StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.CREATE_STAGE);
+    public void writeCreateStageEvent(StageData stageData) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), null, stageData, AuditAction.CREATE_STAGE);
         auditRepository.save(auditEntry);
     }
 
-    public void writeUpdateStageEvent(String username, StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(username, null, stageData, AuditAction.UPDATE_STAGE);
+    public void writeUpdateStageEvent(StageData stageData) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), null, stageData, AuditAction.UPDATE_STAGE);
         auditRepository.save(auditEntry);
     }
 
-    public void writeAddDocumentEvent(String username, DocumentData documentData) {
-        AuditEntry auditEntry = new AuditEntry(username,  documentData,AuditAction.ADD_DOCUMENT);
+    public void writeAddDocumentEvent(DocumentData documentData) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.ADD_DOCUMENT);
         auditRepository.save(auditEntry);
     }
 
-    public void writeUpdateDocumentEvent(String username, DocumentData documentData) {
-        AuditEntry auditEntry = new AuditEntry(username,  documentData,AuditAction.UPDATE_DOCUMENT);
+    public void writeUpdateDocumentEvent(DocumentData documentData) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.UPDATE_DOCUMENT);
         auditRepository.save(auditEntry);
     }
 
-    public void writeDeleteDocumentEvent(String username, DocumentData documentData) {
-        AuditEntry auditEntry = new AuditEntry(username,  documentData,AuditAction.DELETE_DOCUMENT);
+    public void writeDeleteDocumentEvent(DocumentData documentData) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.DELETE_DOCUMENT);
         auditRepository.save(auditEntry);
     }
 
-    public void writeUndeleteDocumentEvent(String username, DocumentData documentData) {
-        AuditEntry auditEntry = new AuditEntry(username,  documentData,AuditAction.UNDELETE_DOCUMENT);
+    public void writeUndeleteDocumentEvent(DocumentData documentData) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.UNDELETE_DOCUMENT);
         auditRepository.save(auditEntry);
     }
 
-    public void writeExtractEvent(String username, String params) {
-        AuditEntry auditEntry = new AuditEntry(username, params, AuditAction.CSV_EXTRACT);
+    public void writeExtractEvent(String params) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), params, AuditAction.CSV_EXTRACT);
         auditRepository.save(auditEntry);
     }
 }

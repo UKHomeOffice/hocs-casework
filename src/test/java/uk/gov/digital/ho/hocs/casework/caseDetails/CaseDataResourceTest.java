@@ -43,7 +43,7 @@ public class CaseDataResourceTest {
 
         when(caseDataService.createCase(any())).thenReturn(new CaseData(caseType, 1234L));
         CreateCaseRequest request = new CreateCaseRequest(caseType);
-        ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request, testUser);
+        ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
         verify(caseDataService, times(1)).createCase(caseType);
         assertThat(response).isNotNull();
@@ -60,7 +60,7 @@ public class CaseDataResourceTest {
 
         when(caseDataService.createCase(any())).thenThrow(EntityCreationException.class);
         CreateCaseRequest request = new CreateCaseRequest(caseType);
-        ResponseEntity response = caseDataResource.createCase(request, testUser);
+        ResponseEntity response = caseDataResource.createCase(request);
 
         verify(caseDataService, times(1)).createCase(caseType);
         assertThat(response).isNotNull();
@@ -117,7 +117,7 @@ public class CaseDataResourceTest {
         when(caseDataService.createStage(any(UUID.class), anyString(), anyMap())).thenReturn(new StageData(uuid, stageType, ""));
         CreateStageRequest request = new CreateStageRequest(stageType, data);
 
-        ResponseEntity<CreateStageResponse> response = caseDataResource.createStage(uuid, request, testUser);
+        ResponseEntity<CreateStageResponse> response = caseDataResource.createStage(uuid, request);
 
         verify(caseDataService, times(1)).createStage(uuid, stageType, new HashMap<>());
         assertThat(response).isNotNull();
@@ -135,7 +135,7 @@ public class CaseDataResourceTest {
         when(caseDataService.createStage(any(UUID.class), anyString(), anyMap())).thenThrow(EntityCreationException.class);
         CreateStageRequest request = new CreateStageRequest(stageType, data);
 
-        ResponseEntity response = caseDataResource.createStage(uuid, request, testUser);
+        ResponseEntity response = caseDataResource.createStage(uuid, request);
 
         verify(caseDataService, times(1)).createStage(uuid, stageType, new HashMap<>());
         assertThat(response).isNotNull();
@@ -150,7 +150,7 @@ public class CaseDataResourceTest {
 
         when(caseDataService.updateStage(any(), any(), any(), any())).thenReturn(new StageData(caseUUID, stageType, ""));
         UpdateStageRequest request = new UpdateStageRequest(stageType, data);
-        ResponseEntity response = caseDataResource.updateStage(caseUUID, uuid, request, testUser);
+        ResponseEntity response = caseDataResource.updateStage(caseUUID, uuid, request);
 
         verify(caseDataService, times(1)).updateStage(caseUUID, uuid, stageType, data);
         assertThat(response).isNotNull();
@@ -166,7 +166,7 @@ public class CaseDataResourceTest {
 
         when(caseDataService.updateStage(any(), any(), any(), any())).thenThrow(EntityCreationException.class);
         UpdateStageRequest request = new UpdateStageRequest(stageType, data);
-        ResponseEntity response = caseDataResource.updateStage(caseUUID, uuid, request, testUser);
+        ResponseEntity response = caseDataResource.updateStage(caseUUID, uuid, request);
 
         verify(caseDataService, times(1)).updateStage(caseUUID, uuid, stageType, data);
         assertThat(response).isNotNull();
@@ -181,7 +181,7 @@ public class CaseDataResourceTest {
 
         when(caseDataService.updateStage(any(), any(), any(), any())).thenThrow(EntityNotFoundException.class);
         UpdateStageRequest request = new UpdateStageRequest(stageType, data);
-        ResponseEntity response = caseDataResource.updateStage(caseUUID, uuid, request, testUser);
+        ResponseEntity response = caseDataResource.updateStage(caseUUID, uuid, request);
 
         verify(caseDataService, times(1)).updateStage(caseUUID, uuid, stageType, data);
         assertThat(response).isNotNull();

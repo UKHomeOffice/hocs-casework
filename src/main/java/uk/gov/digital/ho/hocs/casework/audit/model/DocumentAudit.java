@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "document_audit")
+@Table(name = "audit_document_data")
 public class DocumentAudit {
 
     @Id
