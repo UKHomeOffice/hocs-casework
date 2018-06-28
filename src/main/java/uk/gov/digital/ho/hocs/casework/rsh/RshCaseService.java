@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
@@ -52,18 +53,18 @@ public class RshCaseService {
     }
 
     @Transactional
-    CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest, String username) throws EntityCreationException {
+    CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException {
         if (caseData != null) {
             CaseData caseDetails = caseDataService.createCase("RSH");
             caseDataService.createStage(caseDetails.getUuid(), "Stage", caseData);
-            sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"), username);
+            sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
             return caseDetails;
         } else {
             throw new EntityCreationException("Failed to create case, no caseData!");
         }
     }
 
-    CaseData getRSHCase(UUID caseUUID, String username) throws EntityNotFoundException {
+    CaseData getRSHCase(UUID caseUUID) throws EntityNotFoundException {
         if (!isNullOrEmpty(caseUUID)) {
             CaseData caseData = caseDataService.getCase(caseUUID);
             if (caseData != null) {
@@ -76,13 +77,13 @@ public class RshCaseService {
         }
     }
 
-    CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendRshEmailRequest emailRequest, String username) throws EntityCreationException, EntityNotFoundException {
+    CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException, EntityNotFoundException {
         if (!isNullOrEmpty(caseUUID) && caseData != null) {
             CaseData caseDetails = caseDataService.getCase(caseUUID);
             if (!caseDetails.getStages().isEmpty()) {
                 StageData stageData = caseDetails.getStages().iterator().next();
                 caseDataService.updateStage(caseUUID, stageData.getUuid(), "Stage", caseData);
-                sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"), username);
+                sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
                 return caseDetails;
             } else {
                 throw new EntityCreationException("Failed to update case, case has no stages!");
@@ -92,10 +93,10 @@ public class RshCaseService {
         }
     }
 
-    private void sendRshEmail(SendRshEmailRequest emailRequest, UUID caseUUID, String caseReference, String caseStatus, String userName) {
+    private void sendRshEmail(SendRshEmailRequest emailRequest, UUID caseUUID, String caseReference, String caseStatus) {
         if (emailRequest != null) {
             SendEmailRequest sendEmailRequest = createRshEmail(emailRequest.getEmail(), emailRequest.getTeamName(), frontendUrl, caseUUID, caseReference, caseStatus);
-            emailService.sendRshEmail(sendEmailRequest, userName);
+            emailService.sendRshEmail(sendEmailRequest);
         } else {
             log.warn("Received request to email, but notify request was null!");
         }

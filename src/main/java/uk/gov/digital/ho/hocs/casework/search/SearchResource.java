@@ -22,8 +22,8 @@ class SearchResource {
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.POST, produces = APPLICATION_JSON_UTF8_VALUE)
-    ResponseEntity<Set<CaseData>> search(@RequestBody SearchRequest searchRequest, @RequestHeader("X-Auth-Username") String username) {
-        Set<CaseData> searchResponses = searchService.findCases(searchRequest, username);
+    ResponseEntity<Set<CaseData>> search(@RequestBody SearchRequest searchRequest) {
+        Set<CaseData> searchResponses = searchService.findCases(searchRequest);
         return ResponseEntity.ok(searchResponses);
     }
 }

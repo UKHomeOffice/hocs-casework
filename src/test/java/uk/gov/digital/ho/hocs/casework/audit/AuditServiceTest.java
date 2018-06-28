@@ -5,8 +5,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.*;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentType;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
@@ -21,6 +25,10 @@ public class AuditServiceTest {
     @Mock
     private AuditRepository mockAuditRepository;
 
+    @Mock
+    private RequestData mockRequestData;
+
+
     private AuditService auditService;
 
     private String testUser = "Test User";
@@ -28,14 +36,14 @@ public class AuditServiceTest {
 
     @Before
     public void setUp() {
-        this.auditService = new AuditService(mockAuditRepository);
+        this.auditService = new AuditService(mockAuditRepository, mockRequestData);
     }
 
     @Test
     public void shouldWriteSearchEvent() {
         SearchRequest searchRequest = new SearchRequest();
 
-        auditService.writeSearchEvent(testUser, searchRequest);
+        auditService.writeSearchEvent(searchRequest);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }
@@ -44,7 +52,7 @@ public class AuditServiceTest {
     public void shouldWriteSendEmailEvent() {
         SendEmailRequest sendEmailRequest = new SendEmailRequest("", new HashMap<>());
 
-        auditService.writeSendEmailEvent(testUser, sendEmailRequest);
+        auditService.writeSendEmailEvent(sendEmailRequest);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }
@@ -53,7 +61,7 @@ public class AuditServiceTest {
     public void shouldWriteGetCaseEvent() {
         UUID caseUUID = UUID.randomUUID();
 
-        auditService.writeGetCaseEvent(testUser, caseUUID);
+        auditService.writeGetCaseEvent(caseUUID);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }
@@ -62,7 +70,7 @@ public class AuditServiceTest {
     public void shouldWriteCreateCaseEvent() {
         CaseData caseData = new CaseData("", 1L);
 
-        auditService.writeCreateCaseEvent(testUser, caseData);
+        auditService.writeCreateCaseEvent(caseData);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }
@@ -71,7 +79,7 @@ public class AuditServiceTest {
     public void shouldWriteUpdateCaseEvent() {
         CaseData caseData = new CaseData("", 1L);
 
-        auditService.writeUpdateCaseEvent(testUser, caseData);
+        auditService.writeUpdateCaseEvent(caseData);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }
@@ -80,7 +88,7 @@ public class AuditServiceTest {
     public void shouldWriteCreateStageEvent() {
         StageData stageData = new StageData(UUID.randomUUID(), "", "");
 
-        auditService.writeCreateStageEvent(testUser, stageData);
+        auditService.writeCreateStageEvent(stageData);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }
@@ -89,43 +97,43 @@ public class AuditServiceTest {
     public void shouldWriteUpdateStageEvent() {
         StageData stageData = new StageData(UUID.randomUUID(), "", "");
 
-        auditService.writeUpdateStageEvent(testUser, stageData);
+        auditService.writeUpdateStageEvent(stageData);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }
 
     @Test
     public void shouldWriteAddDocumentEvent() {
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL);
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "", DocumentType.ORIGINAL);
 
-        auditService.writeAddDocumentEvent(testUser, documentData);
+        auditService.writeAddDocumentEvent(documentData);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }
 
     @Test
     public void shouldWriteUpdateDocumentEvent() {
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL);
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "", DocumentType.ORIGINAL);
 
-        auditService.writeUpdateDocumentEvent(testUser, documentData);
+        auditService.writeUpdateDocumentEvent(documentData);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }
 
     @Test
     public void shouldWriteDeleteDocumentEvent() {
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL);
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "", DocumentType.ORIGINAL);
 
-        auditService.writeDeleteDocumentEvent(testUser, documentData);
+        auditService.writeDeleteDocumentEvent(documentData);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }
 
     @Test
     public void shouldWriteUndeleteDocumentEvent() {
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "",DocumentType.ORIGINAL);
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), UUID.randomUUID(), "", DocumentType.ORIGINAL);
 
-        auditService.writeUndeleteDocumentEvent(testUser, documentData);
+        auditService.writeUndeleteDocumentEvent(documentData);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }
@@ -134,7 +142,7 @@ public class AuditServiceTest {
     public void shouldExtractEvent() {
         String params = "";
 
-        auditService.writeExtractEvent(testUser, params);
+        auditService.writeExtractEvent(params);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }

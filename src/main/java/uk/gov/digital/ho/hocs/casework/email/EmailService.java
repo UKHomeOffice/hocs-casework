@@ -9,7 +9,6 @@ import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 
 import static uk.gov.digital.ho.hocs.casework.HocsCaseApplication.isNullOrEmpty;
 
-
 @Service
 @Slf4j
 public class EmailService {
@@ -17,6 +16,7 @@ public class EmailService {
     private final AuditService auditService;
 
     private final ProxyingNotificationClient notifyClient;
+
 
     private final String rshTemplate;
 
@@ -30,15 +30,15 @@ public class EmailService {
         this.rshTemplate = rshTemplateId;
     }
 
-    public void sendRshEmail(SendEmailRequest sendEmailRequest, String username) {
-        sendEmail(sendEmailRequest, rshTemplate, username);
+    public void sendRshEmail(SendEmailRequest sendEmailRequest) {
+        sendEmail(sendEmailRequest, rshTemplate);
     }
 
-    private void sendEmail(SendEmailRequest sendEmailRequest, String templateId, String username) {
+    private void sendEmail(SendEmailRequest sendEmailRequest, String templateId) {
         if (sendEmailRequest != null) {
             if (!isNullOrEmpty(sendEmailRequest.getEmailAddress())) {
                 log.info("Received request to sendEmailRequest {}, templateId {}", sendEmailRequest.getEmailAddress(), templateId);
-                auditService.writeSendEmailEvent(username, sendEmailRequest);
+                auditService.writeSendEmailEvent(sendEmailRequest);
                 notifyClient.sendEmail(sendEmailRequest, templateId);
             } else {
                 log.warn("Received request to sendEmailRequest templateId {}, but params were null!", templateId);

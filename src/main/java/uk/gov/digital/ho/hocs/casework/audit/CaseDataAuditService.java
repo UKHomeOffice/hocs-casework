@@ -8,6 +8,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
+import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.CaseDataAudit;
 import uk.gov.digital.ho.hocs.casework.audit.model.ExportLine;
 import uk.gov.digital.ho.hocs.casework.audit.model.StageDataAudit;
@@ -44,14 +45,16 @@ public class CaseDataAuditService {
     private final CaseDataAuditRepository caseDataAuditRepository;
     private final StageDataAuditRepository stageDataAuditRepository;
     private final ObjectMapper objectMapper;
+    private final RequestData requestData;
 
     @Autowired
-    public CaseDataAuditService(AuditService auditService, CaseDataAuditRepository caseDataAuditRepository, StageDataAuditRepository stageDataAuditRepository) {
+    public CaseDataAuditService(AuditService auditService, CaseDataAuditRepository caseDataAuditRepository, StageDataAuditRepository stageDataAuditRepository, RequestData requestData) {
         this.auditService = auditService;
         this.caseDataAuditRepository = caseDataAuditRepository;
         this.stageDataAuditRepository = stageDataAuditRepository;
 
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
+        this.requestData = requestData;
 
     }
 
@@ -102,9 +105,9 @@ public class CaseDataAuditService {
         return String.format("%s_%s", prefix, suffix);
     }
 
-    String getReportingDataAsCSV(String unit, LocalDate cutoff, String username) {
+    String getReportingDataAsCSV(String unit, LocalDate cutoff) {
         if (caseTypesMapping.containsKey(unit)) {
-            List<ExportLine> exportLines = getReportingData(unit, cutoff, username);
+            List<ExportLine> exportLines = getReportingData(unit, cutoff);
 
             StringBuilder sb = new StringBuilder();
             try {
@@ -127,19 +130,19 @@ public class CaseDataAuditService {
         }
     }
 
-    List<ExportLine> getReportingDataAsJson(String unit, LocalDate cutoff, String username) {
+    List<ExportLine> getReportingDataAsJson(String unit, LocalDate cutoff) {
         if (caseTypesMapping.containsKey(unit)) {
-            return getReportingData(unit, cutoff, username);
+            return getReportingData(unit, cutoff);
         } else {
             return new ArrayList<>();
         }
     }
 
-    private List<ExportLine> getReportingData(String unit, LocalDate cutoff, String username) {
+    private List<ExportLine> getReportingData(String unit, LocalDate cutoff) {
         String[] types = caseTypesMapping.get(unit);
         String typesAuditString = Arrays.toString(types).concat(cutoff.toString());
-        auditService.writeExtractEvent(username, typesAuditString);
-        log.info("Requesting Extract, Values: \"{}\",  User: {}", typesAuditString, cutoff, username);
+        auditService.writeExtractEvent(typesAuditString);
+        log.info("Requesting Extract, Values: \"{}\",  User: {}", typesAuditString, cutoff, requestData.username());
 
         LocalDateTime startDate = getStartDate(cutoff);
         LocalDateTime endDate = getEndDate(cutoff);
@@ -157,7 +160,7 @@ public class CaseDataAuditService {
             return ret;
         }).map(l -> ExportLine.from(caseSchemaMapping.get(unit), l));
 
-        log.info("Returned Extract, Found: {}, User: {}", caseDatumAudits.size(), username);
+        log.info("Returned Extract, Found: {}, User: {}", caseDatumAudits.size(), requestData.username());
         return reportLines.collect(Collectors.toList());
     }
 }

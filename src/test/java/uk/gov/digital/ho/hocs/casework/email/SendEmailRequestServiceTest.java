@@ -22,7 +22,6 @@ public class SendEmailRequestServiceTest {
     @Mock
     private ProxyingNotificationClient mockNotifyClient;
 
-    private final String testUser = "test user";
 
     @Before
     public void setUp() {
@@ -33,7 +32,7 @@ public class SendEmailRequestServiceTest {
     @Test
     public void shouldSendRshEmail() {
         SendEmailRequest sendEmailRequest = new SendEmailRequest("email.user@test.com", new HashMap<>());
-        emailService.sendRshEmail(sendEmailRequest, testUser);
+        emailService.sendRshEmail(sendEmailRequest);
 
         verify(mockNotifyClient, times(1)).sendEmail(any(SendEmailRequest.class), anyString());
     }
@@ -41,7 +40,7 @@ public class SendEmailRequestServiceTest {
     @Test
     public void shouldSendEmailNullEmailAddress() {
         SendEmailRequest sendEmailRequest = new SendEmailRequest(null, new HashMap<>());
-        emailService.sendRshEmail(sendEmailRequest, testUser);
+        emailService.sendRshEmail(sendEmailRequest);
 
         verify(mockNotifyClient, times(0)).sendEmail(any(SendEmailRequest.class), anyString());
     }
@@ -49,7 +48,7 @@ public class SendEmailRequestServiceTest {
     @Test
     public void shouldSendEmailNullTeamName() {
         SendEmailRequest sendEmailRequest = new SendEmailRequest("email.user@test.com", new HashMap<>());
-        emailService.sendRshEmail(sendEmailRequest, testUser);
+        emailService.sendRshEmail(sendEmailRequest);
 
         verify(mockNotifyClient, times(1)).sendEmail(any(SendEmailRequest.class), anyString());
     }
@@ -57,14 +56,14 @@ public class SendEmailRequestServiceTest {
     @Test
     public void shouldSendEmailNullPersonalisation() {
         SendEmailRequest sendEmailRequest = new SendEmailRequest("email.user@test.com", null);
-        emailService.sendRshEmail(sendEmailRequest, testUser);
+        emailService.sendRshEmail(sendEmailRequest);
 
         verify(mockNotifyClient, times(1)).sendEmail(any(SendEmailRequest.class), anyString());
     }
 
     @Test
     public void shouldSendEmailNullNotifyRequest() {
-        emailService.sendRshEmail(null, testUser);
+        emailService.sendRshEmail(null);
 
         verify(mockNotifyClient, times(0)).sendEmail(any(SendEmailRequest.class), anyString());
     }

@@ -19,28 +19,28 @@ class CaseDataAuditResource {
     }
 
     @RequestMapping(value = "/report/{unit}/current", method = RequestMethod.GET, produces = "text/csv;charset=UTF-8")
-    public ResponseEntity<String> getReportCurrent(@PathVariable("unit") String unit, @RequestHeader("X-Auth-Username") String username) {
-        String value = caseDataAuditService.getReportingDataAsCSV(unit, LocalDate.now(), username);
+    public ResponseEntity<String> getReportCurrent(@PathVariable("unit") String unit) {
+        String value = caseDataAuditService.getReportingDataAsCSV(unit, LocalDate.now());
         return ResponseEntity.ok(value);
     }
 
     @RequestMapping(value = "/report/{unit}/current/json", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<List<ExportLine>> getReportCurrentJson(@PathVariable("unit") String unit, @RequestHeader("X-Auth-Username") String username) {
-        List<ExportLine> value = caseDataAuditService.getReportingDataAsJson(unit, LocalDate.now(), username);
+    public ResponseEntity<List<ExportLine>> getReportCurrentJson(@PathVariable("unit") String unit) {
+        List<ExportLine> value = caseDataAuditService.getReportingDataAsJson(unit, LocalDate.now());
         return ResponseEntity.ok(value);
     }
 
     @RequestMapping(value = "/report/{unit}/{cutoff}", method = RequestMethod.GET, produces = "text/csv;charset=UTF-8")
-    public ResponseEntity<String> getReportCutoff(@PathVariable("unit") String unit, @PathVariable("cutoff") String cutoff, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity<String> getReportCutoff(@PathVariable("unit") String unit, @PathVariable("cutoff") String cutoff) {
         LocalDate cutoffDate = LocalDate.parse(cutoff);
-        String value = caseDataAuditService.getReportingDataAsCSV(unit, cutoffDate, username);
+        String value = caseDataAuditService.getReportingDataAsCSV(unit, cutoffDate);
         return ResponseEntity.ok(value);
     }
 
     @RequestMapping(value = "/report/{unit}/{cutoff}/json", method = RequestMethod.GET, produces = "application/json")
-    public ResponseEntity<List<ExportLine>> getReportCutoffJson(@PathVariable("unit") String unit, @PathVariable("cutoff") String cutoff, @RequestHeader("X-Auth-Username") String username) {
+    public ResponseEntity<List<ExportLine>> getReportCutoffJson(@PathVariable("unit") String unit, @PathVariable("cutoff") String cutoff) {
         LocalDate cutoffDate = LocalDate.parse(cutoff);
-        List<ExportLine> value = caseDataAuditService.getReportingDataAsJson(unit, cutoffDate, username);
+        List<ExportLine> value = caseDataAuditService.getReportingDataAsJson(unit, cutoffDate);
         return ResponseEntity.ok(value);
     }
 }

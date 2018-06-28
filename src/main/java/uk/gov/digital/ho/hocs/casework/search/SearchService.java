@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.search;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
@@ -21,17 +22,19 @@ class SearchService {
 
     private final AuditService auditService;
     private final CaseDataRepository caseDataRepository;
+    private final RequestData requestData;
 
     @Autowired
-    public SearchService(AuditService auditService, CaseDataRepository caseDataRepository) {
+    public SearchService(AuditService auditService, CaseDataRepository caseDataRepository, RequestData requestData) {
         this.auditService = auditService;
         this.caseDataRepository = caseDataRepository;
+        this.requestData = requestData;
     }
 
     @Transactional
-    public Set<CaseData> findCases(SearchRequest searchRequest, String username) {
-        auditService.writeSearchEvent(username, searchRequest);
-        log.info("Requesting Search, User: {}", username);
+    public Set<CaseData> findCases(SearchRequest searchRequest) {
+        auditService.writeSearchEvent(searchRequest);
+        log.info("Requesting Search, User: {}", requestData.username());
 
 
         Set<CaseData> results = new HashSet<>(findByCaseReference(searchRequest.getCaseReference()));
@@ -41,7 +44,7 @@ class SearchService {
             results.addAll(findByNameOrDob(searchRequest.getCaseData()));
         }
 
-        log.info("Returned Search, Found: {}, User: {}", results.size(), username);
+        log.info("Returned Search, Found: {}, User: {}", results.size(), requestData.username());
         return results;
     }
 
