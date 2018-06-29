@@ -40,7 +40,7 @@ public class RequestDataTest
 
     @Test
     public void shouldUseCorrelationIdFromRequest() throws Exception {
-        when(mockHttpServletRequest.getHeader("x-correlation-id")).thenReturn("some correlation id");
+        when(mockHttpServletRequest.getHeader("X-Correlationid")).thenReturn("some correlation id");
 
         requestData.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
 

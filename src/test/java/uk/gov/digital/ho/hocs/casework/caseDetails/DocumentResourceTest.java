@@ -8,11 +8,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentRequest;
-import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentResponse;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentsRequest;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.DocumentSummary;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentType;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +30,6 @@ public class DocumentResourceTest {
     private DocumentResource documentResource;
 
     private final UUID uuid = UUID.randomUUID();
-    private final String testUser = "Test User";
 
     @Before
     public void setUp(){
@@ -38,29 +39,63 @@ public class DocumentResourceTest {
     @Test
     public void shouldAddDocument() throws EntityCreationException {
         String documentDisplayName = "A DOC";
-        when(documentService.addDocument(uuid, uuid,documentDisplayName, DocumentType.ORIGINAL)).thenReturn(new DocumentData(uuid,uuid, documentDisplayName, DocumentType.ORIGINAL));
-        AddDocumentRequest request = new AddDocumentRequest(uuid, documentDisplayName, DocumentType.ORIGINAL);
+        DocumentSummary documentSummary = new DocumentSummary(uuid, documentDisplayName, DocumentType.ORIGINAL);
 
-        ResponseEntity<AddDocumentResponse> response = documentResource.AddDocument(uuid, request);
+        doNothing().when(documentService).addDocument(uuid, documentSummary);
+        AddDocumentRequest request = new AddDocumentRequest(documentSummary);
 
-        verify(documentService, times(1)).addDocument(uuid, uuid, documentDisplayName, DocumentType.ORIGINAL);
+        ResponseEntity response = documentResource.addDocument(uuid, request);
+
+        verify(documentService, times(1)).addDocument(uuid, documentSummary);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getUuid()).isNotNull();
-        assertThat(response.getBody()).isInstanceOf(AddDocumentResponse.class);
     }
 
     @Test
-    public void shouldCreateStageException() throws EntityCreationException {
+    public void shouldAddDocumentException() throws EntityCreationException {
         String documentDisplayName = "A DOC";
 
-        when(documentService.addDocument(uuid, uuid,documentDisplayName, DocumentType.ORIGINAL)).thenThrow(EntityCreationException.class);
-        AddDocumentRequest request = new AddDocumentRequest(uuid, documentDisplayName, DocumentType.ORIGINAL);
+        DocumentSummary documentSummary = new DocumentSummary(null, documentDisplayName, DocumentType.ORIGINAL);
+        doThrow(EntityCreationException.class).when(documentService).addDocument(uuid, documentSummary);
+        AddDocumentRequest request = new AddDocumentRequest(documentSummary);
 
-        ResponseEntity<AddDocumentResponse> response = documentResource.AddDocument(uuid, request);
+        ResponseEntity response = documentResource.addDocument(uuid, request);
 
-        verify(documentService, times(1)).addDocument(uuid, uuid, documentDisplayName, DocumentType.ORIGINAL);
+        verify(documentService, times(1)).addDocument(uuid, documentSummary);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldAddDocuments() throws EntityCreationException {
+        String documentDisplayName = "A DOC";
+        DocumentSummary documentSummary = new DocumentSummary(uuid, documentDisplayName, DocumentType.ORIGINAL);
+
+        List<DocumentSummary> documentSummaries = Arrays.asList(documentSummary);
+
+        doNothing().when(documentService).addDocuments(uuid, documentSummaries);
+        AddDocumentsRequest request = new AddDocumentsRequest(documentSummaries);
+
+        ResponseEntity response = documentResource.addDocuments(uuid, request);
+
+        verify(documentService, times(1)).addDocuments(uuid, documentSummaries);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldAddDocumentsException() throws EntityCreationException {
+        String documentDisplayName = "A DOC";
+        DocumentSummary documentSummary = new DocumentSummary(null, documentDisplayName, DocumentType.ORIGINAL);
+
+        List<DocumentSummary> documentSummaries = Arrays.asList(documentSummary);
+
+        doThrow(EntityCreationException.class).when(documentService).addDocuments(uuid, documentSummaries);
+        AddDocumentsRequest request = new AddDocumentsRequest(documentSummaries);
+
+        ResponseEntity response = documentResource.addDocuments(uuid, request);
+
+        verify(documentService, times(1)).addDocuments(uuid, documentSummaries);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
