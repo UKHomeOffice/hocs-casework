@@ -14,7 +14,9 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -70,6 +72,11 @@ public class AuditService {
     public void writeAddDocumentEvent(DocumentData documentData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.ADD_DOCUMENT);
         auditRepository.save(auditEntry);
+    }
+
+    public void writeAddDocumentEvents(List<DocumentData> documentDatum) {
+        List<AuditEntry> auditEntries = documentDatum.stream().map(d -> new AuditEntry(requestData.username(), d, AuditAction.ADD_DOCUMENT)).collect(Collectors.toList());
+        auditRepository.saveAll(auditEntries);
     }
 
     public void writeUpdateDocumentEvent(DocumentData documentData) {

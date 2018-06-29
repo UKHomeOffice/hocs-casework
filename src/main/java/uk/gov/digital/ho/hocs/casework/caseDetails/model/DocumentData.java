@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.caseDetails.model;
 
 import lombok.*;
 import org.hibernate.annotations.Where;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.DocumentSummary;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -68,10 +69,10 @@ public class DocumentData implements Serializable {
         this.deleted = Boolean.FALSE;
     }
 
-    public DocumentData(UUID caseUUID, UUID documentUUID, String documentDisplayName, DocumentType documentType) {
+    public DocumentData(UUID caseUUID, DocumentSummary documentSummary) {
         this.caseUUID = caseUUID;
-        this.documentUUID = documentUUID;
-        this.documentDisplayName = documentDisplayName;
-        this.documentType = documentType;
+        this.documentUUID = documentSummary.getDocumentUUID();
+        this.documentDisplayName =  documentSummary.getDocumentDisplayName();
+        this.documentType = documentSummary.getDocumentType();
     }
 }

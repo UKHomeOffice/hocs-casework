@@ -17,7 +17,6 @@ public class EmailService {
 
     private final ProxyingNotificationClient notifyClient;
 
-
     private final String rshTemplate;
 
 
