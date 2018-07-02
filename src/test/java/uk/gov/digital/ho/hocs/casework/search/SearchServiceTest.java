@@ -10,6 +10,7 @@ import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class SearchServiceTest {
     private SearchService searchService;
     private static Set<CaseData> getValidSet() {
         Set<CaseData> hashSet = new HashSet<>();
-        hashSet.add(new CaseData("REF", 0L));
+        hashSet.add(new CaseData(CaseType.MIN.toString(), 0L));
         return hashSet;
     }
 

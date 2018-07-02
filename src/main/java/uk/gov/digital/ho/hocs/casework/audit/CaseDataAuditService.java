@@ -62,7 +62,7 @@ public class CaseDataAuditService {
         Map<String, String> caseMap = new HashMap<>();
 
         String name = "Case";
-        caseMap.put(stageNameFormat(name, "Type"), caseDataAudit.getType());
+        caseMap.put(stageNameFormat(name, "Type"), caseDataAudit.getType().toString());
         caseMap.put(stageNameFormat(name, "Reference"), caseDataAudit.getReference());
         caseMap.put(stageNameFormat(name, "UUID"), caseDataAudit.getUuid().toString());
         caseMap.put(stageNameFormat(name, "Timestamp"), caseDataAudit.getTimestamp().toString());

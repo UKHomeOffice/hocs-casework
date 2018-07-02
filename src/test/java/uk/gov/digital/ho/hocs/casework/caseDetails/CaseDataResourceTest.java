@@ -11,7 +11,9 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.dto.*;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +33,7 @@ public class CaseDataResourceTest {
     private final UUID uuid = UUID.randomUUID();
     private final Map<String, String> data = new HashMap<>();
     private final String testUser = "Test User";
+    private final StageType stageType = StageType.DCU_MIN_CATEGORISE;
 
     @Before
     public void setUp() {
@@ -39,9 +42,9 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldCreateCase() throws EntityCreationException {
-        final String caseType = "Case Type";
+        final CaseType caseType = CaseType.MIN;
 
-        when(caseDataService.createCase(any())).thenReturn(new CaseData(caseType, 1234L));
+        when(caseDataService.createCase(any())).thenReturn(new CaseData(caseType.toString(), 1234L));
         CreateCaseRequest request = new CreateCaseRequest(caseType);
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
@@ -56,7 +59,7 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldCreateCaseException() throws EntityCreationException {
-        final String caseType = "Case Type";
+        final CaseType caseType = CaseType.MIN;
 
         when(caseDataService.createCase(any())).thenThrow(EntityCreationException.class);
         CreateCaseRequest request = new CreateCaseRequest(caseType);
@@ -69,11 +72,11 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldUpdateCase() throws EntityCreationException, EntityNotFoundException {
-        final String caseType = "Case Type";
+        final CaseType caseType = CaseType.MIN;
 
         UUID caseUUID = UUID.randomUUID();
 
-        when(caseDataService.updateCase(any(), any())).thenReturn(new CaseData(caseType, 1234L));
+        when(caseDataService.updateCase(any(), any())).thenReturn(new CaseData(caseType.toString(), 1234L));
         UpdateCaseRequest request = new UpdateCaseRequest(caseType);
         ResponseEntity response = caseDataResource.updateCase(caseUUID, request);
 
@@ -85,7 +88,7 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldUpdateCaseCreateException() throws EntityCreationException, EntityNotFoundException {
-        final String caseType = "Case Type";
+        final CaseType caseType = CaseType.MIN;
 
         when(caseDataService.updateCase(any(), any())).thenThrow(EntityCreationException.class);
         UpdateCaseRequest request = new UpdateCaseRequest(caseType);
@@ -98,7 +101,7 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldUpdateCaseFindException() throws EntityCreationException, EntityNotFoundException {
-        final String caseType = "Case Type";
+        final CaseType caseType = CaseType.MIN;
 
         when(caseDataService.updateCase(any(), any())).thenThrow(EntityNotFoundException.class);
         UpdateCaseRequest request = new UpdateCaseRequest(caseType);
@@ -111,15 +114,15 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldCreateStage() throws EntityCreationException {
-        String stageType = "Stage Type";
+
         Map<String, String> data = new HashMap<>();
 
-        when(caseDataService.createStage(any(UUID.class), anyString(), anyMap())).thenReturn(new StageData(uuid, stageType, ""));
-        CreateStageRequest request = new CreateStageRequest(stageType, data);
+        when(caseDataService.createStage(any(UUID.class), any(StageType.class), anyMap())).thenReturn(new StageData(uuid, stageType.toString(), ""));
+        CreateStageRequest request = new CreateStageRequest(StageType.DCU_MIN_CATEGORISE, data);
 
         ResponseEntity<CreateStageResponse> response = caseDataResource.createStage(uuid, request);
 
-        verify(caseDataService, times(1)).createStage(uuid, stageType, new HashMap<>());
+        verify(caseDataService, times(1)).createStage(uuid, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
@@ -129,10 +132,9 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldCreateStageException() throws EntityCreationException {
-        String stageType = "Stage Type";
         Map<String, String> data = new HashMap<>();
 
-        when(caseDataService.createStage(any(UUID.class), anyString(), anyMap())).thenThrow(EntityCreationException.class);
+        when(caseDataService.createStage(any(UUID.class), any(StageType.class), anyMap())).thenThrow(EntityCreationException.class);
         CreateStageRequest request = new CreateStageRequest(stageType, data);
 
         ResponseEntity response = caseDataResource.createStage(uuid, request);
@@ -144,11 +146,10 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldUpdateStage() throws EntityCreationException, EntityNotFoundException {
-        final String stageType = "Stage Type";
         UUID caseUUID = UUID.randomUUID();
         Map<String, String> data = new HashMap<>();
 
-        when(caseDataService.updateStage(any(), any(), any(), any())).thenReturn(new StageData(caseUUID, stageType, ""));
+        when(caseDataService.updateStage(any(), any(), any(), any())).thenReturn(new StageData(caseUUID, stageType.toString(), ""));
         UpdateStageRequest request = new UpdateStageRequest(stageType, data);
         ResponseEntity response = caseDataResource.updateStage(caseUUID, uuid, request);
 
@@ -160,7 +161,6 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldUpdateStageCreateException() throws EntityCreationException, EntityNotFoundException {
-        final String stageType = "Stage Type";
         UUID caseUUID = UUID.randomUUID();
         Map<String, String> data = new HashMap<>();
 
@@ -175,7 +175,6 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldUpdateStageFindException() throws EntityCreationException, EntityNotFoundException {
-        final String stageType = "Stage Type";
         UUID caseUUID = UUID.randomUUID();
         Map<String, String> data = new HashMap<>();
 

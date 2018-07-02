@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.*;
 import uk.gov.digital.ho.hocs.casework.caseDetails.dto.DocumentSummary;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
@@ -71,7 +72,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteCreateCaseEvent() {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(CaseType.MIN.toString(), 1L);
 
         auditService.writeCreateCaseEvent(caseData);
 
@@ -80,7 +81,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUpdateCaseEvent() {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(CaseType.MIN.toString(), 1L);
 
         auditService.writeUpdateCaseEvent(caseData);
 
