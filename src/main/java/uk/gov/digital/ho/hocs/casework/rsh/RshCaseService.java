@@ -9,7 +9,9 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.email.EmailService;
 import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.SendRshEmailRequest;
@@ -55,8 +57,8 @@ public class RshCaseService {
     @Transactional
     CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException {
         if (caseData != null) {
-            CaseData caseDetails = caseDataService.createCase("RSH");
-            caseDataService.createStage(caseDetails.getUuid(), "Stage", caseData);
+            CaseData caseDetails = caseDataService.createCase(CaseType.RSH);
+            caseDataService.createStage(caseDetails.getUuid(), StageType.DCU_MIN_CATEGORISE, caseData);
             sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
             return caseDetails;
         } else {
@@ -82,7 +84,7 @@ public class RshCaseService {
             CaseData caseDetails = caseDataService.getCase(caseUUID);
             if (!caseDetails.getStages().isEmpty()) {
                 StageData stageData = caseDetails.getStages().iterator().next();
-                caseDataService.updateStage(caseUUID, stageData.getUuid(), "Stage", caseData);
+                caseDataService.updateStage(caseUUID, stageData.getUuid(), StageType.DCU_MIN_CATEGORISE, caseData);
                 sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
                 return caseDetails;
             } else {

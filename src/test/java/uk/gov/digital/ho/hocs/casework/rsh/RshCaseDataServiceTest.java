@@ -9,7 +9,9 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.email.EmailService;
 import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.SendRshEmailRequest;
@@ -45,8 +47,8 @@ public class RshCaseDataServiceTest {
 
     @Test
     public void shouldCreateRshCase() throws EntityCreationException {
-        CaseData caseData = new CaseData("", 1L);
-        when(caseDataService.createCase(anyString())).thenReturn(caseData);
+        CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
+        when(caseDataService.createCase(CaseType.RSH)).thenReturn(caseData);
 
         Map<String, String> data = new HashMap<>();
         SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
@@ -56,8 +58,8 @@ public class RshCaseDataServiceTest {
 
         assertThat(caseDataReturn).isNotNull();
 
-        verify(caseDataService, times(1)).createCase("RSH");
-        verify(caseDataService, times(1)).createStage(caseData.getUuid(), "Stage", data);
+        verify(caseDataService, times(1)).createCase(CaseType.RSH);
+        verify(caseDataService, times(1)).createStage(caseData.getUuid(), StageType.DCU_MIN_CATEGORISE, data);
         verify(emailService, times(1)).sendRshEmail(any(SendEmailRequest.class));
     }
 
@@ -80,15 +82,15 @@ public class RshCaseDataServiceTest {
             //Do nothing.
         }
 
-        verify(caseDataService, times(0)).createCase(anyString());
-        verify(caseDataService, times(0)).createStage(any(UUID.class), anyString(), anyMap());
+        verify(caseDataService, times(0)).createCase(CaseType.MIN);
+        verify(caseDataService, times(0)).createStage(any(UUID.class), any(StageType.class), anyMap());
         verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class));
     }
 
     @Test
     public void shouldCreateRshCaseNullEmail() throws EntityCreationException {
-        CaseData caseData = new CaseData("", 1L);
-        when(caseDataService.createCase(anyString())).thenReturn(caseData);
+        CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
+        when(caseDataService.createCase(CaseType.RSH)).thenReturn(caseData);
 
         CaseData caseDataReturn = rshCaseService.createRshCase(
                 new HashMap<>(),
@@ -96,19 +98,19 @@ public class RshCaseDataServiceTest {
 
         assertThat(caseDataReturn).isNotNull();
 
-        verify(caseDataService, times(1)).createCase("RSH");
-        verify(caseDataService, times(1)).createStage(caseData.getUuid(), "Stage", new HashMap<>());
+        verify(caseDataService, times(1)).createCase(CaseType.RSH);
+        verify(caseDataService, times(1)).createStage(caseData.getUuid(), StageType.DCU_MIN_CATEGORISE, new HashMap<>());
         verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class));
     }
 
     @Test
     public void shouldUpdateRshCase() throws EntityCreationException, EntityNotFoundException {
-        StageData stageData = new StageData(UUID.randomUUID(), "", "");
-        CaseData caseData = new CaseData("", 1L);
+        StageData stageData = new StageData(UUID.randomUUID(), StageType.DCU_MIN_CATEGORISE.toString(), "");
+        CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
         caseData.getStages().add(stageData);
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
 
-        when(caseDataService.updateStage(any(UUID.class), any(UUID.class), anyString(), anyMap())).thenReturn(stageData);
+        when(caseDataService.updateStage(any(UUID.class), any(UUID.class), any(StageType.class), anyMap())).thenReturn(stageData);
 
         Map<String, String> data = new HashMap<>();
         SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
@@ -120,7 +122,7 @@ public class RshCaseDataServiceTest {
         assertThat(caseDataReturn).isNotNull();
 
         verify(caseDataService, times(1)).getCase(caseData.getUuid());
-        verify(caseDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", data);
+        verify(caseDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), StageType.DCU_MIN_CATEGORISE, data);
         verify(emailService, times(1)).sendRshEmail(any(SendEmailRequest.class));
     }
 
@@ -156,7 +158,7 @@ public class RshCaseDataServiceTest {
 
     @Test(expected = EntityCreationException.class)
     public void shouldUpdateRshCaseNoStage1() throws EntityCreationException, EntityNotFoundException {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
 
         Map<String, String> data = new HashMap<>();
@@ -170,7 +172,7 @@ public class RshCaseDataServiceTest {
 
     @Test
     public void shouldUpdateRshCaseNoStage2() throws EntityCreationException, EntityNotFoundException {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
 
         Map<String, String> data = new HashMap<>();
@@ -191,7 +193,7 @@ public class RshCaseDataServiceTest {
 
     @Test(expected = EntityCreationException.class)
     public void shouldUpdateRshCaseNullDat1() throws EntityCreationException, EntityNotFoundException {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
 
         SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
         rshCaseService.updateRshCase(
@@ -203,7 +205,7 @@ public class RshCaseDataServiceTest {
     @Test
     public void shouldUpdateRshCaseNullDat2() throws EntityCreationException, EntityNotFoundException {
         StageData stageData = new StageData(UUID.randomUUID(), "", "");
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
 
         SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
         try {
@@ -216,18 +218,18 @@ public class RshCaseDataServiceTest {
         }
 
         verify(caseDataService, times(0)).getCase(caseData.getUuid());
-        verify(caseDataService, times(0)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", null);
+        verify(caseDataService, times(0)).updateStage(caseData.getUuid(), stageData.getUuid(), StageType.DCU_MIN_CATEGORISE, null);
         verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class));
     }
 
     @Test()
     public void shouldUpdateRshCaseNullEmail() throws EntityCreationException, EntityNotFoundException {
         StageData stageData = new StageData(UUID.randomUUID(), "", "");
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
         caseData.getStages().add(stageData);
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
 
-        when(caseDataService.updateStage(any(UUID.class), any(UUID.class), anyString(), anyMap())).thenReturn(stageData);
+        when(caseDataService.updateStage(any(UUID.class), any(UUID.class), any(StageType.class), anyMap())).thenReturn(stageData);
 
         Map<String, String> data = new HashMap<>();
         CaseData caseDataReturn = rshCaseService.updateRshCase(
@@ -238,14 +240,14 @@ public class RshCaseDataServiceTest {
         assertThat(caseDataReturn).isNotNull();
 
         verify(caseDataService, times(1)).getCase(caseData.getUuid());
-        verify(caseDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), "Stage", data);
+        verify(caseDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), StageType.DCU_MIN_CATEGORISE, data);
         verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class));
     }
 
     @Test
     public void shouldGetCase() throws EntityNotFoundException {
         StageData stageData = new StageData(UUID.randomUUID(), "", "");
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
         caseData.getStages().add(stageData);
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
 
