@@ -12,7 +12,9 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentToCaseRequest;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageType;
 
 import javax.transaction.Transactional;
 import java.util.Map;
@@ -78,10 +80,10 @@ public class CaseDataService {
 
 
     @Transactional
-    public CaseData createCase(String caseType) throws EntityCreationException {
+    public CaseData createCase(CaseType caseType) throws EntityCreationException {
         log.info("Requesting Create Case, Type: {}, User: {}", caseType, requestData.username());
         if (!isNullOrEmpty(caseType)) {
-            CaseData caseData = new CaseData(caseType, caseDataRepository.getNextSeriesId());
+            CaseData caseData = new CaseData(caseType.toString(), caseDataRepository.getNextSeriesId());
             caseDataRepository.save(caseData);
             auditService.writeCreateCaseEvent(caseData);
             log.info("Created Case, Reference: {}, UUID: {} User: {}", caseData.getReference(), caseData.getUuid(), requestData.username());
@@ -92,11 +94,11 @@ public class CaseDataService {
     }
 
     @Transactional
-    public StageData createStage(UUID caseUUID, String stageType, Map<String, String> stageData) throws EntityCreationException {
+    public StageData createStage(UUID caseUUID, StageType stageType, Map<String, String> stageData) throws EntityCreationException {
         log.info("Requesting Create Stage, Type: {}, Case UUID: {}, User: {}", stageType, caseUUID, requestData.username());
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(stageType)) {
             String data = getDataString(stageData, objectMapper);
-            StageData stageDetails = new StageData(caseUUID, stageType, data);
+            StageData stageDetails = new StageData(caseUUID, stageType.getStringValue(), data);
             stageDataRepository.save(stageDetails);
             auditService.writeCreateStageEvent(stageDetails);
             log.info("Created Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getType(), stageDetails.getUuid(), stageDetails.getCaseUUID(), requestData.username());
@@ -107,12 +109,12 @@ public class CaseDataService {
     }
 
     @Transactional
-    public CaseData updateCase(UUID caseUUID, String caseType) throws EntityCreationException, EntityNotFoundException {
+    public CaseData updateCase(UUID caseUUID, CaseType caseType) throws EntityCreationException, EntityNotFoundException {
         log.info("Requesting Update Case: {}, Type: {}, User: {}", caseUUID, caseType, requestData.username());
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(caseType)) {
             CaseData caseData = caseDataRepository.findByUuid(caseUUID);
             if (caseData != null) {
-                caseData.setType(caseType);
+                caseData.setType(caseType.toString());
                 caseDataRepository.save(caseData);
                 auditService.writeUpdateCaseEvent(caseData);
                 log.info("Updated Case, Reference: {}, UUID: {} User: {}", caseData.getReference(), caseData.getUuid(), requestData.username());
@@ -126,13 +128,13 @@ public class CaseDataService {
     }
 
     @Transactional
-    public StageData updateStage(UUID caseUUID, UUID stageUUID, String stageType, Map<String, String> stageData) throws EntityNotFoundException, EntityCreationException {
+    public StageData updateStage(UUID caseUUID, UUID stageUUID, StageType stageType, Map<String, String> stageData) throws EntityNotFoundException, EntityCreationException {
         log.info("Requesting Update Stage, uuid: {}, User: {}", stageUUID, requestData.username());
         if (!isNullOrEmpty(stageUUID) && !isNullOrEmpty(stageType)) {
             StageData stageDetails = stageDataRepository.findByUuid(stageUUID);
             if (stageDetails != null) {
                 String data = getDataString(stageData, objectMapper);
-                stageDetails.setType(stageType);
+                stageDetails.setType(stageType.getStringValue());
                 stageDetails.setData(data);
                 stageDataRepository.save(stageDetails);
                 auditService.writeUpdateStageEvent(stageDetails);
@@ -142,7 +144,7 @@ public class CaseDataService {
                 throw new EntityNotFoundException("Stage not found!");
         }
         } else {
-            throw new EntityCreationException("Failed to update stage, invalid caseType!");
+            throw new EntityCreationException("Failed to update stage, invalid StageType!");
         }
     }
 

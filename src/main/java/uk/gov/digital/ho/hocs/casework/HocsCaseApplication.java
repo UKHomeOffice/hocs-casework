@@ -2,6 +2,8 @@ package uk.gov.digital.ho.hocs.casework;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageType;
 
 import java.util.UUID;
 
@@ -24,5 +26,11 @@ public class HocsCaseApplication {
 		return value == null;
 	}
 
+	public static boolean isNullOrEmpty(CaseType value) {
+		return value == null;
+	}
+	public static boolean isNullOrEmpty(StageType value) {
+		return value == null;
+	}
 
 }
