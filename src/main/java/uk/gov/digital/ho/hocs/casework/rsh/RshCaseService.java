@@ -58,7 +58,7 @@ public class RshCaseService {
     CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException {
         if (caseData != null) {
             CaseData caseDetails = caseDataService.createCase(CaseType.RSH);
-            caseDataService.createStage(caseDetails.getUuid(), StageType.DCU_MIN_CATEGORISE, caseData);
+            caseDataService.createStage(caseDetails.getUuid(), StageType.RUSH_ONLY_STAGE, caseData);
             sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
             return caseDetails;
         } else {
@@ -84,7 +84,7 @@ public class RshCaseService {
             CaseData caseDetails = caseDataService.getCase(caseUUID);
             if (!caseDetails.getStages().isEmpty()) {
                 StageData stageData = caseDetails.getStages().iterator().next();
-                caseDataService.updateStage(caseUUID, stageData.getUuid(), StageType.DCU_MIN_CATEGORISE, caseData);
+                caseDataService.updateStage(caseUUID, stageData.getUuid(), StageType.RUSH_ONLY_STAGE, caseData);
                 sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
                 return caseDetails;
             } else {
