@@ -20,7 +20,6 @@ class CaseDataResource {
 
     private final CaseDataService caseDataService;
 
-
     @Autowired
     public CaseDataResource(CaseDataService caseDataService) {
         this.caseDataService = caseDataService;

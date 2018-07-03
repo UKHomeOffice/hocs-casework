@@ -59,7 +59,7 @@ public class RshCaseDataServiceTest {
         assertThat(caseDataReturn).isNotNull();
 
         verify(caseDataService, times(1)).createCase(CaseType.RSH);
-        verify(caseDataService, times(1)).createStage(caseData.getUuid(), StageType.DCU_MIN_CATEGORISE, data);
+        verify(caseDataService, times(1)).createStage(caseData.getUuid(), StageType.RUSH_ONLY_STAGE, data);
         verify(emailService, times(1)).sendRshEmail(any(SendEmailRequest.class));
     }
 
@@ -99,13 +99,13 @@ public class RshCaseDataServiceTest {
         assertThat(caseDataReturn).isNotNull();
 
         verify(caseDataService, times(1)).createCase(CaseType.RSH);
-        verify(caseDataService, times(1)).createStage(caseData.getUuid(), StageType.DCU_MIN_CATEGORISE, new HashMap<>());
+        verify(caseDataService, times(1)).createStage(caseData.getUuid(), StageType.RUSH_ONLY_STAGE, new HashMap<>());
         verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class));
     }
 
     @Test
     public void shouldUpdateRshCase() throws EntityCreationException, EntityNotFoundException {
-        StageData stageData = new StageData(UUID.randomUUID(), StageType.DCU_MIN_CATEGORISE.toString(), "");
+        StageData stageData = new StageData(UUID.randomUUID(), StageType.RUSH_ONLY_STAGE.getStringValue(), "");
         CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
         caseData.getStages().add(stageData);
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
@@ -122,7 +122,7 @@ public class RshCaseDataServiceTest {
         assertThat(caseDataReturn).isNotNull();
 
         verify(caseDataService, times(1)).getCase(caseData.getUuid());
-        verify(caseDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), StageType.DCU_MIN_CATEGORISE, data);
+        verify(caseDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), StageType.RUSH_ONLY_STAGE, data);
         verify(emailService, times(1)).sendRshEmail(any(SendEmailRequest.class));
     }
 
@@ -218,7 +218,7 @@ public class RshCaseDataServiceTest {
         }
 
         verify(caseDataService, times(0)).getCase(caseData.getUuid());
-        verify(caseDataService, times(0)).updateStage(caseData.getUuid(), stageData.getUuid(), StageType.DCU_MIN_CATEGORISE, null);
+        verify(caseDataService, times(0)).updateStage(caseData.getUuid(), stageData.getUuid(), StageType.RUSH_ONLY_STAGE, null);
         verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class));
     }
 
@@ -240,7 +240,7 @@ public class RshCaseDataServiceTest {
         assertThat(caseDataReturn).isNotNull();
 
         verify(caseDataService, times(1)).getCase(caseData.getUuid());
-        verify(caseDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), StageType.DCU_MIN_CATEGORISE, data);
+        verify(caseDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), StageType.RUSH_ONLY_STAGE, data);
         verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class));
     }
 

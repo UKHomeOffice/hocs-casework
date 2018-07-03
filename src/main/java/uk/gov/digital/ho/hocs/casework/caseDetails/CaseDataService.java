@@ -98,7 +98,7 @@ public class CaseDataService {
         log.info("Requesting Create Stage, Type: {}, Case UUID: {}, User: {}", stageType, caseUUID, requestData.username());
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(stageType)) {
             String data = getDataString(stageData, objectMapper);
-            StageData stageDetails = new StageData(caseUUID, stageType.toString(), data);
+            StageData stageDetails = new StageData(caseUUID, stageType.getStringValue(), data);
             stageDataRepository.save(stageDetails);
             auditService.writeCreateStageEvent(stageDetails);
             log.info("Created Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getType(), stageDetails.getUuid(), stageDetails.getCaseUUID(), requestData.username());
@@ -134,7 +134,7 @@ public class CaseDataService {
             StageData stageDetails = stageDataRepository.findByUuid(stageUUID);
             if (stageDetails != null) {
                 String data = getDataString(stageData, objectMapper);
-                stageDetails.setType(stageType.toString());
+                stageDetails.setType(stageType.getStringValue());
                 stageDetails.setData(data);
                 stageDataRepository.save(stageDetails);
                 auditService.writeUpdateStageEvent(stageDetails);
