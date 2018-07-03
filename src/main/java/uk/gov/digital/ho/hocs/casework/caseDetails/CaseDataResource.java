@@ -29,7 +29,7 @@ class CaseDataResource {
     @RequestMapping(value = "/case", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         try {
-            CaseData caseData = caseDataService.createCase(request.getCaseType());
+            CaseData caseData = caseDataService.createCase(request.getCaseUUID(), request.getCaseType());
             return ResponseEntity.ok(CreateCaseResponse.from(caseData));
         } catch (EntityCreationException e) {
             return ResponseEntity.badRequest().build();
@@ -47,10 +47,10 @@ class CaseDataResource {
     }
 
     @RequestMapping(value = "/case/{caseUUID}/stage", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
+    public ResponseEntity createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
         try {
-            StageData stageData = caseDataService.createStage(caseUUID, request.getStageType(), request.getStageData());
-            return ResponseEntity.ok(CreateStageResponse.from(stageData));
+            caseDataService.createStage(caseUUID, request.getStageUUID(), request.getStageType(), request.getStageData());
+            return ResponseEntity.ok().build();
         } catch (EntityCreationException e) {
             return ResponseEntity.badRequest().build();
         }

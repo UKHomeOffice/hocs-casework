@@ -71,7 +71,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteCreateCaseEvent() {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(UUID.randomUUID(),"", 1L);
 
         auditService.writeCreateCaseEvent(caseData);
 
@@ -80,7 +80,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUpdateCaseEvent() {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(UUID.randomUUID(),"", 1L);
 
         auditService.writeUpdateCaseEvent(caseData);
 
@@ -89,7 +89,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteCreateStageEvent() {
-        StageData stageData = new StageData(UUID.randomUUID(), "", "");
+        StageData stageData = new StageData(UUID.randomUUID(), UUID.randomUUID(), "", "");
 
         auditService.writeCreateStageEvent(stageData);
 
@@ -98,7 +98,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUpdateStageEvent() {
-        StageData stageData = new StageData(UUID.randomUUID(), "", "");
+        StageData stageData = new StageData(UUID.randomUUID(), UUID.randomUUID(), "", "");
 
         auditService.writeUpdateStageEvent(stageData);
 

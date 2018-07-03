@@ -142,7 +142,7 @@ public class CaseDataAuditService {
         String[] types = caseTypesMapping.get(unit);
         String typesAuditString = Arrays.toString(types).concat(cutoff.toString());
         auditService.writeExtractEvent(typesAuditString);
-        log.info("Requesting Extract, Values: \"{}\",  User: {}", typesAuditString, cutoff, requestData.username());
+        log.info("Starting Extract, Values: \"{}\",  User: {}", typesAuditString, cutoff, requestData.username());
 
         LocalDateTime startDate = getStartDate(cutoff);
         LocalDateTime endDate = getEndDate(cutoff);

@@ -34,7 +34,7 @@ public class RshCaseDataResourceTest {
 
     @Test
     public void shouldCreateCase() throws EntityCreationException {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(UUID.randomUUID(),"", 1L);
         when(mockRshCaseService.createRshCase(anyMap(), any())).thenReturn(caseData);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
@@ -61,7 +61,7 @@ public class RshCaseDataResourceTest {
 
     @Test
     public void shouldUpdateCase() throws EntityCreationException, EntityNotFoundException {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(UUID.randomUUID(),"", 1L);
         when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any())).thenReturn(caseData);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
@@ -76,7 +76,7 @@ public class RshCaseDataResourceTest {
 
     @Test
     public void shouldUpdateCaseCreateException() throws EntityCreationException, EntityNotFoundException {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(UUID.randomUUID(),"", 1L);
         when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any())).thenThrow(EntityCreationException.class);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
@@ -89,7 +89,7 @@ public class RshCaseDataResourceTest {
 
     @Test
     public void shouldUpdateCaseFoundException() throws EntityCreationException, EntityNotFoundException {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(UUID.randomUUID(),"", 1L);
         when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any())).thenThrow(EntityNotFoundException.class);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
@@ -102,7 +102,7 @@ public class RshCaseDataResourceTest {
 
     @Test
     public void shoulGetCase() throws EntityNotFoundException {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(UUID.randomUUID(),"", 1L);
         when(mockRshCaseService.getRSHCase(any(UUID.class))).thenReturn(caseData);
 
         ResponseEntity<CaseData> response = rshCaseResource.rshGetCase(caseData.getUuid());
@@ -116,7 +116,7 @@ public class RshCaseDataResourceTest {
 
     @Test
     public void shoulGetCaseFoundException() throws EntityNotFoundException {
-        CaseData caseData = new CaseData("", 1L);
+        CaseData caseData = new CaseData(UUID.randomUUID(),"", 1L);
         when(mockRshCaseService.getRSHCase(any(UUID.class))).thenThrow(EntityNotFoundException.class);
 
         ResponseEntity<CaseData> response = rshCaseResource.rshGetCase(caseData.getUuid());

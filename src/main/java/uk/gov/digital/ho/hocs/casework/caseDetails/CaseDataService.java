@@ -78,10 +78,10 @@ public class CaseDataService {
 
 
     @Transactional
-    public CaseData createCase(String caseType) throws EntityCreationException {
+    public CaseData createCase(UUID caseUUID, String caseType) throws EntityCreationException {
         log.info("Requesting Create Case, Type: {}, User: {}", caseType, requestData.username());
-        if (!isNullOrEmpty(caseType)) {
-            CaseData caseData = new CaseData(caseType, caseDataRepository.getNextSeriesId());
+        if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(caseType)) {
+            CaseData caseData = new CaseData(caseUUID, caseType, caseDataRepository.getNextSeriesId());
             caseDataRepository.save(caseData);
             auditService.writeCreateCaseEvent(caseData);
             log.info("Created Case, Reference: {}, UUID: {} User: {}", caseData.getReference(), caseData.getUuid(), requestData.username());
@@ -92,15 +92,14 @@ public class CaseDataService {
     }
 
     @Transactional
-    public StageData createStage(UUID caseUUID, String stageType, Map<String, String> stageData) throws EntityCreationException {
+    public void createStage(UUID caseUUID, UUID stageUUID, String stageType, Map<String, String> stageData) throws EntityCreationException {
         log.info("Requesting Create Stage, Type: {}, Case UUID: {}, User: {}", stageType, caseUUID, requestData.username());
-        if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(stageType)) {
+        if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(stageUUID) && !isNullOrEmpty(stageType)) {
             String data = getDataString(stageData, objectMapper);
-            StageData stageDetails = new StageData(caseUUID, stageType, data);
+            StageData stageDetails = new StageData(caseUUID, stageUUID, stageType, data);
             stageDataRepository.save(stageDetails);
             auditService.writeCreateStageEvent(stageDetails);
             log.info("Created Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getType(), stageDetails.getUuid(), stageDetails.getCaseUUID(), requestData.username());
-            return stageDetails;
         } else {
             throw new EntityCreationException("Failed to create stage, invalid stageType or caseUUID!");
         }

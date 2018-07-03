@@ -41,11 +41,11 @@ public class CaseDataResourceTest {
     public void shouldCreateCase() throws EntityCreationException {
         final String caseType = "Case Type";
 
-        when(caseDataService.createCase(any())).thenReturn(new CaseData(caseType, 1234L));
-        CreateCaseRequest request = new CreateCaseRequest(caseType);
+        when(caseDataService.createCase(any(), any())).thenReturn(new CaseData(UUID.randomUUID(), caseType, 1234L));
+        CreateCaseRequest request = new CreateCaseRequest(uuid, caseType);
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseType);
+        verify(caseDataService, times(1)).createCase(uuid, caseType);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
@@ -58,11 +58,11 @@ public class CaseDataResourceTest {
     public void shouldCreateCaseException() throws EntityCreationException {
         final String caseType = "Case Type";
 
-        when(caseDataService.createCase(any())).thenThrow(EntityCreationException.class);
-        CreateCaseRequest request = new CreateCaseRequest(caseType);
+        when(caseDataService.createCase(any(), any())).thenThrow(EntityCreationException.class);
+        CreateCaseRequest request = new CreateCaseRequest(uuid, caseType);
         ResponseEntity response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseType);
+        verify(caseDataService, times(1)).createCase(uuid, caseType);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
@@ -73,7 +73,7 @@ public class CaseDataResourceTest {
 
         UUID caseUUID = UUID.randomUUID();
 
-        when(caseDataService.updateCase(any(), any())).thenReturn(new CaseData(caseType, 1234L));
+        when(caseDataService.updateCase(any(), any())).thenReturn(new CaseData(UUID.randomUUID(), caseType, 1234L));
         UpdateCaseRequest request = new UpdateCaseRequest(caseType);
         ResponseEntity response = caseDataResource.updateCase(caseUUID, request);
 
@@ -114,17 +114,14 @@ public class CaseDataResourceTest {
         String stageType = "Stage Type";
         Map<String, String> data = new HashMap<>();
 
-        when(caseDataService.createStage(any(UUID.class), anyString(), anyMap())).thenReturn(new StageData(uuid, stageType, ""));
-        CreateStageRequest request = new CreateStageRequest(stageType, data);
+        doNothing().when(caseDataService).createStage(any(UUID.class), any(UUID.class), anyString(), anyMap());
+        CreateStageRequest request = new CreateStageRequest(uuid, stageType, data);
 
-        ResponseEntity<CreateStageResponse> response = caseDataResource.createStage(uuid, request);
+        ResponseEntity response = caseDataResource.createStage(uuid, request);
 
-        verify(caseDataService, times(1)).createStage(uuid, stageType, new HashMap<>());
+        verify(caseDataService, times(1)).createStage(uuid, uuid, stageType, new HashMap<>());
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getUuid()).isNotNull();
-        assertThat(response.getBody()).isInstanceOf(CreateStageResponse.class);
     }
 
     @Test
@@ -132,12 +129,12 @@ public class CaseDataResourceTest {
         String stageType = "Stage Type";
         Map<String, String> data = new HashMap<>();
 
-        when(caseDataService.createStage(any(UUID.class), anyString(), anyMap())).thenThrow(EntityCreationException.class);
-        CreateStageRequest request = new CreateStageRequest(stageType, data);
+        doThrow(EntityCreationException.class).when(caseDataService).createStage(any(UUID.class), any(UUID.class), anyString(), anyMap());
+        CreateStageRequest request = new CreateStageRequest(uuid, stageType, data);
 
         ResponseEntity response = caseDataResource.createStage(uuid, request);
 
-        verify(caseDataService, times(1)).createStage(uuid, stageType, new HashMap<>());
+        verify(caseDataService, times(1)).createStage(uuid, uuid, stageType, new HashMap<>());
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
@@ -148,7 +145,7 @@ public class CaseDataResourceTest {
         UUID caseUUID = UUID.randomUUID();
         Map<String, String> data = new HashMap<>();
 
-        when(caseDataService.updateStage(any(), any(), any(), any())).thenReturn(new StageData(caseUUID, stageType, ""));
+        when(caseDataService.updateStage(any(), any(), any(), any())).thenReturn(new StageData(caseUUID, UUID.randomUUID(), stageType, ""));
         UpdateStageRequest request = new UpdateStageRequest(stageType, data);
         ResponseEntity response = caseDataResource.updateStage(caseUUID, uuid, request);
 

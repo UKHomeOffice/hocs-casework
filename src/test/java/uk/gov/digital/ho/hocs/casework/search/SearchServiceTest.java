@@ -15,6 +15,7 @@ import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -34,7 +35,7 @@ public class SearchServiceTest {
     private SearchService searchService;
     private static Set<CaseData> getValidSet() {
         Set<CaseData> hashSet = new HashSet<>();
-        hashSet.add(new CaseData("REF", 0L));
+        hashSet.add(new CaseData(UUID.randomUUID(), "REF", 0L));
         return hashSet;
     }
 

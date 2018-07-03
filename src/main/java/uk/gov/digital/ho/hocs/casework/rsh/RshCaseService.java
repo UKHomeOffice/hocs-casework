@@ -55,8 +55,8 @@ public class RshCaseService {
     @Transactional
     CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException {
         if (caseData != null) {
-            CaseData caseDetails = caseDataService.createCase("RSH");
-            caseDataService.createStage(caseDetails.getUuid(), "Stage", caseData);
+            CaseData caseDetails = caseDataService.createCase(UUID.randomUUID(),"RSH");
+            caseDataService.createStage(caseDetails.getUuid(), UUID.randomUUID(), "Stage", caseData);
             sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
             return caseDetails;
         } else {
