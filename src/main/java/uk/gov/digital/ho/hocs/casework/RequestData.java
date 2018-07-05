@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework;
 
 import org.apache.camel.Processor;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -15,11 +14,11 @@ import java.util.UUID;
 public class RequestData implements HandlerInterceptor {
 
 
-    public static final String CORRELATION_ID_HEADER = "x-correlation-id";
-    public static final String USER_ID_HEADER = "X-Auth-Userid";
-    public static final String USERNAME_HEADER = "X-Auth-Username";
+    private static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
+    private static final String USER_ID_HEADER = "X-Auth-Userid";
+    private static final String USERNAME_HEADER = "X-Auth-Username";
 
-    public static final String ANONYMOUS = "anonymous";
+    private static final String ANONYMOUS = "anonymous";
 
 
     @Override
@@ -46,17 +45,17 @@ public class RequestData implements HandlerInterceptor {
 
     private String initialiseCorrelationId(HttpServletRequest request) {
         String correlationId = request.getHeader(CORRELATION_ID_HEADER);
-        return StringUtils.isNotBlank(correlationId) ? correlationId : UUID.randomUUID().toString();
+        return !isNullOrEmpty(correlationId) ? correlationId : UUID.randomUUID().toString();
     }
 
     private String initialiseUserId(HttpServletRequest request) {
         String userId = request.getHeader(USER_ID_HEADER);
-        return StringUtils.isNotBlank(userId) ? userId : ANONYMOUS;
+        return !isNullOrEmpty(userId) ? userId : ANONYMOUS;
     }
 
     private String initialiseUserName(HttpServletRequest request) {
         String username = request.getHeader(USERNAME_HEADER);
-        return StringUtils.isNotBlank(username) ? username : ANONYMOUS;
+        return !isNullOrEmpty(username) ? username : ANONYMOUS;
     }
 
 
@@ -77,5 +76,8 @@ public class RequestData implements HandlerInterceptor {
         };
     }
 
+    private static boolean isNullOrEmpty(String value) {
+        return value == null || value.equals("");
+    }
 
 }
