@@ -10,14 +10,9 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.caseDetails.dto.*;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageType;
+import uk.gov.digital.ho.hocs.casework.caseDetails.model.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -28,6 +23,10 @@ public class CaseDataResourceTest {
     @Mock
     private CaseDataService caseDataService;
 
+    @Mock
+    private DocumentService documentService;
+
+
     private CaseDataResource caseDataResource;
 
     private final UUID uuid = UUID.randomUUID();
@@ -37,15 +36,16 @@ public class CaseDataResourceTest {
 
     @Before
     public void setUp() {
-        caseDataResource = new CaseDataResource(caseDataService);
+        caseDataResource = new CaseDataResource(caseDataService, documentService);
     }
 
     @Test
-    public void shouldCreateCase() throws EntityCreationException {
+    public void shouldCreateCaseWithNoDocuments() throws EntityCreationException {
         final CaseType caseType = CaseType.MIN;
+        final List<DocumentSummary> documents = Collections.emptyList();
 
         when(caseDataService.createCase(any())).thenReturn(new CaseData(caseType.toString(), 1234L));
-        CreateCaseRequest request = new CreateCaseRequest(caseType);
+        CreateCaseRequest request = new CreateCaseRequest(caseType, documents);
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
         verify(caseDataService, times(1)).createCase(caseType);
@@ -58,11 +58,55 @@ public class CaseDataResourceTest {
     }
 
     @Test
+    public void shouldCreateCaseWithADocument() throws EntityCreationException {
+        final CaseType caseType = CaseType.MIN;
+        final List<DocumentSummary> documents = Arrays.asList(
+                new DocumentSummary(UUID.randomUUID(), "document.docx", DocumentType.ORIGINAL)
+        );
+
+        when(caseDataService.createCase(any())).thenReturn(new CaseData(caseType.toString(), 1234L));
+        CreateCaseRequest request = new CreateCaseRequest(caseType, documents);
+        ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
+
+        verify(caseDataService, times(1)).createCase(caseType);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getUuid()).isNotNull();
+        assertThat(response.getBody().getCaseReference()).isNotNull();
+        assertThat(response.getBody()).isInstanceOf(CreateCaseResponse.class);
+    }
+
+    @Test
+    public void shouldCreateCaseWithSeveralDocuments() throws EntityCreationException {
+        final CaseType caseType = CaseType.MIN;
+        final List<DocumentSummary> documents = Arrays.asList(
+                new DocumentSummary(UUID.randomUUID(), "document.docx", DocumentType.ORIGINAL),
+                new DocumentSummary(UUID.randomUUID(), "document (reloaded).doc", DocumentType.ORIGINAL),
+                new DocumentSummary(UUID.randomUUID(), "document (revolutions).txt", DocumentType.ORIGINAL)
+        );
+
+        when(caseDataService.createCase(any())).thenReturn(new CaseData(caseType.toString(), 1234L));
+        CreateCaseRequest request = new CreateCaseRequest(caseType, documents);
+        ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
+
+        verify(caseDataService, times(1)).createCase(caseType);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getUuid()).isNotNull();
+        assertThat(response.getBody().getCaseReference()).isNotNull();
+        assertThat(response.getBody()).isInstanceOf(CreateCaseResponse.class);
+    }
+
+
+    @Test
     public void shouldCreateCaseException() throws EntityCreationException {
         final CaseType caseType = CaseType.MIN;
+        final List<DocumentSummary> documents = Collections.emptyList();
 
         when(caseDataService.createCase(any())).thenThrow(EntityCreationException.class);
-        CreateCaseRequest request = new CreateCaseRequest(caseType);
+        CreateCaseRequest request = new CreateCaseRequest(caseType, documents);
         ResponseEntity response = caseDataResource.createCase(request);
 
         verify(caseDataService, times(1)).createCase(caseType);
