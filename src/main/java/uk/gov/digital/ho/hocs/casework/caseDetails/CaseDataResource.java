@@ -19,17 +19,20 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 class CaseDataResource {
 
     private final CaseDataService caseDataService;
-
+    private final DocumentService documentService;
 
     @Autowired
-    public CaseDataResource(CaseDataService caseDataService) {
+    public CaseDataResource(CaseDataService caseDataService, DocumentService documentService) {
         this.caseDataService = caseDataService;
+        this.documentService = documentService;
     }
 
     @RequestMapping(value = "/case", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         try {
-            CaseData caseData = caseDataService.createCase(request.getCaseUUID(), request.getCaseType());
+            CaseData caseData = caseDataService.createCase(request.getCaseUUID(),request.getCaseType());
+            UUID caseUuid = caseData.getUuid();
+            documentService.addDocuments(caseUuid, request.getDocuments());
             return ResponseEntity.ok(CreateCaseResponse.from(caseData));
         } catch (EntityCreationException e) {
             return ResponseEntity.badRequest().build();
