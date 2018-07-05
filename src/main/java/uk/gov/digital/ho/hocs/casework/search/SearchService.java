@@ -34,7 +34,7 @@ class SearchService {
     @Transactional
     public Set<CaseData> findCases(SearchRequest searchRequest) {
         auditService.writeSearchEvent(searchRequest);
-        log.info("Requesting Search, User: {}", requestData.username());
+        log.info("Starting Search, User: {}", requestData.username());
 
 
         Set<CaseData> results = new HashSet<>(findByCaseReference(searchRequest.getCaseReference()));
@@ -44,7 +44,7 @@ class SearchService {
             results.addAll(findByNameOrDob(searchRequest.getCaseData()));
         }
 
-        log.info("Returned Search, Found: {}, User: {}", results.size(), requestData.username());
+        log.info("Completed Search, Found: {}, User: {}", results.size(), requestData.username());
         return results;
     }
 

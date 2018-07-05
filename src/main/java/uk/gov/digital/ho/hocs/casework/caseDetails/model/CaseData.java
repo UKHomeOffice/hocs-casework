@@ -43,13 +43,14 @@ public class CaseData implements Serializable {
 
     @Column(name = "uuid")
     @Getter
-    private UUID uuid = UUID.randomUUID();
+    private UUID uuid;
 
     @Column(name = "timestamp")
     @Getter
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    public CaseData(String type, Long caseNumber) {
+    public CaseData(UUID caseUUID, String type, Long caseNumber) {
+        this.uuid = caseUUID;
         this.type = type;
         this.reference = String.format("%s/%07d/%s", type, caseNumber, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy")));
     }

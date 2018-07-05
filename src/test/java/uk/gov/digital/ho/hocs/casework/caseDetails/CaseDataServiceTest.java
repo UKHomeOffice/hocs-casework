@@ -53,8 +53,8 @@ public class CaseDataServiceTest {
         final Long caseID = 12345L;
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-
-        CaseData caseData = caseDataService.createCase(CaseType.MIN);
+      
+        CaseData caseData = caseDataService.createCase(UUID.randomUUID(), CaseType.MIN);
 
         verify(auditService, times(1)).writeCreateCaseEvent(eq(caseData));
         verify(caseDataRepository, times(1)).save(isA(CaseData.class));
@@ -65,13 +65,30 @@ public class CaseDataServiceTest {
 
     @Test(expected = EntityCreationException.class)
     public void shouldCreateCaseCreateException1() throws EntityCreationException {
-        caseDataService.createCase(null);
+        caseDataService.createCase(null,null);
     }
 
     @Test()
     public void shouldCreateCaseCreateException2() {
         try {
-            caseDataService.createCase(null);
+            caseDataService.createCase(UUID.randomUUID(),null);
+        } catch (EntityCreationException e) {
+            // Do nothing.
+        }
+        verify(auditService, times(0)).writeCreateCaseEvent(any(CaseData.class));
+        verify(caseDataRepository, times(0)).save(any(CaseData.class));
+
+    }
+
+    @Test(expected = EntityCreationException.class)
+    public void shouldCreateCaseCreateUUIDException1() throws EntityCreationException {
+        caseDataService.createCase(null,null);
+    }
+
+    @Test()
+    public void shouldCreateCaseCreateUUIDException2() {
+        try {
+            caseDataService.createCase(UUID.randomUUID(),null);
         } catch (EntityCreationException e) {
             // Do nothing.
         }
@@ -82,26 +99,21 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldCreateStage() throws EntityCreationException {
-        StageData stageData = caseDataService.createStage(uuid, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
+        caseDataService.createStage(UUID.randomUUID(), uuid, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
 
-        verify(auditService).writeCreateStageEvent(eq(stageData));
+        verify(auditService).writeCreateStageEvent(any(StageData.class));
         verify(stageDataRepository).save(isA(StageData.class));
-
-        assertThat(stageData).isNotNull();
-        assertThat(stageData.getType()).isEqualTo(StageType.DCU_MIN_CATEGORISE.toString());
-        assertThat(stageData.getData()).isEqualTo("{ }");
-        assertThat(stageData.getCaseUUID()).isEqualTo(uuid);
     }
 
     @Test(expected = EntityCreationException.class)
     public void shouldCreateStageMissingUUIDException1() throws EntityCreationException {
-        caseDataService.createStage(null, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
+        caseDataService.createStage(UUID.randomUUID(),null, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
     }
 
     @Test()
     public void shouldCreateStageMissingUUIDException2() {
         try {
-            caseDataService.createStage(null, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
+            caseDataService.createStage(UUID.randomUUID(),null, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
         } catch (EntityCreationException e) {
             // Do nothing.
         }
@@ -111,13 +123,13 @@ public class CaseDataServiceTest {
 
     @Test(expected = EntityCreationException.class)
     public void shouldCreateStageMissingTypeException1() throws EntityCreationException {
-        caseDataService.createStage(uuid, null, new HashMap<>());
+        caseDataService.createStage(UUID.randomUUID(), uuid, null, new HashMap<>());
     }
 
     @Test()
     public void shouldCreateStageMissingTypeException2() {
         try {
-            caseDataService.createStage(uuid, null, new HashMap<>());
+            caseDataService.createStage(UUID.randomUUID(), uuid, null, new HashMap<>());
         } catch (EntityCreationException e) {
             // Do nothing.
         }
@@ -129,7 +141,7 @@ public class CaseDataServiceTest {
     public void shouldUpdateCase() throws EntityCreationException, EntityNotFoundException {
         UUID caseUUID = UUID.randomUUID();
 
-        when(caseDataRepository.findByUuid(any())).thenReturn(new CaseData(CaseType.MIN.toString(), 123L));
+        when(caseDataRepository.findByUuid(any())).thenReturn(new CaseData(UUID.randomUUID(),CaseType.MIN.toString(), 123L));
 
         CaseData caseData = caseDataService.updateCase(caseUUID, CaseType.MIN);
 
@@ -208,7 +220,7 @@ public class CaseDataServiceTest {
     public void shouldUpdateStage() throws EntityCreationException, EntityNotFoundException {
         UUID caseUUID = UUID.randomUUID();
 
-        when(stageDataRepository.findByUuid(any())).thenReturn(new StageData(uuid, StageType.DCU_MIN_CATEGORISE.toString(), "Some data"));
+        when(stageDataRepository.findByUuid(any())).thenReturn(new StageData(UUID.randomUUID(), uuid, StageType.DCU_MIN_CATEGORISE.toString(), "Some data"));
 
         StageData stageData = caseDataService.updateStage(caseUUID, uuid, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
 
@@ -290,7 +302,7 @@ public class CaseDataServiceTest {
     public void shouldGetCase() throws EntityNotFoundException {
         UUID caseUUID = UUID.randomUUID();
 
-        when(caseDataRepository.findByUuid(any())).thenReturn(new CaseData(CaseType.MIN.toString(), 1L));
+        when(caseDataRepository.findByUuid(any())).thenReturn(new CaseData(UUID.randomUUID(),CaseType.MIN.toString(), 1L));
 
         CaseData caseData = caseDataService.getCase(caseUUID);
 

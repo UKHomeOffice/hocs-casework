@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 public class DocumentSummary {
 
-    @JsonProperty("documentUUID")
+    @JsonProperty("UUID")
     private UUID documentUUID;
 
     @JsonProperty("displayName")

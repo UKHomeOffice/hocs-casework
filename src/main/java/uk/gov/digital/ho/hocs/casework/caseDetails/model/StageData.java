@@ -26,7 +26,7 @@ public class StageData implements Serializable {
 
     @Column(name ="uuid")
     @Getter
-    private UUID uuid = UUID.randomUUID();
+    private UUID uuid;
 
     @Column(name = "timestamp")
     @Getter
@@ -41,8 +41,9 @@ public class StageData implements Serializable {
     @Getter
     private UUID caseUUID;
 
-    public StageData(UUID caseUUID, String type, String data) {
+    public StageData(UUID caseUUID, UUID stageUUID, String type, String data) {
         this.type = type;
+        this.uuid = stageUUID;
         this.data = data;
         this.caseUUID = caseUUID;
     }
