@@ -83,7 +83,7 @@ public class CaseDataService {
     public CaseData createCase(UUID caseUUID, CaseType caseType) throws EntityCreationException {
         log.info("Requesting Create Case, Type: {}, User: {}", caseType, requestData.username());
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(caseType)) {
-            CaseData caseData = new CaseData(caseUUID, caseType, caseDataRepository.getNextSeriesId());
+            CaseData caseData = new CaseData(caseUUID, caseType.toString(), caseDataRepository.getNextSeriesId());
             caseDataRepository.save(caseData);
             auditService.writeCreateCaseEvent(caseData);
             log.info("Created Case, Reference: {}, UUID: {} User: {}", caseData.getReference(), caseData.getUuid(), requestData.username());
@@ -98,7 +98,7 @@ public class CaseDataService {
         log.info("Requesting Create Stage, Type: {}, Case UUID: {}, User: {}", stageType, caseUUID, requestData.username());
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(stageUUID) && !isNullOrEmpty(stageType)) {
             String data = getDataString(stageData, objectMapper);
-            StageData stageDetails = new StageData(caseUUID, stageUUID, stageType, data);
+            StageData stageDetails = new StageData(caseUUID, stageUUID, stageType.toString(), data);
             stageDataRepository.save(stageDetails);
             auditService.writeCreateStageEvent(stageDetails);
             log.info("Created Stage, UUID: {} ({}), Case UUID: {} User: {}", stageDetails.getType(), stageDetails.getUuid(), stageDetails.getCaseUUID(), requestData.username());

@@ -50,11 +50,11 @@ public class DocumentService {
     @Transactional
     public void addDocuments(UUID caseUUID, List<DocumentSummary> documentSummaries) throws EntityCreationException {
         if (!isNullOrEmpty(caseUUID) && documentSummaries != null && documentSummaries.stream().allMatch(d-> d.getDocumentUUID() != null)) {
-            log.info("Bulk Creating DocumentData for case {}, User: {}", caseUUID, requestData.username());
+            log.info("Multiple Creating DocumentData for case {}, User: {}", caseUUID, requestData.username());
             List<DocumentData> documentDatums = documentSummaries.stream().map(d -> new DocumentData(caseUUID,d)).collect(Collectors.toList());
             documentRepository.saveAll(documentDatums);
             auditService.writeAddDocumentEvents(documentDatums);
-            log.debug("Bulk Created DocumentData for case {}", caseUUID);
+            log.debug("Multiple Created DocumentData for case {}", caseUUID);
         } else {
             throw new EntityCreationException("Failed to create documentData details, CaseUUID or DocumentUUID was null");
         }
