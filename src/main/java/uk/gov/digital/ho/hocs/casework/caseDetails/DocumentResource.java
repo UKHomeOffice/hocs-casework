@@ -1,6 +1,8 @@
 package uk.gov.digital.ho.hocs.casework.caseDetails;
 
+import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentRequest;
@@ -26,9 +28,16 @@ public class DocumentResource {
     @RequestMapping(value = "/case/{caseUUID}/documents", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity addDocuments(@PathVariable UUID caseUUID, @RequestBody AddDocumentsRequest request) {
         try {
+            List<DocumentSummary> documentSummaries = request.getDocuments();
             documentService.addDocuments(caseUUID, request.getDocuments());
             return ResponseEntity.ok().build();
         } catch (EntityCreationException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause() instanceof ConstraintViolationException &&
+                    ((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase().contains("document_uuid_idempotent")) {
+                return ResponseEntity.ok().build();
+            }
             return ResponseEntity.badRequest().build();
         }
     }
@@ -36,9 +45,16 @@ public class DocumentResource {
     @RequestMapping(value = "/case/{caseUUID}/document", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity addDocument(@PathVariable UUID caseUUID, @RequestBody AddDocumentRequest request) {
         try {
-            documentService.addDocument(caseUUID, request.getDocumentSummary());
+            DocumentSummary documentSummary = request.getDocumentSummary();
+            documentService.addDocument(caseUUID, documentSummary);
             return ResponseEntity.ok().build();
         } catch (EntityCreationException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause() instanceof ConstraintViolationException &&
+                    ((ConstraintViolationException) e.getCause()).getConstraintName().toLowerCase().contains("document_uuid_idempotent")) {
+                return ResponseEntity.ok().build();
+            }
             return ResponseEntity.badRequest().build();
         }
     }
