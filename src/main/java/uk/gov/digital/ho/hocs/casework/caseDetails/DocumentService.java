@@ -41,7 +41,7 @@ public class DocumentService {
             DocumentData documentData = new DocumentData(caseUUID, documentSummary);
             documentRepository.save(documentData);
             auditService.writeAddDocumentEvent(documentData);
-            log.info("Created DocumentData {} for case {}", documentData.getDocumentUUID(), documentData.getCaseUUID());
+            log.debug("Created DocumentData {} for case {}", documentData.getDocumentUUID(), documentData.getCaseUUID());
         } else {
             throw new EntityCreationException("Failed to create documentData details, CaseUUID or DocumentUUID was null");
         }
@@ -55,7 +55,7 @@ public class DocumentService {
             List<DocumentData> documentDatums = documentSummaries.stream().map(d -> new DocumentData(caseUUID,d)).collect(Collectors.toList());
             documentRepository.saveAll(documentDatums);
             auditService.writeAddDocumentEvents(documentDatums);
-            log.info("Created Bulk DocumentData for case {}", caseUUID);
+            log.debug("Created Bulk DocumentData for case {}", caseUUID);
         } else {
             throw new EntityCreationException("Failed to create documentData details, CaseUUID or DocumentUUID was null");
         }

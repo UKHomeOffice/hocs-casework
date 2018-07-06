@@ -10,7 +10,6 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.dto.AddDocumentsRequest;
 import uk.gov.digital.ho.hocs.casework.caseDetails.dto.DocumentSummary;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 
-import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -28,7 +27,6 @@ public class DocumentResource {
     @RequestMapping(value = "/case/{caseUUID}/documents", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity addDocuments(@PathVariable UUID caseUUID, @RequestBody AddDocumentsRequest request) {
         try {
-            List<DocumentSummary> documentSummaries = request.getDocuments();
             documentService.addDocuments(caseUUID, request.getDocuments());
             return ResponseEntity.ok().build();
         } catch (EntityCreationException e) {
