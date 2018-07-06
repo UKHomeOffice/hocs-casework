@@ -30,7 +30,7 @@ public class RequestDataTest
     }
 
     @Test
-    public void shouldDefaultRequestData() throws Exception {
+    public void shouldDefaultRequestData() {
         requestData.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
 
         assertThat(requestData.correlationId()).isNotNull();
@@ -39,7 +39,7 @@ public class RequestDataTest
     }
 
     @Test
-    public void shouldUseCorrelationIdFromRequest() throws Exception {
+    public void shouldUseCorrelationIdFromRequest() {
         when(mockHttpServletRequest.getHeader("X-Correlation-Id")).thenReturn("some correlation id");
 
         requestData.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
@@ -48,7 +48,7 @@ public class RequestDataTest
     }
 
     @Test
-    public void shouldUseUserIdFromRequest() throws Exception {
+    public void shouldUseUserIdFromRequest() {
         when(mockHttpServletRequest.getHeader("X-Auth-Userid")).thenReturn("some user id");
 
         requestData.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);
@@ -57,7 +57,7 @@ public class RequestDataTest
     }
 
     @Test
-    public void shouldUseUsernameFromRequest() throws Exception {
+    public void shouldUseUsernameFromRequest() {
         when(mockHttpServletRequest.getHeader("X-Auth-Username")).thenReturn("some username");
 
         requestData.preHandle(mockHttpServletRequest, mockHttpServletResponse, mockHandler);

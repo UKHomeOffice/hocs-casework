@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
+import uk.gov.digital.ho.hocs.casework.notifyClient.ProxyingNotificationClient;
 
 import java.util.HashMap;
 
@@ -34,7 +35,7 @@ public class SendEmailRequestServiceTest {
         SendEmailRequest sendEmailRequest = new SendEmailRequest("email.user@test.com", new HashMap<>());
         emailService.sendRshEmail(sendEmailRequest);
 
-        verify(mockNotifyClient, times(1)).sendEmail(any(SendEmailRequest.class), anyString());
+        verify(mockNotifyClient, times(1)).sendEmail(anyString(), anyMap(), anyString());
     }
 
     @Test
@@ -42,7 +43,7 @@ public class SendEmailRequestServiceTest {
         SendEmailRequest sendEmailRequest = new SendEmailRequest(null, new HashMap<>());
         emailService.sendRshEmail(sendEmailRequest);
 
-        verify(mockNotifyClient, times(0)).sendEmail(any(SendEmailRequest.class), anyString());
+        verify(mockNotifyClient, times(0)).sendEmail(anyString(), anyMap(), anyString());
     }
 
     @Test
@@ -50,7 +51,7 @@ public class SendEmailRequestServiceTest {
         SendEmailRequest sendEmailRequest = new SendEmailRequest("email.user@test.com", new HashMap<>());
         emailService.sendRshEmail(sendEmailRequest);
 
-        verify(mockNotifyClient, times(1)).sendEmail(any(SendEmailRequest.class), anyString());
+        verify(mockNotifyClient, times(1)).sendEmail(anyString(), anyMap(), anyString());
     }
 
     @Test
@@ -58,14 +59,14 @@ public class SendEmailRequestServiceTest {
         SendEmailRequest sendEmailRequest = new SendEmailRequest("email.user@test.com", null);
         emailService.sendRshEmail(sendEmailRequest);
 
-        verify(mockNotifyClient, times(1)).sendEmail(any(SendEmailRequest.class), anyString());
+        verify(mockNotifyClient, times(1)).sendEmail(anyString(), anyMap(), anyString());
     }
 
     @Test
     public void shouldNotSendEmailNullNotifyRequest() {
         emailService.sendRshEmail(null);
 
-        verify(mockNotifyClient, times(0)).sendEmail(any(SendEmailRequest.class), anyString());
+        verify(mockNotifyClient, times(0)).sendEmail(anyString(), anyMap(), anyString());
     }
 
 
