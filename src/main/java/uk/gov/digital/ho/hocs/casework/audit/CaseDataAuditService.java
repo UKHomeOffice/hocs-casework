@@ -161,6 +161,7 @@ public class CaseDataAuditService {
         }).map(l -> ExportLine.from(caseSchemaMapping.get(unit), l));
 
         log.info("Returned Extract, Found: {}, User: {}", caseDatumAudits.size(), requestData.username());
+
         return reportLines.collect(Collectors.toList());
     }
 }

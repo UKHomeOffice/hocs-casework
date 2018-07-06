@@ -12,9 +12,7 @@ public class CreateCaseResponse {
 
     private final String caseReference;
 
-    private final UUID uuid;
-
     public static CreateCaseResponse from(CaseData caseData) {
-        return new CreateCaseResponse(caseData.getReference(), caseData.getUuid());
+        return new CreateCaseResponse(caseData.getReference());
     }
 }

@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
 
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "audit_case_data")
+@NoArgsConstructor
 public class CaseDataAudit implements Serializable {
 
     @Id
