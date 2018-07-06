@@ -13,6 +13,7 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundExcep
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseRequest;
+import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseResponse;
 
 import java.util.UUID;
 
@@ -40,13 +41,12 @@ public class RshCaseDataResourceTest {
         when(mockRshCaseService.createRshCase(anyMap(), any())).thenReturn(caseData);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
-        ResponseEntity<CreateCaseResponse> response = rshCaseResource.rshCreateCase(request);
+        ResponseEntity<CreateRshCaseResponse> response = rshCaseResource.rshCreateCase(request);
 
         verify(mockRshCaseService, times(1)).createRshCase(request.getCaseData(), request.getSendEmailRequest());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getCaseReference()).isEqualTo(caseData.getReference());
-        assertThat(response.getBody().getUuid()).isEqualTo(caseData.getUuid());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class RshCaseDataResourceTest {
         when(mockRshCaseService.createRshCase(anyMap(), any())).thenThrow(EntityCreationException.class);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
-        ResponseEntity<CreateCaseResponse> response = rshCaseResource.rshCreateCase(request);
+        ResponseEntity<CreateRshCaseResponse> response = rshCaseResource.rshCreateCase(request);
 
         verify(mockRshCaseService, times(1)).createRshCase(request.getCaseData(), request.getSendEmailRequest());
 
@@ -69,13 +69,12 @@ public class RshCaseDataResourceTest {
         when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any())).thenReturn(caseData);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
-        ResponseEntity<CreateCaseResponse> response = rshCaseResource.rshUpdateCase(caseData.getUuid(), request);
+        ResponseEntity<CreateRshCaseResponse> response = rshCaseResource.rshUpdateCase(caseData.getUuid(), request);
 
         verify(mockRshCaseService, times(1)).updateRshCase(caseData.getUuid(), request.getCaseData(), request.getSendEmailRequest());
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getCaseReference()).isEqualTo(caseData.getReference());
-        assertThat(response.getBody().getUuid()).isEqualTo(caseData.getUuid());
     }
 
     @Test
@@ -85,7 +84,7 @@ public class RshCaseDataResourceTest {
         when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any())).thenThrow(EntityCreationException.class);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
-        ResponseEntity<CreateCaseResponse> response = rshCaseResource.rshUpdateCase(caseData.getUuid(), request);
+        ResponseEntity<CreateRshCaseResponse> response = rshCaseResource.rshUpdateCase(caseData.getUuid(), request);
 
         verify(mockRshCaseService, times(1)).updateRshCase(caseData.getUuid(), request.getCaseData(), request.getSendEmailRequest());
 
@@ -100,7 +99,7 @@ public class RshCaseDataResourceTest {
         when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any())).thenThrow(EntityNotFoundException.class);
 
         CreateRshCaseRequest request = new CreateRshCaseRequest();
-        ResponseEntity<CreateCaseResponse> response = rshCaseResource.rshUpdateCase(caseData.getUuid(), request);
+        ResponseEntity<CreateRshCaseResponse> response = rshCaseResource.rshUpdateCase(caseData.getUuid(), request);
 
         verify(mockRshCaseService, times(1)).updateRshCase(caseData.getUuid(), request.getCaseData(), request.getSendEmailRequest());
 

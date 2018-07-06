@@ -26,8 +26,7 @@ public class DocumentResource {
     @RequestMapping(value = "/case/{caseUUID}/documents", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity addDocuments(@PathVariable UUID caseUUID, @RequestBody AddDocumentsRequest request) {
         try {
-            List<DocumentSummary> documentSummaries = request.getDocuments();
-            documentService.addDocuments(caseUUID, documentSummaries);
+            documentService.addDocuments(caseUUID, request.getDocuments());
             return ResponseEntity.ok().build();
         } catch (EntityCreationException e) {
             return ResponseEntity.badRequest().build();
@@ -37,8 +36,7 @@ public class DocumentResource {
     @RequestMapping(value = "/case/{caseUUID}/document", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity addDocument(@PathVariable UUID caseUUID, @RequestBody AddDocumentRequest request) {
         try {
-            DocumentSummary documentSummary = request.getDocumentSummary();
-            documentService.addDocument(caseUUID, documentSummary);
+            documentService.addDocument(caseUUID, request.getDocumentSummary());
             return ResponseEntity.ok().build();
         } catch (EntityCreationException e) {
             return ResponseEntity.badRequest().build();

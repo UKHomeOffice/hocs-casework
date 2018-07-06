@@ -60,14 +60,13 @@ public class DocumentServiceTest {
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldCreateExceptionOnAddDocumentWhenDocumentUUIDIsNull() throws EntityCreationException {
+    public void shouldThrowExceptionOnAddDocumentWhenDocumentUUIDIsNull() throws EntityCreationException {
         DocumentSummary documentSummary = new DocumentSummary(null, DOCUMENT_DISPLAY_NAME, DocumentType.ORIGINAL);
         documentService.addDocument(uuid, documentSummary);
     }
 
     @Test()
-    public void shouldCreateExceptionOnAddDocumentWhenDocumentUUIDIsNull2() throws EntityNotFoundException {
-
+    public void shouldThrowExceptionOnAddDocumentWhenDocumentUUIDIsNull2() throws EntityNotFoundException {
         try {
             DocumentSummary documentSummary = new DocumentSummary(null, DOCUMENT_DISPLAY_NAME, DocumentType.ORIGINAL);
             documentService.addDocument(uuid, documentSummary);
@@ -88,13 +87,13 @@ public class DocumentServiceTest {
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldCreateExceptionOnAddDocumentsWhenDocumentUUIDIsNull() throws EntityCreationException {
+    public void shouldThrowExceptionOnAddDocumentsWhenDocumentUUIDIsNull() throws EntityCreationException {
         DocumentSummary documentSummary = new DocumentSummary(null, DOCUMENT_DISPLAY_NAME, DocumentType.ORIGINAL);
         documentService.addDocuments(uuid, Arrays.asList(documentSummary));
     }
 
     @Test()
-    public void shouldCreateExceptionOnAddDocumentsWhenDocumentUUIDIsNull2() throws EntityNotFoundException {
+    public void shouldThrowExceptionOnAddDocumentsWhenDocumentUUIDIsNull2() throws EntityNotFoundException {
 
         try {
             DocumentSummary documentSummary = new DocumentSummary(null, DOCUMENT_DISPLAY_NAME, DocumentType.ORIGINAL);
@@ -122,12 +121,12 @@ public class DocumentServiceTest {
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldEntityCreateExceptionOnUpdateDocumentWhenDocumentUUIDIsNull() throws EntityCreationException, EntityNotFoundException {
+    public void shouldThrowExceptionOnUpdateDocumentWhenDocumentUUIDIsNull() throws EntityCreationException, EntityNotFoundException {
         documentService.updateDocument(null, null, S3_LINK, S3_LINK,DocumentStatus.UPLOADED);
     }
 
     @Test()
-    public void shouldCreateExceptionOnUpdateDocumentWhenDocumentUUIDIsNull2() throws EntityNotFoundException {
+    public void shouldThrowExceptionOnUpdateDocumentWhenDocumentUUIDIsNull2() throws EntityNotFoundException {
 
         try {
             documentService.updateDocument(null, null, S3_LINK, S3_LINK,DocumentStatus.UPLOADED);
@@ -140,12 +139,12 @@ public class DocumentServiceTest {
     }
 
     @Test(expected = EntityNotFoundException.class)
-    public void shouldEntityNotFoundExceptionOnUpdateDocumentWhenNoDocumentFound() throws EntityCreationException, EntityNotFoundException {
+    public void shouldThrowEntityNotFoundExceptionOnUpdateDocumentWhenNoDocumentFound() throws EntityCreationException, EntityNotFoundException {
         documentService.updateDocument(uuid, uuid, S3_LINK, S3_LINK,DocumentStatus.UPLOADED);
     }
 
     @Test
-    public void shouldOnDeleteDocumentSetDeleteToTrue() throws EntityCreationException, EntityNotFoundException {
+    public void shouldDeleteDocument() throws EntityCreationException, EntityNotFoundException {
         DocumentSummary documentSummary = new DocumentSummary(null, DOCUMENT_DISPLAY_NAME, DocumentType.ORIGINAL);
         when(documentRepository.findByDocumentUUID(any())).thenReturn(new DocumentData(uuid, documentSummary));
 
@@ -153,19 +152,15 @@ public class DocumentServiceTest {
 
         verify(documentRepository, times(1)).findByDocumentUUID(uuid);
         verify(documentRepository, times(1)).save(isA(DocumentData.class));
-
-        //TODO: Captor stuff
-        //assertThat(documentData).isNotNull();
-        //assertThat(documentData.getDeleted()).isTrue();
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldEntityCreateExceptionOnDeleteDocumentWhenDocumentUUIDIsNull() throws EntityCreationException, EntityNotFoundException {
+    public void shoulThrowExceptionOnDeleteDocumentWhenDocumentUUIDIsNull() throws EntityCreationException, EntityNotFoundException {
         documentService.deleteDocument(null, null);
     }
 
     @Test()
-    public void shouldCreateExceptionOnDeleteDocumentWhenDocumentUUIDIsNull2() throws EntityNotFoundException {
+    public void shouldThrowExceptionOnDeleteDocumentWhenDocumentUUIDIsNull2() throws EntityNotFoundException {
 
         try {
             documentService.deleteDocument(null, null);
@@ -178,12 +173,12 @@ public class DocumentServiceTest {
     }
 
     @Test(expected = EntityNotFoundException.class)
-    public void shouldEntityNotFoundExceptionOnDeleteDocumentWhenNoDocumentFound() throws EntityCreationException, EntityNotFoundException {
-        documentService.unDeleteDocument(uuid, uuid);
+    public void shouldThrowExceptionOnDeleteDocumentWhenNoDocumentFound() throws EntityCreationException, EntityNotFoundException {
+        documentService.deleteDocument(uuid, uuid);
     }
 
     @Test
-    public void shouldOnUndeleteDocumentSetDeleteToFalse() throws EntityCreationException, EntityNotFoundException {
+    public void shouldUndeleteDocument() throws EntityCreationException, EntityNotFoundException {
         DocumentSummary documentSummary = new DocumentSummary(null, DOCUMENT_DISPLAY_NAME, DocumentType.ORIGINAL);
 
         when(documentRepository.findByDocumentUUID(any())).thenReturn(new DocumentData(uuid, documentSummary));
@@ -192,19 +187,15 @@ public class DocumentServiceTest {
 
         verify(documentRepository, times(1)).findByDocumentUUID(uuid);
         verify(documentRepository, times(1)).save(isA(DocumentData.class));
-
-        //TODO: Captor stuff
-        //assertThat(documentData).isNotNull();
-        //assertThat(documentData.getDeleted()).isFalse();
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldEntityCreateExceptionOnUndeleteDocumentWhenDocumentUUIDIsNull() throws EntityCreationException, EntityNotFoundException {
+    public void shouldThrowExceptionOnUndeleteDocumentWhenDocumentUUIDIsNull() throws EntityCreationException, EntityNotFoundException {
         documentService.unDeleteDocument(null, null);
     }
 
     @Test()
-    public void shouldCreateExceptionOnUndeleteDocumentWhenDocumentUUIDIsNull2() throws EntityNotFoundException {
+    public void shouldThrowExceptionOnUndeleteDocumentWhenDocumentUUIDIsNull2() throws EntityNotFoundException {
 
         try {
             documentService.unDeleteDocument(null, null);
@@ -214,7 +205,6 @@ public class DocumentServiceTest {
 
         verify(documentRepository, times(0)).findByDocumentUUID(any());
         verify(documentRepository, times(0)).save(any(DocumentData.class));
-//        verify(auditService, times(0)).writeUpdateStageEvent(any(), any());
     }
 
     @Test(expected = EntityNotFoundException.class)

@@ -31,8 +31,9 @@ class CaseDataResource {
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         try {
             CaseData caseData = caseDataService.createCase(request.getCaseUUID(),request.getCaseType());
-            UUID caseUuid = caseData.getUuid();
-            documentService.addDocuments(caseUuid, request.getDocuments());
+            if(request.getDocuments() != null && request.getDocuments().size() > 0) {
+                documentService.addDocuments(request.getCaseUUID(), request.getDocuments());
+            }
             return ResponseEntity.ok(CreateCaseResponse.from(caseData));
         } catch (EntityCreationException e) {
             return ResponseEntity.badRequest().build();

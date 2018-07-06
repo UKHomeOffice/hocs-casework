@@ -39,7 +39,7 @@ public class SearchResourceTest {
     }
 
     @Test
-    public void shouldRetrieveAllEntities() {
+    public void shouldCallSearch() {
         when(mockSearchService.findCases(any(SearchRequest.class))).thenReturn(getValidSet());
 
         SearchRequest searchRequest = new SearchRequest();
@@ -53,7 +53,7 @@ public class SearchResourceTest {
     }
 
     @Test
-    public void shouldRetrieveAllEntitiesEmpty() {
+    public void shouldCallSearchEmptyRequest() {
         when(mockSearchService.findCases(any(SearchRequest.class))).thenReturn(new HashSet<>());
 
         SearchRequest searchRequest = new SearchRequest();
@@ -66,7 +66,7 @@ public class SearchResourceTest {
     }
 
     @Test
-    public void shouldRetrieveAllEntitiesNull() {
+    public void shouldCallSearchNullRequest() {
         when(mockSearchService.findCases(null)).thenReturn(new HashSet<>());
 
         ResponseEntity<Set<CaseData>> responseEntity = searchResource.search(null);
