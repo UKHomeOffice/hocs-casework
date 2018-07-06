@@ -69,34 +69,10 @@ public class CaseDataAuditResourceIntTest {
         assertThat(responseEntity.getBody().toString()).contains(caseUUID.toString());
     }
 
-    @Test
-    public void getReportCurrentJson() {
-        HttpHeaders requestHeaders = buildHttpHeaders();
-        Map<String, Map<String, String>> body = new HashMap<>();
-        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
-
-        ResponseEntity responseEntity = restTemplate.exchange(
-                "/report/RSH/current/json",
-                HttpMethod.GET,
-                httpEntity,
-                String.class);
-
-        assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
-        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
-        assertThat(responseEntity.getBody().toString()).contains("Case_Type", "RSH");
-        assertThat(responseEntity.getBody().toString()).contains(caseUUID.toString());
-
-    }
-
 
     @Test
     public void getReportCutoff() {
     }
-
-    @Test
-    public void getReportCutoffJson() {
-    }
-
 
     private Map<String, Object> buildCreateStageBody() {
         Map<String, String> stageData = new HashMap<>();

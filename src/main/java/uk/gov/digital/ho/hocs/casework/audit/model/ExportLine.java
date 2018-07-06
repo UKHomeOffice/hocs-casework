@@ -10,20 +10,15 @@ public class ExportLine {
     @Getter
     private final LinkedHashMap<String, String> lineSchema = new LinkedHashMap<>();
 
-    private ExportLine(String schema) {
-        String[] headers = schema.split(",");
+    private ExportLine(String header, Map<String, String> values) {
+        String[] headers = header.split(",");
         for (String h : headers) {
             lineSchema.put(h, "");
         }
-    }
-
-    private void applyData(Map<String, String> values) {
         values.forEach(lineSchema::replace);
     }
 
     public static ExportLine from(String schema, Map<String, String> map) {
-        ExportLine exportLine = new ExportLine(schema);
-        exportLine.applyData(map);
-        return exportLine;
+        return new ExportLine(schema, map);
     }
 }

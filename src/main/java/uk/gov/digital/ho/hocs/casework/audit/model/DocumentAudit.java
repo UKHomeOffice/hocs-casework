@@ -57,8 +57,15 @@ public class DocumentAudit {
     @Getter
     private Boolean deleted;
 
-    public DocumentAudit(UUID caseUUID, UUID documentUUID, String documentDisplayName, DocumentType documentType,
-                         LocalDateTime timestamp, String s3OrigLink, String s3PdfLink, DocumentStatus status, Boolean deleted) {
+    public DocumentAudit(UUID caseUUID,
+                         UUID documentUUID,
+                         String documentDisplayName,
+                         DocumentType documentType,
+                         LocalDateTime timestamp,
+                         String s3OrigLink,
+                         String s3PdfLink,
+                         DocumentStatus status,
+                         Boolean deleted) {
         this.caseUUID = caseUUID;
         this.documentUUID = documentUUID;
         this.documentDisplayName = documentDisplayName;
@@ -71,8 +78,14 @@ public class DocumentAudit {
     }
 
     public static DocumentAudit from(DocumentData documentData) {
-        return new DocumentAudit(documentData.getCaseUUID(), documentData.getDocumentUUID(), documentData.getDocumentDisplayName(),
-                documentData.getDocumentType(), documentData.getTimestamp(), documentData.getS3OrigLink(), documentData.getS3PdfLink(),
-                documentData.getStatus(), documentData.getDeleted());
+        return new DocumentAudit(documentData.getCaseUUID(),
+                documentData.getDocumentUUID(),
+                documentData.getDocumentDisplayName(),
+                documentData.getDocumentType(),
+                documentData.getTimestamp(),
+                documentData.getS3OrigLink(),
+                documentData.getS3PdfLink(),
+                documentData.getStatus(),
+                documentData.getDeleted());
     }
 }

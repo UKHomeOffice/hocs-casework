@@ -35,36 +35,38 @@ public class AuditEntry {
     private DocumentAudit documentInstance;
 
     @Column(name = "timestamp", nullable = false)
-    private final LocalDateTime timestamp;
+    private final LocalDateTime timestamp = LocalDateTime.now();
 
     @Column(name = "event_action", nullable = false)
     private final String eventAction;
 
-    public AuditEntry(String username, CaseData caseInstance, StageData stageInstance, AuditAction eventAction) {
+    public AuditEntry(String username, CaseData caseInstance, EventAction eventAction) {
         this.username = username;
         if(caseInstance != null) {
             this.caseInstance = CaseDataAudit.from(caseInstance);
         }
-        if(stageInstance != null) {
-            this.stageInstance = StageDataAudit.from(stageInstance);
-        }
-        this.timestamp = LocalDateTime.now();
         this.eventAction = eventAction.toString();
     }
 
-    public AuditEntry(String username, DocumentData documentInstance, AuditAction eventAction) {
+    public AuditEntry(String username, StageData stageInstance, EventAction eventAction) {
+        this.username = username;
+        if(stageInstance != null) {
+            this.stageInstance = StageDataAudit.from(stageInstance);
+        }
+        this.eventAction = eventAction.toString();
+    }
+
+    public AuditEntry(String username, DocumentData documentInstance, EventAction eventAction) {
         this.username = username;
         if(documentInstance != null) {
             this.documentInstance = DocumentAudit.from(documentInstance);
         }
-        this.timestamp = LocalDateTime.now();
         this.eventAction = eventAction.toString();
     }
 
-    public AuditEntry(String username, String queryData, AuditAction eventAction) {
+    public AuditEntry(String username, String queryData, EventAction eventAction) {
         this.username = username;
         this.queryData = queryData;
-        this.timestamp = LocalDateTime.now();
         this.eventAction = eventAction.toString();
     }
 }
