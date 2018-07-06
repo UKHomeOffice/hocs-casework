@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.caseDetails;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -266,11 +265,6 @@ public class CaseDataResourceIntTest {
         requestHeaders.set("X-Auth-Username", "bob");
         requestHeaders.set("x-correlation-id", "12");
         return requestHeaders;
-    }
-
-
-    private String buildCreateCaseServiceResponse() throws IOException {
-        return "{ \"caseReference\": \"MIN/0020025/18\",\"uuid\": \"04f4594d-14bf-42be-baf2-9b87540a0b6b\" }";
     }
 
 }

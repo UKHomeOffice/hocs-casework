@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import sun.misc.UUDecoder;
 import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
@@ -46,7 +45,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test
-    public void shouldCreateRshCase() throws EntityCreationException {
+    public void shouldCreateRshCase()  {
 
         UUID uuid = UUID.randomUUID();
         CaseData caseData = new CaseData(uuid, CaseType.RSH.toString(), 1L);
@@ -66,7 +65,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldCreateRshCaseNullData1() throws EntityCreationException {
+    public void shouldCreateRshCaseNullData1() {
 
         rshCaseService.createRshCase(
                 null,
@@ -74,7 +73,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test
-    public void shouldCreateRshCaseNullData2() throws EntityCreationException {
+    public void shouldCreateRshCaseNullData2() {
 
         try {
             rshCaseService.createRshCase(
@@ -90,7 +89,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldCreateRshCaseNullCaseCreate1() throws EntityCreationException {
+    public void shouldCreateRshCaseNullCaseCreate1()  {
 
         when(caseDataService.createCase(any(),eq(CaseType.RSH))).thenReturn(null);
 
@@ -101,7 +100,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test
-    public void shouldCreateRshCaseNullCaseCreate2() throws EntityCreationException {
+    public void shouldCreateRshCaseNullCaseCreate2()  {
 
         when(caseDataService.createCase(any(),eq(CaseType.RSH))).thenReturn(null);
 
@@ -120,7 +119,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test
-    public void shouldCreateRshCaseNullEmail() throws EntityCreationException {
+    public void shouldCreateRshCaseNullEmail() {
 
         CaseData caseData = new CaseData(UUID.randomUUID(),CaseType.RSH.toString(), 1L);
         when(caseDataService.createCase(any(),eq(CaseType.RSH))).thenReturn(caseData);
@@ -137,7 +136,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test
-    public void shouldUpdateRshCase() throws EntityCreationException, EntityNotFoundException {
+    public void shouldUpdateRshCase()  {
         StageData stageData = new StageData(UUID.randomUUID(),UUID.randomUUID(), StageType.RUSH_ONLY_STAGE.toString(), "");
         CaseData caseData = new CaseData(UUID.randomUUID(),CaseType.RSH.toString(), 1L);
 
@@ -161,7 +160,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldNotUpdateRshCaseNullCaseUUID1() throws EntityCreationException, EntityNotFoundException {
+    public void shouldNotUpdateRshCaseNullCaseUUID1() {
 
         Map<String, String> data = new HashMap<>();
         SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
@@ -172,7 +171,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test
-    public void shouldNotUpdateRshCaseNullCaseUUID2() throws EntityCreationException, EntityNotFoundException {
+    public void shouldNotUpdateRshCaseNullCaseUUID2()  {
 
         Map<String, String> data = new HashMap<>();
         SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
@@ -191,7 +190,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldUpdateRshCaseNoStage1() throws EntityCreationException, EntityNotFoundException {
+    public void shouldUpdateRshCaseNoStage1() {
 
         CaseData caseData = new CaseData(UUID.randomUUID(),CaseType.RSH.toString(), 1L);
 
@@ -207,7 +206,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test
-    public void shouldUpdateRshCaseNoStage2() throws EntityCreationException, EntityNotFoundException {
+    public void shouldUpdateRshCaseNoStage2() {
         CaseData caseData = new CaseData(UUID.randomUUID(),CaseType.RSH.toString(), 1L);
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
 
@@ -228,7 +227,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldUpdateRshCaseNullCaseData1() throws EntityCreationException, EntityNotFoundException {
+    public void shouldUpdateRshCaseNullCaseData1()  {
         CaseData caseData = new CaseData(UUID.randomUUID(),CaseType.RSH.toString(), 1L);
 
         SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
@@ -239,7 +238,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test
-    public void shouldUpdateRshCaseNullCaseData2() throws EntityCreationException, EntityNotFoundException {
+    public void shouldUpdateRshCaseNullCaseData2()  {
         StageData stageData = new StageData(UUID.randomUUID(),UUID.randomUUID(), "", "");
         CaseData caseData = new CaseData(UUID.randomUUID(),CaseType.RSH.toString(), 1L);
 
@@ -259,7 +258,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test()
-    public void shouldUpdateRshCaseNullEmail() throws EntityCreationException, EntityNotFoundException {
+    public void shouldUpdateRshCaseNullEmail() {
         StageData stageData = new StageData(UUID.randomUUID(),UUID.randomUUID(), "", "");
         CaseData caseData = new CaseData(UUID.randomUUID(),CaseType.RSH.toString(), 1L);
         caseData.getStages().add(stageData);
@@ -281,7 +280,7 @@ public class RshCaseDataServiceTest {
     }
 
     @Test
-    public void shouldGetCase() throws EntityNotFoundException {
+    public void shouldGetCase() {
         StageData stageData = new StageData(UUID.randomUUID(),UUID.randomUUID(), "", "");
         CaseData caseData = new CaseData(UUID.randomUUID(),CaseType.RSH.toString(), 1L);
         caseData.getStages().add(stageData);
@@ -296,12 +295,12 @@ public class RshCaseDataServiceTest {
     }
 
     @Test(expected = EntityNotFoundException.class)
-    public void shouldGetCaseNullCaseUUID1() throws EntityNotFoundException {
+    public void shouldGetCaseNullCaseUUID1()  {
         rshCaseService.getRSHCase(null);
     }
 
     @Test
-    public void shouldGetCaseNullCaseUUI2() throws EntityNotFoundException {
+    public void shouldGetCaseNullCaseUUI2() {
         try {
             rshCaseService.getRSHCase(null);
         } catch (EntityNotFoundException e) {
@@ -312,14 +311,14 @@ public class RshCaseDataServiceTest {
     }
 
     @Test(expected = EntityNotFoundException.class)
-    public void shouldGetCaseNullReturn1() throws EntityNotFoundException {
+    public void shouldGetCaseNullReturn1()  {
         when(caseDataService.getCase(any(UUID.class))).thenReturn(null);
 
         rshCaseService.getRSHCase(UUID.randomUUID());
     }
 
     @Test
-    public void shouldGetCaseNullReturn2() throws EntityNotFoundException {
+    public void shouldGetCaseNullReturn2() {
         when(caseDataService.getCase(any(UUID.class))).thenReturn(null);
 
         try {
