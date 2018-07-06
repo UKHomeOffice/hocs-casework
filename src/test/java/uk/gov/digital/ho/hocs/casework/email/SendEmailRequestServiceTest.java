@@ -38,7 +38,7 @@ public class SendEmailRequestServiceTest {
     }
 
     @Test
-    public void shouldSendEmailNullEmailAddress() {
+    public void shouldNotSendEmailNullEmailAddress() {
         SendEmailRequest sendEmailRequest = new SendEmailRequest(null, new HashMap<>());
         emailService.sendRshEmail(sendEmailRequest);
 
@@ -62,7 +62,7 @@ public class SendEmailRequestServiceTest {
     }
 
     @Test
-    public void shouldSendEmailNullNotifyRequest() {
+    public void shouldNotSendEmailNullNotifyRequest() {
         emailService.sendRshEmail(null);
 
         verify(mockNotifyClient, times(0)).sendEmail(any(SendEmailRequest.class), anyString());

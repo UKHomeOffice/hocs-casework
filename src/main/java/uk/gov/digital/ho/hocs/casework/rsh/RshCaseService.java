@@ -31,17 +31,14 @@ public class RshCaseService {
     private final EmailService emailService;
 
     private final String frontendUrl;
-    private final String rshTemplateId;
 
     @Autowired
     public RshCaseService(CaseDataService caseDataService,
                           EmailService emailService,
-                          @Value("${notify.frontend.url}") String frontEndUrl,
-                          @Value("${notify.rshTemplateId}") String rshTemplateId) {
+                          @Value("${notify.frontend.url}") String frontEndUrl) {
         this.caseDataService = caseDataService;
         this.emailService = emailService;
         this.frontendUrl = frontEndUrl;
-        this.rshTemplateId = rshTemplateId;
     }
 
     private static SendEmailRequest createRshEmail(String emailAddress, String teamName, String frontEndUrl, UUID caseUUID, String caseReference, String caseStatus) {
@@ -52,23 +49,6 @@ public class RshCaseService {
         personalisation.put("caseStatus", caseStatus);
 
         return new SendEmailRequest(emailAddress, personalisation);
-    }
-
-    @Transactional
-    CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException {
-        if (caseData != null) {
-            CaseData caseDetails = caseDataService.createCase(UUID.randomUUID(), CaseType.RSH);
-            if(caseDetails != null) {
-                caseDataService.createStage(caseDetails.getUuid(), UUID.randomUUID(), StageType.RUSH_ONLY_STAGE, caseData);
-                sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
-                return caseDetails;
-            }
-            else {
-                throw new EntityCreationException("Failed to create case, no caseDetails!");
-            }
-        } else {
-            throw new EntityCreationException("Failed to create case, no caseData!");
-        }
     }
 
     CaseData getRSHCase(UUID caseUUID) throws EntityNotFoundException {
@@ -84,6 +64,25 @@ public class RshCaseService {
         }
     }
 
+    @Transactional
+    CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException {
+        if (caseData != null) {
+            UUID caseUUID = UUID.randomUUID();
+            CaseData caseDetails = caseDataService.createCase(caseUUID, CaseType.RSH);
+            if(caseDetails != null) {
+                caseDataService.createStage(caseDetails.getUuid(), UUID.randomUUID(), StageType.RUSH_ONLY_STAGE, caseData);
+                sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
+                return caseDetails;
+            }
+            else {
+                throw new EntityCreationException("Failed to create case, no caseDetails!");
+            }
+        } else {
+            throw new EntityCreationException("Failed to create case, no caseData!");
+        }
+    }
+
+    @Transactional
     CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException, EntityNotFoundException {
         if (!isNullOrEmpty(caseUUID) && caseData != null) {
             CaseData caseDetails = caseDataService.getCase(caseUUID);

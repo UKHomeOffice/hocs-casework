@@ -14,17 +14,18 @@ import static org.mockito.Mockito.when;
 
 public class SearchRequestTest {
 
+    private static ObjectMapper objectMapper = new ObjectMapper();
+
     @Test
     public void testCreateWithNoEntities() {
         SearchRequest searchRequest = new SearchRequest();
 
         assertThat(searchRequest.getCaseData()).isEmpty();
-        assertThat(searchRequest.getCaseReference()).isNotNull();
+        assertThat(searchRequest.getCaseReference()).isEqualTo("");
     }
 
     @Test
     public void testCreateNull() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
         SearchRequest searchRequest = objectMapper.readValue("{}", SearchRequest.class);
 
         Map<String, String> caseData = new HashMap<>();
@@ -34,7 +35,6 @@ public class SearchRequestTest {
 
     @Test
     public void testCreateWithEntities() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
         SearchRequest searchRequest = objectMapper.readValue("{ \"caseReference\" : \"fsfd\", \"caseData\" : { \"key\" : \"value\"} }", SearchRequest.class);
 
         Map<String, String> caseData = new HashMap<>();
@@ -44,19 +44,15 @@ public class SearchRequestTest {
     }
 
     @Test
-    public void testCreateWithNoEntitiesToJson() throws JsonProcessingException {
+    public void testCreateToJson() throws JsonProcessingException {
         SearchRequest searchRequest = new SearchRequest();
-        ObjectMapper objectMapper = new ObjectMapper();
         String jsonCompare = objectMapper.writeValueAsString(searchRequest);
 
         assertThat(SearchRequest.toJsonString(objectMapper, searchRequest)).isEqualTo(jsonCompare);
     }
 
     @Test
-    public void testCreateWithEntitiesToJson() throws JsonProcessingException {
-        Map<String, String> caseData = new HashMap<>();
-        caseData.put("key", "value");
-        String reference = "reference";
+    public void testCreateToJsonException() throws JsonProcessingException {
         SearchRequest searchRequest = new SearchRequest();
 
         ObjectMapper om = spy(new ObjectMapper());

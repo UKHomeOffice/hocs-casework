@@ -24,11 +24,8 @@ public class CreateRshCaseRequestTest {
         ObjectMapper objectMapper = new ObjectMapper();
         CreateRshCaseRequest createRshCaseRequest = objectMapper.readValue("{}", CreateRshCaseRequest.class);
 
-        SendRshEmailRequest sendEmailRequest = objectMapper.readValue("{}", SendRshEmailRequest.class);
-        Map<String, String> caseData = new HashMap<>();
-
         assertThat(createRshCaseRequest.getSendEmailRequest()).isNull();
-        assertThat(createRshCaseRequest.getCaseData()).isEqualTo(caseData);
+        assertThat(createRshCaseRequest.getCaseData()).isEqualTo(new HashMap<>());
     }
 
     @Test
