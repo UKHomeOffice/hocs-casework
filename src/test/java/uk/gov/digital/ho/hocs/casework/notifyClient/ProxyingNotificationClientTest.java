@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.email;
+package uk.gov.digital.ho.hocs.casework.notifyClient;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -44,8 +44,17 @@ public class ProxyingNotificationClientTest {
     }
 
     @Test
-    public void shouldSendEmailNullNotifyRequest() throws NotificationClientException {
-        mockProxyingNotificationClient.sendEmail(null, "tenplate");
+    public void shouldSendEmailNullEmail() throws NotificationClientException {
+        mockProxyingNotificationClient.sendEmail(null, new HashMap<>(),  "template");
+
+        verify(mockProxyingNotificationClient, times(0)).sendEmail(any(), any(), any(), any());
+        verify(mockProxyingNotificationClient, times(0)).sendEmail(any(), any(), any(), any(), any());
+
+    }
+
+    @Test
+    public void shouldSendEmailNullMap() throws NotificationClientException {
+        mockProxyingNotificationClient.sendEmail("", null,  "template");
 
         verify(mockProxyingNotificationClient, times(0)).sendEmail(any(), any(), any(), any());
         verify(mockProxyingNotificationClient, times(0)).sendEmail(any(), any(), any(), any(), any());
@@ -54,7 +63,7 @@ public class ProxyingNotificationClientTest {
 
     @Test
     public void shouldSendEmailNullTemplate() throws NotificationClientException {
-        mockProxyingNotificationClient.sendEmail(new SendEmailRequest("a", new HashMap<>()), null);
+        mockProxyingNotificationClient.sendEmail("", new HashMap<>(), null);
 
         verify(mockProxyingNotificationClient, times(0)).sendEmail(any(), any(), any(), any());
         verify(mockProxyingNotificationClient, times(0)).sendEmail(any(), any(), any(), any(), any());
@@ -63,7 +72,7 @@ public class ProxyingNotificationClientTest {
 
     @Test
     public void shouldSendEmailNotifyException2() throws NotificationClientException {
-        mockProxyingNotificationClient.sendEmail(new SendEmailRequest("a", new HashMap<>()), "t");
+        mockProxyingNotificationClient.sendEmail("a", new HashMap<>(), "t");
 
         verify(mockProxyingNotificationClient, times(0)).sendEmail(any(), any(), any(), anyString());
     }

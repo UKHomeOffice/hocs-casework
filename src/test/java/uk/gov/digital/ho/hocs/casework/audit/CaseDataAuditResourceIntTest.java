@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.audit;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
 
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = HocsCaseApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CaseDataAuditResourceIntTest {
@@ -31,7 +33,7 @@ public class CaseDataAuditResourceIntTest {
     private UUID stageUUID = UUID.randomUUID();
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         HttpHeaders requestHeaders = buildHttpHeaders();
         Map<String, String> body = buildCreateCaseBody();
         HttpEntity<?> caseHttpEntity = new HttpEntity<Object>(body, requestHeaders);

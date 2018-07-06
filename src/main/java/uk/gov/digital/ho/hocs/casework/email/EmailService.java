@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
+import uk.gov.digital.ho.hocs.casework.notifyClient.ProxyingNotificationClient;
 
 import static uk.gov.digital.ho.hocs.casework.HocsCaseApplication.isNullOrEmpty;
 
@@ -38,7 +39,7 @@ public class EmailService {
             if (!isNullOrEmpty(sendEmailRequest.getEmailAddress())) {
                 log.info("Received request to sendEmailRequest {}, templateId {}", sendEmailRequest.getEmailAddress(), templateId);
                 auditService.writeSendEmailEvent(sendEmailRequest);
-                notifyClient.sendEmail(sendEmailRequest, templateId);
+                notifyClient.sendEmail(sendEmailRequest.getEmailAddress(), sendEmailRequest.getPersonalisation(), templateId);
             } else {
                 log.warn("Received request to sendEmailRequest templateId {}, but params were null!", templateId);
             }

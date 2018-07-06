@@ -37,7 +37,7 @@ public class CaseConsumerTest extends CamelTestSupport {
     }
 
     @Test
-    public void shouldCallAddDocumentToCaseService() throws JsonProcessingException, InterruptedException, EntityCreationException, EntityNotFoundException {
+    public void shouldCallAddDocumentToCaseService() throws JsonProcessingException, EntityCreationException, EntityNotFoundException {
 
         AddDocumentToCaseRequest document = new AddDocumentToCaseRequest("UUID",
                 "docUUID", "Test Document", DocumentType.DRAFT,
