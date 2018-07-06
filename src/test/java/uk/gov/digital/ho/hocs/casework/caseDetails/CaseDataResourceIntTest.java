@@ -9,14 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.client.MockRestServiceServer;
 import uk.gov.digital.ho.hocs.casework.HocsCaseApplication;
 import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CreateStageResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -29,31 +28,34 @@ public class CaseDataResourceIntTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private ResponseEntity<CreateCaseResponse> createCaseResponse;
-    private ResponseEntity<CreateStageResponse> createStageResponse;
+    private UUID caseUUID = UUID.randomUUID();
+    private UUID stageUUID = UUID.randomUUID();
 
     @Before
     public void setup() {
         HttpHeaders requestHeaders = buildHttpHeaders();
         Map<String, String> body = buildCreateCaseBody();
         HttpEntity<?> caseHttpEntity = new HttpEntity<Object>(body, requestHeaders);
-        createCaseResponse = restTemplate.postForEntity(
+        restTemplate.postForEntity(
                 "/case",
                 caseHttpEntity,
                 CreateCaseResponse.class);
         Map<String, Object> stageBody = buildCreateStageBody();
         HttpEntity<?> stageHttpEntity = new HttpEntity<Object>(stageBody, requestHeaders);
-        createStageResponse = restTemplate.postForEntity(
-                "/case/" + createCaseResponse.getBody().getUuid() + "/stage",
+        restTemplate.postForEntity(
+                "/case/" + caseUUID + "/stage",
                 stageHttpEntity,
-                CreateStageResponse.class);
-
+                Void.class);
     }
 
     @Test
     public void shouldCreateCase() {
         HttpHeaders requestHeaders = buildHttpHeaders();
         Map<String, String> body = buildCreateCaseBody();
+
+        // override caseUUID
+        body.put("caseUUID", UUID.randomUUID().toString());
+
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
         ResponseEntity<CreateCaseResponse> responseEntity = restTemplate.postForEntity("/case", httpEntity, CreateCaseResponse.class);
@@ -61,7 +63,6 @@ public class CaseDataResourceIntTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
         assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
         assertThat(responseEntity.getBody()).hasFieldOrProperty("caseReference");
-        assertThat(responseEntity.getBody()).hasFieldOrProperty("uuid");
     }
 
     @Test
@@ -101,7 +102,7 @@ public class CaseDataResourceIntTest {
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
         ResponseEntity responseEntity = restTemplate.exchange(
-                "/case/" + createCaseResponse.getBody().getUuid(),
+                "/case/" + caseUUID,
                 HttpMethod.PUT,
                 httpEntity,
                 String.class);
@@ -116,7 +117,7 @@ public class CaseDataResourceIntTest {
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
         ResponseEntity responseEntity = restTemplate.exchange(
-                "/case/" + createCaseResponse.getBody().getUuid(),
+                "/case/" + caseUUID,
                 HttpMethod.PUT,
                 httpEntity,
                 String.class);
@@ -133,7 +134,7 @@ public class CaseDataResourceIntTest {
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
         ResponseEntity responseEntity = restTemplate.exchange(
-                "/case/" + createCaseResponse.getBody().getUuid(),
+                "/case/" + caseUUID,
                 HttpMethod.PUT,
                 httpEntity,
                 String.class);
@@ -147,16 +148,16 @@ public class CaseDataResourceIntTest {
         Map<String, Object> stageBody = buildCreateStageBody();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(stageBody, requestHeaders);
 
-        ResponseEntity<CreateStageResponse> responseEntity = restTemplate.exchange(
-                "/case/" + createCaseResponse.getBody().getUuid() + "/stage",
+        // override caseUUID
+        stageBody.put("stageUUID", UUID.randomUUID().toString());
+
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(
+                "/case/" + caseUUID + "/stage",
                 HttpMethod.POST,
                 httpEntity,
-                CreateStageResponse.class);
+                Void.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
-        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
-        assertThat(responseEntity.getBody()).hasFieldOrProperty("uuid");
-
     }
 
     @Test
@@ -165,11 +166,11 @@ public class CaseDataResourceIntTest {
         Map<String, Object> body = new HashMap<>();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
-        ResponseEntity<CreateStageResponse> responseEntity = restTemplate.exchange(
-                "/case/" + createCaseResponse.getBody().getUuid() + "/stage",
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(
+                "/case/" + caseUUID + "/stage",
                 HttpMethod.POST,
                 httpEntity,
-                CreateStageResponse.class);
+                Void.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
     }
@@ -182,11 +183,11 @@ public class CaseDataResourceIntTest {
         body.put("StsgeType", "wrong");
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
-        ResponseEntity<CreateStageResponse> responseEntity = restTemplate.exchange(
-                "/case/" + createCaseResponse.getBody().getUuid() + "/stage",
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(
+                "/case/" + caseUUID + "/stage",
                 HttpMethod.POST,
                 httpEntity,
-                CreateStageResponse.class);
+                Void.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
     }
@@ -197,11 +198,11 @@ public class CaseDataResourceIntTest {
         Map<String, Object> stageBody = buildCreateStageBody();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(stageBody, requestHeaders);
 
-        ResponseEntity<CreateStageResponse> responseEntity = restTemplate.exchange(
-                "/case/" + createCaseResponse.getBody().getUuid() + "/stage/" + createStageResponse.getBody().getUuid(),
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(
+                "/case/" + caseUUID + "/stage/" + stageUUID,
                 HttpMethod.PUT,
                 httpEntity,
-                CreateStageResponse.class);
+                Void.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
 
@@ -213,11 +214,11 @@ public class CaseDataResourceIntTest {
         Map<String, Object> body = new HashMap<>();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
-        ResponseEntity<CreateStageResponse> responseEntity = restTemplate.exchange(
-                "/case/" + createCaseResponse.getBody().getUuid() + "/stage/" + createStageResponse.getBody().getUuid(),
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(
+                "/case/" + caseUUID + "/stage/" + stageUUID,
                 HttpMethod.PUT,
                 httpEntity,
-                CreateStageResponse.class);
+                Void.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
     }
@@ -227,14 +228,14 @@ public class CaseDataResourceIntTest {
         HttpHeaders requestHeaders = buildHttpHeaders();
 
         Map<String, String> body = new HashMap<>();
-        body.put("StsgeType", "wrong");
+        body.put("StageType", "wrong");
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
-        ResponseEntity<CreateStageResponse> responseEntity = restTemplate.exchange(
-                "/case/" + createCaseResponse.getBody().getUuid() + "/stage/" + createStageResponse.getBody().getUuid(),
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(
+                "/case/" + caseUUID + "/stage/" + stageUUID,
                 HttpMethod.PUT,
                 httpEntity,
-                CreateStageResponse.class);
+                Void.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
     }
@@ -247,12 +248,14 @@ public class CaseDataResourceIntTest {
         Map<String, Object> body = new HashMap<>();
         body.put("stageType","DCU_MIN_CATEGORISE");
         body.put("stageData",stageData);
+        body.put("stageUUID", stageUUID.toString());
         return body;
     }
 
     private Map<String, String> buildCreateCaseBody() {
         Map<String, String> body = new HashMap<>();
         body.put("caseType", "MIN");
+        body.put("caseUUID", caseUUID.toString());
         return body;
     }
 

@@ -52,7 +52,6 @@ public class CaseDataResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getUuid()).isNotNull();
         assertThat(response.getBody().getCaseReference()).isNotNull();
         assertThat(response.getBody()).isInstanceOf(CreateCaseResponse.class);
     }
@@ -72,7 +71,6 @@ public class CaseDataResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getUuid()).isNotNull();
         assertThat(response.getBody().getCaseReference()).isNotNull();
         assertThat(response.getBody()).isInstanceOf(CreateCaseResponse.class);
     }
@@ -94,7 +92,6 @@ public class CaseDataResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getUuid()).isNotNull();
         assertThat(response.getBody().getCaseReference()).isNotNull();
         assertThat(response.getBody()).isInstanceOf(CreateCaseResponse.class);
     }

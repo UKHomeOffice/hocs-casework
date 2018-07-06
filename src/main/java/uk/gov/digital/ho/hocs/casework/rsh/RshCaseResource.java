@@ -8,6 +8,7 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationExcep
 import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseRequest;
+import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseResponse;
 
 import java.util.UUID;
 
@@ -26,20 +27,20 @@ class RshCaseResource {
     }
 
     @RequestMapping(value = "/rsh/case", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CreateCaseResponse> rshCreateCase(@RequestBody CreateRshCaseRequest request) {
+    public ResponseEntity<CreateRshCaseResponse> rshCreateCase(@RequestBody CreateRshCaseRequest request) {
         try {
             CaseData caseData = rshCaseService.createRshCase(request.getCaseData(), request.getSendEmailRequest());
-            return ResponseEntity.ok(CreateCaseResponse.from(caseData));
+            return ResponseEntity.ok(CreateRshCaseResponse.from(caseData));
         } catch (EntityCreationException e) {
             return ResponseEntity.badRequest().build();
         }
     }
 
     @RequestMapping(value = "/rsh/case/{caseUUID}", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CreateCaseResponse> rshUpdateCase(@PathVariable UUID caseUUID, @RequestBody CreateRshCaseRequest request) {
+    public ResponseEntity<CreateRshCaseResponse> rshUpdateCase(@PathVariable UUID caseUUID, @RequestBody CreateRshCaseRequest request) {
         try {
             CaseData caseData = rshCaseService.updateRshCase(caseUUID, request.getCaseData(), request.getSendEmailRequest());
-            return ResponseEntity.ok(CreateCaseResponse.from(caseData));
+            return ResponseEntity.ok(CreateRshCaseResponse.from(caseData));
         } catch (EntityCreationException | EntityNotFoundException e) {
             return ResponseEntity.badRequest().build();
         }

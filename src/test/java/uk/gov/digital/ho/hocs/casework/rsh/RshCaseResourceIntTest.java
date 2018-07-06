@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.rsh;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,11 +11,12 @@ import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.HocsCaseApplication;
 import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CreateStageResponse;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseResponse;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpStatus.OK;
@@ -28,7 +28,9 @@ public class RshCaseResourceIntTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
-    private ResponseEntity<CreateCaseResponse> createCaseResponse;
+    private ResponseEntity<CreateRshCaseResponse> createCaseResponse;
+
+    private UUID caseUUID;
 
     @Before
     public void setup() {
@@ -36,7 +38,8 @@ public class RshCaseResourceIntTest {
         Map<String, Map<String, String>> body = buildCreateCaseBody();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
-        createCaseResponse = restTemplate.postForEntity("/rsh/case", httpEntity, CreateCaseResponse.class);
+        createCaseResponse = restTemplate.postForEntity("/rsh/case", httpEntity, CreateRshCaseResponse.class);
+        caseUUID = createCaseResponse.getBody().getUuid();
     }
 
 
@@ -52,7 +55,6 @@ public class RshCaseResourceIntTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
         assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
         assertThat(responseEntity.getBody()).hasFieldOrProperty("caseReference");
-        assertThat(responseEntity.getBody()).hasFieldOrProperty("uuid");
     }
 
     @Test
@@ -62,12 +64,11 @@ public class RshCaseResourceIntTest {
         Map<String, Map<String, String>> body = new HashMap<>();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
-        ResponseEntity<CreateCaseResponse> responseEntity = restTemplate.postForEntity("/rsh/case/" + createCaseResponse.getBody().getUuid(), httpEntity, CreateCaseResponse.class);
+        ResponseEntity<CreateCaseResponse> responseEntity = restTemplate.postForEntity("/rsh/case/" + caseUUID, httpEntity, CreateCaseResponse.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
         assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
         assertThat(responseEntity.getBody()).hasFieldOrProperty("caseReference");
-        assertThat(responseEntity.getBody()).hasFieldOrProperty("uuid");
     }
 
     @Test
@@ -77,7 +78,7 @@ public class RshCaseResourceIntTest {
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
         ResponseEntity responseEntity = restTemplate.exchange(
-                "/rsh/case/" + createCaseResponse.getBody().getUuid(),
+                "/rsh/case/" + caseUUID,
                 HttpMethod.GET,
                 httpEntity,
                 CaseData.class);
@@ -86,7 +87,6 @@ public class RshCaseResourceIntTest {
         assertThat(responseEntity.getBody()).hasFieldOrProperty("stages");
         assertThat(responseEntity.getBody()).hasFieldOrPropertyWithValue("type", "RSH");
         assertThat(responseEntity.getBody()).hasFieldOrPropertyWithValue("reference", createCaseResponse.getBody().getCaseReference());
-        assertThat(responseEntity.getBody()).hasFieldOrPropertyWithValue("uuid", createCaseResponse.getBody().getUuid());
         assertThat(responseEntity.getBody()).hasFieldOrProperty("timestamp");
     }
 
