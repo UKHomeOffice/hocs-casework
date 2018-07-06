@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentStatus;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentType;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "audit_document_data")
+@NoArgsConstructor
 public class DocumentAudit {
 
     @Id

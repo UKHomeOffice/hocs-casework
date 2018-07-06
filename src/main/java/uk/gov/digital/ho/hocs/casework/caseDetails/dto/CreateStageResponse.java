@@ -7,7 +7,7 @@ import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
 
 import java.util.UUID;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Getter
 public class CreateStageResponse {
 

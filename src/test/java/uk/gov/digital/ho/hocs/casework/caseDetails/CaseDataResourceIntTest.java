@@ -7,13 +7,12 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import uk.gov.digital.ho.hocs.casework.HocsCaseApplication;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CreateStageResponse;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,46 +26,229 @@ import static org.springframework.http.HttpStatus.OK;
 @SpringBootTest(classes = HocsCaseApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CaseDataResourceIntTest {
 
-
-    private MockRestServiceServer mockService;
-
     @Autowired
     private TestRestTemplate restTemplate;
 
-    @Autowired
-    private ObjectMapper mapper;
-
+    private ResponseEntity<CreateCaseResponse> createCaseResponse;
+    private ResponseEntity<CreateStageResponse> createStageResponse;
 
     @Before
-    public void setup() throws Exception {
+    public void setup() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+        Map<String, String> body = buildCreateCaseBody();
+        HttpEntity<?> caseHttpEntity = new HttpEntity<Object>(body, requestHeaders);
+        createCaseResponse = restTemplate.postForEntity(
+                "/case",
+                caseHttpEntity,
+                CreateCaseResponse.class);
+        Map<String, Object> stageBody = buildCreateStageBody();
+        HttpEntity<?> stageHttpEntity = new HttpEntity<Object>(stageBody, requestHeaders);
+        createStageResponse = restTemplate.postForEntity(
+                "/case/" + createCaseResponse.getBody().getUuid() + "/stage",
+                stageHttpEntity,
+                CreateStageResponse.class);
 
     }
 
     @Test
-    public void shouldCreateACase() {
+    public void shouldCreateCase() {
         HttpHeaders requestHeaders = buildHttpHeaders();
         Map<String, String> body = buildCreateCaseBody();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/case", httpEntity, String.class);
+        ResponseEntity<CreateCaseResponse> responseEntity = restTemplate.postForEntity("/case", httpEntity, CreateCaseResponse.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
         assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
+        assertThat(responseEntity.getBody()).hasFieldOrProperty("caseReference");
+        assertThat(responseEntity.getBody()).hasFieldOrProperty("uuid");
     }
 
     @Test
-    public void ShouldThrowErrorWhenBodyMissing() {
+    public void ShouldReturnBadRequestWhenBodyMissingOnCreateCase() {
         HttpHeaders requestHeaders = buildHttpHeaders();
-
         Map<String, String> body = new HashMap<>();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/case", httpEntity, String.class);
+        ResponseEntity<CreateCaseResponse> responseEntity = restTemplate.postForEntity(
+                "/case",
+                httpEntity,
+                CreateCaseResponse.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void ShouldReturnBadRequestWhenCaseTypeInBodyIsIncorrectOnCreateCase() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+
+        Map<String, String> body = new HashMap<>();
+        body.put("caseType", "wrong");
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
+
+        ResponseEntity<CreateCaseResponse> responseEntity = restTemplate.postForEntity(
+                "/case",
+                httpEntity,
+                CreateCaseResponse.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldUpdateCase() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+        Map<String, String> body = buildCreateCaseBody();
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
+
+        ResponseEntity responseEntity = restTemplate.exchange(
+                "/case/" + createCaseResponse.getBody().getUuid(),
+                HttpMethod.PUT,
+                httpEntity,
+                String.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenBodyMissingOnUpdateCase() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+        Map<String, String> body = new HashMap<>();
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
+
+        ResponseEntity responseEntity = restTemplate.exchange(
+                "/case/" + createCaseResponse.getBody().getUuid(),
+                HttpMethod.PUT,
+                httpEntity,
+                String.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenCaseTypeInBodyIsIncorrectOnUpdateCase() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+
+        Map<String, String> body = new HashMap<>();
+        body.put("caseType", "wrong");
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
+
+        ResponseEntity responseEntity = restTemplate.exchange(
+                "/case/" + createCaseResponse.getBody().getUuid(),
+                HttpMethod.PUT,
+                httpEntity,
+                String.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldCreateStage() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+        Map<String, Object> stageBody = buildCreateStageBody();
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(stageBody, requestHeaders);
+
+        ResponseEntity<CreateStageResponse> responseEntity = restTemplate.exchange(
+                "/case/" + createCaseResponse.getBody().getUuid() + "/stage",
+                HttpMethod.POST,
+                httpEntity,
+                CreateStageResponse.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
+        assertThat(responseEntity.getBody()).hasFieldOrProperty("uuid");
 
     }
 
+    @Test
+    public void shouldReturnBadRequestWhenBodyMissingOnCreateStage() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+        Map<String, Object> body = new HashMap<>();
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
+
+        ResponseEntity<CreateStageResponse> responseEntity = restTemplate.exchange(
+                "/case/" + createCaseResponse.getBody().getUuid() + "/stage",
+                HttpMethod.POST,
+                httpEntity,
+                CreateStageResponse.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenCaseTypeInBodyIsIncorrectOnCreateStage() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+
+        Map<String, String> body = new HashMap<>();
+        body.put("StsgeType", "wrong");
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
+
+        ResponseEntity<CreateStageResponse> responseEntity = restTemplate.exchange(
+                "/case/" + createCaseResponse.getBody().getUuid() + "/stage",
+                HttpMethod.POST,
+                httpEntity,
+                CreateStageResponse.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldUpdateStage() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+        Map<String, Object> stageBody = buildCreateStageBody();
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(stageBody, requestHeaders);
+
+        ResponseEntity<CreateStageResponse> responseEntity = restTemplate.exchange(
+                "/case/" + createCaseResponse.getBody().getUuid() + "/stage/" + createStageResponse.getBody().getUuid(),
+                HttpMethod.PUT,
+                httpEntity,
+                CreateStageResponse.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenBodyMissingOnUpdateStage() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+        Map<String, Object> body = new HashMap<>();
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
+
+        ResponseEntity<CreateStageResponse> responseEntity = restTemplate.exchange(
+                "/case/" + createCaseResponse.getBody().getUuid() + "/stage/" + createStageResponse.getBody().getUuid(),
+                HttpMethod.PUT,
+                httpEntity,
+                CreateStageResponse.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenCaseTypeInBodyIsIncorrectOnUpdateStage() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+
+        Map<String, String> body = new HashMap<>();
+        body.put("StsgeType", "wrong");
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
+
+        ResponseEntity<CreateStageResponse> responseEntity = restTemplate.exchange(
+                "/case/" + createCaseResponse.getBody().getUuid() + "/stage/" + createStageResponse.getBody().getUuid(),
+                HttpMethod.PUT,
+                httpEntity,
+                CreateStageResponse.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+
+    private Map<String, Object> buildCreateStageBody() {
+        Map<String, String> stageData = new HashMap<>();
+        stageData.put("A","A1");
+        stageData.put("B","B1");
+        Map<String, Object> body = new HashMap<>();
+        body.put("stageType","DCU_MIN_CATEGORISE");
+        body.put("stageData",stageData);
+        return body;
+    }
 
     private Map<String, String> buildCreateCaseBody() {
         Map<String, String> body = new HashMap<>();

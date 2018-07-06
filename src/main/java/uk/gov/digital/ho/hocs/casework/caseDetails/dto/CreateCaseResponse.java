@@ -1,13 +1,12 @@
 package uk.gov.digital.ho.hocs.casework.caseDetails.dto;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
 
 import java.util.UUID;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @Getter
 public class CreateCaseResponse {
 
