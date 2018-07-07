@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,7 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "audit_case_data")
 @NoArgsConstructor
-public class CaseDataAudit implements Serializable {
+public class CaseAuditEntry implements Serializable {
 
     @Id
     @Column(name = "id")
@@ -36,15 +35,15 @@ public class CaseDataAudit implements Serializable {
     @Getter
     private LocalDateTime timestamp;
 
-    private CaseDataAudit(String type, String reference, UUID uuid, LocalDateTime timestamp) {
+    private CaseAuditEntry(String type, String reference, UUID uuid, LocalDateTime timestamp) {
         this.type = type;
         this.reference = reference;
         this.uuid = uuid;
         this.timestamp = timestamp;
     }
 
-    public static CaseDataAudit from(CaseData caseData) {
-        return new CaseDataAudit(caseData.getType(), caseData.getReference(), caseData.getUuid(), caseData.getTimestamp());
+    public static CaseAuditEntry from(CaseData caseData) {
+        return new CaseAuditEntry(caseData.getType(), caseData.getReference(), caseData.getUuid(), caseData.getTimestamp());
     }
 
 }

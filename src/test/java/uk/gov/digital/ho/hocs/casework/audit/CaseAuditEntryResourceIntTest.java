@@ -12,7 +12,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.HocsCaseApplication;
 import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CreateCaseResponse;
 
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -23,7 +22,7 @@ import static org.springframework.http.HttpStatus.OK;
 @Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = HocsCaseApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class CaseDataAuditResourceIntTest {
+public class CaseAuditEntryResourceIntTest {
 
     @Autowired
     private TestRestTemplate restTemplate;

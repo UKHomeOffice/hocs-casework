@@ -9,9 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.RequestData;
-import uk.gov.digital.ho.hocs.casework.audit.model.CaseDataAudit;
-import uk.gov.digital.ho.hocs.casework.audit.model.ExtractLine;
-import uk.gov.digital.ho.hocs.casework.audit.model.StageDataAudit;
+import uk.gov.digital.ho.hocs.casework.audit.model.CaseAuditEntry;
+import uk.gov.digital.ho.hocs.casework.audit.model.ReportLine;
+import uk.gov.digital.ho.hocs.casework.audit.model.StageAuditEntry;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.UnitType;
 
@@ -24,8 +24,9 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class CaseDataAuditService {
+class CaseAuditService {
 
+    // TODO: when we do self service all this static block stuff should be put in the database.
     private static Map<UnitType, CaseType[]> unitToCaseTypesMapping;
     private static Map<UnitType, String> unitToReportHeadingMapping;
 
@@ -43,95 +44,56 @@ public class CaseDataAuditService {
     }
 
     private final AuditService auditService;
-    private final CaseDataAuditRepository caseDataAuditRepository;
-    private final StageDataAuditRepository stageDataAuditRepository;
+    private final CaseAuditRepository caseAuditRepository;
+    private final StageAuditRepository stageAuditRepository;
     private final ObjectMapper objectMapper;
     private final RequestData requestData;
 
     @Autowired
-    public CaseDataAuditService(AuditService auditService, CaseDataAuditRepository caseDataAuditRepository, StageDataAuditRepository stageDataAuditRepository, RequestData requestData) {
+    public CaseAuditService(AuditService auditService, CaseAuditRepository caseAuditRepository, StageAuditRepository stageAuditRepository, RequestData requestData) {
         this.auditService = auditService;
-        this.caseDataAuditRepository = caseDataAuditRepository;
-        this.stageDataAuditRepository = stageDataAuditRepository;
+        this.caseAuditRepository = caseAuditRepository;
+        this.stageAuditRepository = stageAuditRepository;
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
         this.requestData = requestData;
     }
 
-    String getReportingDataAsCSV(UnitType unit, LocalDate cutoff) {
-        String heading = unitToReportHeadingMapping.get(unit);
-
-        if (heading != null && cutoff != null) {
-            auditService.writeExtractEvent(String.join(" ", unit.toString(), cutoff.toString()));
-
-            // Get the reporting data
-            List<ExtractLine> extractLines = getReportingData(unit, heading, cutoff);
-
-            // Turn it into a CSV
-            return createCSV(heading, extractLines);
-        } else {
-            return "";
-        }
-    }
-
-    private List<ExtractLine> getReportingData(UnitType unit, String header, LocalDate cutoff) {
-        log.info("Starting Extract, Unit: \"{}\",  User: {}", unit, cutoff, requestData.username());
-
-        // Start date, End data and a string List of case types.
-        LocalDateTime startDate = getStartDate(cutoff);
-        LocalDateTime endDate = getEndDate(cutoff);
-        List<String> types = Arrays.stream(unitToCaseTypesMapping.get(unit)).map(Enum::toString).collect(Collectors.toList());
-
-        // Get the latest version of each case and stage in the system e.g. select max(id) group by case/stage uuid.
-        Set<CaseDataAudit> caseDataAudits = caseDataAuditRepository.getAllByTimestampBetweenAndCorrespondenceTypeIn(startDate, endDate, types);
-        Set<StageDataAudit> stageDataAudits = stageDataAuditRepository.getAllByTimestampBetweenAndCorrespondenceTypeIn(startDate, endDate, types);
-
-        // Group the stages that have the same caseUUID.
-        Map<UUID, List<StageDataAudit>> groupedStages = stageDataAudits.stream().collect(Collectors.groupingBy(StageDataAudit::getCaseUUID));
-
-        // Turn each Case and related Stages into one long report line each.
-        List<ExtractLine> extractLines = caseDataAudits.stream().map(caseDataAudit -> getExtractLine(caseDataAudit, groupedStages.get(caseDataAudit.getUuid()), header, objectMapper)).collect(Collectors.toList());
-
-        log.info("Returned Extract, Found: {}, User: {}", caseDataAudits.size(), requestData.username());
-
-        return extractLines;
-    }
-
-    private static ExtractLine getExtractLine(CaseDataAudit caseDataAudit, List<StageDataAudit> stages, String header, ObjectMapper objectMapper) {
+    private static ReportLine getExtractLine(CaseAuditEntry caseAuditEntry, List<StageAuditEntry> stages, String header, ObjectMapper objectMapper) {
         // Turn the case into a Map of (Heading, Value).
-        Map<String, String> lineData = caseToMap(caseDataAudit);
+        Map<String, String> lineData = caseToMap(caseAuditEntry);
 
         // If there are any stages do the same to those.
         if (stages != null && !stages.isEmpty()) {
-            stages.forEach(stageDataAudit -> lineData.putAll(stageToMap(stageDataAudit, objectMapper)));
+            stages.forEach(stageAuditEntry -> lineData.putAll(stageToMap(stageAuditEntry, objectMapper)));
         }
 
-        return ExtractLine.from(header, lineData);
+        return ReportLine.from(header, lineData);
     }
 
-    private static Map<String, String> caseToMap(CaseDataAudit caseDataAudit) {
+    private static Map<String, String> caseToMap(CaseAuditEntry caseAuditEntry) {
         Map<String, String> caseMap = new HashMap<>();
 
         String caseName = "Case";
-        caseMap.put(columnNameFormat(caseName, "UUID"), caseDataAudit.getUuid().toString());
-        caseMap.put(columnNameFormat(caseName, "Type"), caseDataAudit.getType());
-        caseMap.put(columnNameFormat(caseName, "Timestamp"), caseDataAudit.getTimestamp().toString());
-        caseMap.put(columnNameFormat(caseName, "Reference"), caseDataAudit.getReference());
+        caseMap.put(columnNameFormat(caseName, "UUID"), caseAuditEntry.getUuid().toString());
+        caseMap.put(columnNameFormat(caseName, "Type"), caseAuditEntry.getType());
+        caseMap.put(columnNameFormat(caseName, "Timestamp"), caseAuditEntry.getTimestamp().toString());
+        caseMap.put(columnNameFormat(caseName, "Reference"), caseAuditEntry.getReference());
 
         return caseMap;
     }
 
-
-    private static Map<String, String> stageToMap(StageDataAudit stageDataAudit, ObjectMapper objectMapper) {
+    private static Map<String, String> stageToMap(StageAuditEntry stageAuditEntry, ObjectMapper objectMapper) {
         Map<String, String> stageMap = new HashMap<>();
 
-        String stageName = stageDataAudit.getType();
-        stageMap.put(columnNameFormat(stageName, "UUID"), stageDataAudit.getUuid().toString());
-        stageMap.put(columnNameFormat(stageName, "Type"), stageDataAudit.getType());
-        stageMap.put(columnNameFormat(stageName, "Timestamp"), stageDataAudit.getTimestamp().toString());
-        stageMap.put(columnNameFormat(stageName, "CaseUUID"), stageDataAudit.getCaseUUID().toString());
+        String stageName = stageAuditEntry.getType();
+        stageMap.put(columnNameFormat(stageName, "UUID"), stageAuditEntry.getUuid().toString());
+        stageMap.put(columnNameFormat(stageName, "Type"), stageAuditEntry.getType());
+        stageMap.put(columnNameFormat(stageName, "Timestamp"), stageAuditEntry.getTimestamp().toString());
+        stageMap.put(columnNameFormat(stageName, "CaseUUID"), stageAuditEntry.getCaseUUID().toString());
 
         try {
-            Map<String, String> dataMap = objectMapper.readValue(stageDataAudit.getData(), new TypeReference<HashMap<String, String>>() {});
+            Map<String, String> dataMap = objectMapper.readValue(stageAuditEntry.getData(), new TypeReference<HashMap<String, String>>() {
+            });
 
             // We can't use putAll here because we want to change the Key name
             dataMap.forEach((key, value) -> stageMap.put(columnNameFormat(stageName, key), value));
@@ -142,11 +104,11 @@ public class CaseDataAuditService {
         return stageMap;
     }
 
-    private static String createCSV(String header, List<ExtractLine> extractLines) {
+    private static String createCSV(String header, List<ReportLine> reportLines) {
         StringBuilder sb = new StringBuilder();
         try(CSVPrinter printer = new CSVPrinter(sb, CSVFormat.DEFAULT)) {
             printer.printRecord(header);
-            extractLines.forEach(l -> printExportLine(printer, l));
+            reportLines.forEach(l -> printExportLine(printer, l));
         } catch (IOException e) {
             log.warn(e.toString());
         }
@@ -154,12 +116,51 @@ public class CaseDataAuditService {
         return sb.toString();
     }
 
-    private static void printExportLine(CSVPrinter printer, ExtractLine l) {
+    private static void printExportLine(CSVPrinter printer, ReportLine l) {
         try {
             printer.printRecord(l.getLineData().values());
         } catch (IOException e) {
             log.warn(e.toString());
         }
+    }
+
+    String getReportingDataAsCSV(UnitType unit, LocalDate cutoff) {
+        String heading = unitToReportHeadingMapping.get(unit);
+
+        if (heading != null && cutoff != null) {
+            auditService.writeExtractEvent(String.join(" ", unit.toString(), cutoff.toString()));
+
+            // Get the reporting data
+            List<ReportLine> reportLines = getReportingData(unit, heading, cutoff);
+
+            // Turn it into a CSV
+            return createCSV(heading, reportLines);
+        } else {
+            return "";
+        }
+    }
+
+    private List<ReportLine> getReportingData(UnitType unit, String header, LocalDate cutoff) {
+        log.info("Starting Extract, Unit: \"{}\",  User: {}", unit, cutoff, requestData.username());
+
+        // Start date, End data and a string List of case types.
+        LocalDateTime startDate = getStartDate(cutoff);
+        LocalDateTime endDate = getEndDate(cutoff);
+        List<String> types = Arrays.stream(unitToCaseTypesMapping.get(unit)).map(Enum::toString).collect(Collectors.toList());
+
+        // Get the latest version of each case and stage in the system e.g. select max(id) group by case/stage uuid.
+        Set<CaseAuditEntry> auditCaseDataEntries = caseAuditRepository.getAllByTimestampBetweenAndCorrespondenceTypeIn(startDate, endDate, types);
+        Set<StageAuditEntry> auditStageDataEntries = stageAuditRepository.getAllByTimestampBetweenAndCorrespondenceTypeIn(startDate, endDate, types);
+
+        // Group the stages that have the same caseUUID.
+        Map<UUID, List<StageAuditEntry>> groupedStages = auditStageDataEntries.stream().collect(Collectors.groupingBy(StageAuditEntry::getCaseUUID));
+
+        // Turn each Case and related Stages into one long report line each.
+        List<ReportLine> reportLines = auditCaseDataEntries.stream().map(caseAuditEntry -> getExtractLine(caseAuditEntry, groupedStages.get(caseAuditEntry.getUuid()), header, objectMapper)).collect(Collectors.toList());
+
+        log.info("Returned Extract, Found: {}, User: {}", auditCaseDataEntries.size(), requestData.username());
+
+        return reportLines;
     }
 
     private static LocalDateTime getStartDate(LocalDate cutoff) {

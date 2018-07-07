@@ -2,7 +2,7 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import lombok.Getter;
 
-public enum EventAction {
+public enum AuditAction {
     CREATE_CASE(0),
     CREATE_STAGE(1),
     UPDATE_CASE(2),
@@ -19,7 +19,7 @@ public enum EventAction {
     @Getter
     private int intValue;
 
-    EventAction(int intValue) {
+    AuditAction(int intValue) {
         this.intValue = intValue;
     }
 }
