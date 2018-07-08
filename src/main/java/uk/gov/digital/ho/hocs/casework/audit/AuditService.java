@@ -8,15 +8,13 @@ import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
-import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.rsh.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -74,23 +72,8 @@ class AuditService {
         auditRepository.save(auditEntry);
     }
 
-    public void writeAddDocumentEvents(List<DocumentData> documentDatum) {
-        List<AuditEntry> auditEntries = documentDatum.stream().map(d -> new AuditEntry(requestData.username(), d, AuditAction.ADD_DOCUMENT)).collect(Collectors.toList());
-        auditRepository.saveAll(auditEntries);
-    }
-
     public void writeUpdateDocumentEvent(DocumentData documentData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.UPDATE_DOCUMENT);
-        auditRepository.save(auditEntry);
-    }
-
-    public void writeDeleteDocumentEvent(DocumentData documentData) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.DELETE_DOCUMENT);
-        auditRepository.save(auditEntry);
-    }
-
-    public void writeUndeleteDocumentEvent(DocumentData documentData) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.UNDELETE_DOCUMENT);
         auditRepository.save(auditEntry);
     }
 

@@ -7,18 +7,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.*;
-import uk.gov.digital.ho.hocs.casework.caseDetails.dto.DocumentSummary;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentType;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
-import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.*;
+import uk.gov.digital.ho.hocs.casework.rsh.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -72,7 +65,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteCreateCaseEvent() {
-        CaseData caseData = new CaseData(UUID.randomUUID(),CaseType.MIN.toString(), 1L);
+        CaseData caseData = new CaseData(CaseType.MIN.toString(), 1L);
 
         auditService.writeCreateCaseEvent(caseData);
 
@@ -81,7 +74,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUpdateCaseEvent() {
-       CaseData caseData = new CaseData(UUID.randomUUID(),CaseType.MIN.toString(), 1L);
+        CaseData caseData = new CaseData(CaseType.MIN.toString(), 1L);
 
         auditService.writeUpdateCaseEvent(caseData);
 
@@ -90,7 +83,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteCreateStageEvent() {
-        StageData stageData = new StageData(UUID.randomUUID(), UUID.randomUUID(), "", "");
+        StageData stageData = new StageData(UUID.randomUUID(), "", "");
 
         auditService.writeCreateStageEvent(stageData);
 
@@ -99,7 +92,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUpdateStageEvent() {
-        StageData stageData = new StageData(UUID.randomUUID(), UUID.randomUUID(), "", "");
+        StageData stageData = new StageData(UUID.randomUUID(), "", "");
 
         auditService.writeUpdateStageEvent(stageData);
 
@@ -108,8 +101,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteAddDocumentEvent() {
-        DocumentSummary documentSummary = new DocumentSummary(UUID.randomUUID(), "", DocumentType.ORIGINAL);
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), documentSummary);
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), "", DocumentType.ORIGINAL);
 
         auditService.writeAddDocumentEvent(documentData);
 
@@ -117,44 +109,10 @@ public class AuditServiceTest {
     }
 
     @Test
-    public void shouldWriteAddDocumentEvents() {
-        DocumentSummary documentSummary = new DocumentSummary(UUID.randomUUID(), "", DocumentType.ORIGINAL);
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), documentSummary);
-
-        List<DocumentData> documentDatum = new ArrayList<>();
-        documentDatum.add(documentData);
-
-        auditService.writeAddDocumentEvents(documentDatum);
-
-        verify(mockAuditRepository, times(1)).saveAll(anyCollection());
-    }
-
-    @Test
     public void shouldWriteUpdateDocumentEvent() {
-        DocumentSummary documentSummary = new DocumentSummary(UUID.randomUUID(), "", DocumentType.ORIGINAL);
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), documentSummary);
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), "", DocumentType.ORIGINAL);
 
         auditService.writeUpdateDocumentEvent(documentData);
-
-        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
-    }
-
-    @Test
-    public void shouldWriteDeleteDocumentEvent() {
-        DocumentSummary documentSummary = new DocumentSummary(UUID.randomUUID(), "", DocumentType.ORIGINAL);
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), documentSummary);
-
-        auditService.writeDeleteDocumentEvent(documentData);
-
-        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
-    }
-
-    @Test
-    public void shouldWriteUndeleteDocumentEvent() {
-        DocumentSummary documentSummary = new DocumentSummary(UUID.randomUUID(), "", DocumentType.ORIGINAL);
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), documentSummary);
-
-        auditService.writeUndeleteDocumentEvent(documentData);
 
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
     }

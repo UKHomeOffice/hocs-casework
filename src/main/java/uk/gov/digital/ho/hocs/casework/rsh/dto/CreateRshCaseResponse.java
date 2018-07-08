@@ -2,7 +2,7 @@ package uk.gov.digital.ho.hocs.casework.rsh.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 
 import java.util.UUID;
 

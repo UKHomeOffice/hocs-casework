@@ -2,8 +2,8 @@ package uk.gov.digital.ho.hocs.casework;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
 import java.util.UUID;
 

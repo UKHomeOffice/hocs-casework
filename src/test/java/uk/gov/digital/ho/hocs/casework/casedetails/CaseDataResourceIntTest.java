@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.audit;
+package uk.gov.digital.ho.hocs.casework.casedetails;
 
 import org.junit.Before;
 import org.junit.Ignore;
@@ -18,12 +18,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
 @Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = HocsCaseApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class CaseAuditEntryResourceIntTest {
+public class CaseDataResourceIntTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -53,44 +54,97 @@ public class CaseAuditEntryResourceIntTest {
     }
 
     @Test
-    public void getReportCurrent() {
+    public void shouldCreateCase() {
         HttpHeaders requestHeaders = buildHttpHeaders();
-        Map<String, Map<String, String>> body = new HashMap<>();
+        Map<String, String> body = buildCreateCaseBody();
+
+        // override caseUUID
+        body.put("uuid", UUID.randomUUID().toString());
+
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
+
+        ResponseEntity<CreateCaseResponse> responseEntity = restTemplate.postForEntity("/case", httpEntity, CreateCaseResponse.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
+        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
+        assertThat(responseEntity.getBody()).hasFieldOrProperty("uuid");
+        assertThat(responseEntity.getBody()).hasFieldOrProperty("reference");
+    }
+
+    @Test
+    public void ShouldReturnBadRequestWhenBodyMissingOnCreateCase() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+        Map<String, String> body = new HashMap<>();
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
+
+        ResponseEntity<CreateCaseResponse> responseEntity = restTemplate.postForEntity(
+                "/case",
+                httpEntity,
+                CreateCaseResponse.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void ShouldReturnBadRequestWhenCaseTypeInBodyIsIncorrectOnCreateCase() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+
+        Map<String, String> body = new HashMap<>();
+        body.put("caseType", "wrong");
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
+
+        ResponseEntity<CreateCaseResponse> responseEntity = restTemplate.postForEntity(
+                "/case",
+                httpEntity,
+                CreateCaseResponse.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
+    }
+
+    @Test
+    public void shouldUpdateCase() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+        Map<String, String> body = buildCreateCaseBody();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
         ResponseEntity responseEntity = restTemplate.exchange(
-                "/report/RSH/current",
-                HttpMethod.GET,
+                "/case/" + caseUUID,
+                HttpMethod.PUT,
                 httpEntity,
                 String.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
-        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.valueOf("text/csv;charset=UTF-8"));
-        assertThat(responseEntity.getBody().toString()).contains("Case_Type", "RSH");
-        assertThat(responseEntity.getBody().toString()).contains("Case_Type,Case_Reference,Case_UUID,Case_Timestamp,Stage_legacy-reference,Stage_Name,Stage_UUID,Stage_SchemaVersion,Stage_Timestamp,Stage_who-calling,Stage_rep-first-name,Stage_rep-last-name,Stage_rep-org,Stage_rep-relationship,Stage_rep-calledfrom,Stage_contact-method-helpline,Stage_contact-method-method-mp,Stage_contact-method-media,Stage_contact-method-ie,Stage_contact-method-email,Stage_contact-method-als,Stage_contact-method-internal,Stage_contact-method-external,Stage_call-regarding-citizenship,Stage_call-regarding-settled,Stage_call-regarding-compensation,Stage_call-regarding-other,Stage_first-name,Stage_middle-name,Stage_last-name,Stage_date-of-birth,Stage_nationality-birth,Stage_nationality-current,Stage_address-1,Stage_address-2,Stage_address-town,Stage_post-code,Stage_dependents,Stage_dependents-how-many,Stage_high-profile,Stage_safeguarding,Stage_share-data,Stage_landing-date-day,Stage_landing-date-month,Stage_landing-date-year,Stage_cohort,Stage_date-left,Stage_country-based,Stage_date-last-travelled,Stage_nino,Stage_employment,Stage_education,Stage_tax,Stage_health,Stage_id-docs,Stage_travel-to-psc,Stage_psc-location,Stage_psc-date,Stage_psc-outcome,Stage_psc-followup,Stage_mp,Stage_media,Stage_outcome,Stage_notify-email");
-        assertThat(responseEntity.getBody().toString()).contains(caseUUID.toString());
     }
 
-
+    @Ignore("We don't do anything on Update that the moment")
     @Test
-    public void getReportCutoff() {
+    public void shouldReturnBadRequestWhenBodyMissingOnUpdateCase() {
+        HttpHeaders requestHeaders = buildHttpHeaders();
+
+        HttpEntity<?> httpEntity = new HttpEntity<Object>(new HashMap<>(), requestHeaders);
+
+        ResponseEntity responseEntity = restTemplate.exchange(
+                "/case/" + caseUUID,
+                HttpMethod.PUT,
+                httpEntity,
+                String.class);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
     }
-
-
 
     private Map<String, Object> buildCreateStageBody() {
         Map<String, String> stageData = new HashMap<>();
         stageData.put("A","A1");
         stageData.put("B","B1");
         Map<String, Object> body = new HashMap<>();
-        body.put("type", "RUSH_ONLY_STAGE");
+        body.put("type", "DCU_MIN_CATEGORISE");
         body.put("data", stageData);
         return body;
     }
 
     private Map<String, String> buildCreateCaseBody() {
         Map<String, String> body = new HashMap<>();
-        body.put("type", "RSH");
+        body.put("type", "MIN");
         return body;
     }
 
@@ -102,4 +156,5 @@ public class CaseAuditEntryResourceIntTest {
         requestHeaders.set("x-correlation-id", "12");
         return requestHeaders;
     }
+
 }

@@ -1,10 +1,11 @@
 package uk.gov.digital.ho.hocs.casework.audit.model;
 
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentStatus;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentStatus;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentType;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -77,14 +78,8 @@ public class DocumentAuditEntry {
     }
 
     public static DocumentAuditEntry from(DocumentData documentData) {
-        return new DocumentAuditEntry(documentData.getCaseUUID(),
-                documentData.getDocumentUUID(),
-                documentData.getDocumentDisplayName(),
-                documentData.getDocumentType(),
-                documentData.getTimestamp(),
-                documentData.getS3OrigLink(),
-                documentData.getS3PdfLink(),
-                documentData.getStatus(),
-                documentData.getDeleted());
+        return new DocumentAuditEntry(documentData.getCaseUUID(), documentData.getUuid(), documentData.getName(),
+                documentData.getType(), documentData.getTimestamp(), documentData.getFileLink(), documentData.getPdfLink(),
+                documentData.getStatus(), documentData.getDeleted());
     }
 }
