@@ -24,47 +24,49 @@ public class AuditEntry {
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name ="case_id", referencedColumnName = "id")
-    private CaseDataAudit caseInstance;
+    private CaseAuditEntry caseInstance;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name ="stage_id", referencedColumnName = "id")
-    private StageDataAudit stageInstance;
+    private StageAuditEntry stageInstance;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name ="document_id", referencedColumnName = "id")
-    private DocumentAudit documentInstance;
+    private DocumentAuditEntry documentInstance;
 
     @Column(name = "timestamp", nullable = false)
-    private final LocalDateTime timestamp;
+    private final LocalDateTime timestamp = LocalDateTime.now();
 
     @Column(name = "event_action", nullable = false)
     private final String eventAction;
 
-    public AuditEntry(String username, CaseData caseInstance, StageData stageInstance, AuditAction eventAction) {
+    public AuditEntry(String username, CaseData caseInstance, AuditAction auditAction) {
         this.username = username;
         if(caseInstance != null) {
-            this.caseInstance = CaseDataAudit.from(caseInstance);
+            this.caseInstance = CaseAuditEntry.from(caseInstance);
         }
-        if(stageInstance != null) {
-            this.stageInstance = StageDataAudit.from(stageInstance);
-        }
-        this.timestamp = LocalDateTime.now();
-        this.eventAction = eventAction.toString();
+        this.eventAction = auditAction.toString();
     }
 
-    public AuditEntry(String username, DocumentData documentInstance, AuditAction eventAction) {
+    public AuditEntry(String username, StageData stageInstance, AuditAction auditAction) {
+        this.username = username;
+        if(stageInstance != null) {
+            this.stageInstance = StageAuditEntry.from(stageInstance);
+        }
+        this.eventAction = auditAction.toString();
+    }
+
+    public AuditEntry(String username, DocumentData documentInstance, AuditAction auditAction) {
         this.username = username;
         if(documentInstance != null) {
-            this.documentInstance = DocumentAudit.from(documentInstance);
+            this.documentInstance = DocumentAuditEntry.from(documentInstance);
         }
-        this.timestamp = LocalDateTime.now();
-        this.eventAction = eventAction.toString();
+        this.eventAction = auditAction.toString();
     }
 
-    public AuditEntry(String username, String queryData, AuditAction eventAction) {
+    public AuditEntry(String username, String queryData, AuditAction auditAction) {
         this.username = username;
         this.queryData = queryData;
-        this.timestamp = LocalDateTime.now();
-        this.eventAction = eventAction.toString();
+        this.eventAction = auditAction.toString();
     }
 }

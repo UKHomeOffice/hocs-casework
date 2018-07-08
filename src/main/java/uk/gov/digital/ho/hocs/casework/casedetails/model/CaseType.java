@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
 public enum CaseType {
-
     RSH,
     MIN,
     TRO,

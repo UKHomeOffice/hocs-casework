@@ -1,11 +1,10 @@
 package uk.gov.digital.ho.hocs.casework.audit;
 
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import uk.gov.digital.ho.hocs.casework.audit.model.DocumentAudit;
+import uk.gov.digital.ho.hocs.casework.audit.model.DocumentAuditEntry;
 
 @Repository
-interface DocumentAuditRepository extends CrudRepository<DocumentAudit, String> {
+interface DocumentAuditRepository extends CrudRepository<DocumentAuditEntry, String> {
 
 }
