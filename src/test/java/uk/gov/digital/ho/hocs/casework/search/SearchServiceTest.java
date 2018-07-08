@@ -8,16 +8,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataRepository;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -38,7 +36,7 @@ public class SearchServiceTest {
 
     private static Set<CaseData> getValidSet() {
         Set<CaseData> hashSet = new HashSet<>();
-        hashSet.add(new CaseData(UUID.randomUUID(),CaseType.MIN.toString(), 0L));
+        hashSet.add(new CaseData(CaseType.MIN.toString(), 0L));
         return hashSet;
     }
 

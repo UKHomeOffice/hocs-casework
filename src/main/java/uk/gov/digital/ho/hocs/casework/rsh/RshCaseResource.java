@@ -3,10 +3,9 @@ package uk.gov.digital.ho.hocs.casework.rsh;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseRequest;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseResponse;
 

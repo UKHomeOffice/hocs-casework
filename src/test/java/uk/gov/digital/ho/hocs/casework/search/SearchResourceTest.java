@@ -7,16 +7,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,7 +27,7 @@ public class SearchResourceTest {
 
     private static Set<CaseData> getValidSet() {
         Set<CaseData> set = new HashSet<>();
-        set.add(new CaseData(UUID.randomUUID(), CaseType.MIN.toString(), 0L));
+        set.add(new CaseData(CaseType.MIN.toString(), 0L));
         return set;
     }
 

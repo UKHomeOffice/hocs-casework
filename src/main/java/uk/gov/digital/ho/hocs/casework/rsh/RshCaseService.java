@@ -4,16 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataService;
-import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.caseDetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageType;
-import uk.gov.digital.ho.hocs.casework.email.EmailService;
-import uk.gov.digital.ho.hocs.casework.email.dto.SendEmailRequest;
+import uk.gov.digital.ho.hocs.casework.casedetails.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.casedetails.StageDataService;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.SendRshEmailRequest;
+import uk.gov.digital.ho.hocs.casework.rsh.email.EmailService;
+import uk.gov.digital.ho.hocs.casework.rsh.email.dto.SendEmailRequest;
 
 import javax.transaction.Transactional;
 import java.util.HashMap;
@@ -27,15 +28,18 @@ import static uk.gov.digital.ho.hocs.casework.HocsCaseApplication.isNullOrEmpty;
 public class RshCaseService {
 
     private final CaseDataService caseDataService;
+    private final StageDataService stageDataService;
     private final EmailService emailService;
 
     private final String frontendUrl;
 
     @Autowired
     public RshCaseService(CaseDataService caseDataService,
+                          StageDataService stageDataService,
                           EmailService emailService,
                           @Value("${notify.frontend.url}") String frontEndUrl) {
         this.caseDataService = caseDataService;
+        this.stageDataService = stageDataService;
         this.emailService = emailService;
         this.frontendUrl = frontEndUrl;
     }
@@ -66,15 +70,14 @@ public class RshCaseService {
     @Transactional
     CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException {
         if (caseData != null) {
-            UUID caseUUID = UUID.randomUUID();
-            CaseData caseDetails = caseDataService.createCase(caseUUID, CaseType.RSH);
+            CaseData caseDetails = caseDataService.createCase(CaseType.RSH);
             if(caseDetails != null) {
-                caseDataService.createStage(caseDetails.getUuid(), UUID.randomUUID(), StageType.RUSH_ONLY_STAGE, caseData);
+                stageDataService.createStage(caseDetails.getUuid(), StageType.RUSH_ONLY_STAGE, caseData);
                 sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
                 return caseDetails;
             }
             else {
-                throw new EntityCreationException("Failed to create case, no caseDetails!");
+                throw new EntityCreationException("Failed to create case, no casedetails!");
             }
         } else {
             throw new EntityCreationException("Failed to create case, no caseData!");
@@ -87,7 +90,7 @@ public class RshCaseService {
             CaseData caseDetails = caseDataService.getCase(caseUUID);
             if (!caseDetails.getStages().isEmpty()) {
                 StageData stageData = caseDetails.getStages().iterator().next();
-                caseDataService.updateStage(caseUUID, stageData.getUuid(), StageType.RUSH_ONLY_STAGE, caseData);
+                stageDataService.updateStage(caseUUID, stageData.getUuid(), caseData);
                 sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
                 return caseDetails;
             } else {

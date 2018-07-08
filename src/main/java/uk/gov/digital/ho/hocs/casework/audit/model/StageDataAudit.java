@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 
 import javax.persistence.*;
 import java.io.Serializable;

@@ -2,8 +2,7 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 
 import javax.persistence.*;
 import java.io.Serializable;

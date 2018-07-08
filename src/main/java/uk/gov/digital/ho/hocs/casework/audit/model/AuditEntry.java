@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.hocs.casework.audit.model;
 
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;

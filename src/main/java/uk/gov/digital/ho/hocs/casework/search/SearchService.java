@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
-import uk.gov.digital.ho.hocs.casework.caseDetails.CaseDataRepository;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import javax.transaction.Transactional;
