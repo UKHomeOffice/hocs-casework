@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class AuditService {
+class AuditService {
 
     private final AuditRepository auditRepository;
     private final ObjectMapper objectMapper;
@@ -50,22 +50,22 @@ public class AuditService {
     }
 
     public void writeCreateCaseEvent(CaseData caseData) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), caseData, null, AuditAction.CREATE_CASE);
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), caseData, AuditAction.CREATE_CASE);
         auditRepository.save(auditEntry);
     }
 
     public void writeUpdateCaseEvent(CaseData caseData) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), caseData, null, AuditAction.UPDATE_CASE);
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), caseData, AuditAction.UPDATE_CASE);
         auditRepository.save(auditEntry);
     }
 
     public void writeCreateStageEvent(StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), null, stageData, AuditAction.CREATE_STAGE);
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.CREATE_STAGE);
         auditRepository.save(auditEntry);
     }
 
     public void writeUpdateStageEvent(StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), null, stageData, AuditAction.UPDATE_STAGE);
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.UPDATE_STAGE);
         auditRepository.save(auditEntry);
     }
 

@@ -12,7 +12,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.HocsCaseApplication;
 import uk.gov.digital.ho.hocs.casework.caseDetails.dto.CreateCaseResponse;
 
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -23,7 +22,7 @@ import static org.springframework.http.HttpStatus.OK;
 @Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = HocsCaseApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class CaseDataAuditResourceIntTest {
+public class CaseAuditEntryResourceIntTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
@@ -69,34 +68,10 @@ public class CaseDataAuditResourceIntTest {
         assertThat(responseEntity.getBody().toString()).contains(caseUUID.toString());
     }
 
-    @Test
-    public void getReportCurrentJson() {
-        HttpHeaders requestHeaders = buildHttpHeaders();
-        Map<String, Map<String, String>> body = new HashMap<>();
-        HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
-
-        ResponseEntity responseEntity = restTemplate.exchange(
-                "/report/RSH/current/json",
-                HttpMethod.GET,
-                httpEntity,
-                String.class);
-
-        assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
-        assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
-        assertThat(responseEntity.getBody().toString()).contains("Case_Type", "RSH");
-        assertThat(responseEntity.getBody().toString()).contains(caseUUID.toString());
-
-    }
-
 
     @Test
     public void getReportCutoff() {
     }
-
-    @Test
-    public void getReportCutoffJson() {
-    }
-
 
     private Map<String, Object> buildCreateStageBody() {
         Map<String, String> stageData = new HashMap<>();

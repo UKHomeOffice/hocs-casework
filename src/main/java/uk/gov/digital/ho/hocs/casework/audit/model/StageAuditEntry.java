@@ -13,7 +13,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "audit_stage_data")
 @NoArgsConstructor
-public class StageDataAudit implements Serializable {
+public class StageAuditEntry implements Serializable {
 
     @Column(name = "type")
     @Getter
@@ -41,7 +41,7 @@ public class StageDataAudit implements Serializable {
     @Getter
     private UUID caseUUID;
 
-    private StageDataAudit(UUID stageUUID, String type, String data, UUID caseUUID, LocalDateTime timestamp) {
+    private StageAuditEntry(UUID stageUUID, String type, String data, UUID caseUUID, LocalDateTime timestamp) {
         this.uuid = stageUUID;
         this.type = type;
         this.data = data;
@@ -49,8 +49,8 @@ public class StageDataAudit implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public static StageDataAudit from(StageData stageData)
+    public static StageAuditEntry from(StageData stageData)
     {
-        return new StageDataAudit(stageData.getUuid(), stageData.getType(), stageData.getData(), stageData.getCaseUUID(), stageData.getTimestamp());
+        return new StageAuditEntry(stageData.getUuid(), stageData.getType(), stageData.getData(), stageData.getCaseUUID(), stageData.getTimestamp());
     }
 }

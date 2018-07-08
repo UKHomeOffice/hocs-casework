@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.audit.model;
 
-
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.DocumentData;
@@ -14,7 +13,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "audit_document_data")
 @NoArgsConstructor
-public class DocumentAudit {
+public class DocumentAuditEntry {
 
     @Id
     @Column(name = "id")
@@ -57,8 +56,15 @@ public class DocumentAudit {
     @Getter
     private Boolean deleted;
 
-    public DocumentAudit(UUID caseUUID, UUID documentUUID, String documentDisplayName, DocumentType documentType,
-                         LocalDateTime timestamp, String s3OrigLink, String s3PdfLink, DocumentStatus status, Boolean deleted) {
+    private DocumentAuditEntry(UUID caseUUID,
+                               UUID documentUUID,
+                               String documentDisplayName,
+                               DocumentType documentType,
+                               LocalDateTime timestamp,
+                               String s3OrigLink,
+                               String s3PdfLink,
+                               DocumentStatus status,
+                               Boolean deleted) {
         this.caseUUID = caseUUID;
         this.documentUUID = documentUUID;
         this.documentDisplayName = documentDisplayName;
@@ -70,9 +76,15 @@ public class DocumentAudit {
         this.deleted = deleted;
     }
 
-    public static DocumentAudit from(DocumentData documentData) {
-        return new DocumentAudit(documentData.getCaseUUID(), documentData.getDocumentUUID(), documentData.getDocumentDisplayName(),
-                documentData.getDocumentType(), documentData.getTimestamp(), documentData.getS3OrigLink(), documentData.getS3PdfLink(),
-                documentData.getStatus(), documentData.getDeleted());
+    public static DocumentAuditEntry from(DocumentData documentData) {
+        return new DocumentAuditEntry(documentData.getCaseUUID(),
+                documentData.getDocumentUUID(),
+                documentData.getDocumentDisplayName(),
+                documentData.getDocumentType(),
+                documentData.getTimestamp(),
+                documentData.getS3OrigLink(),
+                documentData.getS3PdfLink(),
+                documentData.getStatus(),
+                documentData.getDeleted());
     }
 }
