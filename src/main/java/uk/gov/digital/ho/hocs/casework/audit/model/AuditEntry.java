@@ -22,6 +22,9 @@ public class AuditEntry {
     @Column(name = "query_data")
     private String queryData;
 
+    @Column(name = "timestamp", nullable = false)
+    private final LocalDateTime timestamp = LocalDateTime.now();
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name ="case_id", referencedColumnName = "id")
     private CaseAuditEntry caseInstance;
@@ -33,9 +36,6 @@ public class AuditEntry {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name ="document_id", referencedColumnName = "id")
     private DocumentAuditEntry documentInstance;
-
-    @Column(name = "timestamp", nullable = false)
-    private final LocalDateTime timestamp = LocalDateTime.now();
 
     @Column(name = "event_action", nullable = false)
     private final String eventAction;
