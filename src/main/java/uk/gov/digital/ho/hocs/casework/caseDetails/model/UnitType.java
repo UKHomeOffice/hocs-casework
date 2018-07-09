@@ -6,5 +6,5 @@ public enum UnitType {
     UKVI,
     FOI,
     HMPOCOR,
-    HMPOCOL;
+    HMPOCOL
 }

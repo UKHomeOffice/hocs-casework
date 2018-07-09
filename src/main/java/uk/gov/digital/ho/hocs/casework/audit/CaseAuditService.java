@@ -12,8 +12,8 @@ import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.CaseAuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.model.ReportLine;
 import uk.gov.digital.ho.hocs.casework.audit.model.StageAuditEntry;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.caseDetails.model.UnitType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -106,7 +106,7 @@ class CaseAuditService {
 
     private static String createCSV(String header, List<ReportLine> reportLines) {
         StringBuilder sb = new StringBuilder();
-        try(CSVPrinter printer = new CSVPrinter(sb, CSVFormat.DEFAULT)) {
+        try (CSVPrinter printer = new CSVPrinter(sb, CSVFormat.DEFAULT)) {
             printer.printRecord(header);
             reportLines.forEach(l -> printExportLine(printer, l));
         } catch (IOException e) {
@@ -122,6 +122,20 @@ class CaseAuditService {
         } catch (IOException e) {
             log.warn(e.toString());
         }
+    }
+
+    private static LocalDateTime getStartDate(LocalDate cutoff) {
+        int monthsBack = 4;
+        // Start at the first day of the month
+        return LocalDateTime.of(cutoff.minusMonths(monthsBack).getYear(), cutoff.minusMonths(monthsBack).getMonth(), 1, 0, 0);
+    }
+
+    private static LocalDateTime getEndDate(LocalDate cutoff) {
+        return LocalDateTime.of(cutoff, LocalTime.MAX);
+    }
+
+    private static String columnNameFormat(String prefix, String suffix) {
+        return String.format("%s_%s", prefix, suffix);
     }
 
     String getReportingDataAsCSV(UnitType unit, LocalDate cutoff) {
@@ -161,19 +175,5 @@ class CaseAuditService {
         log.info("Returned Extract, Found: {}, User: {}", auditCaseDataEntries.size(), requestData.username());
 
         return reportLines;
-    }
-
-    private static LocalDateTime getStartDate(LocalDate cutoff) {
-        int monthsBack = 4;
-        // Start at the first day of the month
-        return LocalDateTime.of(cutoff.minusMonths(monthsBack).getYear(), cutoff.minusMonths(monthsBack).getMonth(), 1, 0, 0);
-    }
-
-    private static LocalDateTime getEndDate(LocalDate cutoff) {
-        return LocalDateTime.of(cutoff, LocalTime.MAX);
-    }
-
-    private static String columnNameFormat(String prefix, String suffix) {
-        return String.format("%s_%s", prefix, suffix);
     }
 }

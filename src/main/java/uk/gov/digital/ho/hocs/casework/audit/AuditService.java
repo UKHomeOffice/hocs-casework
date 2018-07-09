@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Service
 @Slf4j
-class AuditService {
+public class AuditService {
 
     private final AuditRepository auditRepository;
     private final ObjectMapper objectMapper;
