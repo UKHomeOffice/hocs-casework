@@ -25,12 +25,15 @@ public class StageDataServiceTest {
     private AuditService auditService;
     @Mock
     private StageDataRepository stageDataRepository;
+    @Mock
+    private ScreenDataService screenDataService;
     private StageDataService stageDataService;
 
     @Before
     public void setUp() {
         this.stageDataService = new StageDataService(
                 stageDataRepository,
+                screenDataService,
                 auditService
         );
     }
