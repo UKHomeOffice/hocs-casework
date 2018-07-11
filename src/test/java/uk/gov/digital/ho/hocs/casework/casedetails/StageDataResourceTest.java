@@ -26,7 +26,7 @@ public class StageDataResourceTest {
 
     private final UUID uuid = UUID.randomUUID();
     private final Map<String, String> data = new HashMap<>();
-    private final StageType stageType = StageType.DCU_MIN_CATEGORISE;
+    private final StageType stageType = StageType.DCU_MIN_MARKUP;
     @Mock
     private StageDataService stageDataService;
     private StageDataResource stageDataResource;
@@ -40,12 +40,12 @@ public class StageDataResourceTest {
     public void shouldCreateStage() throws EntityCreationException {
         UUID caseUUID = UUID.randomUUID();
 
-        when(stageDataService.createStage(any(UUID.class), any(), anyMap())).thenReturn(new StageData(caseUUID, StageType.DCU_MIN_CATEGORISE.toString(), ""));
-        CreateStageRequest request = new CreateStageRequest(StageType.DCU_MIN_CATEGORISE, data);
+        when(stageDataService.createStage(any(UUID.class), any(), anyMap())).thenReturn(new StageData(caseUUID, StageType.DCU_MIN_MARKUP.toString(), ""));
+        CreateStageRequest request = new CreateStageRequest(StageType.DCU_MIN_MARKUP, data);
 
         ResponseEntity response = stageDataResource.createStage(uuid, request);
 
-        verify(stageDataService, times(1)).createStage(uuid, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
+        verify(stageDataService, times(1)).createStage(uuid, StageType.DCU_MIN_MARKUP, new HashMap<>());
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }

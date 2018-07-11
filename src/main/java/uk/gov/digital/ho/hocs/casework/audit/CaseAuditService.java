@@ -12,8 +12,8 @@ import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.CaseAuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.model.ReportLine;
 import uk.gov.digital.ho.hocs.casework.audit.model.StageAuditEntry;
-import uk.gov.digital.ho.hocs.casework.caseDetails.model.UnitType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.UnitType;
 
 import java.io.IOException;
 import java.time.LocalDate;
