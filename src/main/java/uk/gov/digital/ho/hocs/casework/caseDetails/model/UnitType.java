@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.caseDetails.model;
+package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
 public enum UnitType {
     RSH,
