@@ -164,12 +164,12 @@ public class SearchResourceIntTest {
         List<CaseData> responseEntityAsList = new ArrayList<>(responseEntity.getBody());
 
         CaseData result1 = responseEntityAsList.stream().filter(x -> caseUUID.equals(x.getUuid())).findAny().orElse(null);
-        assertThat(result1.getUuid()).isNotNull();
+        assertThat(result1).isNotNull();
         assertThat(result1.getUuid()).isEqualTo(caseUUID);
         assertThat(result1.getReference()).isEqualTo(caseResponseEntity.getBody().getReference());
 
         CaseData result2 = responseEntityAsList.stream().filter(x -> caseUUID2.equals(x.getUuid())).findAny().orElse(null);
-        assertThat(result1.getUuid()).isNotNull();
+        assertThat(result2).isNotNull();
         assertThat(result2.getUuid()).isEqualTo(caseUUID2);
         assertThat(result2.getReference()).isEqualTo(caseResponseEntity2.getBody().getReference());
     }
@@ -187,12 +187,12 @@ public class SearchResourceIntTest {
         List<CaseData> responseEntityAsList = new ArrayList<>(responseEntity.getBody());
 
         CaseData result1 = responseEntityAsList.stream().filter(x -> caseUUID.equals(x.getUuid())).findAny().orElse(null);
-        assertThat(result1.getUuid()).isNotNull();
+        assertThat(result1).isNotNull();
         assertThat(result1.getUuid()).isEqualTo(caseUUID);
         assertThat(result1.getReference()).isEqualTo(caseResponseEntity.getBody().getReference());
 
         CaseData result2 = responseEntityAsList.stream().filter(x -> caseUUID2.equals(x.getUuid())).findAny().orElse(null);
-        assertThat(result1.getUuid()).isNotNull();
+        assertThat(result2).isNotNull();
         assertThat(result2.getUuid()).isEqualTo(caseUUID2);
         assertThat(result2.getReference()).isEqualTo(caseResponseEntity2.getBody().getReference());
     }
@@ -238,12 +238,12 @@ public class SearchResourceIntTest {
         List<CaseData> responseEntityAsList = new ArrayList<>(responseEntity.getBody());
 
         CaseData result1 = responseEntityAsList.stream().filter(x -> caseUUID.equals(x.getUuid())).findAny().orElse(null);
-        assertThat(result1.getUuid()).isNotNull();
+        assertThat(result1).isNotNull();
         assertThat(result1.getUuid()).isEqualTo(caseUUID);
         assertThat(result1.getReference()).isEqualTo(caseResponseEntity.getBody().getReference());
 
         CaseData result2 = responseEntityAsList.stream().filter(x -> caseUUID2.equals(x.getUuid())).findAny().orElse(null);
-        assertThat(result1.getUuid()).isNotNull();
+        assertThat(result2).isNotNull();
         assertThat(result2.getUuid()).isEqualTo(caseUUID2);
         assertThat(result2.getReference()).isEqualTo(caseResponseEntity2.getBody().getReference());
     }
