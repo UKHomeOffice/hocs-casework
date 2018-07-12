@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.casedetails;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -12,6 +13,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.HocsCaseApplication;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.DocumentRepository;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageDataRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,11 +33,19 @@ public class StageDataResourceIntTest {
     @Autowired
     private TestRestTemplate restTemplate;
 
+    @Autowired
+    private CaseDataRepository caseDataRepository;
+    @Autowired
+    private StageDataRepository stageDataRepository;
+    @Autowired
+    private DocumentRepository documentRepository;
+
     private UUID caseUUID;
     private UUID stageUUID;
 
     @Before
     public void setup() {
+        clearDatabase();
         HttpHeaders requestHeaders = buildHttpHeaders();
         Map<String, String> body = buildCreateCaseBody();
         HttpEntity<?> caseHttpEntity = new HttpEntity<Object>(body, requestHeaders);
@@ -151,6 +163,11 @@ public class StageDataResourceIntTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(BAD_REQUEST);
     }
 
+    @After
+    public void tearDown() {
+        clearDatabase();
+    }
+
 
     private Map<String, Object> buildCreateStageBody() {
         Map<String, String> stageData = new HashMap<>();
@@ -175,6 +192,12 @@ public class StageDataResourceIntTest {
         requestHeaders.set("X-Auth-Username", "bob");
         requestHeaders.set("x-correlation-id", "12");
         return requestHeaders;
+    }
+
+    private void clearDatabase() {
+        stageDataRepository.deleteAll();
+        documentRepository.deleteAll();
+        caseDataRepository.deleteAll();
     }
 
 }
