@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.rsh;
 
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -11,8 +12,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.HocsCaseApplication;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.DocumentRepository;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageDataRepository;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseResponse;
 
 import java.util.HashMap;
@@ -29,6 +32,12 @@ public class RshCaseResourceIntTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+    @Autowired
+    private CaseDataRepository caseDataRepository;
+    @Autowired
+    private StageDataRepository stageDataRepository;
+    @Autowired
+    private DocumentRepository documentRepository;
 
     private ResponseEntity<CreateRshCaseResponse> createCaseResponse;
 
@@ -36,6 +45,7 @@ public class RshCaseResourceIntTest {
 
     @Before
     public void setup() {
+        clearDatabase();
         HttpHeaders requestHeaders = buildHttpHeaders();
         Map<String, Map<String, String>> body = buildCreateCaseBody();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
@@ -52,7 +62,7 @@ public class RshCaseResourceIntTest {
         Map<String, Map<String, String>> body = buildCreateCaseBody();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
-        ResponseEntity<CreateCaseResponse> responseEntity = restTemplate.postForEntity("/rsh/case", httpEntity, CreateCaseResponse.class);
+        ResponseEntity<CreateRshCaseResponse> responseEntity = restTemplate.postForEntity("/rsh/case", httpEntity, CreateRshCaseResponse.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
         assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
@@ -66,7 +76,7 @@ public class RshCaseResourceIntTest {
         Map<String, Map<String, String>> body = new HashMap<>();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
 
-        ResponseEntity<CreateCaseResponse> responseEntity = restTemplate.postForEntity("/rsh/case/" + caseUUID, httpEntity, CreateCaseResponse.class);
+        ResponseEntity<CreateRshCaseResponse> responseEntity = restTemplate.postForEntity("/rsh/case/" + caseUUID, httpEntity, CreateRshCaseResponse.class);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
         assertThat(responseEntity.getHeaders().getContentType()).isEqualTo(MediaType.APPLICATION_JSON_UTF8);
@@ -92,6 +102,11 @@ public class RshCaseResourceIntTest {
         assertThat(responseEntity.getBody()).hasFieldOrProperty("timestamp");
     }
 
+    @After
+    public void tearDown() {
+        clearDatabase();
+    }
+
     private Map<String, Map<String, String>> buildCreateCaseBody() {
         Map<String, String> caseData = new HashMap<>();
         caseData.put("Name", "RSH");
@@ -107,5 +122,11 @@ public class RshCaseResourceIntTest {
         requestHeaders.set("X-Auth-Username", "bob");
         requestHeaders.set("x-correlation-id", "12");
         return requestHeaders;
+    }
+
+    private void clearDatabase() {
+        stageDataRepository.deleteAll();
+        documentRepository.deleteAll();
+        caseDataRepository.deleteAll();
     }
 }
