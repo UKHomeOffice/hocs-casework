@@ -8,6 +8,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateDocumentRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateDocumentResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateDocumentRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
 
 import java.util.UUID;
 
@@ -27,8 +28,8 @@ class DocumentDataResource {
     @RequestMapping(value = "/case/{caseUUID}/document", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateDocumentResponse> createDocument(@PathVariable UUID caseUUID, @RequestBody CreateDocumentRequest request) {
         try {
-            stageDataService.createDocument(caseUUID, request.getName(), request.getType());
-            return ResponseEntity.ok().build();
+            DocumentData documentData = stageDataService.createDocument(caseUUID, request.getName(), request.getType());
+            return ResponseEntity.ok(CreateDocumentResponse.from(documentData));
         } catch (EntityCreationException e) {
             return ResponseEntity.badRequest().build();
         }

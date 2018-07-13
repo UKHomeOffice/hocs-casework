@@ -25,19 +25,22 @@ public class StageDataServiceTest {
     private AuditService auditService;
     @Mock
     private StageDataRepository stageDataRepository;
+    @Mock
+    private ScreenDataService screenDataService;
     private StageDataService stageDataService;
 
     @Before
     public void setUp() {
         this.stageDataService = new StageDataService(
                 stageDataRepository,
+                screenDataService,
                 auditService
         );
     }
 
     @Test
     public void shouldCreateStage() throws EntityCreationException {
-        stageDataService.createStage(uuid, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
+        stageDataService.createStage(uuid, StageType.DCU_MIN_MARKUP, new HashMap<>());
 
         verify(auditService).writeCreateStageEvent(any(StageData.class));
         verify(stageDataRepository).save(isA(StageData.class));
@@ -45,13 +48,13 @@ public class StageDataServiceTest {
 
     @Test(expected = EntityCreationException.class)
     public void shouldCreateStageMissingUUIDException1() throws EntityCreationException {
-        stageDataService.createStage(null, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
+        stageDataService.createStage(null, StageType.DCU_MIN_MARKUP, new HashMap<>());
     }
 
     @Test()
     public void shouldCreateStageMissingUUIDException2() {
         try {
-            stageDataService.createStage(null, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
+            stageDataService.createStage(null, StageType.DCU_MIN_MARKUP, new HashMap<>());
         } catch (EntityCreationException e) {
             // Do nothing.
         }
@@ -77,7 +80,7 @@ public class StageDataServiceTest {
 
     @Test
     public void shouldUpdateStage() throws EntityCreationException, EntityNotFoundException {
-        when(stageDataRepository.findByUuid(any())).thenReturn(new StageData(uuid, StageType.DCU_MIN_CATEGORISE.toString(), "Some data"));
+        when(stageDataRepository.findByUuid(any())).thenReturn(new StageData(uuid, StageType.DCU_MIN_MARKUP.toString(), "Some data"));
 
         stageDataService.updateStage(uuid, uuid, new HashMap<>());
 

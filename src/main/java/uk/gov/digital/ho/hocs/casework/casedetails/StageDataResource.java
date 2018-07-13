@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateStageRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
@@ -36,10 +35,10 @@ class StageDataResource {
         }
     }
 
-    @RequestMapping(value = "/case/{caseUUID}/stage/{stageUuid}", method = RequestMethod.PUT, consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity updateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUuid, @RequestBody UpdateStageRequest request) {
+    @RequestMapping(value = "/case/{caseUUID}/stage/{stageUuid}", method = RequestMethod.GET)
+    public ResponseEntity updateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUuid) {
         try {
-            stageDataService.updateStage(caseUUID, stageUuid, request.getData());
+            stageDataService.updateStage(caseUUID, stageUuid);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException | EntityCreationException e) {
             return ResponseEntity.badRequest().build();

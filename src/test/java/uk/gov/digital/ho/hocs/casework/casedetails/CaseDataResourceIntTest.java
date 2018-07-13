@@ -84,7 +84,7 @@ public class CaseDataResourceIntTest {
     }
 
     @Test
-    public void ShouldReturnBadRequestWhenBodyMissingOnCreateCase() {
+    public void shouldReturnBadRequestWhenBodyMissingOnCreateCase() {
         HttpHeaders requestHeaders = buildHttpHeaders();
         Map<String, String> body = new HashMap<>();
         HttpEntity<?> httpEntity = new HttpEntity<Object>(body, requestHeaders);
@@ -98,7 +98,7 @@ public class CaseDataResourceIntTest {
     }
 
     @Test
-    public void ShouldReturnBadRequestWhenCaseTypeInBodyIsIncorrectOnCreateCase() {
+    public void shouldReturnBadRequestWhenCaseTypeInBodyIsIncorrectOnCreateCase() {
         HttpHeaders requestHeaders = buildHttpHeaders();
 
         Map<String, String> body = new HashMap<>();
@@ -155,7 +155,7 @@ public class CaseDataResourceIntTest {
         stageData.put("A","A1");
         stageData.put("B","B1");
         Map<String, Object> body = new HashMap<>();
-        body.put("type", "DCU_MIN_CATEGORISE");
+        body.put("type", "DCU_MIN_MARKUP");
         body.put("data", stageData);
         return body;
     }

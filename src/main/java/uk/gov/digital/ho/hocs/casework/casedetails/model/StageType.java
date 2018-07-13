@@ -5,7 +5,7 @@ import lombok.Getter;
 public enum StageType {
 
     RUSH_ONLY_STAGE("Stage"),
-    DCU_MIN_CATEGORISE("DCU_MIN_CATEGORISE");
+    DCU_MIN_MARKUP("DCU_MIN_MARKUP");
 
     @Getter
     private String stringValue;

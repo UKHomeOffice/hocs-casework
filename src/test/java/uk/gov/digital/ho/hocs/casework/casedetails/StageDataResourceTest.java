@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateStageRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
@@ -26,7 +25,7 @@ public class StageDataResourceTest {
 
     private final UUID uuid = UUID.randomUUID();
     private final Map<String, String> data = new HashMap<>();
-    private final StageType stageType = StageType.DCU_MIN_CATEGORISE;
+    private final StageType stageType = StageType.DCU_MIN_MARKUP;
     @Mock
     private StageDataService stageDataService;
     private StageDataResource stageDataResource;
@@ -40,12 +39,12 @@ public class StageDataResourceTest {
     public void shouldCreateStage() throws EntityCreationException {
         UUID caseUUID = UUID.randomUUID();
 
-        when(stageDataService.createStage(any(UUID.class), any(), anyMap())).thenReturn(new StageData(caseUUID, StageType.DCU_MIN_CATEGORISE.toString(), ""));
-        CreateStageRequest request = new CreateStageRequest(StageType.DCU_MIN_CATEGORISE, data);
+        when(stageDataService.createStage(any(UUID.class), any(), anyMap())).thenReturn(new StageData(caseUUID, StageType.DCU_MIN_MARKUP.toString(), ""));
+        CreateStageRequest request = new CreateStageRequest(StageType.DCU_MIN_MARKUP, data);
 
         ResponseEntity response = stageDataResource.createStage(uuid, request);
 
-        verify(stageDataService, times(1)).createStage(uuid, StageType.DCU_MIN_CATEGORISE, new HashMap<>());
+        verify(stageDataService, times(1)).createStage(uuid, StageType.DCU_MIN_MARKUP, new HashMap<>());
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -66,12 +65,13 @@ public class StageDataResourceTest {
     @Test
     public void shouldUpdateStage() throws EntityCreationException, EntityNotFoundException {
 
-        doNothing().when(stageDataService).updateStage(any(), any(), any());
+        doNothing().when(stageDataService).updateStage(any(), any());
 
-        UpdateStageRequest request = new UpdateStageRequest(data);
-        ResponseEntity response = stageDataResource.updateStage(uuid, uuid, request);
+        //UpdateStageRequest request = new UpdateStageRequest(data);
+        ResponseEntity response = stageDataResource.updateStage(uuid, uuid);
 
-        verify(stageDataService, times(1)).updateStage(uuid, uuid, data);
+        verify(stageDataService, times(1)).updateStage(uuid, uuid);
+        verify(stageDataService, times(0)).updateStage(any(), any(), any());
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNull();
@@ -80,11 +80,13 @@ public class StageDataResourceTest {
     @Test
     public void shouldUpdateStageCreateException() throws EntityCreationException, EntityNotFoundException {
 
-        doThrow(EntityCreationException.class).when(stageDataService).updateStage(any(), any(), any());
-        UpdateStageRequest request = new UpdateStageRequest(data);
-        ResponseEntity response = stageDataResource.updateStage(uuid, uuid, request);
+        doThrow(EntityCreationException.class).when(stageDataService).updateStage(any(), any());
 
-        verify(stageDataService, times(1)).updateStage(uuid, uuid, data);
+        //UpdateStageRequest request = new UpdateStageRequest(data);
+        ResponseEntity response = stageDataResource.updateStage(uuid, uuid);
+
+        verify(stageDataService, times(1)).updateStage(uuid, uuid);
+        verify(stageDataService, times(0)).updateStage(any(), any(), any());
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
@@ -92,11 +94,13 @@ public class StageDataResourceTest {
     @Test
     public void shouldUpdateStageFindException() throws EntityCreationException, EntityNotFoundException {
 
-        doThrow(EntityNotFoundException.class).when(stageDataService).updateStage(any(), any(), any());
-        UpdateStageRequest request = new UpdateStageRequest(data);
-        ResponseEntity response = stageDataResource.updateStage(uuid, uuid, request);
+        doThrow(EntityNotFoundException.class).when(stageDataService).updateStage(any(), any());
 
-        verify(stageDataService, times(1)).updateStage(uuid, uuid, data);
+        //UpdateStageRequest request = new UpdateStageRequest(data);
+        ResponseEntity response = stageDataResource.updateStage(uuid, uuid);
+
+        verify(stageDataService, times(1)).updateStage(uuid, uuid);
+        verify(stageDataService, times(0)).updateStage(any(), any(), any());
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
