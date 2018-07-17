@@ -64,7 +64,7 @@ public class StageDataService {
         log.info("Requesting Create Stage, Type: {}, Case UUID: {}", stageType, caseUUID);
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(stageType) && data != null) {
             String dataString = getDataString(data, objectMapper);
-            StageData stageData = new StageData(caseUUID, stageType.toString(), dataString);
+            StageData stageData = new StageData(caseUUID, stageType.getStringValue(), dataString);
             stageDataRepository.save(stageData);
             auditService.writeCreateStageEvent(stageData);
             log.info("Created Stage, UUID: {} ({}), Case UUID: {}", stageData.getType(), stageData.getUuid(), stageData.getCaseUUID());

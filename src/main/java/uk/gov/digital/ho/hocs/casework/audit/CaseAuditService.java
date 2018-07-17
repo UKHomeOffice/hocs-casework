@@ -107,7 +107,7 @@ class CaseAuditService {
     private static String createCSV(String header, List<ReportLine> reportLines) {
         StringBuilder sb = new StringBuilder();
         try (CSVPrinter printer = new CSVPrinter(sb, CSVFormat.DEFAULT)) {
-            printer.printRecord(header);
+            printer.printRecord(header.split(","));
             reportLines.forEach(l -> printExportLine(printer, l));
         } catch (IOException e) {
             log.warn(e.toString());
