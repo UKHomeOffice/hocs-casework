@@ -18,5 +18,6 @@ public enum CaseType {
     COM2,
     DGEN,
     GNR,
-    COL
+    COL,
+    BREF
 }
