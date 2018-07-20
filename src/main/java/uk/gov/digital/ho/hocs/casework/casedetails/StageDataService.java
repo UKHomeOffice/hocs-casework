@@ -10,7 +10,7 @@ import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.ScreenData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageDataRepository;
@@ -30,16 +30,19 @@ import static uk.gov.digital.ho.hocs.casework.HocsCaseApplication.isNullOrEmpty;
 public class StageDataService {
 
     private final AuditService auditService;
-    private final ScreenDataService screenDataService;
+    private final ActiveStageDataService activeStageDataService;
+    private final ActiveStageService activeStageService;
     private final StageDataRepository stageDataRepository;
     private final ObjectMapper objectMapper;
 
     @Autowired
     public StageDataService(StageDataRepository stageDataRepository,
-                            ScreenDataService screenDataService,
+                            ActiveStageDataService activeStageDataService,
+                            ActiveStageService activeStageService,
                             AuditService auditService) {
         this.stageDataRepository = stageDataRepository;
-        this.screenDataService = screenDataService;
+        this.activeStageDataService = activeStageDataService;
+        this.activeStageService = activeStageService;
         this.auditService = auditService;
 
         //TODO: This should be a Bean
@@ -65,7 +68,10 @@ public class StageDataService {
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(stageType) && data != null) {
             String dataString = getDataString(data, objectMapper);
             StageData stageData = new StageData(caseUUID, stageType.getStringValue(), dataString);
+            // TODO: do we need to create the stage now or once the stage is complete?
             stageDataRepository.save(stageData);
+            // TODO: GET Case
+            activeStageService.addActiveStage(stageData.getUuid(), stageData.getType(), caseUUID, "PlumbMeIN", "MIN");
             auditService.writeCreateStageEvent(stageData);
             log.info("Created Stage, UUID: {} ({}), Case UUID: {}", stageData.getType(), stageData.getUuid(), stageData.getCaseUUID());
             return stageData;
@@ -107,21 +113,23 @@ public class StageDataService {
     }
 
     @Transactional
-    public void updateStage(UUID caseUUID, UUID stageUUID) {
+    public void completeStage(UUID caseUUID, UUID stageUUID) {
         log.info("Requesting Update Stage, uuid: {}", stageUUID);
         if (!isNullOrEmpty(stageUUID)) {
             StageData stageData = stageDataRepository.findByUuid(stageUUID);
             if (stageData != null) {
 
-                Set<ScreenData> screenData = screenDataService.getScreens(stageUUID);
+                Set<ActiveStageData> activeStageData = activeStageDataService.getScreens(stageUUID);
 
-                Map<String, String> data = screenData.stream().flatMap(s -> stringToMap(s.getData(), objectMapper).entrySet().stream()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                Map<String, String> data = activeStageData.stream().flatMap(s -> stringToMap(s.getData(), objectMapper).entrySet().stream()).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+
+                // TODO: why update here when we can create?
                 String dataString = getDataString(data, objectMapper);
                 stageData.setData(dataString);
                 stageDataRepository.save(stageData);
+                activeStageDataService.removeScreens(stageUUID);
+                activeStageService.removeActiveStage(stageUUID);
                 auditService.writeUpdateStageEvent(stageData);
-
-                screenDataService.removeScreens(stageUUID);
 
                 log.info("Updated Stage, UUID: {} ({}), Case UUID: {}", stageData.getType(), stageData.getUuid(), stageData.getCaseUUID());
             } else {

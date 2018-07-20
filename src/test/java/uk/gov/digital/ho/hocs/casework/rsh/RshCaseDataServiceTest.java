@@ -149,7 +149,7 @@ public class RshCaseDataServiceTest {
         caseData.getStages().add(stageData);
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
 
-        doNothing().when(stageDataService).updateStage(any(UUID.class), any(UUID.class), anyMap());
+        doNothing().when(stageDataService).completeStage(any(UUID.class), any(UUID.class), anyMap());
 
         Map<String, String> data = new HashMap<>();
         SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
@@ -161,7 +161,7 @@ public class RshCaseDataServiceTest {
         assertThat(caseDataReturn).isNotNull();
 
         verify(caseDataService, times(1)).getCase(caseData.getUuid());
-        verify(stageDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), data);
+        verify(stageDataService, times(1)).completeStage(caseData.getUuid(), stageData.getUuid(), data);
         verify(emailService, times(1)).sendRshEmail(any(SendEmailRequest.class));
     }
 
@@ -191,7 +191,7 @@ public class RshCaseDataServiceTest {
         }
 
         verify(caseDataService, times(0)).getCase(any());
-        verify(stageDataService, times(0)).updateStage(any(), any(), any());
+        verify(stageDataService, times(0)).completeStage(any(), any(), any());
         verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class));
     }
 
@@ -228,7 +228,7 @@ public class RshCaseDataServiceTest {
         }
 
         verify(caseDataService, times(1)).getCase(any());
-        verify(stageDataService, times(0)).updateStage(any(), any(), any());
+        verify(stageDataService, times(0)).completeStage(any(), any(), any());
         verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class));
     }
 
@@ -259,7 +259,7 @@ public class RshCaseDataServiceTest {
         }
 
         verify(caseDataService, times(0)).getCase(caseData.getUuid());
-        verify(stageDataService, times(0)).updateStage(caseData.getUuid(), stageData.getUuid(), null);
+        verify(stageDataService, times(0)).completeStage(caseData.getUuid(), stageData.getUuid(), null);
         verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class));
     }
 
@@ -270,7 +270,7 @@ public class RshCaseDataServiceTest {
         caseData.getStages().add(stageData);
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
 
-        doNothing().when(stageDataService).updateStage(any(UUID.class), any(UUID.class), anyMap());
+        doNothing().when(stageDataService).completeStage(any(UUID.class), any(UUID.class), anyMap());
 
         Map<String, String> data = new HashMap<>();
         CaseData caseDataReturn = rshCaseService.updateRshCase(
@@ -281,7 +281,7 @@ public class RshCaseDataServiceTest {
         assertThat(caseDataReturn).isNotNull();
 
         verify(caseDataService, times(1)).getCase(caseData.getUuid());
-        verify(stageDataService, times(1)).updateStage(caseData.getUuid(), stageData.getUuid(), data);
+        verify(stageDataService, times(1)).completeStage(caseData.getUuid(), stageData.getUuid(), data);
         verify(emailService, times(0)).sendRshEmail(any(SendEmailRequest.class));
     }
 

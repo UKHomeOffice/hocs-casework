@@ -10,20 +10,20 @@ import java.util.UUID;
 
 
 @Entity
-@Table(name = "screen_data")
+@Table(name = "active_stage_data")
 @NoArgsConstructor
-public class ScreenData implements Serializable {
+public class ActiveStageData implements Serializable {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "type")
+    @Column(name = "stage_type")
     @Getter
     private String type;
 
-    @Column(name = "data")
+    @Column(name = "screen_data")
     @Getter
     @Setter
     private String data;
@@ -32,7 +32,7 @@ public class ScreenData implements Serializable {
     @Getter
     private UUID stageUUID;
 
-    public ScreenData(String type, String data, UUID stageUUID) {
+    public ActiveStageData(String type, String data, UUID stageUUID) {
         this.type = type;
         this.data = data;
         this.stageUUID = stageUUID;

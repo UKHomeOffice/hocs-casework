@@ -7,8 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.ScreenData;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.ScreenDataRepository;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.ActiveStageDataRepository;
 
 import javax.transaction.Transactional;
 import java.util.Map;
@@ -19,15 +19,15 @@ import static uk.gov.digital.ho.hocs.casework.HocsCaseApplication.isNullOrEmpty;
 
 @Service
 @Slf4j
-public class ScreenDataService {
+public class ActiveStageDataService {
 
-    private final ScreenDataRepository screenDataRepository;
+    private final ActiveStageDataRepository activeStageDataRepository;
 
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public ScreenDataService(ScreenDataRepository screenDataRepository) {
-        this.screenDataRepository = screenDataRepository;
+    public ActiveStageDataService(ActiveStageDataRepository activeStageDataRepository) {
+        this.activeStageDataRepository = activeStageDataRepository;
 
         //TODO: This should be a Bean
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
@@ -52,8 +52,8 @@ public class ScreenDataService {
         log.info("Creating Screen, Stage: {}, Name: {}", stageUUID, screenName);
         if (!isNullOrEmpty(stageUUID) && !isNullOrEmpty(screenName) && data != null) {
             String dataString = getDataString(data, objectMapper);
-            ScreenData screenData = new ScreenData(screenName, dataString, stageUUID);
-            screenDataRepository.save(screenData);
+            ActiveStageData activeStageData = new ActiveStageData(screenName, dataString, stageUUID);
+            activeStageDataRepository.save(activeStageData);
             log.info("Created Screen, Stage: {}, Name: {}", stageUUID, screenName);
         } else {
             throw new EntityCreationException("Failed to create Screen, invalid stageUUID or screenName!");
@@ -61,13 +61,13 @@ public class ScreenDataService {
     }
 
     @Transactional
-    public Set<ScreenData> getScreens(UUID stageUUID) {
+    public Set<ActiveStageData> getScreens(UUID stageUUID) {
 
         log.info("Getting all Screens for Stage: {}", stageUUID);
         if (!isNullOrEmpty(stageUUID)) {
-            Set<ScreenData> screenData = screenDataRepository.findAllByStageUUID(stageUUID);
+            Set<ActiveStageData> activeStageData = activeStageDataRepository.findAllByStageUUID(stageUUID);
             log.info("All Screens Got for Stage: {}", stageUUID);
-            return screenData;
+            return activeStageData;
         } else {
             throw new EntityCreationException("Failed to remove Screens, invalid stageUUID!");
         }
@@ -78,7 +78,7 @@ public class ScreenDataService {
 
         log.info("Removing all Screens for Stage: {}", stageUUID);
         if (!isNullOrEmpty(stageUUID)) {
-            screenDataRepository.deleteAllByStageUUID(stageUUID);
+            activeStageDataRepository.deleteAllByStageUUID(stageUUID);
             log.info("All Screens Removed for Stage: {}", stageUUID);
         } else {
             throw new EntityCreationException("Failed to remove Screens, invalid stageUUID!");

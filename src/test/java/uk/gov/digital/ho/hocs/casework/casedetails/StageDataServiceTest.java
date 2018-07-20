@@ -26,14 +26,14 @@ public class StageDataServiceTest {
     @Mock
     private StageDataRepository stageDataRepository;
     @Mock
-    private ScreenDataService screenDataService;
+    private ActiveStageDataService activeStageDataService;
     private StageDataService stageDataService;
 
     @Before
     public void setUp() {
         this.stageDataService = new StageDataService(
                 stageDataRepository,
-                screenDataService,
+                activeStageDataService,
                 auditService
         );
     }
@@ -82,7 +82,7 @@ public class StageDataServiceTest {
     public void shouldUpdateStage() throws EntityCreationException, EntityNotFoundException {
         when(stageDataRepository.findByUuid(any())).thenReturn(new StageData(uuid, StageType.DCU_MIN_MARKUP.toString(), "Some data"));
 
-        stageDataService.updateStage(uuid, uuid, new HashMap<>());
+        stageDataService.completeStage(uuid, uuid, new HashMap<>());
 
         verify(stageDataRepository, times(1)).findByUuid(uuid);
         verify(stageDataRepository, times(1)).save(isA(StageData.class));
@@ -93,7 +93,7 @@ public class StageDataServiceTest {
     @Test(expected = EntityCreationException.class)
     public void shouldUpdateStageMissingUUIDException1() throws EntityCreationException, EntityNotFoundException {
         UUID caseUUID = UUID.randomUUID();
-        stageDataService.updateStage(caseUUID, null, new HashMap<>());
+        stageDataService.completeStage(caseUUID, null, new HashMap<>());
     }
 
     @Test()
@@ -101,7 +101,7 @@ public class StageDataServiceTest {
         UUID caseUUID = UUID.randomUUID();
 
         try {
-            stageDataService.updateStage(caseUUID, null, new HashMap<>());
+            stageDataService.completeStage(caseUUID, null, new HashMap<>());
         } catch (EntityCreationException e) {
             // Do Nothing.
         }
@@ -117,7 +117,7 @@ public class StageDataServiceTest {
 
         when(stageDataRepository.findByUuid(any())).thenReturn(null);
 
-        stageDataService.updateStage(caseUUID, uuid, new HashMap<>());
+        stageDataService.completeStage(caseUUID, uuid, new HashMap<>());
     }
 
     @Test
@@ -127,7 +127,7 @@ public class StageDataServiceTest {
         when(stageDataRepository.findByUuid(any())).thenReturn(null);
 
         try {
-            stageDataService.updateStage(caseUUID, uuid, new HashMap<>());
+            stageDataService.completeStage(caseUUID, uuid, new HashMap<>());
         } catch (EntityNotFoundException e) {
             // Do nothing.
         }

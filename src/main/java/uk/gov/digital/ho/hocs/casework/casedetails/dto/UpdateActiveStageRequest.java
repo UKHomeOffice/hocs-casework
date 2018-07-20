@@ -10,7 +10,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class CreateScreenRequest {
+public class UpdateActiveStageRequest {
 
     @JsonProperty("name")
     private String name;

@@ -35,10 +35,11 @@ class StageDataResource {
         }
     }
 
-    @RequestMapping(value = "/case/{caseUUID}/stage/{stageUuid}", method = RequestMethod.GET)
+    //TODO: this needs to change to happen when it is assigned to the next user.
+    @RequestMapping(value = "/case/{caseUUID}/stage/{stageUuid}/", method = RequestMethod.GET)
     public ResponseEntity updateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUuid) {
         try {
-            stageDataService.updateStage(caseUUID, stageUuid);
+            stageDataService.completeStage(caseUUID, stageUuid);
             return ResponseEntity.ok().build();
         } catch (EntityNotFoundException | EntityCreationException e) {
             return ResponseEntity.badRequest().build();
