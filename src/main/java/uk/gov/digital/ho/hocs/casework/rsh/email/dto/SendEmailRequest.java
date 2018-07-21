@@ -2,10 +2,12 @@ package uk.gov.digital.ho.hocs.casework.rsh.email.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@NoArgsConstructor
 @Getter
 public class SendEmailRequest {
 

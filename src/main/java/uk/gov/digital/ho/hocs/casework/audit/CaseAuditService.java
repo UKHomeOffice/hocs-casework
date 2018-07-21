@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 class CaseAuditService {
 
-    // TODO: when we do self service all this static block stuff should be put in the database.
+    // TODO: move into info service.
     private static Map<UnitType, CaseType[]> unitToCaseTypesMapping;
     private static Map<UnitType, String> unitToReportHeadingMapping;
 

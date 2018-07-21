@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.hocs.casework.audit.model;
 
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentStatus;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentType;
@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "audit_document_data")
-@NoArgsConstructor
+@EqualsAndHashCode
 public class DocumentAuditEntry {
 
     @Id
@@ -78,8 +78,12 @@ public class DocumentAuditEntry {
     }
 
     public static DocumentAuditEntry from(DocumentData documentData) {
-        return new DocumentAuditEntry(documentData.getCaseUUID(), documentData.getUuid(), documentData.getName(),
-                documentData.getType(), documentData.getTimestamp(), documentData.getFileLink(), documentData.getPdfLink(),
-                documentData.getStatus(), documentData.getDeleted());
+        if (documentData != null) {
+            return new DocumentAuditEntry(documentData.getCaseUUID(), documentData.getUuid(), documentData.getName(),
+                    documentData.getType(), documentData.getTimestamp(), documentData.getFileLink(), documentData.getPdfLink(),
+                    documentData.getStatus(), documentData.getDeleted());
+        } else {
+            return null;
+        }
     }
 }
