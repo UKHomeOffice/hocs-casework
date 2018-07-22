@@ -1,9 +1,8 @@
-package uk.gov.digital.ho.hocs.casework.audit;
+package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.audit.model.CaseAuditEntry;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 
 import static org.assertj.core.api.Assertions.assertThat;
