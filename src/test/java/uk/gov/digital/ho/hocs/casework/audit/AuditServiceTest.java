@@ -33,7 +33,7 @@ public class AuditServiceTest {
     private AuditService auditService;
 
     @Captor
-    ArgumentCaptor<AuditEntry> argCaptor;
+    private ArgumentCaptor<AuditEntry> argCaptor;
 
     @Before
     public void setUp() {
