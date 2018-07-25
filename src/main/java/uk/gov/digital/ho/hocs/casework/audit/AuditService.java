@@ -34,51 +34,64 @@ public class AuditService {
     public void writeSearchEvent(SearchRequest searchRequest) {
         String request = SearchRequest.toJsonString(objectMapper, searchRequest);
         AuditEntry auditEntry = new AuditEntry(requestData.username(), request, AuditAction.SEARCH);
-        auditRepository.save(auditEntry);
+        save(auditEntry);
     }
 
     public void writeSendEmailEvent(SendEmailRequest sendEmailRequest) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), sendEmailRequest.getEmailAddress(), AuditAction.SEND_EMAIL);
-        auditRepository.save(auditEntry);
+        String emailString = null;
+        if (sendEmailRequest != null) {
+            emailString = sendEmailRequest.getEmailAddress();
+        }
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), emailString, AuditAction.SEND_EMAIL);
+        save(auditEntry);
     }
 
     public void writeGetCaseEvent(UUID caseUUID) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), caseUUID.toString(), AuditAction.GET_CASE);
-        auditRepository.save(auditEntry);
+        String caseString = null;
+        if (caseUUID != null) {
+            caseString = caseUUID.toString();
+        }
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), caseString, AuditAction.GET_CASE);
+        save(auditEntry);
     }
 
     public void writeCreateCaseEvent(CaseData caseData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), caseData, AuditAction.CREATE_CASE);
-        auditRepository.save(auditEntry);
+        save(auditEntry);
     }
 
     public void writeUpdateCaseEvent(CaseData caseData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), caseData, AuditAction.UPDATE_CASE);
-        auditRepository.save(auditEntry);
+        save(auditEntry);
     }
 
     public void writeCreateStageEvent(StageData stageData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.CREATE_STAGE);
-        auditRepository.save(auditEntry);
+        save(auditEntry);
     }
 
     public void writeUpdateStageEvent(StageData stageData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.UPDATE_STAGE);
-        auditRepository.save(auditEntry);
+        save(auditEntry);
     }
 
     public void writeAddDocumentEvent(DocumentData documentData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.ADD_DOCUMENT);
-        auditRepository.save(auditEntry);
+        save(auditEntry);
     }
 
     public void writeUpdateDocumentEvent(DocumentData documentData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.UPDATE_DOCUMENT);
-        auditRepository.save(auditEntry);
+        save(auditEntry);
     }
 
     public void writeExtractEvent(String params) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), params, AuditAction.CSV_EXTRACT);
+        save(auditEntry);
+    }
+
+    private void save(AuditEntry auditEntry) {
         auditRepository.save(auditEntry);
     }
+
 }

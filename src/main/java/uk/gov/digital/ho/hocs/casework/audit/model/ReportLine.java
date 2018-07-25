@@ -12,12 +12,23 @@ public class ReportLine {
     private final LinkedHashMap<String, String> lineData = new LinkedHashMap<>();
 
     private ReportLine(String header, Map<String, String> values) {
+
+        String[] headers;
+
+        if (header != null) {
+            headers = header.split(",");
+        } else {
+            headers = new String[0];
+        }
+
         // Put the headings in as the key and then replace the values to maintain the order
-        String[] headers = header.split(",");
         for (String h : headers) {
             lineData.put(h, "");
         }
-        values.forEach(lineData::replace);
+
+        if (values != null) {
+            values.forEach(lineData::replace);
+        }
     }
 
     public static ReportLine from(String header, Map<String, String> values) {

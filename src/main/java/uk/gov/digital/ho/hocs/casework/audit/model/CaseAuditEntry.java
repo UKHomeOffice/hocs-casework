@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.audit.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 
 import javax.persistence.*;
@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "audit_case_data")
-@NoArgsConstructor
+@EqualsAndHashCode
 public class CaseAuditEntry implements Serializable {
 
     @Id
@@ -43,7 +43,11 @@ public class CaseAuditEntry implements Serializable {
     }
 
     public static CaseAuditEntry from(CaseData caseData) {
-        return new CaseAuditEntry(caseData.getType(), caseData.getReference(), caseData.getUuid(), caseData.getTimestamp());
+        if (caseData != null) {
+            return new CaseAuditEntry(caseData.getType(), caseData.getReference(), caseData.getUuid(), caseData.getTimestamp());
+        } else {
+            return null;
+        }
     }
 
 }

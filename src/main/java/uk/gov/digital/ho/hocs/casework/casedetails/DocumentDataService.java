@@ -45,6 +45,7 @@ public class DocumentDataService {
         }
     }
 
+    @Transactional
     public void updateDocumentFromQueue(UpdateDocumentFromQueueRequest request) {
         updateDocument(request.getCaseUUID(), request.getUuid(), request.getStatus(), request.getFileLink(), request.getPdfLink());
     }

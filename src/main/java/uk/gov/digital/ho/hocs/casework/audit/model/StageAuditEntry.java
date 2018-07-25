@@ -1,8 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.audit.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 
 import javax.persistence.*;
@@ -12,7 +11,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "audit_stage_data")
-@NoArgsConstructor
+@EqualsAndHashCode
 public class StageAuditEntry implements Serializable {
 
     @Column(name = "type")
@@ -33,7 +32,6 @@ public class StageAuditEntry implements Serializable {
     private LocalDateTime timestamp;
 
     @Column(name ="data")
-    @Setter
     @Getter
     private String data;
 
@@ -51,6 +49,10 @@ public class StageAuditEntry implements Serializable {
 
     public static StageAuditEntry from(StageData stageData)
     {
-        return new StageAuditEntry(stageData.getUuid(), stageData.getType(), stageData.getData(), stageData.getCaseUUID(), stageData.getTimestamp());
+        if (stageData != null) {
+            return new StageAuditEntry(stageData.getUuid(), stageData.getType(), stageData.getData(), stageData.getCaseUUID(), stageData.getTimestamp());
+        } else {
+            return null;
+        }
     }
 }
