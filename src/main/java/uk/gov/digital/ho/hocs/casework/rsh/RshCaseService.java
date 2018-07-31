@@ -17,6 +17,7 @@ import uk.gov.digital.ho.hocs.casework.rsh.email.EmailService;
 import uk.gov.digital.ho.hocs.casework.rsh.email.dto.SendEmailRequest;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -85,7 +86,7 @@ public class RshCaseService {
     }
 
     @Transactional
-    CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException, EntityNotFoundException {
+    CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException, EntityNotFoundException, IOException {
         if (!isNullOrEmpty(caseUUID) && caseData != null) {
             CaseData caseDetails = caseDataService.getCase(caseUUID);
             if (!caseDetails.getStages().isEmpty()) {

@@ -2,15 +2,15 @@ package uk.gov.digital.ho.hocs.casework.casedetails.repository;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.ScreenData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStageData;
 
 import java.util.Set;
 import java.util.UUID;
 
 @Repository
-public interface ScreenDataRepository extends CrudRepository<ScreenData, String> {
+public interface ActiveStageDataRepository extends CrudRepository<ActiveStageData, String> {
 
     void deleteAllByStageUUID(UUID stageUUID);
 
-    Set<ScreenData> findAllByStageUUID(UUID stageUUID);
+    Set<ActiveStageData> findAllByStageUUID(UUID stageUUID);
 }
