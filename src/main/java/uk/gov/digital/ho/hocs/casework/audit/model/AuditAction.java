@@ -12,9 +12,7 @@ public enum AuditAction {
     SEND_EMAIL(6),
     CSV_EXTRACT(7),
     ADD_DOCUMENT(8),
-    DELETE_DOCUMENT(9),
-    UNDELETE_DOCUMENT(10),
-    UPDATE_DOCUMENT(11);
+    UPDATE_DOCUMENT(9);
 
     @Getter
     private int intValue;

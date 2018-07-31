@@ -16,6 +16,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.UnitType;
 
 import java.io.IOException;
+import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -26,10 +27,11 @@ import java.util.stream.Collectors;
 @Slf4j
 class CaseAuditService {
 
-    // TODO: when we do self service all this static block stuff should be put in the database.
+    // TODO: move into info service.
     private static Map<UnitType, CaseType[]> unitToCaseTypesMapping;
     private static Map<UnitType, String> unitToReportHeadingMapping;
 
+    private static int monthsBack = 4;
     static {
         unitToCaseTypesMapping = new EnumMap<>(UnitType.class);
         unitToCaseTypesMapping.put(UnitType.RSH, new CaseType[]{CaseType.RSH});
@@ -125,7 +127,7 @@ class CaseAuditService {
     }
 
     private static LocalDateTime getStartDate(LocalDate cutoff) {
-        int monthsBack = 4;
+
         // Start at the first day of the month
         return LocalDateTime.of(cutoff.minusMonths(monthsBack).getYear(), cutoff.minusMonths(monthsBack).getMonth(), 1, 0, 0);
     }
@@ -138,10 +140,21 @@ class CaseAuditService {
         return String.format("%s_%s", prefix, suffix);
     }
 
+    private static boolean checkValidDateRange(LocalDate cutoff) {
+        try {
+            cutoff.minusMonths(monthsBack);
+        } catch (DateTimeException e) {
+            log.warn(e.toString());
+            return false;
+        }
+        return true;
+    }
+
     String getReportingDataAsCSV(UnitType unit, LocalDate cutoff) {
+
         String heading = unitToReportHeadingMapping.get(unit);
 
-        if (heading != null && cutoff != null) {
+        if (heading != null && cutoff != null && checkValidDateRange(cutoff)) {
             auditService.writeExtractEvent(String.join(" ", unit.toString(), cutoff.toString()));
 
             // Get the reporting data
