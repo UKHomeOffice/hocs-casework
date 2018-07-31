@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseRequest;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseResponse;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -61,7 +62,7 @@ public class RshCaseDataResourceTest {
     }
 
     @Test
-    public void shouldUpdateCase() {
+    public void shouldUpdateCase() throws IOException {
 
         CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
 
@@ -77,7 +78,7 @@ public class RshCaseDataResourceTest {
     }
 
     @Test
-    public void shouldUpdateCaseCreateException()  {
+    public void shouldUpdateCaseCreateException() throws IOException {
         CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
 
         when(mockRshCaseService.updateRshCase(any(UUID.class), anyMap(), any())).thenThrow(EntityCreationException.class);
@@ -91,7 +92,7 @@ public class RshCaseDataResourceTest {
     }
 
     @Test
-    public void shouldUpdateCaseFoundException() {
+    public void shouldUpdateCaseFoundException() throws IOException {
 
         CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
 

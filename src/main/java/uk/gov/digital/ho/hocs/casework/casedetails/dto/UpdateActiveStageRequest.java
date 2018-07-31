@@ -12,9 +12,6 @@ import java.util.Map;
 @Getter
 public class UpdateActiveStageRequest {
 
-    @JsonProperty("name")
-    private String name;
-
     @JsonProperty("data")
     private Map<String, String> data;
 }

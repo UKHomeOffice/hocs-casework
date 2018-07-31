@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseRequest;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.CreateRshCaseResponse;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -40,7 +41,7 @@ class RshCaseResource {
         try {
             CaseData caseData = rshCaseService.updateRshCase(caseUUID, request.getCaseData(), request.getSendEmailRequest());
             return ResponseEntity.ok(CreateRshCaseResponse.from(caseData));
-        } catch (EntityCreationException | EntityNotFoundException e) {
+        } catch (EntityCreationException | EntityNotFoundException | IOException e) {
             return ResponseEntity.badRequest().build();
         }
     }
