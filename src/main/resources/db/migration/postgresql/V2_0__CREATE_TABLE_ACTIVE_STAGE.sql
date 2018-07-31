@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS screen_data;
 DROP INDEX IF EXISTS idx_screen_type_stage_uuid;
+
 DROP TABLE IF EXISTS active_stage_data;
 
 CREATE TABLE IF NOT EXISTS active_stage_data
