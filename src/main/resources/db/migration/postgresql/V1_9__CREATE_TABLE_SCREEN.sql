@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS screen_data
   type       TEXT  NOT NULL,
   data       JSONB NOT NULL,
   stage_uuid UUID  NOT NULL,
-  
+
   CONSTRAINT fk_screen_id FOREIGN KEY (stage_uuid) REFERENCES stage_data (uuid)
 );
 
