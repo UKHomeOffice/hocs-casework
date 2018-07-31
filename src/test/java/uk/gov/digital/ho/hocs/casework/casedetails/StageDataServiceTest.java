@@ -40,6 +40,7 @@ public class StageDataServiceTest {
         );
     }
 
+    @Ignore
     @Test
     public void shouldCreateStage() throws EntityCreationException {
         stageDataService.createStage(uuid, StageType.DCU_MIN_MARKUP, new HashMap<>());
