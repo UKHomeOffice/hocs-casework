@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
@@ -41,6 +42,16 @@ class CaseDataResource {
         try {
             caseDataService.updateCase(caseUUID);
             return ResponseEntity.ok().build();
+        } catch (EntityCreationException | EntityNotFoundException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @RequestMapping(value = "/case/{caseUUID}", method = RequestMethod.GET)
+    public ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID) {
+        try {
+            CaseData caseData = caseDataService.getCase(caseUUID);
+            return ResponseEntity.ok(GetCaseResponse.from(caseData));
         } catch (EntityCreationException | EntityNotFoundException e) {
             return ResponseEntity.badRequest().build();
         }
