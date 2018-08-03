@@ -10,6 +10,8 @@ import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageDataRepository;
@@ -28,16 +30,19 @@ public class StageDataService {
 
     private final AuditService auditService;
     private final ActiveStageService activeStageService;
+    private final CaseDataService caseDataService;
     private final StageDataRepository stageDataRepository;
     private final ObjectMapper objectMapper;
 
     @Autowired
     public StageDataService(StageDataRepository stageDataRepository,
                             ActiveStageService activeStageService,
+                            CaseDataService caseDataService,
                             AuditService auditService) {
-        this.stageDataRepository = stageDataRepository;
-        this.activeStageService = activeStageService;
         this.auditService = auditService;
+        this.activeStageService = activeStageService;
+        this.caseDataService = caseDataService;
+        this.stageDataRepository = stageDataRepository;
 
         //TODO: This should be a Bean
         this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
@@ -61,7 +66,8 @@ public class StageDataService {
         log.info("Requesting Create Stage, Type: {}, Case UUID: {}", stageType, caseUUID);
         if (!isNullOrEmpty(caseUUID) && !isNullOrEmpty(stageType) && data != null) {
             String dataString = getDataString(data, objectMapper);
-            StageData stageData = new StageData(caseUUID, stageType.getStringValue(), dataString);
+            // TODO: we should store the actual ENUM value.
+            StageData stageData = new StageData(caseUUID, stageType.toString(), dataString);
             saveAndAudit(stageData);
             log.debug("Created Stage, UUID: {} ({}), Case UUID: {}", stageData.getType(), stageData.getUuid(), stageData.getCaseUUID());
             return stageData;
@@ -74,8 +80,10 @@ public class StageDataService {
     public void allocateStage(UUID caseUUID, UUID stageUUID) {
         log.info("Requesting Complete Stage, uuid: {}", stageUUID);
         StageData stageData = stageDataRepository.findByUuid(stageUUID);
-        // TODO: GET Case
-        activeStageService.addActiveStage(stageData.getUuid(), stageData.getType(), caseUUID, "PlumbMeIN", "MIN");
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        StageType stageType = StageType.valueOf(stageData.getType());
+        CaseType caseType = CaseType.valueOf(caseData.getType());
+        activeStageService.addActiveStage(caseUUID, stageData.getUuid(), caseData.getReference(), caseType, stageType, "", "", "", "");
         log.debug("Completed Stage, uuid: {}", stageUUID);
     }
 

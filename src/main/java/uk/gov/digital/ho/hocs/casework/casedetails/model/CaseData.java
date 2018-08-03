@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CaseData implements Serializable {
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
     @Getter
     private Set<StageData> stages = new HashSet<>();

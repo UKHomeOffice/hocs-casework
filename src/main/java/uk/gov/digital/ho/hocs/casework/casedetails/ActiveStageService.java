@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.ActiveStageRepository;
 
 import javax.transaction.Transactional;
@@ -22,8 +24,8 @@ public class ActiveStageService {
     }
 
     @Transactional
-    public void addActiveStage(UUID stageUUID, String stageType, UUID caseUUID, String caseReference, String caseType) {
-        ActiveStage activeStage = new ActiveStage(stageUUID, stageType, caseUUID, caseReference, caseType);
+    public void addActiveStage(UUID caseUUID, UUID stageUUID, String caseReference, CaseType caseType, StageType stageType, String assignedTeam, String assignedTeamDisplay, String assignedUser, String assignedUserDisplay) {
+        ActiveStage activeStage = new ActiveStage(caseUUID, stageUUID, caseReference, caseType, stageType, assignedTeam, assignedTeamDisplay, assignedUser, assignedUserDisplay);
         activeStageRepository.save(activeStage);
     }
 
