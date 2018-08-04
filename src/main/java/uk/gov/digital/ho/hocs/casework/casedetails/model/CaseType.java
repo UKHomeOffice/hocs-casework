@@ -1,23 +1,15 @@
 package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
+import lombok.Getter;
+
 public enum CaseType {
-    RSH,
-    MIN,
-    TRO,
-    DTEN,
-    IMCB,
-    IMCM,
-    UTEN,
-    FOI,
-    FTC,
-    FTCI,
-    FSC,
-    FSCI,
-    COM,
-    COM1,
-    COM2,
-    DGEN,
-    GNR,
-    COL,
-    BREF
+    RSH("WR Response"),
+    MIN("Ministerial");
+
+    @Getter
+    private String displayValue;
+
+    CaseType(String value) {
+        displayValue = value;
+    }
 }

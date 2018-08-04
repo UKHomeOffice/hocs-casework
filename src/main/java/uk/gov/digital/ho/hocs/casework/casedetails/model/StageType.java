@@ -6,13 +6,11 @@ public enum StageType {
 
     RUSH_ONLY_STAGE("Stage"),
     DCU_MIN_MARKUP("Markup"),
-    DCU_MIN_TRANSFER_CONFIRMATION("Transfer Confirmation"),
-    UKVI_BREF_CATEGORISE("UKVI_BREF_CATEGORISE");
-
+    DCU_MIN_TRANSFER_CONFIRMATION("Transfer Confirmation");
     @Getter
-    private String stringValue;
+    private String displayValue;
 
     StageType(String value){
-        stringValue = value;
+        displayValue = value;
     }
 }

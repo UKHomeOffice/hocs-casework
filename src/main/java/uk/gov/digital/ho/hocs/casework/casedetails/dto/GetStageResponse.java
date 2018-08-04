@@ -20,7 +20,10 @@ public class GetStageResponse {
     @JsonProperty("uuid")
     private UUID uuid;
 
+    @JsonProperty("caseReference")
+    private String caseReference;
+
     public static GetStageResponse from(StageData stageData) {
-        return new GetStageResponse(stageData.getType(), stageData.getData(), stageData.getUuid());
+        return new GetStageResponse(stageData.getType().toString(), stageData.getData(), stageData.getUuid(), stageData.getCaseReference());
     }
 }

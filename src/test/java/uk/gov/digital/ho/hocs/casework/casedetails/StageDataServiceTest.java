@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.casedetails;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -11,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationExcep
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageDataRepository;
 
 import java.util.HashMap;
@@ -27,6 +29,8 @@ public class StageDataServiceTest {
     @Mock
     private StageDataRepository stageDataRepository;
     @Mock
+    private CaseDataRepository caseDataRepository;
+    @Mock
     private ActiveStageService activeStageService;
 
     private StageDataService stageDataService;
@@ -36,6 +40,7 @@ public class StageDataServiceTest {
         this.stageDataService = new StageDataService(
                 stageDataRepository,
                 activeStageService,
+                caseDataRepository,
                 auditService
         );
     }
@@ -84,7 +89,7 @@ public class StageDataServiceTest {
     @Ignore
     @Test
     public void shouldUpdateStage() throws EntityCreationException, EntityNotFoundException {
-        when(stageDataRepository.findByUuid(any())).thenReturn(new StageData(uuid, StageType.DCU_MIN_MARKUP.toString(), "Some data"));
+        when(stageDataRepository.findByUuid(any())).thenReturn(new StageData(uuid, StageType.DCU_MIN_MARKUP.toString(), new HashMap<>(), new ObjectMapper()));
 
         stageDataService.completeStage(uuid, uuid);
 

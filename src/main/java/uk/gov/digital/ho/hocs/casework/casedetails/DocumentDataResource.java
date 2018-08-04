@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateDocumentRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateDocumentResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateDocumentRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
 
 import java.util.UUID;
@@ -27,12 +27,8 @@ class DocumentDataResource {
 
     @RequestMapping(value = "/case/{caseUUID}/document", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateDocumentResponse> createDocument(@PathVariable UUID caseUUID, @RequestBody CreateDocumentRequest request) {
-        try {
-            DocumentData documentData = stageDataService.createDocument(caseUUID, request.getName(), request.getType());
-            return ResponseEntity.ok(CreateDocumentResponse.from(documentData));
-        } catch (EntityCreationException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        DocumentData documentData = stageDataService.createDocument(caseUUID, request.getName(), request.getType());
+        return ResponseEntity.ok(CreateDocumentResponse.from(documentData));
     }
 
     @RequestMapping(value = "/case/{caseUUID}/document/{documentUUID}", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
@@ -40,7 +36,7 @@ class DocumentDataResource {
         try {
             stageDataService.updateDocument(caseUUID, documentUUID, request.getStatus(), request.getFileLink(), request.getPdfLink());
             return ResponseEntity.ok().build();
-        } catch (EntityCreationException e) {
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.badRequest().build();
         }
     }

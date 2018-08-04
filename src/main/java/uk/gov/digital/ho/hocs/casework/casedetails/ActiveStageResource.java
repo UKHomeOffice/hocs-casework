@@ -6,9 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetActiveStageResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStage;
+
+import java.util.Set;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
@@ -24,12 +25,8 @@ class ActiveStageResource {
     }
 
     @RequestMapping(value = "/case/active", method = RequestMethod.GET, produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Iterable<ActiveStage>> getActiveCases() {
-        try {
-            Iterable<ActiveStage> activeStages = activeStageService.getActiveCases();
-            return ResponseEntity.ok(activeStages);
-        } catch (EntityNotFoundException | EntityCreationException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<GetActiveStageResponse> getActiveCases() {
+        Set<ActiveStage> activeStages = activeStageService.getActiveCases();
+        return ResponseEntity.ok(GetActiveStageResponse.from(activeStages));
     }
 }

@@ -1,12 +1,18 @@
 package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
 import javax.persistence.*;
+import java.io.IOException;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Entity
@@ -20,12 +26,10 @@ public class StageData implements Serializable {
     private int id;
 
     @Column(name = "type")
-    @Getter
-    private String type;
+    private String stageType;
 
     @Column(name ="data")
     @Getter
-    @Setter
     private String data;
 
     @Column(name = "uuid")
@@ -36,15 +40,43 @@ public class StageData implements Serializable {
     @Getter
     private UUID caseUUID;
 
+    @Column(name = "case_reference")
+    @Getter
+    private String caseReference;
+
     @Column(name = "timestamp")
     @Getter
     private LocalDateTime timestamp = LocalDateTime.now();
 
-
-    public StageData(UUID caseUUID, String type, String data) {
+    public StageData(UUID caseUUID, String caseReference, StageType type, Map<String, String> dataMap, ObjectMapper objectMapper) {
         this.uuid = UUID.randomUUID();
-        this.type = type;
-        this.data = data;
+        this.stageType = type.toString();
+        this.data = getDataString(dataMap, objectMapper);
         this.caseUUID = caseUUID;
+        this.caseReference = caseReference;
+    }
+
+    private static String getDataString(Map<String, String> stageData, ObjectMapper objectMapper) {
+        try {
+            return objectMapper.writeValueAsString(stageData);
+        } catch (JsonProcessingException e) {
+            throw new EntityCreationException("Object Mapper failed to write value!");
+        }
+    }
+
+    public void updateData(Map<String, String> newData, ObjectMapper objectMapper) {
+        HashMap<String, String> dataMap;
+        try {
+            dataMap = objectMapper.readValue(this.data, new TypeReference<Map<String, String>>() {
+            });
+        } catch (IOException e) {
+            throw new EntityCreationException("Object Mapper failed to read value!");
+        }
+        dataMap.putAll(newData);
+        this.data = getDataString(dataMap, objectMapper);
+    }
+
+    public StageType getType() {
+        return StageType.valueOf(this.stageType);
     }
 }

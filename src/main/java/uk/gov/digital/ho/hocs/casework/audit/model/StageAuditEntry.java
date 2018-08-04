@@ -50,7 +50,7 @@ public class StageAuditEntry implements Serializable {
     public static StageAuditEntry from(StageData stageData)
     {
         if (stageData != null) {
-            return new StageAuditEntry(stageData.getUuid(), stageData.getType(), stageData.getData(), stageData.getCaseUUID(), stageData.getTimestamp());
+            return new StageAuditEntry(stageData.getUuid(), stageData.getType().toString(), stageData.getData(), stageData.getCaseUUID(), stageData.getTimestamp());
         } else {
             return null;
         }

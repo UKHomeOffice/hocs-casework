@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.casedetails;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -40,7 +41,7 @@ public class StageDataResourceTest {
     public void shouldCreateStage() throws EntityCreationException {
         UUID caseUUID = UUID.randomUUID();
 
-        when(stageDataService.createStage(any(UUID.class), any(), anyMap())).thenReturn(new StageData(caseUUID, StageType.DCU_MIN_MARKUP.toString(), ""));
+        when(stageDataService.createStage(any(UUID.class), any(), anyMap())).thenReturn(new StageData(caseUUID, StageType.DCU_MIN_MARKUP.toString(), new HashMap<>(), new ObjectMapper()));
         CreateStageRequest request = new CreateStageRequest(StageType.DCU_MIN_MARKUP, data);
 
         ResponseEntity response = stageDataResource.createStage(uuid, request);

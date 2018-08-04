@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.rsh;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -145,7 +146,7 @@ public class RshCaseDataServiceTest {
     @Test
     public void shouldUpdateRshCase() throws IOException {
         CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
-        StageData stageData = new StageData(caseData.getUuid(), StageType.RUSH_ONLY_STAGE.toString(), "");
+        StageData stageData = new StageData(caseData.getUuid(), StageType.RUSH_ONLY_STAGE.toString(), new HashMap<>(), new ObjectMapper());
 
         caseData.getStages().add(stageData);
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
@@ -247,7 +248,7 @@ public class RshCaseDataServiceTest {
     @Test
     public void shouldUpdateRshCaseNullCaseData2() throws IOException {
         CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
-        StageData stageData = new StageData(caseData.getUuid(), "", "");
+        StageData stageData = new StageData(caseData.getUuid(), "", new HashMap<>(), new ObjectMapper());
 
         SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
         try {
@@ -267,7 +268,7 @@ public class RshCaseDataServiceTest {
     @Test()
     public void shouldUpdateRshCaseNullEmail() throws IOException {
         CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
-        StageData stageData = new StageData(caseData.getUuid(), "", "");
+        StageData stageData = new StageData(caseData.getUuid(), "", new HashMap<>(), new ObjectMapper());
         caseData.getStages().add(stageData);
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
 
@@ -289,7 +290,7 @@ public class RshCaseDataServiceTest {
     @Test
     public void shouldGetCase() {
         CaseData caseData = new CaseData(CaseType.RSH.toString(), 1L);
-        StageData stageData = new StageData(caseData.getUuid(), "", "");
+        StageData stageData = new StageData(caseData.getUuid(), "", new HashMap<>(), new ObjectMapper());
         caseData.getStages().add(stageData);
       
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);

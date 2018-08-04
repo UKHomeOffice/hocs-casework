@@ -36,7 +36,7 @@ public class DocumentResourceTest {
     public void shouldCreateDocument() throws EntityCreationException {
         String documentDisplayName = "A DOC";
 
-        when(documentService.createDocument(uuid, documentDisplayName, DocumentType.ORIGINAL)).thenReturn(new DocumentData(caseUUID, documentDisplayName, DocumentType.ORIGINAL));
+        when(documentService.createDocument(uuid, documentDisplayName, DocumentType.ORIGINAL)).thenReturn(new DocumentData(caseUUID, DocumentType.ORIGINAL, documentDisplayName));
         CreateDocumentRequest request = new CreateDocumentRequest(documentDisplayName, DocumentType.ORIGINAL);
 
         ResponseEntity response = documentResource.createDocument(uuid, request);

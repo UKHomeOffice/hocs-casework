@@ -32,17 +32,14 @@ public class DocumentData implements Serializable {
 
     @Column(name = "s3_orig_link")
     @Getter
-    @Setter
     private String fileLink;
 
     @Column(name = "s3_pdf_link")
     @Getter
-    @Setter
     private String pdfLink;
 
     @Column(name = "status")
     @Getter
-    @Setter
     private DocumentStatus status = DocumentStatus.PENDING;
 
     @Column(name = "document_uuid")
@@ -62,10 +59,16 @@ public class DocumentData implements Serializable {
     @Setter
     private Boolean deleted = Boolean.FALSE;
 
-    public DocumentData(UUID caseUUID, String name, DocumentType type) {
+    public DocumentData(UUID caseUUID, DocumentType type, String name) {
         this.uuid = UUID.randomUUID();
         this.type = type;
         this.name = name;
         this.caseUUID = caseUUID;
+    }
+
+    public void update(String fileLink, String pdfLink, DocumentStatus status) {
+        this.fileLink = fileLink;
+        this.pdfLink = pdfLink;
+        this.status = status;
     }
 }

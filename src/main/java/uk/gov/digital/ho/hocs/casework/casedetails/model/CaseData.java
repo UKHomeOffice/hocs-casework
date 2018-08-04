@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -17,25 +16,13 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CaseData implements Serializable {
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
-    @Getter
-    private Set<StageData> stages = new HashSet<>();
-
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
-    @Getter
-    private Set<DocumentData> documents = new HashSet<>();
-
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "type")
-    @Getter
-    @Setter
-    private String type;
+    private String caseType;
 
     @Column(name = "reference")
     @Getter
@@ -49,10 +36,24 @@ public class CaseData implements Serializable {
     @Getter
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    public CaseData(String type, Long caseNumber) {
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
+    @Getter
+    private Set<StageData> stages = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
+    @Getter
+    private Set<DocumentData> documents = new HashSet<>();
+
+    public CaseData(CaseType caseType, Long caseNumber) {
         this.uuid = UUID.randomUUID();
-        this.type = type;
-        this.reference = String.format("%s/%07d/%s", type, caseNumber, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy")));
+        this.caseType = caseType.toString();
+        this.reference = String.format("%s/%07d/%s", caseType.toString(), caseNumber, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy")));
+    }
+
+    public CaseType getType() {
+        return CaseType.valueOf(this.caseType);
     }
 
 }

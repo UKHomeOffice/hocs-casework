@@ -65,7 +65,7 @@ public class DocumentServiceTest {
 
     @Test
     public void shouldUpdateDocument() throws EntityCreationException, EntityNotFoundException {
-        when(documentRepository.findByUuid(any())).thenReturn(new DocumentData(uuid, "name", DocumentType.ORIGINAL));
+        when(documentRepository.findByUuid(any())).thenReturn(new DocumentData(uuid, DocumentType.ORIGINAL, "name"));
 
         documentService.updateDocument(uuid, uuid, DocumentStatus.FAILED, "", "");
 

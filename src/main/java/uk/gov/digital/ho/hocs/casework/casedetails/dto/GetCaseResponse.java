@@ -14,14 +14,14 @@ import java.util.stream.Collectors;
 @Getter
 public class GetCaseResponse {
 
-    @JsonProperty("uuid")
-    private UUID uuid;
-
     @JsonProperty("type")
-    private String type;
+    private String caseType;
 
     @JsonProperty("reference")
     private String reference;
+
+    @JsonProperty("uuid")
+    private UUID uuid;
 
     @JsonProperty("timestamp")
     private LocalDateTime timestamp;
@@ -33,19 +33,23 @@ public class GetCaseResponse {
     private Set<GetDocumentResponse> documents;
 
     public static GetCaseResponse from(CaseData caseData) {
+        Set<GetStageResponse> stageResponses = caseData.getStages()
+                .stream()
+                .map(GetStageResponse::from)
+                .collect(Collectors.toSet());
+
+        Set<GetDocumentResponse> documentResponses = caseData.getDocuments()
+                .stream()
+                .map(GetDocumentResponse::from)
+                .collect(Collectors.toSet());
+
         return new GetCaseResponse(
-                caseData.getUuid(),
-                caseData.getType(),
+                caseData.getType().toString(),
                 caseData.getReference(),
+                caseData.getUuid(),
                 caseData.getTimestamp(),
-                caseData.getStages()
-                        .stream()
-                        .map(GetStageResponse::from)
-                        .collect(Collectors.toSet()),
-                caseData.getDocuments()
-                        .stream()
-                        .map(GetDocumentResponse::from)
-                        .collect(Collectors.toSet())
+                stageResponses,
+                documentResponses
         );
     }
 }

@@ -30,20 +30,10 @@ public class ActiveStage implements Serializable {
     private String caseReference;
 
     @Column(name = "case_type")
-    @Getter
-    private CaseType caseType;
-
-    @Column(name = "case_type_display")
-    @Getter
-    private String caseTypeDisplay;
+    private String caseType;
 
     @Column(name = "stage_type")
-    @Getter
-    private StageType stageType;
-
-    @Column(name = "stage_type_display")
-    @Getter
-    private String stageTypeDisplay;
+    private String stageType;
 
     @Column(name = "assigned_team")
     @Getter
@@ -61,28 +51,30 @@ public class ActiveStage implements Serializable {
     @Getter
     private String assignedUserDisplay;
 
-    public ActiveStage(UUID caseUUID,
-                       UUID stageUUID,
-                       String caseReference,
-                       CaseType caseType,
-                       StageType stageType,
+    public ActiveStage(CaseData caseData,
+                       StageData stageData,
                        String assignedTeam,
                        String assignedTeamDisplay,
                        String assignedUser,
                        String assignedUserDisplay) {
-        this.caseUUID = caseUUID;
-        this.stageUUID = stageUUID;
-        this.caseReference = caseReference;
-        this.caseType = caseType;
-        // TODO: Casetype prettyprint values.
-        this.caseTypeDisplay = caseType.toString();
-        this.stageType = stageType;
-        this.stageTypeDisplay = stageType.getStringValue();
+        this.caseUUID = caseData.getUuid();
+        this.stageUUID = stageData.getUuid();
+        this.caseReference = caseData.getReference();
+        this.caseType = caseData.getType().toString();
+        this.stageType = stageData.getType().toString();
         // TODO: User and Team models.
         this.assignedTeam = assignedTeam;
         this.assignedTeamDisplay = assignedTeamDisplay;
         this.assignedUser = assignedUser;
         this.assignedUserDisplay = assignedUserDisplay;
 
+    }
+
+    public StageType getStageType() {
+        return StageType.valueOf(this.stageType);
+    }
+
+    public CaseType getCaseType() {
+        return CaseType.valueOf(this.caseType);
     }
 }

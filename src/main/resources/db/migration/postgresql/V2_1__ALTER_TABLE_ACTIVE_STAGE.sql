@@ -9,9 +9,7 @@ CREATE TABLE IF NOT EXISTS active_stage
   stage_uuid            UUID NOT NULL,
   case_reference        TEXT NOT NULL,
   case_type             TEXT NOT NULL,
-  case_type_display     TEXT NOT NULL,
   stage_type            TEXT NOT NULL,
-  stage_type_display    TEXT NOT NULL,
   assigned_team         TEXT NOT NULL,
   assigned_team_display TEXT NOT NULL,
   assigned_user         TEXT NOT NULL,
@@ -25,3 +23,7 @@ CREATE INDEX idx_active_stage_assigned_team
 
 CREATE INDEX idx_active_stage_assigned_user
   ON active_stage (assigned_user);
+
+
+ALTER TABLE stage_data
+  add column case_reference TEXT NOT NULL;

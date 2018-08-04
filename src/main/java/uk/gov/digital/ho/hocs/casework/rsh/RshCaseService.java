@@ -69,7 +69,7 @@ public class RshCaseService {
     }
 
     @Transactional
-    CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException {
+    public CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException {
         if (caseData != null) {
             CaseData caseDetails = caseDataService.createCase(CaseType.RSH);
             if(caseDetails != null) {
@@ -86,7 +86,7 @@ public class RshCaseService {
     }
 
     @Transactional
-    CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException, EntityNotFoundException, IOException {
+    public CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException, EntityNotFoundException, IOException {
         if (!isNullOrEmpty(caseUUID) && caseData != null) {
             CaseData caseDetails = caseDataService.getCase(caseUUID);
             if (!caseDetails.getStages().isEmpty()) {
