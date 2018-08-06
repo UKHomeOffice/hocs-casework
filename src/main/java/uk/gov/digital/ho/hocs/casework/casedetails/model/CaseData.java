@@ -52,7 +52,16 @@ public class CaseData implements Serializable {
     public CaseData(String type, Long caseNumber) {
         this.uuid = UUID.randomUUID();
         this.type = type;
-        this.reference = String.format("%s/%07d/%s", type, caseNumber, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy")));
+        generateReference(caseNumber);
+
     }
 
+    private void generateReference(Long caseNumber) {
+        LocalDateTime now = LocalDateTime.now();
+        String suffixPattern = "yy";
+        if (now.getYear() > 2099) suffixPattern = "yyyy";
+        String suffix = now.format(DateTimeFormatter.ofPattern(suffixPattern));
+
+        this.reference = String.format("%s/%07d/%s", type.toUpperCase(), caseNumber, suffix);
+    }
 }
