@@ -26,17 +26,21 @@ public class AuditEntry {
 
     @Column(name = "timestamp", nullable = false)
     private final LocalDateTime timestamp = LocalDateTime.now();
+
     @Column(name = "query_data")
     @Getter
     private String queryData;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name ="case_id", referencedColumnName = "id")
     @Getter
     private CaseAuditEntry caseInstance;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name ="stage_id", referencedColumnName = "id")
     @Getter
     private StageAuditEntry stageInstance;
+
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name ="document_id", referencedColumnName = "id")
     @Getter

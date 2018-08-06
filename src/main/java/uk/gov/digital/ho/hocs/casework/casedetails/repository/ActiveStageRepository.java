@@ -13,5 +13,4 @@ public interface ActiveStageRepository extends CrudRepository<ActiveStage, Strin
     Set<ActiveStage> findAll();
 
     void deleteByStageUUID(UUID stageUUID);
-
 }

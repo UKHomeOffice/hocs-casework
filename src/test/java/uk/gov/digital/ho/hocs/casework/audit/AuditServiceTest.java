@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.audit;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
+import uk.gov.digital.ho.hocs.casework.audit.repository.AuditRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
@@ -30,6 +32,9 @@ public class AuditServiceTest {
     @Mock
     private RequestData mockRequestData;
 
+    @Mock
+    private ObjectMapper objectMapper;
+
     private AuditService auditService;
 
     @Captor
@@ -37,7 +42,7 @@ public class AuditServiceTest {
 
     @Before
     public void setUp() {
-        this.auditService = new AuditService(mockAuditRepository, mockRequestData);
+        this.auditService = new AuditService(mockAuditRepository, mockRequestData, objectMapper);
     }
 
     @Test

@@ -30,11 +30,11 @@ public class DocumentDataService {
 
     @Transactional
     DocumentData createDocument(UUID caseUUID, String displayName, DocumentType type) {
-        log.debug("Create Document: {}, Case UUID: {}", displayName, caseUUID);
+        log.debug("Creating Document: {}, Case UUID: {}", displayName, caseUUID);
         DocumentData documentData = new DocumentData(caseUUID, type, displayName);
         documentRepository.save(documentData);
         auditService.writeAddDocumentEvent(documentData);
-        log.info("Created Document: {} ({}), Case UUID: {}", documentData.getUuid(), documentData.getName(), documentData.getCaseUUID());
+        log.info("Created Document: {}, Case UUID: {}", documentData.getUuid(), documentData.getCaseUUID());
         return documentData;
     }
 
@@ -44,15 +44,14 @@ public class DocumentDataService {
     }
 
     @Transactional
-    public DocumentData updateDocument(UUID caseUUID, UUID documentUUID, DocumentStatus status, String fileLink, String pdfLink) {
+    public void updateDocument(UUID caseUUID, UUID documentUUID, DocumentStatus status, String fileLink, String pdfLink) {
         log.debug("Updating Document: {}, Case {}", documentUUID, caseUUID);
         DocumentData documentData = documentRepository.findByUuid(documentUUID);
         if (documentData != null) {
             documentData.update(fileLink, pdfLink, status);
             documentRepository.save(documentData);
             auditService.writeUpdateDocumentEvent(documentData);
-            log.info("Updated Document: {} ({}), Case {}", documentData.getUuid(), documentData.getName(), documentData.getCaseUUID());
-            return documentData;
+            log.info("Updated Document: {}, Case {}", documentData.getUuid(), documentData.getCaseUUID());
         } else {
             throw new EntityNotFoundException("Document UUID: %s, Case UUID: %s not found!", documentUUID.toString(), caseUUID.toString());
         }

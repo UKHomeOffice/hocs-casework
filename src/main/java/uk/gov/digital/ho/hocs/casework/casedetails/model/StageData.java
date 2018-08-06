@@ -44,16 +44,24 @@ public class StageData implements Serializable {
     @Getter
     private String caseReference;
 
+    @Column(name = "team_uuid")
+    @Getter
+    private UUID teamUUID;
+
+    @Column(name = "user_uuid")
+    @Getter
+    private UUID userUUID;
+
     @Column(name = "timestamp")
     @Getter
     private LocalDateTime timestamp = LocalDateTime.now();
 
-    public StageData(UUID caseUUID, String caseReference, StageType type, Map<String, String> dataMap, ObjectMapper objectMapper) {
+    public StageData(CaseData caseData, StageType type, Map<String, String> dataMap, ObjectMapper objectMapper) {
         this.uuid = UUID.randomUUID();
         this.stageType = type.toString();
         this.data = getDataString(dataMap, objectMapper);
-        this.caseUUID = caseUUID;
-        this.caseReference = caseReference;
+        this.caseUUID = caseData.getUuid();
+        this.caseReference = caseData.getReference();
     }
 
     private static String getDataString(Map<String, String> stageData, ObjectMapper objectMapper) {
@@ -78,5 +86,15 @@ public class StageData implements Serializable {
 
     public StageType getType() {
         return StageType.valueOf(this.stageType);
+    }
+
+    public void allocate(UUID teamUUID, UUID userUUID) {
+        this.teamUUID = teamUUID;
+        this.userUUID = userUUID;
+    }
+
+    public void unallocate() {
+        this.teamUUID = null;
+        this.userUUID = null;
     }
 }

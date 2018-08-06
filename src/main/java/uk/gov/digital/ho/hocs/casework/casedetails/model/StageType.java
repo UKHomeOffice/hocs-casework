@@ -7,6 +7,7 @@ public enum StageType {
     RUSH_ONLY_STAGE("Stage"),
     DCU_MIN_MARKUP("Markup"),
     DCU_MIN_TRANSFER_CONFIRMATION("Transfer Confirmation");
+
     @Getter
     private String displayValue;
 

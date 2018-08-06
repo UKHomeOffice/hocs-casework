@@ -7,11 +7,12 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.CaseAuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.model.ReportLine;
 import uk.gov.digital.ho.hocs.casework.audit.model.StageAuditEntry;
+import uk.gov.digital.ho.hocs.casework.audit.repository.CaseAuditRepository;
+import uk.gov.digital.ho.hocs.casework.audit.repository.StageAuditRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.UnitType;
 
@@ -52,11 +53,11 @@ class CaseAuditService {
     private final RequestData requestData;
 
     @Autowired
-    public CaseAuditService(AuditService auditService, CaseAuditRepository caseAuditRepository, StageAuditRepository stageAuditRepository, RequestData requestData) {
+    public CaseAuditService(AuditService auditService, CaseAuditRepository caseAuditRepository, StageAuditRepository stageAuditRepository, RequestData requestData, ObjectMapper objectMapper) {
         this.auditService = auditService;
         this.caseAuditRepository = caseAuditRepository;
         this.stageAuditRepository = stageAuditRepository;
-        this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
+        this.objectMapper = objectMapper;
         this.requestData = requestData;
     }
 
@@ -109,7 +110,7 @@ class CaseAuditService {
     private static String createCSV(String header, List<ReportLine> reportLines) {
         StringBuilder sb = new StringBuilder();
         try (CSVPrinter printer = new CSVPrinter(sb, CSVFormat.DEFAULT)) {
-            printer.printRecord(header.split(","));
+            printer.printRecord((Object[]) header.split(","));
             reportLines.forEach(l -> printExportLine(printer, l));
         } catch (IOException e) {
             log.warn(e.toString());

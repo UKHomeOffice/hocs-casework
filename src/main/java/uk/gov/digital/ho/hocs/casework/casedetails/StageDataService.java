@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
@@ -31,26 +30,30 @@ public class StageDataService {
     public StageDataService(StageDataRepository stageDataRepository,
                             ActiveStageService activeStageService,
                             CaseDataRepository caseDataRepository,
-                            AuditService auditService) {
+                            AuditService auditService,
+                            ObjectMapper objectMapper) {
         this.auditService = auditService;
         this.activeStageService = activeStageService;
         this.caseDataRepository = caseDataRepository;
         this.stageDataRepository = stageDataRepository;
-
-        //TODO: This should be a Bean
-        this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
+        this.objectMapper = objectMapper;
     }
 
     @Transactional
-    public StageData createStage(UUID caseUUID, StageType stageType, Map<String, String> data) {
+    public StageData createStage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID, Map<String, String> data) {
         log.debug("Creating Stage, Type: {}, Case UUID: {}", stageType, caseUUID);
         CaseData caseData = caseDataRepository.findByUuid(caseUUID);
-        StageData stageData = new StageData(caseUUID, caseData.getReference(), stageType, data, objectMapper);
-        stageDataRepository.save(stageData);
-        allocateStage(caseData, stageData);
-        auditService.writeCreateStageEvent(stageData);
-        log.info("Created Stage UUID: {} ({}), Case UUID: {}", stageData.getUuid(), stageData.getType(), stageData.getCaseUUID());
-        return stageData;
+        if (caseData != null) {
+            StageData stageData = new StageData(caseData, stageType, data, objectMapper);
+            stageData.allocate(teamUUID, userUUID);
+            stageDataRepository.save(stageData);
+            activeStageService.addActiveStage(caseData, stageData, teamUUID, userUUID);
+            auditService.writeCreateStageEvent(stageData);
+            log.info("Created Stage UUID: {} ({}), Case UUID: {}", stageData.getUuid(), stageData.getType(), stageData.getCaseUUID());
+            return stageData;
+        } else {
+            throw new EntityNotFoundException("Case UUID: %s, not found!", caseUUID.toString());
+        }
     }
 
     public StageData getStage(UUID caseUUID, UUID stageUUID) {
@@ -60,7 +63,7 @@ public class StageDataService {
             log.info("Got Stage UUID: {}, Case UUID: {}", stageData.getUuid(), stageData.getCaseUUID());
             return stageData;
         } else {
-            throw new EntityNotFoundException("Stage UUID: %s, Case UUID: %s,  not found!", stageUUID.toString(), caseUUID.toString());
+            throw new EntityNotFoundException("Stage UUID: %s, Case UUID: %s not found!", stageUUID.toString(), caseUUID.toString());
         }
     }
 
@@ -78,26 +81,35 @@ public class StageDataService {
         }
     }
 
-    public void allocateStage(UUID caseUUID, UUID stageUUID) {
+    @Transactional
+    public void allocateStage(UUID caseUUID, UUID stageUUID, UUID teamUUID, UUID userUUID) {
         log.debug("Allocating Stage UUID: {}, Case UUID: {}", stageUUID, caseUUID);
         StageData stageData = stageDataRepository.findByUuid(stageUUID);
         if (stageData != null) {
-            CaseData caseData = caseDataRepository.findByUuid(caseUUID);
-            allocateStage(caseData, stageData);
+            CaseData caseData = caseDataRepository.findByUuid(stageData.getCaseUUID());
+            stageData.allocate(teamUUID, userUUID);
+            stageDataRepository.save(stageData);
+            // TODO: Audit.
+            activeStageService.addActiveStage(caseData, stageData, teamUUID, userUUID);
+            log.info("Allocated Stage UUID: {}, Case UUID: {}, User {}, Team {}", stageData.getUuid(), caseData.getUuid(), "", "");
+
         } else {
             throw new EntityNotFoundException("Stage UUID: %s, Case UUID: %s not found!", stageUUID.toString(), caseUUID.toString());
         }
     }
 
+    @Transactional
     public void completeStage(UUID caseUUID, UUID stageUUID) {
         log.debug("Completing Stage UUID: {}, Case UUID: {}", stageUUID, caseUUID);
-        activeStageService.removeActiveStage(caseUUID, stageUUID);
-        log.info("Completed Stage, uuid: {}", stageUUID, caseUUID);
+        StageData stageData = stageDataRepository.findByUuid(stageUUID);
+        if (stageData != null) {
+            stageData.unallocate();
+            stageDataRepository.save(stageData);
+            // TODO: Audit.
+            activeStageService.removeActiveStage(caseUUID, stageUUID);
+            log.info("Completed Stage UUID: {}, Case UUID: {}", stageUUID, caseUUID);
+        } else {
+            throw new EntityNotFoundException("Stage UUID: %s, Case UUID: %s not found!", stageUUID.toString(), caseUUID.toString());
+        }
     }
-
-    private void allocateStage(CaseData caseData, StageData stageData) {
-        activeStageService.addActiveStage(caseData, stageData, "", "", "", "");
-        log.info("Allocated Stage UUID: {}, Case UUID: {}, User {}, Team {}", stageData.getUuid(), caseData.getUuid(), "", "");
-    }
-
 }

@@ -50,7 +50,7 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).save(isA(CaseData.class));
 
         assertThat(caseData).isNotNull();
-        assertThat(caseData.getType()).isEqualTo(CaseType.MIN.toString());
+        assertThat(caseData.getType()).isEqualTo(CaseType.MIN);
     }
 
     @Test(expected = EntityCreationException.class)
@@ -74,7 +74,7 @@ public class CaseDataServiceTest {
     public void shouldUpdateCase() throws EntityCreationException, EntityNotFoundException {
         UUID caseUUID = UUID.randomUUID();
 
-        when(caseDataRepository.findByUuid(any())).thenReturn(new CaseData(CaseType.MIN.toString(), 123L));
+        when(caseDataRepository.findByUuid(any())).thenReturn(new CaseData(CaseType.MIN, 123L));
 
         caseDataService.updateCase(caseUUID);
 
@@ -131,7 +131,7 @@ public class CaseDataServiceTest {
     public void shouldGetCase() throws EntityNotFoundException {
         UUID caseUUID = UUID.randomUUID();
 
-        when(caseDataRepository.findByUuid(any())).thenReturn(new CaseData(CaseType.MIN.toString(), 1L));
+        when(caseDataRepository.findByUuid(any())).thenReturn(new CaseData(CaseType.MIN, 1L));
 
         CaseData caseData = caseDataService.getCase(caseUUID);
 

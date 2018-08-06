@@ -39,7 +39,7 @@ public class CaseDataResourceTest {
     public void shouldCreateCase() throws EntityCreationException {
         final CaseType caseType = CaseType.MIN;
 
-        when(caseDataService.createCase(any())).thenReturn(new CaseData(caseType.toString(), 1234L));
+        when(caseDataService.createCase(any())).thenReturn(new CaseData(caseType, 1234L));
         CreateCaseRequest request = new CreateCaseRequest(caseType);
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 

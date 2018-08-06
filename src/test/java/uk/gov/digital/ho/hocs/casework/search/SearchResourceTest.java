@@ -27,7 +27,7 @@ public class SearchResourceTest {
 
     private static Set<CaseData> getValidSet() {
         Set<CaseData> set = new HashSet<>();
-        set.add(new CaseData(CaseType.MIN.toString(), 0L));
+        set.add(new CaseData(CaseType.MIN, 0L));
         return set;
     }
 

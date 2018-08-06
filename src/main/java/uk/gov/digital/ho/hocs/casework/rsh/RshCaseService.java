@@ -17,12 +17,9 @@ import uk.gov.digital.ho.hocs.casework.rsh.email.EmailService;
 import uk.gov.digital.ho.hocs.casework.rsh.email.dto.SendEmailRequest;
 
 import javax.transaction.Transactional;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
-import static uk.gov.digital.ho.hocs.casework.HocsCaseApplication.isNullOrEmpty;
 
 @Service
 @Slf4j
@@ -55,50 +52,37 @@ public class RshCaseService {
         return new SendEmailRequest(emailAddress, personalisation);
     }
 
-    CaseData getRSHCase(UUID caseUUID) throws EntityNotFoundException {
-        if (!isNullOrEmpty(caseUUID)) {
-            CaseData caseData = caseDataService.getCase(caseUUID);
-            if (caseData != null) {
-                return caseData;
-            } else {
-                throw new EntityNotFoundException("Case not found!");
-            }
-        } else {
-            throw new EntityNotFoundException("Failed to get case, no caseUUID!");
-        }
-    }
-
-    @Transactional
-    public CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException {
+    CaseData getRSHCase(UUID caseUUID) {
+        CaseData caseData = caseDataService.getCase(caseUUID);
         if (caseData != null) {
-            CaseData caseDetails = caseDataService.createCase(CaseType.RSH);
-            if(caseDetails != null) {
-                stageDataService.createStage(caseDetails.getUuid(), StageType.RUSH_ONLY_STAGE, caseData);
-                sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
-                return caseDetails;
-            }
-            else {
-                throw new EntityCreationException("Failed to create case, no casedetails!");
-            }
+            return caseData;
         } else {
-            throw new EntityCreationException("Failed to create case, no caseData!");
+            throw new EntityNotFoundException("Case not found!");
         }
     }
 
     @Transactional
-    public CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendRshEmailRequest emailRequest) throws EntityCreationException, EntityNotFoundException, IOException {
-        if (!isNullOrEmpty(caseUUID) && caseData != null) {
-            CaseData caseDetails = caseDataService.getCase(caseUUID);
-            if (!caseDetails.getStages().isEmpty()) {
-                StageData stageData = caseDetails.getStages().iterator().next();
-                stageDataService.updateStage(caseUUID, stageData.getUuid(), caseData);
-                sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
-                return caseDetails;
-            } else {
-                throw new EntityCreationException("Failed to update case, case has no stages!");
-            }
+    public CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) {
+        CaseData caseDetails = caseDataService.createCase(CaseType.RSH);
+        if (caseDetails != null) {
+            stageDataService.createStage(caseDetails.getUuid(), StageType.RUSH_ONLY_STAGE, null, null, caseData);
+            sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
+            return caseDetails;
         } else {
-            throw new EntityCreationException("Failed to update case, no caseUUID or caseData!");
+            throw new EntityCreationException("Failed to create case, no casedetails!");
+        }
+    }
+
+    @Transactional
+    public CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendRshEmailRequest emailRequest) {
+        CaseData caseDetails = caseDataService.getCase(caseUUID);
+        if (!caseDetails.getStages().isEmpty()) {
+            StageData stageData = caseDetails.getStages().iterator().next();
+            stageDataService.updateStage(caseUUID, stageData.getUuid(), caseData);
+            sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
+            return caseDetails;
+        } else {
+            throw new EntityCreationException("Failed to update case, case has no stages!");
         }
     }
 

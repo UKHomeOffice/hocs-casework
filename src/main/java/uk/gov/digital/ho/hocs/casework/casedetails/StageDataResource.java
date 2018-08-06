@@ -4,11 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetStageResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateStageRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.*;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 
 import java.util.UUID;
@@ -26,50 +22,33 @@ class StageDataResource {
         this.stageDataService = stageDataService;
     }
 
-    @RequestMapping(value = "/case/{caseUUID}/stage", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/case/{caseUUID}/stage", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
-        StageData stageData = stageDataService.createStage(caseUUID, request.getType(), request.getData());
+        StageData stageData = stageDataService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getUserUUID(), request.getData());
         return ResponseEntity.ok(CreateStageResponse.from(stageData));
     }
 
-    @RequestMapping(value = "/case/{caseUUID}/stage/{stageUUID}", method = RequestMethod.GET)
+    @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
     public ResponseEntity<GetStageResponse> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
-        try {
-            StageData stageData = stageDataService.getStage(caseUUID, stageUUID);
-            return ResponseEntity.ok(GetStageResponse.from(stageData));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        StageData stageData = stageDataService.getStage(caseUUID, stageUUID);
+        return ResponseEntity.ok(GetStageResponse.from(stageData));
     }
 
-    @RequestMapping(value = "/case/{caseUUID}/stage/{stageUUID}", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity updateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageRequest request) {
-        try {
-            stageDataService.updateStage(caseUUID, stageUUID, request.getData());
-            return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        stageDataService.updateStage(caseUUID, stageUUID, request.getData());
+        return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/case/{caseUUID}/stage/{stageUUID}/allocate", method = RequestMethod.GET)
-    public ResponseEntity allocateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
-        try {
-            stageDataService.allocateStage(caseUUID, stageUUID);
-            return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/allocate")
+    public ResponseEntity allocateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateStageRequest allocateStageRequest) {
+        stageDataService.allocateStage(caseUUID, stageUUID, allocateStageRequest.getTeamUUID(), allocateStageRequest.getUserUUID());
+        return ResponseEntity.ok().build();
     }
 
-    @RequestMapping(value = "/case/{caseUUID}/stage/{stageUUID}/complete", method = RequestMethod.GET)
+    @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/complete")
     public ResponseEntity completeStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
-        try {
-            stageDataService.completeStage(caseUUID, stageUUID);
-            return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        stageDataService.completeStage(caseUUID, stageUUID);
+        return ResponseEntity.ok().build();
     }
-
 }

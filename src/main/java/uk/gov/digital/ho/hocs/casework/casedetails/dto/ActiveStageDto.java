@@ -36,14 +36,14 @@ public class ActiveStageDto implements Serializable {
     @JsonProperty("stageTypeDisplay")
     private String stageTypeDisplay;
 
-    @JsonProperty("assignedTeam")
-    private String assignedTeam;
+    @JsonProperty("teamUUID")
+    private UUID teamUUID;
 
     @JsonProperty("assignedTeamDisplay")
     private String assignedTeamDisplay;
 
-    @JsonProperty("assignedUser")
-    private String assignedUser;
+    @JsonProperty("userUUID")
+    private UUID userUUID;
 
     @JsonProperty("assignedUserDisplay")
     private String assignedUserDisplay;
@@ -57,9 +57,9 @@ public class ActiveStageDto implements Serializable {
                 activeStage.getCaseType().getDisplayValue(),
                 activeStage.getStageType(),
                 activeStage.getStageType().getDisplayValue(),
-                activeStage.getAssignedTeam(),
+                activeStage.getTeamUUID(),
                 activeStage.getAssignedTeamDisplay(),
-                activeStage.getAssignedUser(),
+                activeStage.getUserUUID(),
                 activeStage.getAssignedUserDisplay());
     }
 }

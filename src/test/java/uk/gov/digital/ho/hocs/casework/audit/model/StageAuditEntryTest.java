@@ -4,10 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
 import java.util.HashMap;
-import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,8 +18,9 @@ public class StageAuditEntryTest {
 
     @Test
     public void shouldConstructAllValues() {
+        CaseData caseData = new CaseData(CaseType.RSH, 1L);
 
-        StageData stageData = new StageData(UUID.randomUUID(), "anyType", new HashMap<>(), new ObjectMapper());
+        StageData stageData = new StageData(caseData, StageType.DCU_MIN_MARKUP, new HashMap<>(), new ObjectMapper());
 
         StageAuditEntry stageAuditEntry = StageAuditEntry.from(stageData);
 

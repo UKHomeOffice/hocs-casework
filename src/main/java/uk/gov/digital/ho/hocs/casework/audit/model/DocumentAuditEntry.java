@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.audit.model;
 
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;

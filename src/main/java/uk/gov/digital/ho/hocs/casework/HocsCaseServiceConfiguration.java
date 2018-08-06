@@ -21,7 +21,9 @@ public class HocsCaseServiceConfiguration {
     public HocsCaseServiceConfiguration() {
     }
 
-    public static ObjectMapper initialiseObjectMapper(ObjectMapper m) {
+    @Bean
+    public ObjectMapper initialiseObjectMapper() {
+        ObjectMapper m = new ObjectMapper();
         m.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
         m.registerModule(new JavaTimeModule());
         m.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);

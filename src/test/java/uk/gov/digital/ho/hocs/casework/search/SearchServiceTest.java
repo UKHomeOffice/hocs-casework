@@ -36,7 +36,7 @@ public class SearchServiceTest {
 
     private static Set<CaseData> getValidSet() {
         Set<CaseData> hashSet = new HashSet<>();
-        hashSet.add(new CaseData(CaseType.MIN.toString(), 0L));
+        hashSet.add(new CaseData(CaseType.MIN, 0L));
         return hashSet;
     }
 

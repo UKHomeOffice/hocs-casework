@@ -8,7 +8,6 @@ import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 
 import java.util.UUID;
@@ -26,30 +25,22 @@ class CaseDataResource {
         this.caseDataService = caseDataService;
     }
 
-    @RequestMapping(value = "/case", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/case", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         CaseData caseData = caseDataService.createCase(request.getType());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
-    @RequestMapping(value = "/case/{caseUUID}", method = RequestMethod.GET)
+    @GetMapping(value = "/case/{caseUUID}")
     public ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID) {
-        try {
-            CaseData caseData = caseDataService.getCase(caseUUID);
-            return ResponseEntity.ok(GetCaseResponse.from(caseData));
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        return ResponseEntity.ok(GetCaseResponse.from(caseData));
     }
 
-    @RequestMapping(value = "/case/{caseUUID}", method = RequestMethod.POST, consumes = APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/case/{caseUUID}", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity updateCase(@PathVariable UUID caseUUID, @RequestBody UpdateCaseRequest request) {
-        try {
-            caseDataService.updateCase(caseUUID);
-            return ResponseEntity.ok().build();
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.badRequest().build();
-        }
+        caseDataService.updateCase(caseUUID);
+        return ResponseEntity.ok().build();
     }
 
 }

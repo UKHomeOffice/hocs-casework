@@ -10,6 +10,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
@@ -33,6 +35,9 @@ public class StageDataServiceTest {
     @Mock
     private ActiveStageService activeStageService;
 
+    @Mock
+    private ObjectMapper objectMapper;
+
     private StageDataService stageDataService;
 
     @Before
@@ -41,14 +46,15 @@ public class StageDataServiceTest {
                 stageDataRepository,
                 activeStageService,
                 caseDataRepository,
-                auditService
+                auditService,
+                objectMapper
         );
     }
 
     @Ignore
     @Test
     public void shouldCreateStage() throws EntityCreationException {
-        stageDataService.createStage(uuid, StageType.DCU_MIN_MARKUP, new HashMap<>());
+        stageDataService.createStage(uuid, StageType.DCU_MIN_MARKUP, null, null, new HashMap<>());
 
         verify(auditService).writeCreateStageEvent(any(StageData.class));
         verify(stageDataRepository).save(isA(StageData.class));
@@ -56,13 +62,13 @@ public class StageDataServiceTest {
 
     @Test(expected = EntityCreationException.class)
     public void shouldCreateStageMissingUUIDException1() throws EntityCreationException {
-        stageDataService.createStage(null, StageType.DCU_MIN_MARKUP, new HashMap<>());
+        stageDataService.createStage(null, StageType.DCU_MIN_MARKUP, null, null, new HashMap<>());
     }
 
     @Test()
     public void shouldCreateStageMissingUUIDException2() {
         try {
-            stageDataService.createStage(null, StageType.DCU_MIN_MARKUP, new HashMap<>());
+            stageDataService.createStage(null, StageType.DCU_MIN_MARKUP, null, null, new HashMap<>());
         } catch (EntityCreationException e) {
             // Do nothing.
         }
@@ -72,13 +78,13 @@ public class StageDataServiceTest {
 
     @Test(expected = EntityCreationException.class)
     public void shouldCreateStageMissingTypeException1() throws EntityCreationException {
-        stageDataService.createStage(uuid, null, new HashMap<>());
+        stageDataService.createStage(uuid, null, null, null, new HashMap<>());
     }
 
     @Test()
     public void shouldCreateStageMissingTypeException2() {
         try {
-            stageDataService.createStage(uuid, null, new HashMap<>());
+            stageDataService.createStage(uuid, null, null, null, new HashMap<>());
         } catch (EntityCreationException e) {
             // Do nothing.
         }
@@ -89,7 +95,8 @@ public class StageDataServiceTest {
     @Ignore
     @Test
     public void shouldUpdateStage() throws EntityCreationException, EntityNotFoundException {
-        when(stageDataRepository.findByUuid(any())).thenReturn(new StageData(uuid, StageType.DCU_MIN_MARKUP.toString(), new HashMap<>(), new ObjectMapper()));
+        CaseData caseData = new CaseData(CaseType.MIN, 1L);
+        when(stageDataRepository.findByUuid(any())).thenReturn(new StageData(caseData, StageType.DCU_MIN_MARKUP, new HashMap<>(), new ObjectMapper()));
 
         stageDataService.completeStage(uuid, uuid);
 

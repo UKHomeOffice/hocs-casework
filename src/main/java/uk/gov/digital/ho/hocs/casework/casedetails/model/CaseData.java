@@ -55,5 +55,4 @@ public class CaseData implements Serializable {
     public CaseType getType() {
         return CaseType.valueOf(this.caseType);
     }
-
 }

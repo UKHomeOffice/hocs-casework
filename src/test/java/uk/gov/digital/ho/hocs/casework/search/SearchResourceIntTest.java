@@ -112,7 +112,7 @@ public class SearchResourceIntTest {
         assertThat(responseEntity.getBody().size()).isOne();
         assertThat(responseEntity.getBody().iterator().next().getUuid()).isEqualTo(caseUUID);
         assertThat(responseEntity.getBody().iterator().next().getReference()).isEqualTo(caseResponseEntity.getBody().getReference());
-        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN.toString());
+        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN);
     }
 
     @Test
@@ -124,7 +124,7 @@ public class SearchResourceIntTest {
         assertThat(responseEntity.getBody().size()).isOne();
         assertThat(responseEntity.getBody().iterator().next().getUuid()).isEqualTo(caseUUID);
         assertThat(responseEntity.getBody().iterator().next().getReference()).isEqualTo(caseResponseEntity.getBody().getReference());
-        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN.toString());
+        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN);
     }
 
     @Test
@@ -136,7 +136,7 @@ public class SearchResourceIntTest {
         assertThat(responseEntity.getBody().size()).isOne();
         assertThat(responseEntity.getBody().iterator().next().getUuid()).isEqualTo(caseUUID);
         assertThat(responseEntity.getBody().iterator().next().getReference()).isEqualTo(caseResponseEntity.getBody().getReference());
-        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN.toString());
+        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class SearchResourceIntTest {
         assertThat(responseEntity.getBody().size()).isOne();
         assertThat(responseEntity.getBody().iterator().next().getUuid()).isEqualTo(caseUUID);
         assertThat(responseEntity.getBody().iterator().next().getReference()).isEqualTo(caseResponseEntity.getBody().getReference());
-        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN.toString());
+        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN);
     }
 
     @Test
@@ -208,7 +208,7 @@ public class SearchResourceIntTest {
         assertThat(responseEntity.getBody().size()).isEqualTo(1);
         assertThat(responseEntity.getBody().iterator().next().getUuid()).isEqualTo(caseUUID);
         assertThat(responseEntity.getBody().iterator().next().getReference()).isEqualTo(caseResponseEntity.getBody().getReference());
-        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN.toString());
+        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN);
     }
 
     @Test
@@ -222,7 +222,7 @@ public class SearchResourceIntTest {
         assertThat(responseEntity.getBody().size()).isEqualTo(1);
         assertThat(responseEntity.getBody().iterator().next().getUuid()).isEqualTo(caseUUID);
         assertThat(responseEntity.getBody().iterator().next().getReference()).isEqualTo(caseResponseEntity.getBody().getReference());
-        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN.toString());
+        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN);
     }
 
     @Test
@@ -259,7 +259,7 @@ public class SearchResourceIntTest {
         assertThat(responseEntity.getBody().size()).isEqualTo(1);
         assertThat(responseEntity.getBody().iterator().next().getUuid()).isEqualTo(caseUUID);
         assertThat(responseEntity.getBody().iterator().next().getReference()).isEqualTo(caseResponseEntity.getBody().getReference());
-        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN.toString());
+        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN);
     }
 
     @Test
@@ -273,7 +273,7 @@ public class SearchResourceIntTest {
         assertThat(responseEntity.getBody().size()).isEqualTo(1);
         assertThat(responseEntity.getBody().iterator().next().getUuid()).isEqualTo(caseUUID);
         assertThat(responseEntity.getBody().iterator().next().getReference()).isEqualTo(caseResponseEntity.getBody().getReference());
-        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN.toString());
+        assertThat(responseEntity.getBody().iterator().next().getType()).isEqualTo(CaseType.MIN);
     }
 
     @After

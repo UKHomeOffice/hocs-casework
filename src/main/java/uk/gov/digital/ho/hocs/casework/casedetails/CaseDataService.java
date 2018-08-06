@@ -37,15 +37,15 @@ public class CaseDataService {
     }
 
     @Transactional
-    public CaseData getCase(UUID uuid) {
-        log.debug("Getting Case UUID: {}", uuid);
-        CaseData caseData = caseDataRepository.findByUuid(uuid);
-        auditService.writeGetCaseEvent(uuid);
+    public CaseData getCase(UUID caseUUID) {
+        log.debug("Getting Case UUID: {}", caseUUID);
+        CaseData caseData = caseDataRepository.findByUuid(caseUUID);
         if (caseData != null) {
+            auditService.writeGetCaseEvent(caseUUID);
             log.info("Got Case UUID: {} ({})", caseData.getUuid(), caseData.getReference());
             return caseData;
         } else {
-            throw new EntityNotFoundException("Case UUID: %s,  not found!", caseData.getUuid());
+            throw new EntityNotFoundException("Case UUID: %s, not found!", caseUUID);
         }
     }
 
@@ -58,7 +58,7 @@ public class CaseDataService {
             auditService.writeUpdateCaseEvent(caseData);
             log.info("Updated Case UUID: {} ({}),", caseData.getUuid(), caseData.getReference());
         } else {
-            throw new EntityNotFoundException("Case not found!");
+            throw new EntityNotFoundException("Case UUID: %s, not found!", caseUUID);
         }
     }
 }

@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
@@ -39,14 +41,15 @@ public class StageDataResourceTest {
 
     @Test
     public void shouldCreateStage() throws EntityCreationException {
-        UUID caseUUID = UUID.randomUUID();
 
-        when(stageDataService.createStage(any(UUID.class), any(), anyMap())).thenReturn(new StageData(caseUUID, StageType.DCU_MIN_MARKUP.toString(), new HashMap<>(), new ObjectMapper()));
-        CreateStageRequest request = new CreateStageRequest(StageType.DCU_MIN_MARKUP, data);
+
+        CaseData caseData = new CaseData(CaseType.MIN, 1l);
+        when(stageDataService.createStage(any(UUID.class), any(), any(), any(), anyMap())).thenReturn(new StageData(caseData, StageType.DCU_MIN_MARKUP, new HashMap<>(), new ObjectMapper()));
+        CreateStageRequest request = new CreateStageRequest(StageType.DCU_MIN_MARKUP, uuid, uuid, data);
 
         ResponseEntity response = stageDataResource.createStage(uuid, request);
 
-        verify(stageDataService, times(1)).createStage(uuid, StageType.DCU_MIN_MARKUP, new HashMap<>());
+        verify(stageDataService, times(1)).createStage(uuid, StageType.DCU_MIN_MARKUP, uuid, uuid, new HashMap<>());
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -54,12 +57,12 @@ public class StageDataResourceTest {
     @Test
     public void shouldCreateStageException() throws EntityCreationException {
 
-        doThrow(EntityCreationException.class).when(stageDataService).createStage(any(UUID.class), any(), anyMap());
-        CreateStageRequest request = new CreateStageRequest(stageType, data);
+        doThrow(EntityCreationException.class).when(stageDataService).createStage(any(UUID.class), any(), any(), any(), anyMap());
+        CreateStageRequest request = new CreateStageRequest(stageType, uuid, uuid, data);
 
         ResponseEntity response = stageDataResource.createStage(uuid, request);
 
-        verify(stageDataService, times(1)).createStage(uuid, stageType, new HashMap<>());
+        verify(stageDataService, times(1)).createStage(uuid, stageType, uuid, uuid, new HashMap<>());
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }

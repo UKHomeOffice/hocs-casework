@@ -14,10 +14,6 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class StageAuditEntry implements Serializable {
 
-    @Column(name = "type")
-    @Getter
-    private String type;
-
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +22,10 @@ public class StageAuditEntry implements Serializable {
     @Column(name ="uuid")
     @Getter
     private UUID uuid;
+
+    @Column(name = "type")
+    @Getter
+    private String type;
 
     @Column(name = "timestamp")
     @Getter

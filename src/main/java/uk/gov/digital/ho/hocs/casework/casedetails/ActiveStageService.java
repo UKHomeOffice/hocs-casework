@@ -24,11 +24,12 @@ public class ActiveStageService {
     }
 
     @Transactional
-    public void addActiveStage(CaseData caseData, StageData stageData, String assignedTeam, String assignedTeamDisplay, String assignedUser, String assignedUserDisplay) {
+    public void addActiveStage(CaseData caseData, StageData stageData, UUID assignedTeam, UUID assignedUser) {
         log.debug("Adding Active Stage UUID {}, Case UUID: {} ({})", stageData.getUuid(), caseData.getUuid(), caseData.getReference());
-        ActiveStage activeStage = new ActiveStage(caseData, stageData, assignedTeam, assignedTeamDisplay, assignedUser, assignedUserDisplay);
-        log.info("Added Active Stage UUID {}, Case UUID: {} ({})", stageData.getUuid(), caseData.getUuid(), caseData.getReference());
+        // TODO: Fake Data.
+        ActiveStage activeStage = new ActiveStage(caseData, stageData, assignedTeam, "FakeTeam", assignedUser, "FakeUser");
         activeStageRepository.save(activeStage);
+        log.info("Added Active Stage UUID {}, Case UUID: {} ({})", stageData.getUuid(), caseData.getUuid(), caseData.getReference());
     }
 
     //TODO: This method is a dev tool
@@ -41,6 +42,5 @@ public class ActiveStageService {
         log.debug("Removing Active Stage UUID {}, Case UUID: {}", stageUUID, caseUUID);
         activeStageRepository.deleteByStageUUID(stageUUID);
         log.info("Removing Active Stage UUID {}, Case UUID: {}", stageUUID, caseUUID);
-
     }
 }

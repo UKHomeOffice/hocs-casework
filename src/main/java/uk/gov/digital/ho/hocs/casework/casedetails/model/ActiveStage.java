@@ -35,17 +35,17 @@ public class ActiveStage implements Serializable {
     @Column(name = "stage_type")
     private String stageType;
 
-    @Column(name = "assigned_team")
+    @Column(name = "team_uuid")
     @Getter
-    private String assignedTeam;
+    private UUID teamUUID;
 
     @Column(name = "assigned_team_display")
     @Getter
     private String assignedTeamDisplay;
 
-    @Column(name = "assigned_user")
+    @Column(name = "user_uuid")
     @Getter
-    private String assignedUser;
+    private UUID userUUID;
 
     @Column(name = "assigned_user_display")
     @Getter
@@ -53,19 +53,18 @@ public class ActiveStage implements Serializable {
 
     public ActiveStage(CaseData caseData,
                        StageData stageData,
-                       String assignedTeam,
+                       UUID assignedTeam,
                        String assignedTeamDisplay,
-                       String assignedUser,
+                       UUID assignedUser,
                        String assignedUserDisplay) {
         this.caseUUID = caseData.getUuid();
         this.stageUUID = stageData.getUuid();
         this.caseReference = caseData.getReference();
         this.caseType = caseData.getType().toString();
         this.stageType = stageData.getType().toString();
-        // TODO: User and Team models.
-        this.assignedTeam = assignedTeam;
+        this.teamUUID = assignedTeam;
         this.assignedTeamDisplay = assignedTeamDisplay;
-        this.assignedUser = assignedUser;
+        this.userUUID = assignedUser;
         this.assignedUserDisplay = assignedUserDisplay;
 
     }
