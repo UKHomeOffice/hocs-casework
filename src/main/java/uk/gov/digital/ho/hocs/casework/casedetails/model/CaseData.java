@@ -2,11 +2,11 @@ package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -21,12 +21,6 @@ public class CaseData implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "type")
-    private String caseType;
-
-    @Column(name = "reference")
-    @Getter
-    private String reference;
 
     @Column(name = "uuid")
     @Getter
@@ -34,7 +28,12 @@ public class CaseData implements Serializable {
 
     @Column(name = "timestamp")
     @Getter
-    private LocalDateTime timestamp = LocalDateTime.now();
+    private LocalDateTime timestamp;
+
+    @Transient
+    @Getter
+    @Setter
+    private CaseInputData caseInputData;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
@@ -47,12 +46,8 @@ public class CaseData implements Serializable {
     private Set<DocumentData> documents = new HashSet<>();
 
     public CaseData(CaseType caseType, Long caseNumber) {
+        this.timestamp = LocalDateTime.now();
         this.uuid = UUID.randomUUID();
-        this.caseType = caseType.toString();
-        this.reference = String.format("%s/%07d/%s", caseType.toString(), caseNumber, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy")));
-    }
-
-    public CaseType getType() {
-        return CaseType.valueOf(this.caseType);
+        this.caseInputData = new CaseInputData(uuid, caseType, caseNumber, timestamp);
     }
 }

@@ -51,20 +51,18 @@ public class ActiveStage implements Serializable {
     @Getter
     private String assignedUserDisplay;
 
-    public ActiveStage(CaseData caseData,
+    public ActiveStage(CaseInputData caseInputData,
                        StageData stageData,
-                       UUID assignedTeam,
                        String assignedTeamDisplay,
-                       UUID assignedUser,
                        String assignedUserDisplay) {
-        this.caseUUID = caseData.getUuid();
+        this.caseUUID = caseInputData.getCaseUUID();
         this.stageUUID = stageData.getUuid();
-        this.caseReference = caseData.getReference();
-        this.caseType = caseData.getType().toString();
+        this.caseReference = caseInputData.getReference();
+        this.caseType = caseInputData.getTypeString();
         this.stageType = stageData.getType().toString();
-        this.teamUUID = assignedTeam;
+        this.teamUUID = stageData.getTeamUUID();
         this.assignedTeamDisplay = assignedTeamDisplay;
-        this.userUUID = assignedUser;
+        this.userUUID = stageData.getUserUUID();
         this.assignedUserDisplay = assignedUserDisplay;
 
     }
@@ -75,5 +73,12 @@ public class ActiveStage implements Serializable {
 
     public CaseType getCaseType() {
         return CaseType.valueOf(this.caseType);
+    }
+
+    public void allocate(UUID teamUUID, String assignedTeamDisplay, UUID userUUID, String assignedUserDisplay) {
+        this.teamUUID = teamUUID;
+        this.assignedTeamDisplay = assignedTeamDisplay;
+        this.userUUID = userUUID;
+        this.assignedUserDisplay = assignedUserDisplay;
     }
 }

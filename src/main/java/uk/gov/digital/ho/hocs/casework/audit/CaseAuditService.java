@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.audit;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
@@ -80,7 +79,7 @@ class CaseAuditService {
         caseMap.put(columnNameFormat(caseName, "UUID"), caseAuditEntry.getUuid().toString());
         caseMap.put(columnNameFormat(caseName, "Type"), caseAuditEntry.getType());
         caseMap.put(columnNameFormat(caseName, "Timestamp"), caseAuditEntry.getTimestamp().toString());
-        caseMap.put(columnNameFormat(caseName, "Reference"), caseAuditEntry.getReference());
+        //caseMap.put(columnNameFormat(caseName, "Reference"), caseAuditEntry.getReference());
 
         return caseMap;
     }
@@ -94,15 +93,15 @@ class CaseAuditService {
         stageMap.put(columnNameFormat(stageName, "Timestamp"), stageAuditEntry.getTimestamp().toString());
         stageMap.put(columnNameFormat(stageName, "CaseUUID"), stageAuditEntry.getCaseUUID().toString());
 
-        try {
-            Map<String, String> dataMap = objectMapper.readValue(stageAuditEntry.getData(), new TypeReference<HashMap<String, String>>() {
-            });
+        //try {
+        // Map<String, String> dataMap = objectMapper.readValue(stageAuditEntry.getData(), new TypeReference<HashMap<String, String>>() {
+        // });
 
             // We can't use putAll here because we want to change the Key name
-            dataMap.forEach((key, value) -> stageMap.put(columnNameFormat(stageName, key), value));
-        } catch (IOException e) {
-            log.error(e.toString());
-        }
+        // dataMap.forEach((key, value) -> stageMap.put(columnNameFormat(stageName, key), value));
+        //} catch (IOException e) {
+        //    log.error(e.toString());
+        // }
 
         return stageMap;
     }

@@ -24,9 +24,6 @@ CREATE INDEX idx_active_stage_assigned_team
 CREATE INDEX idx_active_stage_assigned_user
   ON active_stage (user_uuid);
 
-
-ALTER TABLE stage_data
-  add column case_reference TEXT NOT NULL;
 ALTER TABLE stage_data
   add column team_uuid UUID;
 ALTER TABLE stage_data

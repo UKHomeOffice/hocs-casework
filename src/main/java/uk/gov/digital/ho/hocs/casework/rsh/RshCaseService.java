@@ -65,8 +65,8 @@ public class RshCaseService {
     public CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) {
         CaseData caseDetails = caseDataService.createCase(CaseType.RSH);
         if (caseDetails != null) {
-            stageDataService.createStage(caseDetails.getUuid(), StageType.RUSH_ONLY_STAGE, null, null, caseData);
-            sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
+            stageDataService.createStage(caseDetails.getUuid(), StageType.RUSH_ONLY_STAGE, null, null);
+            sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getCaseInputData().getReference(), caseData.get("outcome"));
             return caseDetails;
         } else {
             throw new EntityCreationException("Failed to create case, no casedetails!");
@@ -78,8 +78,8 @@ public class RshCaseService {
         CaseData caseDetails = caseDataService.getCase(caseUUID);
         if (!caseDetails.getStages().isEmpty()) {
             StageData stageData = caseDetails.getStages().iterator().next();
-            stageDataService.updateStage(caseUUID, stageData.getUuid(), caseData);
-            sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
+            //stageDataService.updateStage(caseUUID, stageData.getUuid(), caseData);
+            sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getCaseInputData().getReference(), caseData.get("outcome"));
             return caseDetails;
         } else {
             throw new EntityCreationException("Failed to update case, case has no stages!");

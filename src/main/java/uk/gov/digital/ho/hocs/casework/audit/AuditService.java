@@ -75,6 +75,11 @@ public class AuditService {
         save(auditEntry);
     }
 
+    public void writeCompleteStageEvent(UUID stageUUID) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), stageUUID.toString(), AuditAction.COMPLETE_STAGE);
+        save(auditEntry);
+    }
+
     public void writeAddDocumentEvent(DocumentData documentData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.ADD_DOCUMENT);
         save(auditEntry);
@@ -91,7 +96,9 @@ public class AuditService {
     }
 
     private void save(AuditEntry auditEntry) {
-        auditRepository.save(auditEntry);
+        //auditRepository.save(auditEntry);
     }
 
+    public void writeAllocateStageEvent(StageData stageData) {
+    }
 }

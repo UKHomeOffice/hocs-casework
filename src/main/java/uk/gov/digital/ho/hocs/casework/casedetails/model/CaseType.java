@@ -4,7 +4,9 @@ import lombok.Getter;
 
 public enum CaseType {
     RSH("WR Response"),
-    MIN("Ministerial");
+    MIN("Ministerial"),
+    TRO("Treat Official"),
+    DTEN("Number 10");
 
     @Getter
     private String displayValue;

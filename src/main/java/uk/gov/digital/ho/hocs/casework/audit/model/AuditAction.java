@@ -5,6 +5,7 @@ public enum AuditAction {
     CREATE_STAGE,
     UPDATE_CASE,
     UPDATE_STAGE,
+    COMPLETE_STAGE,
     GET_CASE,
     SEARCH,
     SEND_EMAIL,

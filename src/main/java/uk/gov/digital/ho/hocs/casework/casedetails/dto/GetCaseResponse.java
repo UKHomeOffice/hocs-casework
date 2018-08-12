@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -33,6 +34,9 @@ public class GetCaseResponse {
     @JsonProperty("documents")
     private Set<GetDocumentResponse> documents;
 
+    @JsonProperty("data")
+    private String data;
+
     public static GetCaseResponse from(CaseData caseData) {
         Set<GetStageResponse> stageResponses = caseData.getStages()
                 .stream()
@@ -44,13 +48,22 @@ public class GetCaseResponse {
                 .map(GetDocumentResponse::from)
                 .collect(Collectors.toSet());
 
+        String caseRef = null;
+        String data = null;
+        CaseInputData caseInputData = caseData.getCaseInputData();
+        if (caseInputData != null) {
+            caseRef = caseInputData.getReference();
+            data = caseInputData.getData();
+        }
+
         return new GetCaseResponse(
-                caseData.getType().toString(),
-                caseData.getReference(),
+                caseData.getCaseInputData().getTypeString(),
+                caseRef,
                 caseData.getUuid(),
                 caseData.getTimestamp(),
                 stageResponses,
-                documentResponses
+                documentResponses,
+                data
         );
     }
 }
