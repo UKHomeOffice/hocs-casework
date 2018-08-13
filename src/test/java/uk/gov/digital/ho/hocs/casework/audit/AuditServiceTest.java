@@ -188,7 +188,7 @@ public class AuditServiceTest {
     @Test
     public void shouldWriteAddDocumentEvent() {
         DocumentData documentData = new DocumentData();
-        auditService.writeAddDocumentEvent(documentData);
+        auditService.writeCreateDocumentEvent(documentData);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -198,7 +198,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteAddDocumentEventNull() {
-        auditService.writeAddDocumentEvent(null);
+        auditService.writeCreateDocumentEvent(null);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());

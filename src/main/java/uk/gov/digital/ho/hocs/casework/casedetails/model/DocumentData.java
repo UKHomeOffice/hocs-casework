@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Where;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -59,6 +60,9 @@ public class DocumentData implements Serializable {
     private Boolean deleted = Boolean.FALSE;
 
     public DocumentData(UUID caseUUID, DocumentType type, String name) {
+        if (caseUUID == null || type == null || name == null) {
+            throw new EntityCreationException("Cannot create DocumentData(%s, %s, %s).", caseUUID, type, name);
+        }
         this.uuid = UUID.randomUUID();
         this.type = type;
         this.name = name;
@@ -66,6 +70,9 @@ public class DocumentData implements Serializable {
     }
 
     public void update(String fileLink, String pdfLink, DocumentStatus status) {
+        if (fileLink == null || status == null) {
+            throw new EntityCreationException("Cannot call DocumentData.update(%s, %s, %s).", fileLink, pdfLink, status);
+        }
         this.fileLink = fileLink;
         this.pdfLink = pdfLink;
         this.status = status;

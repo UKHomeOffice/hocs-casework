@@ -33,27 +33,27 @@ public class DocumentDataService {
         log.debug("Creating Document: {}, Case UUID: {}", displayName, caseUUID);
         DocumentData documentData = new DocumentData(caseUUID, type, displayName);
         documentRepository.save(documentData);
-        auditService.writeAddDocumentEvent(documentData);
+        auditService.writeCreateDocumentEvent(documentData);
         log.info("Created Document: {}, Case UUID: {}", documentData.getUuid(), documentData.getCaseUUID());
         return documentData;
     }
 
     @Transactional
-    public void updateDocumentFromQueue(UpdateDocumentFromQueueRequest request) {
-        this.updateDocument(request.getCaseUUID(), request.getUuid(), request.getStatus(), request.getFileLink(), request.getPdfLink());
-    }
-
-    @Transactional
-    public void updateDocument(UUID caseUUID, UUID documentUUID, DocumentStatus status, String fileLink, String pdfLink) {
-        log.debug("Updating Document: {}, Case {}", documentUUID, caseUUID);
+    public void updateDocument(UUID documentUUID, DocumentStatus status, String fileLink, String pdfLink) {
+        log.debug("Updating Document: {}", documentUUID);
         DocumentData documentData = documentRepository.findByUuid(documentUUID);
         if (documentData != null) {
             documentData.update(fileLink, pdfLink, status);
             documentRepository.save(documentData);
             auditService.writeUpdateDocumentEvent(documentData);
-            log.info("Updated Document: {}, Case {}", documentData.getUuid(), documentData.getCaseUUID());
+            log.info("Updated Document: {}", documentData.getUuid());
         } else {
-            throw new EntityNotFoundException("Document UUID: %s, Case UUID: %s not found!", documentUUID.toString(), caseUUID.toString());
+            throw new EntityNotFoundException("Document UUID: %s, not found!", documentUUID);
         }
+    }
+
+    @Transactional
+    public void updateDocumentFromQueue(UpdateDocumentFromQueueRequest request) {
+        updateDocument(request.getUuid(), request.getStatus(), request.getFileLink(), request.getPdfLink());
     }
 }

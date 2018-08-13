@@ -8,10 +8,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-
 @ControllerAdvice
 @Slf4j
-public class ResourceExceptionHandler {
+public class RestResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityCreationException.class)
     public ResponseEntity handle(EntityCreationException e) {

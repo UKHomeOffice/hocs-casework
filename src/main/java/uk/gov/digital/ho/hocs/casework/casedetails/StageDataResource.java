@@ -31,15 +31,16 @@ class StageDataResource {
         return ResponseEntity.ok(CreateStageResponse.from(stageData));
     }
 
+    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/allocate")
+    public ResponseEntity allocateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateStageRequest allocateStageRequest) {
+        stageDataService.allocateStage(stageUUID, allocateStageRequest.getTeamUUID(), allocateStageRequest.getUserUUID());
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
     public ResponseEntity<GetStageResponse> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
         StageData stageData = stageDataService.getStage(stageUUID);
         return ResponseEntity.ok(GetStageResponse.from(stageData));
     }
 
-    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/allocate")
-    public ResponseEntity allocateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateStageRequest allocateStageRequest) {
-        stageDataService.allocateStage(stageUUID, allocateStageRequest.getTeamUUID(), allocateStageRequest.getUserUUID());
-        return ResponseEntity.ok().build();
-    }
 }

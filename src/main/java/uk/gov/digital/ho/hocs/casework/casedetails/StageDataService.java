@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseInputDataRepository;
@@ -17,10 +18,10 @@ import java.util.UUID;
 @Slf4j
 public class StageDataService {
 
-    private final AuditService auditService;
-    private final ActiveStageService activeStageService;
     private final StageDataRepository stageDataRepository;
     private final CaseInputDataRepository caseInputDataRepository;
+    private final ActiveStageService activeStageService;
+    private final AuditService auditService;
 
     @Autowired
     public StageDataService(StageDataRepository stageDataRepository,
@@ -57,20 +58,22 @@ public class StageDataService {
             auditService.writeAllocateStageEvent(stageData);
             log.info("Allocated Stage UUID: {}, User {}, Team {}", stageUUID, userUUID, teamUUID);
         } else {
-            throw new EntityNotFoundException("Stage UUID: %s not found!", stageUUID.toString());
+            throw new EntityNotFoundException("Stage UUID: %s not found!", stageUUID);
         }
     }
 
+    @Transactional
     public StageData getStage(UUID stageUUID) {
         log.debug("Getting Stage UUID: {}", stageUUID);
         StageData stageData = stageDataRepository.findByUuid(stageUUID);
-        // TODO: Audit.
         if (stageData != null) {
-            stageData.setCaseInputData(caseInputDataRepository.findByCaseUUID(stageData.getCaseUUID()));
+            CaseInputData caseInputData = caseInputDataRepository.findByCaseUUID(stageData.getCaseUUID());
+            auditService.writeGetStageEvent(stageUUID);
+            stageData.setCaseInputData(caseInputData);
             log.info("Got Stage UUID: {}", stageData.getUuid());
             return stageData;
         } else {
-            throw new EntityNotFoundException("Stage UUID: %s not found!", stageUUID.toString());
+            throw new EntityNotFoundException("Stage UUID: %s not found!", stageUUID);
         }
     }
 }

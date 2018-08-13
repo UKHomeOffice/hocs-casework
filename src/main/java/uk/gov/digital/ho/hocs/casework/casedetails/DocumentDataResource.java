@@ -35,7 +35,7 @@ class DocumentDataResource {
 
     @PostMapping(value = "/case/{caseUUID}/document/{documentUUID}", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity updateDocument(@PathVariable UUID caseUUID, @PathVariable UUID documentUUID, @RequestBody UpdateDocumentRequest request) {
-        stageDataService.updateDocument(caseUUID, documentUUID, request.getStatus(), request.getFileLink(), request.getPdfLink());
+        stageDataService.updateDocument(documentUUID, request.getStatus(), request.getFileLink(), request.getPdfLink());
         return ResponseEntity.ok().build();
     }
 }

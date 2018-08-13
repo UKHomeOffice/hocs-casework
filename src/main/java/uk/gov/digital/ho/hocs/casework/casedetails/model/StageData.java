@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.casedetails.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -47,10 +48,13 @@ public class StageData implements Serializable {
     @Setter
     private CaseInputData caseInputData;
 
-    public StageData(UUID caseDataUUID, StageType type) {
+    public StageData(UUID caseUUID, StageType stageType) {
+        if (caseUUID == null || stageType == null) {
+            throw new EntityCreationException("Cannot create StageData(%s, %s).", caseUUID, stageType);
+        }
         this.uuid = UUID.randomUUID();
-        this.stageType = type.toString();
-        this.caseUUID = caseDataUUID;
+        this.stageType = stageType.toString();
+        this.caseUUID = caseUUID;
     }
 
     public StageType getType() {
@@ -58,13 +62,11 @@ public class StageData implements Serializable {
     }
 
     public void allocate(UUID teamUUID, UUID userUUID) {
+        if (teamUUID == null) {
+            throw new EntityCreationException("Cannot call StageData.allocate(%s, %s).", teamUUID, userUUID);
+        }
         this.teamUUID = teamUUID;
         this.userUUID = userUUID;
-    }
-
-    public void unallocate() {
-        this.teamUUID = null;
-        this.userUUID = null;
     }
 
 }

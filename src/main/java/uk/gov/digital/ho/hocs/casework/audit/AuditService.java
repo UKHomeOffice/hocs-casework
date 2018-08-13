@@ -80,7 +80,7 @@ public class AuditService {
         save(auditEntry);
     }
 
-    public void writeAddDocumentEvent(DocumentData documentData) {
+    public void writeCreateDocumentEvent(DocumentData documentData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.ADD_DOCUMENT);
         save(auditEntry);
     }
@@ -100,5 +100,8 @@ public class AuditService {
     }
 
     public void writeAllocateStageEvent(StageData stageData) {
+    }
+
+    public void writeGetStageEvent(UUID stageUUID) {
     }
 }
