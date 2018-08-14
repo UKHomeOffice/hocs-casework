@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
@@ -13,7 +12,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "case_data")
-@NoArgsConstructor
 public class CaseData implements Serializable {
 
     @Id
@@ -45,9 +43,8 @@ public class CaseData implements Serializable {
     @Getter
     private Set<DocumentData> documents = new HashSet<>();
 
-    public CaseData(CaseType caseType, Long caseNumber) {
+    public CaseData() {
         this.timestamp = LocalDateTime.now();
         this.uuid = UUID.randomUUID();
-        this.caseInputData = new CaseInputData(uuid, caseType, caseNumber, timestamp);
     }
 }

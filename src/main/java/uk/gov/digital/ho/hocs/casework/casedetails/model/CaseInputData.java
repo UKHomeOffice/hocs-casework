@@ -41,10 +41,13 @@ public class CaseInputData implements Serializable {
     @Getter
     private String reference;
 
-    public CaseInputData(UUID caseUUID, CaseType caseType, Long caseNumber, LocalDateTime localDateTime) {
+    public CaseInputData(UUID caseUUID, CaseType caseType, Long caseNumber) {
+        if (caseUUID == null || caseType == null || caseNumber == null) {
+            throw new EntityCreationException("Cannot create CaseInputData(%s, %s,%s).", caseUUID, caseType, caseNumber);
+        }
         this.caseUUID = caseUUID;
         this.caseType = caseType.toString();
-        this.reference = String.format("%s/%07d/%s", caseType.toString(), caseNumber, localDateTime.format(DateTimeFormatter.ofPattern("yy")));
+        this.reference = String.format("%s/%07d/%s", caseType.toString(), caseNumber, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy")));
         this.data = "{}";
     }
 
@@ -65,10 +68,16 @@ public class CaseInputData implements Serializable {
     }
 
     public void updateData(Map<String, String> newData, ObjectMapper objectMapper) {
+        ObjectMapper om;
+        if (objectMapper == null) {
+            om = new ObjectMapper();
+        } else {
+            om = objectMapper;
+        }
         HashMap<String, String> dataMap;
         if (this.data != null) {
             try {
-                dataMap = objectMapper.readValue(this.data, new TypeReference<Map<String, String>>() {
+                dataMap = om.readValue(this.data, new TypeReference<Map<String, String>>() {
                 });
             } catch (IOException e) {
                 throw new EntityCreationException("Object Mapper failed to read value!");
@@ -77,6 +86,6 @@ public class CaseInputData implements Serializable {
             dataMap = new HashMap<>();
         }
         dataMap.putAll(newData);
-        this.data = getDataString(dataMap, objectMapper);
+        this.data = getDataString(dataMap, om);
     }
 }

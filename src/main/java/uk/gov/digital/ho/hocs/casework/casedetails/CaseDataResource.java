@@ -36,10 +36,4 @@ class CaseDataResource {
         return ResponseEntity.ok(GetCaseResponse.from(caseData));
     }
 
-    //@PostMapping(value = "/case/{caseUUID}", consumes = APPLICATION_JSON_UTF8_VALUE)
-    //public ResponseEntity updateCase(@PathVariable UUID caseUUID, @RequestBody UpdateCaseRequest request) {
-    //    caseDataService.updateCase(caseUUID);
-    //    return ResponseEntity.ok().build();
-    //}
-
 }

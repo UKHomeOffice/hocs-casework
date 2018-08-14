@@ -52,7 +52,7 @@ public class RshCaseDataServiceTest {
     public void shouldCreateRshCase()  {
 
         UUID uuid = UUID.randomUUID();
-        CaseData caseData = new CaseData(CaseType.RSH, 1L);
+        CaseData caseData = new CaseData();
         when(caseDataService.createCase(eq(CaseType.RSH))).thenReturn(caseData);
 
         Map<String, String> data = new HashMap<>();
@@ -107,7 +107,7 @@ public class RshCaseDataServiceTest {
     public void shouldCreateRshCaseNullCaseCreate2()  {
 
         when(caseDataService.createCase(eq(CaseType.RSH))).thenReturn(null);
-        CaseData caseData = new CaseData(CaseType.RSH, 1L);
+        CaseData caseData = new CaseData();
 
         try {
             rshCaseService.createRshCase(
@@ -125,7 +125,7 @@ public class RshCaseDataServiceTest {
     @Test
     public void shouldCreateRshCaseNullEmail() {
 
-        CaseData caseData = new CaseData(CaseType.RSH, 1L);
+        CaseData caseData = new CaseData();
         when(caseDataService.createCase(eq(CaseType.RSH))).thenReturn(caseData);
 
         CaseData caseDataReturn = rshCaseService.createRshCase(
@@ -141,7 +141,7 @@ public class RshCaseDataServiceTest {
 
     @Test
     public void shouldUpdateRshCase() {
-        CaseData caseData = new CaseData(CaseType.RSH, 1L);
+        CaseData caseData = new CaseData();
         //StageData stageData = new StageData(caseData, StageType.RUSH_ONLY_STAGE, new HashSet<>());
 
         //caseData.getStages().add(stageData);
@@ -196,7 +196,7 @@ public class RshCaseDataServiceTest {
     @Test(expected = EntityCreationException.class)
     public void shouldUpdateRshCaseNoStage1() {
 
-        CaseData caseData = new CaseData(CaseType.RSH, 1L);
+        CaseData caseData = new CaseData();
 
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
 
@@ -211,7 +211,7 @@ public class RshCaseDataServiceTest {
 
     @Test
     public void shouldUpdateRshCaseNoStage2() {
-        CaseData caseData = new CaseData(CaseType.RSH, 1L);
+        CaseData caseData = new CaseData();
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
 
         Map<String, String> data = new HashMap<>();
@@ -232,7 +232,7 @@ public class RshCaseDataServiceTest {
 
     @Test(expected = EntityCreationException.class)
     public void shouldUpdateRshCaseNullCaseData1() {
-        CaseData caseData = new CaseData(CaseType.RSH, 1L);
+        CaseData caseData = new CaseData();
 
         SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
         rshCaseService.updateRshCase(
@@ -243,7 +243,7 @@ public class RshCaseDataServiceTest {
 
     @Test
     public void shouldUpdateRshCaseNullCaseData2() {
-        CaseData caseData = new CaseData(CaseType.RSH, 1L);
+        CaseData caseData = new CaseData();
         //StageData stageData = new StageData(caseData, StageType.RUSH_ONLY_STAGE, new HashSet<>());
 
         SendRshEmailRequest sendEmailRequest = new SendRshEmailRequest();
@@ -263,7 +263,7 @@ public class RshCaseDataServiceTest {
 
     @Test()
     public void shouldUpdateRshCaseNullEmail() {
-        CaseData caseData = new CaseData(CaseType.RSH, 1L);
+        CaseData caseData = new CaseData();
         //StageData stageData = new StageData(caseData, StageType.RUSH_ONLY_STAGE, new HashSet<>());
         //caseData.getStages().add(stageData);
         when(caseDataService.getCase(any(UUID.class))).thenReturn(caseData);
@@ -285,7 +285,7 @@ public class RshCaseDataServiceTest {
 
     @Test
     public void shouldGetCase() {
-        CaseData caseData = new CaseData(CaseType.RSH, 1L);
+        CaseData caseData = new CaseData();
         //StageData stageData = new StageData(caseData, StageType.RUSH_ONLY_STAGE, new HashSet<>());
         //caseData.getStages().add(stageData);
       

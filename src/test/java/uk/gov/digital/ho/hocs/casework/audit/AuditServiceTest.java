@@ -13,6 +13,7 @@ import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.repository.AuditRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.rsh.email.dto.SendEmailRequest;
@@ -107,7 +108,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteCreateCaseEvent() {
-        auditService.writeCreateCaseEvent(new CaseData());
+        auditService.writeCreateCaseEvent(new CaseData(), new CaseInputData());
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -117,7 +118,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteCreateCaseEventNull() {
-        auditService.writeCreateCaseEvent(null);
+        auditService.writeCreateCaseEvent(null, new CaseInputData());
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());

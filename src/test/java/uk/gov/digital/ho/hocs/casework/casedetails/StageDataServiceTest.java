@@ -291,7 +291,6 @@ public class StageDataServiceTest {
         when(stageDataRepository.findByUuid(uuid)).thenReturn(null);
 
         stageDataService.getStage(uuid);
-
     }
 
     @Test

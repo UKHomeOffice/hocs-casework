@@ -4,7 +4,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -13,7 +12,7 @@ public class StageAuditEntryTest {
 
     @Test
     public void shouldConstructAllValues() {
-        CaseData caseData = new CaseData(CaseType.RSH, 1L);
+        CaseData caseData = new CaseData();
 
         //StageData stageData = new StageData(caseData, StageType.DCU_MIN_MARKUP, new HashSet<>());
 

@@ -9,7 +9,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
@@ -36,7 +35,7 @@ public class SearchServiceTest {
 
     private static Set<CaseData> getValidSet() {
         Set<CaseData> hashSet = new HashSet<>();
-        hashSet.add(new CaseData(CaseType.MIN, 0L));
+        hashSet.add(new CaseData());
         return hashSet;
     }
 

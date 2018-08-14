@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.repository.AuditRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.rsh.email.dto.SendEmailRequest;
@@ -55,7 +56,7 @@ public class AuditService {
         save(auditEntry);
     }
 
-    public void writeCreateCaseEvent(CaseData caseData) {
+    public void writeCreateCaseEvent(CaseData caseData, CaseInputData caseInputData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), caseData, AuditAction.CREATE_CASE);
         save(auditEntry);
     }
