@@ -42,7 +42,7 @@ class ActiveStageResource {
         return ResponseEntity.ok(GetActiveStageResponse.from(activeStages));
     }
 
-    @GetMapping(value = "/stage/{stageUUID}/complete")
+    @GetMapping(value = "/stage/{stageUUID}/complete", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity completeStage(@PathVariable UUID stageUUID) {
         activeStageService.completeStage(stageUUID);
         return ResponseEntity.ok().build();

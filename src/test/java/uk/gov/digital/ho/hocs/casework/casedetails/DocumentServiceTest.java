@@ -164,10 +164,6 @@ public class DocumentServiceTest {
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotUpdateDocumentWhenDocumentUUIDIsNullException() {
 
-        UUID uuid = UUID.randomUUID();
-        String displayName = "name";
-        DocumentType documentType = DocumentType.ORIGINAL;
-        DocumentData documentData = new DocumentData(uuid, documentType, displayName);
         DocumentStatus documentStatus = DocumentStatus.UPLOADED;
         String link = "";
 
@@ -177,10 +173,6 @@ public class DocumentServiceTest {
     @Test()
     public void shouldNotUpdateDocumentWhenDocumentUUIDIsNull() {
 
-        UUID uuid = UUID.randomUUID();
-        String displayName = "name";
-        DocumentType documentType = DocumentType.ORIGINAL;
-        DocumentData documentData = new DocumentData(uuid, documentType, displayName);
         DocumentStatus documentStatus = DocumentStatus.UPLOADED;
         String link = "";
 
