@@ -4,24 +4,23 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStage;
 
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class GetActiveStageResponse {
+public class GetActiveStagesResponse {
 
     @JsonProperty("activeStages")
-    private Set<ActiveStageDto> activeStages;
+    private Set<ActiveStage> activeStages;
 
-    public static GetActiveStageResponse from(Set<ActiveStage> activeStages) {
-        Set<ActiveStageDto> stageResponses = activeStages
+    public static GetActiveStagesResponse from(Set<uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStage> activeStages) {
+        Set<ActiveStage> stageResponses = activeStages
                 .stream()
-                .map(ActiveStageDto::from)
+                .map(ActiveStage::from)
                 .collect(Collectors.toSet());
 
-        return new GetActiveStageResponse(stageResponses);
+        return new GetActiveStagesResponse(stageResponses);
     }
 }

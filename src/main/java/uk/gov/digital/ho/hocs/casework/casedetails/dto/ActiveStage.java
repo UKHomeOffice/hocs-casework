@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
@@ -13,7 +12,7 @@ import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class ActiveStageDto implements Serializable {
+public class ActiveStage implements Serializable {
 
     @JsonProperty("caseUUID")
     private UUID caseUUID;
@@ -48,8 +47,8 @@ public class ActiveStageDto implements Serializable {
     @JsonProperty("assignedUserDisplay")
     private String assignedUserDisplay;
 
-    public static ActiveStageDto from(ActiveStage activeStage) {
-        return new ActiveStageDto(
+    public static ActiveStage from(uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStage activeStage) {
+        return new ActiveStage(
                 activeStage.getCaseUUID(),
                 activeStage.getStageUUID(),
                 activeStage.getCaseReference(),

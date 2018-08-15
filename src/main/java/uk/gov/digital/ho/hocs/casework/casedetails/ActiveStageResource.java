@@ -4,8 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetActiveStageResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetActiveStagesRequest;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetActiveStagesResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStage;
 
 import java.util.Set;
@@ -25,21 +25,21 @@ class ActiveStageResource {
     }
 
     @GetMapping(value = "/stage/active", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<GetActiveStageResponse> getActiveStages() {
+    public ResponseEntity<GetActiveStagesResponse> getActiveStages() {
         Set<ActiveStage> activeStages = activeStageService.getActiveCases();
-        return ResponseEntity.ok(GetActiveStageResponse.from(activeStages));
+        return ResponseEntity.ok(GetActiveStagesResponse.from(activeStages));
     }
 
     @GetMapping(value = "/stage/active/{userUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<GetActiveStageResponse> getActiveStagesByUserUUID(@PathVariable UUID userUUID) {
+    public ResponseEntity<GetActiveStagesResponse> getActiveStagesByUserUUID(@PathVariable UUID userUUID) {
         Set<ActiveStage> activeStages = activeStageService.getActiveStagesByUserUUID(userUUID);
-        return ResponseEntity.ok(GetActiveStageResponse.from(activeStages));
+        return ResponseEntity.ok(GetActiveStagesResponse.from(activeStages));
     }
 
     @PostMapping(value = "/stage/active/team/", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<GetActiveStageResponse> getActiveStagesByTeamUUIDs(@RequestBody GetActiveStagesRequest request) {
+    public ResponseEntity<GetActiveStagesResponse> getActiveStagesByTeamUUIDs(@RequestBody GetActiveStagesRequest request) {
         Set<ActiveStage> activeStages = activeStageService.getActiveStagesByTeamUUID(request.getTeams());
-        return ResponseEntity.ok(GetActiveStageResponse.from(activeStages));
+        return ResponseEntity.ok(GetActiveStagesResponse.from(activeStages));
     }
 
     @GetMapping(value = "/stage/{stageUUID}/complete", produces = APPLICATION_JSON_UTF8_VALUE)

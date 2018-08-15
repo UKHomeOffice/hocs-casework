@@ -71,9 +71,9 @@ public class AuditService {
         save(auditEntry);
     }
 
-    public void writeUpdateStageEvent(StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.UPDATE_STAGE);
-        save(auditEntry);
+    public void writeUpdateStageEvent(UUID stageUUID, CaseInputData caseInputData) {
+        //AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.UPDATE_STAGE);
+        //save(auditEntry);
     }
 
     public void writeCompleteStageEvent(UUID stageUUID) {

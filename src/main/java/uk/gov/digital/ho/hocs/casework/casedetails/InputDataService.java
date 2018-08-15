@@ -37,7 +37,7 @@ public class InputDataService {
         caseInputData.updateData(data, objectMapper);
         caseInputDataRepository.save(caseInputData);
         // TODO: this is wrong. - doesn't capture data anymore
-        //auditService.writeUpdateStageEvent(caseInputData);
+        auditService.writeUpdateStageEvent(stageUUID, caseInputData);
         log.info("Updated Stage UUID: {}", stageUUID);
     }
 }
