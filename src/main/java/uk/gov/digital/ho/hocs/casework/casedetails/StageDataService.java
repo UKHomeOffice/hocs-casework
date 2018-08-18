@@ -47,10 +47,10 @@ public class StageDataService {
         log.debug("Allocating Stage UUID: {}, User {}, Team {}", stageUUID, userUUID, teamUUID);
         // TODO: this if should really be refactored into a 'User' model, revisit when we do the personService stuff.
         if (stageUUID == null) {
-            throw new EntityNotFoundException("Cannot call allocateStage(%s, %s, %s).", stageUUID, teamUUID, userUUID);
+            throw new EntityNotFoundException("Cannot call allocateStage(null, %s, %s).", teamUUID, userUUID);
         }
         if (teamUUID == null) {
-            throw new EntityCreationException("Cannot call allocateStage(%s, %s, %s).", stageUUID, teamUUID, userUUID);
+            throw new EntityCreationException("Cannot call allocateStage(%s, null, %s).", stageUUID, userUUID);
         }
 
         if (userUUID == null) {

@@ -34,7 +34,7 @@ public class CaseInputData implements Serializable {
 
     public CaseInputData(UUID caseUUID) {
         if (caseUUID == null) {
-            throw new EntityCreationException("Cannot create CaseInputData(%s).", caseUUID);
+            throw new EntityCreationException("Cannot create CaseInputData(null).");
         }
         this.caseUUID = caseUUID;
         this.data = "{}";
