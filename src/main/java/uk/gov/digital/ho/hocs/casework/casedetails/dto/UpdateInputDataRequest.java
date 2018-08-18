@@ -8,7 +8,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 @Getter
-public class UpdateStageRequest {
+public class UpdateInputDataRequest {
 
     @JsonProperty("data")
     private Map<String, String> data;

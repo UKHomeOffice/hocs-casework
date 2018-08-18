@@ -7,7 +7,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
 import java.util.UUID;
 
 @Repository
-public interface CaseInputDataRepository extends CrudRepository<CaseInputData, String> {
+public interface InputDataRepository extends CrudRepository<CaseInputData, String> {
 
     CaseInputData findByCaseUUID(UUID uuid);
 

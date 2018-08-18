@@ -15,6 +15,6 @@ public class CreateRshCaseResponse {
     private final UUID uuid;
 
     public static CreateRshCaseResponse from(CaseData caseData) {
-        return new CreateRshCaseResponse(caseData.getCaseInputData().getReference(), caseData.getUuid());
+        return new CreateRshCaseResponse(caseData.getReference(), caseData.getUuid());
     }
 }

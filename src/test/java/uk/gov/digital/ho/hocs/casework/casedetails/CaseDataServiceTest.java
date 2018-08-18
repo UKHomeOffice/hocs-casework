@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.casedetails;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -12,7 +13,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseInputDataRepository;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.InputDataRepository;
 
 import java.util.UUID;
 
@@ -25,7 +26,9 @@ public class CaseDataServiceTest {
     private CaseDataRepository caseDataRepository;
 
     @Mock
-    private CaseInputDataRepository caseInputDataRepository;
+    private InputDataRepository inputDataRepository;
+
+    private InputDataService inputDataService;
 
     @Mock
     private AuditService auditService;
@@ -34,9 +37,11 @@ public class CaseDataServiceTest {
 
     @Before
     public void setUp() {
+        this.inputDataService = new InputDataService(inputDataRepository, auditService, new ObjectMapper());
+
         this.caseDataService = new CaseDataService(
                 caseDataRepository,
-                caseInputDataRepository,
+                inputDataService,
                 auditService);
     }
 
@@ -46,26 +51,30 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
-        caseDataService.createCase(CaseType.MIN);
+        CaseData caseData = caseDataService.createCase(CaseType.MIN);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
-        verify(caseDataRepository, times(1)).save(any(CaseData.class));
-        verify(caseInputDataRepository, times(1)).save(any(CaseInputData.class));
-        verify(auditService, times(1)).writeCreateCaseEvent(any(CaseData.class), any(CaseInputData.class));
+        verify(caseDataRepository, times(1)).save(caseData);
+        verify(inputDataRepository, times(1)).save(any(CaseInputData.class));
+        verify(auditService, times(1)).writeCreateCaseEvent(caseData);
+        verify(auditService, times(1)).writeCreateInputDataEvent(any(CaseInputData.class));
 
         verifyNoMoreInteractions(caseDataRepository);
-        verifyNoMoreInteractions(caseInputDataRepository);
+        verifyNoMoreInteractions(inputDataRepository);
         verifyNoMoreInteractions(auditService);
-
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateCaseMissingUUIDException() throws EntityCreationException {
+    public void shouldNotCreateCaseMissingTypeException() throws EntityCreationException {
         caseDataService.createCase(null);
     }
 
     @Test()
-    public void shouldNotCreateCaseMissingUUID() {
+    public void shouldNotCreateCaseMissingType() {
+        Long caseID = 12345L;
+
+        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+
         try {
             caseDataService.createCase(null);
         } catch (EntityCreationException e) {
@@ -75,35 +84,38 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).getNextSeriesId();
 
         verifyNoMoreInteractions(caseDataRepository);
-        verifyZeroInteractions(caseInputDataRepository);
+        verifyZeroInteractions(inputDataRepository);
         verifyZeroInteractions(auditService);
     }
 
     @Test
     public void shouldGetCaseWithValidParams() throws EntityNotFoundException {
-        CaseData caseData = new CaseData();
-
+        Long caseID = 12345L;
+        CaseData caseData = new CaseData(CaseType.MIN, caseID);
+        CaseInputData caseInputData = new CaseInputData(caseData.getUuid());
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        when(inputDataRepository.findByCaseUUID(caseData.getUuid())).thenReturn(caseInputData);
+
 
         caseDataService.getCase(caseData.getUuid());
 
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
-        verify(caseInputDataRepository, times(1)).findByCaseUUID(caseData.getUuid());
+        verify(inputDataRepository, times(1)).findByCaseUUID(caseData.getUuid());
         verify(auditService, times(1)).writeGetCaseEvent(caseData.getUuid());
 
         verifyNoMoreInteractions(caseDataRepository);
-        verifyNoMoreInteractions(caseInputDataRepository);
+        verifyNoMoreInteractions(inputDataRepository);
         verifyNoMoreInteractions(auditService);
     }
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotGetCaseWithValidParamsNotFoundException() {
-        UUID uuid = UUID.randomUUID();
+        CaseData caseData = new CaseData(CaseType.MIN, 0l);
 
-        when(caseDataRepository.findByUuid(uuid)).thenReturn(null);
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(null);
 
-        caseDataService.getCase(uuid);
+        caseDataService.getCase(caseData.getUuid());
     }
 
     @Test
@@ -119,11 +131,10 @@ public class CaseDataServiceTest {
         }
 
         verify(caseDataRepository, times(1)).findByUuid(uuid);
-        verify(auditService, times(1)).writeGetCaseEvent(uuid);
 
         verifyNoMoreInteractions(caseDataRepository);
-        verifyZeroInteractions(caseInputDataRepository);
-        verifyNoMoreInteractions(auditService);
+        verifyZeroInteractions(inputDataRepository);
+        verifyZeroInteractions(auditService);
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -143,10 +154,9 @@ public class CaseDataServiceTest {
         }
 
         verify(caseDataRepository, times(1)).findByUuid(null);
-        verify(auditService, times(1)).writeGetCaseEvent(null);
 
         verifyNoMoreInteractions(caseDataRepository);
-        verifyZeroInteractions(caseInputDataRepository);
-        verifyNoMoreInteractions(auditService);
+        verifyZeroInteractions(inputDataRepository);
+        verifyZeroInteractions(auditService);
     }
 }

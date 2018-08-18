@@ -38,8 +38,8 @@ public class CaseDataResourceTest {
     public void shouldCreateCase() {
 
         CaseType caseType = CaseType.MIN;
-        CaseData caseData = new CaseData();
-        CaseInputData caseInputData = new CaseInputData(uuid, caseType, 2l);
+        CaseData caseData = new CaseData(CaseType.MIN, 0l);
+        CaseInputData caseInputData = new CaseInputData(uuid);
         caseData.setCaseInputData(caseInputData);
         CreateCaseRequest request = new CreateCaseRequest(caseType);
 
@@ -59,8 +59,8 @@ public class CaseDataResourceTest {
     public void shouldGetCase() {
 
         CaseType caseType = CaseType.MIN;
-        CaseData caseData = new CaseData();
-        CaseInputData caseInputData = new CaseInputData(uuid, caseType, 2l);
+        CaseData caseData = new CaseData(CaseType.MIN, 0l);
+        CaseInputData caseInputData = new CaseInputData(uuid);
         caseData.setCaseInputData(caseInputData);
         CreateCaseRequest request = new CreateCaseRequest(caseType);
 

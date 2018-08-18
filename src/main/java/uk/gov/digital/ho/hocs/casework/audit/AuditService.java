@@ -11,7 +11,7 @@ import uk.gov.digital.ho.hocs.casework.audit.repository.AuditRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.rsh.email.dto.SendEmailRequest;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
@@ -56,7 +56,7 @@ public class AuditService {
         save(auditEntry);
     }
 
-    public void writeCreateCaseEvent(CaseData caseData, CaseInputData caseInputData) {
+    public void writeCreateCaseEvent(CaseData caseData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), caseData, AuditAction.CREATE_CASE);
         save(auditEntry);
     }
@@ -66,12 +66,17 @@ public class AuditService {
         save(auditEntry);
     }
 
-    public void writeCreateStageEvent(StageData stageData) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.CREATE_STAGE);
-        save(auditEntry);
+    public void writeCreateStageEvent(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID) {
+        //AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.CREATE_STAGE);
+        //save(auditEntry);
     }
 
-    public void writeUpdateStageEvent(UUID stageUUID, CaseInputData caseInputData) {
+    public void writeCreateInputDataEvent(CaseInputData caseInputData) {
+        //AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.UPDATE_STAGE);
+        //save(auditEntry);
+    }
+
+    public void writeUpdateInputDataEvent(CaseInputData caseInputData) {
         //AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.UPDATE_STAGE);
         //save(auditEntry);
     }
@@ -100,7 +105,7 @@ public class AuditService {
         //auditRepository.save(auditEntry);
     }
 
-    public void writeAllocateStageEvent(StageData stageData) {
+    public void writeAllocateStageEvent(UUID stageUUID, UUID teamUUID, UUID userUUID) {
     }
 
     public void writeGetStageEvent(UUID stageUUID) {

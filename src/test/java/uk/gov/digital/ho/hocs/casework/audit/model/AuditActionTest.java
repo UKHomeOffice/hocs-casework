@@ -12,20 +12,6 @@ import static uk.gov.digital.ho.hocs.casework.audit.model.AuditAction.*;
 public class AuditActionTest {
 
     @Test
-    public void shouldNotAccidentallyChangeTheIntValuesOfAuditAction() {
-        assertIntValue(CREATE_CASE, 0);
-        assertIntValue(CREATE_STAGE, 1);
-        assertIntValue(UPDATE_CASE, 2);
-        assertIntValue(UPDATE_STAGE, 3);
-        assertIntValue(GET_CASE, 4);
-        assertIntValue(SEARCH, 5);
-        assertIntValue(SEND_EMAIL, 6);
-        assertIntValue(CSV_EXTRACT, 7);
-        assertIntValue(ADD_DOCUMENT, 8);
-        assertIntValue(UPDATE_DOCUMENT, 9);
-    }
-
-    @Test
     public void shouldNotAccidentallyChangeTheOrderValuesOfAuditAction() {
         assertOrderValue(CREATE_CASE, 0);
         assertOrderValue(CREATE_STAGE, 1);
@@ -37,6 +23,7 @@ public class AuditActionTest {
         assertOrderValue(CSV_EXTRACT, 7);
         assertOrderValue(ADD_DOCUMENT, 8);
         assertOrderValue(UPDATE_DOCUMENT, 9);
+        assertOrderValue(COMPLETE_STAGE, 10);
     }
 
     @Test
@@ -53,15 +40,12 @@ public class AuditActionTest {
                 case CSV_EXTRACT:
                 case ADD_DOCUMENT:
                 case UPDATE_DOCUMENT:
+                case COMPLETE_STAGE:
                     break;
                 default:
                     fail("You've added an audit action, make sure you've written all the tests!");
             }
         }
-    }
-
-    private void assertIntValue(AuditAction auditAction, int value) {
-        //assertThat(auditAction.getIntValue()).isEqualTo(value);
     }
 
     private void assertOrderValue(AuditAction auditAction, int value) {

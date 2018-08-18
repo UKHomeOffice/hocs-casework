@@ -42,9 +42,9 @@ public class StageDataResourceTest {
         StageType stageType = StageType.DCU_MIN_MARKUP;
         Map<String, String> data = new HashMap<>();
 
-        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, null, data);
+        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, null);
 
-        when(stageDataService.createStage(uuid, stageType, teamUUID, null)).thenReturn(new StageData(uuid, stageType));
+        when(stageDataService.createStage(uuid, stageType, teamUUID, null)).thenReturn(new StageData(uuid, stageType, uuid, uuid));
 
         ResponseEntity<CreateStageResponse> response = stageDataResource.createStage(uuid, request);
 
@@ -82,7 +82,7 @@ public class StageDataResourceTest {
         UUID uuid = UUID.randomUUID();
         StageType stageType = StageType.DCU_MIN_MARKUP;
 
-        when(stageDataService.getStage(uuid)).thenReturn(new StageData(uuid, stageType));
+        when(stageDataService.getStage(uuid)).thenReturn(new StageData(uuid, stageType, uuid, uuid));
 
         ResponseEntity<GetStageResponse> response = stageDataResource.getStage(uuid, uuid);
 

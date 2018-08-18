@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import java.util.HashSet;
@@ -26,7 +27,7 @@ public class SearchResourceTest {
 
     private static Set<CaseData> getValidSet() {
         Set<CaseData> set = new HashSet<>();
-        set.add(new CaseData());
+        set.add(new CaseData(CaseType.MIN, 0l));
         return set;
     }
 

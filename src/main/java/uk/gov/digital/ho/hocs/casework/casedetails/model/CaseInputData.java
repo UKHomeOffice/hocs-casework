@@ -8,10 +8,7 @@ import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
 import javax.persistence.*;
-import java.io.IOException;
 import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -34,20 +31,12 @@ public class CaseInputData implements Serializable {
     @Getter
     private UUID caseUUID;
 
-    @Column(name = "type")
-    private String caseType;
 
-    @Column(name = "reference")
-    @Getter
-    private String reference;
-
-    public CaseInputData(UUID caseUUID, CaseType caseType, Long caseNumber) {
-        if (caseUUID == null || caseType == null || caseNumber == null) {
-            throw new EntityCreationException("Cannot create CaseInputData(%s, %s,%s).", caseUUID, caseType, caseNumber);
+    public CaseInputData(UUID caseUUID) {
+        if (caseUUID == null) {
+            throw new EntityCreationException("Cannot create CaseInputData(%s).", caseUUID);
         }
         this.caseUUID = caseUUID;
-        this.caseType = caseType.toString();
-        this.reference = String.format("%s/%07d/%s", caseType.toString(), caseNumber, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy")));
         this.data = "{}";
     }
 
@@ -59,33 +48,17 @@ public class CaseInputData implements Serializable {
         }
     }
 
-    public CaseType getType() {
-        return CaseType.valueOf(this.caseType);
-    }
-
-    public String getTypeString() {
-        return this.caseType;
-    }
-
     public void updateData(Map<String, String> newData, ObjectMapper objectMapper) {
-        ObjectMapper om;
-        if (objectMapper == null) {
-            om = new ObjectMapper();
-        } else {
-            om = objectMapper;
-        }
         HashMap<String, String> dataMap;
-        if (this.data != null) {
+        if (newData != null && !newData.isEmpty()) {
             try {
-                dataMap = om.readValue(this.data, new TypeReference<Map<String, String>>() {
+                dataMap = objectMapper.readValue(this.data, new TypeReference<Map<String, String>>() {
                 });
-            } catch (IOException e) {
+            } catch (Exception e) {
                 throw new EntityCreationException("Object Mapper failed to read value!");
             }
-        } else {
-            dataMap = new HashMap<>();
+            dataMap.putAll(newData);
+            this.data = getDataString(dataMap, objectMapper);
         }
-        dataMap.putAll(newData);
-        this.data = getDataString(dataMap, om);
     }
 }

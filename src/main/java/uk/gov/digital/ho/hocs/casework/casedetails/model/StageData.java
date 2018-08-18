@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
@@ -12,7 +11,6 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "stage_data")
-@NoArgsConstructor
 public class StageData implements Serializable {
 
     @Id
@@ -39,6 +37,10 @@ public class StageData implements Serializable {
     @Getter
     private UUID userUUID;
 
+    @Column(name = "active")
+    @Getter
+    private boolean active;
+
     @Column(name = "timestamp")
     @Getter
     private LocalDateTime timestamp = LocalDateTime.now();
@@ -48,25 +50,21 @@ public class StageData implements Serializable {
     @Setter
     private CaseInputData caseInputData;
 
-    public StageData(UUID caseUUID, StageType stageType) {
-        if (caseUUID == null || stageType == null) {
-            throw new EntityCreationException("Cannot create StageData(%s, %s).", caseUUID, stageType);
+    public StageData(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID) {
+        if (caseUUID == null || stageType == null || teamUUID == null) {
+            throw new EntityCreationException("Cannot create StageData(%s, %s, %s, %s).", caseUUID, stageType, teamUUID, userUUID);
         }
         this.uuid = UUID.randomUUID();
         this.stageType = stageType.toString();
         this.caseUUID = caseUUID;
+        this.teamUUID = teamUUID;
+        this.userUUID = userUUID;
+        this.active = true;
+
     }
 
     public StageType getType() {
         return StageType.valueOf(this.stageType);
-    }
-
-    public void allocate(UUID teamUUID, UUID userUUID) {
-        if (teamUUID == null) {
-            throw new EntityCreationException("Cannot call StageData.allocate(%s, %s).", teamUUID, userUUID);
-        }
-        this.teamUUID = teamUUID;
-        this.userUUID = userUUID;
     }
 
 }

@@ -19,6 +19,6 @@ public class CreateCaseResponse {
     private final String reference;
 
     public static CreateCaseResponse from(CaseData caseData) {
-        return new CreateCaseResponse(caseData.getUuid(), caseData.getCaseInputData().getReference());
+        return new CreateCaseResponse(caseData.getUuid(), caseData.getReference());
     }
 }

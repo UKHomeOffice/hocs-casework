@@ -31,7 +31,7 @@ public class GetStageResponse {
         String data = null;
         CaseInputData caseInputData = stageData.getCaseInputData();
         if (caseInputData != null) {
-            caseRef = caseInputData.getReference();
+            caseRef = "TEMP REF";
             data = caseInputData.getData();
         }
         return new GetStageResponse(stageData.getUuid(), stageData.getType().toString(), caseRef, data);

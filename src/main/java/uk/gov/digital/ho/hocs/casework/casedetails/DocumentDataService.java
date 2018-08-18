@@ -41,19 +41,24 @@ public class DocumentDataService {
     @Transactional
     public void updateDocument(UUID documentUUID, DocumentStatus status, String fileLink, String pdfLink) {
         log.debug("Updating Document: {}", documentUUID);
-        DocumentData documentData = documentRepository.findByUuid(documentUUID);
-        if (documentData != null) {
-            documentData.update(fileLink, pdfLink, status);
-            documentRepository.save(documentData);
-            auditService.writeUpdateDocumentEvent(documentData);
-            log.info("Updated Document: {}", documentData.getUuid());
-        } else {
-            throw new EntityNotFoundException("Document UUID: %s, not found!", documentUUID);
-        }
+        DocumentData documentData = getDocumentData(documentUUID);
+        documentData.update(fileLink, pdfLink, status);
+        documentRepository.save(documentData);
+        auditService.writeUpdateDocumentEvent(documentData);
+        log.info("Updated Document: {}", documentData.getUuid());
     }
 
     @Transactional
     public void updateDocumentFromQueue(UpdateDocumentFromQueueRequest request) {
         updateDocument(request.getUuid(), request.getStatus(), request.getFileLink(), request.getPdfLink());
+    }
+
+    private DocumentData getDocumentData(UUID stageUUID) {
+        DocumentData documentData = documentRepository.findByUuid(stageUUID);
+        if (documentData != null) {
+            return documentData;
+        } else {
+            throw new EntityNotFoundException("Document UUID: %s not found!", stageUUID);
+        }
     }
 }

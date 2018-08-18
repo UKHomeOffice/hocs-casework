@@ -5,10 +5,10 @@ CREATE TABLE IF NOT EXISTS case_input_data
   id        BIGSERIAL PRIMARY KEY,
   data      JSONB,
   case_uuid UUID NOT NULL,
-  reference TEXT NOT NULL,
-  type      TEXT NOT NULL,
 
-  CONSTRAINT cip_id_idempotent UNIQUE (case_uuid)
+  CONSTRAINT cip_id_idempotent UNIQUE (case_uuid),
+  CONSTRAINT fk_stage_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)
+
 );
 
 CREATE INDEX idx_cip_case
@@ -20,8 +20,3 @@ ALTER TABLE stage_data
 
 ALTER TABLE active_stage
   add constraint active_stage_stage_uuid_idempotent UNIQUE (stage_uuid);
-
-ALTER TABLE case_data
-  DROP COLUMN reference CASCADE;
-ALTER TABLE case_data
-  DROP COLUMN type CASCADE;

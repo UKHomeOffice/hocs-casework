@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.UUID;
 
 @Entity
-@Table(name = "active_stage")
+@Table(name = "stage_data")
 @NoArgsConstructor
 public class ActiveStage implements Serializable {
 
@@ -21,7 +21,7 @@ public class ActiveStage implements Serializable {
     @Getter
     private UUID caseUUID;
 
-    @Column(name = "stage_uuid")
+    @Column(name = "uuid")
     @Getter
     private UUID stageUUID;
 
@@ -32,38 +32,38 @@ public class ActiveStage implements Serializable {
     @Column(name = "case_type")
     private String caseType;
 
-    @Column(name = "stage_type")
+    @Column(name = "type")
     private String stageType;
 
     @Column(name = "team_uuid")
     @Getter
     private UUID teamUUID;
 
-    @Column(name = "assigned_team_display")
-    @Getter
-    private String assignedTeamDisplay;
+    //@Column(name = "assigned_team_display")
+    //@Getter
+    //private String assignedTeamDisplay;
 
     @Column(name = "user_uuid")
     @Getter
     private UUID userUUID;
 
-    @Column(name = "assigned_user_display")
-    @Getter
-    private String assignedUserDisplay;
+    //@Column(name = "assigned_user_display")
+    //@Getter
+    //private String assignedUserDisplay;
 
-    public ActiveStage(CaseInputData caseInputData,
+    public ActiveStage(CaseData caseData,
                        StageData stageData,
                        String assignedTeamDisplay,
                        String assignedUserDisplay) {
-        this.caseUUID = caseInputData.getCaseUUID();
+        this.caseUUID = caseData.getUuid();
         this.stageUUID = stageData.getUuid();
-        this.caseReference = caseInputData.getReference();
-        this.caseType = caseInputData.getTypeString();
+        this.caseReference = caseData.getReference();
+        this.caseType = caseData.getTypeString();
         this.stageType = stageData.getType().toString();
         this.teamUUID = stageData.getTeamUUID();
-        this.assignedTeamDisplay = assignedTeamDisplay;
+        //this.assignedTeamDisplay = assignedTeamDisplay;
         this.userUUID = stageData.getUserUUID();
-        this.assignedUserDisplay = assignedUserDisplay;
+        //this.assignedUserDisplay = assignedUserDisplay;
 
     }
 
@@ -77,8 +77,8 @@ public class ActiveStage implements Serializable {
 
     public void allocate(UUID teamUUID, String assignedTeamDisplay, UUID userUUID, String assignedUserDisplay) {
         this.teamUUID = teamUUID;
-        this.assignedTeamDisplay = assignedTeamDisplay;
+        //this.assignedTeamDisplay = assignedTeamDisplay;
         this.userUUID = userUUID;
-        this.assignedUserDisplay = assignedUserDisplay;
+        //this.assignedUserDisplay = assignedUserDisplay;
     }
 }

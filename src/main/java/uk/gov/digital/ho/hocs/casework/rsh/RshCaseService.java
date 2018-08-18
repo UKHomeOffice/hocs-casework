@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.casedetails.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.casedetails.InputDataService;
 import uk.gov.digital.ho.hocs.casework.casedetails.StageDataService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
@@ -27,6 +28,7 @@ public class RshCaseService {
 
     private final CaseDataService caseDataService;
     private final StageDataService stageDataService;
+    private final InputDataService inputDataService;
     private final EmailService emailService;
 
     private final String frontendUrl;
@@ -34,22 +36,14 @@ public class RshCaseService {
     @Autowired
     public RshCaseService(CaseDataService caseDataService,
                           StageDataService stageDataService,
+                          InputDataService inputDataService,
                           EmailService emailService,
                           @Value("${notify.frontend.url}") String frontEndUrl) {
         this.caseDataService = caseDataService;
         this.stageDataService = stageDataService;
+        this.inputDataService = inputDataService;
         this.emailService = emailService;
         this.frontendUrl = frontEndUrl;
-    }
-
-    private static SendEmailRequest createRshEmail(String emailAddress, String teamName, String frontEndUrl, UUID caseUUID, String caseReference, String caseStatus) {
-        Map<String, String> personalisation = new HashMap<>();
-        personalisation.put("team", teamName);
-        personalisation.put("link", frontEndUrl + "/case/" + caseUUID);
-        personalisation.put("reference", caseReference);
-        personalisation.put("caseStatus", caseStatus);
-
-        return new SendEmailRequest(emailAddress, personalisation);
     }
 
     CaseData getRSHCase(UUID caseUUID) {
@@ -62,14 +56,20 @@ public class RshCaseService {
     }
 
     @Transactional
-    public CaseData createRshCase(Map<String, String> caseData, SendRshEmailRequest emailRequest) {
-        CaseData caseDetails = caseDataService.createCase(CaseType.RSH);
-        if (caseDetails != null) {
-            stageDataService.createStage(caseDetails.getUuid(), StageType.RUSH_ONLY_STAGE, null, null);
-            sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getCaseInputData().getReference(), caseData.get("outcome"));
-            return caseDetails;
+    public CaseData createRshCase(Map<String, String> data, SendRshEmailRequest emailRequest) {
+        if (data != null) {
+            CaseData caseData = caseDataService.createCase(CaseType.RSH);
+            if (caseData != null) {
+                stageDataService.createStage(caseData.getUuid(), StageType.RUSH_ONLY_STAGE, null, null);
+                inputDataService.createInputData(caseData.getUuid());
+                inputDataService.updateInputData(caseData.getUuid(), data);
+                sendRshEmail(emailRequest, caseData.getUuid(), caseData.getReference(), data.get("outcome"));
+                return caseData;
+            } else {
+                throw new EntityCreationException("Failed to create case!");
+            }
         } else {
-            throw new EntityCreationException("Failed to create case, no casedetails!");
+            throw new EntityCreationException("Failed to create case, no data!");
         }
     }
 
@@ -78,8 +78,8 @@ public class RshCaseService {
         CaseData caseDetails = caseDataService.getCase(caseUUID);
         if (!caseDetails.getStages().isEmpty()) {
             StageData stageData = caseDetails.getStages().iterator().next();
-            //stageDataService.updateStage(caseUUID, stageData.getUuid(), caseData);
-            sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getCaseInputData().getReference(), caseData.get("outcome"));
+            inputDataService.updateInputData(caseUUID, caseData);
+            sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
             return caseDetails;
         } else {
             throw new EntityCreationException("Failed to update case, case has no stages!");
@@ -91,7 +91,17 @@ public class RshCaseService {
             SendEmailRequest sendEmailRequest = createRshEmail(emailRequest.getEmail(), emailRequest.getTeamName(), frontendUrl, caseUUID, caseReference, caseStatus);
             emailService.sendRshEmail(sendEmailRequest);
         } else {
-            log.warn("Received request to email, but notify request was null!");
+            log.info("Received request to email, but notify request was null!");
         }
+    }
+
+    private SendEmailRequest createRshEmail(String emailAddress, String teamName, String frontEndUrl, UUID caseUUID, String caseReference, String caseStatus) {
+        Map<String, String> personalisation = new HashMap<>();
+        personalisation.put("team", teamName);
+        personalisation.put("link", frontEndUrl + "/case/" + caseUUID);
+        personalisation.put("reference", caseReference);
+        personalisation.put("caseStatus", caseStatus);
+
+        return new SendEmailRequest(emailAddress, personalisation);
     }
 }

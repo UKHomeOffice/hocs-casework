@@ -52,12 +52,12 @@ public class GetCaseResponse {
         String data = null;
         CaseInputData caseInputData = caseData.getCaseInputData();
         if (caseInputData != null) {
-            caseRef = caseInputData.getReference();
+            caseRef = caseData.getReference();
             data = caseInputData.getData();
         }
 
         return new GetCaseResponse(
-                caseData.getCaseInputData().getTypeString(),
+                caseData.getTypeString(),
                 caseRef,
                 caseData.getUuid(),
                 caseData.getTimestamp(),

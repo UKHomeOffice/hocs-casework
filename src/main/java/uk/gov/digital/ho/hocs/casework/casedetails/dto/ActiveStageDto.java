@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class ActiveStage implements Serializable {
+public class ActiveStageDto implements Serializable {
 
     @JsonProperty("caseUUID")
     private UUID caseUUID;
@@ -47,8 +47,8 @@ public class ActiveStage implements Serializable {
     @JsonProperty("assignedUserDisplay")
     private String assignedUserDisplay;
 
-    public static ActiveStage from(uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStage activeStage) {
-        return new ActiveStage(
+    public static ActiveStageDto from(uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStage activeStage) {
+        return new ActiveStageDto(
                 activeStage.getCaseUUID(),
                 activeStage.getStageUUID(),
                 activeStage.getCaseReference(),
@@ -57,8 +57,8 @@ public class ActiveStage implements Serializable {
                 activeStage.getStageType(),
                 activeStage.getStageType().getDisplayValue(),
                 activeStage.getTeamUUID(),
-                activeStage.getAssignedTeamDisplay(),
+                "TEMPTEAM",//activeStage.getAssignedTeamDisplay(),
                 activeStage.getUserUUID(),
-                activeStage.getAssignedUserDisplay());
+                "TEMPUSER");//activeStage.getAssignedUserDisplay());
     }
 }

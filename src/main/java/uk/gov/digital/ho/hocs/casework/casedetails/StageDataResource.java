@@ -12,8 +12,6 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 
 import java.util.UUID;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-
 @Slf4j
 @RestController
 class StageDataResource {
@@ -25,7 +23,7 @@ class StageDataResource {
         this.stageDataService = stageDataService;
     }
 
-    @PostMapping(value = "/case/{caseUUID}/stage", consumes = APPLICATION_JSON_UTF8_VALUE)
+    @PostMapping(value = "/case/{caseUUID}/stage")
     public ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
         StageData stageData = stageDataService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getUserUUID());
         return ResponseEntity.ok(CreateStageResponse.from(stageData));
@@ -37,10 +35,15 @@ class StageDataResource {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/complete")
+    public ResponseEntity completeStage(@PathVariable UUID stageUUID) {
+        stageDataService.completeStage(stageUUID);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
     public ResponseEntity<GetStageResponse> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
         StageData stageData = stageDataService.getStage(stageUUID);
         return ResponseEntity.ok(GetStageResponse.from(stageData));
     }
-
 }
