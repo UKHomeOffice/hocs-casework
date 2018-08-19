@@ -11,7 +11,6 @@ import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationExcep
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.rsh.dto.SendRshEmailRequest;
 import uk.gov.digital.ho.hocs.casework.rsh.email.EmailService;
@@ -66,7 +65,7 @@ public class RshCaseService {
                 sendRshEmail(emailRequest, caseData.getUuid(), caseData.getReference(), data.get("outcome"));
                 return caseData;
             } else {
-                throw new EntityCreationException("Failed to create case!");
+                throw new EntityNotFoundException("Failed to create case!");
             }
         } else {
             throw new EntityCreationException("Failed to create case, no data!");
@@ -74,15 +73,18 @@ public class RshCaseService {
     }
 
     @Transactional
-    public CaseData updateRshCase(UUID caseUUID, Map<String, String> caseData, SendRshEmailRequest emailRequest) {
-        CaseData caseDetails = caseDataService.getCase(caseUUID);
-        if (!caseDetails.getStages().isEmpty()) {
-            StageData stageData = caseDetails.getStages().iterator().next();
-            inputDataService.updateInputData(caseUUID, caseData);
-            sendRshEmail(emailRequest, caseDetails.getUuid(), caseDetails.getReference(), caseData.get("outcome"));
-            return caseDetails;
+    public CaseData updateRshCase(UUID caseUUID, Map<String, String> data, SendRshEmailRequest emailRequest) {
+        if (data != null) {
+            CaseData caseData = caseDataService.getCase(caseUUID);
+            if (caseData != null) {
+                inputDataService.updateInputData(caseUUID, data);
+                sendRshEmail(emailRequest, caseData.getUuid(), caseData.getReference(), data.get("outcome"));
+                return caseData;
+            } else {
+                throw new EntityNotFoundException("Failed to update case!");
+            }
         } else {
-            throw new EntityCreationException("Failed to update case, case has no stages!");
+            throw new EntityCreationException("Failed to create case, no data!");
         }
     }
 

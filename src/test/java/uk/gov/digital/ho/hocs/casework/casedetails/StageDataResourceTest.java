@@ -14,8 +14,6 @@ import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetStageResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -40,7 +38,6 @@ public class StageDataResourceTest {
         UUID uuid = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
         StageType stageType = StageType.DCU_MIN_MARKUP;
-        Map<String, String> data = new HashMap<>();
 
         CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, null);
 
