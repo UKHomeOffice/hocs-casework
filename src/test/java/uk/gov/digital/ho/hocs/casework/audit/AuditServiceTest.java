@@ -47,7 +47,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteSearchEvent() {
-        auditService.writeSearchEvent(new SearchRequest());
+        auditService.searchEvent(new SearchRequest());
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -57,7 +57,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteSearchEventNull() {
-        auditService.writeSearchEvent(null);
+        auditService.searchEvent(null);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -67,7 +67,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteSendEmailEvent() {
-        auditService.writeSendEmailEvent(new SendEmailRequest());
+        auditService.sendEmailEvent(new SendEmailRequest());
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -77,7 +77,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteSendEmailEventNull() {
-        auditService.writeSendEmailEvent(null);
+        auditService.sendEmailEvent(null);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -87,7 +87,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteGetCaseEvent() {
-        auditService.writeGetCaseEvent(UUID.randomUUID());
+        auditService.getCaseEvent(UUID.randomUUID());
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -97,7 +97,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteGetCaseEventNull() {
-        auditService.writeGetCaseEvent(null);
+        auditService.getCaseEvent(null);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -108,7 +108,7 @@ public class AuditServiceTest {
     @Test
     public void shouldWriteCreateCaseEvent() {
         CaseType caseType = CaseType.MIN;
-        auditService.writeCreateCaseEvent(new CaseData(caseType, 0l));
+        auditService.createCaseEvent(new CaseData(caseType, 0l));
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -118,7 +118,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteCreateCaseEventNull() {
-        auditService.writeCreateCaseEvent(null);
+        auditService.createCaseEvent(null);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -129,7 +129,7 @@ public class AuditServiceTest {
     @Test
     public void shouldWriteUpdateCaseEvent() {
         CaseType caseType = CaseType.MIN;
-        auditService.writeUpdateCaseEvent(new CaseData(caseType, 0l));
+        auditService.updateCaseEvent(new CaseData(caseType, 0l));
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -139,7 +139,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUpdateCaseEventNull() {
-        auditService.writeUpdateCaseEvent(null);
+        auditService.updateCaseEvent(null);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -151,7 +151,7 @@ public class AuditServiceTest {
     public void shouldWriteCreateStageEvent() {
         UUID uuid = UUID.randomUUID();
         StageType stageType = StageType.DCU_MIN_MARKUP;
-        auditService.writeCreateStageEvent(uuid, stageType, uuid, uuid);
+        auditService.createStageEvent(uuid, stageType, uuid, uuid);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -163,7 +163,7 @@ public class AuditServiceTest {
     public void shouldWriteCreateStageEventNull() {
         UUID uuid = UUID.randomUUID();
         StageType stageType = StageType.DCU_MIN_MARKUP;
-        auditService.writeCreateStageEvent(uuid, stageType, uuid, uuid);
+        auditService.createStageEvent(uuid, stageType, uuid, uuid);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -173,7 +173,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUpdateStageEvent() {
-        auditService.writeUpdateInputDataEvent(new CaseInputData());
+        auditService.updateInputDataEvent(new InputData());
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -183,7 +183,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUpdateStageEventNull() {
-        auditService.writeUpdateInputDataEvent(null);
+        auditService.updateInputDataEvent(null);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -194,7 +194,7 @@ public class AuditServiceTest {
     @Test
     public void shouldWriteAddDocumentEvent() {
         DocumentData documentData = new DocumentData();
-        auditService.writeCreateDocumentEvent(documentData);
+        auditService.createDocumentEvent(documentData);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -204,7 +204,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteAddDocumentEventNull() {
-        auditService.writeCreateDocumentEvent(null);
+        auditService.createDocumentEvent(null);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -215,7 +215,7 @@ public class AuditServiceTest {
     @Test
     public void shouldWriteUpdateDocumentEvent() {
         DocumentData documentData = new DocumentData();
-        auditService.writeUpdateDocumentEvent(documentData);
+        auditService.updateDocumentEvent(documentData);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -225,7 +225,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUpdateDocumentEventNull() {
-        auditService.writeUpdateDocumentEvent(null);
+        auditService.updateDocumentEvent(null);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -235,7 +235,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldExtractEvent() {
-        auditService.writeExtractEvent("");
+        auditService.extractReportEvent("");
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -245,7 +245,7 @@ public class AuditServiceTest {
 
     @Test
     public void shouldExtractEventNull() {
-        auditService.writeExtractEvent(null);
+        auditService.extractReportEvent(null);
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());

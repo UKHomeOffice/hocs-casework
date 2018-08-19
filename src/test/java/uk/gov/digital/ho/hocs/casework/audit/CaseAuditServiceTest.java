@@ -64,7 +64,7 @@ public class CaseAuditServiceTest {
     public void shouldReturnEmptyWhenCutoffIsOutsideOfPossibleRangeMin() {
         String values = caseAuditService.getReportingDataAsCSV(UnitType.RSH, LocalDate.MIN);
 
-        verify(mockAuditService, times(0)).writeExtractEvent(any());
+        verify(mockAuditService, times(0)).extractReportEvent(any());
         assertThat(values).isEqualTo("");
     }
 
@@ -73,7 +73,7 @@ public class CaseAuditServiceTest {
     public void shouldAuditValidAttempts() {
         String values = caseAuditService.getReportingDataAsCSV(UnitType.RSH, LocalDate.now());
 
-        verify(mockAuditService, times(1)).writeExtractEvent(any());
+        verify(mockAuditService, times(1)).extractReportEvent(any());
     }
 
 }

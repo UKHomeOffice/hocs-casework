@@ -10,8 +10,8 @@ import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.InputDataRepository;
 
@@ -55,9 +55,9 @@ public class CaseDataServiceTest {
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
-        verify(inputDataRepository, times(1)).save(any(CaseInputData.class));
-        verify(auditService, times(1)).writeCreateCaseEvent(caseData);
-        verify(auditService, times(1)).writeCreateInputDataEvent(any(CaseInputData.class));
+        verify(inputDataRepository, times(1)).save(any(InputData.class));
+        verify(auditService, times(1)).createCaseEvent(caseData);
+        verify(auditService, times(1)).createInputDataEvent(any(InputData.class));
 
         verifyNoMoreInteractions(caseDataRepository);
         verifyNoMoreInteractions(inputDataRepository);
@@ -92,17 +92,17 @@ public class CaseDataServiceTest {
     public void shouldGetCaseWithValidParams() throws EntityNotFoundException {
         Long caseID = 12345L;
         CaseData caseData = new CaseData(CaseType.MIN, caseID);
-        CaseInputData caseInputData = new CaseInputData(caseData.getUuid());
+        InputData inputData = new InputData(caseData.getUuid());
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
-        when(inputDataRepository.findByCaseUUID(caseData.getUuid())).thenReturn(caseInputData);
+        when(inputDataRepository.findByCaseUUID(caseData.getUuid())).thenReturn(inputData);
 
 
         caseDataService.getCase(caseData.getUuid());
 
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
         verify(inputDataRepository, times(1)).findByCaseUUID(caseData.getUuid());
-        verify(auditService, times(1)).writeGetCaseEvent(caseData.getUuid());
+        verify(auditService, times(1)).getCaseEvent(caseData.getUuid());
 
         verifyNoMoreInteractions(caseDataRepository);
         verifyNoMoreInteractions(inputDataRepository);

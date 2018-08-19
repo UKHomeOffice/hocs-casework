@@ -48,7 +48,7 @@ public class StageDataServiceTest {
         stageDataService.createStage(uuid, stageType, teamUUID, null);
 
         verify(stageDataRepository, times(1)).save(any(StageData.class));
-        verify(auditService, times(1)).writeCreateStageEvent(uuid, stageType, teamUUID, null);
+        verify(auditService, times(1)).createStageEvent(uuid, stageType, teamUUID, null);
 
         verifyNoMoreInteractions(stageDataRepository);
         verifyNoMoreInteractions(auditService);
@@ -143,7 +143,7 @@ public class StageDataServiceTest {
         stageDataService.allocateStage(uuid, teamUUID, null);
 
         verify(stageDataRepository, times(1)).allocate(uuid, teamUUID);
-        verify(auditService, times(1)).writeAllocateStageEvent(uuid, teamUUID, null);
+        verify(auditService, times(1)).allocateStageEvent(uuid, teamUUID, null);
 
         verifyNoMoreInteractions(stageDataRepository);
         verifyNoMoreInteractions(auditService);
@@ -161,7 +161,7 @@ public class StageDataServiceTest {
         stageDataService.allocateStage(uuid, teamUUID, uuid);
 
         verify(stageDataRepository, times(1)).allocate(uuid, teamUUID, uuid);
-        verify(auditService, times(1)).writeAllocateStageEvent(uuid, teamUUID, uuid);
+        verify(auditService, times(1)).allocateStageEvent(uuid, teamUUID, uuid);
 
         verifyNoMoreInteractions(stageDataRepository);
         verifyNoMoreInteractions(auditService);
@@ -233,7 +233,7 @@ public class StageDataServiceTest {
 
         verify(stageDataRepository, times(1)).findByUuid(uuid);
         verify(inputDataService, times(1)).getInputData(uuid);
-        verify(auditService, times(1)).writeGetStageEvent(uuid);
+        verify(auditService, times(1)).getStageEvent(uuid);
 
         verifyNoMoreInteractions(stageDataRepository);
         verifyNoMoreInteractions(auditService);

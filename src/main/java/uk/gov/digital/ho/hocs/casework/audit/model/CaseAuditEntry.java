@@ -39,7 +39,7 @@ public class CaseAuditEntry implements Serializable {
 
     public static CaseAuditEntry from(CaseData caseData) {
         if (caseData != null) {
-            return new CaseAuditEntry(caseData.getTypeString(), caseData.getUuid(), caseData.getTimestamp());
+            return new CaseAuditEntry(caseData.getTypeString(), caseData.getUuid(), caseData.getCreated());
         } else {
             return null;
         }

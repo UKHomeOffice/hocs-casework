@@ -1,17 +1,18 @@
 package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "case_data")
 public class CaseData implements Serializable {
@@ -21,52 +22,55 @@ public class CaseData implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "uuid")
     @Getter
+    @Column(name = "uuid")
     private UUID uuid;
 
     @Column(name = "type")
-    private String caseType;
+    private String type;
 
-    @Column(name = "reference")
     @Getter
+    @Column(name = "reference")
     private String reference;
 
-    @Column(name = "timestamp")
     @Getter
-    private LocalDateTime timestamp;
+    @Column(name = "created")
+    private LocalDateTime created;
 
-    @Transient
+    @Column(name = "updated")
+    private LocalDateTime updated;
+
     @Getter
-    @Setter
-    private CaseInputData caseInputData;
-
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
-    @Getter
     private Set<StageData> stages = new HashSet<>();
 
+    @Getter
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
-    @Getter
     private Set<DocumentData> documents = new HashSet<>();
 
-    public CaseData(CaseType caseType, Long caseNumber) {
-        if (caseType == null || caseNumber == null) {
-            throw new EntityCreationException("Cannot create CaseInputData(%s,%s).", caseType, caseNumber);
+    @Getter
+    @Setter
+    @Transient
+    private InputData inputData;
 
+    public CaseData(CaseType type, Long caseNumber) {
+        if (type == null || caseNumber == null) {
+            throw new EntityCreationException("Cannot create InputData(%s,%s).", type, caseNumber);
         }
-        this.caseType = caseType.toString();
-        this.reference = String.format("%s/%07d/%s", caseType.toString(), caseNumber, LocalDateTime.now().format(DateTimeFormatter.ofPattern("yy")));
-        this.timestamp = LocalDateTime.now();
+        this.created = LocalDateTime.now();
         this.uuid = UUID.randomUUID();
+        this.type = type.toString();
+        this.reference = String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
+
     }
 
     public CaseType getType() {
-        return CaseType.valueOf(this.caseType);
+        return CaseType.valueOf(this.type);
     }
 
     public String getTypeString() {
-        return this.caseType;
+        return this.type;
     }
 }

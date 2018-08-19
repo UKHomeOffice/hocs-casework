@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.InputDataRepository;
 
 import java.util.HashMap;
@@ -44,15 +44,15 @@ public class InputDataServiceTest {
 
         UUID uuid = UUID.randomUUID();
         Map<String, String> data = new HashMap<>();
-        CaseInputData caseInputData = new CaseInputData();
+        InputData inputData = new InputData();
 
-        when(inputDataRepository.findByCaseUUID(uuid)).thenReturn(caseInputData);
+        when(inputDataRepository.findByCaseUUID(uuid)).thenReturn(inputData);
 
         inputDataService.updateInputData(uuid, data);
 
         verify(inputDataRepository, times(1)).findByCaseUUID(uuid);
-        verify(inputDataRepository, times(1)).save(caseInputData);
-        verify(auditService, times(1)).writeUpdateInputDataEvent(caseInputData);
+        verify(inputDataRepository, times(1)).save(inputData);
+        verify(auditService, times(1)).updateInputDataEvent(inputData);
 
         verifyNoMoreInteractions(inputDataRepository);
         verifyNoMoreInteractions(auditService);

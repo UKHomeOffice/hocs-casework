@@ -155,7 +155,7 @@ class CaseAuditService {
         String heading = unitToReportHeadingMapping.get(unit);
 
         if (heading != null && cutoff != null && checkValidDateRange(cutoff)) {
-            auditService.writeExtractEvent(String.join(" ", unit.toString(), cutoff.toString()));
+            auditService.extractReportEvent(String.join(" ", unit.toString(), cutoff.toString()));
 
             // Get the reporting data
             List<ReportLine> reportLines = getReportingData(unit, heading, cutoff);

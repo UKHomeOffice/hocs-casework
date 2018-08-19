@@ -33,7 +33,7 @@ public class DocumentDataService {
         log.debug("Creating Document: {}, Case UUID: {}", displayName, caseUUID);
         DocumentData documentData = new DocumentData(caseUUID, type, displayName);
         documentRepository.save(documentData);
-        auditService.writeCreateDocumentEvent(documentData);
+        auditService.createDocumentEvent(documentData);
         log.info("Created Document: {}, Case UUID: {}", documentData.getUuid(), documentData.getCaseUUID());
         return documentData;
     }
@@ -44,7 +44,7 @@ public class DocumentDataService {
         DocumentData documentData = getDocumentData(documentUUID);
         documentData.update(fileLink, pdfLink, status);
         documentRepository.save(documentData);
-        auditService.writeUpdateDocumentEvent(documentData);
+        auditService.updateDocumentEvent(documentData);
         log.info("Updated Document: {}", documentData.getUuid());
     }
 

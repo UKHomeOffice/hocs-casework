@@ -11,8 +11,8 @@ import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 
 import java.util.UUID;
 
@@ -39,8 +39,8 @@ public class CaseDataResourceTest {
 
         CaseType caseType = CaseType.MIN;
         CaseData caseData = new CaseData(CaseType.MIN, 0l);
-        CaseInputData caseInputData = new CaseInputData(uuid);
-        caseData.setCaseInputData(caseInputData);
+        InputData inputData = new InputData(uuid);
+        caseData.setInputData(inputData);
         CreateCaseRequest request = new CreateCaseRequest(caseType);
 
         when(caseDataService.createCase(any())).thenReturn(caseData);
@@ -60,8 +60,8 @@ public class CaseDataResourceTest {
 
         CaseType caseType = CaseType.MIN;
         CaseData caseData = new CaseData(CaseType.MIN, 0l);
-        CaseInputData caseInputData = new CaseInputData(uuid);
-        caseData.setCaseInputData(caseInputData);
+        InputData inputData = new InputData(uuid);
+        caseData.setInputData(inputData);
         CreateCaseRequest request = new CreateCaseRequest(caseType);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);

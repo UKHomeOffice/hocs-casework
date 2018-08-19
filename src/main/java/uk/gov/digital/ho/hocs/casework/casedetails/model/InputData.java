@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationExcep
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -16,28 +17,36 @@ import java.util.UUID;
 @Entity
 @Table(name = "case_input_data")
 @NoArgsConstructor
-public class CaseInputData implements Serializable {
+public class InputData implements Serializable {
 
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "data")
     @Getter
+    @Column(name = "data")
     private String data;
 
-    @Column(name = "case_uuid")
     @Getter
+    @Column(name = "case_uuid")
     private UUID caseUUID;
 
+    @Getter
+    @Column(name = "created")
+    private LocalDateTime created;
 
-    public CaseInputData(UUID caseUUID) {
+    @Column(name = "updated")
+    private LocalDateTime updated;
+
+
+    public InputData(UUID caseUUID) {
         if (caseUUID == null) {
-            throw new EntityCreationException("Cannot create CaseInputData(null).");
+            throw new EntityCreationException("Cannot create InputData(null).");
         }
-        this.caseUUID = caseUUID;
         this.data = "{}";
+        this.caseUUID = caseUUID;
+        this.created = LocalDateTime.now();
     }
 
     private static String getDataString(Map<String, String> stageData, ObjectMapper objectMapper) {

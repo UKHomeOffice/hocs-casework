@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageDataRepository;
@@ -37,7 +37,7 @@ public class StageDataService {
         log.debug("Creating Stage, Type: {}, Case UUID: {}", stageType, caseUUID);
         StageData stageData = new StageData(caseUUID, stageType, teamUUID, userUUID);
         stageDataRepository.save(stageData);
-        auditService.writeCreateStageEvent(caseUUID, stageType, teamUUID, userUUID);
+        auditService.createStageEvent(caseUUID, stageType, teamUUID, userUUID);
         log.info("Created Stage UUID: {}, Type: {}, Case UUID: {}", stageData.getUuid(), stageData.getType(), stageData.getCaseUUID());
         return stageData;
     }
@@ -59,7 +59,7 @@ public class StageDataService {
             stageDataRepository.allocate(stageUUID, teamUUID, userUUID);
         }
 
-        auditService.writeAllocateStageEvent(stageUUID, teamUUID, userUUID);
+        auditService.allocateStageEvent(stageUUID, teamUUID, userUUID);
         log.info("Allocated Stage UUID: {}, User {}, Team {}", stageUUID, userUUID, teamUUID);
     }
 
@@ -67,7 +67,7 @@ public class StageDataService {
     public void completeStage(UUID stageUUID) {
         log.debug("Completing Stage UUID: {}", stageUUID);
         stageDataRepository.setInactive(stageUUID);
-        auditService.writeCompleteStageEvent(stageUUID);
+        auditService.completeStageEvent(stageUUID);
         log.info("Completed Stage UUID: {}", stageUUID);
     }
 
@@ -75,9 +75,9 @@ public class StageDataService {
     public StageData getStage(UUID stageUUID) {
         log.debug("Getting Stage UUID: {}", stageUUID);
         StageData stageData = getStageData(stageUUID);
-        CaseInputData caseInputData = inputDataService.getInputData(stageData.getCaseUUID());
-        stageData.setCaseInputData(caseInputData);
-        auditService.writeGetStageEvent(stageUUID);
+        InputData inputData = inputDataService.getInputData(stageData.getCaseUUID());
+        stageData.setInputData(inputData);
+        auditService.getStageEvent(stageUUID);
         log.info("Got Stage UUID: {}", stageData.getUuid());
         return stageData;
     }

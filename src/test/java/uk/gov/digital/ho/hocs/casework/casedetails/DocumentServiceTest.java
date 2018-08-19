@@ -46,7 +46,7 @@ public class DocumentServiceTest {
         documentService.createDocument(uuid, displayName, documentType);
 
         verify(documentRepository, times(1)).save(any(DocumentData.class));
-        verify(auditService, times(1)).writeCreateDocumentEvent(any(DocumentData.class));
+        verify(auditService, times(1)).createDocumentEvent(any(DocumentData.class));
 
         verifyNoMoreInteractions(documentRepository);
         verifyNoMoreInteractions(auditService);
@@ -143,7 +143,7 @@ public class DocumentServiceTest {
 
         verify(documentRepository, times(1)).findByUuid(uuid);
         verify(documentRepository, times(1)).save(documentData);
-        verify(auditService, times(1)).writeUpdateDocumentEvent(documentData);
+        verify(auditService, times(1)).updateDocumentEvent(documentData);
 
         verifyNoMoreInteractions(documentRepository);
         verifyZeroInteractions(auditService);

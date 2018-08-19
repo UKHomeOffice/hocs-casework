@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -50,17 +50,17 @@ public class GetCaseResponse {
 
         String caseRef = null;
         String data = null;
-        CaseInputData caseInputData = caseData.getCaseInputData();
-        if (caseInputData != null) {
+        InputData inputData = caseData.getInputData();
+        if (inputData != null) {
             caseRef = caseData.getReference();
-            data = caseInputData.getData();
+            data = inputData.getData();
         }
 
         return new GetCaseResponse(
                 caseData.getTypeString(),
                 caseRef,
                 caseData.getUuid(),
-                caseData.getTimestamp(),
+                caseData.getCreated(),
                 stageResponses,
                 documentResponses,
                 data

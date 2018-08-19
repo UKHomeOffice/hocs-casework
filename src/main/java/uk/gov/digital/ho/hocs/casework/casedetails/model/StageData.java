@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "stage_data")
 public class StageData implements Serializable {
@@ -18,37 +20,41 @@ public class StageData implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Getter
+    @Column(name = "uuid")
+    private UUID uuid;
+
+    @Getter
     @Column(name = "type")
     private String stageType;
 
-    @Column(name = "uuid")
     @Getter
-    private UUID uuid;
-
     @Column(name = "case_uuid")
-    @Getter
     private UUID caseUUID;
 
-    @Column(name = "team_uuid")
     @Getter
-    private UUID teamUUID;
+    @Column(name = "created")
+    private LocalDateTime created;
 
-    @Column(name = "user_uuid")
+    @Column(name = "updated")
+    private LocalDateTime updated;
+
     @Getter
-    private UUID userUUID;
-
     @Column(name = "active")
-    @Getter
     private boolean active;
 
-    @Column(name = "timestamp")
     @Getter
-    private LocalDateTime timestamp = LocalDateTime.now();
+    @Column(name = "team_uuid")
+    private UUID teamUUID;
 
-    @Transient
+    @Getter
+    @Column(name = "user_uuid")
+    private UUID userUUID;
+
     @Getter
     @Setter
-    private CaseInputData caseInputData;
+    @Transient
+    private InputData inputData;
 
     public StageData(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID) {
         if (caseUUID == null || stageType == null || teamUUID == null) {
@@ -57,9 +63,10 @@ public class StageData implements Serializable {
         this.uuid = UUID.randomUUID();
         this.stageType = stageType.toString();
         this.caseUUID = caseUUID;
+        this.created = LocalDateTime.now();
+        this.active = true;
         this.teamUUID = teamUUID;
         this.userUUID = userUUID;
-        this.active = true;
 
     }
 

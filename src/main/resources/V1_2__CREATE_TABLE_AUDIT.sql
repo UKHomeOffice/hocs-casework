@@ -45,14 +45,33 @@ CREATE TABLE IF NOT EXISTS audit
   query_data   TEXT,
   case_id      Int,
   stage_id     Int,
+  document_id  Int,
   timestamp    TIMESTAMP NOT NULL,
   event_action TEXT      NOT NULL,
 
   CONSTRAINT fk_case_data_id FOREIGN KEY (case_id) REFERENCES audit_case_data(id),
-  CONSTRAINT fk_stage_data_id FOREIGN KEY (stage_id) REFERENCES audit_stage_data(id)
+  CONSTRAINT fk_stage_data_id FOREIGN KEY (stage_id) REFERENCES audit_stage_data (id),
+  CONSTRAINT fk_document_data_id FOREIGN KEY (document_id) REFERENCES audit_document_data (id)
+
 );
 
 CREATE INDEX idx_audit_username ON audit (username);
 CREATE INDEX idx_audit_timestamp
   ON audit (timestamp);
 CREATE INDEX idx_audit_action ON audit (event_action);
+
+DROP TABLE IF EXISTS audit_document_data;
+
+CREATE TABLE IF NOT EXISTS audit_document_data
+(
+  id                    BIGSERIAL PRIMARY KEY,
+  case_uuid             UUID      NOT NULL,
+  document_uuid         UUID      NOT NULL,
+  document_display_name TEXT      NOT NULL,
+  document_type         TEXT      NOT NULL,
+  timestamp             TIMESTAMP NOT NULL,
+  orig_link             TEXT,
+  pdf_link              TEXT,
+  status                TEXT      NOT NULL,
+  deleted               BOOLEAN   NOT NULL
+);

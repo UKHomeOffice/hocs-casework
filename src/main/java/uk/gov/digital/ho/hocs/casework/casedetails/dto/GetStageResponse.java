@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 
 import java.util.UUID;
@@ -29,10 +29,10 @@ public class GetStageResponse {
 
         String caseRef = null;
         String data = null;
-        CaseInputData caseInputData = stageData.getCaseInputData();
-        if (caseInputData != null) {
+        InputData inputData = stageData.getInputData();
+        if (inputData != null) {
             caseRef = "TEMP REF";
-            data = caseInputData.getData();
+            data = inputData.getData();
         }
         return new GetStageResponse(stageData.getUuid(), stageData.getType().toString(), caseRef, data);
     }

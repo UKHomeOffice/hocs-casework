@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
 
 import javax.transaction.Transactional;
@@ -36,9 +36,9 @@ public class CaseDataService {
         log.debug("Creating Case, Type: {}", caseType);
         CaseData caseData = new CaseData(caseType, caseDataRepository.getNextSeriesId());
         caseDataRepository.save(caseData);
-        CaseInputData caseInputData = inputDataService.createInputData(caseData.getUuid());
-        caseData.setCaseInputData(caseInputData);
-        auditService.writeCreateCaseEvent(caseData);
+        InputData inputData = inputDataService.createInputData(caseData.getUuid());
+        caseData.setInputData(inputData);
+        auditService.createCaseEvent(caseData);
         log.info("Created Case Type: {} UUID: {}", caseType, caseData.getUuid());
         return caseData;
     }
@@ -47,9 +47,9 @@ public class CaseDataService {
     public CaseData getCase(UUID caseUUID) {
         log.debug("Getting Case UUID: {}", caseUUID);
         CaseData caseData = getCaseData(caseUUID);
-        CaseInputData caseInputData = inputDataService.getInputData(caseData.getUuid());
-        caseData.setCaseInputData(caseInputData);
-        auditService.writeGetCaseEvent(caseUUID);
+        InputData inputData = inputDataService.getInputData(caseData.getUuid());
+        caseData.setInputData(inputData);
+        auditService.getCaseEvent(caseUUID);
         log.info("Got Case UUID: {}", caseData.getUuid());
         return caseData;
     }

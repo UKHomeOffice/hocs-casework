@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseInputData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.InputDataRepository;
 
 import javax.transaction.Transactional;
@@ -31,31 +31,31 @@ public class InputDataService {
     }
 
     @Transactional
-    public CaseInputData createInputData(UUID caseUUID) {
+    public InputData createInputData(UUID caseUUID) {
         log.debug("Updating Input Data for Case UUID: {}", caseUUID);
-        CaseInputData caseInputData = new CaseInputData(caseUUID);
-        inputDataRepository.save(caseInputData);
-        auditService.writeCreateInputDataEvent(caseInputData);
+        InputData inputData = new InputData(caseUUID);
+        inputDataRepository.save(inputData);
+        auditService.createInputDataEvent(inputData);
         log.info("Updated Input Data for Case UUID: {}", caseUUID);
-        return caseInputData;
+        return inputData;
     }
 
     @Transactional
     public void updateInputData(UUID caseUUID, Map<String, String> data) {
         log.debug("Updating Input Data for Case UUID: {}", caseUUID);
-        CaseInputData caseInputData = getInputData(caseUUID);
-        caseInputData.updateData(data, objectMapper);
-        inputDataRepository.save(caseInputData);
-        auditService.writeUpdateInputDataEvent(caseInputData);
+        InputData inputData = getInputData(caseUUID);
+        inputData.updateData(data, objectMapper);
+        inputDataRepository.save(inputData);
+        auditService.updateInputDataEvent(inputData);
         log.info("Updated Input Data for Case UUID: {}", caseUUID);
     }
 
-    CaseInputData getInputData(UUID caseUUID) {
+    InputData getInputData(UUID caseUUID) {
         log.debug("Getting Input Data for Case UUID: {}", caseUUID);
-        CaseInputData caseInputData = inputDataRepository.findByCaseUUID(caseUUID);
-        if (caseInputData != null) {
+        InputData inputData = inputDataRepository.findByCaseUUID(caseUUID);
+        if (inputData != null) {
             log.info("Got Input Data for Case UUID: {}", caseUUID);
-            return caseInputData;
+            return inputData;
         } else {
             throw new EntityNotFoundException("InputData UUID: %s not found!", caseUUID);
         }
