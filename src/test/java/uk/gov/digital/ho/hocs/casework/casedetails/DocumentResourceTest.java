@@ -8,8 +8,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateDocumentRequest;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateDocumentRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentStatus;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentType;
 
 import java.util.UUID;
@@ -20,11 +22,9 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentResourceTest {
 
-    private final UUID caseUUID = UUID.randomUUID();
     @Mock
     private DocumentDataService documentService;
 
-    private final UUID uuid = UUID.randomUUID();
     private DocumentDataResource documentResource;
 
     @Before
@@ -33,31 +33,47 @@ public class DocumentResourceTest {
     }
 
     @Test
-    public void shouldCreateDocument() throws EntityCreationException {
-        String documentDisplayName = "A DOC";
+    public void shouldCreateDocumentWithValidParams() throws EntityCreationException {
 
-        when(documentService.createDocument(uuid, documentDisplayName, DocumentType.ORIGINAL)).thenReturn(new DocumentData(caseUUID, documentDisplayName, DocumentType.ORIGINAL));
-        CreateDocumentRequest request = new CreateDocumentRequest(documentDisplayName, DocumentType.ORIGINAL);
+        UUID uuid = UUID.randomUUID();
+        String displayName = "name";
+        DocumentType documentType = DocumentType.ORIGINAL;
+        DocumentData documentData = new DocumentData(uuid, documentType, displayName);
+
+        when(documentService.createDocument(uuid, displayName, documentType)).thenReturn(documentData);
+
+        CreateDocumentRequest request = new CreateDocumentRequest(displayName, documentType);
 
         ResponseEntity response = documentResource.createDocument(uuid, request);
 
-        verify(documentService, times(1)).createDocument(uuid, documentDisplayName, DocumentType.ORIGINAL);
+        verify(documentService, times(1)).createDocument(uuid, displayName, documentType);
+
+        verifyNoMoreInteractions(documentService);
+
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void shouldCreateDocumentException() throws EntityCreationException {
-        String documentDisplayName = "A DOC";
+    public void shouldUpdateDocumentWithValidParams() throws EntityCreationException {
 
-        doThrow(EntityCreationException.class).when(documentService).createDocument(uuid, documentDisplayName, DocumentType.ORIGINAL);
-        CreateDocumentRequest request = new CreateDocumentRequest(documentDisplayName, DocumentType.ORIGINAL);
+        UUID uuid = UUID.randomUUID();
+        DocumentStatus documentStatus = DocumentStatus.UPLOADED;
+        String link = "";
 
-        ResponseEntity response = documentResource.createDocument(uuid, request);
+        doNothing().when(documentService).updateDocument(uuid, documentStatus, link, link);
 
-        verify(documentService, times(1)).createDocument(uuid, documentDisplayName, DocumentType.ORIGINAL);
+        UpdateDocumentRequest request = new UpdateDocumentRequest(link, link, documentStatus);
+
+        ResponseEntity response = documentResource.updateDocument(uuid, uuid, request);
+
+        verify(documentService, times(1)).updateDocument(uuid, documentStatus, link, link);
+
+        verifyNoMoreInteractions(documentService);
+
         assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
 
 }

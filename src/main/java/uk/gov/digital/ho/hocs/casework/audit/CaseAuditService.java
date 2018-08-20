@@ -1,17 +1,17 @@
 package uk.gov.digital.ho.hocs.casework.audit;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.HocsCaseServiceConfiguration;
 import uk.gov.digital.ho.hocs.casework.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.CaseAuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.model.ReportLine;
 import uk.gov.digital.ho.hocs.casework.audit.model.StageAuditEntry;
+import uk.gov.digital.ho.hocs.casework.audit.repository.CaseAuditRepository;
+import uk.gov.digital.ho.hocs.casework.audit.repository.StageAuditRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.UnitType;
 
@@ -35,11 +35,11 @@ class CaseAuditService {
     static {
         unitToCaseTypesMapping = new EnumMap<>(UnitType.class);
         unitToCaseTypesMapping.put(UnitType.RSH, new CaseType[]{CaseType.RSH});
-        unitToCaseTypesMapping.put(UnitType.DCU, new CaseType[]{CaseType.MIN, CaseType.TRO, CaseType.DTEN});
-        unitToCaseTypesMapping.put(UnitType.UKVI, new CaseType[]{CaseType.IMCB, CaseType.IMCM, CaseType.UTEN});
-        unitToCaseTypesMapping.put(UnitType.FOI, new CaseType[]{CaseType.FOI, CaseType.FTC, CaseType.FTCI, CaseType.FSC, CaseType.FSCI});
-        unitToCaseTypesMapping.put(UnitType.HMPOCOR, new CaseType[]{CaseType.COM, CaseType.COM1, CaseType.COM2, CaseType.DGEN, CaseType.GNR});
-        unitToCaseTypesMapping.put(UnitType.HMPOCOL, new CaseType[]{CaseType.COL});
+        unitToCaseTypesMapping.put(UnitType.DCU, new CaseType[]{CaseType.MIN});//, CaseType.TRO, CaseType.DTEN});
+        //unitToCaseTypesMapping.put(UnitType.UKVI, new CaseType[]{CaseType.IMCB, CaseType.IMCM, CaseType.UTEN});
+        //unitToCaseTypesMapping.put(UnitType.FOI, new CaseType[]{CaseType.FOI, CaseType.FTC, CaseType.FTCI, CaseType.FSC, CaseType.FSCI});
+        //unitToCaseTypesMapping.put(UnitType.HMPOCOR, new CaseType[]{CaseType.COM, CaseType.COM1, CaseType.COM2, CaseType.DGEN, CaseType.GNR});
+        //unitToCaseTypesMapping.put(UnitType.HMPOCOL, new CaseType[]{CaseType.COL});
 
         unitToReportHeadingMapping = new EnumMap<>(UnitType.class);
         unitToReportHeadingMapping.put(UnitType.RSH, "Case_Type,Case_Reference,Case_UUID,Case_Timestamp,Stage_legacy-reference,Stage_Name,Stage_UUID,Stage_SchemaVersion,Stage_Timestamp,Stage_who-calling,Stage_rep-first-name,Stage_rep-last-name,Stage_rep-org,Stage_rep-relationship,Stage_rep-calledfrom,Stage_contact-method-helpline,Stage_contact-method-method-mp,Stage_contact-method-media,Stage_contact-method-ie,Stage_contact-method-email,Stage_contact-method-als,Stage_contact-method-internal,Stage_contact-method-external,Stage_call-regarding-citizenship,Stage_call-regarding-settled,Stage_call-regarding-compensation,Stage_call-regarding-other,Stage_first-name,Stage_middle-name,Stage_last-name,Stage_date-of-birth,Stage_nationality-birth,Stage_nationality-current,Stage_address-1,Stage_address-2,Stage_address-town,Stage_post-code,Stage_dependents,Stage_dependents-how-many,Stage_high-profile,Stage_safeguarding,Stage_share-data,Stage_landing-date-day,Stage_landing-date-month,Stage_landing-date-year,Stage_cohort,Stage_date-left,Stage_country-based,Stage_date-last-travelled,Stage_nino,Stage_employment,Stage_education,Stage_tax,Stage_health,Stage_id-docs,Stage_travel-to-psc,Stage_psc-location,Stage_psc-date,Stage_psc-outcome,Stage_psc-followup,Stage_mp,Stage_media,Stage_outcome,Stage_notify-email");
@@ -52,11 +52,11 @@ class CaseAuditService {
     private final RequestData requestData;
 
     @Autowired
-    public CaseAuditService(AuditService auditService, CaseAuditRepository caseAuditRepository, StageAuditRepository stageAuditRepository, RequestData requestData) {
+    public CaseAuditService(AuditService auditService, CaseAuditRepository caseAuditRepository, StageAuditRepository stageAuditRepository, RequestData requestData, ObjectMapper objectMapper) {
         this.auditService = auditService;
         this.caseAuditRepository = caseAuditRepository;
         this.stageAuditRepository = stageAuditRepository;
-        this.objectMapper = HocsCaseServiceConfiguration.initialiseObjectMapper(new ObjectMapper());
+        this.objectMapper = objectMapper;
         this.requestData = requestData;
     }
 
@@ -79,7 +79,7 @@ class CaseAuditService {
         caseMap.put(columnNameFormat(caseName, "UUID"), caseAuditEntry.getUuid().toString());
         caseMap.put(columnNameFormat(caseName, "Type"), caseAuditEntry.getType());
         caseMap.put(columnNameFormat(caseName, "Timestamp"), caseAuditEntry.getTimestamp().toString());
-        caseMap.put(columnNameFormat(caseName, "Reference"), caseAuditEntry.getReference());
+        //caseMap.put(columnNameFormat(caseName, "Reference"), caseAuditEntry.getReference());
 
         return caseMap;
     }
@@ -93,15 +93,15 @@ class CaseAuditService {
         stageMap.put(columnNameFormat(stageName, "Timestamp"), stageAuditEntry.getTimestamp().toString());
         stageMap.put(columnNameFormat(stageName, "CaseUUID"), stageAuditEntry.getCaseUUID().toString());
 
-        try {
-            Map<String, String> dataMap = objectMapper.readValue(stageAuditEntry.getData(), new TypeReference<HashMap<String, String>>() {
-            });
+        //try {
+        // Map<String, String> dataMap = objectMapper.readValue(stageAuditEntry.getData(), new TypeReference<HashMap<String, String>>() {
+        // });
 
             // We can't use putAll here because we want to change the Key name
-            dataMap.forEach((key, value) -> stageMap.put(columnNameFormat(stageName, key), value));
-        } catch (IOException e) {
-            log.error(e.toString());
-        }
+        // dataMap.forEach((key, value) -> stageMap.put(columnNameFormat(stageName, key), value));
+        //} catch (IOException e) {
+        //    log.error(e.toString());
+        // }
 
         return stageMap;
     }
@@ -109,7 +109,7 @@ class CaseAuditService {
     private static String createCSV(String header, List<ReportLine> reportLines) {
         StringBuilder sb = new StringBuilder();
         try (CSVPrinter printer = new CSVPrinter(sb, CSVFormat.DEFAULT)) {
-            printer.printRecord(header.split(","));
+            printer.printRecord((Object[]) header.split(","));
             reportLines.forEach(l -> printExportLine(printer, l));
         } catch (IOException e) {
             log.warn(e.toString());
@@ -155,7 +155,7 @@ class CaseAuditService {
         String heading = unitToReportHeadingMapping.get(unit);
 
         if (heading != null && cutoff != null && checkValidDateRange(cutoff)) {
-            auditService.writeExtractEvent(String.join(" ", unit.toString(), cutoff.toString()));
+            auditService.extractReportEvent(String.join(" ", unit.toString(), cutoff.toString()));
 
             // Get the reporting data
             List<ReportLine> reportLines = getReportingData(unit, heading, cutoff);

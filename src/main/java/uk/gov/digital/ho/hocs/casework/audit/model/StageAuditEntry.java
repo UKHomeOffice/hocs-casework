@@ -14,10 +14,6 @@ import java.util.UUID;
 @EqualsAndHashCode
 public class StageAuditEntry implements Serializable {
 
-    @Column(name = "type")
-    @Getter
-    private String type;
-
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,22 +23,21 @@ public class StageAuditEntry implements Serializable {
     @Getter
     private UUID uuid;
 
+    @Column(name = "type")
+    @Getter
+    private String type;
+
     @Column(name = "timestamp")
     @Getter
     private LocalDateTime timestamp;
-
-    @Column(name ="data")
-    @Getter
-    private String data;
 
     @Column(name = "case_uuid")
     @Getter
     private UUID caseUUID;
 
-    private StageAuditEntry(UUID stageUUID, String type, String data, UUID caseUUID, LocalDateTime timestamp) {
+    private StageAuditEntry(UUID stageUUID, String type, UUID caseUUID, LocalDateTime timestamp) {
         this.uuid = stageUUID;
         this.type = type;
-        this.data = data;
         this.caseUUID = caseUUID;
         this.timestamp = timestamp;
     }
@@ -50,7 +45,7 @@ public class StageAuditEntry implements Serializable {
     public static StageAuditEntry from(StageData stageData)
     {
         if (stageData != null) {
-            return new StageAuditEntry(stageData.getUuid(), stageData.getType(), stageData.getData(), stageData.getCaseUUID(), stageData.getTimestamp());
+            return new StageAuditEntry(stageData.getUuid(), stageData.getType().toString(), stageData.getCaseUUID(), stageData.getCreated());
         } else {
             return null;
         }

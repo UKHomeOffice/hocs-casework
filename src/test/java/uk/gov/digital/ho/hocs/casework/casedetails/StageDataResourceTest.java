@@ -1,21 +1,19 @@
 package uk.gov.digital.ho.hocs.casework.casedetails;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.AllocateStageRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetStageResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,11 +22,9 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class StageDataResourceTest {
 
-    private final UUID uuid = UUID.randomUUID();
-    private final Map<String, String> data = new HashMap<>();
-    private final StageType stageType = StageType.DCU_MIN_MARKUP;
     @Mock
     private StageDataService stageDataService;
+
     private StageDataResource stageDataResource;
 
     @Before
@@ -37,71 +33,61 @@ public class StageDataResourceTest {
     }
 
     @Test
-    public void shouldCreateStage() throws EntityCreationException {
-        UUID caseUUID = UUID.randomUUID();
+    public void shouldCreateStageWithValidParams() {
 
-        when(stageDataService.createStage(any(UUID.class), any(), anyMap())).thenReturn(new StageData(caseUUID, StageType.DCU_MIN_MARKUP.toString(), ""));
-        CreateStageRequest request = new CreateStageRequest(StageType.DCU_MIN_MARKUP, data);
+        UUID uuid = UUID.randomUUID();
+        UUID teamUUID = UUID.randomUUID();
+        StageType stageType = StageType.DCU_MIN_MARKUP;
 
-        ResponseEntity response = stageDataResource.createStage(uuid, request);
+        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, null);
 
-        verify(stageDataService, times(1)).createStage(uuid, StageType.DCU_MIN_MARKUP, new HashMap<>());
+        when(stageDataService.createStage(uuid, stageType, teamUUID, null)).thenReturn(new StageData(uuid, stageType, uuid, uuid));
+
+        ResponseEntity<CreateStageResponse> response = stageDataResource.createStage(uuid, request);
+
+        verify(stageDataService, times(1)).createStage(uuid, stageType, teamUUID, null);
+
+        verifyNoMoreInteractions(stageDataService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+
+    @Test
+    public void shouldAllocateStageWithValidParams() {
+
+        UUID uuid = UUID.randomUUID();
+        UUID teamUUID = UUID.randomUUID();
+        AllocateStageRequest request = new AllocateStageRequest(teamUUID, null);
+
+        doNothing().when(stageDataService).allocateStage(uuid, teamUUID, null);
+
+        ResponseEntity response = stageDataResource.allocateStage(uuid, uuid, request);
+
+        verify(stageDataService, times(1)).allocateStage(uuid, teamUUID, null);
+
+        verifyNoMoreInteractions(stageDataService);
+
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void shouldCreateStageException() throws EntityCreationException {
+    public void shouldGetStageWithValidParams() {
 
-        doThrow(EntityCreationException.class).when(stageDataService).createStage(any(UUID.class), any(), anyMap());
-        CreateStageRequest request = new CreateStageRequest(stageType, data);
+        UUID uuid = UUID.randomUUID();
+        StageType stageType = StageType.DCU_MIN_MARKUP;
 
-        ResponseEntity response = stageDataResource.createStage(uuid, request);
+        when(stageDataService.getStage(uuid)).thenReturn(new StageData(uuid, stageType, uuid, uuid));
 
-        verify(stageDataService, times(1)).createStage(uuid, stageType, new HashMap<>());
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
+        ResponseEntity<GetStageResponse> response = stageDataResource.getStage(uuid, uuid);
 
-    @Ignore
-    @Test
-    public void shouldUpdateStage() throws EntityCreationException, EntityNotFoundException {
+        verify(stageDataService, times(1)).getStage(uuid);
 
-        doNothing().when(stageDataService).completeStage(any(), any());
+        verifyNoMoreInteractions(stageDataService);
 
-        //UpdateStageRequest request = new UpdateStageRequest(data);
-        ResponseEntity response = stageDataResource.completeStage(uuid, uuid);
-
-        verify(stageDataService, times(1)).completeStage(uuid, uuid);
-        //verify(stageDataService, times(0)).completeStage(any(), any());
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isNull();
-    }
-
-    @Test
-    public void shouldUpdateStageCreateException() throws EntityCreationException, EntityNotFoundException {
-
-        doThrow(EntityCreationException.class).when(stageDataService).completeStage(any(), any());
-
-        //UpdateStageRequest request = new UpdateStageRequest(data);
-        ResponseEntity response = stageDataResource.completeStage(uuid, uuid);
-
-        verify(stageDataService, times(1)).completeStage(uuid, uuid);
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-    }
-
-    @Test
-    public void shouldUpdateStageFindException() throws EntityCreationException, EntityNotFoundException {
-
-        doThrow(EntityNotFoundException.class).when(stageDataService).completeStage(any(), any());
-
-        //UpdateStageRequest request = new UpdateStageRequest(data);
-        ResponseEntity response = stageDataResource.completeStage(uuid, uuid);
-
-        verify(stageDataService, times(1)).completeStage(uuid, uuid);
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }

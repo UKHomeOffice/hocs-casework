@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.casedetails;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -13,7 +12,6 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageDataRepository;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -21,13 +19,14 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class StageDataServiceTest {
 
-    private final UUID uuid = UUID.randomUUID();
-    @Mock
-    private AuditService auditService;
     @Mock
     private StageDataRepository stageDataRepository;
+
     @Mock
-    private ActiveStageService activeStageService;
+    private InputDataService inputDataService;
+
+    @Mock
+    private AuditService auditService;
 
     private StageDataService stageDataService;
 
@@ -35,112 +34,264 @@ public class StageDataServiceTest {
     public void setUp() {
         this.stageDataService = new StageDataService(
                 stageDataRepository,
-                activeStageService,
-                auditService
-        );
+                inputDataService,
+                auditService);
     }
 
-    @Ignore
     @Test
-    public void shouldCreateStage() throws EntityCreationException {
-        stageDataService.createStage(uuid, StageType.DCU_MIN_MARKUP, new HashMap<>());
+    public void shouldCreateStageWithValidParams() {
 
-        verify(auditService).writeCreateStageEvent(any(StageData.class));
-        verify(stageDataRepository).save(isA(StageData.class));
+        UUID uuid = UUID.randomUUID();
+        UUID teamUUID = UUID.randomUUID();
+        StageType stageType = StageType.DCU_MIN_MARKUP;
+
+        stageDataService.createStage(uuid, stageType, teamUUID, null);
+
+        verify(stageDataRepository, times(1)).save(any(StageData.class));
+        verify(auditService, times(1)).createStageEvent(uuid, stageType, teamUUID, null);
+
+        verifyNoMoreInteractions(stageDataRepository);
+        verifyNoMoreInteractions(auditService);
+        verifyZeroInteractions(inputDataService);
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldCreateStageMissingUUIDException1() throws EntityCreationException {
-        stageDataService.createStage(null, StageType.DCU_MIN_MARKUP, new HashMap<>());
+    public void shouldNotCreateStageMissingUUIDException() {
+
+        UUID teamUUID = UUID.randomUUID();
+        StageType stageType = StageType.DCU_MIN_MARKUP;
+
+        stageDataService.createStage(null, stageType, teamUUID, null);
     }
 
     @Test()
-    public void shouldCreateStageMissingUUIDException2() {
+    public void shouldNotCreateStageMissingUUID() {
+
+        StageType stageType = StageType.DCU_MIN_MARKUP;
+        UUID teamUUID = UUID.randomUUID();
+
         try {
-            stageDataService.createStage(null, StageType.DCU_MIN_MARKUP, new HashMap<>());
+            stageDataService.createStage(null, stageType, teamUUID, null);
         } catch (EntityCreationException e) {
             // Do nothing.
         }
-        verify(auditService, times(0)).writeCreateStageEvent(any());
-        verify(stageDataRepository, times(0)).save(any(StageData.class));
+
+        verifyZeroInteractions(stageDataRepository);
+        verifyZeroInteractions(auditService);
+        verifyZeroInteractions(inputDataService);
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldCreateStageMissingTypeException1() throws EntityCreationException {
-        stageDataService.createStage(uuid, null, new HashMap<>());
+    public void shouldNotCreateStageMissingTypeException() {
+        UUID uuid = UUID.randomUUID();
+        UUID teamUUID = UUID.randomUUID();
+
+        stageDataService.createStage(uuid, null, teamUUID, null);
     }
 
     @Test()
-    public void shouldCreateStageMissingTypeException2() {
+    public void shouldNotCreateStageMissingType() {
+
+        UUID uuid = UUID.randomUUID();
+        UUID teamUUID = UUID.randomUUID();
+
         try {
-            stageDataService.createStage(uuid, null, new HashMap<>());
+            stageDataService.createStage(uuid, null, teamUUID, null);
         } catch (EntityCreationException e) {
             // Do nothing.
         }
-        verify(auditService, times(0)).writeCreateStageEvent(any());
-        verify(stageDataRepository, times(0)).save(any(StageData.class));
+
+        verifyZeroInteractions(stageDataRepository);
+        verifyZeroInteractions(auditService);
+        verifyZeroInteractions(inputDataService);
     }
 
-    @Ignore
-    @Test
-    public void shouldUpdateStage() throws EntityCreationException, EntityNotFoundException {
-        when(stageDataRepository.findByUuid(any())).thenReturn(new StageData(uuid, StageType.DCU_MIN_MARKUP.toString(), "Some data"));
-
-        stageDataService.completeStage(uuid, uuid);
-
-        verify(stageDataRepository, times(1)).findByUuid(uuid);
-        verify(stageDataRepository, times(1)).save(isA(StageData.class));
-        verify(auditService, times(1)).writeUpdateStageEvent(any(StageData.class));
-
-    }
-
-    @Ignore
     @Test(expected = EntityCreationException.class)
-    public void shouldUpdateStageMissingUUIDException1() throws EntityCreationException, EntityNotFoundException {
-        UUID caseUUID = UUID.randomUUID();
-        stageDataService.completeStage(caseUUID, null);
+    public void shouldNotCreateStageMissingTeamUUIDException() {
+
+        UUID uuid = UUID.randomUUID();
+        StageType stageType = StageType.DCU_MIN_MARKUP;
+
+        stageDataService.createStage(uuid, stageType, null, null);
     }
 
     @Test()
-    public void shouldUpdateStageMissingUUIDException2() throws EntityNotFoundException {
-        UUID caseUUID = UUID.randomUUID();
+    public void shouldNotCreateStageMissingTeamUUID() {
+
+        UUID uuid = UUID.randomUUID();
+        StageType stageType = StageType.DCU_MIN_MARKUP;
 
         try {
-            stageDataService.completeStage(caseUUID, null);
+            stageDataService.createStage(uuid, stageType, null, null);
         } catch (EntityCreationException e) {
-            // Do Nothing.
+            // Do nothing.
         }
 
-        verify(stageDataRepository, times(0)).findByUuid(any());
-        verify(stageDataRepository, times(0)).save(any(StageData.class));
-        verify(auditService, times(0)).writeUpdateStageEvent(any());
+        verifyZeroInteractions(stageDataRepository);
+        verifyZeroInteractions(auditService);
+        verifyZeroInteractions(inputDataService);
     }
 
-    @Ignore
+    @Test
+    public void shouldAllocateStageWithValidParams() {
+
+        UUID uuid = UUID.randomUUID();
+        UUID teamUUID = UUID.randomUUID();
+        StageType stageType = StageType.DCU_MIN_MARKUP;
+        StageData stageData = new StageData(uuid, stageType, uuid, null);
+
+        stageDataService.allocateStage(uuid, teamUUID, null);
+
+        verify(stageDataRepository, times(1)).allocate(uuid, teamUUID);
+        verify(auditService, times(1)).allocateStageEvent(uuid, teamUUID, null);
+
+        verifyNoMoreInteractions(stageDataRepository);
+        verifyNoMoreInteractions(auditService);
+        verifyZeroInteractions(inputDataService);
+    }
+
+    @Test
+    public void shouldAllocateStageWithValidParamsUserUUID() {
+
+        UUID uuid = UUID.randomUUID();
+        UUID teamUUID = UUID.randomUUID();
+        StageType stageType = StageType.DCU_MIN_MARKUP;
+        StageData stageData = new StageData(uuid, stageType, uuid, uuid);
+
+        stageDataService.allocateStage(uuid, teamUUID, uuid);
+
+        verify(stageDataRepository, times(1)).allocate(uuid, teamUUID, uuid);
+        verify(auditService, times(1)).allocateStageEvent(uuid, teamUUID, uuid);
+
+        verifyNoMoreInteractions(stageDataRepository);
+        verifyNoMoreInteractions(auditService);
+        verifyZeroInteractions(inputDataService);
+    }
+
     @Test(expected = EntityNotFoundException.class)
-    public void shouldUpdateStageNotFound1() throws EntityCreationException, EntityNotFoundException {
-        UUID caseUUID = UUID.randomUUID();
+    public void shouldNotUpdateStageMissingUUIDException() {
 
-        when(stageDataRepository.findByUuid(any())).thenReturn(null);
+        UUID teamUUID = UUID.randomUUID();
 
-        stageDataService.completeStage(caseUUID, uuid);
+        stageDataService.allocateStage(null, teamUUID, null);
     }
 
-    @Ignore
     @Test
-    public void shouldUpdateStageNotFound2() throws EntityCreationException {
-        UUID caseUUID = UUID.randomUUID();
+    public void shouldNotUpdateStageMissingUUID() {
 
-        when(stageDataRepository.findByUuid(any())).thenReturn(null);
+        UUID teamUUID = UUID.randomUUID();
 
         try {
-            stageDataService.completeStage(caseUUID, uuid);
+            stageDataService.allocateStage(null, teamUUID, null);
         } catch (EntityNotFoundException e) {
             // Do nothing.
         }
-        verify(stageDataRepository, times(1)).findByUuid(any());
-        verify(stageDataRepository, times(0)).save(any(StageData.class));
-        verify(auditService, times(0)).writeUpdateStageEvent(any());
+
+        verifyZeroInteractions(stageDataRepository);
+        verifyZeroInteractions(auditService);
+        verifyZeroInteractions(inputDataService);
+    }
+
+    @Test(expected = EntityCreationException.class)
+    public void shouldNotUpdateStageStageMissingTeamUUIDException() {
+
+        UUID uuid = UUID.randomUUID();
+        StageType stageType = StageType.DCU_MIN_MARKUP;
+        StageData stageData = new StageData(uuid, stageType, uuid, uuid);
+
+        stageDataService.allocateStage(uuid, null, null);
+    }
+
+    @Test
+    public void shouldNotUpdateStageStageMissingTeamUUID() {
+
+        UUID uuid = UUID.randomUUID();
+        StageType stageType = StageType.DCU_MIN_MARKUP;
+        StageData stageData = new StageData(uuid, stageType, uuid, uuid);
+
+        try {
+            stageDataService.allocateStage(uuid, null, null);
+        } catch (EntityCreationException e) {
+            // Do nothing.
+        }
+
+        verifyNoMoreInteractions(stageDataRepository);
+        verifyZeroInteractions(auditService);
+        verifyZeroInteractions(inputDataService);
+    }
+
+    @Test
+    public void shouldGetStageWithValidParams() {
+
+        UUID uuid = UUID.randomUUID();
+        StageType stageType = StageType.DCU_MIN_MARKUP;
+        StageData stageData = new StageData(uuid, stageType, uuid, uuid);
+
+        when(stageDataRepository.findByUuid(uuid)).thenReturn(stageData);
+
+        stageDataService.getStage(uuid);
+
+        verify(stageDataRepository, times(1)).findByUuid(uuid);
+        verify(inputDataService, times(1)).getInputData(uuid);
+        verify(auditService, times(1)).getStageEvent(uuid);
+
+        verifyNoMoreInteractions(stageDataRepository);
+        verifyNoMoreInteractions(auditService);
+        verifyNoMoreInteractions(inputDataService);
+
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void shouldNotGetStageWithValidParamsNotFoundException() {
+
+        UUID uuid = UUID.randomUUID();
+
+        when(stageDataRepository.findByUuid(uuid)).thenReturn(null);
+
+        stageDataService.getStage(uuid);
+    }
+
+    @Test
+    public void shouldNotGetStageWithValidParamsNotFound() {
+
+        UUID uuid = UUID.randomUUID();
+
+        when(stageDataRepository.findByUuid(uuid)).thenReturn(null);
+
+        try {
+            stageDataService.getStage(uuid);
+        } catch (EntityNotFoundException e) {
+            // Do nothing.
+        }
+
+        verify(stageDataRepository, times(1)).findByUuid(uuid);
+
+        verifyNoMoreInteractions(stageDataRepository);
+        verifyZeroInteractions(auditService);
+        verifyZeroInteractions(inputDataService);
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void shouldNotGetStageMissingUUIDException() {
+
+        stageDataService.getStage(null);
+
+    }
+
+    @Test()
+    public void shouldNotGetStageMissingUUID() {
+
+        try {
+            stageDataService.getStage(null);
+        } catch (EntityNotFoundException e) {
+            // Do nothing.
+        }
+
+        verify(stageDataRepository, times(1)).findByUuid(null);
+
+        verifyNoMoreInteractions(stageDataRepository);
+        verifyZeroInteractions(auditService);
+        verifyZeroInteractions(inputDataService);
     }
 
 }

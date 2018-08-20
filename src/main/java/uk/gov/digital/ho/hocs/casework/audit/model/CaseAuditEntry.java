@@ -23,10 +23,6 @@ public class CaseAuditEntry implements Serializable {
     @Getter
     private String type;
 
-    @Column(name = "reference")
-    @Getter
-    private String reference;
-
     @Column(name = "uuid")
     @Getter
     private UUID uuid;
@@ -35,16 +31,15 @@ public class CaseAuditEntry implements Serializable {
     @Getter
     private LocalDateTime timestamp;
 
-    private CaseAuditEntry(String type, String reference, UUID uuid, LocalDateTime timestamp) {
+    private CaseAuditEntry(String type, UUID uuid, LocalDateTime timestamp) {
         this.type = type;
-        this.reference = reference;
         this.uuid = uuid;
         this.timestamp = timestamp;
     }
 
     public static CaseAuditEntry from(CaseData caseData) {
         if (caseData != null) {
-            return new CaseAuditEntry(caseData.getType(), caseData.getReference(), caseData.getUuid(), caseData.getTimestamp());
+            return new CaseAuditEntry(caseData.getTypeString(), caseData.getUuid(), caseData.getCreated());
         } else {
             return null;
         }

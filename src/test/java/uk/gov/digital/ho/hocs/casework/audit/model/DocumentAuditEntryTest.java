@@ -17,7 +17,7 @@ public class DocumentAuditEntryTest {
     @Test
     public void shouldConstructAllValues() {
 
-        DocumentData documentData = new DocumentData(UUID.randomUUID(), "anyType", DocumentType.ORIGINAL);
+        DocumentData documentData = new DocumentData(UUID.randomUUID(), DocumentType.ORIGINAL, "anyName");
 
         DocumentAuditEntry documentAuditEntry = DocumentAuditEntry.from(documentData);
 

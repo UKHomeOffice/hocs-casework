@@ -128,7 +128,7 @@ public class CaseDataResourceIntTest {
         assertThat(responseEntity.getStatusCode()).isEqualTo(OK);
     }
 
-    @Ignore("We don't do anything on Update that the moment")
+    @Ignore("We don't do anything on update that the moment")
     @Test
     public void shouldReturnBadRequestWhenBodyMissingOnUpdateCase() {
         HttpHeaders requestHeaders = buildHttpHeaders();

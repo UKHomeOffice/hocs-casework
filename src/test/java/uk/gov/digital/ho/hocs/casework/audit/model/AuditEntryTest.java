@@ -3,9 +3,9 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.*;
+
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,7 +16,7 @@ public class AuditEntryTest {
 
     @Test
     public void shouldConstructCaseData() {
-        CaseData caseData = new CaseData();
+        CaseData caseData = new CaseData(CaseType.MIN, 0l);
 
         AuditEntry auditEntry = new AuditEntry(userName, caseData, AuditAction.CREATE_CASE);
 
@@ -36,7 +36,9 @@ public class AuditEntryTest {
 
     @Test
     public void shouldConstructStageData() {
-        StageData stageData = new StageData();
+        UUID uuid = UUID.randomUUID();
+        StageType stageType = StageType.DCU_MIN_MARKUP;
+        StageData stageData = new StageData(uuid, stageType, uuid, uuid);
 
         AuditEntry auditEntry = new AuditEntry(userName, stageData, AuditAction.CREATE_STAGE);
 

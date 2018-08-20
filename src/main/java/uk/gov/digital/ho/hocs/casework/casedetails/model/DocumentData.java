@@ -4,12 +4,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Where;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
-
 
 @Entity
 @Table(name = "document_data")
@@ -32,17 +32,14 @@ public class DocumentData implements Serializable {
 
     @Column(name = "s3_orig_link")
     @Getter
-    @Setter
     private String fileLink;
 
     @Column(name = "s3_pdf_link")
     @Getter
-    @Setter
     private String pdfLink;
 
     @Column(name = "status")
     @Getter
-    @Setter
     private DocumentStatus status = DocumentStatus.PENDING;
 
     @Column(name = "document_uuid")
@@ -62,10 +59,22 @@ public class DocumentData implements Serializable {
     @Setter
     private Boolean deleted = Boolean.FALSE;
 
-    public DocumentData(UUID caseUUID, String name, DocumentType type) {
+    public DocumentData(UUID caseUUID, DocumentType type, String name) {
+        if (caseUUID == null || type == null || name == null) {
+            throw new EntityCreationException("Cannot create DocumentData(%s, %s, %s).", caseUUID, type, name);
+        }
         this.uuid = UUID.randomUUID();
         this.type = type;
         this.name = name;
         this.caseUUID = caseUUID;
+    }
+
+    public void update(String fileLink, String pdfLink, DocumentStatus status) {
+        if (fileLink == null || status == null) {
+            throw new EntityCreationException("Cannot call DocumentData.update(%s, %s, %s).", fileLink, pdfLink, status);
+        }
+        this.fileLink = fileLink;
+        this.pdfLink = pdfLink;
+        this.status = status;
     }
 }
