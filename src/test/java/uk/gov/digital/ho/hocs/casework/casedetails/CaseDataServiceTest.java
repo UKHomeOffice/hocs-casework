@@ -18,6 +18,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.InputDataRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.DeadlineDataRepository;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -27,6 +28,9 @@ public class CaseDataServiceTest {
 
     @Mock
     private CaseDataRepository caseDataRepository;
+
+    @Mock
+    private StageDataService stageDataService;
 
     @Mock
     private InputDataRepository inputDataRepository;
@@ -46,7 +50,8 @@ public class CaseDataServiceTest {
         this.caseDataService = new CaseDataService(
                 caseDataRepository,
                 inputDataService,
-                auditService);
+                auditService,
+                stageDataService);
     }
 
     @Test
@@ -55,7 +60,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
-        CaseData caseData = caseDataService.createCase(CaseType.MIN);
+        CaseData caseData = caseDataService.createCase(CaseType.MIN, LocalDate.now());
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
@@ -66,11 +71,12 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
         verifyNoMoreInteractions(inputDataRepository);
         verifyNoMoreInteractions(auditService);
+        verifyZeroInteractions(stageDataService);
     }
 
     @Test(expected = EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws EntityCreationException {
-        caseDataService.createCase(null);
+        caseDataService.createCase(null, null);
     }
 
     @Test()
@@ -80,7 +86,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         try {
-            caseDataService.createCase(null);
+            caseDataService.createCase(null, null);
         } catch (EntityCreationException e) {
             // Do nothing.
         }
@@ -90,6 +96,8 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
         verifyZeroInteractions(inputDataRepository);
         verifyZeroInteractions(auditService);
+        verifyZeroInteractions(stageDataService);
+
     }
 
     @Test
@@ -107,10 +115,13 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
         verify(inputDataRepository, times(1)).findByCaseUUID(caseData.getUuid());
         verify(auditService, times(1)).getCaseEvent(caseData.getUuid());
+        verify(stageDataService, times(1)).getStagesForCase(caseData.getUuid());
 
         verifyNoMoreInteractions(caseDataRepository);
         verifyNoMoreInteractions(inputDataRepository);
         verifyNoMoreInteractions(auditService);
+        verifyZeroInteractions(stageDataService);
+
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -139,6 +150,8 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
         verifyZeroInteractions(inputDataRepository);
         verifyZeroInteractions(auditService);
+        verifyZeroInteractions(stageDataService);
+
     }
 
     @Test(expected = EntityNotFoundException.class)
@@ -162,6 +175,7 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
         verifyZeroInteractions(inputDataRepository);
         verifyZeroInteractions(auditService);
+        verifyZeroInteractions(stageDataService);
     }
 
 

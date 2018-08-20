@@ -41,8 +41,8 @@ public class CaseData implements Serializable {
     private LocalDateTime updated;
 
     @Getter
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
+    @Setter
+    @Transient
     private Set<StageData> stages = new HashSet<>();
 
     @Getter

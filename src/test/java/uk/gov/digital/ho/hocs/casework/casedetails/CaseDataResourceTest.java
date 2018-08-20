@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,13 +40,14 @@ public class CaseDataResourceTest {
         CaseData caseData = new CaseData(CaseType.MIN, 0l);
         InputData inputData = new InputData(uuid);
         caseData.setInputData(inputData);
-        CreateCaseRequest request = new CreateCaseRequest(caseType);
+        LocalDate now = LocalDate.now();
+        CreateCaseRequest request = new CreateCaseRequest(caseType, now);
 
-        when(caseDataService.createCase(any())).thenReturn(caseData);
+        when(caseDataService.createCase(caseType, now)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseType);
+        verify(caseDataService, times(1)).createCase(caseType, now);
 
         verifyNoMoreInteractions(caseDataService);
 
@@ -60,7 +62,7 @@ public class CaseDataResourceTest {
         CaseData caseData = new CaseData(CaseType.MIN, 0l);
         InputData inputData = new InputData(uuid);
         caseData.setInputData(inputData);
-        CreateCaseRequest request = new CreateCaseRequest(caseType);
+        CreateCaseRequest request = new CreateCaseRequest(caseType, LocalDate.now());
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
