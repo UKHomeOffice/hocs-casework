@@ -16,7 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 @Slf4j
 @RestController
 public class DeadlineDataResource {
-    
+
     private final DeadlineDataService deadlineDataService;
 
     @Autowired

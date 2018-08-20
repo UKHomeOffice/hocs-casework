@@ -2,7 +2,9 @@ package uk.gov.digital.ho.hocs.casework.casedetails;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.DeadlineDataDto;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DeadlineData;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.DeadlineDataRepository;
@@ -15,8 +17,8 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DeadlineDataServiceTest {
-
 
     @Mock
     private DeadlineDataRepository deadlineDataRepository;
