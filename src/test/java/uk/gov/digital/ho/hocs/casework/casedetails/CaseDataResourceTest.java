@@ -7,13 +7,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.*;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,4 +76,21 @@ public class CaseDataResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
+    @Test
+    public void shouldStoreDeadlines() {
+
+        UpdateDeadlineRequest updateDeadlineRequest = new UpdateDeadlineRequest();
+        Set<UpdateDeadlineRequest> deadlines = new HashSet<>();
+        deadlines.add(updateDeadlineRequest);
+        UpdateDeadlinesRequest updateDeadlinesRequest = new UpdateDeadlinesRequest(deadlines);
+
+        ResponseEntity response = caseDataResource.storeDeadlines(updateDeadlinesRequest,uuid);
+
+        verify(caseDataService, times(1)).updateDeadlines(uuid, deadlines);
+
+        verifyNoMoreInteractions(caseDataService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 }

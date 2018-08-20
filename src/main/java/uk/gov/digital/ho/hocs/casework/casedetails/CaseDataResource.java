@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateDeadlinesRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 
 import java.util.UUID;
@@ -34,6 +35,12 @@ class CaseDataResource {
     public ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID) {
         CaseData caseData = caseDataService.getCase(caseUUID);
         return ResponseEntity.ok(GetCaseResponse.from(caseData));
+    }
+
+    @PostMapping(value = "/case/{caseUUID}/deadline", consumes = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity storeDeadlines(@RequestBody UpdateDeadlinesRequest request, @PathVariable UUID caseUUID) {
+        caseDataService.updateDeadlines(caseUUID, request.getDeadlines());
+        return ResponseEntity.ok().build();
     }
 
 }
