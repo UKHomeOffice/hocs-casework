@@ -12,8 +12,6 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
-import uk.gov.digital.ho.hocs.casework.rsh.email.dto.SendEmailRequest;
-import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import java.util.UUID;
 
@@ -32,20 +30,6 @@ public class AuditService {
         this.requestData = requestData;
     }
 
-    public void searchEvent(SearchRequest searchRequest) {
-        String request = SearchRequest.toJsonString(objectMapper, searchRequest);
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), request, AuditAction.SEARCH);
-        save(auditEntry);
-    }
-
-    public void sendEmailEvent(SendEmailRequest sendEmailRequest) {
-        String emailString = null;
-        if (sendEmailRequest != null) {
-            emailString = sendEmailRequest.getEmailAddress();
-        }
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), emailString, AuditAction.SEND_EMAIL);
-        save(auditEntry);
-    }
 
     public void createCaseEvent(CaseData caseData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), caseData, AuditAction.CREATE_CASE);

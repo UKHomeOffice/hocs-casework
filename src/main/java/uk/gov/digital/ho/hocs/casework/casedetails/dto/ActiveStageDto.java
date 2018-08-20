@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
 import java.io.Serializable;
@@ -47,10 +48,10 @@ public class ActiveStageDto implements Serializable {
     @JsonProperty("assignedUserDisplay")
     private String assignedUserDisplay;
 
-    public static ActiveStageDto from(uk.gov.digital.ho.hocs.casework.casedetails.model.ActiveStage activeStage) {
+    public static ActiveStageDto from(StageData activeStage) {
         return new ActiveStageDto(
                 activeStage.getCaseUUID(),
-                activeStage.getStageUUID(),
+                activeStage.getUuid(),
                 activeStage.getCaseReference(),
                 activeStage.getCaseType(),
                 activeStage.getCaseType().getDisplayValue(),

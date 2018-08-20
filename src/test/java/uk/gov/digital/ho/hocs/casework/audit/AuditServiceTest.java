@@ -14,8 +14,6 @@ import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.repository.AuditRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.*;
-import uk.gov.digital.ho.hocs.casework.rsh.email.dto.SendEmailRequest;
-import uk.gov.digital.ho.hocs.casework.search.dto.SearchRequest;
 
 import java.util.UUID;
 
@@ -43,46 +41,6 @@ public class AuditServiceTest {
     @Before
     public void setUp() {
         this.auditService = new AuditService(mockAuditRepository, mockRequestData, objectMapper);
-    }
-
-    @Test
-    public void shouldWriteSearchEvent() {
-        auditService.searchEvent(new SearchRequest());
-        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
-
-        verify(mockAuditRepository).save(argCaptor.capture());
-        AuditEntry auditEntry = argCaptor.getValue();
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.SEARCH.toString());
-    }
-
-    @Test
-    public void shouldWriteSearchEventNull() {
-        auditService.searchEvent(null);
-        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
-
-        verify(mockAuditRepository).save(argCaptor.capture());
-        AuditEntry auditEntry = argCaptor.getValue();
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.SEARCH.toString());
-    }
-
-    @Test
-    public void shouldWriteSendEmailEvent() {
-        auditService.sendEmailEvent(new SendEmailRequest());
-        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
-
-        verify(mockAuditRepository).save(argCaptor.capture());
-        AuditEntry auditEntry = argCaptor.getValue();
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.SEND_EMAIL.toString());
-    }
-
-    @Test
-    public void shouldWriteSendEmailEventNull() {
-        auditService.sendEmailEvent(null);
-        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
-
-        verify(mockAuditRepository).save(argCaptor.capture());
-        AuditEntry auditEntry = argCaptor.getValue();
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.SEND_EMAIL.toString());
     }
 
     @Test

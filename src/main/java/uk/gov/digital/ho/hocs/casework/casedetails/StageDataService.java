@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageDataRepository;
 
 import javax.transaction.Transactional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -80,6 +81,19 @@ public class StageDataService {
         auditService.getStageEvent(stageUUID);
         log.info("Got Stage UUID: {}", stageData.getUuid());
         return stageData;
+    }
+
+    //TODO: This method is a dev tool
+    public Set<StageData> getActiveCases() {
+        return stageDataRepository.findAllActiveStages();
+    }
+
+    public Set<StageData> getActiveStagesByUserUUID(UUID userUUID) {
+        return stageDataRepository.findAllActiveStages();
+    }
+
+    public Set<StageData> getActiveStagesByTeamUUID(Set<UUID> teamUUIDs) {
+        return stageDataRepository.findAllActiveStages();
     }
 
     private StageData getStageData(UUID stageUUID) {

@@ -26,7 +26,7 @@ public class StageData implements Serializable {
 
     @Getter
     @Column(name = "type")
-    private String stageType;
+    private String type;
 
     @Getter
     @Column(name = "case_uuid")
@@ -51,6 +51,13 @@ public class StageData implements Serializable {
     @Column(name = "user_uuid")
     private UUID userUUID;
 
+    @Column(name = "case_reference", insertable = false)
+    @Getter
+    private String caseReference;
+
+    @Column(name = "case_type", insertable = false)
+    private String caseType;
+
     @Getter
     @Setter
     @Transient
@@ -61,7 +68,7 @@ public class StageData implements Serializable {
             throw new EntityCreationException("Cannot create StageData(%s, %s, %s, %s).", caseUUID, stageType, teamUUID, userUUID);
         }
         this.uuid = UUID.randomUUID();
-        this.stageType = stageType.toString();
+        this.type = stageType.toString();
         this.caseUUID = caseUUID;
         this.created = LocalDateTime.now();
         this.active = true;
@@ -70,8 +77,12 @@ public class StageData implements Serializable {
 
     }
 
-    public StageType getType() {
-        return StageType.valueOf(this.stageType);
+    public StageType getStageType() {
+        return StageType.valueOf(this.type);
+    }
+
+    public CaseType getCaseType() {
+        return CaseType.valueOf(this.caseType);
     }
 
 }
