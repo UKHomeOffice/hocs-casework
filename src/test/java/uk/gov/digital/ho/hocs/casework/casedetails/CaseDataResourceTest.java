@@ -12,8 +12,6 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,24 +67,6 @@ public class CaseDataResourceTest {
         ResponseEntity<GetCaseResponse> response = caseDataResource.getCase(uuid);
 
         verify(caseDataService, times(1)).getCase(uuid);
-
-        verifyNoMoreInteractions(caseDataService);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
-    public void shouldStoreDeadlines() {
-
-        UpdateDeadlineRequest updateDeadlineRequest = new UpdateDeadlineRequest();
-        Set<UpdateDeadlineRequest> deadlines = new HashSet<>();
-        deadlines.add(updateDeadlineRequest);
-        UpdateDeadlinesRequest updateDeadlinesRequest = new UpdateDeadlinesRequest(deadlines);
-
-        ResponseEntity response = caseDataResource.storeDeadlines(updateDeadlinesRequest,uuid);
-
-        verify(caseDataService, times(1)).updateDeadlines(uuid, deadlines);
 
         verifyNoMoreInteractions(caseDataService);
 

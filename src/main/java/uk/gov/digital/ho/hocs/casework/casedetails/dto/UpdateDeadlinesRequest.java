@@ -11,5 +11,5 @@ import java.util.Set;
 public class UpdateDeadlinesRequest {
 
     @JsonProperty("deadlines")
-    private Set<UpdateDeadlineRequest> deadlines;
+    private Set<DeadlineDataDto> deadlines;
 }

@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class UpdateDeadlineRequest {
+public class DeadlineDataDto {
 
     @JsonProperty("type")
     private String stage;

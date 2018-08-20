@@ -7,8 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateDeadlineRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateDeadlinesRequest;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.DeadlineDataDto;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
@@ -19,10 +18,6 @@ import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.InputDataRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.DeadlineDataRepository;
 
-import java.time.LocalDate;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -38,8 +33,6 @@ public class CaseDataServiceTest {
 
     private InputDataService inputDataService;
 
-    @Mock
-    private DeadlineDataRepository deadlineDataRepository;
 
     @Mock
     private AuditService auditService;
@@ -53,8 +46,7 @@ public class CaseDataServiceTest {
         this.caseDataService = new CaseDataService(
                 caseDataRepository,
                 inputDataService,
-                auditService,
-                deadlineDataRepository);
+                auditService);
     }
 
     @Test
@@ -172,49 +164,5 @@ public class CaseDataServiceTest {
         verifyZeroInteractions(auditService);
     }
 
-    @Test
-    public void shouldSaveDeadlines(){
-        LocalDate draftDate = LocalDate.now();
-        LocalDate finalDate = LocalDate.now().plusDays(1);
-        UUID caseUUID = UUID.randomUUID();
-        UpdateDeadlineRequest deadline = new UpdateDeadlineRequest("draft",draftDate);
-        UpdateDeadlineRequest deadline1 = new UpdateDeadlineRequest("final",finalDate);
-        Set<UpdateDeadlineRequest> deadlines = new HashSet<>();
-        deadlines.add(deadline);
-        deadlines.add(deadline1);
 
-        when(deadlineDataRepository.findByCaseUUIDAndStage(caseUUID, deadline.getStage())).thenReturn(null);
-        when(deadlineDataRepository.findByCaseUUIDAndStage(caseUUID, deadline1.getStage())).thenReturn(null);
-
-        caseDataService.updateDeadlines(caseUUID, deadlines);
-        verify(deadlineDataRepository, times(1)).findByCaseUUIDAndStage(caseUUID,deadline.getStage());
-        verify(deadlineDataRepository, times(1)).findByCaseUUIDAndStage(caseUUID,deadline1.getStage());
-        verify(deadlineDataRepository, times(2)).save(any(DeadlineData.class));
-
-        verifyNoMoreInteractions(deadlineDataRepository);
-    }
-
-    @Test
-    public void shouldUpdateDeadlines(){
-        LocalDate draftDate = LocalDate.now();
-        LocalDate finalDate = LocalDate.now().plusDays(1);
-        UUID caseUUID = UUID.randomUUID();
-        UpdateDeadlineRequest deadline = new UpdateDeadlineRequest("draft",draftDate);
-        UpdateDeadlineRequest deadline1 = new UpdateDeadlineRequest("final",finalDate);
-        Set<UpdateDeadlineRequest> deadlines = new HashSet<>();
-        deadlines.add(deadline);
-        deadlines.add(deadline1);
-        DeadlineData deadlineData = new DeadlineData(caseUUID,draftDate,"draft");
-        DeadlineData deadlineData1 = new DeadlineData(caseUUID,finalDate,"final");
-
-        when(deadlineDataRepository.findByCaseUUIDAndStage(caseUUID, deadline.getStage())).thenReturn(deadlineData);
-        when(deadlineDataRepository.findByCaseUUIDAndStage(caseUUID, deadline1.getStage())).thenReturn(deadlineData1);
-
-        caseDataService.updateDeadlines(caseUUID, deadlines);
-        verify(deadlineDataRepository, times(1)).findByCaseUUIDAndStage(caseUUID,deadline.getStage());
-        verify(deadlineDataRepository, times(1)).findByCaseUUIDAndStage(caseUUID,deadline1.getStage());
-        verify(deadlineDataRepository, times(2)).save(any(DeadlineData.class));
-
-        verifyNoMoreInteractions(deadlineDataRepository);
-    }
 }

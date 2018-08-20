@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS deadline_data
   id        BIGSERIAL PRIMARY KEY,
   case_uuid UUID      NOT NULL,
   stage     TEXT      NOT NULL,
-  date  TIMESTAMP NOT NULL,
+  date  DATE NOT NULL,
 
   CONSTRAINT fk_deadline_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)
 );
