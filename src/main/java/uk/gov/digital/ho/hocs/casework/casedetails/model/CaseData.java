@@ -46,6 +46,11 @@ public class CaseData implements Serializable {
     private Set<StageData> stages = new HashSet<>();
 
     @Getter
+    @Setter
+    @Transient
+    private Set<DeadlineData> deadline = new HashSet<>();
+
+    @Getter
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
     private Set<DocumentData> documents = new HashSet<>();

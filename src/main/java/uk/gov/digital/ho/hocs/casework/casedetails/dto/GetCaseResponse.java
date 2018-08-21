@@ -31,6 +31,9 @@ public class GetCaseResponse {
     @JsonProperty("stages")
     private Set<GetStageResponse> stages;
 
+    @JsonProperty("deadlines")
+    private Set<DeadlineDataDto> deadlines;
+
     @JsonProperty("documents")
     private Set<GetDocumentResponse> documents;
 
@@ -48,6 +51,11 @@ public class GetCaseResponse {
                 .map(GetDocumentResponse::from)
                 .collect(Collectors.toSet());
 
+        Set<DeadlineDataDto> deadlineDataDtos = caseData.getDeadline()
+                .stream()
+                .map(d -> new DeadlineDataDto(d.getStage(), d.getDate()))
+                .collect(Collectors.toSet());
+
         String caseRef = null;
         String data = null;
         InputData inputData = caseData.getInputData();
@@ -62,6 +70,7 @@ public class GetCaseResponse {
                 caseData.getUuid(),
                 caseData.getCreated(),
                 stageResponses,
+                deadlineDataDtos,
                 documentResponses,
                 data
         );

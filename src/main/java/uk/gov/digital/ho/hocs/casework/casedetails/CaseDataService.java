@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.*;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
 
 import javax.transaction.Transactional;
@@ -26,17 +23,20 @@ public class CaseDataService {
     private final CaseDataRepository caseDataRepository;
     private final InputDataService inputDataService;
     private final StageDataService stageDataService;
+    private final DeadlineDataService deadlineDataService;
 
 
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository,
                            InputDataService inputDataService,
                            AuditService auditService,
-                           StageDataService stageDataService) {
+                           StageDataService stageDataService,
+                           DeadlineDataService deadlineDataService) {
         this.caseDataRepository = caseDataRepository;
         this.inputDataService = inputDataService;
-        this.stageDataService = stageDataService;
         this.auditService = auditService;
+        this.stageDataService = stageDataService;
+        this.deadlineDataService = deadlineDataService;
     }
 
     @Transactional
@@ -62,6 +62,8 @@ public class CaseDataService {
         caseData.setStages(stageData);
         InputData inputData = inputDataService.getInputData(caseData.getUuid());
         caseData.setInputData(inputData);
+        Set<DeadlineData> deadlineData = deadlineDataService.getDeadlinesForCase(caseUUID);
+        caseData.setDeadline(deadlineData);
         auditService.getCaseEvent(caseUUID);
         log.info("Got Case UUID: {}", caseData.getUuid());
         return caseData;
