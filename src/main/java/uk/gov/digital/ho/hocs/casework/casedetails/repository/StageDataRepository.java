@@ -15,6 +15,9 @@ public interface StageDataRepository extends CrudRepository<StageData, String> {
     @Query(value = "SELECT cd.reference as case_reference, cd.type as case_type, sd.* from stage_data sd JOIN case_data cd on sd.case_uuid = cd.uuid WHERE sd.uuid = ?1 LIMIT 1", nativeQuery = true)
     StageData findByUuid(UUID uuid);
 
+    @Query(value = "SELECT cd.reference as case_reference, cd.type as case_type, sd.* from stage_data sd JOIN case_data cd on sd.case_uuid = cd.uuid WHERE sd.case_uuid = ?1", nativeQuery = true)
+    Set<StageData> findAllByCaseUuid(UUID uuid);
+
     @Modifying
     @Query(value = "UPDATE stage_data SET active = FALSE WHERE uuid = ?1", nativeQuery = true)
     int setInactive(UUID stageUUID);

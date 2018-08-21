@@ -22,19 +22,19 @@ public class DocumentData implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "document_type")
+    @Column(name = "type")
     @Getter
     private DocumentType type;
 
-    @Column(name = "document_display_name")
+    @Column(name = "display_name")
     @Getter
     private String name;
 
-    @Column(name = "s3_orig_link")
+    @Column(name = "orig_link")
     @Getter
     private String fileLink;
 
-    @Column(name = "s3_pdf_link")
+    @Column(name = "pdf_link")
     @Getter
     private String pdfLink;
 
@@ -42,7 +42,7 @@ public class DocumentData implements Serializable {
     @Getter
     private DocumentStatus status = DocumentStatus.PENDING;
 
-    @Column(name = "document_uuid")
+    @Column(name = "uuid")
     @Getter
     private UUID uuid;
 
@@ -50,7 +50,7 @@ public class DocumentData implements Serializable {
     @Getter
     private UUID caseUUID;
 
-    @Column(name = "timestamp")
+    @Column(name = "created")
     @Getter
     private LocalDateTime timestamp = LocalDateTime.now();
 

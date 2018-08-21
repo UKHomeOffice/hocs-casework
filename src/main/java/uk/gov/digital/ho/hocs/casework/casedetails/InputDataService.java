@@ -31,9 +31,10 @@ public class InputDataService {
     }
 
     @Transactional
-    public InputData createInputData(UUID caseUUID) {
+    public InputData createInputData(UUID caseUUID, Map<String, String> data) {
         log.debug("Updating Input Data for Case UUID: {}", caseUUID);
         InputData inputData = new InputData(caseUUID);
+        inputData.updateData(data, objectMapper);
         inputDataRepository.save(inputData);
         auditService.createInputDataEvent(inputData);
         log.info("Updated Input Data for Case UUID: {}", caseUUID);

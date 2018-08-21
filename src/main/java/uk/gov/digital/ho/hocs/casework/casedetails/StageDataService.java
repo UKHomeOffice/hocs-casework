@@ -83,6 +83,14 @@ public class StageDataService {
         return stageData;
     }
 
+    @Transactional
+    public Set<StageData> getStagesForCase(UUID caseUUID) {
+        log.debug("Getting all Stages for Case: {}", caseUUID);
+        Set<StageData> stageData = stageDataRepository.findAllByCaseUuid(caseUUID);
+        log.debug("Got all Stages for Case: {}", caseUUID);
+        return stageData;
+    }
+
     //TODO: This method is a dev tool
     public Set<StageData> getActiveCases() {
         return stageDataRepository.findAllActiveStages();
