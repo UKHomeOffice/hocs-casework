@@ -49,7 +49,7 @@ class StageDataResource {
 
     @GetMapping(value = "/stage/active", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetActiveStagesResponse> getActiveStages() {
-        Set<StageData> activeStages = stageDataService.getActiveCases();
+        Set<StageData> activeStages = stageDataService.getActiveStages();
         return ResponseEntity.ok(GetActiveStagesResponse.from(activeStages));
     }
 

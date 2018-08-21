@@ -48,6 +48,9 @@ public class ActiveStageDto implements Serializable {
     @JsonProperty("assignedUserDisplay")
     private String assignedUserDisplay;
 
+    @JsonProperty("deadline")
+    private String deadline;
+
     public static ActiveStageDto from(StageData activeStage) {
         return new ActiveStageDto(
                 activeStage.getCaseUUID(),
@@ -58,8 +61,11 @@ public class ActiveStageDto implements Serializable {
                 activeStage.getStageType(),
                 activeStage.getStageType().getDisplayValue(),
                 activeStage.getTeamUUID(),
-                "TEMPTEAM",//activeStage.getAssignedTeamDisplay(),
+                activeStage.getTeamUUID() == null ? "" : activeStage.getTeamUUID().toString().substring(0, 4),
+                //activeStage.getAssignedTeamDisplay(),
                 activeStage.getUserUUID(),
-                "TEMPUSER");//activeStage.getAssignedUserDisplay());
+                activeStage.getUserUUID() == null ? "Unassigned" : activeStage.getUserUUID().toString().substring(0, 4),
+                //activeStage.getAssignedUserDisplay(),
+                activeStage.getDeadline());//activeStage.getAssignedUserDisplay());
     }
 }

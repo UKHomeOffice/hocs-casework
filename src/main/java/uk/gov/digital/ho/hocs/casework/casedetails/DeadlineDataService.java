@@ -17,9 +17,7 @@ public class DeadlineDataService {
     private final DeadlineDataRepository deadlineDataRepository;
 
     @Autowired
-    public DeadlineDataService(
-            DeadlineDataRepository deadlineDataRepository
-    ) {
+    public DeadlineDataService(DeadlineDataRepository deadlineDataRepository) {
         this.deadlineDataRepository = deadlineDataRepository;
     }
 
@@ -32,12 +30,12 @@ public class DeadlineDataService {
                 deadlineData.update(deadline.getDate(), deadline.getStage());
                 deadlineDataRepository.save(deadlineData);
                 //TODO Audit
-                log.info("Updated {} Deadline for case - {}", deadline.getStage(), caseUUID);
+                log.info("Updated {} Deadline for Case UUID: {}", deadline.getStage(), caseUUID);
             } else {
                 DeadlineData d = new DeadlineData(caseUUID, deadline.getDate(), deadline.getStage());
                 deadlineDataRepository.save(d);
                 //TODO Audit
-                log.info("created entry for {} Deadline for case - {}", deadline.getStage(), caseUUID);
+                log.info("Created {} Deadline for Case UUID: {}", deadline.getStage(), caseUUID);
             }
         }
         return null;

@@ -92,7 +92,7 @@ public class StageDataService {
     }
 
     //TODO: This method is a dev tool
-    public Set<StageData> getActiveCases() {
+    public Set<StageData> getActiveStages() {
         return stageDataRepository.findAllActiveStages();
     }
 
