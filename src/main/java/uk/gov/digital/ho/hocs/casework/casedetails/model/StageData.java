@@ -51,12 +51,16 @@ public class StageData implements Serializable {
     @Column(name = "user_uuid")
     private UUID userUUID;
 
-    @Column(name = "case_reference", insertable = false)
     @Getter
+    @Column(name = "case_reference", insertable = false)
     private String caseReference;
 
     @Column(name = "case_type", insertable = false)
     private String caseType;
+
+    @Getter
+    @Column(name = "deadline", insertable = false)
+    private String deadline;
 
     @Getter
     @Setter
