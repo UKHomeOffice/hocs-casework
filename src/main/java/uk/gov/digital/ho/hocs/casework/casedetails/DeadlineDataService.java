@@ -22,8 +22,8 @@ public class DeadlineDataService {
     }
 
     @Transactional
-    public DeadlineData updateDeadlines(UUID caseUUID, Set<DeadlineDataDto> deadlines){
-        log.debug("updating Deadlines for Case UUID: {}", caseUUID);
+    public void updateDeadlines(UUID caseUUID, Set<DeadlineDataDto> deadlines) {
+        log.debug("Updating Deadlines for Case UUID: {}", caseUUID);
         for (DeadlineDataDto deadline : deadlines) {
             DeadlineData deadlineData = deadlineDataRepository.findByCaseUUIDAndStage(caseUUID, deadline.getStage());
             if (deadlineData != null) {
@@ -38,6 +38,12 @@ public class DeadlineDataService {
                 log.info("Created {} Deadline for Case UUID: {}", deadline.getStage(), caseUUID);
             }
         }
-        return null;
+    }
+
+    public Set<DeadlineData> getDeadlinesForCase(UUID caseUUID) {
+        log.debug("Getting Deadlines for Case UUID: {}", caseUUID);
+        Set<DeadlineData> deadlines = deadlineDataRepository.findAllByCaseUUID(caseUUID);
+        log.info("Got Deadlines for Case UUID: {}", caseUUID);
+        return deadlines;
     }
 }

@@ -7,16 +7,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.DeadlineDataDto;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.DeadlineData;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.InputDataRepository;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.DeadlineDataRepository;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -35,6 +32,9 @@ public class CaseDataServiceTest {
     @Mock
     private InputDataRepository inputDataRepository;
 
+    @Mock
+    private DeadlineDataService deadlineDataService;
+
     private InputDataService inputDataService;
 
 
@@ -51,7 +51,8 @@ public class CaseDataServiceTest {
                 caseDataRepository,
                 inputDataService,
                 auditService,
-                stageDataService);
+                stageDataService,
+                deadlineDataService);
     }
 
     @Test
