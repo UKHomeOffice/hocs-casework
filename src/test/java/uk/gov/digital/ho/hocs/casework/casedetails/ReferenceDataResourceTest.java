@@ -1,0 +1,63 @@
+package uk.gov.digital.ho.hocs.casework.casedetails;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateReferenceRequest;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetReferenceResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.ReferenceData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.ReferenceType;
+
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
+public class ReferenceDataResourceTest {
+
+    @Mock
+    private ReferenceDataService referenceDataService;
+
+    private ReferenceDataResource referenceDataResource;
+
+    private UUID caseUUID = UUID.randomUUID();
+
+    @Before
+    public void setUp() {
+        referenceDataResource = new ReferenceDataResource(referenceDataService);
+    }
+
+    @Test
+    public void shouldAddReferenceData() {
+        CreateReferenceRequest createReferenceRequest = new CreateReferenceRequest(ReferenceType.MP, "M101");
+
+        ResponseEntity response = referenceDataResource.recordReference(createReferenceRequest, caseUUID);
+
+        verify(referenceDataService, times(1)).createReference(caseUUID, ReferenceType.MP, "M101");
+
+        verifyNoMoreInteractions(referenceDataService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetAllCorrespondentsForIndividualCase() {
+        ReferenceData referenceData = new ReferenceData(caseUUID, ReferenceType.MP, "M101");
+
+        when(referenceDataService.getReferenceData(caseUUID)).thenReturn(referenceData);
+        ResponseEntity<GetReferenceResponse> response = referenceDataResource.getReference(caseUUID);
+
+        verify(referenceDataService, times(1)).getReferenceData(caseUUID);
+
+        verifyNoMoreInteractions(referenceDataService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+}
