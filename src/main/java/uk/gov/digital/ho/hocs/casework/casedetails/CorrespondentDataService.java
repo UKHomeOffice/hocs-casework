@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CorrespondentDto;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseCorrespondent;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseCorrespondentRepository;
@@ -54,6 +55,12 @@ public class CorrespondentDataService {
     public Set<CorrespondentData> getCorrespondents(UUID caseUUID) {
         log.debug("Getting all Correspondents for case UUID: {}", caseUUID);
         //TODO Audit
-        return correspondentDataRepository.findByCaseUUID(caseUUID);
+        Set<CorrespondentData> correspondents = correspondentDataRepository.findByCaseUUID(caseUUID);
+        if (correspondents != null) {
+            log.info("Got correspondent Data for Case UUID: {}", caseUUID);
+            return correspondents;
+        } else {
+            throw new EntityNotFoundException("Correspondents not found for case id: %s", caseUUID);
+        }
     }
 }

@@ -33,7 +33,7 @@ public class CorrespondentDataResourceTest {
     }
 
     @Test
-    public void shouldAddCorrespondentToCase() {
+    public void shouldAddCorrespondent() {
         UUID caseUUID = UUID.randomUUID();
         CorrespondentDto correspondentDto =
                 new CorrespondentDto(null,

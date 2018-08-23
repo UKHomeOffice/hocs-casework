@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.casedetails.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -64,6 +65,9 @@ public class CorrespondentData {
     private String type;
 
     public CorrespondentData(String title, String firstName, String surname, String postcode, String address1, String address2, String address3, String country, String telephone, String email) {
+        if (firstName == null || surname == null || (postcode == null || telephone == null || email == null)) {
+            throw new EntityCreationException("Cannot create CorrespondentData(%s, %s, %s, %s, %s).", firstName, surname, postcode,telephone, email);
+        }
         this.uuid = UUID.randomUUID();
         this.title = title;
         this.firstName = firstName;
