@@ -46,6 +46,7 @@ public class CaseDataService {
         caseDataRepository.save(caseData);
         // TODO: this should be passed in as a map from UI down.
         Map<String, String> data = new HashMap<>();
+        data.put("CaseReference", caseData.getUuid().toString());
         data.put("DateReceived", dateReceived.toString());
         InputData inputData = inputDataService.createInputData(caseData.getUuid(), data);
         caseData.setInputData(inputData);
