@@ -30,9 +30,9 @@ public class CaseCorrespondent {
     @Column(name = "type")
     private String type;
 
-    public CaseCorrespondent(UUID caseUUID, UUID correspondentUUID, String type) {
+    public CaseCorrespondent(UUID caseUUID, UUID correspondentUUID, CorrespondentType type) {
         this.caseUUID = caseUUID;
         this.correspondentUUID = correspondentUUID;
-        this.type = type;
+        this.type = type.toString();
     }
 }
