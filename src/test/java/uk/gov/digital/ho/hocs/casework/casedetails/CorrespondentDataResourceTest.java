@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CorrespondentDto;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCorrespondentResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentType;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -47,7 +48,7 @@ public class CorrespondentDataResourceTest {
                         "UK",
                         "01234 567890",
                         "A@A.com",
-                        "Complainant");
+                        CorrespondentType.COMPLAINANT);
 
         ResponseEntity response = correspondentDataResource.addCorrespondentToCase(correspondentDto, caseUUID);
 
@@ -78,7 +79,7 @@ public class CorrespondentDataResourceTest {
                         "A@A.com",
                         LocalDateTime.now(),
                         null,
-                        "Complainant");
+                        CorrespondentType.COMPLAINANT);
 
         when(correspondentDataService.getCorrespondents(uuid)).thenReturn(Correspondents);
         ResponseEntity<GetCorrespondentResponse> response = correspondentDataResource.getCorrespondents(uuid);
