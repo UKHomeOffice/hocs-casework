@@ -12,6 +12,8 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.DocumentRepository;
 
 import javax.transaction.Transactional;
+
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -60,5 +62,10 @@ public class DocumentDataService {
         } else {
             throw new EntityNotFoundException("Document UUID: %s not found!", stageUUID);
         }
+    }
+
+    public Set<DocumentData> getDocumentsForCase(UUID caseUuid) {
+        Set<DocumentData> documents = documentRepository.findAllByCaseUUID(caseUuid);
+        return documents;
     }
 }
