@@ -34,7 +34,7 @@ public class ReferenceDataServiceTest {
     @Test
     public void ShouldCreateReferenceData() {
 
-        referenceDataService.createReference(caseUUID, ReferenceType.MP, "M101");
+        referenceDataService.createReference(caseUUID, ReferenceType.MEMBER_REFERENCE, "M101");
 
         verify(referenceDataRepository, times(1)).save(any(ReferenceData.class));
 
@@ -45,7 +45,7 @@ public class ReferenceDataServiceTest {
     @Test(expected = EntityCreationException.class)
     public void ShouldNotCreateReferenceMissingCaseUUIDException() {
 
-        referenceDataService.createReference(null, ReferenceType.MP, "M101");
+        referenceDataService.createReference(null, ReferenceType.MEMBER_REFERENCE, "M101");
     }
 
     @Test(expected = EntityCreationException.class)
@@ -57,20 +57,20 @@ public class ReferenceDataServiceTest {
     @Test(expected = EntityCreationException.class)
     public void ShouldNotCreateReferenceMissingReferenceException() {
 
-        referenceDataService.createReference(caseUUID, ReferenceType.MP, null);
+        referenceDataService.createReference(caseUUID, ReferenceType.MEMBER_REFERENCE, null);
     }
 
     @Test
     public void shouldReturnReferenceForCase() {
 
-        when(referenceDataRepository.findByCaseUUID(caseUUID)).thenReturn(new ReferenceData(caseUUID, ReferenceType.MP, "M101"));
+        when(referenceDataRepository.findByCaseUUID(caseUUID)).thenReturn(new ReferenceData(caseUUID, ReferenceType.MEMBER_REFERENCE, "M101"));
 
         ReferenceData response = referenceDataService.getReferenceData(caseUUID);
         verify(referenceDataRepository, times(1)).findByCaseUUID(caseUUID);
         verifyNoMoreInteractions(referenceDataRepository);
 
         assertThat(response.getCaseUUID()).isEqualTo(caseUUID);
-        assertThat(response.getReferenceType()).isEqualTo(ReferenceType.MP);
+        assertThat(response.getReferenceType()).isEqualTo(ReferenceType.MEMBER_REFERENCE);
         assertThat(response.getReference()).isEqualTo("M101");
     }
 }

@@ -10,6 +10,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationExcep
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseCorrespondent;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseCorrespondentRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CorrespondentDataRepository;
 
@@ -57,7 +58,7 @@ public class CorrespondentDataServiceTest {
                         "UK",
                         "01234 567890",
                         "A@A.com",
-                        "Complainant");
+                        CorrespondentType.COMPLAINANT);
 
         correspondentDataService.addCorrespondentToCase(caseUUID, correspondentDto);
         verify(correspondentDataRepository, times(1)).save(any(CorrespondentData.class));
@@ -87,7 +88,7 @@ public class CorrespondentDataServiceTest {
                         "A@A.com",
                         LocalDateTime.now(),
                         null,
-                        "Complainant");
+                        CorrespondentType.COMPLAINANT);
         correspondents.add(correspondentData);
         when(correspondentDataRepository.findByCaseUUID(uuid)).thenReturn(correspondents);
         Set<CorrespondentData> response = correspondentDataService.getCorrespondents(uuid);
@@ -112,7 +113,7 @@ public class CorrespondentDataServiceTest {
                         "UK",
                         "01234 567890",
                         "A@A.com",
-                        "Complainant");
+                        CorrespondentType.COMPLAINANT);
         correspondentDataService.addCorrespondentToCase(caseUUID, correspondentDto);
     }
 
@@ -129,7 +130,7 @@ public class CorrespondentDataServiceTest {
                         "UK",
                         "01234 567890",
                         "A@A.com",
-                        "Complainant");
+                        CorrespondentType.COMPLAINANT);
         correspondentDataService.addCorrespondentToCase(caseUUID, correspondentDto);
     }
 
@@ -146,7 +147,7 @@ public class CorrespondentDataServiceTest {
                         null,
                         null,
                         "A@A.com",
-                        "Complainant");
+                        CorrespondentType.COMPLAINANT);
         correspondentDataService.addCorrespondentToCase(caseUUID, correspondentDto);
     }
 

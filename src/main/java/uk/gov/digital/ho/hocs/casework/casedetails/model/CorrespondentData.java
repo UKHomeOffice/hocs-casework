@@ -62,7 +62,7 @@ public class CorrespondentData {
 
     @Getter
     @Column(name = "type", insertable = false)
-    private String type;
+    private CorrespondentType type;
 
     public CorrespondentData(String title, String firstName, String surname, String postcode, String address1, String address2, String address3, String country, String telephone, String email) {
         if (firstName == null || surname == null || (postcode == null || telephone == null || email == null)) {

@@ -34,11 +34,11 @@ public class ReferenceDataResourceTest {
 
     @Test
     public void shouldAddReferenceData() {
-        CreateReferenceRequest createReferenceRequest = new CreateReferenceRequest(ReferenceType.MP, "M101");
+        CreateReferenceRequest createReferenceRequest = new CreateReferenceRequest(ReferenceType.MEMBER_REFERENCE, "M101");
 
         ResponseEntity response = referenceDataResource.recordReference(createReferenceRequest, caseUUID);
 
-        verify(referenceDataService, times(1)).createReference(caseUUID, ReferenceType.MP, "M101");
+        verify(referenceDataService, times(1)).createReference(caseUUID, ReferenceType.MEMBER_REFERENCE, "M101");
 
         verifyNoMoreInteractions(referenceDataService);
 
@@ -48,7 +48,7 @@ public class ReferenceDataResourceTest {
 
     @Test
     public void shouldGetAllCorrespondentsForIndividualCase() {
-        ReferenceData referenceData = new ReferenceData(caseUUID, ReferenceType.MP, "M101");
+        ReferenceData referenceData = new ReferenceData(caseUUID, ReferenceType.MEMBER_REFERENCE, "M101");
 
         when(referenceDataService.getReferenceData(caseUUID)).thenReturn(referenceData);
         ResponseEntity<GetReferenceResponse> response = referenceDataResource.getReference(caseUUID);

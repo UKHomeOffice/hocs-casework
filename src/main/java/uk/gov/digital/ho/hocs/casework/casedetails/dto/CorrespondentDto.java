@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentType;
 
 @AllArgsConstructor
 @Getter
@@ -43,7 +44,7 @@ public class CorrespondentDto {
     private String email;
 
     @JsonProperty("type")
-    private String type;
+    private CorrespondentType type;
 
     public static CorrespondentDto from(CorrespondentData correspondentData) {
         return new CorrespondentDto(
