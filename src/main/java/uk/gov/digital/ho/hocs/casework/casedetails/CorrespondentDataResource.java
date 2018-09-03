@@ -29,6 +29,7 @@ public class CorrespondentDataResource {
         correspondentDataService.addCorrespondentToCase(caseUUID, request);
         return ResponseEntity.ok().build();
     }
+
     @GetMapping(value = "/case/{caseUUID}/correspondent", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetCorrespondentResponse> getCorrespondents(@PathVariable UUID caseUUID) {
         Set<CorrespondentData> correspondents = correspondentDataService.getCorrespondents(caseUUID);
