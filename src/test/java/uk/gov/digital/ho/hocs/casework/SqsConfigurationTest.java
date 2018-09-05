@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.BeanCreationException;
-import uk.gov.digital.ho.hocs.casework.application.SqsConfiguration;
+import uk.gov.digital.ho.hocs.casework.aws.SqsConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
