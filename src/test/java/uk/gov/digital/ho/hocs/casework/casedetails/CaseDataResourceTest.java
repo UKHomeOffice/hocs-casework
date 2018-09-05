@@ -7,12 +7,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.*;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -38,16 +38,13 @@ public class CaseDataResourceTest {
 
         CaseType caseType = CaseType.MIN;
         CaseData caseData = new CaseData(CaseType.MIN, 0l);
-        InputData inputData = new InputData(uuid);
-        caseData.setInputData(inputData);
-        LocalDate now = LocalDate.now();
-        CreateCaseRequest request = new CreateCaseRequest(caseType, now);
+        CreateCaseRequest request = new CreateCaseRequest(caseType);
 
-        when(caseDataService.createCase(caseType, now)).thenReturn(caseData);
+        when(caseDataService.createCase(caseType)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseType, now);
+        verify(caseDataService, times(1)).createCase(caseType);
 
         verifyNoMoreInteractions(caseDataService);
 
@@ -60,9 +57,6 @@ public class CaseDataResourceTest {
 
         CaseType caseType = CaseType.MIN;
         CaseData caseData = new CaseData(CaseType.MIN, 0l);
-        InputData inputData = new InputData(uuid);
-        caseData.setInputData(inputData);
-        CreateCaseRequest request = new CreateCaseRequest(caseType, LocalDate.now());
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 

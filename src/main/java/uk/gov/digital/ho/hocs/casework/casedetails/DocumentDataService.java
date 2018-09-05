@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateDocumentFromQueueRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentStatus;
@@ -12,7 +11,6 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.DocumentRepository;
 
 import javax.transaction.Transactional;
-
 import java.util.Set;
 import java.util.UUID;
 
@@ -48,11 +46,6 @@ public class DocumentDataService {
         documentRepository.save(documentData);
         auditService.updateDocumentEvent(documentData);
         log.info("Updated Document: {}", documentData.getUuid());
-    }
-
-    @Transactional
-    public void updateDocumentFromQueue(UpdateDocumentFromQueueRequest request) {
-        updateDocument(request.getUuid(), request.getStatus(), request.getFileLink(), request.getPdfLink());
     }
 
     private DocumentData getDocumentData(UUID stageUUID) {

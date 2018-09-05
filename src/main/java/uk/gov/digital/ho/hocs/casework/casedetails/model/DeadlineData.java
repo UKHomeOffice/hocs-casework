@@ -34,18 +34,18 @@ public class DeadlineData implements Serializable {
     @Getter
     private LocalDate date;
 
-    public DeadlineData(UUID caseUUID, LocalDate date, String stage) {
+    public DeadlineData(UUID caseUUID, StageType stage, LocalDate date) {
         this.caseUUID = caseUUID;
         this.date = date;
-        this.stage = stage;
+        this.stage = stage.toString();
     }
 
 
-    public void update(LocalDate date, String stage) {
+    public void update(LocalDate date, StageType stage) {
         if (date == null || stage == null) {
             throw new EntityCreationException("Cannot call DeadlineData.update(%s, %s) for case ref %s.", date, stage, caseUUID);
         }
         this.date = date;
-        this.stage = stage;
+        this.stage = stage.toString();
     }
 }

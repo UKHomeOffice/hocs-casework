@@ -2,14 +2,11 @@ package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -39,26 +36,6 @@ public class CaseData implements Serializable {
 
     @Column(name = "updated")
     private LocalDateTime updated;
-
-    @Getter
-    @Setter
-    @Transient
-    private Set<StageData> stages = new HashSet<>();
-
-    @Getter
-    @Setter
-    @Transient
-    private Set<DeadlineData> deadline = new HashSet<>();
-
-    @Getter
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
-    private Set<DocumentData> documents = new HashSet<>();
-
-    @Getter
-    @Setter
-    @Transient
-    private InputData inputData;
 
     public CaseData(CaseType type, Long caseNumber) {
         if (type == null || caseNumber == null) {

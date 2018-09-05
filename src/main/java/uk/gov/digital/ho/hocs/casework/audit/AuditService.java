@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.RequestData;
+import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.repository.AuditRepository;
@@ -58,8 +58,13 @@ public class AuditService {
     public void allocateStageEvent(UUID stageUUID, UUID teamUUID, UUID userUUID) {
     }
 
-    public void completeStageEvent(UUID stageUUID) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), stageUUID.toString(), AuditAction.COMPLETE_STAGE);
+    public void setStageInactiveEvent(UUID stageUUID) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), stageUUID.toString(), AuditAction.SET_INACTIVE_STAGE);
+        save(auditEntry);
+    }
+
+    public void setStageActiveEvent(UUID stageUUID) {
+        AuditEntry auditEntry = new AuditEntry(requestData.username(), stageUUID.toString(), AuditAction.SET_ACTIVE_STAGE);
         save(auditEntry);
     }
 

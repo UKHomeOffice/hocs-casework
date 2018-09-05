@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateReferenceRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetReferenceResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.ReferenceData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.ReferenceType;
@@ -32,19 +31,6 @@ public class ReferenceDataResourceTest {
         referenceDataResource = new ReferenceDataResource(referenceDataService);
     }
 
-    @Test
-    public void shouldAddReferenceData() {
-        CreateReferenceRequest createReferenceRequest = new CreateReferenceRequest(ReferenceType.MEMBER_REFERENCE, "M101");
-
-        ResponseEntity response = referenceDataResource.recordReference(createReferenceRequest, caseUUID);
-
-        verify(referenceDataService, times(1)).createReference(caseUUID, ReferenceType.MEMBER_REFERENCE, "M101");
-
-        verifyNoMoreInteractions(referenceDataService);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
 
     @Test
     public void shouldGetAllCorrespondentsForIndividualCase() {

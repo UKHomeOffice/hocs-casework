@@ -10,7 +10,7 @@ import java.util.UUID;
 @Repository
 public interface DeadlineDataRepository extends CrudRepository<DeadlineData, String> {
 
-    DeadlineData findByCaseUUIDAndStage(UUID caseUUID,String stage);
+    DeadlineData findByCaseUUIDAndStage(UUID caseUUID, String stage);
 
     Set<DeadlineData> findAllByCaseUUID(UUID caseUUID);
 }

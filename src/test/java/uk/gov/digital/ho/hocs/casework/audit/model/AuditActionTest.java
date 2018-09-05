@@ -23,7 +23,8 @@ public class AuditActionTest {
         assertOrderValue(CSV_EXTRACT, 7);
         assertOrderValue(ADD_DOCUMENT, 8);
         assertOrderValue(UPDATE_DOCUMENT, 9);
-        assertOrderValue(COMPLETE_STAGE, 10);
+        assertOrderValue(SET_INACTIVE_STAGE, 10);
+        assertOrderValue(SET_ACTIVE_STAGE, 11);
     }
 
     @Test
@@ -40,7 +41,8 @@ public class AuditActionTest {
                 case CSV_EXTRACT:
                 case ADD_DOCUMENT:
                 case UPDATE_DOCUMENT:
-                case COMPLETE_STAGE:
+                case SET_INACTIVE_STAGE:
+                case SET_ACTIVE_STAGE:
                     break;
                 default:
                     fail("You've added an audit action, make sure you've written all the tests!");

@@ -11,5 +11,6 @@ public enum AuditAction {
     CSV_EXTRACT,
     ADD_DOCUMENT,
     UPDATE_DOCUMENT,
-    COMPLETE_STAGE,
+    SET_INACTIVE_STAGE,
+    SET_ACTIVE_STAGE
 }

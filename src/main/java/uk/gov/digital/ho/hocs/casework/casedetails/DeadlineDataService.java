@@ -3,11 +3,13 @@ package uk.gov.digital.ho.hocs.casework.casedetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.DeadlineDataDto;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.DeadlineData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.DeadlineDataRepository;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -22,20 +24,21 @@ public class DeadlineDataService {
     }
 
     @Transactional
-    public void updateDeadlines(UUID caseUUID, Set<DeadlineDataDto> deadlines) {
+    public void updateDeadlines(UUID caseUUID, Map<StageType, LocalDate> deadlines) {
         log.debug("Updating Deadlines for Case UUID: {}", caseUUID);
-        for (DeadlineDataDto deadline : deadlines) {
-            DeadlineData deadlineData = deadlineDataRepository.findByCaseUUIDAndStage(caseUUID, deadline.getStage());
+        for (Map.Entry<StageType, LocalDate> deadline : deadlines.entrySet()) {
+            String stageTypeString = deadline.getKey().toString();
+            DeadlineData deadlineData = deadlineDataRepository.findByCaseUUIDAndStage(caseUUID, stageTypeString);
             if (deadlineData != null) {
-                deadlineData.update(deadline.getDate(), deadline.getStage());
+                deadlineData.update(deadline.getValue(), deadline.getKey());
                 deadlineDataRepository.save(deadlineData);
                 //TODO Audit
-                log.info("Updated {} Deadline for Case UUID: {}", deadline.getStage(), caseUUID);
+                log.info("Updated {} Deadline for Case UUID: {}", deadline.getKey(), caseUUID);
             } else {
-                DeadlineData d = new DeadlineData(caseUUID, deadline.getDate(), deadline.getStage());
+                DeadlineData d = new DeadlineData(caseUUID, deadline.getKey(), deadline.getValue());
                 deadlineDataRepository.save(d);
                 //TODO Audit
-                log.info("Created {} Deadline for Case UUID: {}", deadline.getStage(), caseUUID);
+                log.info("Created {} Deadline for Case UUID: {}", deadline.getKey(), caseUUID);
             }
         }
     }

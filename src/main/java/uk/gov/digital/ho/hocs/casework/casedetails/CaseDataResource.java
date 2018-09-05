@@ -26,11 +26,11 @@ class CaseDataResource {
 
     @PostMapping(value = "/case", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
-        CaseData caseData = caseDataService.createCase(request.getType(), request.getDateReceived());
+        CaseData caseData = caseDataService.createCase(request.getType());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
-    @GetMapping(value = "/case/{caseUUID}")
+    @GetMapping(value = "/case/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID) {
         CaseData caseData = caseDataService.getCase(caseUUID);
         return ResponseEntity.ok(GetCaseResponse.from(caseData));

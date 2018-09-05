@@ -9,7 +9,6 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.ReferenceType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.ReferenceDataRepository;
 
 import javax.transaction.Transactional;
-import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -24,7 +23,7 @@ public class ReferenceDataService {
     }
 
     @Transactional
-    public void createReference(UUID caseUUID, ReferenceType type, String reference) {
+    public void createReference(UUID caseUUID, String reference, ReferenceType type) {
         log.debug("create Reference Data for Case UUID: {}", caseUUID);
         ReferenceData referenceData = new ReferenceData(caseUUID,type,reference);
                 referenceDataRepository.save(referenceData);

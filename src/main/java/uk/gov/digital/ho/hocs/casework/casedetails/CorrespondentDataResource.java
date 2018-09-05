@@ -3,8 +3,9 @@ package uk.gov.digital.ho.hocs.casework.casedetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CorrespondentDto;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCorrespondentResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
 
@@ -22,12 +23,6 @@ public class CorrespondentDataResource {
     @Autowired
     public CorrespondentDataResource(CorrespondentDataService correspondentDataService) {
         this.correspondentDataService = correspondentDataService;
-    }
-
-    @PostMapping(value = "/case/{caseUUID}/correspondent", consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity addCorrespondentToCase(@RequestBody CorrespondentDto request, @PathVariable UUID caseUUID) {
-        correspondentDataService.addCorrespondentToCase(caseUUID, request);
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/case/{caseUUID}/correspondent", produces = APPLICATION_JSON_UTF8_VALUE)
