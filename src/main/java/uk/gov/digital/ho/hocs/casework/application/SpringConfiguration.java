@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework;
+package uk.gov.digital.ho.hocs.casework.application;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

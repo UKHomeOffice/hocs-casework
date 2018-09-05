@@ -6,7 +6,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.RequestData;
+import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.CaseAuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.model.ReportLine;
 import uk.gov.digital.ho.hocs.casework.audit.model.StageAuditEntry;

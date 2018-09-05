@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
 import javax.persistence.*;
@@ -62,10 +61,6 @@ public class StageData implements Serializable {
     @Column(name = "deadline", insertable = false)
     private String deadline;
 
-    @Getter
-    @Setter
-    @Transient
-    private InputData inputData;
 
     public StageData(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID) {
         if (caseUUID == null || stageType == null || teamUUID == null) {

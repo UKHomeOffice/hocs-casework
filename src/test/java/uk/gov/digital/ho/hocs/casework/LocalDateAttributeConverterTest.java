@@ -4,10 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.digital.ho.hocs.casework.application.LocalDateAttributeConverter;
 
-import java.security.Timestamp;
-import java.time.LocalDate;
 import java.sql.Date;
+import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

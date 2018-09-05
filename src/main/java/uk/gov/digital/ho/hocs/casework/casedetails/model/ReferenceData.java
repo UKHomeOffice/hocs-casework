@@ -22,12 +22,13 @@ public class ReferenceData {
     private UUID caseUUID;
 
     @Getter
+    @Column(name = "reference")
+    private String reference;
+
+    @Getter
     @Column(name = "type")
     private String type;
 
-    @Getter
-    @Column(name = "reference")
-    private String reference;
 
     public ReferenceData(UUID caseUUID, ReferenceType referenceType, String reference) {
         if (caseUUID == null || referenceType == null || reference == null) {

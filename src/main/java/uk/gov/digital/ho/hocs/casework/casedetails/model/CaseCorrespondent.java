@@ -35,4 +35,8 @@ public class CaseCorrespondent {
         this.correspondentUUID = correspondentUUID;
         this.type = type.toString();
     }
+
+    public void update(CorrespondentType correspondentType) {
+        this.type = correspondentType.toString();
+    }
 }

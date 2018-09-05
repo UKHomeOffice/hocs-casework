@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework;
+package uk.gov.digital.ho.hocs.casework.application;
 
 import org.apache.camel.Processor;
 import org.slf4j.MDC;

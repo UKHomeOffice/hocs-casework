@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework;
+package uk.gov.digital.ho.hocs.casework.application;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;

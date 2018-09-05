@@ -10,10 +10,9 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-
 @Slf4j
 @RestController
+@RequestMapping(value = "/case/{caseUUID}")
 class StageDataResource {
 
     private final StageDataService stageDataService;
@@ -23,45 +22,40 @@ class StageDataResource {
         this.stageDataService = stageDataService;
     }
 
-    @PostMapping(value = "/case/{caseUUID}/stage")
+    @PostMapping(value = "/stage")
     public ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
         StageData stageData = stageDataService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getUserUUID());
         return ResponseEntity.ok(CreateStageResponse.from(stageData));
     }
 
-    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/allocate")
+    @GetMapping(value = "/stage")
+    public ResponseEntity<GetStagesResponse> getStage(@PathVariable UUID caseUUID) {
+        Set<StageData> stageDatas = stageDataService.getStagesForCase(caseUUID);
+        return ResponseEntity.ok(GetStagesResponse.from(stageDatas));
+    }
+
+    @PostMapping(value = "/stage/{stageUUID}/allocate")
     public ResponseEntity allocateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateStageRequest allocateStageRequest) {
         stageDataService.allocateStage(stageUUID, allocateStageRequest.getTeamUUID(), allocateStageRequest.getUserUUID());
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/complete")
-    public ResponseEntity completeStage(@PathVariable UUID stageUUID) {
-        stageDataService.completeStage(stageUUID);
+    @GetMapping(value = "/stage/{stageUUID}/close")
+    public ResponseEntity closeStage(@PathVariable UUID stageUUID) {
+        stageDataService.closeStage(stageUUID);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
+    @GetMapping(value = "/stage/{stageUUID}/reopen")
+    public ResponseEntity reopenStage(@PathVariable UUID stageUUID) {
+        stageDataService.reopenStage(stageUUID);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/stage/{stageUUID}")
     public ResponseEntity<GetStageResponse> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
         StageData stageData = stageDataService.getStage(stageUUID);
         return ResponseEntity.ok(GetStageResponse.from(stageData));
     }
 
-    @GetMapping(value = "/stage/active", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<GetActiveStagesResponse> getActiveStages() {
-        Set<StageData> activeStages = stageDataService.getActiveStages();
-        return ResponseEntity.ok(GetActiveStagesResponse.from(activeStages));
-    }
-
-    @GetMapping(value = "/stage/active/{userUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<GetActiveStagesResponse> getActiveStagesByUserUUID(@PathVariable UUID userUUID) {
-        Set<StageData> activeStages = stageDataService.getActiveStagesByUserUUID(userUUID);
-        return ResponseEntity.ok(GetActiveStagesResponse.from(activeStages));
-    }
-
-    @PostMapping(value = "/stage/active/team/", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<GetActiveStagesResponse> getActiveStagesByTeamUUIDs(@RequestBody GetActiveStagesRequest request) {
-        Set<StageData> activeStages = stageDataService.getActiveStagesByTeamUUID(request.getTeams());
-        return ResponseEntity.ok(GetActiveStagesResponse.from(activeStages));
-    }
 }

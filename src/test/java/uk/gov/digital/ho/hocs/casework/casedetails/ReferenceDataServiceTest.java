@@ -34,7 +34,7 @@ public class ReferenceDataServiceTest {
     @Test
     public void ShouldCreateReferenceData() {
 
-        referenceDataService.createReference(caseUUID, ReferenceType.MEMBER_REFERENCE, "M101");
+        referenceDataService.createReference(caseUUID, "M101", ReferenceType.MEMBER_REFERENCE);
 
         verify(referenceDataRepository, times(1)).save(any(ReferenceData.class));
 
@@ -45,19 +45,19 @@ public class ReferenceDataServiceTest {
     @Test(expected = EntityCreationException.class)
     public void ShouldNotCreateReferenceMissingCaseUUIDException() {
 
-        referenceDataService.createReference(null, ReferenceType.MEMBER_REFERENCE, "M101");
+        referenceDataService.createReference(null, "M101", ReferenceType.MEMBER_REFERENCE);
     }
 
     @Test(expected = EntityCreationException.class)
     public void ShouldNotCreateReferenceMissingReferenceTypeException() {
 
-        referenceDataService.createReference(caseUUID, null, "M101");
+        referenceDataService.createReference(caseUUID, "M101", null);
     }
 
     @Test(expected = EntityCreationException.class)
     public void ShouldNotCreateReferenceMissingReferenceException() {
 
-        referenceDataService.createReference(caseUUID, ReferenceType.MEMBER_REFERENCE, null);
+        referenceDataService.createReference(caseUUID, null, ReferenceType.MEMBER_REFERENCE);
     }
 
     @Test

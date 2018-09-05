@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.casedetails;
+package uk.gov.digital.ho.hocs.casework.queue;
 
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
@@ -7,29 +7,29 @@ import org.apache.camel.model.dataformat.JsonLibrary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.UpdateDocumentFromQueueRequest;
+import uk.gov.digital.ho.hocs.casework.domain.HocsCaseDomain;
+import uk.gov.digital.ho.hocs.casework.domain.HocsCommand;
 
-import static uk.gov.digital.ho.hocs.casework.RequestData.transferHeadersToMDC;
+import static uk.gov.digital.ho.hocs.casework.application.RequestData.transferHeadersToMDC;
 
 @Component
 public class CaseConsumer extends RouteBuilder {
 
-
+    private final HocsCaseDomain hocsCaseDomain;
     private final String caseQueue;
-    private String dlq;
+    private final String dlq;
     private final int maximumRedeliveries;
     private final int redeliveryDelay;
     private final int backOffMultiplier;
-    private DocumentDataService documentDataService;
 
     @Autowired
-    public CaseConsumer(DocumentDataService documentDataService,
+    public CaseConsumer(HocsCaseDomain hocsCaseDomain,
                         @Value("${case.queue}") String caseQueue,
                         @Value("${case.queue.dlq}") String dlq,
                         @Value("${case.queue.maximumRedeliveries}") int maximumRedeliveries,
                         @Value("${case.queue.redeliveryDelay}") int redeliveryDelay,
                         @Value("${case.queue.backOffMultiplier}") int backOffMultiplier) {
-        this.documentDataService = documentDataService;
+        this.hocsCaseDomain = hocsCaseDomain;
         this.caseQueue = caseQueue;
         this.dlq = dlq;
         this.maximumRedeliveries = maximumRedeliveries;
@@ -54,11 +54,11 @@ public class CaseConsumer extends RouteBuilder {
         from(caseQueue)
                 .setProperty(SqsConstants.RECEIPT_HANDLE, header(SqsConstants.RECEIPT_HANDLE))
                 .process(transferHeadersToMDC())
-                .log("Add Document to Case Request received: ${body}")
-                .unmarshal().json(JsonLibrary.Jackson, UpdateDocumentFromQueueRequest.class)
-                .log("Add Document to Case unmarshalled")
-                .bean(documentDataService, "updateDocumentFromQueue")
-                .log("Add Document to Case Request processed")
+                .log("Command received: ${body}")
+                .unmarshal().json(JsonLibrary.Jackson, HocsCommand.class)
+                .log("Command unmarshalled")
+                .bean(hocsCaseDomain, "executeCommand")
+                .log("Command processed")
                 .setHeader(SqsConstants.RECEIPT_HANDLE, exchangeProperty(SqsConstants.RECEIPT_HANDLE));
     }
 

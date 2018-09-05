@@ -1,0 +1,2 @@
+ALTER TABLE case_correspondent
+  ADD CONSTRAINT case_correspondent_case_correspondent_idempotent UNIQUE (case_uuid, correspondent_uuid)

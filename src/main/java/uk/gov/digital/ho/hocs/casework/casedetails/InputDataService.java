@@ -31,24 +31,30 @@ public class InputDataService {
     }
 
     @Transactional
-    public InputData createInputData(UUID caseUUID, Map<String, String> data) {
-        log.debug("Updating Input Data for Case UUID: {}", caseUUID);
+    public void setInputData(UUID caseUUID, Map<String, String> data) {
+        log.debug("Setting Input Data for Case UUID: {}", caseUUID);
+        InputData inputData = inputDataRepository.findByCaseUUID(caseUUID);
+        if (inputData == null) {
+            createInputData(caseUUID, data);
+        } else {
+            updateInputData(inputData, data);
+        }
+        log.info("Set Input Data for Case UUID: {}", caseUUID);
+    }
+
+    private void createInputData(UUID caseUUID, Map<String, String> data) {
+        log.debug("Creating new Input Data for Case UUID: {}", caseUUID);
         InputData inputData = new InputData(caseUUID);
         inputData.updateData(data, objectMapper);
         inputDataRepository.save(inputData);
         auditService.createInputDataEvent(inputData);
-        log.info("Updated Input Data for Case UUID: {}", caseUUID);
-        return inputData;
     }
 
-    @Transactional
-    public void updateInputData(UUID caseUUID, Map<String, String> data) {
-        log.debug("Updating Input Data for Case UUID: {}", caseUUID);
-        InputData inputData = getInputData(caseUUID);
+    private void updateInputData(InputData inputData, Map<String, String> data) {
+        log.debug("Updating Input Data for Case UUID: {}", inputData.getCaseUUID());
         inputData.updateData(data, objectMapper);
         inputDataRepository.save(inputData);
         auditService.updateInputDataEvent(inputData);
-        log.info("Updated Input Data for Case UUID: {}", caseUUID);
     }
 
     InputData getInputData(UUID caseUUID) {

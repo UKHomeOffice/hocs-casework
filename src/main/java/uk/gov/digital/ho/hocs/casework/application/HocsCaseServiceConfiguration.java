@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework;
+package uk.gov.digital.ho.hocs.casework.application;
 
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
