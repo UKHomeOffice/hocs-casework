@@ -27,59 +27,18 @@ public class CorrespondentDataService {
         this.caseCorrespondentRepository = caseCorrespondentRepository;
     }
 
-    public void findOrCreateCorrespondent(UUID caseUUID, String title, String firstname, String surname, String postcode, String address1, String address2, String address3, String country, String telephone, String email, CorrespondentType correspondentType, String addressIdentity, String emailIdentity, String telephoneIdentity) {
-        log.debug("Finding or creating a Correspondent");
+    public void createCorrespondent(UUID caseUUID, String fullname, String postcode, String address1, String address2, String address3, String country, String telephone, String email, CorrespondentType correspondentType) {
 
-        CorrespondentData correspondentData = null;
-        //get case by identity
-        if (addressIdentity != null) {
-            log.debug("Checking AddressIdentity");
-            correspondentData = correspondentDataRepository.findByAddressIdentity(addressIdentity);
-        }
-        if (correspondentData == null && emailIdentity != null) {
-            log.debug("Checking EmailIdentity");
-            correspondentData = correspondentDataRepository.findByEmailIdentity(emailIdentity);
-        }
-        if (correspondentData == null && telephoneIdentity != null) {
-            log.debug("Checking TelephoneIdentity");
-            correspondentData = correspondentDataRepository.findByTelephoneIdentity(telephoneIdentity);
-        }
+        log.debug("Not found Correspondent, creating a new one");
+        CorrespondentData correspondentData = new CorrespondentData(fullname,
+                postcode,
+                address1,
+                address2,
+                address3,
+                country,
+                telephone,
+                email);
 
-        if (correspondentData != null) {
-            log.debug("Found Correspondent");
-            correspondentData.update(
-                    title,
-                    firstname,
-                    surname,
-                    postcode,
-                    address1,
-                    address2,
-                    address3,
-                    country,
-                    telephone,
-                    email,
-                    addressIdentity,
-                    emailIdentity,
-                    telephoneIdentity);
-
-        } else {
-            log.debug("Not found Correspondent, creating a new one");
-            correspondentData =
-                new CorrespondentData(
-                        title,
-                        firstname,
-                        surname,
-                        postcode,
-                        address1,
-                        address2,
-                        address3,
-                        country,
-                        telephone,
-                        email,
-                        addressIdentity,
-                        emailIdentity,
-                        telephoneIdentity);
-        }
         correspondentDataRepository.save(correspondentData);
 
         assignCorrespondentToCase(caseUUID, correspondentData.getUuid(), correspondentType);

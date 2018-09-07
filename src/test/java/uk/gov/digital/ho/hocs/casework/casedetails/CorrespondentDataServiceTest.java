@@ -110,7 +110,7 @@ public class CorrespondentDataServiceTest {
                         "01234 567890",
                         "A@A.com",
                         CorrespondentType.COMPLAINANT);
-        correspondentDataService.findOrCreateCorrespondent(caseUUID,
+        correspondentDataService.createCorrespondent(caseUUID,
                 createCorrespondentRequest.getTitle(),
                 createCorrespondentRequest.getFirstname(),
                 createCorrespondentRequest.getSurname(),
@@ -141,7 +141,7 @@ public class CorrespondentDataServiceTest {
                         "01234 567890",
                         "A@A.com",
                         CorrespondentType.COMPLAINANT);
-        correspondentDataService.findOrCreateCorrespondent(caseUUID,
+        correspondentDataService.createCorrespondent(caseUUID,
                 createCorrespondentRequest.getTitle(),
                 createCorrespondentRequest.getFirstname(),
                 createCorrespondentRequest.getSurname(),
@@ -172,7 +172,7 @@ public class CorrespondentDataServiceTest {
                         null,
                         "A@A.com",
                         CorrespondentType.COMPLAINANT);
-        correspondentDataService.findOrCreateCorrespondent(caseUUID,
+        correspondentDataService.createCorrespondent(caseUUID,
                 createCorrespondentRequest.getTitle(),
                 createCorrespondentRequest.getFirstname(),
                 createCorrespondentRequest.getSurname(),
