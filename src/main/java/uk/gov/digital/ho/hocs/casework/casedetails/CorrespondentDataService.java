@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.casedetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseCorrespondent;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
@@ -29,19 +30,23 @@ public class CorrespondentDataService {
 
     public void createCorrespondent(UUID caseUUID, String fullname, String postcode, String address1, String address2, String address3, String country, String telephone, String email, CorrespondentType correspondentType) {
 
-        log.debug("Not found Correspondent, creating a new one");
-        CorrespondentData correspondentData = new CorrespondentData(fullname,
-                postcode,
-                address1,
-                address2,
-                address3,
-                country,
-                telephone,
-                email);
+        if (correspondentType != null) {
+            log.debug("Not found Correspondent, creating a new one");
+            CorrespondentData correspondentData = new CorrespondentData(fullname,
+                    postcode,
+                    address1,
+                    address2,
+                    address3,
+                    country,
+                    telephone,
+                    email);
 
-        correspondentDataRepository.save(correspondentData);
+            correspondentDataRepository.save(correspondentData);
 
-        assignCorrespondentToCase(caseUUID, correspondentData.getUuid(), correspondentType);
+            assignCorrespondentToCase(caseUUID, correspondentData.getUuid(), correspondentType);
+        } else {
+            throw new EntityCreationException("CorrespondentType is null");
+        }
     }
 
     @Transactional
