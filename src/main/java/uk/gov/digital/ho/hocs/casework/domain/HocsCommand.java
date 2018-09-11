@@ -6,7 +6,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.casedetails.*;
-import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.*;
+import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.CreateReferenceRequest;
+import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.UpdateDeadlinesRequest;
+import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.UpdateInputDataRequest;
 
 
 @JsonTypeInfo(
@@ -18,7 +21,6 @@ import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.*;
         @JsonSubTypes.Type(value = CreateCorrespondentRequest.class),
         @JsonSubTypes.Type(value = CreateReferenceRequest.class),
         @JsonSubTypes.Type(value = UpdateDeadlinesRequest.class),
-        @JsonSubTypes.Type(value = UpdateDocumentRequest.class),
         @JsonSubTypes.Type(value = UpdateInputDataRequest.class)
 })
 
@@ -27,7 +29,6 @@ public abstract class HocsCommand implements Command {
     protected CaseDataService caseDataService;
     protected CorrespondentDataService correspondentDataService;
     protected DeadlineDataService deadlineDataService;
-    protected DocumentDataService documentDataService;
     protected InputDataService inputDataService;
     protected ReferenceDataService referenceDataService;
     protected StageDataService stageDataService;
@@ -46,7 +47,6 @@ public abstract class HocsCommand implements Command {
         caseDataService = hocsCaseContext.getCaseDataService();
         correspondentDataService = hocsCaseContext.getCorrespondentDataService();
         deadlineDataService = hocsCaseContext.getDeadlineDataService();
-        documentDataService = hocsCaseContext.getDocumentDataService();
         inputDataService = hocsCaseContext.getInputDataService();
         referenceDataService = hocsCaseContext.getReferenceDataService();
         stageDataService = hocsCaseContext.getStageDataService();

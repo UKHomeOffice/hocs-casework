@@ -9,7 +9,6 @@ import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.repository.AuditRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
@@ -78,15 +77,15 @@ public class AuditService {
         //save(auditEntry);
     }
 
-    public void createDocumentEvent(DocumentData documentData) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.ADD_DOCUMENT);
-        save(auditEntry);
-    }
+    //public void createDocumentEvent(DocumentData documentData) {
+    //    AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.ADD_DOCUMENT);
+    //    save(auditEntry);
+    // }
 
-    public void updateDocumentEvent(DocumentData documentData) {
-        AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.UPDATE_DOCUMENT);
-        save(auditEntry);
-    }
+    //public void updateDocumentEvent(DocumentData documentData) {
+    //    AuditEntry auditEntry = new AuditEntry(requestData.username(), documentData, AuditAction.UPDATE_DOCUMENT);
+    //    save(auditEntry);
+    //}
 
     public void extractReportEvent(String params) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), params, AuditAction.CSV_EXTRACT);
