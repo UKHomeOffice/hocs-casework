@@ -45,9 +45,8 @@ public class CorrespondentDataServiceTest {
     public void shouldSaveCorrespondentData() {
 
         CreateCorrespondentRequest createCorrespondentRequest =
-                new CreateCorrespondentRequest(null, "Mr",
+                new CreateCorrespondentRequest(null,
                         "Bob",
-                        "Smith",
                         "S1 1DJ",
                         "1 somewhere street",
                         "some",
@@ -72,19 +71,14 @@ public class CorrespondentDataServiceTest {
         Set<CorrespondentData> correspondents = new HashSet<>();
         CorrespondentData correspondentData =
                 new CorrespondentData(
-                        "Mr",
                         "Bob",
-                        "Smith",
                         "S1 1DJ",
                         "1 somewhere street",
                         "some",
                         "Where",
                         "UK",
                         "01234 567890",
-                        "A@A.com",
-                        null,
-                        null,
-                        null);
+                        "A@A.com");
         correspondents.add(correspondentData);
         when(correspondentDataRepository.findByCaseUUID(uuid)).thenReturn(correspondents);
         Set<CorrespondentData> response = correspondentDataService.getCorrespondents(uuid);
@@ -97,41 +91,9 @@ public class CorrespondentDataServiceTest {
     }
 
     @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateCorrespondentMissingFirstNameException() throws EntityCreationException {
+    public void shouldNotCreateCorrespondentMissingtNameException() throws EntityCreationException {
         CreateCorrespondentRequest createCorrespondentRequest =
-                new CreateCorrespondentRequest(null, "Mr",
-                        null,
-                        "Smith",
-                        "S1 1DJ",
-                        "1 somewhere street",
-                        "some",
-                        "Where",
-                        "UK",
-                        "01234 567890",
-                        "A@A.com",
-                        CorrespondentType.COMPLAINANT);
-        correspondentDataService.findOrCreateCorrespondent(caseUUID,
-                createCorrespondentRequest.getTitle(),
-                createCorrespondentRequest.getFirstname(),
-                createCorrespondentRequest.getSurname(),
-                createCorrespondentRequest.getPostcode(),
-                createCorrespondentRequest.getAddress1(),
-                createCorrespondentRequest.getAddress2(),
-                createCorrespondentRequest.getAddress3(),
-                createCorrespondentRequest.getCountry(),
-                createCorrespondentRequest.getTelephone(),
-                createCorrespondentRequest.getEmail(),
-                createCorrespondentRequest.getType(),
-                createCorrespondentRequest.getAddressIdentity(),
-                createCorrespondentRequest.getEmailIdentity(),
-                createCorrespondentRequest.getTelephoneIdentity());
-    }
-
-    @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateCorrespondentMissingSurnameException() throws EntityCreationException {
-        CreateCorrespondentRequest createCorrespondentRequest =
-                new CreateCorrespondentRequest(null, "Mr",
-                        "Bob",
+                new CreateCorrespondentRequest(null,
                         null,
                         "S1 1DJ",
                         "1 somewhere street",
@@ -141,10 +103,8 @@ public class CorrespondentDataServiceTest {
                         "01234 567890",
                         "A@A.com",
                         CorrespondentType.COMPLAINANT);
-        correspondentDataService.findOrCreateCorrespondent(caseUUID,
-                createCorrespondentRequest.getTitle(),
-                createCorrespondentRequest.getFirstname(),
-                createCorrespondentRequest.getSurname(),
+        correspondentDataService.createCorrespondent(caseUUID,
+                createCorrespondentRequest.getFullname(),
                 createCorrespondentRequest.getPostcode(),
                 createCorrespondentRequest.getAddress1(),
                 createCorrespondentRequest.getAddress2(),
@@ -152,30 +112,24 @@ public class CorrespondentDataServiceTest {
                 createCorrespondentRequest.getCountry(),
                 createCorrespondentRequest.getTelephone(),
                 createCorrespondentRequest.getEmail(),
-                createCorrespondentRequest.getType(),
-                createCorrespondentRequest.getAddressIdentity(),
-                createCorrespondentRequest.getEmailIdentity(),
-                createCorrespondentRequest.getTelephoneIdentity());
+                createCorrespondentRequest.getType());
     }
 
     @Test(expected = EntityCreationException.class)
     public void shouldNotCreateCorrespondentMissingTypeException() throws EntityCreationException {
         CreateCorrespondentRequest createCorrespondentRequest =
-                new CreateCorrespondentRequest(null, "Mr",
+                new CreateCorrespondentRequest(null,
                         "Bob",
-                        "Smith",
-                        null,
+                        "S1 1DJ",
                         "1 somewhere street",
                         "some",
                         "Where",
-                        null,
-                        null,
+                        "UK",
+                        "01234 567890",
                         "A@A.com",
-                        CorrespondentType.COMPLAINANT);
-        correspondentDataService.findOrCreateCorrespondent(caseUUID,
-                createCorrespondentRequest.getTitle(),
-                createCorrespondentRequest.getFirstname(),
-                createCorrespondentRequest.getSurname(),
+                        null);
+        correspondentDataService.createCorrespondent(caseUUID,
+                createCorrespondentRequest.getFullname(),
                 createCorrespondentRequest.getPostcode(),
                 createCorrespondentRequest.getAddress1(),
                 createCorrespondentRequest.getAddress2(),
@@ -183,10 +137,7 @@ public class CorrespondentDataServiceTest {
                 createCorrespondentRequest.getCountry(),
                 createCorrespondentRequest.getTelephone(),
                 createCorrespondentRequest.getEmail(),
-                createCorrespondentRequest.getType(),
-                createCorrespondentRequest.getAddressIdentity(),
-                createCorrespondentRequest.getEmailIdentity(),
-                createCorrespondentRequest.getTelephoneIdentity());
+                createCorrespondentRequest.getType());
     }
 
     @Test(expected = EntityNotFoundException.class)

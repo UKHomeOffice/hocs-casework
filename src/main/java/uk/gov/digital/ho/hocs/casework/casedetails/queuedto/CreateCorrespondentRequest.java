@@ -21,11 +21,7 @@ public class CreateCorrespondentRequest extends HocsCommand {
 
     private UUID caseUUID;
 
-    private String title;
-
-    private String firstname;
-
-    private String surname;
+    private String fullname;
 
     private String postcode;
 
@@ -46,9 +42,7 @@ public class CreateCorrespondentRequest extends HocsCommand {
     @JsonCreator
     public CreateCorrespondentRequest(
             @JsonProperty(value = "caseUUID", required = true) UUID caseUUID,
-            @JsonProperty("title") String title,
-            @JsonProperty("first_name") String firstname,
-            @JsonProperty("surname") String surname,
+            @JsonProperty("fullname") String fullname,
             @JsonProperty("postcode") String postcode,
             @JsonProperty("address1") String address1,
             @JsonProperty("address2") String address2,
@@ -59,9 +53,7 @@ public class CreateCorrespondentRequest extends HocsCommand {
             @JsonProperty(value = "type", required = true) CorrespondentType correspondentType) {
         super(CREATE_CORRESPONDENT_COMMAND);
         this.caseUUID = caseUUID;
-        this.title = title;
-        this.firstname = firstname;
-        this.surname = surname;
+        this.fullname = fullname;
         this.postcode = postcode;
         this.address1 = address1;
         this.address2 = address2;
@@ -75,9 +67,7 @@ public class CreateCorrespondentRequest extends HocsCommand {
     public static CreateCorrespondentRequest from(CorrespondentData correspondentData, CorrespondentType correspondentType) {
         return new CreateCorrespondentRequest(
                 correspondentData.getUuid(),
-                correspondentData.getTitle(),
-                correspondentData.getFirstName(),
-                correspondentData.getSurname(),
+                correspondentData.getFullName(),
                 correspondentData.getPostcode(),
                 correspondentData.getAddress1(),
                 correspondentData.getAddress2() ,
@@ -91,33 +81,7 @@ public class CreateCorrespondentRequest extends HocsCommand {
     @Override
     public void execute(HocsCaseContext hocsCaseContext) {
         initialiseDependencies(hocsCaseContext);
-        correspondentDataService.findOrCreateCorrespondent(caseUUID, title, firstname, surname, postcode, address1, address2, address3, country, telephone, email, type, getAddressIdentity(), getEmailIdentity(), getTelephoneIdentity());
+        correspondentDataService.createCorrespondent(caseUUID, fullname, postcode, address1, address2, address3, country, telephone, email, type);
     }
-
-    public String getAddressIdentity() {
-        String fName = makeComparable(this.firstname);
-        String sName = makeComparable(this.surname);
-        String lOne = makeComparable(this.address1.split(" ")[0]);
-        String pcode = makeComparable(this.postcode);
-        return String.join("-", fName, sName, lOne, pcode);
-    }
-
-    public String getTelephoneIdentity() {
-        return makeComparable(this.telephone);
-    }
-
-    public String getEmailIdentity() {
-        return makeComparable(this.email);
-    }
-
-    private String makeComparable(String value) {
-
-        if (value == null || value.equals("")) {
-            return "";
-        } else {
-            return value.replace(" ", "").toLowerCase();
-        }
-    }
-
 
 }

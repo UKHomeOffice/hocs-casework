@@ -14,11 +14,4 @@ public interface CorrespondentDataRepository extends CrudRepository<Corresponden
 
     @Query(value = "SELECT c.*, cc.type AS type from correspondent_data c JOIN case_correspondent cc on cc.correspondent_uuid = c.uuid where cc.case_uuid = ?1", nativeQuery = true)
     Set<CorrespondentData> findByCaseUUID(UUID caseUUID);
-
-    CorrespondentData findByAddressIdentity(String addressCompare);
-
-    CorrespondentData findByEmailIdentity(String emailCompare);
-
-    CorrespondentData findByTelephoneIdentity(String telephoneCompare);
-
 }

@@ -54,7 +54,7 @@ class DevOnlyResource {
 
     @PostMapping(value = "/correspondent", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity addCorrespondentToCase(@RequestBody CreateCorrespondentRequest request, @PathVariable UUID caseUUID) {
-        correspondentDataService.findOrCreateCorrespondent(caseUUID, request.getTitle(), request.getFirstname(), request.getSurname(), request.getPostcode(), request.getAddress1(), request.getAddress2(), request.getAddress3(), request.getCountry(), request.getTelephone(), request.getEmail(), request.getType(), request.getAddressIdentity(), request.getEmailIdentity(), request.getTelephoneIdentity());
+        correspondentDataService.createCorrespondent(caseUUID, request.getFullname(), request.getPostcode(), request.getAddress1(), request.getAddress2(), request.getAddress3(), request.getCountry(), request.getTelephone(), request.getEmail(), request.getType());
         return ResponseEntity.ok().build();
     }
 

@@ -36,19 +36,14 @@ public class CorrespondentDataResourceTest {
         Set<CorrespondentData> Correspondents = new HashSet<>();
         CorrespondentData correspondentData =
                 new CorrespondentData(
-                        "Mr",
                         "Bob",
-                        "Smith",
                         "S1 1DJ",
                         "1 somewhere street",
                         "some",
                         "Where",
                         "UK",
                         "01234 567890",
-                        "A@A.com",
-                        null,
-                        null,
-                        null);
+                        "A@A.com");
 
         when(correspondentDataService.getCorrespondents(uuid)).thenReturn(Correspondents);
         ResponseEntity<GetCorrespondentResponse> response = correspondentDataResource.getCorrespondents(uuid);

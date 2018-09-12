@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.casedetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseCorrespondent;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
@@ -27,62 +28,25 @@ public class CorrespondentDataService {
         this.caseCorrespondentRepository = caseCorrespondentRepository;
     }
 
-    public void findOrCreateCorrespondent(UUID caseUUID, String title, String firstname, String surname, String postcode, String address1, String address2, String address3, String country, String telephone, String email, CorrespondentType correspondentType, String addressIdentity, String emailIdentity, String telephoneIdentity) {
-        log.debug("Finding or creating a Correspondent");
+    public void createCorrespondent(UUID caseUUID, String fullname, String postcode, String address1, String address2, String address3, String country, String telephone, String email, CorrespondentType correspondentType) {
 
-        CorrespondentData correspondentData = null;
-        //get case by identity
-        if (addressIdentity != null) {
-            log.debug("Checking AddressIdentity");
-            correspondentData = correspondentDataRepository.findByAddressIdentity(addressIdentity);
-        }
-        if (correspondentData == null && emailIdentity != null) {
-            log.debug("Checking EmailIdentity");
-            correspondentData = correspondentDataRepository.findByEmailIdentity(emailIdentity);
-        }
-        if (correspondentData == null && telephoneIdentity != null) {
-            log.debug("Checking TelephoneIdentity");
-            correspondentData = correspondentDataRepository.findByTelephoneIdentity(telephoneIdentity);
-        }
-
-        if (correspondentData != null) {
-            log.debug("Found Correspondent");
-            correspondentData.update(
-                    title,
-                    firstname,
-                    surname,
+        if (correspondentType != null) {
+            log.debug("Not found Correspondent, creating a new one");
+            CorrespondentData correspondentData = new CorrespondentData(fullname,
                     postcode,
                     address1,
                     address2,
                     address3,
                     country,
                     telephone,
-                    email,
-                    addressIdentity,
-                    emailIdentity,
-                    telephoneIdentity);
+                    email);
 
+            correspondentDataRepository.save(correspondentData);
+
+            assignCorrespondentToCase(caseUUID, correspondentData.getUuid(), correspondentType);
         } else {
-            log.debug("Not found Correspondent, creating a new one");
-            correspondentData =
-                new CorrespondentData(
-                        title,
-                        firstname,
-                        surname,
-                        postcode,
-                        address1,
-                        address2,
-                        address3,
-                        country,
-                        telephone,
-                        email,
-                        addressIdentity,
-                        emailIdentity,
-                        telephoneIdentity);
+            throw new EntityCreationException("CorrespondentType is null");
         }
-        correspondentDataRepository.save(correspondentData);
-
-        assignCorrespondentToCase(caseUUID, correspondentData.getUuid(), correspondentType);
     }
 
     @Transactional
