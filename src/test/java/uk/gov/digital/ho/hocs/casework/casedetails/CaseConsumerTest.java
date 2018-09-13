@@ -10,6 +10,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.ReferenceType;
+import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.CreateReferenceRequest;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseContext;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseDomain;
 import uk.gov.digital.ho.hocs.casework.queue.CaseConsumer;
@@ -31,14 +33,14 @@ public class CaseConsumerTest extends CamelTestSupport {
 
 
     @Mock
-    private DocumentDataService mockDataService;
+    private ReferenceDataService mockDataService;
 
     private HocsCaseDomain hocsCaseDomain;
 
 
     @Override
     public RouteBuilder createRouteBuilder() {
-        HocsCaseContext hocsCaseContext = new HocsCaseContext(null, null, null, mockDataService, null, null, null);
+        HocsCaseContext hocsCaseContext = new HocsCaseContext(null, null, null, null, mockDataService, null);
         hocsCaseDomain = new HocsCaseDomain(hocsCaseContext);
 
         return new CaseConsumer(
@@ -51,13 +53,12 @@ public class CaseConsumerTest extends CamelTestSupport {
     @Test
     public void shouldCallAddDocumentToCaseService() throws JsonProcessingException, EntityCreationException, EntityNotFoundException {
 
-        UpdateDocumentRequest document = new UpdateDocumentRequest(caseUUID,
-                docUUID, "PDF Link", "Orig Link", DocumentStatus.UPLOADED);
+        CreateReferenceRequest request = new CreateReferenceRequest(UUID.randomUUID(), "fsdfds", ReferenceType.MEMBER_REFERENCE);
 
-        String json = mapper.writeValueAsString(document);
+        String json = mapper.writeValueAsString(request);
         template.sendBody(caseQueue, json);
 
-        verify(mockDataService, times(1)).updateDocument(document.getUuid(), document.getStatus(), document.getFileLink(), document.getPdfLink());
+        verify(mockDataService, times(1)).createReference(any(), any(), any());
     }
 
     @Test
@@ -65,22 +66,20 @@ public class CaseConsumerTest extends CamelTestSupport {
         getMockEndpoint(dlq).setExpectedCount(1);
         String json = mapper.writeValueAsString("{invalid:invalid}");
         template.sendBody(caseQueue, json);
-        verify(mockDataService, never()).updateDocument(any(), any(), any(), any());
+        verify(mockDataService, never()).createReference(any(), any(), any());
         getMockEndpoint(dlq).assertIsSatisfied();
     }
 
     @Test
     public void shouldTransferToDLQOnFailure() throws JsonProcessingException, InterruptedException, EntityCreationException, EntityNotFoundException {
 
-        UpdateDocumentRequest document = new UpdateDocumentRequest(caseUUID,
-                docUUID, "PDF Link", "Orig Link", DocumentStatus.UPLOADED);
+        CreateReferenceRequest request = new CreateReferenceRequest(UUID.randomUUID(), "fsdfds", ReferenceType.MEMBER_REFERENCE);
 
         doThrow(EntityCreationException.class)
-                .when(mockDataService)
-                .updateDocument(any(), any(), any(), any());
+                .when(mockDataService).createReference(any(), any(), any());
 
         getMockEndpoint(dlq).setExpectedCount(1);
-        String json = mapper.writeValueAsString(document);
+        String json = mapper.writeValueAsString(request);
         template.sendBody(caseQueue, json);
         getMockEndpoint(dlq).assertIsSatisfied();
     }

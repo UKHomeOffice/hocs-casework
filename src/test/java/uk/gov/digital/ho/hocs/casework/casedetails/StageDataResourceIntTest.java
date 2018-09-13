@@ -36,8 +36,6 @@ public class StageDataResourceIntTest {
     private CaseDataRepository caseDataRepository;
     @Autowired
     private StageDataRepository stageDataRepository;
-    @Autowired
-    private DocumentRepository documentRepository;
 
     private UUID caseUUID;
     private UUID stageUUID;
@@ -195,7 +193,6 @@ public class StageDataResourceIntTest {
 
     private void clearDatabase() {
         stageDataRepository.deleteAll();
-        documentRepository.deleteAll();
         caseDataRepository.deleteAll();
     }
 
