@@ -3,13 +3,8 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentStatus;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentType;
 
 import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentAuditEntryTest {

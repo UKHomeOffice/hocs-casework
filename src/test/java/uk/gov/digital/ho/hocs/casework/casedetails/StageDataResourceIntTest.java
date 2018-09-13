@@ -14,7 +14,6 @@ import uk.gov.digital.ho.hocs.casework.HocsCaseApplication;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.DocumentRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageDataRepository;
 
 import java.util.HashMap;

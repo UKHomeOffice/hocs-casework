@@ -10,13 +10,4 @@ public class HocsCaseApplication {
 		SpringApplication.run(HocsCaseApplication.class, args);
 	}
 
-	public static boolean isNullOrEmpty(String value) {
-		if (value == null) {
-			return true;
-        } else {
-            return value.trim().equals("");
-        }
-	}
-
-
 }
