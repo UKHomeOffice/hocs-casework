@@ -13,7 +13,10 @@ import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.repository.AuditRepository;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.*;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
 import java.util.UUID;
 
@@ -147,48 +150,6 @@ public class AuditServiceTest {
         verify(mockAuditRepository).save(argCaptor.capture());
         AuditEntry auditEntry = argCaptor.getValue();
         assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.UPDATE_STAGE.toString());
-    }
-
-    @Test
-    public void shouldWriteAddDocumentEvent() {
-        DocumentData documentData = new DocumentData();
-        auditService.createDocumentEvent(documentData);
-        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
-
-        verify(mockAuditRepository).save(argCaptor.capture());
-        AuditEntry auditEntry = argCaptor.getValue();
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.ADD_DOCUMENT.toString());
-    }
-
-    @Test
-    public void shouldWriteAddDocumentEventNull() {
-        auditService.createDocumentEvent(null);
-        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
-
-        verify(mockAuditRepository).save(argCaptor.capture());
-        AuditEntry auditEntry = argCaptor.getValue();
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.ADD_DOCUMENT.toString());
-    }
-
-    @Test
-    public void shouldWriteUpdateDocumentEvent() {
-        DocumentData documentData = new DocumentData();
-        auditService.updateDocumentEvent(documentData);
-        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
-
-        verify(mockAuditRepository).save(argCaptor.capture());
-        AuditEntry auditEntry = argCaptor.getValue();
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.UPDATE_DOCUMENT.toString());
-    }
-
-    @Test
-    public void shouldWriteUpdateDocumentEventNull() {
-        auditService.updateDocumentEvent(null);
-        verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
-
-        verify(mockAuditRepository).save(argCaptor.capture());
-        AuditEntry auditEntry = argCaptor.getValue();
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.UPDATE_DOCUMENT.toString());
     }
 
     @Test

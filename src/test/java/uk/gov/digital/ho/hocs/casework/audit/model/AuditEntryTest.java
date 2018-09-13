@@ -3,7 +3,10 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.*;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
 import java.util.UUID;
 
@@ -54,26 +57,6 @@ public class AuditEntryTest {
         assertThat(auditEntry.getUsername()).isEqualTo(userName);
         assertThat(auditEntry.getStageInstance()).isEqualTo(null);
         assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.CREATE_STAGE.toString());
-    }
-
-    @Test
-    public void shouldConstructDocumentData() {
-        DocumentData documentData = new DocumentData();
-
-        AuditEntry auditEntry = new AuditEntry(userName, documentData, AuditAction.ADD_DOCUMENT);
-
-        assertThat(auditEntry.getUsername()).isEqualTo(userName);
-        assertThat(auditEntry.getDocumentInstance()).isEqualTo(DocumentAuditEntry.from(documentData));
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.ADD_DOCUMENT.toString());
-    }
-
-    @Test
-    public void shouldConstructDocumentDataNull() {
-        AuditEntry auditEntry = new AuditEntry(userName, (DocumentData) null, AuditAction.ADD_DOCUMENT);
-
-        assertThat(auditEntry.getUsername()).isEqualTo(userName);
-        assertThat(auditEntry.getDocumentInstance()).isEqualTo(null);
-        assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.ADD_DOCUMENT.toString());
     }
 
     @Test
