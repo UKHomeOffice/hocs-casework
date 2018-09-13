@@ -10,8 +10,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentStatus;
-import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.UpdateDocumentRequest;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseContext;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseDomain;
 import uk.gov.digital.ho.hocs.casework.queue.CaseConsumer;

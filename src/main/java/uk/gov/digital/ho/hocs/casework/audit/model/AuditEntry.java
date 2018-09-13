@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.DocumentData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
 
 import javax.persistence.*;
@@ -41,10 +40,10 @@ public class AuditEntry {
     @Getter
     private StageAuditEntry stageInstance;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name ="document_id", referencedColumnName = "id")
-    @Getter
-    private DocumentAuditEntry documentInstance;
+    // @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // @JoinColumn(name ="document_id", referencedColumnName = "id")
+    // @Getter
+    //private DocumentAuditEntry documentInstance;
 
     public AuditEntry(String username, AuditAction auditAction) {
         this.username = username;
@@ -61,10 +60,10 @@ public class AuditEntry {
         this.stageInstance = StageAuditEntry.from(stageInstance);
     }
 
-    public AuditEntry(String username, DocumentData documentInstance, AuditAction auditAction) {
-        this(username, auditAction);
-        this.documentInstance = DocumentAuditEntry.from(documentInstance);
-    }
+    //public AuditEntry(String username, DocumentData documentInstance, AuditAction auditAction) {
+    //    this(username, auditAction);
+    //    this.documentInstance = DocumentAuditEntry.from(documentInstance);
+    //}
 
     public AuditEntry(String username, String queryData, AuditAction auditAction) {
         this(username, auditAction);
