@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "topic_data")
 @NoArgsConstructor
+@AllArgsConstructor
 public class TopicData implements Serializable {
 
 
@@ -38,6 +40,10 @@ public class TopicData implements Serializable {
     @Getter
     private LocalDate created;
 
+    @Column(name = "modified")
+    @Getter
+    private LocalDate modified;
+
     @Getter
     @Column(name = "deleted")
     private boolean deleted = Boolean.FALSE;
@@ -56,11 +62,13 @@ public class TopicData implements Serializable {
     }
 
     public void delete() {
+        this.modified = LocalDate.now();
         this.deleted = Boolean.TRUE;
+
     }
 
     public void reAdd() {
         this.deleted = Boolean.FALSE;
-        this.created = LocalDate.now();
+        this.modified = LocalDate.now();
     }
 }
