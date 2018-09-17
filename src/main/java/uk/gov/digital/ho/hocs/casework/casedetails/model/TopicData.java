@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.casedetails.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -56,10 +55,9 @@ public class TopicData implements Serializable {
         this.created = LocalDate.now();
     }
 
-    public void delete(){
+    public void delete() {
         this.deleted = Boolean.TRUE;
     }
-
 
     public void reAdd() {
         this.deleted = Boolean.FALSE;
