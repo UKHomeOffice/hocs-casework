@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.AddTopicToCaseRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCorrespondentResponse;
 
 import java.util.UUID;
 
