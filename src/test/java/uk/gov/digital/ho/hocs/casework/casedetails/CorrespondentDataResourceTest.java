@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCorrespondentResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCorrespondentsResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
 
 import java.util.HashSet;
@@ -46,7 +46,7 @@ public class CorrespondentDataResourceTest {
                         "A@A.com");
 
         when(correspondentDataService.getCorrespondents(uuid)).thenReturn(Correspondents);
-        ResponseEntity<GetCorrespondentResponse> response = correspondentDataResource.getCorrespondents(uuid);
+        ResponseEntity<GetCorrespondentsResponse> response = correspondentDataResource.getCorrespondents(uuid);
 
         verify(correspondentDataService, times(1)).getCorrespondents(uuid);
 

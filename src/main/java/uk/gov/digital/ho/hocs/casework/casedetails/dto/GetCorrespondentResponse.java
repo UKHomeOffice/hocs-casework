@@ -5,24 +5,22 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentType;
-import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.CreateCorrespondentRequest;
 
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.UUID;
+
 
 @AllArgsConstructor
 @Getter
 public class GetCorrespondentResponse {
 
-    @JsonProperty("correspondents")
-    Set<CreateCorrespondentRequest> correspondents;
+    @JsonProperty("value")
+    private UUID value;
 
-    public static GetCorrespondentResponse from(Set<CorrespondentData> correspondentData) {
-        Set<CreateCorrespondentRequest> correspondents = correspondentData
-                .stream()
-                .map(cd -> CreateCorrespondentRequest.from(cd, CorrespondentType.APPLICANT))
-                .collect(Collectors.toSet());
+    @JsonProperty("label")
+    private String label;
 
-        return new GetCorrespondentResponse(correspondents);
+
+    public static GetCorrespondentResponse from(CorrespondentData correspondentData, CorrespondentType correspondentType) {
+        return new GetCorrespondentResponse(correspondentData.getUuid(), correspondentData.getFullName());
     }
 }
