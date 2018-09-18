@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCorrespondentResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCorrespondentsResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
 
 import java.util.Set;
@@ -26,8 +26,8 @@ public class CorrespondentDataResource {
     }
 
     @GetMapping(value = "/case/{caseUUID}/correspondent", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<GetCorrespondentResponse> getCorrespondents(@PathVariable UUID caseUUID) {
+    public ResponseEntity<GetCorrespondentsResponse> getCorrespondents(@PathVariable UUID caseUUID) {
         Set<CorrespondentData> correspondents = correspondentDataService.getCorrespondents(caseUUID);
-        return ResponseEntity.ok(GetCorrespondentResponse.from(correspondents));
+        return ResponseEntity.ok(GetCorrespondentsResponse.from(correspondents));
     }
 }
