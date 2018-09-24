@@ -32,6 +32,7 @@ pipeline:
     commands:
       - docker login -u="ukhomeofficedigital+hocs" -p=$${DOCKER_PASSWORD} quay.io
       - docker tag hocs-casework quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
+      - docker tag hocs-casework quay.io/ukhomeofficedigital/hocs-casework:latest
       - docker push quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
     when:
       branch: master
@@ -49,7 +50,7 @@ pipeline:
       - docker push quay.io/ukhomeofficedigital/hocs-casework:$${DRONE_TAG}
     when:
       event: tag
- 
+
   clone-kube-project:
     image: plugins/git
     commands:
