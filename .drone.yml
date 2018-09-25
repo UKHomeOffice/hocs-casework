@@ -34,6 +34,7 @@ pipeline:
       - docker tag hocs-casework quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
       - docker tag hocs-casework quay.io/ukhomeofficedigital/hocs-casework:latest
       - docker push quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
+      - docker push quay.io/ukhomeofficedigital/hocs-casework:latest
     when:
       branch: master
       event: push
