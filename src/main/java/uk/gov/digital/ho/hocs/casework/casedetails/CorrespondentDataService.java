@@ -50,6 +50,18 @@ public class CorrespondentDataService {
     }
 
     @Transactional
+    public CorrespondentData getCorrespondent(UUID correspondentUUID) {
+        log.debug("Getting all correspondent: {}", correspondentUUID);
+        CorrespondentData correspondent = correspondentDataRepository.findByUUID(correspondentUUID);
+        if (correspondent != null) {
+            log.info("Got correspondent data: {}", correspondentUUID);
+            return correspondent;
+        } else {
+            throw new EntityNotFoundException("Correspondents not found for case id: %s", correspondentUUID);
+        }
+    }
+
+    @Transactional
     public Set<CorrespondentData> getCorrespondents(UUID caseUUID) {
         log.debug("Getting all Correspondents for case UUID: {}", caseUUID);
         Set<CorrespondentData> correspondents = correspondentDataRepository.findByCaseUUID(caseUUID);
