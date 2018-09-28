@@ -9,6 +9,5 @@ import java.util.UUID;
 @Repository
 public interface CaseCorrespondentRepository extends CrudRepository<CaseCorrespondent, String> {
 
-
     CaseCorrespondent findByCaseUUIDAndCorrespondentUUID(UUID caseUUID, UUID correspondentUUID);
 }

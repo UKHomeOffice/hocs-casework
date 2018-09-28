@@ -85,6 +85,17 @@ public class CorrespondentDataService {
             caseCorrespondent = new CaseCorrespondent(caseUUID, correspondentUUID, type);
         }
         caseCorrespondentRepository.save(caseCorrespondent);
+    }
 
+    public void deleteCorrespondent(UUID caseUUID, UUID correspondentUUID) {
+        log.debug("deleting a Case Correspondent link");
+        CaseCorrespondent caseCorrespondent = caseCorrespondentRepository.findByCaseUUIDAndCorrespondentUUID(caseUUID, correspondentUUID);
+        if (caseCorrespondent != null) {
+            log.debug("Found link, soft deleting");
+            caseCorrespondent.delete();
+        } else {
+            throw new EntityNotFoundException("Correspondent not found for case id: %s", caseUUID);
+        }
+        caseCorrespondentRepository.save(caseCorrespondent);
     }
 }

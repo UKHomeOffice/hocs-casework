@@ -10,7 +10,6 @@ import java.util.UUID;
 @Repository
 public interface TopicDataRepository extends CrudRepository<TopicData, String> {
 
-
     Set<TopicData> findAllByCaseUUID(UUID caseUUID);
 
     TopicData findByCaseUUIDAndTopicUUID(UUID caseUUID, UUID topicUUID);

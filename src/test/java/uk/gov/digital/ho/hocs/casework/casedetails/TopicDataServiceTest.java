@@ -29,6 +29,7 @@ public class TopicDataServiceTest {
 
     private final UUID CASE_UUID = UUID.randomUUID();
     private final UUID TOPIC_UUID = UUID.randomUUID();
+    private final String TOPIC_NAME = "TOPIC";
 
     @Before
     public void setUp() {
@@ -41,7 +42,7 @@ public class TopicDataServiceTest {
 
         when(topicDataRepository.findByCaseUUIDAndTopicUUID(CASE_UUID, TOPIC_UUID)).thenReturn(null);
 
-        topicDataService.addTopicToCase(CASE_UUID,TOPIC_UUID);
+        topicDataService.addTopicToCase(CASE_UUID,TOPIC_UUID, TOPIC_NAME);
 
         verify(topicDataRepository, times(1)).findByCaseUUIDAndTopicUUID(CASE_UUID, TOPIC_UUID);
         verify(topicDataRepository, times(1)).save(any());
@@ -63,8 +64,5 @@ public class TopicDataServiceTest {
 
         verifyNoMoreInteractions(topicDataRepository);
     }
-
-
-
 }
 

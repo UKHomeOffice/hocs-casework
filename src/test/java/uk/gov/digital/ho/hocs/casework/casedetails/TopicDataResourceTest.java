@@ -27,6 +27,7 @@ public class TopicDataResourceTest {
 
     private final UUID CASE_UUID = UUID.randomUUID();
     private final UUID TOPIC_UUID = UUID.randomUUID();
+    private final String TOPIC_NAME = "TOPIC";
 
     @Before
     public void setUp() {
@@ -36,20 +37,19 @@ public class TopicDataResourceTest {
     @Test
     public void shouldAddTopicToCase() {
 
-        when(topicDataService.addTopicToCase(CASE_UUID,TOPIC_UUID)).thenReturn(new TopicData());
+        when(topicDataService.addTopicToCase(CASE_UUID,TOPIC_UUID,TOPIC_NAME)).thenReturn(new TopicData());
 
         AddTopicToCaseRequest request = new AddTopicToCaseRequest(TOPIC_UUID,"TOPIC" );
 
         ResponseEntity response = topicDataResource.addTopicToCase(CASE_UUID, request);
 
-        verify(topicDataService, times(1)).addTopicToCase(CASE_UUID,TOPIC_UUID );
+        verify(topicDataService, times(1)).addTopicToCase(CASE_UUID,TOPIC_UUID, TOPIC_NAME);
 
         verifyNoMoreInteractions(topicDataService);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
-
 
     @Test
     public void shouldDeleteTopicFromCase() {
@@ -64,6 +64,4 @@ public class TopicDataResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
-
-
 }
