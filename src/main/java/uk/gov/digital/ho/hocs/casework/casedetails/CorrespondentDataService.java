@@ -50,6 +50,18 @@ public class CorrespondentDataService {
     }
 
     @Transactional
+    public CorrespondentData getCorrespondent(UUID correspondentUUID) {
+        log.debug("Getting all correspondent: {}", correspondentUUID);
+        CorrespondentData correspondent = correspondentDataRepository.findByUUID(correspondentUUID);
+        if (correspondent != null) {
+            log.info("Got correspondent data: {}", correspondentUUID);
+            return correspondent;
+        } else {
+            throw new EntityNotFoundException("Correspondents not found for case id: %s", correspondentUUID);
+        }
+    }
+
+    @Transactional
     public Set<CorrespondentData> getCorrespondents(UUID caseUUID) {
         log.debug("Getting all Correspondents for case UUID: {}", caseUUID);
         Set<CorrespondentData> correspondents = correspondentDataRepository.findByCaseUUID(caseUUID);
@@ -73,6 +85,17 @@ public class CorrespondentDataService {
             caseCorrespondent = new CaseCorrespondent(caseUUID, correspondentUUID, type);
         }
         caseCorrespondentRepository.save(caseCorrespondent);
+    }
 
+    public void deleteCorrespondent(UUID caseUUID, UUID correspondentUUID) {
+        log.debug("deleting a Case Correspondent link");
+        CaseCorrespondent caseCorrespondent = caseCorrespondentRepository.findByCaseUUIDAndCorrespondentUUID(caseUUID, correspondentUUID);
+        if (caseCorrespondent != null) {
+            log.debug("Found link, soft deleting");
+            caseCorrespondent.delete();
+        } else {
+            throw new EntityNotFoundException("Correspondent not found for case id: %s", caseUUID);
+        }
+        caseCorrespondentRepository.save(caseCorrespondent);
     }
 }

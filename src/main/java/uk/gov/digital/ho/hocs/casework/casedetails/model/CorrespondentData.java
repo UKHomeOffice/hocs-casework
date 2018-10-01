@@ -64,7 +64,6 @@ public class CorrespondentData {
     @Column(name = "updated")
     private LocalDateTime updated;
 
-
     public CorrespondentData(String fullName, String postcode, String address1, String address2, String address3, String country, String telephone, String email) {
         if (fullName == null) {
             throw new EntityCreationException("Cannot create CorrespondentData(%s, %s, %s, %s, %s, %s, %s, %s).", null, postcode, address1, address2, address3, country, telephone, email);

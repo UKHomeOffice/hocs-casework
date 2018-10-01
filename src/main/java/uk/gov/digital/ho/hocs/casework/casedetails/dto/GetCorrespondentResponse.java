@@ -19,7 +19,6 @@ public class GetCorrespondentResponse {
     @JsonProperty("label")
     private String label;
 
-
     public static GetCorrespondentResponse from(CorrespondentData correspondentData, CorrespondentType correspondentType) {
         return new GetCorrespondentResponse(correspondentData.getUuid(), correspondentData.getFullName());
     }

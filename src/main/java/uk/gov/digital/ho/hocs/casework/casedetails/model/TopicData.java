@@ -6,12 +6,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+
+import org.hibernate.annotations.Where;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
 @Table(name = "topic_data")
+@Where(clause = "not deleted")
 @NoArgsConstructor
 @AllArgsConstructor
 public class TopicData implements Serializable {
