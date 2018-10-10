@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 @Getter
 public class GetCaseNoteResponse {
 
-    @JsonProperty("label")
+    @JsonProperty("created")
     private LocalDateTime created;
 
-    @JsonProperty("value")
+    @JsonProperty("caseNote")
     private String caseNote;
 
     public static GetCaseNoteResponse from(CaseNoteData caseNoteData) {
