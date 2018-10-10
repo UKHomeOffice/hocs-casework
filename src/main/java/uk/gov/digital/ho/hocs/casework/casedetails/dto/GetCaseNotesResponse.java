@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 @Getter
 public class GetCaseNotesResponse {
 
-    @JsonProperty("casenotes")
+    @JsonProperty("caseNotes")
     private Set<GetCaseNoteResponse> caseNotes;
 
     public static GetCaseNotesResponse from(Set<CaseNoteData> caseNoteData) {
