@@ -13,6 +13,3 @@ CREATE TABLE IF NOT EXISTS case_note_data
   CONSTRAINT uuid_idempotent UNIQUE (uuid)
 );
 
-ALTER TABLE topic_data
-  ADD CONSTRAINT topic_uuid_idempotent UNIQUE (topic_uuid);
-
