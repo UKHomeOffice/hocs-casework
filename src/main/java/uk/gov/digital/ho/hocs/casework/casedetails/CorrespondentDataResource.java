@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCorrespondentDataResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCorrespondentsResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;

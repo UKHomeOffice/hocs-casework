@@ -9,7 +9,6 @@ import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationExcep
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
