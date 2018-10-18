@@ -6,8 +6,6 @@ import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentType;
 
-import java.util.UUID;
-
 @AllArgsConstructor
 @Getter
 public class GetCorrespondentDataResponse {

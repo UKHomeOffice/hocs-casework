@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseNoteData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.TopicData;
 
 import java.util.Set;
 import java.util.stream.Collectors;
