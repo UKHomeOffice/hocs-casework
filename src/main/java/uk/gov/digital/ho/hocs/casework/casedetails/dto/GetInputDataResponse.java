@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter

@@ -9,26 +9,23 @@ import uk.gov.digital.ho.hocs.casework.casedetails.*;
 public class HocsCaseContext {
 
     private final CaseDataService caseDataService;
-    private final CaseNoteDataService caseNoteDataService;
-    private final CorrespondentDataService correspondentDataService;
+    private final CaseNoteService caseNoteService;
+    private final CorrespondentService correspondentService;
     private final DeadlineDataService deadlineDataService;
-    private final InputDataService inputDataService;
     private final ReferenceDataService referenceDataService;
     private final StageDataService stageDataService;
 
     public HocsCaseContext(CaseDataService caseDataService,
-                           CaseNoteDataService caseNoteDataService,
-                           CorrespondentDataService correspondentDataService,
+                           CaseNoteService caseNoteService,
+                           CorrespondentService correspondentService,
                            DeadlineDataService deadlineDataService,
-                           InputDataService inputDataService,
                            ReferenceDataService referenceDataService,
                            StageDataService stageDataService) {
 
         this.caseDataService = caseDataService;
-        this.caseNoteDataService = caseNoteDataService;
-        this.correspondentDataService = correspondentDataService;
+        this.caseNoteService = caseNoteService;
+        this.correspondentService = correspondentService;
         this.deadlineDataService = deadlineDataService;
-        this.inputDataService = inputDataService;
         this.referenceDataService = referenceDataService;
         this.stageDataService = stageDataService;
     }

@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseDataType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -14,7 +14,7 @@ public class CaseAuditEntryTest {
     @Test
     public void shouldConstructAllValues() {
 
-        CaseData caseData = new CaseData(CaseType.MIN, 0l);
+        CaseData caseData = new CaseData(CaseDataType.MIN, 0l);
 
         CaseAuditEntry caseAuditEntry = CaseAuditEntry.from(caseData);
 

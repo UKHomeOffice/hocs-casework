@@ -25,10 +25,9 @@ import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.*;
 public abstract class HocsCommand implements Command {
 
     protected CaseDataService caseDataService;
-    protected CaseNoteDataService caseNoteDataService;
-    protected CorrespondentDataService correspondentDataService;
+    protected CaseNoteService caseNoteService;
+    protected CorrespondentService correspondentService;
     protected DeadlineDataService deadlineDataService;
-    protected InputDataService inputDataService;
     protected ReferenceDataService referenceDataService;
     protected StageDataService stageDataService;
 
@@ -44,10 +43,9 @@ public abstract class HocsCommand implements Command {
 
     protected void initialiseDependencies(HocsCaseContext hocsCaseContext) {
         caseDataService = hocsCaseContext.getCaseDataService();
-        caseNoteDataService = hocsCaseContext.getCaseNoteDataService();
-        correspondentDataService = hocsCaseContext.getCorrespondentDataService();
+        caseNoteService = hocsCaseContext.getCaseNoteService();
+        correspondentService = hocsCaseContext.getCorrespondentService();
         deadlineDataService = hocsCaseContext.getDeadlineDataService();
-        inputDataService = hocsCaseContext.getInputDataService();
         referenceDataService = hocsCaseContext.getReferenceDataService();
         stageDataService = hocsCaseContext.getStageDataService();
     }

@@ -9,7 +9,7 @@ import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
 
 import java.util.UUID;
@@ -41,7 +41,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
-        CaseData caseData = caseDataService.createCase(CaseType.MIN);
+        CaseData caseData = caseDataService.createCase(CaseDataType.MIN);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
@@ -78,7 +78,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseWithValidParams() throws EntityNotFoundException {
         Long caseID = 12345L;
-        CaseData caseData = new CaseData(CaseType.MIN, caseID);
+        CaseData caseData = new CaseData(CaseDataType.MIN, caseID);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -93,7 +93,7 @@ public class CaseDataServiceTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotGetCaseWithValidParamsNotFoundException() {
-        CaseData caseData = new CaseData(CaseType.MIN, 0l);
+        CaseData caseData = new CaseData(CaseDataType.MIN, 0l);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(null);
 

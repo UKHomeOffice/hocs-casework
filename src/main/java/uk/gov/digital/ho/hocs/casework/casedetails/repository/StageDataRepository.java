@@ -4,19 +4,19 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Stage;
 
 import java.util.Set;
 import java.util.UUID;
 
 @Repository
-public interface StageDataRepository extends CrudRepository<StageData, String> {
+public interface StageDataRepository extends CrudRepository<Stage, String> {
 
     @Query(value = "SELECT cd.reference as case_reference, cd.type as case_type, sd.*, dd.date as deadline from stage_data sd JOIN case_data cd on sd.case_uuid = cd.uuid LEFT JOIN deadline_data dd ON dd.case_uuid = sd.case_uuid AND dd.stage = sd.type WHERE sd.uuid = ?1 LIMIT 1", nativeQuery = true)
-    StageData findByUuid(UUID uuid);
+    Stage findByUuid(UUID uuid);
 
     @Query(value = "SELECT cd.reference as case_reference, cd.type as case_type, sd.*, dd.date as deadline from stage_data sd JOIN case_data cd on sd.case_uuid = cd.uuid LEFT JOIN deadline_data dd ON dd.case_uuid = sd.case_uuid AND dd.stage = sd.type WHERE sd.case_uuid = ?1", nativeQuery = true)
-    Set<StageData> findAllByCaseUuid(UUID uuid);
+    Set<Stage> findAllByCaseUuid(UUID uuid);
 
     @Modifying
     @Query(value = "UPDATE stage_data SET active = FALSE WHERE uuid = ?1", nativeQuery = true)
@@ -35,5 +35,11 @@ public interface StageDataRepository extends CrudRepository<StageData, String> {
     int allocateToTeam(UUID stageUUID, UUID teamUUID);
 
     @Query(value = "SELECT cd.reference as case_reference, cd.type as case_type, sd.*, dd.date as deadline from stage_data sd JOIN case_data cd on sd.case_uuid = cd.uuid LEFT JOIN deadline_data dd ON dd.case_uuid = sd.case_uuid AND dd.stage = sd.type WHERE sd.active = TRUE", nativeQuery = true)
-    Set<StageData> findAllActiveStages();
+    Set<Stage> findAllActiveStages();
+
+    @Query(value = "SELECT cd.reference as case_reference, cd.type as case_type, sd.*, dd.date as deadline from stage_data sd JOIN case_data cd on sd.case_uuid = cd.uuid LEFT JOIN deadline_data dd ON dd.case_uuid = sd.case_uuid AND dd.stage = sd.type WHERE sd.active = TRUE AND sd.user_uuid = ?1", nativeQuery = true)
+    Set<Stage> findActiveStagesByUserUUID(UUID userUUID);
+
+    @Query(value = "SELECT cd.reference as case_reference, cd.type as case_type, sd.*, dd.date as deadline from stage_data sd JOIN case_data cd on sd.case_uuid = cd.uuid LEFT JOIN deadline_data dd ON dd.case_uuid = sd.case_uuid AND dd.stage = sd.type WHERE sd.active = TRUE AND sd.team_uuid = ?1", nativeQuery = true)
+    Set<Stage> findActiveStagesByTeamUUID(UUID teamUUID);
 }

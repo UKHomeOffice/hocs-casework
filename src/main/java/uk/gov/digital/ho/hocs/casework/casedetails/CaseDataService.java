@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
 
 import javax.transaction.Transactional;
@@ -27,12 +27,12 @@ public class CaseDataService {
     }
 
     @Transactional
-    public CaseData createCase(CaseType caseType) {
-        log.debug("Creating Case, Type: {}", caseType);
-        CaseData caseData = new CaseData(caseType, caseDataRepository.getNextSeriesId());
+    public CaseData createCase(CaseDataType caseDataType) {
+        log.debug("Creating Case, Type: {}", caseDataType);
+        CaseData caseData = new CaseData(caseDataType, caseDataRepository.getNextSeriesId());
         caseDataRepository.save(caseData);
         auditService.createCaseEvent(caseData);
-        log.info("Created Case Type: {} UUID: {}", caseType, caseData.getUuid());
+        log.info("Created Case Type: {} UUID: {}", caseDataType, caseData.getUuid());
         return caseData;
     }
 
@@ -45,5 +45,12 @@ public class CaseDataService {
         } else {
             throw new EntityNotFoundException("Case UUID: %s, not found!", caseUUID);
         }
+    }
+
+    public void deleteCase(UUID caseUUID) {
+        caseDataRepository.delete(caseUUID);
+        log.info("Deleted Case: {}", caseUUID);
+
+
     }
 }

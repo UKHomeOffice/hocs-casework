@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentType;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseContext;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCommand;
@@ -64,24 +64,24 @@ public class CreateCorrespondentRequest extends HocsCommand {
         this.type = correspondentType;
     }
 
-    public static CreateCorrespondentRequest from(CorrespondentData correspondentData, CorrespondentType correspondentType) {
+    public static CreateCorrespondentRequest from(Correspondent correspondent, CorrespondentType correspondentType) {
         return new CreateCorrespondentRequest(
-                correspondentData.getUuid(),
-                correspondentData.getFullName(),
-                correspondentData.getPostcode(),
-                correspondentData.getAddress1(),
-                correspondentData.getAddress2() ,
-                correspondentData.getAddress3() ,
-                correspondentData.getCountry(),
-                correspondentData.getTelephone(),
-                correspondentData.getEmail(),
+                correspondent.getUuid(),
+                correspondent.getFullName(),
+                correspondent.getPostcode(),
+                correspondent.getAddress1(),
+                correspondent.getAddress2(),
+                correspondent.getAddress3(),
+                correspondent.getCountry(),
+                correspondent.getTelephone(),
+                correspondent.getEmail(),
                 correspondentType);
     }
 
     @Override
     public void execute(HocsCaseContext hocsCaseContext) {
         initialiseDependencies(hocsCaseContext);
-        correspondentDataService.createCorrespondent(caseUUID, fullname, postcode, address1, address2, address3, country, telephone, email, type);
+        correspondentService.createCorrespondent(caseUUID, fullname, postcode, address1, address2, address3, country, telephone, email, type);
     }
 
 }

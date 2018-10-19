@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.AddTopicToCaseRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetTopicsResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.TopicData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Topic;
 
 import java.util.Set;
 import java.util.UUID;
@@ -26,7 +26,7 @@ public class TopicDataResource {
 
     @GetMapping(value = "/case/{caseUUID}/topic", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetTopicsResponse> getCaseTopics(@PathVariable UUID caseUUID) {
-        Set<TopicData> topics = topicDataService.getCaseTopics(caseUUID);
+        Set<Topic> topics = topicDataService.getCaseTopics(caseUUID);
         return ResponseEntity.ok(GetTopicsResponse.from(topics));
     }
 

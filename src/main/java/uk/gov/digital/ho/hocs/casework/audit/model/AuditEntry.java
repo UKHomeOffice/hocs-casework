@@ -2,7 +2,7 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Stage;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -55,7 +55,7 @@ public class AuditEntry {
         this.caseInstance = CaseAuditEntry.from(caseInstance);
     }
 
-    public AuditEntry(String username, StageData stageInstance, AuditAction auditAction) {
+    public AuditEntry(String username, Stage stageInstance, AuditAction auditAction) {
         this(username, auditAction);
         this.stageInstance = StageAuditEntry.from(stageInstance);
     }

@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.casedetails.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentType;
 
 import java.util.UUID;
@@ -19,7 +19,7 @@ public class GetCorrespondentResponse {
     @JsonProperty("label")
     private String label;
 
-    public static GetCorrespondentResponse from(CorrespondentData correspondentData, CorrespondentType correspondentType) {
-        return new GetCorrespondentResponse(correspondentData.getUuid(), correspondentData.getFullName());
+    public static GetCorrespondentResponse from(Correspondent correspondent, CorrespondentType correspondentType) {
+        return new GetCorrespondentResponse(correspondent.getUuid(), correspondent.getFullName());
     }
 }

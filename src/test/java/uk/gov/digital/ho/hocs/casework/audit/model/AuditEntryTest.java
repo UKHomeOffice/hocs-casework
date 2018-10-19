@@ -4,8 +4,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Stage;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
 import java.util.UUID;
@@ -19,7 +19,7 @@ public class AuditEntryTest {
 
     @Test
     public void shouldConstructCaseData() {
-        CaseData caseData = new CaseData(CaseType.MIN, 0l);
+        CaseData caseData = new CaseData(CaseDataType.MIN, 0l);
 
         AuditEntry auditEntry = new AuditEntry(userName, caseData, AuditAction.CREATE_CASE);
 
@@ -41,18 +41,18 @@ public class AuditEntryTest {
     public void shouldConstructStageData() {
         UUID uuid = UUID.randomUUID();
         StageType stageType = StageType.DCU_MIN_MARKUP;
-        StageData stageData = new StageData(uuid, stageType, uuid, uuid);
+        Stage stage = new Stage(uuid, stageType, uuid, uuid);
 
-        AuditEntry auditEntry = new AuditEntry(userName, stageData, AuditAction.CREATE_STAGE);
+        AuditEntry auditEntry = new AuditEntry(userName, stage, AuditAction.CREATE_STAGE);
 
         assertThat(auditEntry.getUsername()).isEqualTo(userName);
-        assertThat(auditEntry.getStageInstance()).isEqualTo(StageAuditEntry.from(stageData));
+        assertThat(auditEntry.getStageInstance()).isEqualTo(StageAuditEntry.from(stage));
         assertThat(auditEntry.getEventAction()).isEqualTo(AuditAction.CREATE_STAGE.toString());
     }
 
     @Test
     public void shouldConstructStageDataNull() {
-        AuditEntry auditEntry = new AuditEntry(userName, (StageData) null, AuditAction.CREATE_STAGE);
+        AuditEntry auditEntry = new AuditEntry(userName, (Stage) null, AuditAction.CREATE_STAGE);
 
         assertThat(auditEntry.getUsername()).isEqualTo(userName);
         assertThat(auditEntry.getStageInstance()).isEqualTo(null);

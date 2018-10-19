@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.*;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Stage;
 
 import java.util.Set;
 import java.util.UUID;
@@ -24,14 +24,14 @@ class StageDataResource {
 
     @PostMapping(value = "/stage")
     public ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
-        StageData stageData = stageDataService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getUserUUID());
-        return ResponseEntity.ok(CreateStageResponse.from(stageData));
+        Stage stage = stageDataService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getUserUUID());
+        return ResponseEntity.ok(CreateStageResponse.from(stage));
     }
 
     @GetMapping(value = "/stage")
     public ResponseEntity<GetStagesResponse> getStage(@PathVariable UUID caseUUID) {
-        Set<StageData> stageDatas = stageDataService.getStagesForCase(caseUUID);
-        return ResponseEntity.ok(GetStagesResponse.from(stageDatas));
+        Set<Stage> stages = stageDataService.getStagesForCase(caseUUID);
+        return ResponseEntity.ok(GetStagesResponse.from(stages));
     }
 
     @PostMapping(value = "/stage/{stageUUID}/allocate")
@@ -54,8 +54,8 @@ class StageDataResource {
 
     @GetMapping(value = "/stage/{stageUUID}")
     public ResponseEntity<GetStageResponse> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
-        StageData stageData = stageDataService.getStage(stageUUID);
-        return ResponseEntity.ok(GetStageResponse.from(stageData));
+        Stage stage = stageDataService.getStage(stageUUID);
+        return ResponseEntity.ok(GetStageResponse.from(stage));
     }
 
 }

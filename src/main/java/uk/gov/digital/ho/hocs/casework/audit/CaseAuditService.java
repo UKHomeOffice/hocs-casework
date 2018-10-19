@@ -12,7 +12,7 @@ import uk.gov.digital.ho.hocs.casework.audit.model.ReportLine;
 import uk.gov.digital.ho.hocs.casework.audit.model.StageAuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.repository.CaseAuditRepository;
 import uk.gov.digital.ho.hocs.casework.audit.repository.StageAuditRepository;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.UnitType;
 
 import java.io.IOException;
@@ -28,18 +28,18 @@ import java.util.stream.Collectors;
 class CaseAuditService {
 
     // TODO: move into info service.
-    private static Map<UnitType, CaseType[]> unitToCaseTypesMapping;
+    private static Map<UnitType, CaseDataType[]> unitToCaseTypesMapping;
     private static Map<UnitType, String> unitToReportHeadingMapping;
 
     private static int monthsBack = 4;
     static {
         unitToCaseTypesMapping = new EnumMap<>(UnitType.class);
-        unitToCaseTypesMapping.put(UnitType.RSH, new CaseType[]{CaseType.RSH});
-        unitToCaseTypesMapping.put(UnitType.DCU, new CaseType[]{CaseType.MIN});//, CaseType.TRO, CaseType.DTEN});
-        //unitToCaseTypesMapping.put(UnitType.UKVI, new CaseType[]{CaseType.IMCB, CaseType.IMCM, CaseType.UTEN});
-        //unitToCaseTypesMapping.put(UnitType.FOI, new CaseType[]{CaseType.FOI, CaseType.FTC, CaseType.FTCI, CaseType.FSC, CaseType.FSCI});
-        //unitToCaseTypesMapping.put(UnitType.HMPOCOR, new CaseType[]{CaseType.COM, CaseType.COM1, CaseType.COM2, CaseType.DGEN, CaseType.GNR});
-        //unitToCaseTypesMapping.put(UnitType.HMPOCOL, new CaseType[]{CaseType.COL});
+        unitToCaseTypesMapping.put(UnitType.RSH, new CaseDataType[]{CaseDataType.RSH});
+        unitToCaseTypesMapping.put(UnitType.DCU, new CaseDataType[]{CaseDataType.MIN});//, CaseDataType.TRO, CaseDataType.DTEN});
+        //unitToCaseTypesMapping.put(UnitType.UKVI, new CaseDataType[]{CaseDataType.IMCB, CaseDataType.IMCM, CaseDataType.UTEN});
+        //unitToCaseTypesMapping.put(UnitType.FOI, new CaseDataType[]{CaseDataType.FOI, CaseDataType.FTC, CaseDataType.FTCI, CaseDataType.FSC, CaseDataType.FSCI});
+        //unitToCaseTypesMapping.put(UnitType.HMPOCOR, new CaseDataType[]{CaseDataType.COM, CaseDataType.COM1, CaseDataType.COM2, CaseDataType.DGEN, CaseDataType.GNR});
+        //unitToCaseTypesMapping.put(UnitType.HMPOCOL, new CaseDataType[]{CaseDataType.COL});
 
         unitToReportHeadingMapping = new EnumMap<>(UnitType.class);
         unitToReportHeadingMapping.put(UnitType.RSH, "Case_Type,Case_Reference,Case_UUID,Case_Timestamp,Stage_legacy-reference,Stage_Name,Stage_UUID,Stage_SchemaVersion,Stage_Timestamp,Stage_who-calling,Stage_rep-first-name,Stage_rep-last-name,Stage_rep-org,Stage_rep-relationship,Stage_rep-calledfrom,Stage_contact-method-helpline,Stage_contact-method-method-mp,Stage_contact-method-media,Stage_contact-method-ie,Stage_contact-method-email,Stage_contact-method-als,Stage_contact-method-internal,Stage_contact-method-external,Stage_call-regarding-citizenship,Stage_call-regarding-settled,Stage_call-regarding-compensation,Stage_call-regarding-other,Stage_first-name,Stage_middle-name,Stage_last-name,Stage_date-of-birth,Stage_nationality-birth,Stage_nationality-current,Stage_address-1,Stage_address-2,Stage_address-town,Stage_post-code,Stage_dependents,Stage_dependents-how-many,Stage_high-profile,Stage_safeguarding,Stage_share-data,Stage_landing-date-day,Stage_landing-date-month,Stage_landing-date-year,Stage_cohort,Stage_date-left,Stage_country-based,Stage_date-last-travelled,Stage_nino,Stage_employment,Stage_education,Stage_tax,Stage_health,Stage_id-docs,Stage_travel-to-psc,Stage_psc-location,Stage_psc-date,Stage_psc-outcome,Stage_psc-followup,Stage_mp,Stage_media,Stage_outcome,Stage_notify-email");

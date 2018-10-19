@@ -8,8 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.audit.AuditService;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.InputDataRepository;
 
 import java.util.HashMap;
 import java.util.Map;

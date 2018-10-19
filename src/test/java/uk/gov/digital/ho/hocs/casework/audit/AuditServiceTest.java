@@ -14,8 +14,7 @@ import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.repository.AuditRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
 import java.util.UUID;
@@ -68,8 +67,8 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteCreateCaseEvent() {
-        CaseType caseType = CaseType.MIN;
-        auditService.createCaseEvent(new CaseData(caseType, 0l));
+        CaseDataType caseDataType = CaseDataType.MIN;
+        auditService.createCaseEvent(new CaseData(caseDataType, 0l));
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());
@@ -89,8 +88,8 @@ public class AuditServiceTest {
 
     @Test
     public void shouldWriteUpdateCaseEvent() {
-        CaseType caseType = CaseType.MIN;
-        auditService.updateCaseEvent(new CaseData(caseType, 0l));
+        CaseDataType caseDataType = CaseDataType.MIN;
+        auditService.updateCaseEvent(new CaseData(caseDataType, 0l));
         verify(mockAuditRepository, times(1)).save(any(AuditEntry.class));
 
         verify(mockAuditRepository).save(argCaptor.capture());

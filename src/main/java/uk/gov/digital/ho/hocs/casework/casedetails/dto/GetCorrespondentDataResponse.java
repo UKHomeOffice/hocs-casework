@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.casedetails.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentType;
 
 @AllArgsConstructor
@@ -40,18 +40,18 @@ public class GetCorrespondentDataResponse {
     @JsonProperty("reference")
     String reference;
 
-    public static GetCorrespondentDataResponse from(CorrespondentData correspondentData)
+    public static GetCorrespondentDataResponse from(Correspondent correspondent)
     {
         return new GetCorrespondentDataResponse(
             CorrespondentType.APPLICANT,
-            correspondentData.getFullName(),
-            correspondentData.getPostcode(),
-            correspondentData.getAddress1(),
-            correspondentData.getAddress2(),
-            correspondentData.getAddress3(),
-            correspondentData.getCountry(),
-            correspondentData.getTelephone(),
-            correspondentData.getEmail(),
+                correspondent.getFullName(),
+                correspondent.getPostcode(),
+                correspondent.getAddress1(),
+                correspondent.getAddress2(),
+                correspondent.getAddress3(),
+                correspondent.getCountry(),
+                correspondent.getTelephone(),
+                correspondent.getEmail(),
             ""
         );
     }

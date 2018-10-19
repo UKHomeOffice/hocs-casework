@@ -4,7 +4,7 @@ package uk.gov.digital.ho.hocs.casework.casedetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.TopicData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Topic;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.TopicDataRepository;
 
 import java.util.Set;
@@ -21,31 +21,31 @@ public class TopicDataService {
         this.topicDataRepository = topicDataRepository;
     }
 
-    public Set<TopicData> getCaseTopics(UUID caseUUID) {
+    public Set<Topic> getCaseTopics(UUID caseUUID) {
         log.debug("Getting Topics for case {}", caseUUID);
-        Set<TopicData> topics = topicDataRepository.findAllByCaseUUID(caseUUID);
+        Set<Topic> topics = topicDataRepository.findAllByCaseUUID(caseUUID);
         return topics;
     }
 
-    public TopicData addTopicToCase(UUID caseUUID, UUID topicUUID, String topicName) {
+    public Topic addTopicToCase(UUID caseUUID, UUID topicUUID, String topicName) {
         log.debug("Adding Topic to case {}", caseUUID);
-        TopicData topicData = topicDataRepository.findByCaseUUIDAndTopicUUID(caseUUID,topicUUID);
-        if(topicData != null){
-            topicData.reAdd();
+        Topic topic = topicDataRepository.findByCaseUUIDAndTopicUUID(caseUUID, topicUUID);
+        if (topic != null) {
+            topic.reAdd();
         } else {
-            topicData = new TopicData(caseUUID, topicName, topicUUID);
+            topic = new Topic(caseUUID, topicName, topicUUID);
         }
-        topicDataRepository.save(topicData);
+        topicDataRepository.save(topic);
         log.info("Added Topic to case {}", caseUUID);
-        return topicData;
+        return topic;
     }
 
-    public TopicData deleteTopicFromCase(UUID caseUUID, UUID topicUUID) {
+    public Topic deleteTopicFromCase(UUID caseUUID, UUID topicUUID) {
         log.debug("Deleting Topic to case {}", caseUUID);
-        TopicData topicData = topicDataRepository.findByCaseUUIDAndTopicUUID(caseUUID,topicUUID);
-        topicData.delete();
-        topicDataRepository.save(topicData);
+        Topic topic = topicDataRepository.findByCaseUUIDAndTopicUUID(caseUUID, topicUUID);
+        topic.delete();
+        topicDataRepository.save(topic);
         log.info("Deleted Topic from case {}", caseUUID);
-        return topicData;
+        return topic;
     }
 }

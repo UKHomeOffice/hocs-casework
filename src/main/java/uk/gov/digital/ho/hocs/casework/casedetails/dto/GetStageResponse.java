@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Stage;
 
 import java.util.UUID;
 
@@ -24,7 +24,7 @@ public class GetStageResponse {
     @JsonProperty("active")
     private boolean active;
 
-    public static GetStageResponse from(StageData stageData) {
-        return new GetStageResponse(stageData.getUuid(), stageData.getType(), stageData.getCaseReference(), stageData.isActive());
+    public static GetStageResponse from(Stage stage) {
+        return new GetStageResponse(stage.getUuid(), stage.getType(), stage.getCaseReference(), stage.isActive());
     }
 }

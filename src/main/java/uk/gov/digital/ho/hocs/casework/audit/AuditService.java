@@ -9,7 +9,6 @@ import uk.gov.digital.ho.hocs.casework.audit.model.AuditAction;
 import uk.gov.digital.ho.hocs.casework.audit.model.AuditEntry;
 import uk.gov.digital.ho.hocs.casework.audit.repository.AuditRepository;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
 import java.util.UUID;
@@ -28,7 +27,6 @@ public class AuditService {
         this.objectMapper = objectMapper;
         this.requestData = requestData;
     }
-
 
     public void createCaseEvent(CaseData caseData) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), caseData, AuditAction.CREATE_CASE);
@@ -65,16 +63,6 @@ public class AuditService {
     public void setStageActiveEvent(UUID stageUUID) {
         AuditEntry auditEntry = new AuditEntry(requestData.username(), stageUUID.toString(), AuditAction.SET_ACTIVE_STAGE);
         save(auditEntry);
-    }
-
-    public void createInputDataEvent(InputData inputData) {
-        //AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.UPDATE_STAGE);
-        //save(auditEntry);
-    }
-
-    public void updateInputDataEvent(InputData inputData) {
-        //AuditEntry auditEntry = new AuditEntry(requestData.username(), stageData, AuditAction.UPDATE_STAGE);
-        //save(auditEntry);
     }
 
     //public void createDocumentEvent(DocumentData documentData) {

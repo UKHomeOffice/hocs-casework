@@ -32,7 +32,7 @@ public class AddCaseNoteDataRequest extends HocsCommand {
     @Override
     public void execute(HocsCaseContext hocsCaseContext) {
         initialiseDependencies(hocsCaseContext);
-       caseNoteDataService.createCaseNote(caseUUID, caseNote);
+        caseNoteService.createCaseNote(caseUUID, caseNote);
 
     }
 }

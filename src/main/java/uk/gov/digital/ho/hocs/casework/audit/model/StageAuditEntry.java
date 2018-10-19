@@ -2,7 +2,7 @@ package uk.gov.digital.ho.hocs.casework.audit.model;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Stage;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -42,10 +42,10 @@ public class StageAuditEntry implements Serializable {
         this.timestamp = timestamp;
     }
 
-    public static StageAuditEntry from(StageData stageData)
+    public static StageAuditEntry from(Stage stage)
     {
-        if (stageData != null) {
-            return new StageAuditEntry(stageData.getUuid(), stageData.getType().toString(), stageData.getCaseUUID(), stageData.getCreated());
+        if (stage != null) {
+            return new StageAuditEntry(stage.getUuid(), stage.getType(), stage.getCaseUUID(), stage.getCreated());
         } else {
             return null;
         }

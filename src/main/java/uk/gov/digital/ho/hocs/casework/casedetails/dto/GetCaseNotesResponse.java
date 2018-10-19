@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseNoteData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseNote;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 public class GetCaseNotesResponse {
 
     @JsonProperty("caseNotes")
-    private Set<GetCaseNoteResponse> caseNotes;
+    private Set<CaseNoteDto> caseNotes;
 
-    public static GetCaseNotesResponse from(Set<CaseNoteData> caseNoteData) {
-        Set<GetCaseNoteResponse> caseNotesResponses = caseNoteData
+    public static GetCaseNotesResponse from(Set<CaseNote> caseNoteData) {
+        Set<CaseNoteDto> caseNotesResponses = caseNoteData
                 .stream()
-                .map(GetCaseNoteResponse::from)
+                .map(CaseNoteDto::from)
                 .collect(Collectors.toSet());
 
         return new GetCaseNotesResponse(caseNotesResponses);

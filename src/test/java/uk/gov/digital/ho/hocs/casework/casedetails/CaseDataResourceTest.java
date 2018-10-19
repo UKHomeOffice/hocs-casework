@@ -7,12 +7,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.CaseDataDto;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseTypeResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseDataType;
 
 import java.util.UUID;
 
@@ -37,15 +36,15 @@ public class CaseDataResourceTest {
     @Test
     public void shouldCreateCase() {
 
-        CaseType caseType = CaseType.MIN;
-        CaseData caseData = new CaseData(CaseType.MIN, 0l);
-        CreateCaseRequest request = new CreateCaseRequest(caseType);
+        CaseDataType caseDataType = CaseDataType.MIN;
+        CaseData caseData = new CaseData(CaseDataType.MIN, 0l);
+        CreateCaseRequest request = new CreateCaseRequest(caseDataType);
 
-        when(caseDataService.createCase(caseType)).thenReturn(caseData);
+        when(caseDataService.createCase(caseDataType)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseType);
+        verify(caseDataService, times(1)).createCase(caseDataType);
 
         verifyNoMoreInteractions(caseDataService);
 
@@ -56,12 +55,12 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCase() {
 
-        CaseType caseType = CaseType.MIN;
-        CaseData caseData = new CaseData(CaseType.MIN, 0l);
+        CaseDataType caseDataType = CaseDataType.MIN;
+        CaseData caseData = new CaseData(CaseDataType.MIN, 0l);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
-        ResponseEntity<GetCaseResponse> response = caseDataResource.getCase(uuid);
+        ResponseEntity<CaseDataDto> response = caseDataResource.getCase(uuid);
 
         verify(caseDataService, times(1)).getCase(uuid);
 
@@ -74,8 +73,8 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCaseType() {
 
-        CaseType caseType = CaseType.MIN;
-        CaseData caseData = new CaseData(CaseType.MIN, 0l);
+        CaseDataType caseDataType = CaseDataType.MIN;
+        CaseData caseData = new CaseData(CaseDataType.MIN, 0l);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 

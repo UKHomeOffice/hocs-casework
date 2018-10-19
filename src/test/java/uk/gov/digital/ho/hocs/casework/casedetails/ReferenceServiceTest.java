@@ -1,0 +1,76 @@
+package uk.gov.digital.ho.hocs.casework.casedetails;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Reference;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.ReferenceType;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.ReferenceDataRepository;
+
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
+@RunWith(MockitoJUnitRunner.class)
+public class ReferenceServiceTest {
+
+    @Mock
+    private ReferenceDataRepository referenceDataRepository;
+
+    private ReferenceDataService referenceDataService;
+
+    private UUID caseUUID = UUID.randomUUID();
+
+    @Before
+    public void setUp() {
+        this.referenceDataService = new ReferenceDataService(referenceDataRepository);
+    }
+
+    @Test
+    public void ShouldCreateReferenceData() {
+
+        referenceDataService.createReference(caseUUID, "M101", ReferenceType.MEMBER_REFERENCE);
+
+        verify(referenceDataRepository, times(1)).save(any(Reference.class));
+
+        verifyNoMoreInteractions(referenceDataRepository);
+
+    }
+
+    @Test(expected = EntityCreationException.class)
+    public void ShouldNotCreateReferenceMissingCaseUUIDException() {
+
+        referenceDataService.createReference(null, "M101", ReferenceType.MEMBER_REFERENCE);
+    }
+
+    @Test(expected = EntityCreationException.class)
+    public void ShouldNotCreateReferenceMissingReferenceTypeException() {
+
+        referenceDataService.createReference(caseUUID, "M101", null);
+    }
+
+    @Test(expected = EntityCreationException.class)
+    public void ShouldNotCreateReferenceMissingReferenceException() {
+
+        referenceDataService.createReference(caseUUID, null, ReferenceType.MEMBER_REFERENCE);
+    }
+
+    @Test
+    public void shouldReturnReferenceForCase() {
+
+        when(referenceDataRepository.findByCaseUUID(caseUUID)).thenReturn(new Reference(caseUUID, ReferenceType.MEMBER_REFERENCE, "M101"));
+
+        Reference response = referenceDataService.getReferenceData(caseUUID);
+        verify(referenceDataRepository, times(1)).findByCaseUUID(caseUUID);
+        verifyNoMoreInteractions(referenceDataRepository);
+
+        assertThat(response.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(response.getReferenceType()).isEqualTo(ReferenceType.MEMBER_REFERENCE);
+        assertThat(response.getReference()).isEqualTo("M101");
+    }
+}

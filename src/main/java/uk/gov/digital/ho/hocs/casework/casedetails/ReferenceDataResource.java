@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetReferenceResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.ReferenceData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Reference;
 
 import java.util.UUID;
 
@@ -26,8 +26,8 @@ public class ReferenceDataResource {
 
     @GetMapping(value = "/case/{caseUUID}/reference", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetReferenceResponse> getReference(@PathVariable UUID caseUUID) {
-        ReferenceData referenceData = referenceDataService.getReferenceData(caseUUID);
-        return ResponseEntity.ok(GetReferenceResponse.from(referenceData));
+        Reference reference = referenceDataService.getReferenceData(caseUUID);
+        return ResponseEntity.ok(GetReferenceResponse.from(reference));
     }
 
 }

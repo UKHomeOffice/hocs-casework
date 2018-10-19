@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 
 import java.io.IOException;
 import java.util.HashMap;

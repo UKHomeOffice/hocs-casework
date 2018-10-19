@@ -1,20 +1,14 @@
 package uk.gov.digital.ho.hocs.casework.casedetails;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.InputData;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)

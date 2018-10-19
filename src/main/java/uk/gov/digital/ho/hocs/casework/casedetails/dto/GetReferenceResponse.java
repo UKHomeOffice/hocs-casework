@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.casedetails.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.ReferenceData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Reference;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.ReferenceType;
 
 @AllArgsConstructor
@@ -16,10 +16,10 @@ public class GetReferenceResponse {
     @JsonProperty("reference")
     private String reference;
 
-    public static GetReferenceResponse from(ReferenceData referenceData) {
+    public static GetReferenceResponse from(Reference reference) {
         return new GetReferenceResponse(
-                referenceData.getReferenceType(),
-                referenceData.getReference());
+                reference.getReferenceType(),
+                reference.getReference());
 
     }
 }

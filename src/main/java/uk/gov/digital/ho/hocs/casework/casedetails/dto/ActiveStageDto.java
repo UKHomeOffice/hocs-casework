@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageData;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.Stage;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
 import java.io.Serializable;
@@ -24,8 +24,8 @@ public class ActiveStageDto implements Serializable {
     @JsonProperty("caseReference")
     private String caseReference;
 
-    @JsonProperty("caseType")
-    private CaseType caseType;
+    @JsonProperty("caseDataType")
+    private CaseDataType caseDataType;
 
     @JsonProperty("caseTypeDisplay")
     private String caseTypeDisplay;
@@ -51,7 +51,7 @@ public class ActiveStageDto implements Serializable {
     @JsonProperty("deadline")
     private String deadline;
 
-    public static ActiveStageDto from(StageData activeStage) {
+    public static ActiveStageDto from(Stage activeStage) {
         return new ActiveStageDto(
                 activeStage.getCaseUUID(),
                 activeStage.getUuid(),

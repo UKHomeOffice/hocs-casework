@@ -4,10 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.CaseDataDto;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseTypeResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 
 import java.util.UUID;
@@ -32,14 +31,14 @@ class CaseDataResource {
     }
 
     @GetMapping(value = "/case/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID) {
+    public ResponseEntity<CaseDataDto> getCase(@PathVariable UUID caseUUID) {
         CaseData caseData = caseDataService.getCase(caseUUID);
-        return ResponseEntity.ok(GetCaseResponse.from(caseData));
+        return ResponseEntity.ok(CaseDataDto.from(caseData));
     }
 
-    @GetMapping(value = "/case/{caseUUID}/casetype", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<GetCaseTypeResponse> getCaseTypeForCase(@PathVariable UUID caseUUID) {
-        CaseData caseData = caseDataService.getCase(caseUUID);
-        return ResponseEntity.ok(GetCaseTypeResponse.from(caseData));
+    @DeleteMapping(value = "/case/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<CaseDataDto> deleteCase(@PathVariable UUID caseUUID) {
+        caseDataService.deleteCase(caseUUID);
+        return ResponseEntity.ok().build();
     }
 }
