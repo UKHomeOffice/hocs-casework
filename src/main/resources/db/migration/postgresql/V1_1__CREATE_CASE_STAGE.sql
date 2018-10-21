@@ -19,6 +19,11 @@ CREATE TABLE IF NOT EXISTS case_data
   CONSTRAINT case_ref_idempotent UNIQUE (reference)
 );
 
+CREATE OR REPLACE VIEW active_case AS
+  SELECT *
+  FROM case_data
+  WHERE deleted = FALSE;
+
 DROP TABLE IF EXISTS stage;
 
 CREATE TABLE IF NOT EXISTS stage
@@ -27,6 +32,7 @@ CREATE TABLE IF NOT EXISTS stage
   uuid      UUID      NOT NULL,
   created   TIMESTAMP NOT NULL,
   type      TEXT      NOT NULL,
+  deadline  DATE,
   completed BOOLEAN   NOT NULL DEFAULT FALSE,
   case_uuid UUID      NOT NULL,
   team_uuid UUID      NOT NULL,
@@ -36,15 +42,12 @@ CREATE TABLE IF NOT EXISTS stage
   CONSTRAINT fk_stage_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)
 );
 
-DROP TABLE IF EXISTS stage_deadline cascade;
+CREATE OR REPLACE VIEW active_stage AS
+  SELECT *
+  FROM stage
+  WHERE completed = FALSE;
 
-CREATE TABLE IF NOT EXISTS stage_deadline
-(
-  id         BIGSERIAL PRIMARY KEY,
-  created    TIMESTAMP NOT NULL,
-  stage_type TEXT      NOT NULL,
-  date       DATE      NOT NULL,
-  case_uuid  UUID      NOT NULL,
-
-  CONSTRAINT fk_deadline_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)
-);
+CREATE OR REPLACE VIEW stage_data AS
+  SELECT c.reference AS case_reference, c.type AS case_type, c.data as data, s.*
+  FROM active_stage s
+         JOIN active_case c ON s.case_uuid = c.uuid;

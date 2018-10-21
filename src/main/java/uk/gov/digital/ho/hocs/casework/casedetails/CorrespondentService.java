@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentType;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.CorrespondentDataRepository;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.CorrespondentRepository;
 
 import javax.transaction.Transactional;
 import java.util.Set;
@@ -16,11 +16,11 @@ import java.util.UUID;
 @Service
 public class CorrespondentService {
 
-    private final CorrespondentDataRepository correspondentDataRepository;
+    private final CorrespondentRepository correspondentRepository;
 
     @Autowired
-    public CorrespondentService(CorrespondentDataRepository correspondentDataRepository) {
-        this.correspondentDataRepository = correspondentDataRepository;
+    public CorrespondentService(CorrespondentRepository correspondentRepository) {
+        this.correspondentRepository = correspondentRepository;
     }
 
     public void createCorrespondent(UUID caseUUID, String fullname, String postcode, String address1, String address2, String address3, String country, String telephone, String email, CorrespondentType correspondentType) {
@@ -33,13 +33,13 @@ public class CorrespondentService {
                 telephone,
                 email);
 
-        correspondentDataRepository.save(correspondent);
+        correspondentRepository.save(correspondent);
         log.debug("Created Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID);
     }
 
     @Transactional
     public Correspondent getCorrespondent(UUID caseUUID, UUID correspondentUUID) {
-        Correspondent correspondent = correspondentDataRepository.findByUUID(caseUUID, correspondentUUID);
+        Correspondent correspondent = correspondentRepository.findByUUID(caseUUID, correspondentUUID);
         if (correspondent != null) {
             log.info("Got Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
             return correspondent;
@@ -50,14 +50,14 @@ public class CorrespondentService {
 
     @Transactional
     public Set<Correspondent> getCorrespondents(UUID caseUUID) {
-        Set<Correspondent> correspondents = correspondentDataRepository.findByCaseUUID(caseUUID);
+        Set<Correspondent> correspondents = correspondentRepository.findAllByCaseUUID(caseUUID);
         log.info("Got {} Correspondents for Case: {}", correspondents.size(), caseUUID);
         return correspondents;
     }
 
     @Transactional
     public void deleteCorrespondent(UUID caseUUID, UUID correspondentUUID) {
-        correspondentDataRepository.delete(correspondentUUID);
+        correspondentRepository.delete(correspondentUUID);
         log.info("Deleted Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
     }
 }

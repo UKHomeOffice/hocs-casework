@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 public class GetStagesResponse {
 
     @JsonProperty("stages")
-    private Set<GetStageResponse> stages;
+    private Set<StageDto> stages;
 
     public static GetStagesResponse from(Set<Stage> stages) {
-        Set<GetStageResponse> stageDataResponses = stages
+        Set<StageDto> stageDataResponses = stages
                 .stream()
-                .map(GetStageResponse::from)
+                .map(StageDto::from)
                 .collect(Collectors.toSet());
 
         return new GetStagesResponse(stageDataResponses);

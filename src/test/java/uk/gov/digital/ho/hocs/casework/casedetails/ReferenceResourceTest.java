@@ -22,13 +22,13 @@ public class ReferenceResourceTest {
     @Mock
     private ReferenceDataService referenceDataService;
 
-    private ReferenceDataResource referenceDataResource;
+    private ReferenceResource referenceResource;
 
     private UUID caseUUID = UUID.randomUUID();
 
     @Before
     public void setUp() {
-        referenceDataResource = new ReferenceDataResource(referenceDataService);
+        referenceResource = new ReferenceResource(referenceDataService);
     }
 
 
@@ -37,7 +37,7 @@ public class ReferenceResourceTest {
         Reference reference = new Reference(caseUUID, ReferenceType.MEMBER_REFERENCE, "M101");
 
         when(referenceDataService.getReferenceData(caseUUID)).thenReturn(reference);
-        ResponseEntity<GetReferenceResponse> response = referenceDataResource.getReference(caseUUID);
+        ResponseEntity<GetReferenceResponse> response = referenceResource.getReference(caseUUID);
 
         verify(referenceDataService, times(1)).getReferenceData(caseUUID);
 

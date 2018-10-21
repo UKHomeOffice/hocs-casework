@@ -27,7 +27,6 @@ public abstract class HocsCommand implements Command {
     protected CaseDataService caseDataService;
     protected CaseNoteService caseNoteService;
     protected CorrespondentService correspondentService;
-    protected DeadlineDataService deadlineDataService;
     protected ReferenceDataService referenceDataService;
     protected StageDataService stageDataService;
 
@@ -45,7 +44,6 @@ public abstract class HocsCommand implements Command {
         caseDataService = hocsCaseContext.getCaseDataService();
         caseNoteService = hocsCaseContext.getCaseNoteService();
         correspondentService = hocsCaseContext.getCorrespondentService();
-        deadlineDataService = hocsCaseContext.getDeadlineDataService();
         referenceDataService = hocsCaseContext.getReferenceDataService();
         stageDataService = hocsCaseContext.getStageDataService();
     }

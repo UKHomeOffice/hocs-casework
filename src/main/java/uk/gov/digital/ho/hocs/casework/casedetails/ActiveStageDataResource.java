@@ -29,8 +29,9 @@ class ActiveStageDataResource {
 
     @GetMapping(value = "/active", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetActiveStagesResponse> getActiveStages() {
-        Set<Stage> activeStages = stageDataService.getActiveStages();
-        return ResponseEntity.ok(GetActiveStagesResponse.from(activeStages));
+        //Set<Stage> activeStages = stageDataService.getActiveStages();
+        // return ResponseEntity.ok(GetActiveStagesResponse.from(activeStages));
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/active/user/{userUUID}", produces = APPLICATION_JSON_UTF8_VALUE)

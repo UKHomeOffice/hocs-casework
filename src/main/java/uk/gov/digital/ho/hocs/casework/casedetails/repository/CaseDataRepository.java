@@ -14,10 +14,10 @@ public interface CaseDataRepository extends CrudRepository<CaseData, String> {
     @Query(value = "SELECT nextval('case_ref')" , nativeQuery = true)
     Long getNextSeriesId();
 
-    @Query(value = "SELECT cd.* FROM case_data cd where cd.uuid = ?1 and cd.deleted = FALSE", nativeQuery = true)
+    @Query(value = "SELECT ac.* FROM active_case ac where ac.uuid = ?1", nativeQuery = true)
     CaseData findByUuid(UUID uuid);
 
     @Modifying
-    @Query(value = "UPDATE case_data cd SET cd.deleted = TRUE WHERE uuid = ?1", nativeQuery = true)
-    int delete(UUID correspondentUUID);
+    @Query(value = "UPDATE case_data SET deleted = TRUE WHERE uuid = ?1", nativeQuery = true)
+    int delete(UUID caseUUID);
 }

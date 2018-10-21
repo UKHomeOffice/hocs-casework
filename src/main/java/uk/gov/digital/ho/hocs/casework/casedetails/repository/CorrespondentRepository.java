@@ -10,10 +10,10 @@ import java.util.Set;
 import java.util.UUID;
 
 @Repository
-public interface CorrespondentDataRepository extends CrudRepository<Correspondent, String> {
+public interface CorrespondentRepository extends CrudRepository<Correspondent, String> {
 
     @Query(value = "SELECT c.* FROM correspondent c join case_data cd on c.case_uuid = cd.uuid WHERE cd.uuid = ?1 AND cd.deleted = FALSE AND c.deleted = FALSE", nativeQuery = true)
-    Set<Correspondent> findByCaseUUID(UUID caseUUID);
+    Set<Correspondent> findAllByCaseUUID(UUID caseUUID);
 
     @Query(value = "SELECT c.* FROM correspondent c join case_data cd on c.case_uuid = cd.uuid WHERE cd.uuid = ?1 AND cd.deleted = FALSE AND c.uuid = ?2 AND c.deleted = FALSE", nativeQuery = true)
     Correspondent findByUUID(UUID caseUUID, UUID correspondentUUID);

@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.model.ReferenceType;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.ReferenceDataRepository;
 
 import javax.transaction.Transactional;
+import java.util.Set;
 import java.util.UUID;
 
 @Slf4j
@@ -24,20 +25,16 @@ public class ReferenceDataService {
 
     @Transactional
     public void createReference(UUID caseUUID, String reference, ReferenceType type) {
-        log.debug("create Reference Data for Case UUID: {}", caseUUID);
         Reference referenceData = new Reference(caseUUID, type, reference);
-                referenceDataRepository.save(referenceData);
-                //TODO Audit
-                log.info("Updated reference data for Case UUID: {}", caseUUID);
+        referenceDataRepository.save(referenceData);
+        log.info("Updated reference data for Case: {}", caseUUID);
     }
 
     @Transactional
-    public Reference getReferenceData(UUID caseUUID) {
-        log.debug("Getting reference for case UUID: {}", caseUUID);
-        //TODO Audit
-        Reference reference = referenceDataRepository.findByCaseUUID(caseUUID);
+    public Set<Reference> getReference(UUID caseUUID) {
+        Set<Reference> reference = referenceDataRepository.findByCaseUUID(caseUUID);
         if (reference != null) {
-            log.info("Got reference Data for Case UUID: {}", caseUUID);
+            log.info("Got Reference for Case: {}", caseUUID);
             return reference;
         } else {
             throw new EntityNotFoundException("reference not found for case id: %s", caseUUID);

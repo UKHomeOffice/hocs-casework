@@ -100,7 +100,7 @@ public class InputDataServiceTest {
             // Do nothing.
     //   }
 
-    //   verify(inputDataRepository, times(1)).findByCaseUUID(uuid);
+    //   verify(inputDataRepository, times(1)).findAllByCaseUUID(uuid);
 
     //    verifyNoMoreInteractions(inputDataRepository);
     //   verifyZeroInteractions(auditService);

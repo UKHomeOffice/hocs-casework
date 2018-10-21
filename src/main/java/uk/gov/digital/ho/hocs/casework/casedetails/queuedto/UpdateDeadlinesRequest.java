@@ -36,7 +36,7 @@ public class UpdateDeadlinesRequest extends HocsCommand {
     @Override
     public void execute(HocsCaseContext hocsCaseContext) {
         initialiseDependencies(hocsCaseContext);
-        deadlineDataService.updateDeadlines(caseUUID, deadlines);
+        //deadlineDataService.updateDeadlines(caseUUID, deadlines);
     }
 
 }

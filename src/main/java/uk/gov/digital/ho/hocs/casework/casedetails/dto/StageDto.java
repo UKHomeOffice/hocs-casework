@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class GetStageResponse {
+public class StageDto {
 
     @JsonProperty("uuid")
     private UUID uuid;
@@ -21,10 +21,7 @@ public class GetStageResponse {
     @JsonProperty("caseReference")
     private String caseReference;
 
-    @JsonProperty("active")
-    private boolean active;
-
-    public static GetStageResponse from(Stage stage) {
-        return new GetStageResponse(stage.getUuid(), stage.getType(), stage.getCaseReference(), stage.isActive());
+    public static StageDto from(Stage stage) {
+        return new StageDto(stage.getUuid(), stage.getType(), stage.getCaseReference());
     }
 }

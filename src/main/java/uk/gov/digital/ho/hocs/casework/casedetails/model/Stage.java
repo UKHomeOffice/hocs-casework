@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.casedetails.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "stage")
 public class Stage implements Serializable {
@@ -50,6 +52,9 @@ public class Stage implements Serializable {
 
     @Column(name = "case_type", insertable = false)
     private String caseType;
+
+    @Column(name = "data", insertable = false)
+    private String data;
 
     @Getter
     @Column(name = "deadline", insertable = false)

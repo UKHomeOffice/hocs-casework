@@ -10,7 +10,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationExcep
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.Stage;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageDataRepository;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageRepository;
 
 import java.util.UUID;
 
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 public class StageServiceTest {
 
     @Mock
-    private StageDataRepository stageDataRepository;
+    private StageRepository stageRepository;
 
     @Mock
     private AuditService auditService;
@@ -30,7 +30,7 @@ public class StageServiceTest {
     @Before
     public void setUp() {
         this.stageDataService = new StageDataService(
-                stageDataRepository,
+                stageRepository,
                 auditService);
     }
 
@@ -43,10 +43,10 @@ public class StageServiceTest {
 
         stageDataService.createStage(uuid, stageType, teamUUID, null);
 
-        verify(stageDataRepository, times(1)).save(any(Stage.class));
+        verify(stageRepository, times(1)).save(any(Stage.class));
         verify(auditService, times(1)).createStageEvent(uuid, stageType, teamUUID, null);
 
-        verifyNoMoreInteractions(stageDataRepository);
+        verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(auditService);
     }
 
@@ -71,7 +71,7 @@ public class StageServiceTest {
             // Do nothing.
         }
 
-        verifyZeroInteractions(stageDataRepository);
+        verifyZeroInteractions(stageRepository);
         verifyZeroInteractions(auditService);
     }
 
@@ -95,7 +95,7 @@ public class StageServiceTest {
             // Do nothing.
         }
 
-        verifyZeroInteractions(stageDataRepository);
+        verifyZeroInteractions(stageRepository);
         verifyZeroInteractions(auditService);
     }
 
@@ -120,7 +120,7 @@ public class StageServiceTest {
             // Do nothing.
         }
 
-        verifyZeroInteractions(stageDataRepository);
+        verifyZeroInteractions(stageRepository);
         verifyZeroInteractions(auditService);
     }
 
@@ -134,10 +134,10 @@ public class StageServiceTest {
 
         stageDataService.allocateStage(uuid, teamUUID, null);
 
-        verify(stageDataRepository, times(1)).allocateToTeam(uuid, teamUUID);
+        verify(stageRepository, times(1)).allocateToTeam(uuid, teamUUID);
         verify(auditService, times(1)).allocateStageEvent(uuid, teamUUID, null);
 
-        verifyNoMoreInteractions(stageDataRepository);
+        verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(auditService);
     }
 
@@ -151,10 +151,10 @@ public class StageServiceTest {
 
         stageDataService.allocateStage(uuid, teamUUID, uuid);
 
-        verify(stageDataRepository, times(1)).allocateToUser(uuid, teamUUID, uuid);
+        verify(stageRepository, times(1)).allocateToUser(uuid, teamUUID, uuid);
         verify(auditService, times(1)).allocateStageEvent(uuid, teamUUID, uuid);
 
-        verifyNoMoreInteractions(stageDataRepository);
+        verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(auditService);
     }
 
@@ -182,7 +182,7 @@ public class StageServiceTest {
             // Do nothing.
         }
 
-        verifyNoMoreInteractions(stageDataRepository);
+        verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(auditService);
     }
 
@@ -193,14 +193,14 @@ public class StageServiceTest {
         StageType stageType = StageType.DCU_MIN_MARKUP;
         Stage stage = new Stage(uuid, stageType, uuid, uuid);
 
-        when(stageDataRepository.findByUuid(uuid)).thenReturn(stage);
+        when(stageRepository.findByUuid(uuid)).thenReturn(stage);
 
         stageDataService.getStage(uuid);
 
-        verify(stageDataRepository, times(1)).findByUuid(uuid);
+        verify(stageRepository, times(1)).findByUuid(uuid);
         verify(auditService, times(1)).getStageEvent(uuid);
 
-        verifyNoMoreInteractions(stageDataRepository);
+        verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(auditService);
 
     }
@@ -210,7 +210,7 @@ public class StageServiceTest {
 
         UUID uuid = UUID.randomUUID();
 
-        when(stageDataRepository.findByUuid(uuid)).thenReturn(null);
+        when(stageRepository.findByUuid(uuid)).thenReturn(null);
 
         stageDataService.getStage(uuid);
     }
@@ -220,7 +220,7 @@ public class StageServiceTest {
 
         UUID uuid = UUID.randomUUID();
 
-        when(stageDataRepository.findByUuid(uuid)).thenReturn(null);
+        when(stageRepository.findByUuid(uuid)).thenReturn(null);
 
         try {
             stageDataService.getStage(uuid);
@@ -228,9 +228,9 @@ public class StageServiceTest {
             // Do nothing.
         }
 
-        verify(stageDataRepository, times(1)).findByUuid(uuid);
+        verify(stageRepository, times(1)).findByUuid(uuid);
 
-        verifyNoMoreInteractions(stageDataRepository);
+        verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(auditService);
     }
 
@@ -250,9 +250,9 @@ public class StageServiceTest {
             // Do nothing.
         }
 
-        verify(stageDataRepository, times(1)).findByUuid(null);
+        verify(stageRepository, times(1)).findByUuid(null);
 
-        verifyNoMoreInteractions(stageDataRepository);
+        verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(auditService);
     }
 

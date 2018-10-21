@@ -5,9 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageDeadline;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.DeadlineDataRepository;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -21,13 +19,15 @@ import static org.mockito.Mockito.*;
 public class StageDeadlineServiceTest {
 
     @Mock
-    private DeadlineDataRepository deadlineDataRepository;
+    private DeadlineRepository deadlineRepository;
 
     private DeadlineDataService deadlineDataService;
 
 
     @Before
-    public void setUp() { this.deadlineDataService = new DeadlineDataService(deadlineDataRepository);}
+    public void setUp() {
+        this.deadlineDataService = new DeadlineDataService(deadlineRepository);
+    }
 
     @Test
     public void shouldSaveDeadlines(){
@@ -38,15 +38,15 @@ public class StageDeadlineServiceTest {
         deadlines.put(StageType.DCU_MIN_INITIAL_DRAFT, draftDate);
         deadlines.put(StageType.DCU_MIN_DISPATCH, finalDate);
 
-        when(deadlineDataRepository.findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_INITIAL_DRAFT.toString())).thenReturn(null);
-        when(deadlineDataRepository.findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_DISPATCH.toString())).thenReturn(null);
+        when(deadlineRepository.findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_INITIAL_DRAFT.toString())).thenReturn(null);
+        when(deadlineRepository.findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_DISPATCH.toString())).thenReturn(null);
 
         deadlineDataService.updateDeadlines(caseUUID, deadlines);
-        verify(deadlineDataRepository, times(1)).findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_INITIAL_DRAFT.toString());
-        verify(deadlineDataRepository, times(1)).findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_DISPATCH.toString());
-        verify(deadlineDataRepository, times(2)).save(any(StageDeadline.class));
+        verify(deadlineRepository, times(1)).findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_INITIAL_DRAFT.toString());
+        verify(deadlineRepository, times(1)).findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_DISPATCH.toString());
+        verify(deadlineRepository, times(2)).save(any(StageDeadline.class));
 
-        verifyNoMoreInteractions(deadlineDataRepository);
+        verifyNoMoreInteractions(deadlineRepository);
     }
 
     @Test
@@ -61,14 +61,14 @@ public class StageDeadlineServiceTest {
         StageDeadline stageDeadline = new StageDeadline(caseUUID, StageType.DCU_MIN_INITIAL_DRAFT, draftDate);
         StageDeadline stageDeadline1 = new StageDeadline(caseUUID, StageType.DCU_MIN_DISPATCH, finalDate);
 
-        when(deadlineDataRepository.findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_INITIAL_DRAFT.toString())).thenReturn(stageDeadline);
-        when(deadlineDataRepository.findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_DISPATCH.toString())).thenReturn(stageDeadline1);
+        when(deadlineRepository.findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_INITIAL_DRAFT.toString())).thenReturn(stageDeadline);
+        when(deadlineRepository.findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_DISPATCH.toString())).thenReturn(stageDeadline1);
 
         deadlineDataService.updateDeadlines(caseUUID, deadlines);
-        verify(deadlineDataRepository, times(1)).findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_INITIAL_DRAFT.toString());
-        verify(deadlineDataRepository, times(1)).findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_DISPATCH.toString());
-        verify(deadlineDataRepository, times(2)).save(any(StageDeadline.class));
+        verify(deadlineRepository, times(1)).findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_INITIAL_DRAFT.toString());
+        verify(deadlineRepository, times(1)).findByCaseUUIDAndStage(caseUUID, StageType.DCU_MIN_DISPATCH.toString());
+        verify(deadlineRepository, times(2)).save(any(StageDeadline.class));
 
-        verifyNoMoreInteractions(deadlineDataRepository);
+        verifyNoMoreInteractions(deadlineRepository);
     }
 }

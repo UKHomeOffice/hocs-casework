@@ -14,7 +14,7 @@ import uk.gov.digital.ho.hocs.casework.HocsCaseApplication;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageResponse;
 import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageDataRepository;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageRepository;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +35,7 @@ public class StageResourceIntTest {
     @Autowired
     private CaseDataRepository caseDataRepository;
     @Autowired
-    private StageDataRepository stageDataRepository;
+    private StageRepository stageRepository;
 
     private UUID caseUUID;
     private UUID stageUUID;
@@ -192,7 +192,7 @@ public class StageResourceIntTest {
     }
 
     private void clearDatabase() {
-        stageDataRepository.deleteAll();
+        stageRepository.deleteAll();
         caseDataRepository.deleteAll();
     }
 

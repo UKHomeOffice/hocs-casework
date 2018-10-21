@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.AllocateStageRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetStageResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.StageDto;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.Stage;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
 
@@ -25,11 +25,11 @@ public class StageResourceTest {
     @Mock
     private StageDataService stageDataService;
 
-    private StageDataResource stageDataResource;
+    private StageResource stageResource;
 
     @Before
     public void setUp() {
-        stageDataResource = new StageDataResource(stageDataService);
+        stageResource = new StageResource(stageDataService);
     }
 
     @Test
@@ -43,7 +43,7 @@ public class StageResourceTest {
 
         when(stageDataService.createStage(uuid, stageType, teamUUID, null)).thenReturn(new Stage(uuid, stageType, uuid, uuid));
 
-        ResponseEntity<CreateStageResponse> response = stageDataResource.createStage(uuid, request);
+        ResponseEntity<CreateStageResponse> response = stageResource.createStage(uuid, request);
 
         verify(stageDataService, times(1)).createStage(uuid, stageType, teamUUID, null);
 
@@ -63,7 +63,7 @@ public class StageResourceTest {
 
         doNothing().when(stageDataService).allocateStage(uuid, teamUUID, null);
 
-        ResponseEntity response = stageDataResource.allocateStage(uuid, uuid, request);
+        ResponseEntity response = stageResource.allocateStage(uuid, uuid, request);
 
         verify(stageDataService, times(1)).allocateStage(uuid, teamUUID, null);
 
@@ -81,7 +81,7 @@ public class StageResourceTest {
 
         when(stageDataService.getStage(uuid)).thenReturn(new Stage(uuid, stageType, uuid, uuid));
 
-        ResponseEntity<GetStageResponse> response = stageDataResource.getStage(uuid, uuid);
+        ResponseEntity<StageDto> response = stageResource.getStage(uuid, uuid);
 
         verify(stageDataService, times(1)).getStage(uuid);
 

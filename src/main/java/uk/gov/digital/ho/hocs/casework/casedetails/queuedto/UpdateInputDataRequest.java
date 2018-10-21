@@ -33,7 +33,7 @@ public class UpdateInputDataRequest extends HocsCommand {
     @Override
     public void execute(HocsCaseContext hocsCaseContext) {
         initialiseDependencies(hocsCaseContext);
-        inputDataService.setInputData(caseUUID, data);
+        caseDataService.updateCaseData(caseUUID, data);
 
     }
 }

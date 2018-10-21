@@ -59,14 +59,6 @@ public class CaseData implements Serializable {
         this.data = "{}";
     }
 
-    private static String getDataString(Map<String, String> stageData, ObjectMapper objectMapper) {
-        try {
-            return objectMapper.writeValueAsString(stageData);
-        } catch (JsonProcessingException e) {
-            throw new EntityCreationException("Object Mapper failed to write value!");
-        }
-    }
-
     public String getTypeString() {
         return this.type;
     }
@@ -89,7 +81,11 @@ public class CaseData implements Serializable {
         }
     }
 
-    public void delete() {
-        this.deleted = Boolean.TRUE;
+    private static String getDataString(Map<String, String> stageData, ObjectMapper objectMapper) {
+        try {
+            return objectMapper.writeValueAsString(stageData);
+        } catch (JsonProcessingException e) {
+            throw new EntityCreationException("Object Mapper failed to write value!");
+        }
     }
 }

@@ -30,9 +30,26 @@ CREATE TABLE IF NOT EXISTS correspondent
   country   TEXT,
   telephone TEXT,
   email     TEXT,
+  reference TEXT      NOT NULL,
   type      TEXT      NOT NULL,
   deleted   BOOLEAN   NOT NULL DEFAULT FALSE,
 
   CONSTRAINT correspondent_uuid_idempotent UNIQUE (uuid),
   CONSTRAINT fk_correspondent_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)
+);
+
+DROP TABLE IF EXISTS reference cascade;
+
+CREATE TABLE IF NOT EXISTS reference
+(
+  id        BIGSERIAL PRIMARY KEY,
+  uuid      UUID      NOT NULL,
+  created   TIMESTAMP NOT NULL,
+  case_uuid UUID      NOT NULL,
+  reference TEXT      NOT NULL,
+  type      TEXT      NOT NULL,
+  deleted   BOOLEAN   NOT NULL DEFAULT FALSE,
+
+  CONSTRAINT reference_uuid_idempotent UNIQUE (uuid),
+  CONSTRAINT fk_reference_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)
 );

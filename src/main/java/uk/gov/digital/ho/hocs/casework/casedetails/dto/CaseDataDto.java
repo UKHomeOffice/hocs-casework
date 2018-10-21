@@ -13,27 +13,28 @@ import java.util.UUID;
 @Getter
 public class CaseDataDto {
 
+    @JsonProperty("uuid")
+    private UUID uuid;
+
+    @JsonProperty("created")
+    private LocalDateTime created;
+
     @JsonProperty("type")
-    private String caseType;
+    private String type;
 
     @JsonProperty("reference")
     private String reference;
 
-    @JsonProperty("uuid")
-    private UUID uuid;
-
-    @JsonProperty("timestamp")
-    private LocalDateTime timestamp;
-
+    @JsonProperty("data")
+    private String data;
 
     public static CaseDataDto from(CaseData caseData) {
 
-        String caseRef = caseData.getReference();
-
         return new CaseDataDto(
-                caseData.getTypeString(),
-                caseRef,
                 caseData.getUuid(),
-                caseData.getCreated());
+                caseData.getCreated(),
+                caseData.getTypeString(),
+                caseData.getReference(),
+                caseData.getData());
     }
 }

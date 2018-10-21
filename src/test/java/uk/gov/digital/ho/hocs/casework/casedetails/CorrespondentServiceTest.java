@@ -10,7 +10,7 @@ import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundExcep
 import uk.gov.digital.ho.hocs.casework.casedetails.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentType;
 import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.CreateCorrespondentRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.CorrespondentDataRepository;
+import uk.gov.digital.ho.hocs.casework.casedetails.repository.CorrespondentRepository;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 public class CorrespondentServiceTest {
 
     @Mock
-    private CorrespondentDataRepository correspondentDataRepository;
+    private CorrespondentRepository correspondentRepository;
 
     @Mock
     private CaseCorrespondentRepository caseCorrespondentRepository;
@@ -36,7 +36,7 @@ public class CorrespondentServiceTest {
     @Before
     public void setUp() {
         this.correspondentService = new CorrespondentService(
-                correspondentDataRepository,
+                correspondentRepository,
                 caseCorrespondentRepository
         );
     }
@@ -80,11 +80,11 @@ public class CorrespondentServiceTest {
                         "01234 567890",
                         "A@A.com");
         correspondents.add(correspondent);
-        when(correspondentDataRepository.findByCaseUUID(uuid)).thenReturn(correspondents);
+        when(correspondentRepository.findAllByCaseUUID(uuid)).thenReturn(correspondents);
         Set<Correspondent> response = correspondentService.getCorrespondents(uuid);
 
-        verify(correspondentDataRepository, times(1)).findByCaseUUID(uuid);
-        verifyNoMoreInteractions(correspondentDataRepository);
+        verify(correspondentRepository, times(1)).findAllByCaseUUID(uuid);
+        verifyNoMoreInteractions(correspondentRepository);
         verifyNoMoreInteractions(caseCorrespondentRepository);
 
         assertThat(response.size()).isEqualTo(1);
@@ -142,7 +142,7 @@ public class CorrespondentServiceTest {
 
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotGetCorrespondentsEntityNotFoundException() {
-        when(correspondentDataRepository.findByCaseUUID(CASE_UUID)).thenReturn(null);
+        when(correspondentRepository.findAllByCaseUUID(CASE_UUID)).thenReturn(null);
         correspondentService.getCorrespondents(CASE_UUID);
 
     }

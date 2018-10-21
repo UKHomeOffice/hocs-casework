@@ -31,7 +31,7 @@ public class TopicDataService {
         log.debug("Adding Topic to case {}", caseUUID);
         Topic topic = topicDataRepository.findByCaseUUIDAndTopicUUID(caseUUID, topicUUID);
         if (topic != null) {
-            topic.reAdd();
+            //  topic.reAdd();
         } else {
             topic = new Topic(caseUUID, topicName, topicUUID);
         }
