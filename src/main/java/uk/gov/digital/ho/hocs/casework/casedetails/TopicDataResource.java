@@ -25,7 +25,7 @@ public class TopicDataResource {
     }
 
     @GetMapping(value = "/case/{caseUUID}/topic", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<GetTopicsResponse> addTopicToCase(@PathVariable UUID caseUUID) {
+    public ResponseEntity<GetTopicsResponse> getCaseTopics(@PathVariable UUID caseUUID) {
         Set<TopicData> topics = topicDataService.getCaseTopics(caseUUID);
         return ResponseEntity.ok(GetTopicsResponse.from(topics));
     }

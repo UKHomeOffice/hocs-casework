@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.casedetails.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "case_input_data")
 @NoArgsConstructor
+@AllArgsConstructor
 public class InputData implements Serializable {
 
     @Id
