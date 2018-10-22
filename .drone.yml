@@ -106,3 +106,10 @@ pipeline:
     when:
       event: deployment
       environment: prod
+
+  services:
+    postgres:
+      image: postgres
+      environment:
+        POSTGRES_USER: root
+        POSTGRES_PASSWORD: dev
