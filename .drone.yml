@@ -109,7 +109,7 @@ pipeline:
 
   services:
     postgres:
-      image: postgres
+      image: quay.io/ukhomeofficedigital/postgres
       environment:
         POSTGRES_USER: root
         POSTGRES_PASSWORD: dev
