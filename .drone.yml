@@ -126,7 +126,7 @@ services:
       DEFAULT_REGION: eu-west-2
       SERVICES: sqs,s3
   aws_cli:
-    image: quay.io/ukhomeofficedigital/postgres
+    image: garland/aws-cli-docker
     command:
       ["-c
               aws --endpoint-url=http://localstack:4572 s3 mb s3://untrusted-bucket;
