@@ -3,6 +3,7 @@ pipeline:
   build-project:
     image: quay.io/ukhomeofficedigital/openjdk8
     commands:
+      - export DB_HOST=postgres
       - ./gradlew build
     when:
       event: [push, pull_request, tag]
@@ -11,7 +12,6 @@ pipeline:
     image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.2
     when:
       event: [push, pull_request, tag]
-
 
   docker-build:
     image: docker:17.09.1
