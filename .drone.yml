@@ -107,9 +107,9 @@ pipeline:
       event: deployment
       environment: prod
 
-  services:
-    postgres:
-      image: quay.io/ukhomeofficedigital/postgres
-      environment:
-        POSTGRES_USER: root
-        POSTGRES_PASSWORD: dev
+services:
+  postgres:
+    image: quay.io/ukhomeofficedigital/postgres
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: dev
