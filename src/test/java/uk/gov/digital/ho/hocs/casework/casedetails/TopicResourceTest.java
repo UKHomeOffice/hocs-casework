@@ -7,8 +7,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.AddTopicToCaseRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.Topic;
+import uk.gov.digital.ho.hocs.casework.api.TopicResource;
+import uk.gov.digital.ho.hocs.casework.api.TopicService;
+import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
+import uk.gov.digital.ho.hocs.casework.queue.dto.AddTopicToCaseRequest;
 
 import java.util.UUID;
 
@@ -19,9 +21,9 @@ import static org.mockito.Mockito.*;
 public class TopicResourceTest {
 
     @Mock
-    private TopicDataService topicDataService;
+    private TopicService topicService;
 
-    private TopicDataResource topicDataResource;
+    private TopicResource topicResource;
 
     private final UUID CASE_UUID = UUID.randomUUID();
     private final UUID TOPIC_UUID = UUID.randomUUID();
@@ -29,21 +31,21 @@ public class TopicResourceTest {
 
     @Before
     public void setUp() {
-        topicDataResource = new TopicDataResource(topicDataService);
+        topicResource = new TopicResource(topicService);
     }
 
     @Test
     public void shouldAddTopicToCase() {
 
-        when(topicDataService.addTopicToCase(CASE_UUID, TOPIC_UUID, TOPIC_NAME)).thenReturn(new Topic());
+        when(topicService.addTopicToCase(CASE_UUID, TOPIC_UUID, TOPIC_NAME)).thenReturn(new Topic(UUID.randomUUID(), "anyName", UUID.randomUUID()));
 
         AddTopicToCaseRequest request = new AddTopicToCaseRequest(TOPIC_UUID,"TOPIC" );
 
-        ResponseEntity response = topicDataResource.addTopicToCase(CASE_UUID, request);
+        ResponseEntity response = topicResource.addTopicToCase(CASE_UUID, request);
 
-        verify(topicDataService, times(1)).addTopicToCase(CASE_UUID,TOPIC_UUID, TOPIC_NAME);
+        verify(topicService, times(1)).addTopicToCase(CASE_UUID, TOPIC_UUID, TOPIC_NAME);
 
-        verifyNoMoreInteractions(topicDataService);
+        verifyNoMoreInteractions(topicService);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -51,13 +53,13 @@ public class TopicResourceTest {
 
     @Test
     public void shouldDeleteTopicFromCase() {
-        when(topicDataService.deleteTopicFromCase(CASE_UUID, TOPIC_UUID)).thenReturn(new Topic());
+        when(topicService.deleteTopicFromCase(CASE_UUID, TOPIC_UUID)).thenReturn(new Topic(UUID.randomUUID(), "anyName", UUID.randomUUID()));
 
-        ResponseEntity response = topicDataResource.deleteTopicFromCase(CASE_UUID,TOPIC_UUID );
+        ResponseEntity response = topicResource.deleteTopicFromCase(CASE_UUID, TOPIC_UUID);
 
-        verify(topicDataService, times(1)).deleteTopicFromCase(CASE_UUID,TOPIC_UUID );
+        verify(topicService, times(1)).deleteTopicFromCase(CASE_UUID, TOPIC_UUID);
 
-        verifyNoMoreInteractions(topicDataService);
+        verifyNoMoreInteractions(topicService);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

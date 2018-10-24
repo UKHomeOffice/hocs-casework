@@ -1,16 +1,17 @@
 package uk.gov.digital.ho.hocs.casework.casedetails;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.audit.AuditService;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.util.UUID;
 
@@ -22,17 +23,14 @@ public class CaseDataServiceTest {
     @Mock
     private CaseDataRepository caseDataRepository;
 
-
     @Mock
-    private AuditService auditService;
+    ObjectMapper objectMapper;
 
     private CaseDataService caseDataService;
 
     @Before
     public void setUp() {
-        this.caseDataService = new CaseDataService(
-                caseDataRepository,
-                auditService);
+        this.caseDataService = new CaseDataService(caseDataRepository, objectMapper);
     }
 
     @Test
@@ -45,10 +43,8 @@ public class CaseDataServiceTest {
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
-        verify(auditService, times(1)).createCaseEvent(caseData);
 
         verifyNoMoreInteractions(caseDataRepository);
-        verifyNoMoreInteractions(auditService);
     }
 
     @Test(expected = EntityCreationException.class)
@@ -71,7 +67,6 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).getNextSeriesId();
 
         verifyNoMoreInteractions(caseDataRepository);
-        verifyZeroInteractions(auditService);
 
     }
 
@@ -87,7 +82,6 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
 
         verifyNoMoreInteractions(caseDataRepository);
-        verifyZeroInteractions(auditService);
 
     }
 
@@ -115,7 +109,6 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).findByUuid(uuid);
 
         verifyNoMoreInteractions(caseDataRepository);
-        verifyZeroInteractions(auditService);
 
     }
 
@@ -138,7 +131,6 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).findByUuid(null);
 
         verifyNoMoreInteractions(caseDataRepository);
-        verifyZeroInteractions(auditService);
     }
 
 

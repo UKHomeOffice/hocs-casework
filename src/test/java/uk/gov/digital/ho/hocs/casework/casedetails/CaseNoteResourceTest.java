@@ -7,7 +7,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseNotesResponse;
+import uk.gov.digital.ho.hocs.casework.api.CaseNoteResource;
+import uk.gov.digital.ho.hocs.casework.api.CaseNoteService;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseNotesResponse;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -33,11 +35,11 @@ public class CaseNoteResourceTest {
     @Test
     public void shouldGetCase() {
 
-        when(caseNoteService.getCaseNote(uuid)).thenReturn(new HashSet<>());
+        when(caseNoteService.getCaseNotesForCase(uuid)).thenReturn(new HashSet<>());
 
         ResponseEntity<GetCaseNotesResponse> response = caseNoteResource.getCaseNotesForCase(uuid);
 
-        verify(caseNoteService, times(1)).getCaseNote(uuid);
+        verify(caseNoteService, times(1)).getCaseNotesForCase(uuid);
 
         verifyNoMoreInteractions(caseNoteService);
 

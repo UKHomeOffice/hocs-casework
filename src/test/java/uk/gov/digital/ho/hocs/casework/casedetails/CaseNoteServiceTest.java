@@ -5,12 +5,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseNoteRepository;
+import uk.gov.digital.ho.hocs.casework.api.CaseNoteService;
+import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNoteType;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseNoteRepository;
 
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -34,7 +35,7 @@ public class CaseNoteServiceTest {
     @Test
     public void shouldCreateCaseWithValidParams() throws EntityCreationException {
 
-        caseNoteService.createCaseNote(uuid, "CASE NOTE");
+        caseNoteService.createCaseNote(uuid, CaseNoteType.MANUAL, "CASE NOTE");
 
         verify(caseNoteRepository, times(1)).save(any());
 
@@ -43,18 +44,18 @@ public class CaseNoteServiceTest {
 
     @Test(expected = EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws EntityCreationException {
-        caseNoteService.createCaseNote(null, null);
+        caseNoteService.createCaseNote(null, null, null);
     }
 
 
     @Test
     public void shouldGetCaseWithValidParams() throws EntityNotFoundException {
         HashSet<CaseNote> caseNoteData = new HashSet<>();
-        caseNoteData.add(new CaseNote(1, uuid, uuid, "Case Note", LocalDateTime.now(), false));
+        caseNoteData.add(new CaseNote(uuid, CaseNoteType.MANUAL, "Case Note"));
 
         when(caseNoteRepository.findAllByCaseUUID(uuid)).thenReturn(caseNoteData);
 
-        caseNoteService.getCaseNote(uuid);
+        caseNoteService.getCaseNotesForCase(uuid);
 
         verify(caseNoteRepository, times(1)).findAllByCaseUUID(uuid);
 
@@ -66,7 +67,7 @@ public class CaseNoteServiceTest {
 
         when(caseNoteRepository.findAllByCaseUUID(uuid)).thenReturn(null);
 
-        caseNoteService.getCaseNote(uuid);
+        caseNoteService.getCaseNotesForCase(uuid);
     }
 
     @Test
@@ -76,7 +77,7 @@ public class CaseNoteServiceTest {
         when(caseNoteRepository.findAllByCaseUUID(uuid)).thenReturn(null);
 
         try {
-            caseNoteService.getCaseNote(uuid);
+            caseNoteService.getCaseNotesForCase(uuid);
         } catch (EntityNotFoundException e) {
             // Do nothing.
         }
@@ -90,7 +91,7 @@ public class CaseNoteServiceTest {
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotGetCaseMissingUUIDException() throws EntityNotFoundException {
 
-        caseNoteService.getCaseNote(null);
+        caseNoteService.getCaseNotesForCase(null);
 
     }
 

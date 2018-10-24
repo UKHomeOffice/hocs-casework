@@ -7,9 +7,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCorrespondentDataResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCorrespondentsResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.api.CorrespondentResource;
+import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
+import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -60,11 +62,11 @@ public class CorrespondentResourceTest {
 
     @Test
     public void shouldGetCorrespondent() {
-        when(correspondentService.getCorrespondent(CORRESPONDENT_UUID)).thenReturn(new Correspondent());
+        when(correspondentService.getCorrespondent(CORRESPONDENT_UUID, CORRESPONDENT_UUID)).thenReturn(new Correspondent(anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString(), anyString()));
 
-        ResponseEntity<GetCorrespondentDataResponse> response = correspondentResource.getCorrespondent(CASE_UUID, CORRESPONDENT_UUID);
+        ResponseEntity<CorrespondentDto> response = correspondentResource.getCorrespondent(CASE_UUID, CORRESPONDENT_UUID);
 
-        verify(correspondentService, times(1)).getCorrespondent(CORRESPONDENT_UUID);
+        verify(correspondentService, times(1)).getCorrespondent(CORRESPONDENT_UUID, CORRESPONDENT_UUID);
         verifyNoMoreInteractions(correspondentService);
 
         assertThat(response).isNotNull();

@@ -11,10 +11,10 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.HocsCaseApplication;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.CaseDataRepository;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.StageRepository;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 
 import java.util.HashMap;
 import java.util.Map;

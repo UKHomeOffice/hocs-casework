@@ -33,9 +33,9 @@ CREATE TABLE IF NOT EXISTS stage
   created   TIMESTAMP NOT NULL,
   type      TEXT      NOT NULL,
   deadline  DATE,
-  completed BOOLEAN   NOT NULL DEFAULT FALSE,
+  status    TEXT      NOT NULL,
   case_uuid UUID      NOT NULL,
-  team_uuid UUID      NOT NULL,
+  team_uuid UUID,
   user_uuid UUID,
 
   CONSTRAINT stage_id_idempotent UNIQUE (uuid),
@@ -45,7 +45,7 @@ CREATE TABLE IF NOT EXISTS stage
 CREATE OR REPLACE VIEW active_stage AS
   SELECT *
   FROM stage
-  WHERE completed = FALSE;
+  WHERE status != 'COMPLETE';
 
 CREATE OR REPLACE VIEW stage_data AS
   SELECT c.reference AS case_reference, c.type AS case_type, c.data as data, s.*

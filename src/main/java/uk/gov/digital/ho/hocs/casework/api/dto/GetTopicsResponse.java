@@ -1,0 +1,27 @@
+package uk.gov.digital.ho.hocs.casework.api.dto;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public class GetTopicsResponse {
+
+    @JsonProperty("topics")
+    private Set<TopicDto> topics;
+
+    public static GetTopicsResponse from(Set<Topic> topicData) {
+        Set<TopicDto> topicsResponses = topicData
+                .stream()
+                .map(TopicDto::from)
+                .collect(Collectors.toSet());
+
+        return new GetTopicsResponse(topicsResponses);
+    }
+}

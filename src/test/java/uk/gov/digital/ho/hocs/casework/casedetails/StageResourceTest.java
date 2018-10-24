@@ -7,12 +7,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.AllocateStageRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateStageResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.StageDto;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.Stage;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.StageType;
+import uk.gov.digital.ho.hocs.casework.api.StageResource;
+import uk.gov.digital.ho.hocs.casework.api.StageService;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.StageDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageOwnerRequest;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
 import java.util.UUID;
 
@@ -23,13 +25,13 @@ import static org.mockito.Mockito.*;
 public class StageResourceTest {
 
     @Mock
-    private StageDataService stageDataService;
+    private StageService stageService;
 
     private StageResource stageResource;
 
     @Before
     public void setUp() {
-        stageResource = new StageResource(stageDataService);
+        stageResource = new StageResource(stageService);
     }
 
     @Test
@@ -41,13 +43,13 @@ public class StageResourceTest {
 
         CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, null);
 
-        when(stageDataService.createStage(uuid, stageType, teamUUID, null)).thenReturn(new Stage(uuid, stageType, uuid, uuid));
+        when(stageService.createStage(uuid, stageType, teamUUID, null)).thenReturn(new Stage(uuid, stageType, uuid, uuid));
 
         ResponseEntity<CreateStageResponse> response = stageResource.createStage(uuid, request);
 
-        verify(stageDataService, times(1)).createStage(uuid, stageType, teamUUID, null);
+        verify(stageService, times(1)).createStage(uuid, stageType, teamUUID, null);
 
-        verifyNoMoreInteractions(stageDataService);
+        verifyNoMoreInteractions(stageService);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -59,15 +61,15 @@ public class StageResourceTest {
 
         UUID uuid = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
-        AllocateStageRequest request = new AllocateStageRequest(teamUUID, null);
+        UpdateStageOwnerRequest request = new UpdateStageOwnerRequest(teamUUID, null);
 
-        doNothing().when(stageDataService).allocateStage(uuid, teamUUID, null);
+        doNothing().when(stageService).allocateStage(uuid, uuid, teamUUID, null);
 
         ResponseEntity response = stageResource.allocateStage(uuid, uuid, request);
 
-        verify(stageDataService, times(1)).allocateStage(uuid, teamUUID, null);
+        verify(stageService, times(1)).allocateStage(uuid, uuid, teamUUID, null);
 
-        verifyNoMoreInteractions(stageDataService);
+        verifyNoMoreInteractions(stageService);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -79,13 +81,13 @@ public class StageResourceTest {
         UUID uuid = UUID.randomUUID();
         StageType stageType = StageType.DCU_MIN_MARKUP;
 
-        when(stageDataService.getStage(uuid)).thenReturn(new Stage(uuid, stageType, uuid, uuid));
+        when(stageService.getStage(uuid, uuid)).thenReturn(new Stage(uuid, stageType, uuid, uuid));
 
         ResponseEntity<StageDto> response = stageResource.getStage(uuid, uuid);
 
-        verify(stageDataService, times(1)).getStage(uuid);
+        verify(stageService, times(1)).getStage(uuid, uuid);
 
-        verifyNoMoreInteractions(stageDataService);
+        verifyNoMoreInteractions(stageService);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

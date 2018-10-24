@@ -7,11 +7,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CaseDataDto;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataResource;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.util.UUID;
 
@@ -69,24 +71,4 @@ public class CaseDataResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
-
-    @Test
-    public void shouldGetCaseType() {
-
-        CaseDataType caseDataType = CaseDataType.MIN;
-        CaseData caseData = new CaseData(CaseDataType.MIN, 0l);
-
-        when(caseDataService.getCase(uuid)).thenReturn(caseData);
-
-        ResponseEntity<GetCaseTypeResponse> response = caseDataResource.getCaseTypeForCase(uuid);
-
-        verify(caseDataService, times(1)).getCase(uuid);
-
-        verifyNoMoreInteractions(caseDataService);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-
 }

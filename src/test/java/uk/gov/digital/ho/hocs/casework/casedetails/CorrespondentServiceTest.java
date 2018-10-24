@@ -5,12 +5,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CorrespondentType;
-import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.CreateCorrespondentRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.CorrespondentRepository;
+import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
+import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentType;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
+import uk.gov.digital.ho.hocs.casework.queue.dto.CreateCorrespondentRequest;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -25,9 +26,6 @@ public class CorrespondentServiceTest {
     @Mock
     private CorrespondentRepository correspondentRepository;
 
-    @Mock
-    private CaseCorrespondentRepository caseCorrespondentRepository;
-
     private CorrespondentService correspondentService;
 
     private final UUID CASE_UUID = UUID.randomUUID();
@@ -36,9 +34,7 @@ public class CorrespondentServiceTest {
     @Before
     public void setUp() {
         this.correspondentService = new CorrespondentService(
-                correspondentRepository,
-                caseCorrespondentRepository
-        );
+                correspondentRepository);
     }
 
     @Test
@@ -56,7 +52,6 @@ public class CorrespondentServiceTest {
                         "A@A.com",
                         CorrespondentType.COMPLAINANT);
 
-        correspondentService.assignCorrespondentToCase(CASE_UUID, UUID.randomUUID(), createCorrespondentRequest.getType());
         //verify(correspondentDataRepository, times(1)).save(any(Correspondent.class));
         //verify(caseCorrespondentRepository, times(1)).save(any(CaseCorrespondent.class));
 
@@ -85,7 +80,6 @@ public class CorrespondentServiceTest {
 
         verify(correspondentRepository, times(1)).findAllByCaseUUID(uuid);
         verifyNoMoreInteractions(correspondentRepository);
-        verifyNoMoreInteractions(caseCorrespondentRepository);
 
         assertThat(response.size()).isEqualTo(1);
     }
@@ -144,29 +138,5 @@ public class CorrespondentServiceTest {
     public void shouldNotGetCorrespondentsEntityNotFoundException() {
         when(correspondentRepository.findAllByCaseUUID(CASE_UUID)).thenReturn(null);
         correspondentService.getCorrespondents(CASE_UUID);
-
-    }
-
-    @Test
-    public void shouldDeleteCorrespondentFromCase() {
-
-        CaseCorrespondent caseCorrespondent = new CaseCorrespondent(1,CASE_UUID,CORRESPODENT_UUID, CorrespondentType.APPLICANT.getDisplayValue(),Boolean.FALSE);
-
-        when(caseCorrespondentRepository.findByCaseUUIDAndCorrespondentUUID(CASE_UUID, CORRESPODENT_UUID)).thenReturn(caseCorrespondent);
-
-        correspondentService.deleteCorrespondent(CASE_UUID, CORRESPODENT_UUID);
-
-        verify(caseCorrespondentRepository, times(1)).findByCaseUUIDAndCorrespondentUUID(CASE_UUID, CORRESPODENT_UUID);
-        verify(caseCorrespondentRepository, times(1)).save(any());
-
-        verifyNoMoreInteractions(caseCorrespondentRepository);
-    }
-
-    @Test(expected = EntityNotFoundException.class)
-    public void shouldThroughExceptionWhenDeleteCorrespondentFromCaseButNullResponseFromDB() {
-
-        when(caseCorrespondentRepository.findByCaseUUIDAndCorrespondentUUID(CASE_UUID, CORRESPODENT_UUID)).thenReturn(null);
-
-        correspondentService.deleteCorrespondent(CASE_UUID, CORRESPODENT_UUID);
     }
 }

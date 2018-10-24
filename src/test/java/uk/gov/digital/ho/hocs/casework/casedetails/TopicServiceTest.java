@@ -5,10 +5,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.Topic;
-import uk.gov.digital.ho.hocs.casework.casedetails.repository.TopicDataRepository;
+import uk.gov.digital.ho.hocs.casework.api.TopicService;
+import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
+import uk.gov.digital.ho.hocs.casework.domain.repository.TopicDataRepository;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -19,7 +19,7 @@ public class TopicServiceTest {
     @Mock
     private TopicDataRepository topicDataRepository;
 
-    private TopicDataService topicDataService;
+    private TopicService topicService;
 
     private final UUID CASE_UUID = UUID.randomUUID();
     private final UUID TOPIC_UUID = UUID.randomUUID();
@@ -27,7 +27,7 @@ public class TopicServiceTest {
 
     @Before
     public void setUp() {
-        this.topicDataService = new TopicDataService(
+        this.topicService = new TopicService(
                 topicDataRepository);
     }
 
@@ -36,7 +36,7 @@ public class TopicServiceTest {
 
         when(topicDataRepository.findByCaseUUIDAndTopicUUID(CASE_UUID, TOPIC_UUID)).thenReturn(null);
 
-        topicDataService.addTopicToCase(CASE_UUID,TOPIC_UUID, TOPIC_NAME);
+        topicService.addTopicToCase(CASE_UUID, TOPIC_UUID, TOPIC_NAME);
 
         verify(topicDataRepository, times(1)).findByCaseUUIDAndTopicUUID(CASE_UUID, TOPIC_UUID);
         verify(topicDataRepository, times(1)).save(any());
@@ -47,11 +47,11 @@ public class TopicServiceTest {
     @Test
     public void shouldDeleteTopicFromCase() {
 
-        Topic topic = new Topic(1, CASE_UUID, "Topic1", TOPIC_UUID, LocalDate.now(), null, Boolean.FALSE);
+        Topic topic = new Topic(CASE_UUID, "Topic1", TOPIC_UUID);
 
         when(topicDataRepository.findByCaseUUIDAndTopicUUID(CASE_UUID, TOPIC_UUID)).thenReturn(topic);
 
-        topicDataService.deleteTopicFromCase(CASE_UUID,TOPIC_UUID);
+        topicService.deleteTopicFromCase(CASE_UUID, TOPIC_UUID);
 
         verify(topicDataRepository, times(1)).findByCaseUUIDAndTopicUUID(CASE_UUID, TOPIC_UUID);
         verify(topicDataRepository, times(1)).save(any());
