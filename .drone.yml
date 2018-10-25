@@ -94,7 +94,7 @@ pipeline:
        - artifactory_username
        - artifactory_password
     commands:    
-      - cd /hocs-serenity-automation
+      - cd hocs-serenity-automation
       - sh bin/smoke-tests.sh
     when:
       event: deployment
