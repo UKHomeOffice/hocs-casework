@@ -86,7 +86,9 @@ pipeline:
        - artifactory_username
        - artifactory_password
     commands:
-      - sh bin/smoke-tests.sh
+      - ls
+      - pwd
+      - sh ./bin/smoke-tests.sh
     when:
       event: deployment
       environment: [dev, qa]
