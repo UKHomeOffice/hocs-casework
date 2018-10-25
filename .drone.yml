@@ -80,6 +80,17 @@ pipeline:
       branch: master
       event: [push, tag]
 
+  execute-tests:
+    image: quay.io/ukhomeofficedigital/hocs-serenity-automation
+    secrets:
+       - artifactory_username
+       - artifactory_password
+    commands:
+      - sh bin/smoke-tests.sh
+    when:
+      event: deployment
+      environment: [qa]
+
   deployment:
     image: quay.io/ukhomeofficedigital/kd:v0.8.0
     environment:
@@ -142,3 +153,19 @@ services:
       AWS_ACCESS_KEY_ID: UNSET
       AWS_SECRET_ACCESS_KEY: UNSET
       AWS_DEFAULT_REGION: 'eu-west-2'
+  selenium:
+    image: selenium/hub
+
+  chrome:
+    image: selenium/node-chrome
+    environment:
+      HUB_PORT_4444_TCP_ADDR: selenium
+      HUB_PORT_4444_TCP_PORT: "4444"
+      DISPLAY: ":99.0"
+
+  firefox:
+    image: selenium/node-firefox
+    environment:
+      HUB_PORT_4444_TCP_ADDR: selenium
+      HUB_PORT_4444_TCP_PORT: "4444"
+      DISPLAY: ":98.0"
