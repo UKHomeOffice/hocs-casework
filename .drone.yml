@@ -89,7 +89,7 @@ pipeline:
       - sh bin/smoke-tests.sh
     when:
       event: deployment
-      environment: [qa]
+      environment: [dev, qa]
 
   deployment:
     image: quay.io/ukhomeofficedigital/kd:v0.8.0
