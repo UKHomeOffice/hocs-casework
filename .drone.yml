@@ -88,7 +88,7 @@ pipeline:
     commands:
       - ls
       - pwd
-      - sh ./bin/smoke-tests.sh
+      - sh /app/bin/smoke-tests.sh
     when:
       event: deployment
       environment: [dev, qa]
