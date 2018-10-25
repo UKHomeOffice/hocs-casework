@@ -81,14 +81,13 @@ pipeline:
       event: [push, tag]
 
   execute-tests:
-    image: quay.io/ukhomeofficedigital/hocs-serenity-automation
+    image: quay.io/ukhomeofficedigital/openjdk8
     secrets:
        - artifactory_username
        - artifactory_password
     commands:
-      - ls
-      - pwd
-      - cd /app
+      - git clone https://github.com/UKHomeOffice/hocs-serenity-automation.git      
+      - cd /hocs-serenity-automation
       - sh bin/smoke-tests.sh
     when:
       event: deployment
