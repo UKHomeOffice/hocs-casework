@@ -64,7 +64,7 @@ public class Stage implements Serializable {
     @Column(name = "data", insertable = false)
     private String data;
 
-    public Stage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID) {
+    public Stage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID, StageStatusType stageStatusType) {
         if (caseUUID == null || stageType == null || teamUUID == null) {
             throw new EntityCreationException("Cannot create Stage(%s, %s, %s, %s).", caseUUID, stageType, teamUUID, userUUID);
         }
@@ -72,7 +72,7 @@ public class Stage implements Serializable {
         this.uuid = UUID.randomUUID();
         this.created = LocalDateTime.now();
         this.type = stageType.toString();
-        this.status = StageStatusType.CREATED.toString();
+        this.status = stageStatusType.toString();
         this.caseUUID = caseUUID;
         this.teamUUID = teamUUID;
         this.userUUID = userUUID;

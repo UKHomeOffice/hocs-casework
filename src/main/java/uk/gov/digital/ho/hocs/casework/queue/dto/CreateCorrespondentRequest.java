@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseContext;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCommand;
-import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentType;
 
 import java.util.UUID;
@@ -20,6 +19,8 @@ public class CreateCorrespondentRequest extends HocsCommand {
     static final String CREATE_CORRESPONDENT_COMMAND = "create_correspondent_command";
 
     private UUID caseUUID;
+
+    private CorrespondentType type;
 
     private String fullname;
 
@@ -37,11 +38,12 @@ public class CreateCorrespondentRequest extends HocsCommand {
 
     private String email;
 
-    private CorrespondentType type;
+    private String reference;
 
     @JsonCreator
     public CreateCorrespondentRequest(
             @JsonProperty(value = "caseUUID", required = true) UUID caseUUID,
+            @JsonProperty(value = "type", required = true) CorrespondentType correspondentType,
             @JsonProperty("fullname") String fullname,
             @JsonProperty("postcode") String postcode,
             @JsonProperty("address1") String address1,
@@ -50,9 +52,10 @@ public class CreateCorrespondentRequest extends HocsCommand {
             @JsonProperty("country") String country,
             @JsonProperty("telephone") String telephone,
             @JsonProperty("email") String email,
-            @JsonProperty(value = "type", required = true) CorrespondentType correspondentType) {
+            @JsonProperty("reference") String reference) {
         super(CREATE_CORRESPONDENT_COMMAND);
         this.caseUUID = caseUUID;
+        this.type = correspondentType;
         this.fullname = fullname;
         this.postcode = postcode;
         this.address1 = address1;
@@ -61,27 +64,13 @@ public class CreateCorrespondentRequest extends HocsCommand {
         this.country = country;
         this.telephone = telephone;
         this.email = email;
-        this.type = correspondentType;
-    }
-
-    public static CreateCorrespondentRequest from(Correspondent correspondent, CorrespondentType correspondentType) {
-        return new CreateCorrespondentRequest(
-                correspondent.getUuid(),
-                correspondent.getFullName(),
-                correspondent.getPostcode(),
-                correspondent.getAddress1(),
-                correspondent.getAddress2(),
-                correspondent.getAddress3(),
-                correspondent.getCountry(),
-                correspondent.getTelephone(),
-                correspondent.getEmail(),
-                correspondentType);
+        this.reference = reference;
     }
 
     @Override
     public void execute(HocsCaseContext hocsCaseContext) {
         initialiseDependencies(hocsCaseContext);
-        correspondentService.createCorrespondent(caseUUID, fullname, postcode, address1, address2, address3, country, telephone, email, type);
+        correspondentService.createCorrespondent(caseUUID, type, fullname, postcode, address1, address2, address3, country, telephone, email, reference);
     }
 
 }

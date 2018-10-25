@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -21,7 +23,7 @@ public class StageDto {
     @JsonProperty("caseType")
     private CaseDataType caseType;
 
-    @JsonProperty("data")
+    @JsonRawValue
     private String data;
 
     @JsonProperty("stageUUID")
@@ -34,7 +36,7 @@ public class StageDto {
     private StageType stageType;
 
     @JsonProperty("deadline")
-    private String deadline;
+    private LocalDate deadline;
 
     @JsonProperty("caseUUID")
     private UUID caseUUID;

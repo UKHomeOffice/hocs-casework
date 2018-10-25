@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,7 +26,7 @@ public class CaseDataDto {
     @JsonProperty("reference")
     private String reference;
 
-    @JsonProperty("data")
+    @JsonRawValue
     private String data;
 
     public static CaseDataDto from(CaseData caseData) {

@@ -2,9 +2,6 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
 
-import javax.persistence.Entity;
-
-@Entity
 @Getter
 public class Address {
 

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageStatusType;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 
@@ -24,10 +25,10 @@ public class StageService {
     }
 
     @Transactional
-    public Stage createStage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID) {
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID);
+    public Stage createStage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID, StageStatusType stageStatusType) {
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, stageStatusType);
         stageRepository.save(stage);
-        log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getType(), stage.getCaseUUID());
+        log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID());
         return stage;
     }
 
@@ -43,9 +44,9 @@ public class StageService {
     }
 
     @Transactional
-    public void allocateStage(UUID caseUUID, UUID stageUUID, UUID teamUUID, UUID userUUID) {
-        stageRepository.allocate(caseUUID, stageUUID, teamUUID, userUUID);
-        log.info("Allocated Stage: {}, User {}, Team {} for Case {}", stageUUID, userUUID, teamUUID, caseUUID);
+    public void updateStage(UUID caseUUID, UUID stageUUID, UUID teamUUID, UUID userUUID, StageStatusType stageStatusType) {
+        stageRepository.update(caseUUID, stageUUID, teamUUID, userUUID, stageStatusType);
+        log.info("Updated Stage: {} ({}), User {}, Team {} for Case {}", stageUUID, stageStatusType, userUUID, teamUUID, caseUUID);
     }
 
     public Set<Stage> getActiveStagesByUserUUID(UUID userUUID) {

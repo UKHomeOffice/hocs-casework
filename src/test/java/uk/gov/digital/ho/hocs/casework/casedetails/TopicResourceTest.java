@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.api.TopicResource;
 import uk.gov.digital.ho.hocs.casework.api.TopicService;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
-import uk.gov.digital.ho.hocs.casework.queue.dto.AddTopicToCaseRequest;
+import uk.gov.digital.ho.hocs.casework.queue.dto.CreateTopicRequest;
 
 import java.util.UUID;
 
@@ -39,7 +39,7 @@ public class TopicResourceTest {
 
         when(topicService.addTopicToCase(CASE_UUID, TOPIC_UUID, TOPIC_NAME)).thenReturn(new Topic(UUID.randomUUID(), "anyName", UUID.randomUUID()));
 
-        AddTopicToCaseRequest request = new AddTopicToCaseRequest(TOPIC_UUID,"TOPIC" );
+        CreateTopicRequest request = new CreateTopicRequest(TOPIC_UUID, "TOPIC");
 
         ResponseEntity response = topicResource.addTopicToCase(CASE_UUID, request);
 

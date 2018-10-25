@@ -12,7 +12,7 @@ import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.StageDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageOwnerRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
@@ -61,7 +61,7 @@ public class StageResourceTest {
 
         UUID uuid = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
-        UpdateStageOwnerRequest request = new UpdateStageOwnerRequest(teamUUID, null);
+        UpdateStageRequest request = new UpdateStageRequest(teamUUID, null);
 
         doNothing().when(stageService).allocateStage(uuid, uuid, teamUUID, null);
 

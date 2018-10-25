@@ -19,6 +19,6 @@ public class TopicDto {
     private UUID value;
 
     public static TopicDto from(Topic topic) {
-        return new TopicDto(topic.getTopicName(), topic.getTopicUUID());
+        return new TopicDto(topic.getTopicName(), topic.getTopicNameUUID());
     }
 }

@@ -35,15 +35,9 @@ class StageResource {
         return ResponseEntity.ok(StageDto.from(stage));
     }
 
-    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/owner")
-    public ResponseEntity updateOwner(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageOwnerRequest updateStageOwnerRequest) {
-        stageService.allocateStage(caseUUID, stageUUID, updateStageOwnerRequest.getTeamUUID(), updateStageOwnerRequest.getUserUUID());
-        return ResponseEntity.ok().build();
-    }
-
-    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/status")
-    public ResponseEntity updateStatus(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageOwnerRequest updateStageOwnerRequest) {
-        stageService.allocateStage(caseUUID, stageUUID, updateStageOwnerRequest.getTeamUUID(), updateStageOwnerRequest.getUserUUID());
+    @PatchMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
+    public ResponseEntity updateOwner(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageRequest updateStageRequest) {
+        stageService.updateStage(caseUUID, stageUUID, updateStageRequest.getTeamUUID(), updateStageRequest.getUserUUID(), updateStageRequest.getStatus());
         return ResponseEntity.ok().build();
     }
 

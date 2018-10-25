@@ -43,7 +43,7 @@ public class CorrespondentService {
     }
 
     @Transactional
-    public void createCorrespondent(UUID caseUUID, CorrespondentType correspondentType, String fullname, String postcode, String address1, String address2, String address3, String country, String telephone, String email) {
+    public void createCorrespondent(UUID caseUUID, CorrespondentType correspondentType, String fullname, String postcode, String address1, String address2, String address3, String country, String telephone, String email, String reference) {
         Address address = new Address(postcode,
                 address1,
                 address2,
@@ -55,7 +55,8 @@ public class CorrespondentService {
                 fullname,
                 address,
                 telephone,
-                email);
+                email,
+                reference);
 
         correspondentRepository.save(correspondent);
         log.info("Created Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID);

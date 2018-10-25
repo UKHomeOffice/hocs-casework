@@ -25,11 +25,11 @@ public class CaseData {
 
     @Getter
     @Column(name = "uuid")
-    private UUID uuid;
+    private UUID uuid = UUID.randomUUID();
 
     @Getter
     @Column(name = "created")
-    private LocalDateTime created;
+    private LocalDateTime created = LocalDateTime.now();
 
     @Getter
     @Column(name = "type")
@@ -41,21 +41,19 @@ public class CaseData {
 
     @Getter
     @Column(name = "data")
-    private String data;
+    private String data = "{}";
 
     @Column(name = "deleted")
     private boolean deleted = Boolean.FALSE;
 
-    public CaseData(CaseDataType type, Long caseNumber) {
+    public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper) {
         if (type == null || caseNumber == null) {
             throw new EntityCreationException("Cannot create InputData(%s,%s).", type, caseNumber);
         }
 
-        this.uuid = UUID.randomUUID();
-        this.created = LocalDateTime.now();
         this.type = type.toString();
         this.reference = String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
-        this.data = "{}";
+        updateData(data, objectMapper);
     }
 
     public String getTypeString() {

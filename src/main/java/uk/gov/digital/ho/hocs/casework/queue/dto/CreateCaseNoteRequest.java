@@ -10,13 +10,13 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseNoteType;
 
 import java.util.UUID;
 
-import static uk.gov.digital.ho.hocs.casework.queue.dto.AddCaseNoteDataRequest.ADD_CASE_NOTE_DATA_COMMAND;
+import static uk.gov.digital.ho.hocs.casework.queue.dto.CreateCaseNoteRequest.ADD_CASE_NOTE_DATA_COMMAND;
 
 @Getter
 @JsonTypeName(ADD_CASE_NOTE_DATA_COMMAND)
-public class AddCaseNoteDataRequest extends HocsCommand {
+public class CreateCaseNoteRequest extends HocsCommand {
 
-    static final String ADD_CASE_NOTE_DATA_COMMAND = "add_case_note_data_command";
+    static final String ADD_CASE_NOTE_DATA_COMMAND = "create_case_note_command";
 
     private UUID caseUUID;
 
@@ -25,9 +25,9 @@ public class AddCaseNoteDataRequest extends HocsCommand {
     private String caseNote;
 
     @JsonCreator
-    public AddCaseNoteDataRequest(@JsonProperty(value = "caseUUID", required = true) UUID caseUUID,
-                                  @JsonProperty(value = "caseNoteType", required = true) CaseNoteType caseNoteType,
-                                  @JsonProperty(value = "casenote", required = true) String caseNote) {
+    public CreateCaseNoteRequest(@JsonProperty(value = "caseUUID", required = true) UUID caseUUID,
+                                 @JsonProperty(value = "caseNoteType", required = true) CaseNoteType caseNoteType,
+                                 @JsonProperty(value = "casenote", required = true) String caseNote) {
         super(ADD_CASE_NOTE_DATA_COMMAND);
         this.caseUUID = caseUUID;
         this.caseNoteType = caseNoteType;

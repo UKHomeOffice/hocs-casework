@@ -14,7 +14,7 @@ import uk.gov.digital.ho.hocs.casework.domain.HocsCaseDomain;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.queue.CaseConsumer;
-import uk.gov.digital.ho.hocs.casework.queue.dto.UpdateInputDataRequest;
+import uk.gov.digital.ho.hocs.casework.queue.dto.UpdateCaseDataRequest;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -50,7 +50,7 @@ public class CaseConsumerTest extends CamelTestSupport {
     @Test
     public void shouldCallAddDocumentToCaseService() throws JsonProcessingException, EntityCreationException, EntityNotFoundException {
 
-        UpdateInputDataRequest request = new UpdateInputDataRequest(UUID.randomUUID(), new HashMap<>());
+        UpdateCaseDataRequest request = new UpdateCaseDataRequest(UUID.randomUUID(), new HashMap<>());
 
         String json = mapper.writeValueAsString(request);
         template.sendBody(caseQueue, json);
@@ -70,7 +70,7 @@ public class CaseConsumerTest extends CamelTestSupport {
     @Test
     public void shouldTransferToDLQOnFailure() throws JsonProcessingException, InterruptedException, EntityCreationException, EntityNotFoundException {
 
-        UpdateInputDataRequest request = new UpdateInputDataRequest(UUID.randomUUID(), new HashMap<>());
+        UpdateCaseDataRequest request = new UpdateCaseDataRequest(UUID.randomUUID(), new HashMap<>());
 
         doThrow(EntityCreationException.class)
                 .when(mockDataService).updateCaseData(any(), any());

@@ -26,7 +26,7 @@ class CaseDataResource {
 
     @PostMapping(value = "/case", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
-        CaseData caseData = caseDataService.createCase(request.getType());
+        CaseData caseData = caseDataService.createCase(request.getType(), request.getData());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 

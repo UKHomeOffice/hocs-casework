@@ -4,7 +4,7 @@ import lombok.Getter;
 
 public enum StageStatusType {
     CREATED("CREATED"),
-    ALLOCATED("ALLOCATED"),
+    UPDATED("UPDATED"),
     REJECTED("REJECTED"),
     COMPLETE("COMPLETE");
 
