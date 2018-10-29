@@ -50,6 +50,7 @@ public class AllocatedAspectTest {
     @Before
     public void setup() {
 
+
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setMethod("GET");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
