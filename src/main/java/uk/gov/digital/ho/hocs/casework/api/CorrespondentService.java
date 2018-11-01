@@ -43,6 +43,18 @@ public class CorrespondentService {
     }
 
     @Transactional
+    public Correspondent getPrimaryCorrespondent(UUID caseUUID) {
+        Correspondent correspondent = correspondentRepository.getPrimaryCorrespondent(caseUUID);
+        if (correspondent != null) {
+            log.info("Got Primary Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID);
+            return correspondent;
+        } else {
+            throw new EntityNotFoundException("Primary Topic %s not found for Case: %s", correspondent.getUuid(), caseUUID);
+        }
+    }
+
+
+    @Transactional
     public void createCorrespondent(UUID caseUUID, CorrespondentType correspondentType, String fullname, String postcode, String address1, String address2, String address3, String country, String telephone, String email, String reference) {
         Address address = new Address(postcode,
                 address1,

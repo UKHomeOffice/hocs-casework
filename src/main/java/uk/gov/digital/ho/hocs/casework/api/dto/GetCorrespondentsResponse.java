@@ -18,7 +18,7 @@ public class GetCorrespondentsResponse {
     public static GetCorrespondentsResponse from(Set<Correspondent> correspondentData) {
         Set<CorrespondentDto> correspondents = correspondentData
                 .stream()
-                .map(cd -> CorrespondentDto.from(cd))
+                .map(CorrespondentDto::from)
                 .collect(Collectors.toSet());
 
         return new GetCorrespondentsResponse(correspondents);

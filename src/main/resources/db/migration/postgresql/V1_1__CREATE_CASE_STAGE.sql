@@ -7,13 +7,16 @@ DROP TABLE IF EXISTS case_data;
 
 CREATE TABLE IF NOT EXISTS case_data
 (
-  id        BIGSERIAL PRIMARY KEY,
-  uuid      UUID      NOT NULL,
-  created   TIMESTAMP NOT NULL,
-  type      TEXT      NOT NULL,
-  reference TEXT      NOT NULL,
-  data      JSONB,
-  deleted   BOOLEAN   NOT NULL DEFAULT FALSE,
+  id                    BIGSERIAL PRIMARY KEY,
+  uuid                  UUID      NOT NULL,
+  created               TIMESTAMP NOT NULL,
+  type                  TEXT      NOT NULL,
+  reference             TEXT      NOT NULL,
+  data                  JSONB,
+  primary_topic         UUID,
+  primary_correspondent UUID,
+  primary_response      UUID,
+  deleted               BOOLEAN   NOT NULL DEFAULT FALSE,
 
   CONSTRAINT case_uuid_idempotent UNIQUE (uuid),
   CONSTRAINT case_ref_idempotent UNIQUE (reference)

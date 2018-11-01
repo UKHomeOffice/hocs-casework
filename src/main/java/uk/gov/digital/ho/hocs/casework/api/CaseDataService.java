@@ -20,7 +20,6 @@ public class CaseDataService {
     private final CaseDataRepository caseDataRepository;
     private final ObjectMapper objectMapper;
 
-
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository, ObjectMapper objectMapper) {
         this.caseDataRepository = caseDataRepository;
@@ -48,18 +47,18 @@ public class CaseDataService {
 
     @Transactional
     public void updateCaseData(UUID caseUUID, Map<String, String> data) {
-        CaseData caseData = getCase(caseUUID);
-        caseData.updateData(data, objectMapper);
-        caseDataRepository.save(caseData);
-        log.info("Updated Case Data for Case: {}", caseUUID);
-
+        if (data != null) {
+            CaseData caseData = getCase(caseUUID);
+            caseData.update(data, objectMapper);
+            caseDataRepository.save(caseData);
+            log.info("Updated Case Data for Case: {}", caseUUID);
+        }
     }
 
     @Transactional
     public void deleteCase(UUID caseUUID) {
-        caseDataRepository.delete(caseUUID);
+        caseDataRepository.deleteCase(caseUUID);
         log.info("Deleted Case: {}", caseUUID);
-
 
     }
 }

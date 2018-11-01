@@ -37,7 +37,7 @@ class CaseDataResource {
     }
 
     @DeleteMapping(value = "/case/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CaseDataDto> deleteCase(@PathVariable UUID caseUUID) {
+    public ResponseEntity deleteCase(@PathVariable UUID caseUUID) {
         caseDataService.deleteCase(caseUUID);
         return ResponseEntity.ok().build();
     }

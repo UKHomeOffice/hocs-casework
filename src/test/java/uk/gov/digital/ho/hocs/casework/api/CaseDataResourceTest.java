@@ -1,5 +1,6 @@
-package uk.gov.digital.ho.hocs.casework.casedetails;
+package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,14 +8,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.CaseDataResource;
-import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +28,11 @@ public class CaseDataResourceTest {
 
     private CaseDataResource caseDataResource;
 
+    private final long caseID = 12345L;
+    private final CaseDataType caseDataType = CaseDataType.MIN;
+    private final HashMap<String, String> data = new HashMap<>();
     private final UUID uuid = UUID.randomUUID();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setUp() {
@@ -38,15 +42,14 @@ public class CaseDataResourceTest {
     @Test
     public void shouldCreateCase() {
 
-        CaseDataType caseDataType = CaseDataType.MIN;
-        CaseData caseData = new CaseData(CaseDataType.MIN, 0l);
-        CreateCaseRequest request = new CreateCaseRequest(caseDataType);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper);
+        CreateCaseRequest request = new CreateCaseRequest(caseDataType, data);
 
-        when(caseDataService.createCase(caseDataType)).thenReturn(caseData);
+        when(caseDataService.createCase(caseDataType, data)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseDataType);
+        verify(caseDataService, times(1)).createCase(caseDataType, data);
 
         verifyNoMoreInteractions(caseDataService);
 
@@ -57,14 +60,28 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCase() {
 
-        CaseDataType caseDataType = CaseDataType.MIN;
-        CaseData caseData = new CaseData(CaseDataType.MIN, 0l);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
         ResponseEntity<CaseDataDto> response = caseDataResource.getCase(uuid);
 
         verify(caseDataService, times(1)).getCase(uuid);
+
+        verifyNoMoreInteractions(caseDataService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldDeleteCase() {
+
+        doNothing().when(caseDataService).deleteCase(uuid);
+
+        ResponseEntity response = caseDataResource.deleteCase(uuid);
+
+        verify(caseDataService, times(1)).deleteCase(uuid);
 
         verifyNoMoreInteractions(caseDataService);
 

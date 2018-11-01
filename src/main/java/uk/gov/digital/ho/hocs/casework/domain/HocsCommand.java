@@ -8,8 +8,8 @@ import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.api.*;
 import uk.gov.digital.ho.hocs.casework.queue.dto.CreateCaseNoteRequest;
 import uk.gov.digital.ho.hocs.casework.queue.dto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.queue.dto.CreateTopicRequest;
 import uk.gov.digital.ho.hocs.casework.queue.dto.UpdateCaseDataRequest;
-
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -19,6 +19,7 @@ import uk.gov.digital.ho.hocs.casework.queue.dto.UpdateCaseDataRequest;
 @JsonSubTypes({ // Keep this list alphabetical
         @JsonSubTypes.Type(value = CreateCaseNoteRequest.class),
         @JsonSubTypes.Type(value = CreateCorrespondentRequest.class),
+        @JsonSubTypes.Type(value = CreateTopicRequest.class),
         @JsonSubTypes.Type(value = UpdateCaseDataRequest.class)
 })
 

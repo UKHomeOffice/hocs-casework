@@ -25,14 +25,6 @@ public class StageService {
     }
 
     @Transactional
-    public Stage createStage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID, StageStatusType stageStatusType) {
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, stageStatusType);
-        stageRepository.save(stage);
-        log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID());
-        return stage;
-    }
-
-    @Transactional
     public Stage getStage(UUID caseUUID, UUID stageUUID) {
         Stage stage = stageRepository.findByUuid(caseUUID, stageUUID);
         if (stage != null) {
@@ -44,17 +36,31 @@ public class StageService {
     }
 
     @Transactional
+    public Stage createStage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID, StageStatusType stageStatusType) {
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, stageStatusType);
+        stageRepository.save(stage);
+        log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID());
+        return stage;
+    }
+
+    @Transactional
     public void updateStage(UUID caseUUID, UUID stageUUID, UUID teamUUID, UUID userUUID, StageStatusType stageStatusType) {
-        stageRepository.update(caseUUID, stageUUID, teamUUID, userUUID, stageStatusType);
+        Stage stage = getStage(caseUUID, stageUUID);
+        stage.update(teamUUID, userUUID, stageStatusType);
+        stageRepository.save(stage);
         log.info("Updated Stage: {} ({}), User {}, Team {} for Case {}", stageUUID, stageStatusType, userUUID, teamUUID, caseUUID);
     }
 
     public Set<Stage> getActiveStagesByUserUUID(UUID userUUID) {
-        return stageRepository.findAllByUserUID(userUUID);
+        return stageRepository.findAllByUserUUID(userUUID);
     }
 
     public Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
         return stageRepository.findAllByTeamUUID(teamUUID);
+    }
+
+    public Set<Stage> getActiveStages() {
+        return stageRepository.findAll();
     }
 
 }

@@ -25,7 +25,9 @@ public class CaseNoteServiceTest {
 
     private CaseNoteService caseNoteService;
 
-    private UUID uuid = UUID.randomUUID();
+    private final UUID caseUUID = UUID.randomUUID();
+    private final CaseNoteType caseNoteType = CaseNoteType.MANUAL;
+    private final String text = "CASE_NOTE";
 
     @Before
     public void setUp() {
@@ -33,31 +35,15 @@ public class CaseNoteServiceTest {
     }
 
     @Test
-    public void shouldCreateCaseWithValidParams() throws EntityCreationException {
-
-        caseNoteService.createCaseNote(uuid, CaseNoteType.MANUAL, "CASE NOTE");
-
-        verify(caseNoteRepository, times(1)).save(any());
-
-        verifyNoMoreInteractions(caseNoteRepository);
-    }
-
-    @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateCaseMissingTypeException() throws EntityCreationException {
-        caseNoteService.createCaseNote(null, null, null);
-    }
-
-
-    @Test
-    public void shouldGetCaseWithValidParams() throws EntityNotFoundException {
+    public void shouldGetCase() throws EntityNotFoundException {
         HashSet<CaseNote> caseNoteData = new HashSet<>();
-        caseNoteData.add(new CaseNote(uuid, CaseNoteType.MANUAL, "Case Note"));
+        caseNoteData.add(new CaseNote(caseUUID, CaseNoteType.MANUAL, "Case Note"));
 
-        when(caseNoteRepository.findAllByCaseUUID(uuid)).thenReturn(caseNoteData);
+        when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(caseNoteData);
 
-        caseNoteService.getCaseNotesForCase(uuid);
+        caseNoteService.getCaseNotes(caseUUID);
 
-        verify(caseNoteRepository, times(1)).findAllByCaseUUID(uuid);
+        verify(caseNoteRepository, times(1)).findAllByCaseUUID(caseUUID);
 
         verifyNoMoreInteractions(caseNoteRepository);
     }
@@ -65,24 +51,23 @@ public class CaseNoteServiceTest {
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotGetCaseWithValidParamsNotFoundException() {
 
-        when(caseNoteRepository.findAllByCaseUUID(uuid)).thenReturn(null);
+        when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(null);
 
-        caseNoteService.getCaseNotesForCase(uuid);
+        caseNoteService.getCaseNotes(caseUUID);
     }
 
     @Test
     public void shouldNotGetCaseWithValidParamsNotFound() {
-        UUID uuid = UUID.randomUUID();
 
-        when(caseNoteRepository.findAllByCaseUUID(uuid)).thenReturn(null);
+        when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(null);
 
         try {
-            caseNoteService.getCaseNotesForCase(uuid);
+            caseNoteService.getCaseNotes(caseUUID);
         } catch (EntityNotFoundException e) {
             // Do nothing.
         }
 
-        verify(caseNoteRepository, times(1)).findAllByCaseUUID(uuid);
+        verify(caseNoteRepository, times(1)).findAllByCaseUUID(caseUUID);
 
         verifyNoMoreInteractions(caseNoteRepository);
 
@@ -91,9 +76,38 @@ public class CaseNoteServiceTest {
     @Test(expected = EntityNotFoundException.class)
     public void shouldNotGetCaseMissingUUIDException() throws EntityNotFoundException {
 
-        caseNoteService.getCaseNotesForCase(null);
+        caseNoteService.getCaseNotes(null);
 
     }
 
+    @Test
+    public void shouldNotGetCaseMissingUUID() {
+
+        try {
+            caseNoteService.getCaseNotes(null);
+        } catch (EntityNotFoundException e) {
+            // Do nothing.
+        }
+
+        verify(caseNoteRepository, times(1)).findAllByCaseUUID(caseUUID);
+
+        verifyNoMoreInteractions(caseNoteRepository);
+
+    }
+
+    @Test
+    public void shouldCreateCaseNote() throws EntityCreationException {
+
+        caseNoteService.createCaseNote(caseUUID, caseNoteType, text);
+
+        verify(caseNoteRepository, times(1)).save(any(CaseNote.class));
+
+        verifyNoMoreInteractions(caseNoteRepository);
+    }
+
+    @Test(expected = EntityCreationException.class)
+    public void shouldNotCreateCaseMissingTypeException() throws EntityCreationException {
+        caseNoteService.createCaseNote(null, null, null);
+    }
 
 }

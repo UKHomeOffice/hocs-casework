@@ -29,13 +29,25 @@ public class CaseDataDto {
     @JsonRawValue
     private String data;
 
+    @JsonProperty("primaryTopic")
+    private String primaryTopic;
+
+    @JsonProperty("primaryCorrespondent")
+    private String primaryCorrespondent;
+
+    @JsonProperty("primaryResponse")
+    private String primaryResponse;
+
     public static CaseDataDto from(CaseData caseData) {
 
         return new CaseDataDto(
                 caseData.getUuid(),
                 caseData.getCreated(),
-                caseData.getTypeString(),
+                caseData.getType(),
                 caseData.getReference(),
-                caseData.getData());
+                caseData.getData(),
+                caseData.getPrimaryTopic(),
+                caseData.getPrimaryCorrespondent(),
+                caseData.getPrimaryResponse());
     }
 }

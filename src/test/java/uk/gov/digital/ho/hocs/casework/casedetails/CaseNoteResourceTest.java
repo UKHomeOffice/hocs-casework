@@ -35,11 +35,11 @@ public class CaseNoteResourceTest {
     @Test
     public void shouldGetCase() {
 
-        when(caseNoteService.getCaseNotesForCase(uuid)).thenReturn(new HashSet<>());
+        when(caseNoteService.getCaseNotes(uuid)).thenReturn(new HashSet<>());
 
         ResponseEntity<GetCaseNotesResponse> response = caseNoteResource.getCaseNotesForCase(uuid);
 
-        verify(caseNoteService, times(1)).getCaseNotesForCase(uuid);
+        verify(caseNoteService, times(1)).getCaseNotes(uuid);
 
         verifyNoMoreInteractions(caseNoteService);
 

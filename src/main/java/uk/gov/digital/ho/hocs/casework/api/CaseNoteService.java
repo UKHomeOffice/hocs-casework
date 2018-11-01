@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNoteType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseNoteRepository;
@@ -25,8 +26,12 @@ public class CaseNoteService {
     @Transactional
     public Set<CaseNote> getCaseNotes(UUID caseUUID) {
         Set<CaseNote> caseNotes = caseNoteRepository.findAllByCaseUUID(caseUUID);
-        log.info("Got {} CaseNotes for Case: {}", caseNotes.size(), caseUUID);
-        return caseNotes;
+        if (caseNotes != null) {
+            log.info("Got {} CaseNotes for Case: {}", caseNotes.size(), caseUUID);
+            return caseNotes;
+        } else {
+            throw new EntityNotFoundException("CaseNotes for Case UUID: %s not found!", caseUUID);
+        }
     }
 
     @Transactional

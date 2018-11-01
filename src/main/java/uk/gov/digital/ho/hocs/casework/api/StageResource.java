@@ -25,7 +25,7 @@ class StageResource {
 
     @PostMapping(value = "/case/{caseUUID}/stage")
     public ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
-        Stage stage = stageService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getUserUUID());
+        Stage stage = stageService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getUserUUID(), request.getStatus());
         return ResponseEntity.ok(CreateStageResponse.from(stage));
     }
 
@@ -36,7 +36,7 @@ class StageResource {
     }
 
     @PatchMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
-    public ResponseEntity updateOwner(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageRequest updateStageRequest) {
+    public ResponseEntity updateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageRequest updateStageRequest) {
         stageService.updateStage(caseUUID, stageUUID, updateStageRequest.getTeamUUID(), updateStageRequest.getUserUUID(), updateStageRequest.getStatus());
         return ResponseEntity.ok().build();
     }
@@ -48,8 +48,17 @@ class StageResource {
     }
 
     @GetMapping(value = "/stage/owner/team/{teamUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<GetStagesResponse> getActiveStagesByTeamUUIDs(@PathVariable UUID teamUUID) {
+    public ResponseEntity<GetStagesResponse> getActiveStagesByTeamUUID(@PathVariable UUID teamUUID) {
         Set<Stage> activeStages = stageService.getActiveStagesByTeamUUID(teamUUID);
+        return ResponseEntity.ok(GetStagesResponse.from(activeStages));
+    }
+
+    /*
+    Temp code as call should move to workflow or somewhere that can work out the teams.
+     */
+    @GetMapping(value = "/stage/active", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<GetStagesResponse> getActiveStages() {
+        Set<Stage> activeStages = stageService.getActiveStages();
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 

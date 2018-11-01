@@ -39,6 +39,12 @@ public class CorrespondentResource {
         return ResponseEntity.ok(CorrespondentDto.from(correspondent));
     }
 
+    @GetMapping(value = "/case/{caseUUID}/correspondent/primary", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<CorrespondentDto> getPrimaryCorrespondent(@PathVariable UUID caseUUID) {
+        Correspondent correspondent = correspondentService.getPrimaryCorrespondent(caseUUID);
+        return ResponseEntity.ok(CorrespondentDto.from(correspondent));
+    }
+
     @DeleteMapping(value = "/case/{caseUUID}/correspondent/{correspondentUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CorrespondentDto> deleteCorrespondentFromCase(@PathVariable UUID caseUUID, @PathVariable UUID correspondentUUID) {
         correspondentService.deleteCorrespondent(caseUUID, correspondentUUID);

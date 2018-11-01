@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 
 import javax.persistence.*;
@@ -44,12 +43,10 @@ public class Stage implements Serializable {
     private UUID caseUUID;
 
     @Getter
-    @Setter
     @Column(name = "team_uuid")
     private UUID teamUUID;
 
     @Getter
-    @Setter
     @Column(name = "user_uuid")
     private UUID userUUID;
 
@@ -65,17 +62,13 @@ public class Stage implements Serializable {
     private String data;
 
     public Stage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID, StageStatusType stageStatusType) {
-        if (caseUUID == null || stageType == null || teamUUID == null) {
-            throw new EntityCreationException("Cannot create Stage(%s, %s, %s, %s).", caseUUID, stageType, teamUUID, userUUID);
-        }
+        validateCreate(caseUUID, stageType);
 
         this.uuid = UUID.randomUUID();
         this.created = LocalDateTime.now();
-        this.type = stageType.toString();
-        this.status = stageStatusType.toString();
         this.caseUUID = caseUUID;
-        this.teamUUID = teamUUID;
-        this.userUUID = userUUID;
+        this.type = stageType.toString();
+        update(teamUUID, userUUID, stageStatusType);
     }
 
     public StageType getStageType() {
@@ -86,7 +79,31 @@ public class Stage implements Serializable {
         return StageStatusType.valueOf(this.status);
     }
 
-    public CaseDataType getCaseType() {
-        return CaseDataType.valueOf(this.caseType);
+    private static void validateCreate(UUID caseUUID, StageType stageType) {
+        if (caseUUID == null || stageType == null) {
+            throw new EntityCreationException("Cannot create Stage (%s, %s).", caseUUID, stageType);
+        }
+    }
+
+    private static void validateUpdate(UUID teamUUID, StageStatusType stageStatusType) {
+        if (teamUUID == null || stageStatusType == null) {
+            throw new EntityCreationException("Cannot update Stage (%s, %s).", teamUUID, stageStatusType);
+        }
+    }
+
+    public CaseDataType getCaseDataType() {
+        if (this.caseType == null) {
+            return null;
+        } else {
+            return CaseDataType.valueOf(this.caseType);
+        }
+    }
+
+    public void update(UUID teamUUID, UUID userUUID, StageStatusType stageStatusType) {
+        validateUpdate(teamUUID, stageStatusType);
+
+        this.teamUUID = teamUUID;
+        this.userUUID = userUUID;
+        this.status = stageStatusType.toString();
     }
 }

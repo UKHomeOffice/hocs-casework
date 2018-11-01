@@ -34,13 +34,19 @@ public class TopicResource {
     }
 
     @GetMapping(value = "/case/{caseUUID}/topic/{topicUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<TopicDto> getCaseTopics(@PathVariable UUID caseUUID, @PathVariable UUID topicUUID) {
+    public ResponseEntity<TopicDto> getTopic(@PathVariable UUID caseUUID, @PathVariable UUID topicUUID) {
         Topic topic = topicService.getTopic(caseUUID, topicUUID);
         return ResponseEntity.ok(TopicDto.from(topic));
     }
 
+    @GetMapping(value = "/case/{caseUUID}/topic/primary", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<TopicDto> getPrimaryTopic(@PathVariable UUID caseUUID) {
+        Topic topic = topicService.getPrimaryTopic(caseUUID);
+        return ResponseEntity.ok(TopicDto.from(topic));
+    }
+
     @DeleteMapping(value = "/case/{caseUUID}/topic/{topicUUID}", consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity deleteTopicFromCase(@PathVariable UUID caseUUID, @PathVariable UUID topicUUID) {
+    public ResponseEntity deleteTopic(@PathVariable UUID caseUUID, @PathVariable UUID topicUUID) {
         topicService.deleteTopic(caseUUID, topicUUID);
         return ResponseEntity.ok().build();
     }

@@ -27,7 +27,7 @@ public class CreateCaseNoteRequest extends HocsCommand {
     @JsonCreator
     public CreateCaseNoteRequest(@JsonProperty(value = "caseUUID", required = true) UUID caseUUID,
                                  @JsonProperty(value = "caseNoteType", required = true) CaseNoteType caseNoteType,
-                                 @JsonProperty(value = "casenote", required = true) String caseNote) {
+                                 @JsonProperty(value = "caseNote", required = true) String caseNote) {
         super(ADD_CASE_NOTE_DATA_COMMAND);
         this.caseUUID = caseUUID;
         this.caseNoteType = caseNoteType;
@@ -38,6 +38,5 @@ public class CreateCaseNoteRequest extends HocsCommand {
     public void execute(HocsCaseContext hocsCaseContext) {
         initialiseDependencies(hocsCaseContext);
         caseNoteService.createCaseNote(caseUUID, caseNoteType, caseNote);
-
     }
 }

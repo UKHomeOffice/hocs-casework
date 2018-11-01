@@ -41,6 +41,17 @@ public class TopicService {
     }
 
     @Transactional
+    public Topic getPrimaryTopic(UUID caseUUID) {
+        Topic topic = topicDataRepository.getPrimaryTopic(caseUUID);
+        if (topic != null) {
+            log.info("Got Primary Topic: {} for Case: {}", topic.getUuid(), caseUUID);
+            return topic;
+        } else {
+            throw new EntityNotFoundException("Primary Topic %s not found for Case: %s", topic.getUuid(), caseUUID);
+        }
+    }
+
+    @Transactional
     public void createTopic(UUID caseUUID, UUID topicUUID, String topicName) {
         Topic topic = new Topic(caseUUID, topicName, topicUUID);
         topicDataRepository.save(topic);

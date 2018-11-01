@@ -18,6 +18,9 @@ public interface TopicDataRepository extends CrudRepository<Topic, String> {
     @Query(value = "SELECT ato.* FROM active_topic ato JOIN active_case aca ON ato.case_uuid = aca.uuid WHERE aca.uuid = ?1 AND ato.uuid = ?2", nativeQuery = true)
     Topic findByUUID(UUID caseUUID, UUID topicUUID);
 
+    @Query(value = "SELECT ato.* FROM active_topic ato JOIN active_case aca ON ato.case_uuid = aca.uuid AND ato.uuid = aca.primary_topic WHERE aca.uuid = ?1", nativeQuery = true)
+    Topic getPrimaryTopic(UUID caseUUID);
+
     @Modifying
     @Query(value = "UPDATE topic t SET t.deleted = TRUE WHERE t.uuid = ?1", nativeQuery = true)
     int delete(UUID correspondentUUID);

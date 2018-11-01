@@ -51,7 +51,7 @@ public class StageDto {
     public static StageDto from(Stage stage) {
         return new StageDto(
                 stage.getCaseReference(),
-                stage.getCaseType(),
+                stage.getCaseDataType(),
                 stage.getData(),
                 stage.getUuid(),
                 stage.getCreated(),
