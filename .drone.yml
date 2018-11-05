@@ -114,7 +114,7 @@ pipeline:
       - ./deploy.sh
     when:
       event: deployment
-      environment: [dev, qa]
+      environment: [dev, qa, demo]
 
   deploy-to-prod:
     image: quay.io/ukhomeofficedigital/kd:v0.8.0
