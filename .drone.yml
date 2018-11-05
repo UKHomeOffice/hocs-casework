@@ -108,6 +108,7 @@ pipeline:
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
       - hocs_casework_dev
+      - hocs_casework_demo
       - hocs_casework_qa
     commands:
       - cd kube-hocs-casework
