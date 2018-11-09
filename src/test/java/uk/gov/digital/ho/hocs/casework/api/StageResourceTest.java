@@ -23,11 +23,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class StageResourceTest {
 
-    @Mock
-    private StageService stageService;
-
-    private StageResource stageResource;
-
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID teamUUID = UUID.randomUUID();
     private final UUID userUUID = UUID.randomUUID();
@@ -35,6 +30,9 @@ public class StageResourceTest {
     private final LocalDate deadline = LocalDate.now();
     private final StageType stageType = StageType.DCU_MIN_MARKUP;
     private final StageStatusType statusType = StageStatusType.CREATED;
+    @Mock
+    private StageService stageService;
+    private StageResource stageResource;
 
     @Before
     public void setUp() {

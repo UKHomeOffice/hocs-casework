@@ -11,7 +11,7 @@ import java.util.UUID;
 @Repository
 public interface CaseDataRepository extends CrudRepository<CaseData, String> {
 
-    @Query(value = "SELECT nextval('case_ref')" , nativeQuery = true)
+    @Query(value = "SELECT nextval('case_ref')", nativeQuery = true)
     Long getNextSeriesId();
 
     @Query(value = "SELECT ac.* FROM active_case ac where ac.uuid = ?1", nativeQuery = true)

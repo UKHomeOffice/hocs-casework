@@ -22,13 +22,11 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CorrespondentResourceTest {
 
-    @Mock
-    private CorrespondentService correspondentService;
-
-    private CorrespondentResource correspondentResource;
-
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID correspondentUUID = UUID.randomUUID();
+    @Mock
+    private CorrespondentService correspondentService;
+    private CorrespondentResource correspondentResource;
 
     @Before
     public void setUp() {

@@ -149,8 +149,8 @@ public class CaseDataResourceIntTest {
 
     private Map<String, Object> buildCreateStageBody() {
         Map<String, String> stageData = new HashMap<>();
-        stageData.put("A","A1");
-        stageData.put("B","B1");
+        stageData.put("A", "A1");
+        stageData.put("B", "B1");
         Map<String, Object> body = new HashMap<>();
         body.put("type", "DCU_MIN_MARKUP");
         body.put("data", stageData);

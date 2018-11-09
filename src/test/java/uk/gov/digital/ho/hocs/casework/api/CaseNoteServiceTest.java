@@ -19,14 +19,12 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseNoteServiceTest {
 
-    @Mock
-    private CaseNoteRepository caseNoteRepository;
-
-    private CaseNoteService caseNoteService;
-
     private final UUID caseUUID = UUID.randomUUID();
     private final CaseNoteType caseNoteType = CaseNoteType.MANUAL;
     private final String text = "CASE_NOTE";
+    @Mock
+    private CaseNoteRepository caseNoteRepository;
+    private CaseNoteService caseNoteService;
 
     @Before
     public void setUp() {

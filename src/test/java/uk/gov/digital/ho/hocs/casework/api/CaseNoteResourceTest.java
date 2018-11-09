@@ -18,12 +18,10 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseNoteResourceTest {
 
+    private final UUID caseUUID = UUID.randomUUID();
     @Mock
     private CaseNoteService caseNoteService;
-
     private CaseNoteResource caseNoteResource;
-
-    private final UUID caseUUID = UUID.randomUUID();
 
     @Before
     public void setUp() {

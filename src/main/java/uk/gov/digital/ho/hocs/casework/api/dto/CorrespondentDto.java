@@ -53,8 +53,7 @@ public class CorrespondentDto {
     @JsonProperty("reference")
     private String reference;
 
-    public static CorrespondentDto from(Correspondent correspondent)
-    {
+    public static CorrespondentDto from(Correspondent correspondent) {
         return new CorrespondentDto(
                 correspondent.getUuid(),
                 correspondent.getCreated(),

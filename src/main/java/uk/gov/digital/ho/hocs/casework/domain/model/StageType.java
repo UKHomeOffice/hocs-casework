@@ -38,7 +38,7 @@ public enum StageType {
     @Getter
     private String displayValue;
 
-    StageType(String value){
+    StageType(String value) {
         displayValue = value;
     }
 

@@ -59,10 +59,6 @@ public class CaseData {
         update(data, objectMapper);
     }
 
-    public CaseDataType getCaseDataType() {
-        return CaseDataType.valueOf(this.type);
-    }
-
     private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {
         String dataString;
         try {
@@ -82,6 +78,10 @@ public class CaseData {
             throw new EntityCreationException("Object Mapper failed to read data value!");
         }
         return dataMap;
+    }
+
+    public CaseDataType getCaseDataType() {
+        return CaseDataType.valueOf(this.type);
     }
 
     public void update(Map<String, String> newData, ObjectMapper objectMapper) {

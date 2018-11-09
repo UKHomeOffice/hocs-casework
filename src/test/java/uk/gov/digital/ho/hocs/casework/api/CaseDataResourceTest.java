@@ -23,15 +23,13 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataResourceTest {
 
-    @Mock
-    private CaseDataService caseDataService;
-
-    private CaseDataResource caseDataResource;
-
     private final long caseID = 12345L;
     private final CaseDataType caseDataType = CaseDataType.MIN;
     private final HashMap<String, String> data = new HashMap<>();
     private final UUID uuid = UUID.randomUUID();
+    @Mock
+    private CaseDataService caseDataService;
+    private CaseDataResource caseDataResource;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before

@@ -20,14 +20,12 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataServiceTest {
 
-    @Mock
-    private CaseDataRepository caseDataRepository;
-
     private final long caseID = 12345L;
-
-    private CaseDataService caseDataService;
     private final CaseDataType caseType = CaseDataType.MIN;
     private final UUID caseUUID = UUID.randomUUID();
+    @Mock
+    private CaseDataRepository caseDataRepository;
+    private CaseDataService caseDataService;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before

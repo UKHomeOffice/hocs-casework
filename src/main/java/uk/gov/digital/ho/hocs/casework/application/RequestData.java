@@ -20,6 +20,17 @@ public class RequestData implements HandlerInterceptor {
 
     private static final String ANONYMOUS = "anonymous";
 
+    public static Processor transferHeadersToMDC() {
+        return ex -> {
+            MDC.put(CORRELATION_ID_HEADER, ex.getIn().getHeader(CORRELATION_ID_HEADER, String.class));
+            MDC.put(USER_ID_HEADER, ex.getIn().getHeader(USER_ID_HEADER, String.class));
+            MDC.put(USERNAME_HEADER, ex.getIn().getHeader(USERNAME_HEADER, String.class));
+        };
+    }
+
+    private static boolean isNullOrEmpty(String value) {
+        return value == null || value.equals("");
+    }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
@@ -58,26 +69,16 @@ public class RequestData implements HandlerInterceptor {
         return !isNullOrEmpty(username) ? username : ANONYMOUS;
     }
 
-
     public String correlationId() {
         return MDC.get(CORRELATION_ID_HEADER);
     }
 
-    public String userId() { return MDC.get(USER_ID_HEADER); }
-
-    public String username() { return MDC.get(USERNAME_HEADER); }
-
-
-    public static Processor transferHeadersToMDC() {
-        return ex -> {
-            MDC.put(CORRELATION_ID_HEADER, ex.getIn().getHeader(CORRELATION_ID_HEADER, String.class));
-            MDC.put(USER_ID_HEADER, ex.getIn().getHeader(USER_ID_HEADER, String.class));
-            MDC.put(USERNAME_HEADER, ex.getIn().getHeader(USERNAME_HEADER, String.class));
-        };
+    public String userId() {
+        return MDC.get(USER_ID_HEADER);
     }
 
-    private static boolean isNullOrEmpty(String value) {
-        return value == null || value.equals("");
+    public String username() {
+        return MDC.get(USERNAME_HEADER);
     }
 
 }
