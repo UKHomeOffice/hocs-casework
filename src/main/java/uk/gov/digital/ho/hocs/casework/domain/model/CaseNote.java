@@ -24,7 +24,6 @@ public class CaseNote {
     @Column(name = "created")
     private LocalDateTime created;
 
-    @Getter
     @Column(name = "type")
     private String type;
 
@@ -35,10 +34,6 @@ public class CaseNote {
     @Getter
     @Column(name = "text")
     private String text;
-
-    @Getter
-    @Column(name = "deleted")
-    private boolean deleted = Boolean.FALSE;
 
     public CaseNote(UUID caseUUID, CaseNoteType caseNoteType, String text) {
         if (caseUUID == null || caseNoteType == null || text == null) {

@@ -25,8 +25,12 @@ public class TopicService {
     @Transactional
     public Set<Topic> getTopics(UUID caseUUID) {
         Set<Topic> topics = topicDataRepository.findAllByCaseUUID(caseUUID);
-        log.info("Got {} Topics for Case: {}", topics.size(), caseUUID);
-        return topics;
+        if (topics != null) {
+            log.info("Got {} Topics for Case: {}", topics.size(), caseUUID);
+            return topics;
+        } else {
+            throw new EntityNotFoundException("Topics for Case UUID: %s not found!", caseUUID);
+        }
     }
 
     @Transactional
@@ -47,12 +51,12 @@ public class TopicService {
             log.info("Got Primary Topic: {} for Case: {}", topic.getUuid(), caseUUID);
             return topic;
         } else {
-            throw new EntityNotFoundException("Primary Topic %s not found for Case: %s", topic.getUuid(), caseUUID);
+            throw new EntityNotFoundException("Primary Topic not found for Case: %s", caseUUID);
         }
     }
 
     @Transactional
-    public void createTopic(UUID caseUUID, UUID topicUUID, String topicName) {
+    public void createTopic(UUID caseUUID, String topicName, UUID topicUUID) {
         Topic topic = new Topic(caseUUID, topicName, topicUUID);
         topicDataRepository.save(topic);
         log.info("Created Topic: {} for Case: {}", topic.getUuid(), caseUUID);
@@ -60,7 +64,7 @@ public class TopicService {
 
     @Transactional
     public void deleteTopic(UUID caseUUID, UUID topicUUID) {
-        topicDataRepository.delete(topicUUID);
+        topicDataRepository.deleteTopic(topicUUID);
         log.info("Deleted Topic: {} for Case: {}", topicUUID, caseUUID);
     }
 }

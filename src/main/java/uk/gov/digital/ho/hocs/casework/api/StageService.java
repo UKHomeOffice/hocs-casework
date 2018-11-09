@@ -10,6 +10,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,8 +37,8 @@ public class StageService {
     }
 
     @Transactional
-    public Stage createStage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID, StageStatusType stageStatusType) {
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, stageStatusType);
+    public Stage createStage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID, LocalDate deadline) {
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, deadline);
         stageRepository.save(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID());
         return stage;
@@ -51,6 +52,14 @@ public class StageService {
         log.info("Updated Stage: {} ({}), User {}, Team {} for Case {}", stageUUID, stageStatusType, userUUID, teamUUID, caseUUID);
     }
 
+    @Transactional
+    public void setDeadline(UUID caseUUID, UUID stageUUID, LocalDate deadline) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        stage.setDeadline(deadline);
+        stageRepository.save(stage);
+        log.info("Set Stage Deadline: {} ({}) for Case {}", stageUUID, deadline, caseUUID);
+    }
+
     public Set<Stage> getActiveStagesByUserUUID(UUID userUUID) {
         return stageRepository.findAllByUserUUID(userUUID);
     }
@@ -60,7 +69,7 @@ public class StageService {
     }
 
     public Set<Stage> getActiveStages() {
-        return stageRepository.findAll();
+        return stageRepository.findAllBy();
     }
 
 }

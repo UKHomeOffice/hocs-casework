@@ -21,5 +21,5 @@ public interface StageRepository extends CrudRepository<Stage, String> {
     Set<Stage> findAllByUserUUID(UUID teamUUID);
 
     @Query
-    Set<Stage> findAll();
+    Set<Stage> findAllBy();
 }

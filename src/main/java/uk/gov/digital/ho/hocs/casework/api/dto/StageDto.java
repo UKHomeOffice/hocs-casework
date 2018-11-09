@@ -5,9 +5,7 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -17,26 +15,20 @@ import java.util.UUID;
 @Getter
 public class StageDto {
 
-    @JsonProperty("caseReference")
-    private String caseReference;
-
-    @JsonProperty("caseType")
-    private CaseDataType caseType;
-
-    @JsonRawValue
-    private String data;
-
-    @JsonProperty("stageUUID")
-    private UUID stageUUID;
+    @JsonProperty("uuid")
+    private UUID uuid;
 
     @JsonProperty("created")
     private LocalDateTime created;
 
     @JsonProperty("stageType")
-    private StageType stageType;
+    private String stageType;
 
     @JsonProperty("deadline")
     private LocalDate deadline;
+
+    @JsonProperty("status")
+    private String status;
 
     @JsonProperty("caseUUID")
     private UUID caseUUID;
@@ -47,18 +39,32 @@ public class StageDto {
     @JsonProperty("userUUID")
     private UUID userUUID;
 
+    @JsonProperty("caseReference")
+    private String caseReference;
+
+    @JsonProperty("caseType")
+    private String caseType;
+
+    @JsonRawValue
+    private String data;
 
     public static StageDto from(Stage stage) {
+
+        String caseDataType = null;
+        if (stage.getCaseDataType() != null) {
+            caseDataType = stage.getCaseDataType().toString();
+        }
         return new StageDto(
-                stage.getCaseReference(),
-                stage.getCaseDataType(),
-                stage.getData(),
                 stage.getUuid(),
                 stage.getCreated(),
-                stage.getStageType(),
+                stage.getStageType().toString(),
                 stage.getDeadline(),
+                stage.getStageStatusType().toString(),
                 stage.getCaseUUID(),
                 stage.getTeamUUID(),
-                stage.getUserUUID());
+                stage.getUserUUID(),
+                stage.getCaseReference(),
+                caseDataType,
+                stage.getData());
     }
 }

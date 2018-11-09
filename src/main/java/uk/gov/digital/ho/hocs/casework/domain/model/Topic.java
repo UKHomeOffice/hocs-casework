@@ -5,7 +5,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -23,23 +23,19 @@ public class Topic implements Serializable {
 
     @Column(name = "created")
     @Getter
-    private LocalDate created;
+    private LocalDateTime created;
 
     @Column(name = "case_uuid")
     @Getter
     private UUID caseUUID;
 
-    @Column(name = "topic_name")
+    @Column(name = "topic_text")
     @Getter
-    private String topicName;
+    private String text;
 
-    @Column(name = "topic_name_uuid")
+    @Column(name = "topic_text_uuid")
     @Getter
-    private UUID topicNameUUID;
-
-    @Column(name = "deleted")
-    @Getter
-    private boolean deleted = Boolean.FALSE;
+    private UUID textUUID;
 
     public Topic(UUID caseUUID, String topicName, UUID topicNameUUID) {
         if (caseUUID == null || topicName == null || topicNameUUID == null) {
@@ -47,10 +43,10 @@ public class Topic implements Serializable {
         }
 
         this.uuid = UUID.randomUUID();
-        this.created = LocalDate.now();
+        this.created = LocalDateTime.now();
         this.caseUUID = caseUUID;
-        this.topicName = topicName;
-        this.topicNameUUID = topicNameUUID;
+        this.text = topicName;
+        this.textUUID = topicNameUUID;
     }
 
 }

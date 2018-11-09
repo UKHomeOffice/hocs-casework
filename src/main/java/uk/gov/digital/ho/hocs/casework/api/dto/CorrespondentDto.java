@@ -6,44 +6,60 @@ import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentType;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @AllArgsConstructor
 @Getter
 public class CorrespondentDto {
 
+
+    @JsonProperty("uuid")
+    private UUID uuid;
+
+    @JsonProperty("created")
+    private LocalDateTime created;
+
     @JsonProperty("type")
-    CorrespondentType type;
+    private CorrespondentType type;
+
+    @JsonProperty("caseUUID")
+    private UUID caseUUID;
 
     @JsonProperty("fullname")
-    String fullname;
+    private String fullname;
 
     @JsonProperty("postcode")
-    String postcode;
+    private String postcode;
 
     @JsonProperty("address1")
-    String address1;
+    private String address1;
 
     @JsonProperty("address2")
-    String address2;
+    private String address2;
 
     @JsonProperty("address3")
-    String address3;
+    private String address3;
 
     @JsonProperty("country")
-    String country;
+    private String country;
 
     @JsonProperty("telephone")
-    String telephone;
+    private String telephone;
 
     @JsonProperty("email")
-    String email;
+    private String email;
 
     @JsonProperty("reference")
-    String reference;
+    private String reference;
 
     public static CorrespondentDto from(Correspondent correspondent)
     {
         return new CorrespondentDto(
+                correspondent.getUuid(),
+                correspondent.getCreated(),
                 correspondent.getCorrespondentType(),
+                correspondent.getCaseUUID(),
                 correspondent.getFullName(),
                 correspondent.getPostcode(),
                 correspondent.getAddress1(),
@@ -52,7 +68,7 @@ public class CorrespondentDto {
                 correspondent.getCountry(),
                 correspondent.getTelephone(),
                 correspondent.getEmail(),
-            ""
+                correspondent.getReference()
         );
     }
 }

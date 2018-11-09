@@ -6,10 +6,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.api.*;
-import uk.gov.digital.ho.hocs.casework.queue.dto.CreateCaseNoteRequest;
-import uk.gov.digital.ho.hocs.casework.queue.dto.CreateCorrespondentRequest;
-import uk.gov.digital.ho.hocs.casework.queue.dto.CreateTopicRequest;
-import uk.gov.digital.ho.hocs.casework.queue.dto.UpdateCaseDataRequest;
+import uk.gov.digital.ho.hocs.casework.queue.dto.*;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -20,7 +17,8 @@ import uk.gov.digital.ho.hocs.casework.queue.dto.UpdateCaseDataRequest;
         @JsonSubTypes.Type(value = CreateCaseNoteRequest.class),
         @JsonSubTypes.Type(value = CreateCorrespondentRequest.class),
         @JsonSubTypes.Type(value = CreateTopicRequest.class),
-        @JsonSubTypes.Type(value = UpdateCaseDataRequest.class)
+        @JsonSubTypes.Type(value = UpdateCaseDataRequest.class),
+        @JsonSubTypes.Type(value = UpdateStageDeadlineRequest.class)
 })
 
 public abstract class HocsCommand implements Command {
@@ -34,7 +32,6 @@ public abstract class HocsCommand implements Command {
     @Getter
     @JsonProperty("command")
     protected String command;
-
 
     @JsonCreator
     public HocsCommand(String command) {

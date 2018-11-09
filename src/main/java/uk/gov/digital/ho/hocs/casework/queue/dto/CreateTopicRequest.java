@@ -37,7 +37,7 @@ public class CreateTopicRequest extends HocsCommand {
     @Override
     public void execute(HocsCaseContext hocsCaseContext) {
         initialiseDependencies(hocsCaseContext);
-        topicService.createTopic(caseUUID, topicNameUUID, topicName);
+        topicService.createTopic(caseUUID, topicName, topicNameUUID);
     }
 
 }

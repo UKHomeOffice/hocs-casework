@@ -27,8 +27,8 @@ CREATE TABLE IF NOT EXISTS topic
   uuid            UUID      NOT NULL,
   created         TIMESTAMP NOT NULL,
   case_uuid       UUID      NOT NULL,
-  topic_name      TEXT,
-  topic_name_uuid UUID      NOT NULL,
+  topic_text      TEXT,
+  topic_text_uuid UUID      NOT NULL,
   deleted         BOOLEAN   NOT NULL DEFAULT FALSE,
 
   CONSTRAINT topic_uuid_idempotent UNIQUE (uuid),

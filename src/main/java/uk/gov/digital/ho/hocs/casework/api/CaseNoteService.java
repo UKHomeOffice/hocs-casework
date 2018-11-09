@@ -35,10 +35,9 @@ public class CaseNoteService {
     }
 
     @Transactional
-    public CaseNote createCaseNote(UUID caseUUID, CaseNoteType caseNoteType, String text) {
+    public void createCaseNote(UUID caseUUID, CaseNoteType caseNoteType, String text) {
         CaseNote caseNote = new CaseNote(caseUUID, caseNoteType, text);
         caseNoteRepository.save(caseNote);
         log.info("Created CaseNote: {} for Case: {}", caseNote.getUuid(), caseUUID);
-        return caseNote;
     }
 }

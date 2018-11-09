@@ -25,7 +25,7 @@ class StageResource {
 
     @PostMapping(value = "/case/{caseUUID}/stage")
     public ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
-        Stage stage = stageService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getUserUUID(), request.getStatus());
+        Stage stage = stageService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getUserUUID(), request.getDeadline());
         return ResponseEntity.ok(CreateStageResponse.from(stage));
     }
 

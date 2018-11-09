@@ -43,7 +43,7 @@ public class CaseDataDto {
         return new CaseDataDto(
                 caseData.getUuid(),
                 caseData.getCreated(),
-                caseData.getType(),
+                caseData.getCaseDataType().toString(),
                 caseData.getReference(),
                 caseData.getData(),
                 caseData.getPrimaryTopic(),

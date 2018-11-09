@@ -16,64 +16,59 @@ public class Correspondent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(name = "uuid")
     @Getter
+    @Column(name = "uuid")
     private UUID uuid;
 
-    @Column(name = "created")
     @Getter
+    @Column(name = "created")
     private LocalDateTime created;
 
     @Column(name = "type")
-    @Getter
     private String type;
 
-    @Column(name = "case_uuid")
     @Getter
+    @Column(name = "case_uuid")
     private UUID caseUUID;
 
-    @Column(name = "fullname")
     @Getter
+    @Column(name = "fullname")
     private String fullName;
 
-    @Column(name = "postcode")
     @Getter
+    @Column(name = "postcode")
     private String postcode;
 
-    @Column(name = "address1")
     @Getter
+    @Column(name = "address1")
     private String address1;
 
-    @Column(name = "address2")
     @Getter
+    @Column(name = "address2")
     private String address2;
 
-    @Column(name = "address3")
     @Getter
+    @Column(name = "address3")
     private String address3;
 
-    @Column(name = "country")
     @Getter
+    @Column(name = "country")
     private String country;
 
-    @Column(name = "telephone")
     @Getter
+    @Column(name = "telephone")
     private String telephone;
 
-    @Column(name = "email")
     @Getter
+    @Column(name = "email")
     private String email;
 
-    @Column(name = "reference")
     @Getter
+    @Column(name = "reference")
     private String reference;
 
-    @Column(name = "deleted")
-    @Getter
-    private boolean deleted = Boolean.FALSE;
-
     public Correspondent(UUID caseUUID, CorrespondentType correspondentType, String fullName, Address address, String telephone, String email, String reference) {
-        if (caseUUID == null || correspondentType == null || fullName == null) {
+        if (caseUUID == null || correspondentType == null) {
             throw new EntityCreationException("Cannot create Correspondent(%s, %s, %s, %s, %s, %s).", caseUUID, correspondentType, fullName, "Address", telephone, email);
         }
 
@@ -82,11 +77,13 @@ public class Correspondent {
         this.caseUUID = caseUUID;
         this.type = correspondentType.toString();
         this.fullName = fullName;
-        this.postcode = address.getPostcode();
-        this.address1 = address.getAddress1();
-        this.address2 = address.getAddress2();
-        this.address3 = address.getAddress3();
-        this.country = address.getCountry();
+        if (address != null) {
+            this.postcode = address.getPostcode();
+            this.address1 = address.getAddress1();
+            this.address2 = address.getAddress2();
+            this.address3 = address.getAddress3();
+            this.country = address.getCountry();
+        }
         this.telephone = telephone;
         this.email = email;
         this.reference = reference;

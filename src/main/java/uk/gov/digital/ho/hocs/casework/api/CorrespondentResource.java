@@ -46,7 +46,7 @@ public class CorrespondentResource {
     }
 
     @DeleteMapping(value = "/case/{caseUUID}/correspondent/{correspondentUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CorrespondentDto> deleteCorrespondentFromCase(@PathVariable UUID caseUUID, @PathVariable UUID correspondentUUID) {
+    public ResponseEntity<CorrespondentDto> deleteCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID correspondentUUID) {
         correspondentService.deleteCorrespondent(caseUUID, correspondentUUID);
         return ResponseEntity.ok().build();
     }

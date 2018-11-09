@@ -23,5 +23,5 @@ public interface TopicDataRepository extends CrudRepository<Topic, String> {
 
     @Modifying
     @Query(value = "UPDATE topic t SET t.deleted = TRUE WHERE t.uuid = ?1", nativeQuery = true)
-    int delete(UUID correspondentUUID);
+    int deleteTopic(UUID topicUUID);
 }

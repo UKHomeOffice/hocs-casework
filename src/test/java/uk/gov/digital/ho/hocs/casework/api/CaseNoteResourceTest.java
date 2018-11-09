@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.casedetails;
+package uk.gov.digital.ho.hocs.casework.api;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -7,8 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.CaseNoteResource;
-import uk.gov.digital.ho.hocs.casework.api.CaseNoteService;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseNotesResponse;
 
 import java.util.HashSet;
@@ -25,7 +23,7 @@ public class CaseNoteResourceTest {
 
     private CaseNoteResource caseNoteResource;
 
-    private final UUID uuid = UUID.randomUUID();
+    private final UUID caseUUID = UUID.randomUUID();
 
     @Before
     public void setUp() {
@@ -33,13 +31,13 @@ public class CaseNoteResourceTest {
     }
 
     @Test
-    public void shouldGetCase() {
+    public void shouldGetCaseNotes() {
 
-        when(caseNoteService.getCaseNotes(uuid)).thenReturn(new HashSet<>());
+        when(caseNoteService.getCaseNotes(caseUUID)).thenReturn(new HashSet<>());
 
-        ResponseEntity<GetCaseNotesResponse> response = caseNoteResource.getCaseNotesForCase(uuid);
+        ResponseEntity<GetCaseNotesResponse> response = caseNoteResource.getCaseNotesForCase(caseUUID);
 
-        verify(caseNoteService, times(1)).getCaseNotes(uuid);
+        verify(caseNoteService, times(1)).getCaseNotes(caseUUID);
 
         verifyNoMoreInteractions(caseNoteService);
 

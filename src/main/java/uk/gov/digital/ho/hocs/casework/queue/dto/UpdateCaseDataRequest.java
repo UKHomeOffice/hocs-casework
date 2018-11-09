@@ -10,13 +10,13 @@ import uk.gov.digital.ho.hocs.casework.domain.HocsCommand;
 import java.util.Map;
 import java.util.UUID;
 
-import static uk.gov.digital.ho.hocs.casework.queue.dto.UpdateCaseDataRequest.UPDATE_INPUT_DATA_COMMAND;
+import static uk.gov.digital.ho.hocs.casework.queue.dto.UpdateCaseDataRequest.UPDATE_CASE_DATA_COMMAND;
 
 @Getter
-@JsonTypeName(UPDATE_INPUT_DATA_COMMAND)
+@JsonTypeName(UPDATE_CASE_DATA_COMMAND)
 public class UpdateCaseDataRequest extends HocsCommand {
 
-    static final String UPDATE_INPUT_DATA_COMMAND = "update_case_data_command";
+    static final String UPDATE_CASE_DATA_COMMAND = "update_case_data_command";
 
     private UUID caseUUID;
 
@@ -25,7 +25,7 @@ public class UpdateCaseDataRequest extends HocsCommand {
     @JsonCreator
     public UpdateCaseDataRequest(@JsonProperty(value = "caseUUID", required = true) UUID caseUUID,
                                  @JsonProperty(value = "data", required = true) Map<String, String> data) {
-        super(UPDATE_INPUT_DATA_COMMAND);
+        super(UPDATE_CASE_DATA_COMMAND);
         this.caseUUID = caseUUID;
         this.data = data;
     }

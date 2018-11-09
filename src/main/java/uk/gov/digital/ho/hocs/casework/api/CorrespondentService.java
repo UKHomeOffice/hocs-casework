@@ -27,8 +27,12 @@ public class CorrespondentService {
     @Transactional
     public Set<Correspondent> getCorrespondents(UUID caseUUID) {
         Set<Correspondent> correspondents = correspondentRepository.findAllByCaseUUID(caseUUID);
-        log.info("Got {} Correspondents for Case: {}", correspondents.size(), caseUUID);
-        return correspondents;
+        if (correspondents != null) {
+            log.info("Got {} Correspondents for Case: {}", correspondents.size(), caseUUID);
+            return correspondents;
+        } else {
+            throw new EntityNotFoundException("Correspondents for Case UUID: %s not found!", caseUUID);
+        }
     }
 
     @Transactional
@@ -49,10 +53,9 @@ public class CorrespondentService {
             log.info("Got Primary Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID);
             return correspondent;
         } else {
-            throw new EntityNotFoundException("Primary Topic %s not found for Case: %s", correspondent.getUuid(), caseUUID);
+            throw new EntityNotFoundException("Primary Correspondent not found for Case: %s", caseUUID);
         }
     }
-
 
     @Transactional
     public void createCorrespondent(UUID caseUUID, CorrespondentType correspondentType, String fullname, String postcode, String address1, String address2, String address3, String country, String telephone, String email, String reference) {
@@ -76,7 +79,7 @@ public class CorrespondentService {
 
     @Transactional
     public void deleteCorrespondent(UUID caseUUID, UUID correspondentUUID) {
-        correspondentRepository.delete(correspondentUUID);
+        correspondentRepository.deleteCorrespondent(correspondentUUID);
         log.info("Deleted Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
     }
 }

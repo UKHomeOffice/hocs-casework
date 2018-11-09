@@ -23,5 +23,5 @@ public interface CorrespondentRepository extends CrudRepository<Correspondent, S
 
     @Modifying
     @Query(value = "UPDATE correspondent c SET c.deleted = TRUE WHERE c.uuid = ?1", nativeQuery = true)
-    int delete(UUID correspondentUUID);
+    int deleteCorrespondent(UUID correspondentUUID);
 }

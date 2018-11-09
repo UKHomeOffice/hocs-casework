@@ -3,16 +3,13 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-@NoArgsConstructor
 @Entity
 @Table(name = "case_data")
 public class CaseData {
@@ -30,7 +27,6 @@ public class CaseData {
     @Column(name = "created")
     private LocalDateTime created = LocalDateTime.now();
 
-    @Getter
     @Column(name = "type")
     private String type;
 
@@ -54,48 +50,47 @@ public class CaseData {
     @Column(name = "primary_response")
     private String primaryResponse;
 
-    @Column(name = "deleted")
-    private boolean deleted = Boolean.FALSE;
-
     public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper) {
-        validateCreate(type, caseNumber);
-
-        this.type = type.toString();
-        this.reference = String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
-        update(data, objectMapper);
-    }
-
-    private static void validateCreate(CaseDataType type, Long caseNumber) {
         if (type == null || caseNumber == null) {
             throw new EntityCreationException("Cannot create CaseData (%s,%s).", type, caseNumber);
         }
+        this.type = type.toString();
+        this.reference = String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
+        update(data, objectMapper);
     }
 
     public CaseDataType getCaseDataType() {
         return CaseDataType.valueOf(this.type);
     }
 
-    public void update(Map<String, String> newData, ObjectMapper objectMapper) {
-
-        if (newData != null) {
-            this.data = updateDataString(newData, objectMapper);
+    private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {
+        String dataString;
+        try {
+            dataString = objectMapper.writeValueAsString(dataMap);
+        } catch (Exception e) {
+            throw new EntityCreationException("Object Mapper failed to write value!");
         }
+        return dataString;
     }
 
-    private String updateDataString(Map<String, String> stageData, ObjectMapper objectMapper) {
-        HashMap<String, String> dataMap;
+    private static Map<String, String> getDataMap(String dataString, ObjectMapper objectMapper) {
+        Map<String, String> dataMap;
         try {
-            dataMap = objectMapper.readValue(this.data, new TypeReference<Map<String, String>>() {
+            dataMap = objectMapper.readValue(dataString, new TypeReference<Map<String, String>>() {
             });
         } catch (Exception e) {
             throw new EntityCreationException("Object Mapper failed to read data value!");
         }
-        dataMap.putAll(stageData);
+        return dataMap;
+    }
 
-        try {
-            return objectMapper.writeValueAsString(dataMap);
-        } catch (Exception e) {
-            throw new EntityCreationException("Object Mapper failed to write value!");
+    public void update(Map<String, String> newData, ObjectMapper objectMapper) {
+        if (newData != null && newData.size() > 0) {
+            Map<String, String> dataMap = getDataMap(this.data, objectMapper);
+
+            dataMap.putAll(newData);
+
+            this.data = getDataString(dataMap, objectMapper);
         }
     }
 
