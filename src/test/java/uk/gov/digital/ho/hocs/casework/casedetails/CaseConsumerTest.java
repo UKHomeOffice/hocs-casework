@@ -8,14 +8,15 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.casedetails.exception.EntityNotFoundException;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.ReferenceType;
-import uk.gov.digital.ho.hocs.casework.casedetails.queuedto.CreateReferenceRequest;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseContext;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseDomain;
+import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.queue.CaseConsumer;
+import uk.gov.digital.ho.hocs.casework.queue.dto.UpdateCaseDataRequest;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -28,19 +29,15 @@ public class CaseConsumerTest extends CamelTestSupport {
     private static final String dlq = "mock:case-queue-dlq";
     private ObjectMapper mapper = new ObjectMapper();
 
-    private static final UUID caseUUID = UUID.randomUUID();
-    private static final UUID docUUID = UUID.randomUUID();
-
-
     @Mock
-    private ReferenceDataService mockDataService;
+    private CaseDataService mockDataService;
 
     private HocsCaseDomain hocsCaseDomain;
 
 
     @Override
     public RouteBuilder createRouteBuilder() {
-        HocsCaseContext hocsCaseContext = new HocsCaseContext(null, null, null, null, null, mockDataService, null);
+        HocsCaseContext hocsCaseContext = new HocsCaseContext(mockDataService, null, null, null, null);
         hocsCaseDomain = new HocsCaseDomain(hocsCaseContext);
 
         return new CaseConsumer(
@@ -53,12 +50,12 @@ public class CaseConsumerTest extends CamelTestSupport {
     @Test
     public void shouldCallAddDocumentToCaseService() throws JsonProcessingException, EntityCreationException, EntityNotFoundException {
 
-        CreateReferenceRequest request = new CreateReferenceRequest(UUID.randomUUID(), "fsdfds", ReferenceType.MEMBER_REFERENCE);
+        UpdateCaseDataRequest request = new UpdateCaseDataRequest(UUID.randomUUID(), new HashMap<>());
 
         String json = mapper.writeValueAsString(request);
         template.sendBody(caseQueue, json);
 
-        verify(mockDataService, times(1)).createReference(any(), any(), any());
+        verify(mockDataService, times(1)).updateCaseData(any(), any());
     }
 
     @Test
@@ -66,17 +63,17 @@ public class CaseConsumerTest extends CamelTestSupport {
         getMockEndpoint(dlq).setExpectedCount(1);
         String json = mapper.writeValueAsString("{invalid:invalid}");
         template.sendBody(caseQueue, json);
-        verify(mockDataService, never()).createReference(any(), any(), any());
+        verify(mockDataService, never()).updateCaseData(any(), any());
         getMockEndpoint(dlq).assertIsSatisfied();
     }
 
     @Test
     public void shouldTransferToDLQOnFailure() throws JsonProcessingException, InterruptedException, EntityCreationException, EntityNotFoundException {
 
-        CreateReferenceRequest request = new CreateReferenceRequest(UUID.randomUUID(), "fsdfds", ReferenceType.MEMBER_REFERENCE);
+        UpdateCaseDataRequest request = new UpdateCaseDataRequest(UUID.randomUUID(), new HashMap<>());
 
         doThrow(EntityCreationException.class)
-                .when(mockDataService).createReference(any(), any(), any());
+                .when(mockDataService).updateCaseData(any(), any());
 
         getMockEndpoint(dlq).setExpectedCount(1);
         String json = mapper.writeValueAsString(request);

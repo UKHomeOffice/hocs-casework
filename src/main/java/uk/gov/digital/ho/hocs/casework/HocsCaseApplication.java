@@ -6,14 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class HocsCaseApplication {
 
-	public static void main(String[] args) {
-		try {
-			SpringApplication.run(HocsCaseApplication.class, args);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
-
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(HocsCaseApplication.class, args);
+    }
 
 }

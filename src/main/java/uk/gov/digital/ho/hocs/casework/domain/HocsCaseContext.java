@@ -2,34 +2,28 @@ package uk.gov.digital.ho.hocs.casework.domain;
 
 import lombok.Getter;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.hocs.casework.casedetails.*;
+import uk.gov.digital.ho.hocs.casework.api.*;
 
 @Component
 @Getter
 public class HocsCaseContext {
 
     private final CaseDataService caseDataService;
-    private final CaseNoteDataService caseNoteDataService;
-    private final CorrespondentDataService correspondentDataService;
-    private final DeadlineDataService deadlineDataService;
-    private final InputDataService inputDataService;
-    private final ReferenceDataService referenceDataService;
-    private final StageDataService stageDataService;
+    private final CaseNoteService caseNoteService;
+    private final CorrespondentService correspondentService;
+    private final StageService stageService;
+    private final TopicService topicService;
 
     public HocsCaseContext(CaseDataService caseDataService,
-                           CaseNoteDataService caseNoteDataService,
-                           CorrespondentDataService correspondentDataService,
-                           DeadlineDataService deadlineDataService,
-                           InputDataService inputDataService,
-                           ReferenceDataService referenceDataService,
-                           StageDataService stageDataService) {
+                           CaseNoteService caseNoteService,
+                           CorrespondentService correspondentService,
+                           StageService stageService,
+                           TopicService topicService) {
 
         this.caseDataService = caseDataService;
-        this.caseNoteDataService = caseNoteDataService;
-        this.correspondentDataService = correspondentDataService;
-        this.deadlineDataService = deadlineDataService;
-        this.inputDataService = inputDataService;
-        this.referenceDataService = referenceDataService;
-        this.stageDataService = stageDataService;
+        this.caseNoteService = caseNoteService;
+        this.correspondentService = correspondentService;
+        this.stageService = stageService;
+        this.topicService = topicService;
     }
 }
