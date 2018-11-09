@@ -1,78 +1,88 @@
 package uk.gov.digital.ho.hocs.casework.security;
-
-import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.casedetails.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
-import java.util.UUID;
+
+import java.util.*;
 
 @Aspect
 @Component
-@AllArgsConstructor
+@Slf4j
 public class AuthorisationAspect {
 
-    private RequestData requestData;
-    private UserClient userClient;
     private CaseDataService caseService;
+    private UserPermissionsService userService;
 
+    public AuthorisationAspect(CaseDataService caseService, UserPermissionsService userService) {
+        this.caseService = caseService;
+        this.userService = userService;
+    }
 
-    @Around("@annotation(Allocated)")
-    public Object validateUserAccess(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Around("@annotation(authorised)")
+    public Object validateUserAccess(ProceedingJoinPoint joinPoint, Authorised authorised) throws Throwable {
 
         UUID caseUUID;
         CaseData caseData;
         CaseType caseType;
-        String accessType = getAccessRequestType();
+        AccessLevel requestedAccessLevel;
+
+        if(authorised.accessLevel() != AccessLevel.UNSET) {
+            requestedAccessLevel = authorised.accessLevel();
+        }
+        else {
+            requestedAccessLevel = getAccessRequestAccessLevel();
+        }
 
         if (joinPoint.getArgs().length > 0) {
             if (joinPoint.getArgs()[0] instanceof UUID) {
                 caseUUID = (UUID) joinPoint.getArgs()[0];
                 caseType = getCaseTypeFromId(caseUUID);
-            } else if (joinPoint.getArgs()[0] instanceof CaseData) {
-                caseData = (CaseData) joinPoint.getArgs()[0];
-                caseType = caseData.getType();
+            } else if (joinPoint.getArgs()[0] instanceof CreateCaseRequest) {
+                CreateCaseRequest createCaseRequest = (CreateCaseRequest) joinPoint.getArgs()[0];
+                caseType = createCaseRequest.getType();
             } else {
-                throw new PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName());
+                throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName());
             }
         }
         else {
-            throw new PermissionCheckException("Unable to check permission of method with no case parameters");
+            throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without case UUID parameters");
         }
 
-        String userId = requestData.userId();
+        AccessLevel accessLevel = userService.getMaxAccessLevel(caseType);
 
-        if(!userClient.getUserAccess(userId, caseType, accessType)) {
-            throw new PermissionCheckException("User does not have access to the requested resource");
+        if(accessLevel.getLevel() >= requestedAccessLevel.getLevel()) {
+            return joinPoint.proceed();
         }
-
-        return joinPoint.proceed();
+        else {
+            throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource");
+        }
     }
 
     private CaseType getCaseTypeFromId(UUID caseUUID) {
-            return caseService.getCase(caseUUID).getType();
+        return caseService.getCase(caseUUID).getType();
     }
 
-    private String getAccessRequestType() {
-        ServletRequestAttributes sra = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        String method = sra.getRequest().getMethod();
+    public AccessLevel getAccessRequestAccessLevel() {
+        ServletRequestAttributes requestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        String method = requestAttributes.getRequest().getMethod();
         switch (method) {
             case "GET":
-                return "READ";
+                return AccessLevel.SUMMARY;
             case "POST":
-                return "CREATE";
             case "PUT":
-                return "UPDATE";
             case "DELETE":
-                return "DELETE";
+                return AccessLevel.WRITE;
             default:
-                throw new PermissionCheckException("Unknown access request type " + method);
+                throw new SecurityExceptions.PermissionCheckException("Unknown access request type " + method);
         }
     }
+
 }

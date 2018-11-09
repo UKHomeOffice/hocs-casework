@@ -9,81 +9,74 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.casedetails.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthorisationAspectTest {
 
     @Mock
-    private RequestData requestData;
-
-    @Mock
-    private UserClient userClient;
+    private UserPermissionsService userService;
 
     @Mock
     private CaseDataService caseService;
+
+    @Mock
+    private Authorised annotation;
 
     private AuthorisationAspect aspect;
 
     private UUID caseUUID = UUID.randomUUID();
 
-    private String userId = UUID.randomUUID().toString();
-
     @Mock
     private ProceedingJoinPoint proceedingJoinPoint;
 
-
-
     @Before
     public void setup() {
+        when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.OWNER);
 
-        aspect = new AuthorisationAspect(requestData, userClient, caseService);
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setMethod("GET");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        aspect = new AuthorisationAspect(caseService, userService);
+
     }
 
-
-
     @Test
-    public void shouldCallCollaboratorsWhenExistingCase() throws Throwable {
+    public void shouldCaseServiceWhenExistingCase() throws Throwable {
 
         Object[] args = new Object[1];
         args[0] = caseUUID;
 
         when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseType.MIN, 123456789L));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
-        when(requestData.userId()).thenReturn(userId);
-        when(userClient.getUserAccess(userId, CaseType.MIN, "READ")).thenReturn(true);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
 
-        aspect.validateUserAccess(proceedingJoinPoint);
+        aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         verify(caseService, times(1)).getCase(caseUUID);
-        verify(requestData, times(1)).userId();
-        verify(userClient, times(1)).getUserAccess(userId, CaseType.MIN, "READ");
+        verify(userService, times(1)).getMaxAccessLevel(CaseType.MIN);
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
 
     @Test
-    public void shouldCallCollaboratorsWhenNewCase() throws Throwable {
+    public void shouldNotCallCaseServiceWhenNewCase() throws Throwable {
 
         Object[] args = new Object[1];
-        args[0] = new CaseData(CaseType.MIN, 123456789L);
+        args[0] = new CreateCaseRequest(CaseType.MIN);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
-          when(proceedingJoinPoint.getArgs()).thenReturn(args);
-        when(requestData.userId()).thenReturn(userId);
-        when(userClient.getUserAccess(userId, CaseType.MIN, "READ")).thenReturn(true);
-
-        aspect.validateUserAccess(proceedingJoinPoint);
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
         verify(caseService, never()).getCase(caseUUID);
-        verify(requestData, times(1)).userId();
-        verify(userClient, times(1)).getUserAccess(userId, CaseType.MIN, "READ");
+        verify(userService, times(1)).getMaxAccessLevel(CaseType.MIN);
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
 
@@ -93,41 +86,87 @@ public class AuthorisationAspectTest {
 
         Object[] args = new Object[1];
         args[0] = caseUUID;
-
         when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseType.MIN, 123456789L));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
-        when(requestData.userId()).thenReturn(userId);
-        when(userClient.getUserAccess(userId, CaseType.MIN, "READ")).thenReturn(true);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
 
-        aspect.validateUserAccess(proceedingJoinPoint);
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
         verify(proceedingJoinPoint, times(1)).proceed();
-
     }
 
-    @Test(expected = PermissionCheckException.class)
+    @Test(expected = SecurityExceptions.PermissionCheckException.class)
     public void shouldNotProceedIfUserDoesNotHavePermission() throws Throwable {
 
         Object[] args = new Object[1];
         args[0] = caseUUID;
-
+        when(userService.getMaxAccessLevel(any())).thenThrow(new SecurityExceptions.PermissionCheckException("User does not have any permission onf this case type"));
         when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseType.MIN, 123456789L));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
-        when(requestData.userId()).thenReturn(userId);
-        when(userClient.getUserAccess(userId, CaseType.MIN, "READ")).thenReturn(false);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
 
-        aspect.validateUserAccess(proceedingJoinPoint);
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
         verify(proceedingJoinPoint, never()).proceed();
-
     }
 
-    @Test(expected = PermissionCheckException.class)
+    @Test(expected = SecurityExceptions.PermissionCheckException.class)
     public void shouldThrowExceptionOnError() throws Throwable {
 
         Object[] args = new Object[1];
         args[0] = "bad UUID";
+        when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
-        aspect.validateUserAccess(proceedingJoinPoint);
+
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
         verify(proceedingJoinPoint, never()).proceed();
+    }
+
+
+    @Test
+    public void shouldGetRequestedPermissionTypeFromRequestWhenAnnotationIsNull() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setMethod("GET");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        assertThat(aspect.getAccessRequestAccessLevel()).isEqualTo(AccessLevel.SUMMARY);
+    }
+
+    @Test
+    public void shouldGetRequestedPermissionTypeFromRequestWhenAnnotationIsSet() throws Throwable {
+
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+        when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.OWNER);
+        when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseType.MIN, 123456789L));
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
+
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
+        verify(annotation, times(2)).accessLevel();
+
+
+    }
+
+
+    @Test
+    public void shouldGetRequestedPermissionTypeFromRequestWhenUNSET() throws Throwable {
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setMethod("GET");
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.OWNER);
+        when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseType.MIN, 123456789L));
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.UNSET);
+
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
+        verify(annotation, times(1)).accessLevel();
 
     }
 

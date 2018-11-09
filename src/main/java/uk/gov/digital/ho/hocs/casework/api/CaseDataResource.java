@@ -9,9 +9,17 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseTypeResponse;
+import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.Authorised;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+
 
 @Slf4j
 @RestController
@@ -24,12 +32,14 @@ class CaseDataResource {
         this.caseDataService = caseDataService;
     }
 
+    @Authorised()
     @PostMapping(value = "/case", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         CaseData caseData = caseDataService.createCase(request.getType(), request.getData());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CaseDataDto> getCase(@PathVariable UUID caseUUID) {
         CaseData caseData = caseDataService.getCase(caseUUID);
