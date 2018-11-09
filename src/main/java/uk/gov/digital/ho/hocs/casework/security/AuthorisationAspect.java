@@ -6,10 +6,11 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import uk.gov.digital.ho.hocs.casework.casedetails.CaseDataService;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+
 
 import java.util.*;
 
@@ -31,7 +32,7 @@ public class AuthorisationAspect {
 
         UUID caseUUID;
         CaseData caseData;
-        CaseType caseType;
+        CaseDataType caseType;
         AccessLevel requestedAccessLevel;
 
         if(authorised.accessLevel() != AccessLevel.UNSET) {
@@ -66,8 +67,8 @@ public class AuthorisationAspect {
         }
     }
 
-    private CaseType getCaseTypeFromId(UUID caseUUID) {
-        return caseService.getCase(caseUUID).getType();
+    private CaseDataType getCaseTypeFromId(UUID caseUUID) {
+        return caseService.getCase(caseUUID).getCaseDataType();
     }
 
     public AccessLevel getAccessRequestAccessLevel() {

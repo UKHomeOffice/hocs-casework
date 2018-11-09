@@ -6,16 +6,9 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
-import uk.gov.digital.ho.hocs.casework.casedetails.CaseDataService;
-import uk.gov.digital.ho.hocs.casework.casedetails.StageDataService;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
 
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,15 +19,17 @@ import java.util.UUID;
 public class AllocatedAspect {
 
     private RequestData requestData;
-    private StageDataService stageService;
+    private StageService stageService;
     private UserPermissionsService userService;
 
     @Around("@annotation(allocated)")
     public Object validateUserAccess(ProceedingJoinPoint joinPoint, Allocated allocated) throws Throwable {
         UUID stageUUID;
+        UUID caseUUID;
         if (joinPoint.getArgs().length > 1) {
             if (joinPoint.getArgs()[1] instanceof UUID) {
                 stageUUID = (UUID) joinPoint.getArgs()[1];
+                caseUUID = (UUID) joinPoint.getArgs()[0];
             } else {
                 throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[1].getClass().getName());
             }
@@ -45,7 +40,8 @@ public class AllocatedAspect {
 
         if(allocated.allocatedTo() == AllocationLevel.USER) {
             UUID userId = UUID.fromString(requestData.userId());
-            UUID assignedUser = stageService.getStage(stageUUID).getUserUUID();
+
+            UUID assignedUser = stageService.getStage(caseUUID,stageUUID).getUserUUID();
             if (!userId.equals(assignedUser)) {
                 throw new SecurityExceptions.StageNotAssignedToLoggedInUserException("Stage " + stageUUID.toString() + " is assigned to " + assignedUser);
             }
@@ -53,7 +49,7 @@ public class AllocatedAspect {
         }
          else {
             Set<String> teams = userService.getUserTeams();
-            String assignedTeam = stageService.getStage(stageUUID).getTeamUUID().toString();
+            String assignedTeam = stageService.getStage(caseUUID, stageUUID).getTeamUUID().toString();
             if (!teams.contains(assignedTeam)) {
                 throw new SecurityExceptions.StageNotAssignedToUserTeamException("Stage " + stageUUID.toString() + " is assigned to " + assignedTeam);
             }

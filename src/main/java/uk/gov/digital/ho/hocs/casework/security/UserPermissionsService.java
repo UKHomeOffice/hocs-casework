@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,7 +21,7 @@ public class UserPermissionsService {
         this.requestData = requestData;
     }
 
-    AccessLevel getMaxAccessLevel(CaseType caseType) {
+    AccessLevel getMaxAccessLevel(CaseDataType caseType) {
 
         return getUserAccessLevels(caseType).stream()
                 .max(Comparator.comparing(level -> level.getLevel()))
@@ -29,7 +29,7 @@ public class UserPermissionsService {
                         new SecurityExceptions.PermissionCheckException("User does not have any permissions for this case type"));
     }
 
-    Set<AccessLevel> getUserAccessLevels(CaseType caseType) {
+    Set<AccessLevel> getUserAccessLevels(CaseDataType caseType) {
 
         return  getUserPermission().entrySet().stream()
                 .flatMap(unit -> unit.getValue().values().stream())
@@ -50,7 +50,7 @@ public class UserPermissionsService {
                 .collect(Collectors.toSet());
     }
 
-    Set<CaseType> getUserCaseTypes() {
+    Set<CaseDataType> getUserCaseTypes() {
         return getUserPermission().entrySet().stream()
                 .flatMap(unit -> unit.getValue().values().stream())
                 .flatMap(team -> team.entrySet().stream())
@@ -58,12 +58,12 @@ public class UserPermissionsService {
                 .collect(Collectors.toSet());
     }
 
-    Map<String, Map<String, Map<CaseType,Set<AccessLevel>>>> getUserPermission() {
+    Map<String, Map<String, Map<CaseDataType,Set<AccessLevel>>>> getUserPermission() {
         List<List<String>> groups = Arrays.stream(requestData.groups().split(","))
                 .map(g -> Arrays.asList(g.split("/")))
                 .collect(Collectors.toList());
 
-        Map<String, Map<String, Map<CaseType,Set<AccessLevel>>>> permissions = new HashMap<>();
+        Map<String, Map<String, Map<CaseDataType,Set<AccessLevel>>>> permissions = new HashMap<>();
         for(List<String> permission : groups) {
             if(permission.size() > 4) {
                 getAccessLevel(permissions, permission);
@@ -72,7 +72,7 @@ public class UserPermissionsService {
         return permissions;
     }
 
-    private void getAccessLevel(Map<String, Map<String, Map<CaseType, Set<AccessLevel>>>> permissions, List<String> permission) {
+    private void getAccessLevel(Map<String, Map<String, Map<CaseDataType, Set<AccessLevel>>>> permissions, List<String> permission) {
         try {
             String unit ="";
             if (!StringUtils.isNullOrEmpty(permission.get(1))) {
@@ -84,10 +84,10 @@ public class UserPermissionsService {
                 team = Optional.ofNullable(permission.get(2)).orElseThrow(() ->new SecurityExceptions.PermissionCheckException("Null team Found"));
             }
 
-            CaseType type = null;
+            CaseDataType type = null;
             if (!StringUtils.isNullOrEmpty(permission.get(3))) {
                 String caseType = Optional.ofNullable(permission.get(3)).orElseThrow(() ->new SecurityExceptions.PermissionCheckException("Invalid case type Found"));
-                type = CaseType.valueOf(caseType);
+                type = CaseDataType.valueOf(caseType);
             }
 
             AccessLevel level = null;

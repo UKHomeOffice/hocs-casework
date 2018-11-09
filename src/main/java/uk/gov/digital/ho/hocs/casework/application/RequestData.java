@@ -100,5 +100,4 @@ public class RequestData implements HandlerInterceptor {
     private static boolean isNullOrEmpty(String value) {
         return value == null || value.equals("");
     }
-
 }

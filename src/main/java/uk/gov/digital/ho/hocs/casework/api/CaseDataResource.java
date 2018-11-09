@@ -8,6 +8,8 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;

@@ -9,10 +9,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import uk.gov.digital.ho.hocs.casework.casedetails.CaseDataService;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+
+import java.util.HashMap;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,14 +56,14 @@ public class AuthorisationAspectTest {
         Object[] args = new Object[1];
         args[0] = caseUUID;
 
-        when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseType.MIN, 123456789L));
+        when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseDataType.MIN, 123456789L));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
 
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         verify(caseService, times(1)).getCase(caseUUID);
-        verify(userService, times(1)).getMaxAccessLevel(CaseType.MIN);
+        verify(userService, times(1)).getMaxAccessLevel(CaseDataType.MIN);
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
 
@@ -69,14 +71,14 @@ public class AuthorisationAspectTest {
     public void shouldNotCallCaseServiceWhenNewCase() throws Throwable {
 
         Object[] args = new Object[1];
-        args[0] = new CreateCaseRequest(CaseType.MIN);
+        args[0] = new CreateCaseRequest(CaseDataType.MIN, new HashMap<>());
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
         verify(caseService, never()).getCase(caseUUID);
-        verify(userService, times(1)).getMaxAccessLevel(CaseType.MIN);
+        verify(userService, times(1)).getMaxAccessLevel(CaseDataType.MIN);
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
 
@@ -86,7 +88,7 @@ public class AuthorisationAspectTest {
 
         Object[] args = new Object[1];
         args[0] = caseUUID;
-        when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseType.MIN, 123456789L));
+        when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseDataType.MIN, 123456789L));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
 
@@ -101,7 +103,7 @@ public class AuthorisationAspectTest {
         Object[] args = new Object[1];
         args[0] = caseUUID;
         when(userService.getMaxAccessLevel(any())).thenThrow(new SecurityExceptions.PermissionCheckException("User does not have any permission onf this case type"));
-        when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseType.MIN, 123456789L));
+        when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseDataType.MIN, 123456789L));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
 
@@ -138,7 +140,7 @@ public class AuthorisationAspectTest {
         Object[] args = new Object[1];
         args[0] = caseUUID;
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.OWNER);
-        when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseType.MIN, 123456789L));
+        when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseDataType.MIN, 123456789L));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
 
@@ -160,7 +162,7 @@ public class AuthorisationAspectTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.OWNER);
-        when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseType.MIN, 123456789L));
+        when(caseService.getCase(caseUUID)).thenReturn(new CaseData(CaseDataType.MIN, 123456789L));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.UNSET);
 

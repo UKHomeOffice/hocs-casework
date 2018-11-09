@@ -9,7 +9,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseType;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+
 import java.util.Map;
 import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,7 +44,7 @@ public class UserPermissionsServiceTest {
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Map<String, Map<String, Map<CaseType,Set<AccessLevel>>>> permissions = service.getUserPermission();
+        Map<String, Map<String, Map<CaseDataType,Set<AccessLevel>>>> permissions = service.getUserPermission();
         assertThat(permissions.size()).isEqualTo(2);
     }
 
@@ -59,7 +60,7 @@ public class UserPermissionsServiceTest {
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Map<String, Map<String, Map<CaseType,Set<AccessLevel>>>> permissions = service.getUserPermission();
+        Map<String, Map<String, Map<CaseDataType,Set<AccessLevel>>>> permissions = service.getUserPermission();
         assertThat(permissions.size()).isEqualTo(2);
     }
 
@@ -75,7 +76,7 @@ public class UserPermissionsServiceTest {
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Set<AccessLevel> userAccessLevels = service.getUserAccessLevels(CaseType.MIN);
+        Set<AccessLevel> userAccessLevels = service.getUserAccessLevels(CaseDataType.MIN);
         assertThat(userAccessLevels.size()).isEqualTo(2);
         assertThat(userAccessLevels).contains(AccessLevel.WRITE);
         assertThat(userAccessLevels).contains(AccessLevel.OWNER);
@@ -127,8 +128,8 @@ public class UserPermissionsServiceTest {
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Set<CaseType> caseTypes = service.getUserCaseTypes();
-        assertThat(caseTypes).contains(CaseType.TRO);
-        assertThat(caseTypes).contains(CaseType.MIN);
+        Set<CaseDataType> caseTypes = service.getUserCaseTypes();
+        assertThat(caseTypes).contains(CaseDataType.TRO);
+        assertThat(caseTypes).contains(CaseDataType.MIN);
     }
 }
