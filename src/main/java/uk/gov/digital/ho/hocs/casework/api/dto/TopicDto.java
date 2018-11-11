@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 public class TopicDto {
 
-    @JsonProperty("value")
+    @JsonProperty("uuid")
     private UUID uuid;
 
     @JsonProperty("created")
@@ -22,13 +22,13 @@ public class TopicDto {
     @JsonProperty("caseUUID")
     private UUID caseUUID;
 
-    @JsonProperty("label")
-    private String topicText;
+    @JsonProperty("text")
+    private String text;
 
     @JsonProperty("topicUUID")
     private UUID topicUUID;
 
     public static TopicDto from(Topic topic) {
-        return new TopicDto(topic.getUuid(), topic.getCreated(), topic.getCaseUUID(), topic.getText(), topic.getTextUUID());
+        return new TopicDto(topic.getUuid(), topic.getCreated(), topic.getCaseUUID(), topic.getText(), topic.getTopicUUID());
     }
 }

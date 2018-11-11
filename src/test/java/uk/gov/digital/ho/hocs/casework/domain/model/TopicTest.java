@@ -23,7 +23,7 @@ public class TopicTest {
         assertThat(topic.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
         assertThat(topic.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(topic.getText()).isEqualTo(text);
-        assertThat(topic.getTextUUID()).isEqualTo(textUUID);
+        assertThat(topic.getTopicUUID()).isEqualTo(textUUID);
 
     }
 

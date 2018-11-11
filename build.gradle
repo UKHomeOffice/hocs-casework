@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '2.0.5.RELEASE'
+		springBootVersion = '2.1.0.RELEASE'
 		camelVersion = '2.22.0'
 	}
 	repositories {
@@ -50,7 +50,7 @@ dependencies {
 	compile group: 'org.apache.camel', name: 'camel-aws', version: camelVersion
 	compile group: 'org.apache.camel', name: 'camel-http4', version: camelVersion
 	compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.6'
-	compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.380'
+	compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.446'
 
 	compile('org.flywaydb:flyway-core')
 

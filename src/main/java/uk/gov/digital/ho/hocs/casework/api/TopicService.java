@@ -56,8 +56,8 @@ public class TopicService {
     }
 
     @Transactional
-    public void createTopic(UUID caseUUID, String topicName, UUID topicUUID) {
-        Topic topic = new Topic(caseUUID, topicName, topicUUID);
+    public void createTopic(UUID caseUUID, String text, UUID topicUUID) {
+        Topic topic = new Topic(caseUUID, text, topicUUID);
         topicDataRepository.save(topic);
         log.info("Created Topic: {} for Case: {}", topic.getUuid(), caseUUID);
     }

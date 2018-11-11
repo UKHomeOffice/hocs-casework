@@ -29,24 +29,24 @@ public class Topic implements Serializable {
     @Getter
     private UUID caseUUID;
 
-    @Column(name = "topic_text")
+    @Column(name = "text")
     @Getter
     private String text;
 
-    @Column(name = "topic_text_uuid")
+    @Column(name = "topic_uuid")
     @Getter
-    private UUID textUUID;
+    private UUID topicUUID;
 
-    public Topic(UUID caseUUID, String topicName, UUID topicNameUUID) {
-        if (caseUUID == null || topicName == null || topicNameUUID == null) {
-            throw new EntityCreationException("Cannot create Topic(%s, %s, %s).", caseUUID, topicName, topicNameUUID);
+    public Topic(UUID caseUUID, String text, UUID topicUUID) {
+        if (caseUUID == null || text == null || topicUUID == null) {
+            throw new EntityCreationException("Cannot create Topic(%s, %s, %s).", caseUUID, text, topicUUID);
         }
 
         this.uuid = UUID.randomUUID();
         this.created = LocalDateTime.now();
         this.caseUUID = caseUUID;
-        this.text = topicName;
-        this.textUUID = topicNameUUID;
+        this.text = text;
+        this.topicUUID = topicUUID;
     }
 
 }

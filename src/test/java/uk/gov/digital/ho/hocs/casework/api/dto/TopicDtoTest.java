@@ -23,8 +23,8 @@ public class TopicDtoTest {
         assertThat(topicDto.getUuid()).isEqualTo(topic.getUuid());
         assertThat(topicDto.getCreated()).isEqualTo(topic.getCreated());
         assertThat(topicDto.getCaseUUID()).isEqualTo(topic.getCaseUUID());
-        assertThat(topicDto.getTopicText()).isEqualTo(topic.getText());
-        assertThat(topicDto.getTopicUUID()).isEqualTo(topic.getTextUUID());
+        assertThat(topicDto.getText()).isEqualTo(topic.getText());
+        assertThat(topicDto.getTopicUUID()).isEqualTo(topic.getTopicUUID());
 
     }
 

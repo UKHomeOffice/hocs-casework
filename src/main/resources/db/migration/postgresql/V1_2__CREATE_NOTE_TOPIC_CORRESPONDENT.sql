@@ -23,13 +23,13 @@ DROP TABLE IF EXISTS topic cascade;
 
 CREATE TABLE IF NOT EXISTS topic
 (
-  id              BIGSERIAL PRIMARY KEY,
-  uuid            UUID      NOT NULL,
-  created         TIMESTAMP NOT NULL,
-  case_uuid       UUID      NOT NULL,
-  topic_text      TEXT,
-  topic_text_uuid UUID      NOT NULL,
-  deleted         BOOLEAN   NOT NULL DEFAULT FALSE,
+  id         BIGSERIAL PRIMARY KEY,
+  uuid       UUID      NOT NULL,
+  created    TIMESTAMP NOT NULL,
+  case_uuid  UUID      NOT NULL,
+  text       TEXT,
+  topic_uuid UUID      NOT NULL,
+  deleted    BOOLEAN   NOT NULL DEFAULT FALSE,
 
   CONSTRAINT topic_uuid_idempotent UNIQUE (uuid),
   CONSTRAINT fk_topic_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)
