@@ -11,13 +11,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.dto.GetCaseTypeResponse;
-import uk.gov.digital.ho.hocs.casework.casedetails.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
-import uk.gov.digital.ho.hocs.casework.security.Authorised;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
