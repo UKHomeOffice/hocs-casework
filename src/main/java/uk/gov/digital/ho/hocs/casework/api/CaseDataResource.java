@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.util.UUID;
@@ -40,6 +41,7 @@ class CaseDataResource {
         return ResponseEntity.ok(CaseDataDto.from(caseData));
     }
 
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @DeleteMapping(value = "/case/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity deleteCase(@PathVariable UUID caseUUID) {
         caseDataService.deleteCase(caseUUID);

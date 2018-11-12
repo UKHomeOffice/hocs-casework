@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseNotesResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.util.Set;
 import java.util.UUID;
@@ -25,6 +27,7 @@ public class CaseNoteResource {
         this.caseNoteService = caseNoteService;
     }
 
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/{caseUUID}/note", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetCaseNotesResponse> getCaseNotesForCase(@PathVariable UUID caseUUID) {
         Set<CaseNote> caseNoteData = caseNoteService.getCaseNotes(caseUUID);

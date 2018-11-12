@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.security.Allocated;
+import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
+import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.util.Set;
 import java.util.UUID;
@@ -29,24 +32,28 @@ class StageResource {
         return ResponseEntity.ok(CreateStageResponse.from(stage));
     }
 
+    @Authorised
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
     public ResponseEntity<StageDto> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
         Stage stage = stageService.getStage(caseUUID, stageUUID);
         return ResponseEntity.ok(StageDto.from(stage));
     }
 
+    @Allocated(allocatedTo = AllocationLevel.USER)
     @PatchMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
     public ResponseEntity updateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageRequest updateStageRequest) {
         stageService.updateStage(caseUUID, stageUUID, updateStageRequest.getTeamUUID(), updateStageRequest.getUserUUID(), updateStageRequest.getStatus());
         return ResponseEntity.ok().build();
     }
 
+    @Authorised
     @GetMapping(value = "/stage/owner/user/{userUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetStagesResponse> getActiveStagesByUserUUID(@PathVariable UUID userUUID) {
         Set<Stage> activeStages = stageService.getActiveStagesByUserUUID(userUUID);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
+    @Authorised
     @GetMapping(value = "/stage/owner/team/{teamUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetStagesResponse> getActiveStagesByTeamUUID(@PathVariable UUID teamUUID) {
         Set<Stage> activeStages = stageService.getActiveStagesByTeamUUID(teamUUID);
@@ -56,6 +63,7 @@ class StageResource {
     /*
     Temp code as call should move to workflow or somewhere that can work out the teams.
      */
+    @Authorised
     @GetMapping(value = "/stage/active", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetStagesResponse> getActiveStages() {
         Set<Stage> activeStages = stageService.getActiveStages();
