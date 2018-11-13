@@ -6,7 +6,7 @@ public enum StageStatusType {
     CREATED("CREATED"),
     UPDATED("UPDATED"),
     REJECTED("REJECTED"),
-    COMPLETE("COMPLETE");
+    COMPLETE("COMPLETED");
 
     @Getter
     private String displayValue;

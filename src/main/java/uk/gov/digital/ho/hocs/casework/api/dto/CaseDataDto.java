@@ -35,9 +35,6 @@ public class CaseDataDto {
     @JsonProperty("primaryCorrespondent")
     private String primaryCorrespondent;
 
-    @JsonProperty("primaryResponse")
-    private String primaryResponse;
-
     public static CaseDataDto from(CaseData caseData) {
 
         return new CaseDataDto(
@@ -46,8 +43,7 @@ public class CaseDataDto {
                 caseData.getCaseDataType().toString(),
                 caseData.getReference(),
                 caseData.getData(),
-                caseData.getPrimaryTopic(),
-                caseData.getPrimaryCorrespondent(),
-                caseData.getPrimaryResponse());
+                caseData.getPrimaryTopicUUID(),
+                caseData.getPrimaryCorrespondentUUID());
     }
 }

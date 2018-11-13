@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 
@@ -10,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "stage")
 public class Stage implements Serializable {
@@ -17,7 +19,7 @@ public class Stage implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Getter
     @Column(name = "uuid")

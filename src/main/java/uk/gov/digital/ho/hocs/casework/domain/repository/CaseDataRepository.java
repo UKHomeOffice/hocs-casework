@@ -9,7 +9,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import java.util.UUID;
 
 @Repository
-public interface CaseDataRepository extends CrudRepository<CaseData, String> {
+public interface CaseDataRepository extends CrudRepository<CaseData, Long> {
 
     @Query(value = "SELECT nextval('case_ref')", nativeQuery = true)
     Long getNextSeriesId();

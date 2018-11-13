@@ -27,9 +27,8 @@ public class CaseDataTest {
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
         assertThat(caseData.getCaseDataType()).isEqualTo(type);
         assertThat(caseData.getData()).isEqualTo("{}");
-        assertThat(caseData.getPrimaryCorrespondent()).isEqualTo(null);
-        assertThat(caseData.getPrimaryResponse()).isEqualTo(null);
-        assertThat(caseData.getPrimaryTopic()).isEqualTo(null);
+        assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
+        assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
 
     }
 

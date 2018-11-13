@@ -13,7 +13,7 @@ public class StageStatusTypeTest {
         assertThat(CREATED.getDisplayValue()).isEqualTo("CREATED");
         assertThat(UPDATED.getDisplayValue()).isEqualTo("UPDATED");
         assertThat(REJECTED.getDisplayValue()).isEqualTo("REJECTED");
-        assertThat(COMPLETE.getDisplayValue()).isEqualTo("COMPLETE");
+        assertThat(COMPLETE.getDisplayValue()).isEqualTo("COMPLETED");
 
     }
 
