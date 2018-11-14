@@ -12,10 +12,10 @@ import java.util.UUID;
 @Repository
 public interface TopicDataRepository extends CrudRepository<Topic, Long> {
 
-    @Query(value = "SELECT ato.* FROM active_topic ato WHERE aca.uuid = ?1", nativeQuery = true)
+    @Query(value = "SELECT ato.* FROM active_topic ato WHERE ato.case_uuid = ?1", nativeQuery = true)
     Set<Topic> findAllByCaseUUID(UUID caseUUID);
 
-    @Query(value = "SELECT ato.* FROM active_topic ato WHERE aca.uuid = ?1 AND ato.uuid = ?2", nativeQuery = true)
+    @Query(value = "SELECT ato.* FROM active_topic ato WHERE ato.case_uuid = ?1 AND ato.uuid = ?2", nativeQuery = true)
     Topic findByUUID(UUID caseUUID, UUID topicUUID);
 
     @Query(value = "SELECT pt.* FROM primary_topic pt WHERE pt.case_uuid = ?1", nativeQuery = true)
