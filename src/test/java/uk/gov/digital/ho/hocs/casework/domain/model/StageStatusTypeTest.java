@@ -13,7 +13,7 @@ public class StageStatusTypeTest {
         assertThat(CREATED.getDisplayValue()).isEqualTo("CREATED");
         assertThat(UPDATED.getDisplayValue()).isEqualTo("UPDATED");
         assertThat(REJECTED.getDisplayValue()).isEqualTo("REJECTED");
-        assertThat(COMPLETE.getDisplayValue()).isEqualTo("COMPLETED");
+        assertThat(COMPLETED.getDisplayValue()).isEqualTo("COMPLETED");
 
     }
 
@@ -22,7 +22,7 @@ public class StageStatusTypeTest {
         assertOrderValue(CREATED, 0);
         assertOrderValue(UPDATED, 1);
         assertOrderValue(REJECTED, 2);
-        assertOrderValue(COMPLETE, 3);
+        assertOrderValue(COMPLETED, 3);
 
     }
 
@@ -33,7 +33,7 @@ public class StageStatusTypeTest {
                 case CREATED:
                 case UPDATED:
                 case REJECTED:
-                case COMPLETE:
+                case COMPLETED:
                     break;
                 default:
                     fail("You've added a StageStatusType, make sure you've written all the tests!");
