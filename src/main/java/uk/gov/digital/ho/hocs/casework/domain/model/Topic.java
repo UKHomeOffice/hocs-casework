@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "topic")
 public class Topic implements Serializable {
@@ -15,7 +17,7 @@ public class Topic implements Serializable {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(name = "uuid")
     @Getter
@@ -29,11 +31,11 @@ public class Topic implements Serializable {
     @Getter
     private UUID caseUUID;
 
-    @Column(name = "topic_text")
+    @Column(name = "text")
     @Getter
     private String text;
 
-    @Column(name = "topic_text_uuid")
+    @Column(name = "text_uuid")
     @Getter
     private UUID textUUID;
 

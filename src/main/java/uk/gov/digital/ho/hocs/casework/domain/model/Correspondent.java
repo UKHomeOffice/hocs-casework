@@ -1,12 +1,14 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "correspondent")
 public class Correspondent {
@@ -14,7 +16,7 @@ public class Correspondent {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Getter
     @Column(name = "uuid")
