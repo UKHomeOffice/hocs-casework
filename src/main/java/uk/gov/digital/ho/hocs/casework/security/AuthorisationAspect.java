@@ -8,7 +8,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 
@@ -31,7 +30,6 @@ public class AuthorisationAspect {
     public Object validateUserAccess(ProceedingJoinPoint joinPoint, Authorised authorised) throws Throwable {
 
         UUID caseUUID;
-        CaseData caseData;
         CaseDataType caseType;
         AccessLevel requestedAccessLevel;
 
@@ -68,6 +66,7 @@ public class AuthorisationAspect {
     }
 
     private CaseDataType getCaseTypeFromId(UUID caseUUID) {
+
         return caseService.getCase(caseUUID).getCaseDataType();
     }
 

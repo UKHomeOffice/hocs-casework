@@ -34,7 +34,7 @@ public class UserPermissionsServiceTest {
 
 
     @Test
-    public void shouldParseValidUserGroupList() {
+    public void shouldParseValidUserGroups() {
         String groups =
                 "/DCU/team1/TRO/READ," +
                         "/DCU/team2/TRO/WRITE," +
@@ -50,7 +50,7 @@ public class UserPermissionsServiceTest {
 
 
     @Test
-    public void shouldIgnoreInvalidUserGroupItems() {
+    public void shouldIgnoreInvalidUserGroups() {
         String groups =
                 "/DCU/team1/TRO/READ," +
                         "/DCU/team2/TRO/," +

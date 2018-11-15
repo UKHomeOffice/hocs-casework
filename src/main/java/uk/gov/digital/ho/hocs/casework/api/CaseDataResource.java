@@ -9,7 +9,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
-import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.util.UUID;
