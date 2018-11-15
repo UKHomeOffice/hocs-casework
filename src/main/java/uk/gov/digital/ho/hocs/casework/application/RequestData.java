@@ -14,9 +14,10 @@ import java.util.UUID;
 public class RequestData implements HandlerInterceptor {
 
 
-    private static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
-    private static final String USER_ID_HEADER = "X-Auth-Userid";
-    private static final String USERNAME_HEADER = "X-Auth-Username";
+    public static final String CORRELATION_ID_HEADER = "X-Correlation-Id";
+    public static final String USER_ID_HEADER = "X-Auth-Userid";
+    public static final String USERNAME_HEADER = "X-Auth-Username";
+    public static final String GROUP_HEADER = "X-Auth-Groups";
 
     private static final String ANONYMOUS = "anonymous";
 
@@ -38,6 +39,8 @@ public class RequestData implements HandlerInterceptor {
         MDC.put(CORRELATION_ID_HEADER, initialiseCorrelationId(request));
         MDC.put(USER_ID_HEADER, initialiseUserId(request));
         MDC.put(USERNAME_HEADER, initialiseUserName(request));
+        MDC.put(GROUP_HEADER, initialiseGroups(request));
+
         return true;
     }
 
@@ -69,16 +72,20 @@ public class RequestData implements HandlerInterceptor {
         return !isNullOrEmpty(username) ? username : ANONYMOUS;
     }
 
+    private String initialiseGroups(HttpServletRequest request) {
+        String groups = request.getHeader(GROUP_HEADER);
+        return !isNullOrEmpty(groups) ? groups : "/ANONYMOUS/ANONYMOUS";
+    }
+
+
     public String correlationId() {
         return MDC.get(CORRELATION_ID_HEADER);
     }
 
-    public String userId() {
-        return MDC.get(USER_ID_HEADER);
-    }
+    public String userId() { return MDC.get(USER_ID_HEADER); }
 
-    public String username() {
-        return MDC.get(USERNAME_HEADER);
-    }
+    public String username() { return MDC.get(USERNAME_HEADER); }
+
+    public String groups() { return MDC.get(GROUP_HEADER); }
 
 }

@@ -8,6 +8,8 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.util.UUID;
 
@@ -24,18 +26,21 @@ class CaseDataResource {
         this.caseDataService = caseDataService;
     }
 
+    @Authorised()
     @PostMapping(value = "/case", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         CaseData caseData = caseDataService.createCase(request.getType(), request.getData());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CaseDataDto> getCase(@PathVariable UUID caseUUID) {
         CaseData caseData = caseDataService.getCase(caseUUID);
         return ResponseEntity.ok(CaseDataDto.from(caseData));
     }
 
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @DeleteMapping(value = "/case/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity deleteCase(@PathVariable UUID caseUUID) {
         caseDataService.deleteCase(caseUUID);

@@ -53,8 +53,17 @@ public class CaseData {
             throw new EntityCreationException("Cannot create CaseData (%s,%s).", type, caseNumber);
         }
         this.type = type.toString();
-        this.reference = String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
+        this.reference = generateCaseReference(caseNumber);
         update(data, objectMapper);
+    }
+
+    public CaseData(CaseDataType caseType, long caseNumber) {
+        this.type = caseType.getDisplayValue();
+        this.reference = generateCaseReference(caseNumber);
+    }
+
+    private String generateCaseReference(Long caseNumber) {
+        return String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
     }
 
     private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {
