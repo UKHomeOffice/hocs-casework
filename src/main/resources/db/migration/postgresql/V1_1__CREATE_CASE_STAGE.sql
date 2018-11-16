@@ -66,9 +66,6 @@ CREATE INDEX stage_case_uuid_complete
 CREATE INDEX stage_team_uuid_complete
   ON stage (team_uuid, case_uuid)
   WHERE status <> 'COMPLETED';
-CREATE INDEX stage_user_uuid_complete
-  ON stage (user_uuid, case_uuid)
-  WHERE status <> 'COMPLETED';
 
 CREATE OR REPLACE VIEW active_stage AS
   SELECT c.reference AS case_reference, c.type AS case_type, c.data as data, s.*
