@@ -8,6 +8,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageStatusType;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
+import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
@@ -19,10 +20,12 @@ import java.util.UUID;
 public class StageService {
 
     private final StageRepository stageRepository;
+    private final UserPermissionsService userPermissionsService;
 
     @Autowired
-    public StageService(StageRepository stageRepository) {
+    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService) {
         this.stageRepository = stageRepository;
+        this.userPermissionsService = userPermissionsService;
     }
 
     @Transactional
@@ -69,7 +72,8 @@ public class StageService {
     }
 
     public Set<Stage> getActiveStages() {
-        return stageRepository.findAllBy();
+        Set<UUID> teams = userPermissionsService.getUserTeams();
+        return stageRepository.findAllBy(teams, userPermissionsService.getUserId());
     }
 
 }

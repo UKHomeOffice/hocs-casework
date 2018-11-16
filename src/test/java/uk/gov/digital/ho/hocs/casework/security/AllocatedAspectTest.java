@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.security;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,7 +10,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
-import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
@@ -27,9 +25,6 @@ import static org.mockito.Mockito.*;
 public class AllocatedAspectTest {
 
     @Mock
-    private RequestData requestData;
-
-    @Mock
     private StageService stageService;
 
     @Mock
@@ -43,10 +38,8 @@ public class AllocatedAspectTest {
     private UUID stageUUID = UUID.randomUUID();
     private UUID caseUUID = UUID.randomUUID();
 
-    private String userId = UUID.randomUUID().toString();
-    private String teamId = UUID.randomUUID().toString();
-
-
+    private UUID userId = UUID.randomUUID();
+    private UUID teamId = UUID.randomUUID();
 
     @Mock
     private ProceedingJoinPoint proceedingJoinPoint;
@@ -66,16 +59,16 @@ public class AllocatedAspectTest {
         args[1] = stageUUID;
         args[0] = caseUUID;
         when(stageService.getStage(caseUUID, stageUUID)).thenReturn(new Stage(UUID.randomUUID(),
-                StageType.DCU_DTEN_DATA_INPUT, UUID.fromString(teamId), UUID.fromString(userId), LocalDate.now()));
+                StageType.DCU_DTEN_DATA_INPUT, teamId, userId, LocalDate.now()));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
-        when(requestData.userId()).thenReturn(userId);
+        when(userService.getUserId()).thenReturn(userId);
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.USER);
 
-        aspect = new AllocatedAspect(requestData, stageService,userService);
+        aspect = new AllocatedAspect(stageService,userService);
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         verify(stageService, times(1)).getStage(caseUUID, stageUUID);
-        verify(requestData, times(1)).userId();
+        verify(userService, times(1)).getUserId();
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
 
@@ -86,17 +79,17 @@ public class AllocatedAspectTest {
         args[1] = stageUUID;
         args[0] = caseUUID;
         when(stageService.getStage(caseUUID, stageUUID)).thenReturn(new Stage(UUID.randomUUID(),
-                StageType.DCU_DTEN_DATA_INPUT, UUID.fromString(teamId), UUID.fromString(userId), LocalDate.now()));
+                StageType.DCU_DTEN_DATA_INPUT,teamId, userId, LocalDate.now()));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.TEAM);
         when(userService.getUserTeams()).thenReturn(new HashSet<>(Arrays.asList(teamId)));
 
-        aspect = new AllocatedAspect(requestData, stageService,userService);
+        aspect = new AllocatedAspect(stageService,userService);
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         verify(userService, times(1)).getUserTeams();
         verify(stageService, times(1)).getStage(caseUUID,stageUUID);
-        verify(requestData, never()).userId();
+        verify(userService, never()).getUserId();
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
 
@@ -107,11 +100,11 @@ public class AllocatedAspectTest {
         args[1] = stageUUID;
         args[0] = caseUUID;
         when(stageService.getStage(caseUUID, stageUUID)).thenReturn(new Stage(UUID.randomUUID(),
-                StageType.DCU_DTEN_DATA_INPUT, UUID.fromString(teamId), UUID.fromString(userId), LocalDate.now()));
+                StageType.DCU_DTEN_DATA_INPUT, teamId, userId, LocalDate.now()));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
-        when(requestData.userId()).thenReturn(userId);
+        when(userService.getUserId()).thenReturn(userId);
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.USER);
-        aspect = new AllocatedAspect(requestData, stageService,userService);
+        aspect = new AllocatedAspect(stageService,userService);
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
         verify(proceedingJoinPoint, times(1)).proceed();
 
@@ -124,11 +117,11 @@ public class AllocatedAspectTest {
         args[0] = caseUUID;
         args[1] = stageUUID;
         when(stageService.getStage(caseUUID, stageUUID)).thenReturn(new Stage(UUID.randomUUID(),
-                StageType.DCU_DTEN_DATA_INPUT, UUID.fromString(teamId), UUID.fromString(userId), LocalDate.now()));
+                StageType.DCU_DTEN_DATA_INPUT,teamId, userId, LocalDate.now()));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.TEAM);
         when(userService.getUserTeams()).thenReturn(new HashSet<>(Arrays.asList(teamId)));
-        aspect = new AllocatedAspect(requestData, stageService,userService);
+        aspect = new AllocatedAspect(stageService,userService);
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
         verify(proceedingJoinPoint, times(1)).proceed();
 
@@ -142,11 +135,11 @@ public class AllocatedAspectTest {
         args[0] = caseUUID;
 
         when(stageService.getStage(caseUUID, stageUUID)).thenReturn(new Stage(UUID.randomUUID(),
-                StageType.DCU_DTEN_DATA_INPUT, UUID.fromString(teamId), UUID.fromString(userId), LocalDate.now()));
+                StageType.DCU_DTEN_DATA_INPUT, teamId, userId, LocalDate.now()));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
-        when(requestData.userId()).thenReturn(UUID.randomUUID().toString());
+        when(userService.getUserId()).thenReturn(UUID.randomUUID());
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.USER);
-        aspect = new AllocatedAspect(requestData, stageService,userService);
+        aspect = new AllocatedAspect( stageService,userService);
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
         verify(proceedingJoinPoint, never()).proceed();
 
@@ -160,11 +153,11 @@ public class AllocatedAspectTest {
         args[0] = caseUUID;
 
         when(stageService.getStage(caseUUID, stageUUID)).thenReturn(new Stage(UUID.randomUUID(),
-                StageType.DCU_DTEN_DATA_INPUT, UUID.fromString(teamId), UUID.fromString(userId), LocalDate.now()));
+                StageType.DCU_DTEN_DATA_INPUT, teamId, userId, LocalDate.now()));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.TEAM);
-        when(userService.getUserTeams()).thenReturn(new HashSet<String>(){{UUID.randomUUID().toString();}});
-        aspect = new AllocatedAspect(requestData,stageService,userService);
+        when(userService.getUserTeams()).thenReturn(new HashSet<UUID>(){{UUID.randomUUID();}});
+        aspect = new AllocatedAspect(stageService,userService);
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
         verify(proceedingJoinPoint, never()).proceed();
 
@@ -177,7 +170,7 @@ public class AllocatedAspectTest {
         args[1] = "bad UUID";
         args[0] = caseUUID;
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
-        aspect = new AllocatedAspect(requestData, stageService,userService);
+        aspect = new AllocatedAspect(stageService,userService);
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
         verify(proceedingJoinPoint, never()).proceed();
 

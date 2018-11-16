@@ -13,6 +13,8 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -36,11 +38,11 @@ public class UserPermissionsServiceTest {
     @Test
     public void shouldParseValidUserGroups() {
         String groups =
-                "/DCU/team1/TRO/READ," +
-                        "/DCU/team2/TRO/WRITE," +
-                        "/DCU/team3/MIN/WRITE," +
-                        "/ABC/team1/MIN/WRITE," +
-                        "/ABC/team2/MIN/OWNER";
+                "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
+                        "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/WRITE," +
+                        "/DCU/f1825c7d-baff-4c09-8056-2166760ccbd2/MIN/WRITE," +
+                        "/ABC/1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d/MIN/WRITE," +
+                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER";
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
@@ -52,11 +54,11 @@ public class UserPermissionsServiceTest {
     @Test
     public void shouldIgnoreInvalidUserGroups() {
         String groups =
-                "/DCU/team1/TRO/READ," +
-                        "/DCU/team2/TRO/," +
-                        "/DCU/team3," +
+                "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
+                        "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/," +
+                        "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01," +
                         "/ABC/," +
-                        "/ABC/team2/MIN/OWNER";
+                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER";
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
@@ -69,10 +71,11 @@ public class UserPermissionsServiceTest {
     @Test
     public void shouldGetPermissionsForCaseType() {
         String groups =
-                "/DCU/team1/TRO/READ," +
-                        "/DCU/team2/TRO/WRITE," +
-                        "/ABC/team1/MIN/WRITE," +
-                        "/ABC/team2/MIN/OWNER";
+                "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
+                        "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/WRITE," +
+                        "/DCU/f1825c7d-baff-4c09-8056-2166760ccbd2/MIN/WRITE," +
+                        "/ABC/1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d/MIN/WRITE," +
+                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER";
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
@@ -86,11 +89,11 @@ public class UserPermissionsServiceTest {
     @Test
     public void shouldGetUnitsForUser() {
         String groups =
-                "/DCU/team1/TRO/READ," +
-                        "/DCU/team2/TRO/WRITE," +
-                        "/DCU/team3/MIN/WRITE," +
-                        "/ABC/team1/MIN/WRITE," +
-                        "/ABC/team2/MIN/OWNER";
+                "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
+                        "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/WRITE," +
+                        "/DCU/f1825c7d-baff-4c09-8056-2166760ccbd2/MIN/WRITE," +
+                        "/ABC/1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d/MIN/WRITE," +
+                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER";
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
@@ -103,28 +106,28 @@ public class UserPermissionsServiceTest {
     @Test
     public void shouldGetTeamsForUser() {
         String groups =
-                "/DCU/team1/TRO/READ," +
-                        "/DCU/team2/TRO/WRITE," +
-                        "/DCU/team3/MIN/WRITE," +
-                        "/ABC/team1/MIN/WRITE," +
-                        "/ABC/team2/MIN/OWNER";
+                "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
+                        "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/WRITE," +
+                        "/DCU/f1825c7d-baff-4c09-8056-2166760ccbd2/MIN/WRITE," +
+                        "/ABC/1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d/MIN/WRITE," +
+                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER";
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Set<String> teams = service.getUserTeams();
-        assertThat(teams).contains("team1");
-        assertThat(teams).contains("team2");
-        assertThat(teams).contains("team3");
+        Set<UUID> teams = service.getUserTeams();
+        assertThat(teams).contains(UUID.fromString("1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d"));
+        assertThat(teams).contains(UUID.fromString("f1825c7d-baff-4c09-8056-2166760ccbd2"));
+        assertThat(teams).contains(UUID.fromString("1325fe16-b864-42c7-85c2-7cab2863fe01"));
     }
 
     @Test
     public void shouldGetCaseTypesForUser() {
         String groups =
-                "/DCU/team1/TRO/READ," +
-                        "/DCU/team2/TRO/WRITE," +
-                        "/DCU/team3/MIN/WRITE," +
-                        "/ABC/team1/MIN/WRITE," +
-                        "/ABC/team2/MIN/OWNER";
+                "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
+                        "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/WRITE," +
+                        "/DCU/f1825c7d-baff-4c09-8056-2166760ccbd2/MIN/WRITE," +
+                        "/ABC/1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d/MIN/WRITE," +
+                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER";
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);

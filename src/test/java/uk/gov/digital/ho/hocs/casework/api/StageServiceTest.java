@@ -11,8 +11,11 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageStatusType;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
+import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.Mockito.*;
@@ -30,10 +33,12 @@ public class StageServiceTest {
     @Mock
     private StageRepository stageRepository;
     private StageService stageService;
+    @Mock
+    private UserPermissionsService userPermissionsService;
 
     @Before
     public void setUp() {
-        this.stageService = new StageService(stageRepository);
+        this.stageService = new StageService(stageRepository, userPermissionsService);
     }
 
     @Test
@@ -322,10 +327,17 @@ public class StageServiceTest {
 
     @Test
     public void shouldGetActiveStages() {
+        UUID userId = UUID.randomUUID();
+        Set<UUID> teams = new HashSet<UUID>(){{
+            add(UUID.randomUUID());
+        }};
+
+        when(userPermissionsService.getUserId()).thenReturn(userId);
+        when(userPermissionsService.getUserTeams()).thenReturn(teams);
 
         stageService.getActiveStages();
 
-        verify(stageRepository, times(1)).findAllBy();
+        verify(stageRepository, times(1)).findAllBy(teams, userId);
 
         verifyNoMoreInteractions(stageRepository);
     }
