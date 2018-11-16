@@ -332,12 +332,11 @@ public class StageServiceTest {
             add(UUID.randomUUID());
         }};
 
-        when(userPermissionsService.getUserId()).thenReturn(userId);
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
 
         stageService.getActiveStages();
 
-        verify(stageRepository, times(1)).findAllBy(teams, userId);
+        verify(stageRepository, times(1)).findAllBy(teams);
 
         verifyNoMoreInteractions(stageRepository);
     }
