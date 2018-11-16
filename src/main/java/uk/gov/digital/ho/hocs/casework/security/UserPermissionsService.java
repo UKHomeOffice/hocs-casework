@@ -28,7 +28,7 @@ public class UserPermissionsService {
     public AccessLevel getMaxAccessLevel(CaseDataType caseType) {
 
         return getUserAccessLevels(caseType).stream()
-                .max(Comparator.comparing(level -> level.getLevel()))
+                .max(Comparator.comparing(AccessLevel::getLevel))
                 .orElseThrow(() ->
                         new SecurityExceptions.PermissionCheckException("User does not have any permissions for this case type"));
     }
@@ -43,7 +43,7 @@ public class UserPermissionsService {
 
     public Set<String> getUserUnits() {
         return getUserPermission().entrySet().stream()
-                .map(unit -> unit.getKey())
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
     }
 
@@ -58,7 +58,7 @@ public class UserPermissionsService {
         return getUserPermission().entrySet().stream()
                 .flatMap(unit -> unit.getValue().values().stream())
                 .flatMap(team -> team.entrySet().stream())
-                .map(caseType -> caseType.getKey())
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toSet());
     }
 

@@ -327,7 +327,6 @@ public class StageServiceTest {
 
     @Test
     public void shouldGetActiveStages() {
-        UUID userId = UUID.randomUUID();
         Set<UUID> teams = new HashSet<UUID>(){{
             add(UUID.randomUUID());
         }};
