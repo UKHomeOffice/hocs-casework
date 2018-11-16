@@ -73,7 +73,7 @@ public class StageService {
 
     public Set<Stage> getActiveStages() {
         Set<UUID> teams = userPermissionsService.getUserTeams();
-        return stageRepository.findAllBy(teams, userPermissionsService.getUserId());
+        return stageRepository.findAllBy(teams);
     }
 
 }
