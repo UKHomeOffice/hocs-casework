@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "case_data")
 public class CaseData {
@@ -17,7 +19,7 @@ public class CaseData {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Getter
     @Column(name = "uuid")
@@ -39,16 +41,12 @@ public class CaseData {
     private String data = "{}";
 
     @Getter
-    @Column(name = "primary_topic")
-    private String primaryTopic;
+    @Column(name = "primary_topic_uuid")
+    private String primaryTopicUUID;
 
     @Getter
-    @Column(name = "primary_correspondent")
-    private String primaryCorrespondent;
-
-    @Getter
-    @Column(name = "primary_response")
-    private String primaryResponse;
+    @Column(name = "primary_correspondent_uuid")
+    private String primaryCorrespondentUUID;
 
     public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper) {
         if (type == null || caseNumber == null) {
