@@ -286,51 +286,8 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldGetActiveStagesUserUUID() {
-
-        stageService.getActiveStagesByUserUUID(userUUID);
-
-        verify(stageRepository, times(1)).findAllByUserUUID(userUUID);
-
-        verifyNoMoreInteractions(stageRepository);
-    }
-
-    @Test
-    public void shouldGetActiveStagesUserUUIDNull() {
-
-        stageService.getActiveStagesByUserUUID(null);
-
-        verify(stageRepository, times(1)).findAllByUserUUID(null);
-
-        verifyNoMoreInteractions(stageRepository);
-    }
-
-    @Test
-    public void shouldGetActiveStagesTeamUUID() {
-
-        stageService.getActiveStagesByTeamUUID(teamUUID);
-
-        verify(stageRepository, times(1)).findAllByTeamUUID(teamUUID);
-
-        verifyNoMoreInteractions(stageRepository);
-    }
-
-    @Test
-    public void shouldGetActiveStagesTeamUUIDNull() {
-
-        stageService.getActiveStagesByTeamUUID(null);
-
-        verify(stageRepository, times(1)).findAllByTeamUUID(null);
-
-        verifyNoMoreInteractions(stageRepository);
-    }
-
-    @Test
     public void shouldGetActiveStages() {
-        UUID userId = UUID.randomUUID();
-        Set<UUID> teams = new HashSet<UUID>(){{
-            add(UUID.randomUUID());
-        }};
+        Set<UUID> teams = new HashSet<>();
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
 
