@@ -21,7 +21,11 @@ public class UserPermissionsService {
         this.requestData = requestData;
     }
 
-    AccessLevel getMaxAccessLevel(CaseDataType caseType) {
+    public UUID getUserId() {
+        return UUID.fromString(requestData.userId());
+    }
+
+    public AccessLevel getMaxAccessLevel(CaseDataType caseType) {
 
         return getUserAccessLevels(caseType).stream()
                 .max(Comparator.comparing(level -> level.getLevel()))
@@ -29,7 +33,7 @@ public class UserPermissionsService {
                         new SecurityExceptions.PermissionCheckException("User does not have any permissions for this case type"));
     }
 
-    Set<AccessLevel> getUserAccessLevels(CaseDataType caseType) {
+    public Set<AccessLevel> getUserAccessLevels(CaseDataType caseType) {
 
         return  getUserPermission().entrySet().stream()
                 .flatMap(unit -> unit.getValue().values().stream())
@@ -37,20 +41,20 @@ public class UserPermissionsService {
                 .collect(Collectors.toSet());
     }
 
-    Set<String> getUserUnits() {
+    public Set<String> getUserUnits() {
         return getUserPermission().entrySet().stream()
                 .map(unit -> unit.getKey())
                 .collect(Collectors.toSet());
     }
 
-    Set<String> getUserTeams() {
+    public Set<UUID> getUserTeams() {
       return getUserPermission().entrySet().stream()
                 .flatMap(unit -> unit.getValue().entrySet().stream())
-                .map(team -> team.getKey())
+                .map(team -> UUID.fromString(team.getKey()))
                 .collect(Collectors.toSet());
     }
 
-    Set<CaseDataType> getUserCaseTypes() {
+    public Set<CaseDataType> getUserCaseTypes() {
         return getUserPermission().entrySet().stream()
                 .flatMap(unit -> unit.getValue().values().stream())
                 .flatMap(team -> team.entrySet().stream())
@@ -58,7 +62,7 @@ public class UserPermissionsService {
                 .collect(Collectors.toSet());
     }
 
-    Map<String, Map<String, Map<CaseDataType,Set<AccessLevel>>>> getUserPermission() {
+    public Map<String, Map<String, Map<CaseDataType,Set<AccessLevel>>>> getUserPermission() {
         List<List<String>> groups = Arrays.stream(requestData.groups().split(","))
                 .map(g -> Arrays.asList(g.split("/")))
                 .collect(Collectors.toList());

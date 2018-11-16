@@ -7,8 +7,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
-import uk.gov.digital.ho.hocs.casework.application.RequestData;
-
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,7 +16,6 @@ import java.util.UUID;
 @Slf4j
 public class AllocatedAspect {
 
-    private RequestData requestData;
     private StageService stageService;
     private UserPermissionsService userService;
 
@@ -39,7 +36,7 @@ public class AllocatedAspect {
         }
 
         if(allocated.allocatedTo() == AllocationLevel.USER) {
-            UUID userId = UUID.fromString(requestData.userId());
+            UUID userId = userService.getUserId();
 
             UUID assignedUser = stageService.getStage(caseUUID,stageUUID).getUserUUID();
             if (!userId.equals(assignedUser)) {
@@ -48,8 +45,8 @@ public class AllocatedAspect {
             return joinPoint.proceed();
         }
          else {
-            Set<String> teams = userService.getUserTeams();
-            String assignedTeam = stageService.getStage(caseUUID, stageUUID).getTeamUUID().toString();
+            Set<UUID> teams = userService.getUserTeams();
+            UUID assignedTeam = stageService.getStage(caseUUID, stageUUID).getTeamUUID();
             if (!teams.contains(assignedTeam)) {
                 throw new SecurityExceptions.StageNotAssignedToUserTeamException("Stage " + stageUUID.toString() + " is assigned to " + assignedTeam);
             }

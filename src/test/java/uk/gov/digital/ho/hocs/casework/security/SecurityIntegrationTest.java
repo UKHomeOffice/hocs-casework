@@ -80,17 +80,17 @@ public class SecurityIntegrationTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
+
     @Test
     public void shouldReturnNotFoundIfCaseUUIDNotFound() {
-            UUID caseUUID = UUID.randomUUID();
-           when(caseDataService.getCase(caseUUID)).thenThrow(new EntityNotFoundException("Not found"));
-            headers.add(RequestData.USER_ID_HEADER, userId);
-            headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");
-            HttpEntity httpEntity = new HttpEntity(headers);
-            ResponseEntity result = restTemplate.exchange( getBasePath()  + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
-            assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        }
-
+        UUID caseUUID = UUID.randomUUID();
+        when(caseDataService.getCase(caseUUID)).thenThrow(new EntityNotFoundException("Not found"));
+        headers.add(RequestData.USER_ID_HEADER, userId);
+        headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");
+        HttpEntity httpEntity = new HttpEntity(headers);
+        ResponseEntity result = restTemplate.exchange( getBasePath()  + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
     private String getBasePath() {
         return "http://localhost:"+ port;
     }
