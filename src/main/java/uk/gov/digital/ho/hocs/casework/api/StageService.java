@@ -63,14 +63,6 @@ public class StageService {
         log.info("Set Stage Deadline: {} ({}) for Case {}", stageUUID, deadline, caseUUID);
     }
 
-    public Set<Stage> getActiveStagesByUserUUID(UUID userUUID) {
-        return stageRepository.findAllByUserUUID(userUUID);
-    }
-
-    public Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
-        return stageRepository.findAllByTeamUUID(teamUUID);
-    }
-
     public Set<Stage> getActiveStages() {
         Set<UUID> teams = userPermissionsService.getUserTeams();
         return stageRepository.findAllBy(teams);

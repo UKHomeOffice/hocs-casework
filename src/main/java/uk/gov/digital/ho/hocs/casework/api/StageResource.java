@@ -46,23 +46,8 @@ class StageResource {
         return ResponseEntity.ok().build();
     }
 
-    //TODO: review these resources once front end is clearer
-//    @GetMapping(value = "/stage/owner/user/{userUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
-//    public ResponseEntity<GetStagesResponse> getActiveStagesByUserUUID(@PathVariable UUID userUUID) {
-//        Set<Stage> activeStages = stageService.getActiveStagesByUserUUID(userUUID);
-//        return ResponseEntity.ok(GetStagesResponse.from(activeStages));
-//    }
-//
-//    @GetMapping(value = "/stage/owner/team/{teamUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
-//    public ResponseEntity<GetStagesResponse> getActiveStagesByTeamUUID(@PathVariable UUID teamUUID) {
-//        Set<Stage> activeStages = stageService.getActiveStagesByTeamUUID(teamUUID);
-//        return ResponseEntity.ok(GetStagesResponse.from(activeStages));
-//    }
-
-
     @GetMapping(value = "/stage/active", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetStagesResponse> getActiveStages() {
-
         Set<Stage> activeStages = stageService.getActiveStages();
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
