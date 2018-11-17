@@ -97,9 +97,17 @@ public class Stage implements Serializable {
             throw new EntityCreationException("Cannot update Stage (%s, %s).", teamUUID, null);
         }
 
-        this.teamUUID = teamUUID;
-        this.userUUID = userUUID;
-        this.status = stageStatusType.toString();
+        if (teamUUID != null) {
+            this.teamUUID = teamUUID;
+        }
+
+        if (userUUID != null) {
+            this.userUUID = userUUID;
+        }
+
+        if (this.status != null) {
+            this.status = stageStatusType.toString();
+        }
     }
 
 }
