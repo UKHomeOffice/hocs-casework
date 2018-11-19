@@ -105,7 +105,7 @@ public class Stage implements Serializable {
             this.userUUID = userUUID;
         }
 
-        if (status != null) {
+        if (stageStatusType != null) {
             this.status = stageStatusType.toString();
         }
     }
