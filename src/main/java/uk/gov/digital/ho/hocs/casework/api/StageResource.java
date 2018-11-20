@@ -40,7 +40,7 @@ class StageResource {
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER)
-    @PatchMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
     public ResponseEntity updateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageRequest updateStageRequest) {
         stageService.updateStage(caseUUID, stageUUID, updateStageRequest.getTeamUUID(), updateStageRequest.getUserUUID(), updateStageRequest.getStatus());
         return ResponseEntity.ok().build();

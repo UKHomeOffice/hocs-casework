@@ -53,7 +53,7 @@ public class TopicResource {
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER)
-    @DeleteMapping(value = "/case/{caseUUID}/topic/{topicUUID}", consumes = APPLICATION_JSON_UTF8_VALUE)
+    @DeleteMapping(value = "/case/{caseUUID}/topic/{topicUUID}")
     public ResponseEntity deleteTopic(@PathVariable UUID caseUUID, @PathVariable UUID topicUUID) {
         topicService.deleteTopic(caseUUID, topicUUID);
         return ResponseEntity.ok().build();

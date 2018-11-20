@@ -22,6 +22,6 @@ public interface TopicDataRepository extends CrudRepository<Topic, Long> {
     Topic getPrimaryTopic(UUID caseUUID);
 
     @Modifying
-    @Query(value = "UPDATE topic t SET t.deleted = TRUE WHERE t.uuid = ?1", nativeQuery = true)
+    @Query(value = "UPDATE topic SET deleted = TRUE WHERE uuid = ?1", nativeQuery = true)
     int deleteTopic(UUID topicUUID);
 }
