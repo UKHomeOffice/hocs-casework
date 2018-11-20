@@ -53,14 +53,14 @@ public class Stage implements Serializable {
     private UUID userUUID;
 
     @Getter
-    @Column(name = "case_reference", insertable = false)
+    @Column(name = "case_reference", insertable = false, updatable = false)
     private String caseReference;
 
-    @Column(name = "case_type", insertable = false)
+    @Column(name = "case_type", insertable = false, updatable = false)
     private String caseType;
 
     @Getter
-    @Column(name = "data", insertable = false)
+    @Column(name = "data", insertable = false, updatable = false)
     private String data;
 
     public Stage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID, LocalDate deadline) {
