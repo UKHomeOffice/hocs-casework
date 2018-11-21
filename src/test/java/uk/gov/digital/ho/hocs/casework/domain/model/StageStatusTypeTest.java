@@ -10,7 +10,9 @@ public class StageStatusTypeTest {
 
     @Test
     public void getDisplayValue() {
-        assertThat(CREATED.getDisplayValue()).isEqualTo("CREATED");
+        assertThat(UNASSIGNED.getDisplayValue()).isEqualTo("UNASSIGNED");
+        assertThat(TEAM_ASSIGNED.getDisplayValue()).isEqualTo("TEAM_ASSIGNED");
+        assertThat(USER_ASSIGNED.getDisplayValue()).isEqualTo("USER_ASSIGNED");
         assertThat(UPDATED.getDisplayValue()).isEqualTo("UPDATED");
         assertThat(REJECTED.getDisplayValue()).isEqualTo("REJECTED");
         assertThat(COMPLETED.getDisplayValue()).isEqualTo("COMPLETED");
@@ -19,10 +21,12 @@ public class StageStatusTypeTest {
 
     @Test
     public void shouldNotAccidentallyChangeTheOrder() {
-        assertOrderValue(CREATED, 0);
-        assertOrderValue(UPDATED, 1);
-        assertOrderValue(REJECTED, 2);
-        assertOrderValue(COMPLETED, 3);
+        assertOrderValue(UNASSIGNED, 0);
+        assertOrderValue(TEAM_ASSIGNED, 1);
+        assertOrderValue(USER_ASSIGNED, 2);
+        assertOrderValue(UPDATED, 3);
+        assertOrderValue(REJECTED, 4);
+        assertOrderValue(COMPLETED, 5);
 
     }
 
@@ -30,7 +34,9 @@ public class StageStatusTypeTest {
     public void shouldNotAccidentallyAddValues() {
         for (StageStatusType stageStatusType : StageStatusType.values()) {
             switch (stageStatusType) {
-                case CREATED:
+                case UNASSIGNED:
+                case TEAM_ASSIGNED:
+                case USER_ASSIGNED:
                 case UPDATED:
                 case REJECTED:
                 case COMPLETED:
