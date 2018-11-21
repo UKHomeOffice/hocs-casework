@@ -48,6 +48,7 @@ CREATE TABLE IF NOT EXISTS stage
   created   TIMESTAMP   NOT NULL,
   type      TEXT        NOT NULL,
   deadline  DATE,
+  priority  BOOLEAN     NOT NULL DEFAULT FALSE,
   status    VARCHAR(16) NOT NULL,
   case_uuid UUID        NOT NULL,
   team_uuid UUID,

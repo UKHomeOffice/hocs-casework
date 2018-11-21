@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 
 import javax.persistence.*;
@@ -35,6 +36,11 @@ public class CaseData {
     @Getter
     @Column(name = "reference")
     private String reference;
+
+    @Setter
+    @Getter
+    @Column(name = "priority")
+    private boolean priority;
 
     @Getter
     @Column(name = "data")
