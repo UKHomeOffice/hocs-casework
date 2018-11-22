@@ -56,6 +56,14 @@ public class CaseDataService {
     }
 
     @Transactional
+    public void updatePriority(UUID caseUUID, boolean priority) {
+        CaseData caseData = getCase(caseUUID);
+        caseData.setPriority(priority);
+        caseDataRepository.save(caseData);
+        log.info("Updated Case Data for Case: {}", caseUUID);
+    }
+
+    @Transactional
     public void deleteCase(UUID caseUUID) {
         caseDataRepository.deleteCase(caseUUID);
         log.info("Deleted Case: {}", caseUUID);
