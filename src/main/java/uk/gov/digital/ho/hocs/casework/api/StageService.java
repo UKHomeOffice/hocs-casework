@@ -70,6 +70,14 @@ public class StageService {
         log.info("Set Stage User: {} ({}) for Case {}", stageUUID, userUUID, caseUUID);
     }
 
+    @Transactional
+    public void completeStage(UUID caseUUID, UUID stageUUID) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        stage.completeStage();
+        stageRepository.save(stage);
+        log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID);
+    }
+
     public Set<Stage> getActiveStagesByUserUUID(UUID userUUID) {
         return stageRepository.findAllByUserUUID(userUUID);
     }

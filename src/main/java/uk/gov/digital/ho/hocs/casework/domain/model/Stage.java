@@ -106,4 +106,8 @@ public class Stage implements Serializable {
 
     }
 
+    public void completeStage() {
+        this.status = StageStatusType.COMPLETED.toString();
+    }
+
 }
