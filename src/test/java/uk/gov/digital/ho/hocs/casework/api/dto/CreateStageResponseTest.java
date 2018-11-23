@@ -18,10 +18,9 @@ public class CreateStageResponseTest {
         UUID caseUUID = UUID.randomUUID();
         StageType stageType = StageType.DCU_MIN_MARKUP;
         UUID teamUUID = UUID.randomUUID();
-        UUID userUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, deadline);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
         CreateStageResponse createStageResponse = CreateStageResponse.from(stage);
 

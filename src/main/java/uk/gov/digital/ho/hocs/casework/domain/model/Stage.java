@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 
 import javax.persistence.*;
@@ -32,7 +31,6 @@ public class Stage implements Serializable {
     @Column(name = "type")
     private String type;
 
-    @Setter
     @Getter
     @Column(name = "deadline")
     private LocalDate deadline;
@@ -63,7 +61,7 @@ public class Stage implements Serializable {
     @Column(name = "data", insertable = false, updatable = false)
     private String data;
 
-    public Stage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID, LocalDate deadline) {
+    public Stage(UUID caseUUID, StageType stageType, UUID teamUUID, LocalDate deadline) {
         if (caseUUID == null || stageType == null) {
             throw new EntityCreationException("Cannot create Stage (%s, %s).", caseUUID, stageType);
         }
@@ -71,9 +69,9 @@ public class Stage implements Serializable {
         this.uuid = UUID.randomUUID();
         this.created = LocalDateTime.now();
         this.caseUUID = caseUUID;
-        this.deadline = deadline;
         this.type = stageType.toString();
-        update(teamUUID, userUUID, StageStatusType.CREATED);
+        setDeadline(deadline);
+        setTeam(teamUUID);
     }
 
     public StageType getStageType() {
@@ -92,21 +90,24 @@ public class Stage implements Serializable {
         }
     }
 
-    public void update(UUID teamUUID, UUID userUUID, StageStatusType stageStatusType) {
-        if (stageStatusType == null) {
-            throw new EntityCreationException("Cannot update Stage (%s, %s).", teamUUID, null);
-        } else {
-            this.status = stageStatusType.toString();
-        }
+    public void setDeadline(LocalDate deadline) {
+        this.deadline = deadline;
+    }
 
-        if (teamUUID != null) {
-            this.teamUUID = teamUUID;
-        }
+    public void setTeam(UUID teamUUID) {
+        this.teamUUID = teamUUID;
+        this.userUUID = null;
+        this.status = StageStatusType.TEAM_ASSIGNED.toString();
+    }
 
-        if (userUUID != null) {
-            this.userUUID = userUUID;
-        }
+    public void setUser(UUID userUUID) {
+        this.userUUID = userUUID;
+        this.status = StageStatusType.USER_ASSIGNED.toString();
 
+    }
+
+    public void completeStage() {
+        this.status = StageStatusType.COMPLETED.toString();
     }
 
 }

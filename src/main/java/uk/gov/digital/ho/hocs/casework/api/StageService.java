@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageStatusType;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
@@ -40,27 +39,43 @@ public class StageService {
     }
 
     @Transactional
-    public Stage createStage(UUID caseUUID, StageType stageType, UUID teamUUID, UUID userUUID, LocalDate deadline) {
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, deadline);
+    public Stage createStage(UUID caseUUID, StageType stageType, UUID teamUUID, LocalDate deadline) {
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
         stageRepository.save(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID());
         return stage;
     }
 
     @Transactional
-    public void updateStage(UUID caseUUID, UUID stageUUID, UUID teamUUID, UUID userUUID, StageStatusType stageStatusType) {
-        Stage stage = getStage(caseUUID, stageUUID);
-        stage.update(teamUUID, userUUID, stageStatusType);
-        stageRepository.save(stage);
-        log.info("Updated Stage: {} ({}), User {}, Team {} for Case {}", stageUUID, stageStatusType, userUUID, teamUUID, caseUUID);
-    }
-
-    @Transactional
-    public void setDeadline(UUID caseUUID, UUID stageUUID, LocalDate deadline) {
+    public void updateDeadline(UUID caseUUID, UUID stageUUID, LocalDate deadline) {
         Stage stage = getStage(caseUUID, stageUUID);
         stage.setDeadline(deadline);
         stageRepository.save(stage);
         log.info("Set Stage Deadline: {} ({}) for Case {}", stageUUID, deadline, caseUUID);
+    }
+
+    @Transactional
+    public void updateTeam(UUID caseUUID, UUID stageUUID, UUID teamUUID) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        stage.setTeam(teamUUID);
+        stageRepository.save(stage);
+        log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, teamUUID, caseUUID);
+    }
+
+    @Transactional
+    public void updateUser(UUID caseUUID, UUID stageUUID, UUID userUUID) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        stage.setUser(userUUID);
+        stageRepository.save(stage);
+        log.info("Set Stage User: {} ({}) for Case {}", stageUUID, userUUID, caseUUID);
+    }
+
+    @Transactional
+    public void completeStage(UUID caseUUID, UUID stageUUID) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        stage.completeStage();
+        stageRepository.save(stage);
+        log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID);
     }
 
     public Set<Stage> getActiveStagesByUserUUID(UUID userUUID) {
@@ -72,8 +87,7 @@ public class StageService {
     }
 
     public Set<Stage> getActiveStages() {
-        Set<UUID> teams = userPermissionsService.getUserTeams();
-        return stageRepository.findAllBy(teams);
+        return stageRepository.findAllBy(userPermissionsService.getUserTeams());
     }
 
 }

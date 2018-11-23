@@ -14,11 +14,15 @@ import uk.gov.digital.ho.hocs.casework.queue.dto.*;
         property = "command"
 )
 @JsonSubTypes({ // Keep this list alphabetical
+        @JsonSubTypes.Type(value = CompleteStageRequest.class),
         @JsonSubTypes.Type(value = CreateCaseNoteRequest.class),
         @JsonSubTypes.Type(value = CreateCorrespondentRequest.class),
         @JsonSubTypes.Type(value = CreateTopicRequest.class),
         @JsonSubTypes.Type(value = UpdateCaseDataRequest.class),
-        @JsonSubTypes.Type(value = UpdateStageDeadlineRequest.class)
+        @JsonSubTypes.Type(value = UpdateCasePriorityRequest.class),
+        @JsonSubTypes.Type(value = UpdateStageDeadlineRequest.class),
+        @JsonSubTypes.Type(value = UpdateStageTeamRequest.class),
+        @JsonSubTypes.Type(value = UpdateStageUserRequest.class)
 })
 
 public abstract class HocsCommand implements Command {

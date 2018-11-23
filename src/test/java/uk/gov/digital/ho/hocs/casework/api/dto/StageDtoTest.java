@@ -16,24 +16,23 @@ public class StageDtoTest {
 
         UUID caseUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
-        UUID userUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
-        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, userUUID, deadline);
+        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, deadline);
 
         StageDto stageDto = StageDto.from(stage);
 
         assertThat(stageDto.getUuid()).isEqualTo(stage.getUuid());
         assertThat(stageDto.getCreated()).isEqualTo(stage.getCreated());
         assertThat(stageDto.getStageType()).isEqualTo(stage.getStageType().toString());
-        assertThat(stageDto.getDeadline()).isEqualTo(stageDto.getDeadline());
-        assertThat(stageDto.getStatus()).isEqualTo(stageDto.getStatus());
-        assertThat(stageDto.getCaseUUID()).isEqualTo(stageDto.getCaseUUID());
-        assertThat(stageDto.getTeamUUID()).isEqualTo(stageDto.getTeamUUID());
-        assertThat(stageDto.getUserUUID()).isEqualTo(stageDto.getUserUUID());
-        assertThat(stageDto.getCaseReference()).isEqualTo(stageDto.getCaseReference());
-        assertThat(stageDto.getCaseType()).isEqualTo(stageDto.getCaseType());
-        assertThat(stageDto.getData()).isEqualTo(stageDto.getData());
+        assertThat(stageDto.getDeadline()).isEqualTo(stage.getDeadline());
+        assertThat(stageDto.getStatus()).isEqualTo(stage.getStageStatusType().toString());
+        assertThat(stageDto.getCaseUUID()).isEqualTo(stage.getCaseUUID());
+        assertThat(stageDto.getTeamUUID()).isEqualTo(stage.getTeamUUID());
+        assertThat(stageDto.getUserUUID()).isEqualTo(stage.getUserUUID());
+        assertThat(stageDto.getCaseReference()).isEqualTo(stage.getCaseReference());
+        assertThat(stageDto.getCaseType()).isEqualTo(stage.getCaseDataType());
+        assertThat(stageDto.getData()).isEqualTo(stage.getData());
 
     }
 
@@ -42,20 +41,20 @@ public class StageDtoTest {
 
         UUID caseUUID = UUID.randomUUID();
 
-        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, null, null, null);
+        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, null, null);
 
         StageDto stageDto = StageDto.from(stage);
 
         assertThat(stageDto.getUuid()).isEqualTo(stage.getUuid());
         assertThat(stageDto.getCreated()).isEqualTo(stage.getCreated());
         assertThat(stageDto.getStageType()).isEqualTo(stage.getStageType().toString());
-        assertThat(stageDto.getDeadline()).isEqualTo(stageDto.getDeadline());
-        assertThat(stageDto.getStatus()).isEqualTo(stageDto.getStatus());
-        assertThat(stageDto.getCaseUUID()).isEqualTo(stageDto.getCaseUUID());
-        assertThat(stageDto.getTeamUUID()).isEqualTo(stageDto.getTeamUUID());
-        assertThat(stageDto.getUserUUID()).isEqualTo(stageDto.getUserUUID());
-        assertThat(stageDto.getCaseReference()).isEqualTo(stageDto.getCaseReference());
-        assertThat(stageDto.getCaseType()).isEqualTo(stageDto.getCaseType());
-        assertThat(stageDto.getData()).isEqualTo(stageDto.getData());
+        assertThat(stageDto.getDeadline()).isEqualTo(stage.getDeadline());
+        assertThat(stageDto.getStatus()).isEqualTo(stage.getStageStatusType().toString());
+        assertThat(stageDto.getCaseUUID()).isEqualTo(stage.getCaseUUID());
+        assertThat(stageDto.getTeamUUID()).isEqualTo(stage.getTeamUUID());
+        assertThat(stageDto.getUserUUID()).isEqualTo(stage.getUserUUID());
+        assertThat(stageDto.getCaseReference()).isEqualTo(stage.getCaseReference());
+        assertThat(stageDto.getCaseType()).isEqualTo(stage.getCaseDataType());
+        assertThat(stageDto.getData()).isEqualTo(stage.getData());
     }
 }

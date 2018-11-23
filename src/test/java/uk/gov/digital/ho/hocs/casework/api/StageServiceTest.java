@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageStatusType;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
@@ -29,7 +28,7 @@ public class StageServiceTest {
     private final UUID stageUUID = UUID.randomUUID();
     private final StageType stageType = StageType.DCU_MIN_MARKUP;
     private final LocalDate deadline = LocalDate.now();
-    private final StageStatusType statusType = StageStatusType.CREATED;
+
     @Mock
     private StageRepository stageRepository;
     private StageService stageService;
@@ -44,7 +43,7 @@ public class StageServiceTest {
     @Test
     public void shouldCreateStage() {
 
-        stageService.createStage(caseUUID, stageType, teamUUID, userUUID, deadline);
+        stageService.createStage(caseUUID, stageType, teamUUID, deadline);
 
         verify(stageRepository, times(1)).save(any(Stage.class));
 
@@ -54,7 +53,7 @@ public class StageServiceTest {
     @Test
     public void shouldCreateStageNoDeadline() {
 
-        stageService.createStage(caseUUID, stageType, teamUUID, userUUID, null);
+        stageService.createStage(caseUUID, stageType, teamUUID, null);
 
         verify(stageRepository, times(1)).save(any(Stage.class));
 
@@ -64,7 +63,7 @@ public class StageServiceTest {
     @Test
     public void shouldCreateStageNoUser() {
 
-        stageService.createStage(caseUUID, stageType, teamUUID, null, deadline);
+        stageService.createStage(caseUUID, stageType, teamUUID, deadline);
 
         verify(stageRepository, times(1)).save(any(Stage.class));
 
@@ -74,14 +73,14 @@ public class StageServiceTest {
     @Test(expected = EntityCreationException.class)
     public void shouldNotCreateStageMissingCaseUUIDException() {
 
-        stageService.createStage(null, stageType, teamUUID, null, deadline);
+        stageService.createStage(null, stageType, teamUUID, deadline);
     }
 
     @Test()
     public void shouldNotCreateStageMissingCaseUUID() {
 
         try {
-            stageService.createStage(null, stageType, teamUUID, userUUID, deadline);
+            stageService.createStage(null, stageType, teamUUID, deadline);
         } catch (EntityCreationException e) {
             // Do nothing.
         }
@@ -92,14 +91,14 @@ public class StageServiceTest {
     @Test(expected = EntityCreationException.class)
     public void shouldNotCreateStageMissingTypeException() {
 
-        stageService.createStage(caseUUID, null, teamUUID, userUUID, deadline);
+        stageService.createStage(caseUUID, null, teamUUID, deadline);
     }
 
     @Test()
     public void shouldNotCreateStageMissingType() {
 
         try {
-            stageService.createStage(caseUUID, null, teamUUID, userUUID, deadline);
+            stageService.createStage(caseUUID, null, teamUUID, deadline);
         } catch (EntityCreationException e) {
             // Do nothing.
         }
@@ -110,7 +109,7 @@ public class StageServiceTest {
     @Test
     public void shouldGetStageWithValidParams() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, deadline);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
         when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -187,105 +186,6 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldUpdateStage() {
-
-        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, userUUID, deadline);
-
-        when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
-
-        stageService.updateStage(caseUUID, stageUUID, teamUUID, userUUID, statusType);
-
-        verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
-        verify(stageRepository, times(1)).save(stage);
-
-        verifyNoMoreInteractions(stageRepository);
-    }
-
-    @Test
-    public void shouldUpdateStageNoUser() {
-
-        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, userUUID, deadline);
-
-        when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
-
-        stageService.updateStage(caseUUID, stageUUID, teamUUID, null, statusType);
-
-        verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
-        verify(stageRepository, times(1)).save(stage);
-
-        verifyNoMoreInteractions(stageRepository);
-    }
-
-    @Test(expected = EntityNotFoundException.class)
-    public void shouldNotUpdateStageMissingCaseUUIDException() {
-
-        stageService.updateStage(null, stageUUID, teamUUID, userUUID, statusType);
-    }
-
-    @Test()
-    public void shouldNotUpdateStageMissingCaseUUID() {
-
-        try {
-            stageService.updateStage(null, stageUUID, teamUUID, userUUID, statusType);
-        } catch (EntityNotFoundException e) {
-            // Do nothing.
-        }
-
-        verify(stageRepository, times(1)).findByUuid(null, stageUUID);
-
-        verifyNoMoreInteractions(stageRepository);
-    }
-
-    @Test(expected = EntityNotFoundException.class)
-    public void shouldNotUpdateStageMissingStageException() {
-
-        stageService.updateStage(caseUUID, null, teamUUID, userUUID, statusType);
-    }
-
-    @Test()
-    public void shouldNotUpdateStageMissingStage() {
-
-        try {
-            stageService.updateStage(caseUUID, null, teamUUID, userUUID, statusType);
-        } catch (EntityNotFoundException e) {
-            // Do nothing.
-        }
-
-        verify(stageRepository, times(1)).findByUuid(caseUUID, null);
-
-        verifyNoMoreInteractions(stageRepository);
-    }
-
-    @Test(expected = EntityCreationException.class)
-    public void shouldNotUpdateStageMissingStatusTypeException() {
-
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, deadline);
-
-        when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
-
-        stageService.updateStage(caseUUID, stageUUID, teamUUID, userUUID, null);
-    }
-
-    @Test()
-    public void shouldNotUpdateStageMissingStatusType() {
-
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, deadline);
-
-        when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
-
-
-        try {
-            stageService.updateStage(caseUUID, stageUUID, teamUUID, userUUID, null);
-        } catch (EntityCreationException e) {
-            // Do nothing.
-        }
-
-        verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
-
-        verifyNoMoreInteractions(stageRepository);
-    }
-
-    @Test
     public void shouldGetActiveStagesUserUUID() {
 
         stageService.getActiveStagesByUserUUID(userUUID);
@@ -341,11 +241,11 @@ public class StageServiceTest {
     @Test
     public void shouldUpdateStageDeadline() {
 
-        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, userUUID, deadline);
+        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, deadline);
 
         when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.setDeadline(caseUUID, stageUUID, deadline);
+        stageService.updateDeadline(caseUUID, stageUUID, deadline);
 
         verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
         verify(stageRepository, times(1)).save(stage);
@@ -356,11 +256,11 @@ public class StageServiceTest {
     @Test
     public void shouldUpdateStageDeadlineException() {
 
-        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, userUUID, null);
+        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, null);
 
         when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.setDeadline(caseUUID, stageUUID, deadline);
+        stageService.updateDeadline(caseUUID, stageUUID, deadline);
 
         verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
         verify(stageRepository, times(1)).save(stage);

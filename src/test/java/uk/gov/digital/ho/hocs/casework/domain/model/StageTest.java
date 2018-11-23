@@ -18,19 +18,18 @@ public class StageTest {
         UUID caseUUID = UUID.randomUUID();
         StageType stageType = StageType.DCU_MIN_MARKUP;
         UUID teamUUID = UUID.randomUUID();
-        UUID userUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, deadline);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
         assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(stage.getStageType()).isEqualTo(stageType);
         assertThat(stage.getTeamUUID()).isEqualTo(teamUUID);
-        assertThat(stage.getUserUUID()).isEqualTo(userUUID);
+        assertThat(stage.getUserUUID()).isEqualTo(null);
         assertThat(stage.getDeadline()).isEqualTo(deadline);
-        assertThat(stage.getStageStatusType()).isEqualTo(StageStatusType.CREATED);
+        assertThat(stage.getStageStatusType()).isEqualTo(StageStatusType.TEAM_ASSIGNED);
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
         assertThat(stage.getCaseDataType()).isEqualTo(null);
@@ -42,11 +41,9 @@ public class StageTest {
 
         StageType stageType = StageType.DCU_MIN_MARKUP;
         UUID teamUUID = UUID.randomUUID();
-        UUID userUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
-        StageStatusType stageStatusType = StageStatusType.CREATED;
 
-        new Stage(null, stageType, teamUUID, userUUID, deadline);
+        new Stage(null, stageType, teamUUID, deadline);
 
     }
 
@@ -55,51 +52,10 @@ public class StageTest {
 
         UUID caseUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
-        UUID userUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
-        StageStatusType stageStatusType = StageStatusType.CREATED;
 
-        new Stage(caseUUID, null, teamUUID, userUUID, deadline);
+        new Stage(caseUUID, null, teamUUID, deadline);
 
     }
 
-    public void update() {
-
-        UUID caseUUID = UUID.randomUUID();
-        StageType stageType = StageType.DCU_MIN_MARKUP;
-        UUID teamUUID = UUID.randomUUID();
-        UUID userUUID = UUID.randomUUID();
-        LocalDate deadline = LocalDate.now();
-
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, deadline);
-
-        UUID newTeamUUID = UUID.randomUUID();
-        UUID newUserUUID = UUID.randomUUID();
-        StageStatusType newStageStatusType = StageStatusType.CREATED;
-
-        stage.update(newTeamUUID, newUserUUID, newStageStatusType);
-
-        assertThat(stage.getTeamUUID()).isEqualTo(newTeamUUID);
-        assertThat(stage.getUserUUID()).isEqualTo(newUserUUID);
-        assertThat(stage.getStageStatusType()).isEqualTo(newStageStatusType);
-
-    }
-
-    @Test(expected = EntityCreationException.class)
-    public void updateNoStageStatusType() {
-
-        UUID caseUUID = UUID.randomUUID();
-        StageType stageType = StageType.DCU_MIN_MARKUP;
-        UUID teamUUID = UUID.randomUUID();
-        UUID userUUID = UUID.randomUUID();
-        LocalDate deadline = LocalDate.now();
-
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, deadline);
-
-        UUID newTeamUUID = UUID.randomUUID();
-        UUID newUserUUID = UUID.randomUUID();
-
-        stage.update(newTeamUUID, newUserUUID, null);
-
-    }
 }

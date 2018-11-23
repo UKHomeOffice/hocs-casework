@@ -13,7 +13,6 @@ import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
-
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -55,11 +54,13 @@ public class AllocatedAspectTest {
     @Test
     public void shouldCallCollaboratorsForUser() throws Throwable {
 
+        Stage stage = new Stage(UUID.randomUUID(), StageType.DCU_DTEN_DATA_INPUT, teamId, LocalDate.now());
+        stage.setUser(userId);
+
         Object[] args = new Object[2];
         args[1] = stageUUID;
         args[0] = caseUUID;
-        when(stageService.getStage(caseUUID, stageUUID)).thenReturn(new Stage(UUID.randomUUID(),
-                StageType.DCU_DTEN_DATA_INPUT, teamId, userId, LocalDate.now()));
+        when(stageService.getStage(caseUUID, stageUUID)).thenReturn(stage);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(userService.getUserId()).thenReturn(userId);
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.USER);
@@ -79,7 +80,7 @@ public class AllocatedAspectTest {
         args[1] = stageUUID;
         args[0] = caseUUID;
         when(stageService.getStage(caseUUID, stageUUID)).thenReturn(new Stage(UUID.randomUUID(),
-                StageType.DCU_DTEN_DATA_INPUT,teamId, userId, LocalDate.now()));
+                StageType.DCU_DTEN_DATA_INPUT, teamId, LocalDate.now()));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.TEAM);
         when(userService.getUserTeams()).thenReturn(new HashSet<>(Arrays.asList(teamId)));
@@ -96,11 +97,13 @@ public class AllocatedAspectTest {
     @Test
     public void shouldProceedIfUserIsAllocatedToCase() throws Throwable {
 
+        Stage stage = new Stage(UUID.randomUUID(), StageType.DCU_DTEN_DATA_INPUT, teamId, LocalDate.now());
+        stage.setUser(userId);
+
         Object[] args = new Object[2];
         args[1] = stageUUID;
         args[0] = caseUUID;
-        when(stageService.getStage(caseUUID, stageUUID)).thenReturn(new Stage(UUID.randomUUID(),
-                StageType.DCU_DTEN_DATA_INPUT, teamId, userId, LocalDate.now()));
+        when(stageService.getStage(caseUUID, stageUUID)).thenReturn(stage);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(userService.getUserId()).thenReturn(userId);
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.USER);
@@ -117,7 +120,7 @@ public class AllocatedAspectTest {
         args[0] = caseUUID;
         args[1] = stageUUID;
         when(stageService.getStage(caseUUID, stageUUID)).thenReturn(new Stage(UUID.randomUUID(),
-                StageType.DCU_DTEN_DATA_INPUT,teamId, userId, LocalDate.now()));
+                StageType.DCU_DTEN_DATA_INPUT, teamId, LocalDate.now()));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.TEAM);
         when(userService.getUserTeams()).thenReturn(new HashSet<>(Arrays.asList(teamId)));
@@ -135,7 +138,7 @@ public class AllocatedAspectTest {
         args[0] = caseUUID;
 
         when(stageService.getStage(caseUUID, stageUUID)).thenReturn(new Stage(UUID.randomUUID(),
-                StageType.DCU_DTEN_DATA_INPUT, teamId, userId, LocalDate.now()));
+                StageType.DCU_DTEN_DATA_INPUT, teamId, LocalDate.now()));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(userService.getUserId()).thenReturn(UUID.randomUUID());
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.USER);
@@ -153,7 +156,7 @@ public class AllocatedAspectTest {
         args[0] = caseUUID;
 
         when(stageService.getStage(caseUUID, stageUUID)).thenReturn(new Stage(UUID.randomUUID(),
-                StageType.DCU_DTEN_DATA_INPUT, teamId, userId, LocalDate.now()));
+                StageType.DCU_DTEN_DATA_INPUT, teamId, LocalDate.now()));
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.TEAM);
         when(userService.getUserTeams()).thenReturn(new HashSet<UUID>(){{UUID.randomUUID();}});

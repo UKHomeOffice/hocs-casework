@@ -7,9 +7,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetStagesResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.StageDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageStatusType;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
 import java.time.LocalDate;
@@ -29,7 +31,6 @@ public class StageResourceTest {
     private final UUID stageUUID = UUID.randomUUID();
     private final LocalDate deadline = LocalDate.now();
     private final StageType stageType = StageType.DCU_MIN_MARKUP;
-    private final StageStatusType statusType = StageStatusType.CREATED;
     @Mock
     private StageService stageService;
     private StageResource stageResource;
@@ -42,14 +43,14 @@ public class StageResourceTest {
     @Test
     public void shouldCreateStage() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, null, deadline);
-        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, null, deadline);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
+        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, deadline);
 
-        when(stageService.createStage(caseUUID, stageType, teamUUID, null, deadline)).thenReturn(stage);
+        when(stageService.createStage(caseUUID, stageType, teamUUID, deadline)).thenReturn(stage);
 
         ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
 
-        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, null, deadline);
+        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, deadline);
 
         verifyNoMoreInteractions(stageService);
 
@@ -60,14 +61,14 @@ public class StageResourceTest {
     @Test
     public void shouldCreateStageNoDeadline() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, null, null);
-        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, null, null);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, null);
+        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, null);
 
-        when(stageService.createStage(caseUUID, stageType, teamUUID, null, null)).thenReturn(stage);
+        when(stageService.createStage(caseUUID, stageType, teamUUID, null)).thenReturn(stage);
 
         ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
 
-        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, null, null);
+        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, null);
 
         verifyNoMoreInteractions(stageService);
 
@@ -78,31 +79,13 @@ public class StageResourceTest {
     @Test
     public void shouldGetStage() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, null, deadline);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
         when(stageService.getStage(caseUUID, stageUUID)).thenReturn(stage);
 
         ResponseEntity<StageDto> response = stageResource.getStage(caseUUID, stageUUID);
 
         verify(stageService, times(1)).getStage(caseUUID, stageUUID);
-
-        verifyNoMoreInteractions(stageService);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-
-    @Test
-    public void shouldAllocateStageWithValidParams() {
-
-        UpdateStageRequest request = new UpdateStageRequest(teamUUID, null, statusType);
-
-        doNothing().when(stageService).updateStage(caseUUID, stageUUID, teamUUID, null, statusType);
-
-        ResponseEntity response = stageResource.updateStage(caseUUID, stageUUID, request);
-
-        verify(stageService, times(1)).updateStage(caseUUID, stageUUID, teamUUID, null, statusType);
 
         verifyNoMoreInteractions(stageService);
 
