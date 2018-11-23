@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -87,7 +88,12 @@ public class StageService {
     }
 
     public Set<Stage> getActiveStages() {
-        return stageRepository.findAllBy(userPermissionsService.getUserTeams());
+        Set<UUID> teams = userPermissionsService.getUserTeams();
+        if (teams.isEmpty()) {
+            return new HashSet<>();
+        } else {
+            return stageRepository.findAllBy(teams);
+        }
     }
 
 }

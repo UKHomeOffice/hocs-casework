@@ -233,9 +233,9 @@ public class StageServiceTest {
 
         stageService.getActiveStages();
 
-        verify(stageRepository, times(1)).findAllBy(teams);
+        // We don't try and get active stages with no teams (empty set) because you're going to get 0 results.
 
-        verifyNoMoreInteractions(stageRepository);
+        verifyZeroInteractions(stageRepository);
     }
 
     @Test
