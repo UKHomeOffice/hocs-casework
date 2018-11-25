@@ -22,7 +22,7 @@ public class TopicResourceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID topicUUID = UUID.randomUUID();
-    private final String topicName = "topicName";
+    private static final String topicName = "topicName";
     @Mock
     private TopicService topicService;
     private TopicResource topicResource;

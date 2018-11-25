@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataServiceTest {
 
-    private final long caseID = 12345L;
+    private static final long caseID = 12345L;
     private final CaseDataType caseType = CaseDataType.MIN;
     private final UUID caseUUID = UUID.randomUUID();
     @Mock
