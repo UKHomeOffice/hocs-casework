@@ -37,13 +37,23 @@ public class CaseDataDto {
 
     public static CaseDataDto from(CaseData caseData) {
 
+        String primaryCorrespondent = null;
+        if (caseData.getPrimaryCorrespondentUUID() != null) {
+            primaryCorrespondent = caseData.getPrimaryCorrespondentUUID().toString();
+        }
+
+        String primaryTopic = null;
+        if (caseData.getPrimaryTopicUUID() != null) {
+            primaryTopic = caseData.getPrimaryTopicUUID().toString();
+        }
+
         return new CaseDataDto(
                 caseData.getUuid(),
                 caseData.getCreated(),
                 caseData.getCaseDataType().toString(),
                 caseData.getReference(),
                 caseData.getData(),
-                caseData.getPrimaryTopicUUID(),
-                caseData.getPrimaryCorrespondentUUID());
+                primaryTopic,
+                primaryCorrespondent);
     }
 }

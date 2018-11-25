@@ -46,13 +46,15 @@ public class CaseData {
     @Column(name = "data")
     private String data = "{}";
 
+    @Setter
     @Getter
     @Column(name = "primary_topic_uuid")
-    private String primaryTopicUUID;
+    private UUID primaryTopicUUID;
 
+    @Setter
     @Getter
     @Column(name = "primary_correspondent_uuid")
-    private String primaryCorrespondentUUID;
+    private UUID primaryCorrespondentUUID;
 
     public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper) {
         if (type == null || caseNumber == null) {

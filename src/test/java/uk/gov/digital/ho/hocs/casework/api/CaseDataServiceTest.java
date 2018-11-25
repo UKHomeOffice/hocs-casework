@@ -188,6 +188,41 @@ public class CaseDataServiceTest {
     }
 
     @Test
+    public void shouldUpdatePriorityCase() {
+
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper);
+
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+
+        caseDataService.updatePriority(caseData.getUuid(), false);
+
+        verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
+        verify(caseDataRepository, times(1)).save(caseData);
+
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test(expected = EntityNotFoundException.class)
+    public void shouldNotUpdatePriorityCaseMissingCaseUUIDException() throws EntityCreationException {
+
+        caseDataService.updatePriority(null, false);
+    }
+
+    @Test()
+    public void shouldNotUpdatePriorityCaseMissingCaseUUID() {
+
+        try {
+            caseDataService.updatePriority(null, false);
+        } catch (EntityNotFoundException e) {
+            // Do nothing.
+        }
+
+        verify(caseDataRepository, times(1)).findByUuid(null);
+
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
     public void shouldDeleteCase() {
 
         caseDataService.deleteCase(caseUUID);

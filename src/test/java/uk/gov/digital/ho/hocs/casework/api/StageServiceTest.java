@@ -228,12 +228,26 @@ public class StageServiceTest {
     @Test
     public void shouldGetActiveStages() {
         Set<UUID> teams = new HashSet<>();
+        teams.add(UUID.randomUUID());
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
 
         stageService.getActiveStages();
 
-        // We don't try and get active stages with no teams (empty set) because you're going to get 0 results.
+        verify(stageRepository, times(1)).findAllBy(teams);
+
+        verifyZeroInteractions(stageRepository);
+    }
+
+    @Test
+    public void shouldGetActiveStagesEmpty() {
+        Set<UUID> teams = new HashSet<>();
+
+        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+
+        stageService.getActiveStages();
+
+        // We don't try and get active stages with no teams (empty set) because we're going to get 0 results.
 
         verifyZeroInteractions(stageRepository);
     }
@@ -254,13 +268,88 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldUpdateStageDeadlineException() {
+    public void shouldUpdateStageDeadlineNull() {
 
-        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, null);
+        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, deadline);
 
         when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.updateDeadline(caseUUID, stageUUID, deadline);
+        stageService.updateDeadline(caseUUID, stageUUID, null);
+
+        verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).save(stage);
+
+        verifyNoMoreInteractions(stageRepository);
+    }
+
+    @Test
+    public void shouldUpdateStageTeam() {
+
+        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, deadline);
+
+        when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
+
+        stageService.updateTeam(caseUUID, stageUUID, teamUUID);
+
+        verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).save(stage);
+
+        verifyNoMoreInteractions(stageRepository);
+    }
+
+    @Test
+    public void shouldUpdateStageTeamNull() {
+
+        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, deadline);
+
+        when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
+
+        stageService.updateTeam(caseUUID, stageUUID, null);
+
+        verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).save(stage);
+
+        verifyNoMoreInteractions(stageRepository);
+    }
+
+    @Test
+    public void shouldUpdateStageUser() {
+
+        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, deadline);
+
+        when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
+
+        stageService.updateUser(caseUUID, stageUUID, userUUID);
+
+        verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).save(stage);
+
+        verifyNoMoreInteractions(stageRepository);
+    }
+
+    @Test
+    public void shouldUpdateStageUserNull() {
+
+        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, deadline);
+
+        when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
+
+        stageService.updateUser(caseUUID, stageUUID, null);
+
+        verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).save(stage);
+
+        verifyNoMoreInteractions(stageRepository);
+    }
+
+    @Test
+    public void shouldCompleteStage() {
+
+        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, deadline);
+
+        when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
+
+        stageService.completeStage(caseUUID, stageUUID);
 
         verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
         verify(stageRepository, times(1)).save(stage);
