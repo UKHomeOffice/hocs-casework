@@ -35,7 +35,7 @@ public class UserPermissionsService {
 
     public Set<AccessLevel> getUserAccessLevels(CaseDataType caseType) {
 
-        return  getUserPermission().entrySet().stream()
+        return getUserPermission().entrySet().stream()
                 .flatMap(unit -> unit.getValue().values().stream())
                 .flatMap(type -> type.getOrDefault(caseType, new HashSet<>()).stream())
                 .collect(Collectors.toSet());
@@ -48,7 +48,7 @@ public class UserPermissionsService {
     }
 
     public Set<UUID> getUserTeams() {
-      return getUserPermission().entrySet().stream()
+        return getUserPermission().entrySet().stream()
                 .flatMap(unit -> unit.getValue().entrySet().stream())
                 .map(team -> UUID.fromString(team.getKey()))
                 .collect(Collectors.toSet());
@@ -62,14 +62,14 @@ public class UserPermissionsService {
                 .collect(Collectors.toSet());
     }
 
-    public Map<String, Map<String, Map<CaseDataType,Set<AccessLevel>>>> getUserPermission() {
+    public Map<String, Map<String, Map<CaseDataType, Set<AccessLevel>>>> getUserPermission() {
         List<List<String>> groups = Arrays.stream(requestData.groups().split(","))
                 .map(g -> Arrays.asList(g.split("/")))
                 .collect(Collectors.toList());
 
-        Map<String, Map<String, Map<CaseDataType,Set<AccessLevel>>>> permissions = new HashMap<>();
-        for(List<String> permission : groups) {
-            if(permission.size() > 4) {
+        Map<String, Map<String, Map<CaseDataType, Set<AccessLevel>>>> permissions = new HashMap<>();
+        for (List<String> permission : groups) {
+            if (permission.size() > 4) {
                 getAccessLevel(permissions, permission);
             }
         }
@@ -78,25 +78,25 @@ public class UserPermissionsService {
 
     private void getAccessLevel(Map<String, Map<String, Map<CaseDataType, Set<AccessLevel>>>> permissions, List<String> permission) {
         try {
-            String unit ="";
+            String unit = "";
             if (!StringUtils.isNullOrEmpty(permission.get(1))) {
-                unit = Optional.ofNullable(permission.get(1)).orElseThrow(() ->new SecurityExceptions.PermissionCheckException("Null unit Found"));
+                unit = Optional.ofNullable(permission.get(1)).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Null unit Found"));
             }
 
-            String team="";
+            String team = "";
             if (!StringUtils.isNullOrEmpty(permission.get(2))) {
-                team = Optional.ofNullable(permission.get(2)).orElseThrow(() ->new SecurityExceptions.PermissionCheckException("Null team Found"));
+                team = Optional.ofNullable(permission.get(2)).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Null team Found"));
             }
 
             CaseDataType type = null;
             if (!StringUtils.isNullOrEmpty(permission.get(3))) {
-                String caseType = Optional.ofNullable(permission.get(3)).orElseThrow(() ->new SecurityExceptions.PermissionCheckException("Invalid case type Found"));
+                String caseType = Optional.ofNullable(permission.get(3)).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Invalid case type Found"));
                 type = CaseDataType.valueOf(caseType);
             }
 
             AccessLevel level = null;
             if (!StringUtils.isNullOrEmpty(permission.get(4))) {
-                String accessLevel = Optional.ofNullable(permission.get(4)).orElseThrow(() ->new SecurityExceptions.PermissionCheckException("Invalid access type Found"));
+                String accessLevel = Optional.ofNullable(permission.get(4)).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Invalid access type Found"));
                 level = AccessLevel.valueOf(accessLevel);
             }
 
@@ -114,8 +114,7 @@ public class UserPermissionsService {
 
             permissions.get(unit).get(team).get(type).add(level);
 
-        }
-        catch(SecurityExceptions.PermissionCheckException e) {
+        } catch (SecurityExceptions.PermissionCheckException e) {
             log.error(e.getMessage());
         }
     }

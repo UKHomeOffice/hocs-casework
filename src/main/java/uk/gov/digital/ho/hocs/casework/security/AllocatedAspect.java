@@ -31,21 +31,19 @@ public class AllocatedAspect {
             } else {
                 throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[1].getClass().getName());
             }
-        }
-        else {
+        } else {
             throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without stage UUID parameter");
         }
 
-        if(allocated.allocatedTo() == AllocationLevel.USER) {
+        if (allocated.allocatedTo() == AllocationLevel.USER) {
             UUID userId = userService.getUserId();
 
-            UUID assignedUser = stageService.getStage(caseUUID,stageUUID).getUserUUID();
+            UUID assignedUser = stageService.getStage(caseUUID, stageUUID).getUserUUID();
             if (!userId.equals(assignedUser)) {
                 throw new SecurityExceptions.StageNotAssignedToLoggedInUserException("Stage " + stageUUID.toString() + " is assigned to " + assignedUser);
             }
             return joinPoint.proceed();
-        }
-         else {
+        } else {
             Set<UUID> teams = userService.getUserTeams();
             UUID assignedTeam = stageService.getStage(caseUUID, stageUUID).getTeamUUID();
             if (!teams.contains(assignedTeam)) {

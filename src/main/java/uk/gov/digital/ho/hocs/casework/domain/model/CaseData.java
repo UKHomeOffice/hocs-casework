@@ -70,10 +70,6 @@ public class CaseData {
         this.reference = generateCaseReference(caseNumber);
     }
 
-    private String generateCaseReference(Long caseNumber) {
-        return String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
-    }
-
     private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {
         String dataString;
         try {
@@ -93,6 +89,10 @@ public class CaseData {
             throw new EntityCreationException("Object Mapper failed to read data value!");
         }
         return dataMap;
+    }
+
+    private String generateCaseReference(Long caseNumber) {
+        return String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
     }
 
     public CaseDataType getCaseDataType() {

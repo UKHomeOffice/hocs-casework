@@ -2,11 +2,15 @@ package uk.gov.digital.ho.hocs.casework.security;
 
 public interface SecurityExceptions {
     class StageNotAssignedToLoggedInUserException extends RuntimeException {
-        public StageNotAssignedToLoggedInUserException(String s) { super(s); }
+        public StageNotAssignedToLoggedInUserException(String s) {
+            super(s);
+        }
     }
 
     class StageNotAssignedToUserTeamException extends RuntimeException {
-        public StageNotAssignedToUserTeamException(String s) { super(s); }
+        public StageNotAssignedToUserTeamException(String s) {
+            super(s);
+        }
     }
 
     class PermissionCheckException extends RuntimeException {

@@ -82,10 +82,16 @@ public class RequestData implements HandlerInterceptor {
         return MDC.get(CORRELATION_ID_HEADER);
     }
 
-    public String userId() { return MDC.get(USER_ID_HEADER); }
+    public String userId() {
+        return MDC.get(USER_ID_HEADER);
+    }
 
-    public String username() { return MDC.get(USERNAME_HEADER); }
+    public String username() {
+        return MDC.get(USERNAME_HEADER);
+    }
 
-    public String groups() { return MDC.get(GROUP_HEADER); }
+    public String groups() {
+        return MDC.get(GROUP_HEADER);
+    }
 
 }
