@@ -1,4 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.security;
+
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -10,8 +11,7 @@ import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
-
-import java.util.*;
+import java.util.UUID;
 
 @Aspect
 @Component
@@ -33,10 +33,9 @@ public class AuthorisationAspect {
         CaseDataType caseType;
         AccessLevel requestedAccessLevel;
 
-        if(authorised.accessLevel() != AccessLevel.UNSET) {
+        if (authorised.accessLevel() != AccessLevel.UNSET) {
             requestedAccessLevel = authorised.accessLevel();
-        }
-        else {
+        } else {
             requestedAccessLevel = getAccessRequestAccessLevel();
         }
 
@@ -50,17 +49,15 @@ public class AuthorisationAspect {
             } else {
                 throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName());
             }
-        }
-        else {
+        } else {
             throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without case UUID parameters");
         }
 
         AccessLevel accessLevel = userService.getMaxAccessLevel(caseType);
 
-        if(accessLevel.getLevel() >= requestedAccessLevel.getLevel()) {
+        if (accessLevel.getLevel() >= requestedAccessLevel.getLevel()) {
             return joinPoint.proceed();
-        }
-        else {
+        } else {
             throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource");
         }
     }

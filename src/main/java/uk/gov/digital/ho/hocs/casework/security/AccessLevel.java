@@ -4,7 +4,7 @@ import lombok.Getter;
 
 @Getter
 public enum AccessLevel {
-   UNSET(0), SUMMARY(1), READ(2), WRITE(3), OWNER(5);
+    UNSET(0), SUMMARY(1), READ(2), WRITE(3), OWNER(5);
 
     private int level;
 

@@ -21,7 +21,7 @@ public class CaseNoteServiceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
     private final CaseNoteType caseNoteType = CaseNoteType.MANUAL;
-    private final String text = "CASE_NOTE";
+    private static final String text = "CASE_NOTE";
     @Mock
     private CaseNoteRepository caseNoteRepository;
     private CaseNoteService caseNoteService;

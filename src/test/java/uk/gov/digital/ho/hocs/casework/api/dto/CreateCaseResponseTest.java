@@ -34,7 +34,6 @@ public class CreateCaseResponseTest {
 
         CaseDataType type = CaseDataType.MIN;
         Long caseNumber = 1234L;
-        Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
         CaseData caseData = new CaseData(type, caseNumber, null, objectMapper);

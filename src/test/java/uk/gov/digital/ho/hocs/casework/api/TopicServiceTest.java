@@ -20,7 +20,7 @@ public class TopicServiceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID topicUUID = UUID.randomUUID();
-    private final String topicName = "topicName";
+    private static final String topicName = "topicName";
     private final UUID topicNameUUID = UUID.randomUUID();
     @Mock
     private TopicDataRepository topicRepository;

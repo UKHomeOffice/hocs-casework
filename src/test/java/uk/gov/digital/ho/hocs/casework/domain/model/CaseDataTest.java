@@ -15,7 +15,6 @@ public class CaseDataTest {
 
     @Test
     public void getCaseData() {
-
         CaseDataType type = CaseDataType.MIN;
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
@@ -27,6 +26,7 @@ public class CaseDataTest {
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
         assertThat(caseData.getCaseDataType()).isEqualTo(type);
         assertThat(caseData.getData()).isEqualTo("{}");
+        assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
 
@@ -80,6 +80,14 @@ public class CaseDataTest {
 
         CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
 
+        assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getData()).isEqualTo("{}");
+        assertThat(caseData.isPriority()).isEqualTo(false);
+        assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
+        assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+
         Map<String, String> newData = new HashMap<>();
         newData.put("new", "anyValue");
 
@@ -87,6 +95,13 @@ public class CaseDataTest {
 
         assertThat(caseData.getData().contains("new")).isTrue();
         assertThat(caseData.getData().contains("anyValue")).isTrue();
+
+        assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.isPriority()).isEqualTo(false);
+        assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
+        assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
     }
 
 
@@ -170,6 +185,103 @@ public class CaseDataTest {
 
         assertThat(caseData.getData().contains("new")).isTrue();
         assertThat(caseData.getData().contains("anyOldValue")).isTrue();
+    }
+
+    @Test
+    public void shouldUpdatePriority() {
+
+        CaseDataType type = CaseDataType.MIN;
+        Long caseNumber = 1234L;
+        Map<String, String> data = new HashMap<>();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+
+        assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getData()).isEqualTo("{}");
+        assertThat(caseData.isPriority()).isEqualTo(false);
+        assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
+        assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+
+        caseData.setPriority(true);
+
+        assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getData()).isEqualTo("{}");
+        assertThat(caseData.isPriority()).isEqualTo(true);
+        assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
+        assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+
+    }
+
+    @Test
+    public void shouldSetPrimaryCorrespondent() {
+
+        CaseDataType type = CaseDataType.MIN;
+        Long caseNumber = 1234L;
+        Map<String, String> data = new HashMap<>();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        UUID primary = UUID.randomUUID();
+
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+
+        assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getData()).isEqualTo("{}");
+        assertThat(caseData.isPriority()).isEqualTo(false);
+        assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
+        assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+
+        caseData.setPrimaryCorrespondentUUID(primary);
+
+        assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getData()).isEqualTo("{}");
+        assertThat(caseData.isPriority()).isEqualTo(false);
+        assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(primary);
+        assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+
+    }
+
+    @Test
+    public void updatePriority() {
+
+        CaseDataType type = CaseDataType.MIN;
+        Long caseNumber = 1234L;
+        Map<String, String> data = new HashMap<>();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        UUID primary = UUID.randomUUID();
+
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+
+        assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getData()).isEqualTo("{}");
+        assertThat(caseData.isPriority()).isEqualTo(false);
+        assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
+        assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+
+        caseData.setPrimaryTopicUUID(primary);
+
+        assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getData()).isEqualTo("{}");
+        assertThat(caseData.isPriority()).isEqualTo(false);
+        assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
+        assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(primary);
+
     }
 
 

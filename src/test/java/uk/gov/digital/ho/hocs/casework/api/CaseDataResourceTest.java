@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataResourceTest {
 
-    private final long caseID = 12345L;
+    private static final long caseID = 12345L;
     private final CaseDataType caseDataType = CaseDataType.MIN;
     private final HashMap<String, String> data = new HashMap<>();
     private final UUID uuid = UUID.randomUUID();

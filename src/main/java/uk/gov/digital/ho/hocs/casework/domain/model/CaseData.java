@@ -46,13 +46,15 @@ public class CaseData {
     @Column(name = "data")
     private String data = "{}";
 
+    @Setter
     @Getter
     @Column(name = "primary_topic_uuid")
-    private String primaryTopicUUID;
+    private UUID primaryTopicUUID;
 
+    @Setter
     @Getter
     @Column(name = "primary_correspondent_uuid")
-    private String primaryCorrespondentUUID;
+    private UUID primaryCorrespondentUUID;
 
     public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper) {
         if (type == null || caseNumber == null) {
@@ -66,10 +68,6 @@ public class CaseData {
     public CaseData(CaseDataType caseType, long caseNumber) {
         this.type = caseType.getDisplayValue();
         this.reference = generateCaseReference(caseNumber);
-    }
-
-    private String generateCaseReference(Long caseNumber) {
-        return String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
     }
 
     private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {
@@ -91,6 +89,10 @@ public class CaseData {
             throw new EntityCreationException("Object Mapper failed to read data value!");
         }
         return dataMap;
+    }
+
+    private String generateCaseReference(Long caseNumber) {
+        return String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
     }
 
     public CaseDataType getCaseDataType() {
