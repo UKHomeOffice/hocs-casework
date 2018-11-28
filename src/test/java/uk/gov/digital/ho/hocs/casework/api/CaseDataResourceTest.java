@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -31,6 +32,7 @@ public class CaseDataResourceTest {
     private CaseDataService caseDataService;
     private CaseDataResource caseDataResource;
     private ObjectMapper objectMapper = new ObjectMapper();
+    private LocalDate caseDeadline = LocalDate.now().plusDays(20);
 
     @Before
     public void setUp() {
@@ -40,14 +42,14 @@ public class CaseDataResourceTest {
     @Test
     public void shouldCreateCase() {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper);
-        CreateCaseRequest request = new CreateCaseRequest(caseDataType, data);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseDeadline);
+        CreateCaseRequest request = new CreateCaseRequest(caseDataType, data, caseDeadline);
 
-        when(caseDataService.createCase(caseDataType, data)).thenReturn(caseData);
+        when(caseDataService.createCase(caseDataType, data, caseDeadline)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseDataType, data);
+        verify(caseDataService, times(1)).createCase(caseDataType, data, caseDeadline);
 
         verifyNoMoreInteractions(caseDataService);
 
@@ -58,7 +60,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCase() {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseDeadline);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 

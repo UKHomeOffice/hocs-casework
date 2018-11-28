@@ -29,7 +29,7 @@ class CaseDataResource {
     @Authorised()
     @PostMapping(value = "/case", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
-        CaseData caseData = caseDataService.createCase(request.getType(), request.getData());
+        CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getCaseDeadline());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 

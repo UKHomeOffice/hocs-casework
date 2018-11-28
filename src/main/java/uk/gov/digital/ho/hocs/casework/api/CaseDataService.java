@@ -10,6 +10,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,8 +28,8 @@ public class CaseDataService {
     }
 
     @Transactional
-    public CaseData createCase(CaseDataType caseDataType, Map<String, String> data) {
-        CaseData caseData = new CaseData(caseDataType, caseDataRepository.getNextSeriesId(), data, objectMapper);
+    public CaseData createCase(CaseDataType caseDataType, Map<String, String> data, LocalDate caseDeadline) {
+        CaseData caseData = new CaseData(caseDataType, caseDataRepository.getNextSeriesId(), data, objectMapper, caseDeadline);
         caseDataRepository.save(caseData);
         log.info("Created Case Type: {} UUID: {}", caseDataType, caseData.getUuid());
         return caseData;

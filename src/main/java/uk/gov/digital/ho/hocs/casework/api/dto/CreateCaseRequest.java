@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @AllArgsConstructor
@@ -16,4 +17,8 @@ public class CreateCaseRequest {
 
     @JsonProperty("data")
     private Map<String, String> data;
+
+    @JsonProperty("caseDeadline")
+    private LocalDate caseDeadline;
+
 }
