@@ -8,6 +8,7 @@ import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -57,12 +58,17 @@ public class CaseData {
     @Column(name = "primary_correspondent_uuid")
     private UUID primaryCorrespondentUUID;
 
-    public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper) {
-        this(type, caseNumber);
+    @Setter
+    @Getter
+    @Column(name = "case_deadline")
+    private LocalDate caseDeadline;
+
+    public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline) {
+        this(type, caseNumber, caseDeadline);
         update(data, objectMapper);
     }
 
-    public CaseData(CaseDataType type, Long caseNumber) {
+    public CaseData(CaseDataType type, Long caseNumber , LocalDate caseDeadline) {
         if (type == null || caseNumber == null) {
             throw new EntityCreationException("Cannot create CaseData");
         }
@@ -70,6 +76,7 @@ public class CaseData {
         this.type = type.getDisplayCode();
         this.reference = generateCaseReference(caseNumber);
         this.uuid = randomUUID(type.getShortCode());
+        this.caseDeadline = caseDeadline;
     }
 
     private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {

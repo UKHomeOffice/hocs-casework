@@ -13,6 +13,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -30,6 +31,7 @@ public class CaseDataServiceTest {
     private InfoClient infoClient;
     private CaseDataService caseDataService;
     private ObjectMapper objectMapper = new ObjectMapper();
+    private LocalDate caseDeadline = LocalDate.now().plusDays(20);
 
     @Before
     public void setUp() {
@@ -41,7 +43,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
-        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>());
+        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>(), caseDeadline);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
@@ -54,7 +56,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
-        CaseData caseData = caseDataService.createCase(caseType, null);
+        CaseData caseData = caseDataService.createCase(caseType, null, caseDeadline);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
@@ -66,7 +68,7 @@ public class CaseDataServiceTest {
     @Test(expected = EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws EntityCreationException {
 
-        caseDataService.createCase(null, new HashMap<>());
+        caseDataService.createCase(null, new HashMap<>(),caseDeadline);
     }
 
     @Test()
@@ -75,7 +77,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         try {
-            caseDataService.createCase(null, new HashMap<>());
+            caseDataService.createCase(null, new HashMap<>(),caseDeadline);
         } catch (EntityCreationException e) {
             // Do nothing.
         }
@@ -88,7 +90,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseWithValidParams() throws EntityNotFoundException {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -148,7 +150,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldUpdateCase() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -163,7 +165,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldUpdateCaseNullData() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline);
 
         caseDataService.updateCaseData(caseData.getUuid(), null);
 
@@ -193,7 +195,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldUpdatePriorityCase() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline );
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 

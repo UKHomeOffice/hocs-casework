@@ -13,6 +13,7 @@ import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -76,7 +77,7 @@ public class AuthorisationAspectTest {
 
         CaseDataType type = new CaseDataType("MIN", "a1");
         Object[] args = new Object[1];
-        args[0] = new CreateCaseRequest(type, new HashMap<>());
+        args[0] = new CreateCaseRequest(type, new HashMap<>(), LocalDate.now());
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 

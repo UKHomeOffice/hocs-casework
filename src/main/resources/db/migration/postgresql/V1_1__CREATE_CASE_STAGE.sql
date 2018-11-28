@@ -16,6 +16,7 @@ CREATE TABLE IF NOT EXISTS case_data
   data                       JSONB,
   primary_topic_uuid         UUID,
   primary_correspondent_uuid UUID,
+  case_deadline              DATE        NOT NULL,
   deleted                    BOOLEAN     NOT NULL DEFAULT FALSE,
 
   CONSTRAINT case_uuid_idempotent UNIQUE (uuid),
@@ -36,9 +37,9 @@ CREATE INDEX case_data_correspondent
 
 -- This should be used to ensure we only return results from cases we haven't deleted
 CREATE OR REPLACE VIEW active_case AS
-  SELECT *
-  FROM case_data
-  WHERE NOT deleted;
+SELECT *
+FROM case_data
+WHERE NOT deleted;
 
 DROP TABLE IF EXISTS stage;
 
@@ -72,7 +73,7 @@ CREATE INDEX stage_user_uuid_complete
   WHERE status <> 'COMPLETED';
 
 CREATE OR REPLACE VIEW active_stage AS
-  SELECT c.reference AS case_reference, c.type AS case_type, c.data as data, s.*
-  FROM stage s
-         JOIN active_case c ON s.case_uuid = c.uuid
-  WHERE s.status <> 'COMPLETED';
+SELECT c.reference AS case_reference, c.type AS case_type, c.data as data, s.*
+FROM stage s
+       JOIN active_case c ON s.case_uuid = c.uuid
+WHERE s.status <> 'COMPLETED';

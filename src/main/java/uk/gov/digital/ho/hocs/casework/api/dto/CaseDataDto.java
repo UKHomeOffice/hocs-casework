@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -35,6 +36,9 @@ public class CaseDataDto {
     @JsonProperty("primaryCorrespondent")
     private String primaryCorrespondent;
 
+    @JsonProperty("caseDeadline")
+    private LocalDate caseDeadline;
+
     public static CaseDataDto from(CaseData caseData) {
 
         String primaryCorrespondent = null;
@@ -54,6 +58,7 @@ public class CaseDataDto {
                 caseData.getReference(),
                 caseData.getData(),
                 primaryTopic,
-                primaryCorrespondent);
+                primaryCorrespondent,
+                caseData.getCaseDeadline());
     }
 }
