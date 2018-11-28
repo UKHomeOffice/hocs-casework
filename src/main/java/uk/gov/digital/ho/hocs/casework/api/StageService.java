@@ -90,9 +90,12 @@ public class StageService {
     public Set<Stage> getActiveStages() {
         Set<UUID> teams = userPermissionsService.getUserTeams();
         if (teams.isEmpty()) {
+            log.info("Returning empty stage list");
             return new HashSet<>();
         } else {
-            return stageRepository.findAllBy(teams);
+            Set<Stage> stages = stageRepository.findAllBy(teams);
+            log.info("Returning {} stages", stages.size());
+            return stages;
         }
     }
 
