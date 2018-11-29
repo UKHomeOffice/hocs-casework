@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.auditClient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
@@ -18,17 +19,20 @@ import java.util.UUID;
 public class CaseDataService {
 
     private final CaseDataRepository caseDataRepository;
+    private final AuditClient auditClient;
     private final ObjectMapper objectMapper;
 
     @Autowired
-    public CaseDataService(CaseDataRepository caseDataRepository, ObjectMapper objectMapper) {
+    public CaseDataService(CaseDataRepository caseDataRepository, ObjectMapper objectMapper, AuditClient auditClient) {
         this.caseDataRepository = caseDataRepository;
+        this.auditClient = auditClient;
         this.objectMapper = objectMapper;
     }
 
     @Transactional
     public CaseData createCase(CaseDataType caseDataType, Map<String, String> data) {
         CaseData caseData = new CaseData(caseDataType, caseDataRepository.getNextSeriesId(), data, objectMapper);
+        auditClient.createCaseAudit(caseData);
         caseDataRepository.save(caseData);
         log.info("Created Case Type: {} UUID: {}", caseDataType, caseData.getUuid());
         return caseData;

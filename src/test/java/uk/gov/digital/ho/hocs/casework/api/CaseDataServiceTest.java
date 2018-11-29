@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.auditClient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
@@ -26,11 +27,13 @@ public class CaseDataServiceTest {
     @Mock
     private CaseDataRepository caseDataRepository;
     private CaseDataService caseDataService;
+    @Mock
+    private AuditClient auditClient;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setUp() {
-        this.caseDataService = new CaseDataService(caseDataRepository, objectMapper);
+        this.caseDataService = new CaseDataService(caseDataRepository, objectMapper, auditClient);
     }
 
     @Test
@@ -59,6 +62,17 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
     }
 
+    @Test
+    public void shouldAuditCreateCase() throws EntityCreationException {
+
+        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+
+        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>());
+
+        verify(auditClient, times(1)).createCaseAudit(caseData);
+
+        verifyNoMoreInteractions(auditClient);
+    }
 
     @Test(expected = EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws EntityCreationException {
