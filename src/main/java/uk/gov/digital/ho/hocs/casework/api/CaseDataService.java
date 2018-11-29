@@ -28,6 +28,7 @@ public class CaseDataService {
 
     @Transactional
     public CaseData createCase(CaseDataType caseDataType, Map<String, String> data) {
+
         CaseData caseData = new CaseData(caseDataType, caseDataRepository.getNextSeriesId(), data, objectMapper);
         caseDataRepository.save(caseData);
         log.info("Created Case Type: {} UUID: {}", caseDataType, caseData.getUuid());
