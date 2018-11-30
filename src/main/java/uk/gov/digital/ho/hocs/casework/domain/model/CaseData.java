@@ -24,7 +24,7 @@ public class CaseData {
 
     @Getter
     @Column(name = "uuid")
-    private UUID uuid = UUID.randomUUID();
+    private UUID uuid;
 
     @Getter
     @Column(name = "created")
@@ -57,17 +57,18 @@ public class CaseData {
     private UUID primaryCorrespondentUUID;
 
     public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper) {
-        if (type == null || caseNumber == null) {
-            throw new EntityCreationException("Cannot create CaseData (%s,%s).", type, caseNumber);
-        }
-        this.type = type.toString();
-        this.reference = generateCaseReference(caseNumber);
+        this(type, caseNumber);
         update(data, objectMapper);
     }
 
-    public CaseData(CaseDataType caseType, long caseNumber) {
-        this.type = caseType.getDisplayValue();
+    public CaseData(CaseDataType type, Long caseNumber) {
+        if (type == null || caseNumber == null) {
+            throw new EntityCreationException("Cannot create CaseData (%s,%s).", type, caseNumber);
+        }
+
+        this.type = type.getDisplayName();
         this.reference = generateCaseReference(caseNumber);
+        this.uuid = HocsCaseUUID.randomUUID(type);
     }
 
     private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {

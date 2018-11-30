@@ -44,7 +44,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getReference()).matches("[A-Z]{3,4}/[0-9]{7}/[0-9]{2}");
 
-        assertThat(caseData.getReference()).startsWith(type.getDisplayValue());
+        assertThat(caseData.getReference()).startsWith(type.getDisplayName());
         assertThat(caseData.getReference()).contains(String.valueOf(caseNumber));
         assertThat(caseData.getReference()).endsWith(String.valueOf(caseData.getCreated().getYear()).substring(2, 4));
 

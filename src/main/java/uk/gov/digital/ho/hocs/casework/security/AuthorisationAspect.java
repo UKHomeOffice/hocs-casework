@@ -10,6 +10,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.domain.model.HocsCaseUUID;
 
 import java.util.UUID;
 
@@ -63,8 +64,12 @@ public class AuthorisationAspect {
     }
 
     private CaseDataType getCaseTypeFromId(UUID caseUUID) {
-
-        return caseService.getCase(caseUUID).getCaseDataType();
+        CaseDataType caseDataType = HocsCaseUUID.getCaseDataType(caseUUID);
+        if (caseDataType == null) {
+            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID);
+            caseDataType = caseService.getCase(caseUUID).getCaseDataType();
+        }
+        return caseDataType;
     }
 
     public AccessLevel getAccessRequestAccessLevel() {
