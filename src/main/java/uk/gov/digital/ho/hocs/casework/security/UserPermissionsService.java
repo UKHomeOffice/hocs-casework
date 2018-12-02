@@ -27,7 +27,6 @@ public class UserPermissionsService {
 
     public AccessLevel getMaxAccessLevel(CaseDataType caseType) {
 
-        Set<AccessLevel> access = getUserAccessLevels(caseType);
         return getUserAccessLevels(caseType).stream()
                 .max(Comparator.comparing(AccessLevel::getLevel))
                 .orElseThrow(() ->

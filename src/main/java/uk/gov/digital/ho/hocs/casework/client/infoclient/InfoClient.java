@@ -34,7 +34,7 @@ public class InfoClient {
 
     @Cacheable(value = "getCaseTypeByShortCode")
     public CaseDataType getCaseTypeByShortCode(String shortCode) {
-        ResponseEntity<CaseDataType> response = restHelper.get(serviceBaseURL, String.format("/caseType/shortcode/{}", shortCode), CaseDataType.class);
+        ResponseEntity<CaseDataType> response = restHelper.get(serviceBaseURL, String.format("/caseType/shortcode/%s", shortCode), CaseDataType.class);
         return response.getBody();
     }
 
