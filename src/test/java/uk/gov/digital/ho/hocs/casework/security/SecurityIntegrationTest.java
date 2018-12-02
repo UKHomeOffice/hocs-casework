@@ -47,7 +47,7 @@ public class SecurityIntegrationTest {
 
     @Test
     public void shouldGetCaseDataWhenInCaseTypeGroup() {
-        UUID caseUUID = UUID.fromString("00000000-0000-0000-0000-0000000000a1");
+        UUID caseUUID = UUID.randomUUID();
 
         Map<String,String> caseSubData = new HashMap<String, String>(){{
             put("key","value");

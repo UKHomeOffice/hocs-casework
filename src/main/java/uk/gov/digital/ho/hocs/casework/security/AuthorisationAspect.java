@@ -62,7 +62,12 @@ public class AuthorisationAspect {
     }
 
     private CaseDataType getCaseTypeFromId(UUID caseUUID) {
-        return caseService.getCaseTypeByUUID(caseUUID);
+        CaseDataType caseDataType = caseService.getCaseTypeByUUID(caseUUID);
+        if (caseDataType == null) {
+            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID);
+            caseDataType = new CaseDataType(caseService.getCase(caseUUID).getType(), null);
+        }
+        return caseDataType;
     }
 
     public AccessLevel getAccessRequestAccessLevel() {

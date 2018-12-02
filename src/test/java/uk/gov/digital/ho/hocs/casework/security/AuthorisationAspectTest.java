@@ -50,7 +50,7 @@ public class AuthorisationAspectTest {
     }
 
     @Test
-    public void shouldCaseServicLookupeWhenExistingCase() throws Throwable {
+    public void shouldCaseServiceLookupWhenExistingCase() throws Throwable {
 
         CaseDataType type = new CaseDataType("MIN", "a1");
         Object[] args = new Object[1];
