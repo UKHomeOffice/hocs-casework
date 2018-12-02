@@ -56,7 +56,7 @@ public class Stage implements Serializable {
 
     @Getter
     @Column(name = "case_type", insertable = false, updatable = false)
-    private String caseType;
+    private String caseDataType;
 
     @Getter
     @Column(name = "data", insertable = false, updatable = false)

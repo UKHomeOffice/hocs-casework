@@ -31,7 +31,7 @@ public class StageDtoTest {
         assertThat(stageDto.getTeamUUID()).isEqualTo(stage.getTeamUUID());
         assertThat(stageDto.getUserUUID()).isEqualTo(stage.getUserUUID());
         assertThat(stageDto.getCaseReference()).isEqualTo(stage.getCaseReference());
-        assertThat(stageDto.getCaseType()).isEqualTo(stage.getCaseType());
+        assertThat(stageDto.getCaseDataType()).isEqualTo(stage.getCaseDataType());
         assertThat(stageDto.getData()).isEqualTo(stage.getData());
 
     }
@@ -54,7 +54,7 @@ public class StageDtoTest {
         assertThat(stageDto.getTeamUUID()).isEqualTo(stage.getTeamUUID());
         assertThat(stageDto.getUserUUID()).isEqualTo(stage.getUserUUID());
         assertThat(stageDto.getCaseReference()).isEqualTo(stage.getCaseReference());
-        assertThat(stageDto.getCaseType()).isEqualTo(stage.getCaseType());
+        assertThat(stageDto.getCaseDataType()).isEqualTo(stage.getCaseDataType());
         assertThat(stageDto.getData()).isEqualTo(stage.getData());
     }
 }

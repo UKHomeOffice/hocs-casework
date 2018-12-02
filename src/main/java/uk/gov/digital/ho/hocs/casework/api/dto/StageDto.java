@@ -43,7 +43,7 @@ public class StageDto {
     private String caseReference;
 
     @JsonProperty("caseType")
-    private String caseType;
+    private String caseDataType;
 
     @JsonRawValue
     private String data;
@@ -51,8 +51,8 @@ public class StageDto {
     public static StageDto from(Stage stage) {
 
         String caseDataType = null;
-        if (stage.getCaseType() != null) {
-            caseDataType = stage.getCaseType();
+        if (stage.getCaseDataType() != null) {
+            caseDataType = stage.getCaseDataType();
         }
         return new StageDto(
                 stage.getUuid(),

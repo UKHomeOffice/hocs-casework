@@ -32,7 +32,7 @@ public class StageTest {
         assertThat(stage.getStageStatusType()).isEqualTo(StageStatusType.TEAM_ASSIGNED);
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
-        assertThat(stage.getCaseType()).isEqualTo(null);
+        assertThat(stage.getCaseDataType()).isEqualTo(null);
         assertThat(stage.getData()).isEqualTo(null);
     }
 
