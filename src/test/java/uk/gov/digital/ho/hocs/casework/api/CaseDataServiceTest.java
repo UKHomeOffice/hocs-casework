@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
@@ -21,16 +22,18 @@ import static org.mockito.Mockito.*;
 public class CaseDataServiceTest {
 
     private static final long caseID = 12345L;
-    private final CaseDataType caseType = CaseDataType.MIN;
+    private final CaseDataType caseType = new CaseDataType("MIN", "a1");
     private final UUID caseUUID = UUID.randomUUID();
     @Mock
     private CaseDataRepository caseDataRepository;
+    @Mock
+    private InfoClient infoClient;
     private CaseDataService caseDataService;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setUp() {
-        this.caseDataService = new CaseDataService(caseDataRepository, objectMapper);
+        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper);
     }
 
     @Test

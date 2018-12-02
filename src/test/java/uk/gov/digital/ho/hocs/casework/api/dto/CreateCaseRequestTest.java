@@ -13,7 +13,7 @@ public class CreateCaseRequestTest {
     @Test
     public void getCreateCaseRequest() {
 
-        CaseDataType caseDataType = CaseDataType.MIN;
+        CaseDataType caseDataType = new CaseDataType("MIN", "a1");
         Map<String, String> data = new HashMap<>();
 
         CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseDataType, data);

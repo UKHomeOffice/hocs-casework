@@ -54,6 +54,7 @@ public class Stage implements Serializable {
     @Column(name = "case_reference", insertable = false, updatable = false)
     private String caseReference;
 
+    @Getter
     @Column(name = "case_type", insertable = false, updatable = false)
     private String caseType;
 
@@ -80,14 +81,6 @@ public class Stage implements Serializable {
 
     public StageStatusType getStageStatusType() {
         return StageStatusType.valueOf(this.status);
-    }
-
-    public CaseDataType getCaseDataType() {
-        if (this.caseType == null) {
-            return null;
-        } else {
-            return CaseDataType.valueOf(this.caseType);
-        }
     }
 
     public void setDeadline(LocalDate deadline) {

@@ -79,7 +79,7 @@ public class UserPermissionsServiceTest {
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Set<AccessLevel> userAccessLevels = service.getUserAccessLevels(CaseDataType.MIN);
+        Set<AccessLevel> userAccessLevels = service.getUserAccessLevels(new CaseDataType("MIN", null));
         assertThat(userAccessLevels.size()).isEqualTo(2);
         assertThat(userAccessLevels).contains(AccessLevel.WRITE);
         assertThat(userAccessLevels).contains(AccessLevel.OWNER);
@@ -132,7 +132,7 @@ public class UserPermissionsServiceTest {
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
         Set<CaseDataType> caseTypes = service.getUserCaseTypes();
-        assertThat(caseTypes).contains(CaseDataType.TRO);
-        assertThat(caseTypes).contains(CaseDataType.MIN);
+        assertThat(caseTypes.stream().anyMatch(c -> c.getDisplayCode().equals("TRO"))).isTrue();
+        assertThat(caseTypes.stream().anyMatch(c -> c.getDisplayCode().equals("MIN"))).isTrue();
     }
 }

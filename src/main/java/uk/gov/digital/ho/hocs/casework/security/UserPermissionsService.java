@@ -27,6 +27,7 @@ public class UserPermissionsService {
 
     public AccessLevel getMaxAccessLevel(CaseDataType caseType) {
 
+        Set<AccessLevel> access = getUserAccessLevels(caseType);
         return getUserAccessLevels(caseType).stream()
                 .max(Comparator.comparing(AccessLevel::getLevel))
                 .orElseThrow(() ->
@@ -91,7 +92,8 @@ public class UserPermissionsService {
             CaseDataType type = null;
             if (!StringUtils.isNullOrEmpty(permission.get(3))) {
                 String caseType = Optional.ofNullable(permission.get(3)).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Invalid case type Found"));
-                type = CaseDataType.valueOf(caseType);
+                //TODO:should we get the shortcode here?
+                type = new CaseDataType(caseType, null);
             }
 
             AccessLevel level = null;

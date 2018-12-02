@@ -30,6 +30,7 @@ public class CaseData {
     @Column(name = "created")
     private LocalDateTime created = LocalDateTime.now();
 
+    @Getter
     @Column(name = "type")
     private String type;
 
@@ -63,12 +64,12 @@ public class CaseData {
 
     public CaseData(CaseDataType type, Long caseNumber) {
         if (type == null || caseNumber == null) {
-            throw new EntityCreationException("Cannot create CaseData (%s,%s).", type, caseNumber);
+            throw new EntityCreationException("Cannot create CaseData");
         }
 
-        this.type = type.getDisplayName();
+        this.type = type.getDisplayCode();
         this.reference = generateCaseReference(caseNumber);
-        this.uuid = HocsCaseUUID.randomUUID(type);
+        this.uuid = randomUUID(type.getShortCode());
     }
 
     private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {
@@ -96,10 +97,6 @@ public class CaseData {
         return String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
     }
 
-    public CaseDataType getCaseDataType() {
-        return CaseDataType.valueOf(this.type);
-    }
-
     public void update(Map<String, String> newData, ObjectMapper objectMapper) {
         if (newData != null && newData.size() > 0) {
             Map<String, String> dataMap = getDataMap(this.data, objectMapper);
@@ -107,6 +104,15 @@ public class CaseData {
             dataMap.putAll(newData);
 
             this.data = getDataString(dataMap, objectMapper);
+        }
+    }
+
+    private static UUID randomUUID(String shortCode) {
+        if (shortCode != null) {
+            String uuid = UUID.randomUUID().toString().substring(0, 33);
+            return UUID.fromString(uuid.concat(shortCode));
+        } else {
+            throw new EntityCreationException("shortCode is null");
         }
     }
 

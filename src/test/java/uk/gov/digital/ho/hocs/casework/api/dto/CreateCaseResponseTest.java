@@ -7,6 +7,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,8 +16,9 @@ public class CreateCaseResponseTest {
     @Test
     public void getCreateCaseResponse() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
+        UUID uuid = UUID.randomUUID();
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -32,8 +34,9 @@ public class CreateCaseResponseTest {
     @Test
     public void getCreateCaseResponseNull() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         CaseData caseData = new CaseData(type, caseNumber, null, objectMapper);

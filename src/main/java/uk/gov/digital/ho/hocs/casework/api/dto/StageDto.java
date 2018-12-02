@@ -51,8 +51,8 @@ public class StageDto {
     public static StageDto from(Stage stage) {
 
         String caseDataType = null;
-        if (stage.getCaseDataType() != null) {
-            caseDataType = stage.getCaseDataType().toString();
+        if (stage.getCaseType() != null) {
+            caseDataType = stage.getCaseType();
         }
         return new StageDto(
                 stage.getUuid(),
