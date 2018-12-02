@@ -12,12 +12,12 @@ import java.util.Set;
 
 @Component
 @Profile({"cache"})
-public class DependentDataFetcher {
+public class DependentDataPreLoader {
 
     private InfoClient infoClient;
 
     @Autowired
-    public DependentDataFetcher(InfoClient infoClient) {
+    public DependentDataPreLoader(InfoClient infoClient) {
         this.infoClient = infoClient;
     }
 

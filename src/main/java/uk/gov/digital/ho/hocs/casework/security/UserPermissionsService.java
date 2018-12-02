@@ -91,7 +91,6 @@ public class UserPermissionsService {
             CaseDataType type = null;
             if (!StringUtils.isNullOrEmpty(permission.get(3))) {
                 String caseType = Optional.ofNullable(permission.get(3)).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Invalid case type Found"));
-                //TODO:should we get the shortcode here?
                 type = new CaseDataType(caseType, null);
             }
 

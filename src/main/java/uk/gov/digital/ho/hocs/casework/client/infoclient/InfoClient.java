@@ -27,14 +27,14 @@ public class InfoClient {
     }
 
     public Set<CaseDataType> getCaseTypes() {
-        ResponseEntity<GetCaseTypesResponse> response = restHelper.get(serviceBaseURL, String.format("/caseType"), GetCaseTypesResponse.class);
+        ResponseEntity<GetCaseTypesResponse> response = restHelper.get(serviceBaseURL, "/caseType", GetCaseTypesResponse.class);
         return response.getBody().getCaseTypes();
     }
 
 
     @Cacheable(value = "getCaseTypeByShortCode")
     public CaseDataType getCaseTypeByShortCode(String shortCode) {
-        ResponseEntity<CaseDataType> response = restHelper.get(serviceBaseURL, String.format("/caseType/shortcode/%s", shortCode), CaseDataType.class);
+        ResponseEntity<CaseDataType> response = restHelper.get(serviceBaseURL, String.format("/caseType/shortCode/%s", shortCode), CaseDataType.class);
         return response.getBody();
     }
 
