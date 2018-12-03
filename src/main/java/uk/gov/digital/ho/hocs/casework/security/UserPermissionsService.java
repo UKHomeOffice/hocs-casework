@@ -91,7 +91,7 @@ public class UserPermissionsService {
             CaseDataType type = null;
             if (!StringUtils.isNullOrEmpty(permission.get(3))) {
                 String caseType = Optional.ofNullable(permission.get(3)).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Invalid case type Found"));
-                type = CaseDataType.valueOf(caseType);
+                type = new CaseDataType(caseType, null);
             }
 
             AccessLevel level = null;

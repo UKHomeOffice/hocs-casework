@@ -50,7 +50,7 @@ public class CaseDataDto {
         return new CaseDataDto(
                 caseData.getUuid(),
                 caseData.getCreated(),
-                caseData.getCaseDataType().toString(),
+                caseData.getType(),
                 caseData.getReference(),
                 caseData.getData(),
                 primaryTopic,

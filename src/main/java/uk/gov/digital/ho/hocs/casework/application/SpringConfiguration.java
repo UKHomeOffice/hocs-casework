@@ -6,6 +6,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
@@ -16,7 +19,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.text.SimpleDateFormat;
 
 @Configuration
-
+@EnableCaching
 public class SpringConfiguration implements WebMvcConfigurer {
 
     @Bean
@@ -50,5 +53,10 @@ public class SpringConfiguration implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(createRequestData());
+    }
+
+    @Bean
+    public CacheManager caseTypeShortCodeByDisplayCodeManager() {
+        return new ConcurrentMapCacheManager("getCaseTypeByShortCode");
     }
 }

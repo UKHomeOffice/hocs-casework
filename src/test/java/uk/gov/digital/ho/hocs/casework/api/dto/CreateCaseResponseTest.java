@@ -15,7 +15,7 @@ public class CreateCaseResponseTest {
     @Test
     public void getCreateCaseResponse() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -32,8 +32,9 @@ public class CreateCaseResponseTest {
     @Test
     public void getCreateCaseResponseNull() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
+
         ObjectMapper objectMapper = new ObjectMapper();
 
         CaseData caseData = new CaseData(type, caseNumber, null, objectMapper);

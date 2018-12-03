@@ -15,7 +15,7 @@ public class CaseDataDtoTest {
     @Test
     public void getCaseDataDto() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -26,7 +26,7 @@ public class CaseDataDtoTest {
 
         assertThat(caseDataDto.getUuid()).isEqualTo(caseData.getUuid());
         assertThat(caseDataDto.getCreated()).isEqualTo(caseData.getCreated());
-        assertThat(caseDataDto.getType()).isEqualTo(caseData.getCaseDataType().toString());
+        assertThat(caseDataDto.getType()).isEqualTo(caseData.getType());
         assertThat(caseDataDto.getReference()).isEqualTo(caseData.getReference());
         assertThat(caseDataDto.getData()).isEqualTo(caseData.getData());
         assertThat(caseDataDto.getPrimaryTopic()).isEqualTo(caseData.getPrimaryTopicUUID());
@@ -37,7 +37,7 @@ public class CaseDataDtoTest {
     @Test
     public void getCaseDataDtoNull() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -47,7 +47,7 @@ public class CaseDataDtoTest {
 
         assertThat(caseDataDto.getUuid()).isEqualTo(caseData.getUuid());
         assertThat(caseDataDto.getCreated()).isEqualTo(caseData.getCreated());
-        assertThat(caseDataDto.getType()).isEqualTo(caseData.getCaseDataType().toString());
+        assertThat(caseDataDto.getType()).isEqualTo(caseData.getType());
         assertThat(caseDataDto.getReference()).isEqualTo(caseData.getReference());
         assertThat(caseDataDto.getData()).isEqualTo(caseData.getData());
         assertThat(caseDataDto.getPrimaryTopic()).isEqualTo(caseData.getPrimaryTopicUUID());

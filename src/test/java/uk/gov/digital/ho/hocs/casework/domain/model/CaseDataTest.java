@@ -15,7 +15,7 @@ public class CaseDataTest {
 
     @Test
     public void getCaseData() {
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -24,7 +24,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -35,8 +35,9 @@ public class CaseDataTest {
     @Test
     public void getCaseDataReferenceFormat() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         long caseNumber = 1234L;
+
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -44,10 +45,12 @@ public class CaseDataTest {
 
         assertThat(caseData.getReference()).matches("[A-Z]{3,4}/[0-9]{7}/[0-9]{2}");
 
-        assertThat(caseData.getReference()).startsWith(type.getDisplayName());
+        assertThat(caseData.getReference()).startsWith(type.getDisplayCode());
         assertThat(caseData.getReference()).contains(String.valueOf(caseNumber));
         assertThat(caseData.getReference()).endsWith(String.valueOf(caseData.getCreated().getYear()).substring(2, 4));
 
+        // We encode the type into the UUID for quicker lookup (assuming type data is cached)
+        assertThat(caseData.getUuid().toString()).endsWith(type.getShortCode());
     }
 
     @Test(expected = EntityCreationException.class)
@@ -63,7 +66,7 @@ public class CaseDataTest {
     @Test(expected = EntityCreationException.class)
     public void getCaseDataNullNumber() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
 
@@ -73,7 +76,7 @@ public class CaseDataTest {
     @Test
     public void update() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -82,7 +85,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -98,7 +101,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
@@ -108,7 +111,7 @@ public class CaseDataTest {
     @Test
     public void updateWithExistingData() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("old", "anyOldValue");
@@ -131,7 +134,7 @@ public class CaseDataTest {
     @Test
     public void updateWithOverwriteExistingData() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("new", "anyOldValue");
@@ -152,7 +155,7 @@ public class CaseDataTest {
     @Test
     public void updateWithEmptyData() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("new", "anyOldValue");
@@ -172,7 +175,7 @@ public class CaseDataTest {
     @Test
     public void updateWithNullData() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("new", "anyOldValue");
@@ -190,7 +193,7 @@ public class CaseDataTest {
     @Test
     public void shouldUpdatePriority() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
 
@@ -200,7 +203,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -210,7 +213,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(true);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -221,7 +224,7 @@ public class CaseDataTest {
     @Test
     public void shouldSetPrimaryCorrespondent() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
 
@@ -233,7 +236,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -243,7 +246,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(primary);
@@ -254,7 +257,7 @@ public class CaseDataTest {
     @Test
     public void updatePriority() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
 
@@ -266,7 +269,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -276,7 +279,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);

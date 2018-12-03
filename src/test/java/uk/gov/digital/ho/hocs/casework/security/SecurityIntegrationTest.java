@@ -17,9 +17,11 @@ import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +40,7 @@ public class SecurityIntegrationTest {
     CaseDataService caseDataService;
 
     String userId = UUID.randomUUID().toString();
+    CaseDataType caseDataType = new CaseDataType("MIN", "a1");
 
     @Autowired
     ObjectMapper mapper;
@@ -50,8 +53,10 @@ public class SecurityIntegrationTest {
             put("key","value");
         }};
 
-        CaseData caseData = new CaseData(CaseDataType.MIN,123456L, caseSubData, mapper);
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper);
         when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
+        when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("MIN", "a1"));
+
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/MIN/WRITE," +
@@ -70,8 +75,9 @@ public class SecurityIntegrationTest {
             put("key","value");
         }};
 
-        CaseData caseData = new CaseData(CaseDataType.MIN,123456L, caseSubData, new ObjectMapper());
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, new ObjectMapper());
         when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
+        when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("MIN", "1a"));
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");
@@ -85,6 +91,8 @@ public class SecurityIntegrationTest {
     public void shouldReturnNotFoundIfCaseUUIDNotFound() {
         UUID caseUUID = UUID.randomUUID();
         when(caseDataService.getCase(caseUUID)).thenThrow(new EntityNotFoundException("Not found"));
+        when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("TRO", "1b"));
+
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");
         HttpEntity httpEntity = new HttpEntity(headers);

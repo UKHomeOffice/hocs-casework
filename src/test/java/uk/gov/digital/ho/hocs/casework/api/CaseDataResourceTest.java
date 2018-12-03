@@ -24,7 +24,7 @@ import static org.mockito.Mockito.*;
 public class CaseDataResourceTest {
 
     private static final long caseID = 12345L;
-    private final CaseDataType caseDataType = CaseDataType.MIN;
+    private final CaseDataType caseDataType = new CaseDataType("MIN", "a1");
     private final HashMap<String, String> data = new HashMap<>();
     private final UUID uuid = UUID.randomUUID();
     @Mock
