@@ -68,7 +68,7 @@ public class CaseData {
         update(data, objectMapper);
     }
 
-    public CaseData(CaseDataType type, Long caseNumber , LocalDate caseDeadline) {
+    public CaseData(CaseDataType type, Long caseNumber, LocalDate caseDeadline) {
         if (type == null || caseNumber == null) {
             throw new EntityCreationException("Cannot create CaseData");
         }
