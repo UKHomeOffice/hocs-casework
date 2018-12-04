@@ -11,7 +11,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,8 +45,7 @@ public class UserPermissionsServiceTest {
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Map<String, Map<String, Map<CaseDataType,Set<AccessLevel>>>> permissions = service.getUserPermission();
-        assertThat(permissions.size()).isEqualTo(2);
+        assertThat(service.getUserPermission().count()).isEqualTo(2);
     }
 
 
@@ -62,8 +60,7 @@ public class UserPermissionsServiceTest {
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Map<String, Map<String, Map<CaseDataType,Set<AccessLevel>>>> permissions = service.getUserPermission();
-        assertThat(permissions.size()).isEqualTo(2);
+        assertThat(service.getUserPermission().count()).isEqualTo(2);
     }
 
 
