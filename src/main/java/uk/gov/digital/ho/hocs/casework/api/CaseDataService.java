@@ -31,9 +31,14 @@ public class CaseDataService {
     }
 
     @Transactional
+<<<<<<< HEAD
     public CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline) {
         Long caseNumber = caseDataRepository.getNextSeriesId();
         CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline);
+=======
+    public CaseData createCase(CaseDataType caseDataType, Map<String, String> data, LocalDate caseDeadline) {
+        CaseData caseData = new CaseData(caseDataType, caseDataRepository.getNextSeriesId(), data, objectMapper, caseDeadline);
+>>>>>>> b4d025c39063b28d91d08de1b237dbe8c76a2a09
         caseDataRepository.save(caseData);
         log.info("Created Case Type: {} UUID: {}", caseType.getDisplayCode(), caseData.getUuid());
         return caseData;

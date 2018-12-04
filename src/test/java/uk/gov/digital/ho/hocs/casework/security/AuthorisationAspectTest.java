@@ -77,7 +77,11 @@ public class AuthorisationAspectTest {
 
         CaseDataType type = new CaseDataType("MIN", "a1");
         Object[] args = new Object[1];
+<<<<<<< HEAD
         args[0] = new CreateCaseRequest(type, new HashMap<>(), LocalDate.now());
+=======
+        args[0] = new CreateCaseRequest(CaseDataType.MIN, new HashMap<>(), LocalDate.now());
+>>>>>>> b4d025c39063b28d91d08de1b237dbe8c76a2a09
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
