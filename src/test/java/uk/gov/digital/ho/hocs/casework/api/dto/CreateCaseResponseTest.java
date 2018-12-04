@@ -5,6 +5,7 @@ import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,8 +20,9 @@ public class CreateCaseResponseTest {
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline);
 
         CreateCaseResponse createCaseResponse = CreateCaseResponse.from(caseData);
 
@@ -36,8 +38,9 @@ public class CreateCaseResponseTest {
         Long caseNumber = 1234L;
 
         ObjectMapper objectMapper = new ObjectMapper();
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
 
-        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper);
+        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper, caseDeadline);
 
         CreateCaseResponse createCaseResponse = CreateCaseResponse.from(caseData);
 

@@ -18,6 +18,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -53,7 +54,9 @@ public class SecurityIntegrationTest {
             put("key","value");
         }};
 
-        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper);
+
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
+
         when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
         when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("MIN", "a1"));
 
@@ -75,7 +78,8 @@ public class SecurityIntegrationTest {
             put("key","value");
         }};
 
-        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, new ObjectMapper());
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, new ObjectMapper(), LocalDate.now());
+
         when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
         when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("MIN", "1a"));
 
