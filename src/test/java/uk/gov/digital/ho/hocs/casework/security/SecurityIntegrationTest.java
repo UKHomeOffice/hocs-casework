@@ -54,11 +54,9 @@ public class SecurityIntegrationTest {
             put("key","value");
         }};
 
-<<<<<<< HEAD
+
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
-=======
-        CaseData caseData = new CaseData(CaseDataType.MIN,123456L, caseSubData, mapper, LocalDate.now());
->>>>>>> b4d025c39063b28d91d08de1b237dbe8c76a2a09
+
         when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
         when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("MIN", "a1"));
 
@@ -80,11 +78,8 @@ public class SecurityIntegrationTest {
             put("key","value");
         }};
 
-<<<<<<< HEAD
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, new ObjectMapper(), LocalDate.now());
-=======
-        CaseData caseData = new CaseData(CaseDataType.MIN,123456L, caseSubData, new ObjectMapper(), LocalDate.now());
->>>>>>> b4d025c39063b28d91d08de1b237dbe8c76a2a09
+
         when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
         when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("MIN", "1a"));
 

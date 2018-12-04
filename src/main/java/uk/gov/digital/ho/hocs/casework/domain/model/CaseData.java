@@ -64,16 +64,7 @@ public class CaseData {
     private LocalDate caseDeadline;
 
     public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline) {
-<<<<<<< HEAD
         this(type, caseNumber, caseDeadline);
-=======
-        if (type == null || caseNumber == null) {
-            throw new EntityCreationException("Cannot create CaseData (%s,%s).", type, caseNumber);
-        }
-        this.type = type.toString();
-        this.reference = generateCaseReference(caseNumber);
-        this.caseDeadline = caseDeadline;
->>>>>>> b4d025c39063b28d91d08de1b237dbe8c76a2a09
         update(data, objectMapper);
     }
 
