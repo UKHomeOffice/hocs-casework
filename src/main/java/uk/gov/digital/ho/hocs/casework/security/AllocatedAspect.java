@@ -24,8 +24,8 @@ public class AllocatedAspect {
     public Object validateUserAccess(ProceedingJoinPoint joinPoint, Allocated allocated) throws Throwable {
         UUID stageUUID;
         UUID caseUUID;
-        if (joinPoint.getArgs().length > 1) {
-            if (joinPoint.getArgs()[1] instanceof UUID) {
+        if (joinPoint.getArgs().length >= 2) {
+            if (joinPoint.getArgs()[0] instanceof UUID && joinPoint.getArgs()[1] instanceof UUID) {
                 stageUUID = (UUID) joinPoint.getArgs()[1];
                 caseUUID = (UUID) joinPoint.getArgs()[0];
             } else {
