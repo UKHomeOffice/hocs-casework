@@ -13,8 +13,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
@@ -70,7 +71,7 @@ public class SecurityIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenNotInCaseTypeGroup() {
+    public void shouldReturnForbiddenWhenNotInCaseTypeGroup() {
         UUID caseUUID = UUID.randomUUID();
 
 
@@ -94,7 +95,7 @@ public class SecurityIntegrationTest {
     @Test
     public void shouldReturnNotFoundIfCaseUUIDNotFound() {
         UUID caseUUID = UUID.randomUUID();
-        when(caseDataService.getCase(caseUUID)).thenThrow(new EntityNotFoundException("Not found"));
+        when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
         when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("TRO", "1b"));
 
         headers.add(RequestData.USER_ID_HEADER, userId);

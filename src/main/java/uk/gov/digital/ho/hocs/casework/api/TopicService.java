@@ -3,13 +3,16 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.domain.repository.TopicDataRepository;
 
 import javax.transaction.Transactional;
 import java.util.Set;
 import java.util.UUID;
+
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Slf4j
 @Service
@@ -26,10 +29,10 @@ public class TopicService {
     public Set<Topic> getTopics(UUID caseUUID) {
         Set<Topic> topics = topicDataRepository.findAllByCaseUUID(caseUUID);
         if (topics != null) {
-            log.info("Got {} Topics for Case: {}", topics.size(), caseUUID);
+            log.info("Got {} Topics for Case: {}", topics.size(), caseUUID, value(EVENT, CASE_TOPICS_RETRIEVED));
             return topics;
         } else {
-            throw new EntityNotFoundException("Topics for Case UUID: %s not found!", caseUUID);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Topics for Case UUID: %s not found!", caseUUID), CASE_TOPICS_NOT_FOUND);
         }
     }
 
@@ -37,10 +40,10 @@ public class TopicService {
     public Topic getTopic(UUID caseUUID, UUID topicUUID) {
         Topic topic = topicDataRepository.findByUUID(caseUUID, topicUUID);
         if (topic != null) {
-            log.info("Got Topic: {} for Case: {}", topicUUID, caseUUID);
+            log.info("Got Topic: {} for Case: {}", topicUUID, caseUUID, value(EVENT, CASE_TOPIC_RETRIEVED));
             return topic;
         } else {
-            throw new EntityNotFoundException("Topic %s not found for Case: %s", topicUUID, caseUUID);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Topic %s not found for Case: %s", topicUUID, caseUUID), CASE_TOPIC_NOT_FOUND);
         }
     }
 
@@ -48,10 +51,10 @@ public class TopicService {
     public Topic getPrimaryTopic(UUID caseUUID) {
         Topic topic = topicDataRepository.getPrimaryTopic(caseUUID);
         if (topic != null) {
-            log.info("Got Primary Topic: {} for Case: {}", topic.getUuid(), caseUUID);
+            log.info("Got Primary Topic: {} for Case: {}", topic.getUuid(), caseUUID, value(EVENT, CASE_PRIMARY_TOPIC_RETRIEVED));
             return topic;
         } else {
-            throw new EntityNotFoundException("Primary Topic not found for Case: %s", caseUUID);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Primary Topic not found for Case: %s", caseUUID), CASE_PRIMARY_TOPIC_NOT_FOUND);
         }
     }
 
@@ -59,12 +62,12 @@ public class TopicService {
     public void createTopic(UUID caseUUID, String topicName, UUID topicUUID) {
         Topic topic = new Topic(caseUUID, topicName, topicUUID);
         topicDataRepository.save(topic);
-        log.info("Created Topic: {} for Case: {}", topic.getUuid(), caseUUID);
+        log.info("Created Topic: {} for Case: {}", topic.getUuid(), caseUUID, value(EVENT, CASE_TOPIC_CREATE));
     }
 
     @Transactional
     public void deleteTopic(UUID caseUUID, UUID topicUUID) {
         topicDataRepository.deleteTopic(topicUUID);
-        log.info("Deleted Topic: {} for Case: {}", topicUUID, caseUUID);
+        log.info("Deleted Topic: {} for Case: {}", topicUUID, caseUUID, value(EVENT, CASE_TOPIC_DELETED));
     }
 }

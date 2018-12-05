@@ -2,7 +2,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -57,7 +57,7 @@ public class CaseDataTest {
         assertThat(caseData.getUuid().toString()).endsWith(type.getShortCode());
     }
 
-    @Test(expected = EntityCreationException.class)
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getCaseDataNullType() {
 
         Long caseNumber = 1234L;
@@ -68,7 +68,7 @@ public class CaseDataTest {
         new CaseData(null, caseNumber, data, objectMapper, caseDeadline);
     }
 
-    @Test(expected = EntityCreationException.class)
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getCaseDataNullNumber() {
 
         CaseDataType type = new CaseDataType("MIN", "a1");

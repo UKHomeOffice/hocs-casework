@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,7 +27,7 @@ public class TopicTest {
 
     }
 
-    @Test(expected = EntityCreationException.class)
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getTopicNullCaseUUID() {
 
         String text = "anyTitle";
@@ -36,7 +36,7 @@ public class TopicTest {
         new Topic(null, text, textUUID);
     }
 
-    @Test(expected = EntityCreationException.class)
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getTopicNullType() {
 
         UUID caseUUID = UUID.randomUUID();
@@ -45,7 +45,7 @@ public class TopicTest {
         new Topic(caseUUID, null, textUUID);
     }
 
-    @Test(expected = EntityCreationException.class)
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getTopicNullText() {
 
         UUID caseUUID = UUID.randomUUID();

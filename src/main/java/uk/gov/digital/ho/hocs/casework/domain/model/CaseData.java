@@ -5,13 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
+
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DATA_JSON_PARSE_ERROR;
 
 @NoArgsConstructor
 @Entity
@@ -70,7 +74,7 @@ public class CaseData {
 
     public CaseData(CaseDataType type, Long caseNumber, LocalDate caseDeadline) {
         if (type == null || caseNumber == null) {
-            throw new EntityCreationException("Cannot create CaseData");
+            throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
         }
 
         this.type = type.getDisplayCode();
@@ -84,7 +88,7 @@ public class CaseData {
         try {
             dataString = objectMapper.writeValueAsString(dataMap);
         } catch (Exception e) {
-            throw new EntityCreationException("Object Mapper failed to write value!");
+            throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to write value!", CASE_DATA_JSON_PARSE_ERROR);
         }
         return dataString;
     }
@@ -95,7 +99,7 @@ public class CaseData {
             dataMap = objectMapper.readValue(dataString, new TypeReference<Map<String, String>>() {
             });
         } catch (Exception e) {
-            throw new EntityCreationException("Object Mapper failed to read data value!");
+            throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to read data value!", CASE_DATA_JSON_PARSE_ERROR);
         }
         return dataMap;
     }
@@ -119,7 +123,7 @@ public class CaseData {
             String uuid = UUID.randomUUID().toString().substring(0, 33);
             return UUID.fromString(uuid.concat(shortCode));
         } else {
-            throw new EntityCreationException("shortCode is null");
+            throw new ApplicationExceptions.EntityCreationException("shortCode is null", CASE_CREATE_FAILURE);
         }
     }
 

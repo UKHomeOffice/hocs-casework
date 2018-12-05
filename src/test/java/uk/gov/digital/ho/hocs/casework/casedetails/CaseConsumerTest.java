@@ -11,8 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseContext;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseDomain;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.queue.CaseConsumer;
 import uk.gov.digital.ho.hocs.casework.queue.dto.UpdateCaseDataRequest;
 
@@ -48,7 +47,7 @@ public class CaseConsumerTest extends CamelTestSupport {
     }
 
     @Test
-    public void shouldCallAddDocumentToCaseService() throws JsonProcessingException, EntityCreationException, EntityNotFoundException {
+    public void shouldCallAddDocumentToCaseService() throws JsonProcessingException, ApplicationExceptions.EntityCreationException, ApplicationExceptions.EntityNotFoundException {
 
         UpdateCaseDataRequest request = new UpdateCaseDataRequest(UUID.randomUUID(), new HashMap<>());
 
@@ -59,7 +58,7 @@ public class CaseConsumerTest extends CamelTestSupport {
     }
 
     @Test
-    public void shouldNotProcessMessgeWhenMarshellingFails() throws JsonProcessingException, InterruptedException, EntityCreationException, EntityNotFoundException {
+    public void shouldNotProcessMessgeWhenMarshellingFails() throws JsonProcessingException, InterruptedException, ApplicationExceptions.EntityCreationException, ApplicationExceptions.EntityNotFoundException {
         getMockEndpoint(dlq).setExpectedCount(1);
         String json = mapper.writeValueAsString("{invalid:invalid}");
         template.sendBody(caseQueue, json);
@@ -68,11 +67,11 @@ public class CaseConsumerTest extends CamelTestSupport {
     }
 
     @Test
-    public void shouldTransferToDLQOnFailure() throws JsonProcessingException, InterruptedException, EntityCreationException, EntityNotFoundException {
+    public void shouldTransferToDLQOnFailure() throws JsonProcessingException, InterruptedException, ApplicationExceptions.EntityCreationException, ApplicationExceptions.EntityNotFoundException {
 
         UpdateCaseDataRequest request = new UpdateCaseDataRequest(UUID.randomUUID(), new HashMap<>());
 
-        doThrow(EntityCreationException.class)
+        doThrow(ApplicationExceptions.EntityCreationException.class)
                 .when(mockDataService).updateCaseData(any(), any());
 
         getMockEndpoint(dlq).setExpectedCount(1);

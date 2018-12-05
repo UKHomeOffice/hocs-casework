@@ -7,9 +7,12 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 
 import java.util.Set;
 import java.util.UUID;
+
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Aspect
 @Component
@@ -29,10 +32,10 @@ public class AllocatedAspect {
                 stageUUID = (UUID) joinPoint.getArgs()[1];
                 caseUUID = (UUID) joinPoint.getArgs()[0];
             } else {
-                throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[1].getClass().getName());
+                throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[1].getClass().getName(), SECURITY_PARSE_ERROR);
             }
         } else {
-            throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without stage UUID parameter");
+            throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without stage UUID parameter", SECURITY_PARSE_ERROR);
         }
 
         if (allocated.allocatedTo() == AllocationLevel.USER) {
@@ -40,14 +43,14 @@ public class AllocatedAspect {
 
             UUID assignedUser = stageService.getStage(caseUUID, stageUUID).getUserUUID();
             if (!userId.equals(assignedUser)) {
-                throw new SecurityExceptions.StageNotAssignedToLoggedInUserException("Stage " + stageUUID.toString() + " is assigned to " + assignedUser);
+                throw new SecurityExceptions.StageNotAssignedToLoggedInUserException(String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedUser), SECURITY_CASE_NOT_ALLOCATED_TO_USER);
             }
             return joinPoint.proceed();
         } else {
             Set<UUID> teams = userService.getUserTeams();
             UUID assignedTeam = stageService.getStage(caseUUID, stageUUID).getTeamUUID();
             if (!teams.contains(assignedTeam)) {
-                throw new SecurityExceptions.StageNotAssignedToUserTeamException("Stage " + stageUUID.toString() + " is assigned to " + assignedTeam);
+                throw new SecurityExceptions.StageNotAssignedToUserTeamException(String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedTeam), SECURITY_CASE_NOT_ALLOCATED_TO_TEAM);
             }
             return joinPoint.proceed();
         }

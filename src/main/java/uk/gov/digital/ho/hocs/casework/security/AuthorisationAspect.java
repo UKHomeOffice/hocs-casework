@@ -9,9 +9,13 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.util.UUID;
+
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Aspect
 @Component
@@ -46,10 +50,10 @@ public class AuthorisationAspect {
                 CreateCaseRequest createCaseRequest = (CreateCaseRequest) joinPoint.getArgs()[0];
                 caseType = createCaseRequest.getType();
             } else {
-                throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName());
+                throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName(), SECURITY_PARSE_ERROR);
             }
         } else {
-            throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without case UUID parameters");
+            throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without case UUID parameters", SECURITY_PARSE_ERROR);
         }
 
         AccessLevel accessLevel = userService.getMaxAccessLevel(caseType);
@@ -57,14 +61,14 @@ public class AuthorisationAspect {
         if (accessLevel.getLevel() >= requestedAccessLevel.getLevel()) {
             return joinPoint.proceed();
         } else {
-            throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource");
+            throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource", SECURITY_UNAUTHORISED);
         }
     }
 
     private CaseDataType getCaseTypeFromId(UUID caseUUID) {
         CaseDataType caseDataType = caseService.getCaseTypeByUUID(caseUUID);
         if (caseDataType == null) {
-            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID);
+            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, SECURITY_PARSE_ERROR));
             caseDataType = new CaseDataType(caseService.getCase(caseUUID).getType(), null);
         }
         return caseDataType;
@@ -81,7 +85,7 @@ public class AuthorisationAspect {
             case "DELETE":
                 return AccessLevel.WRITE;
             default:
-                throw new SecurityExceptions.PermissionCheckException("Unknown access request type " + method);
+                throw new SecurityExceptions.PermissionCheckException("Unknown access request type " + method, SECURITY_PARSE_ERROR);
         }
     }
 
