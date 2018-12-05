@@ -7,8 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
@@ -39,7 +38,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldCreateCase() throws EntityCreationException {
+    public void shouldCreateCase() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
@@ -52,7 +51,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldCreateCaseWithValidParamsNullData() throws EntityCreationException {
+    public void shouldCreateCaseWithValidParamsNullData() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
@@ -65,8 +64,8 @@ public class CaseDataServiceTest {
     }
 
 
-    @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateCaseMissingTypeException() throws EntityCreationException {
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
 
         caseDataService.createCase(null, new HashMap<>(),caseDeadline);
     }
@@ -78,7 +77,7 @@ public class CaseDataServiceTest {
 
         try {
             caseDataService.createCase(null, new HashMap<>(),caseDeadline);
-        } catch (EntityCreationException e) {
+        } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
 
@@ -88,7 +87,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldGetCaseWithValidParams() throws EntityNotFoundException {
+    public void shouldGetCaseWithValidParams() throws ApplicationExceptions.EntityNotFoundException {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline);
 
@@ -102,7 +101,7 @@ public class CaseDataServiceTest {
 
     }
 
-    @Test(expected = EntityNotFoundException.class)
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetCaseWithValidParamsNotFoundException() {
 
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(null);
@@ -117,7 +116,7 @@ public class CaseDataServiceTest {
 
         try {
             caseDataService.getCase(caseUUID);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -126,8 +125,8 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
     }
 
-    @Test(expected = EntityNotFoundException.class)
-    public void shouldNotGetCaseMissingUUIDException() throws EntityNotFoundException {
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotGetCaseMissingUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
         caseDataService.getCase(null);
 
@@ -138,7 +137,7 @@ public class CaseDataServiceTest {
 
         try {
             caseDataService.getCase(null);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -172,8 +171,8 @@ public class CaseDataServiceTest {
         verifyZeroInteractions(caseDataRepository);
     }
 
-    @Test(expected = EntityNotFoundException.class)
-    public void shouldNotUpdateCaseMissingCaseUUIDException() throws EntityCreationException {
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotUpdateCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
 
         caseDataService.updateCaseData(null, new HashMap<>());
     }
@@ -183,7 +182,7 @@ public class CaseDataServiceTest {
 
         try {
             caseDataService.updateCaseData(null, new HashMap<>());
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -207,8 +206,8 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
     }
 
-    @Test(expected = EntityNotFoundException.class)
-    public void shouldNotUpdatePriorityCaseMissingCaseUUIDException() throws EntityCreationException {
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotUpdatePriorityCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
 
         caseDataService.updatePriority(null, false);
     }
@@ -218,7 +217,7 @@ public class CaseDataServiceTest {
 
         try {
             caseDataService.updatePriority(null, false);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 

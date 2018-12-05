@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentType;
@@ -12,6 +12,9 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository
 import javax.transaction.Transactional;
 import java.util.Set;
 import java.util.UUID;
+
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Slf4j
 @Service
@@ -28,10 +31,10 @@ public class CorrespondentService {
     public Set<Correspondent> getCorrespondents(UUID caseUUID) {
         Set<Correspondent> correspondents = correspondentRepository.findAllByCaseUUID(caseUUID);
         if (correspondents != null) {
-            log.info("Got {} Correspondents for Case: {}", correspondents.size(), caseUUID);
+            log.info("Got {} Correspondents for Case: {}", correspondents.size(), caseUUID, value(EVENT, CORRESPONDENTS_RETRIEVED));
             return correspondents;
         } else {
-            throw new EntityNotFoundException("Correspondents for Case UUID: %s not found!", caseUUID);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Correspondents for Case UUID: %s not found!", caseUUID),  CORRESPONDENT_NOT_FOUND);
         }
     }
 
@@ -39,10 +42,10 @@ public class CorrespondentService {
     public Correspondent getCorrespondent(UUID caseUUID, UUID correspondentUUID) {
         Correspondent correspondent = correspondentRepository.findByUUID(caseUUID, correspondentUUID);
         if (correspondent != null) {
-            log.info("Got Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
+            log.info("Got Correspondent: {} for Case: {}", correspondentUUID, caseUUID, value(EVENT, CORRESPONDENT_RETRIEVED));
             return correspondent;
         } else {
-            throw new EntityNotFoundException("Correspondent %s not found for Case: %s", correspondentUUID, caseUUID);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Correspondent %s not found for Case: %s", correspondentUUID, caseUUID), CORRESPONDENT_NOT_FOUND);
         }
     }
 
@@ -50,10 +53,10 @@ public class CorrespondentService {
     public Correspondent getPrimaryCorrespondent(UUID caseUUID) {
         Correspondent correspondent = correspondentRepository.getPrimaryCorrespondent(caseUUID);
         if (correspondent != null) {
-            log.info("Got Primary Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID);
+            log.info("Got Primary Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID, value(EVENT, CORRESPONDENT_RETRIEVED));
             return correspondent;
         } else {
-            throw new EntityNotFoundException("Primary Correspondent not found for Case: %s", caseUUID);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Primary Correspondent not found for Case: %s", caseUUID), CORRESPONDENT_NOT_FOUND);
         }
     }
 
@@ -74,12 +77,12 @@ public class CorrespondentService {
                 reference);
 
         correspondentRepository.save(correspondent);
-        log.info("Created Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID);
+        log.info("Created Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID, value(EVENT, CORRESPONDENT_CREATED));
     }
 
     @Transactional
     public void deleteCorrespondent(UUID caseUUID, UUID correspondentUUID) {
         correspondentRepository.deleteCorrespondent(correspondentUUID);
-        log.info("Deleted Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
+        log.info("Deleted Correspondent: {} for Case: {}", correspondentUUID, caseUUID, value(EVENT, CORRESPONDENT_DELETED));
     }
 }

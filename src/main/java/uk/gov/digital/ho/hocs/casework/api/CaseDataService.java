@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
@@ -14,6 +14,9 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
+
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Service
 @Slf4j
@@ -36,7 +39,7 @@ public class CaseDataService {
         CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline);
 
         caseDataRepository.save(caseData);
-        log.info("Created Case Type: {} UUID: {}", caseType.getDisplayCode(), caseData.getUuid());
+        log.info("Created Case Type: {} UUID: {}", caseType.getDisplayCode(), caseData.getUuid(), value(EVENT, CASE_CREATED));
         return caseData;
     }
 
@@ -44,10 +47,11 @@ public class CaseDataService {
     public CaseData getCase(UUID caseUUID) {
         CaseData caseData = caseDataRepository.findByUuid(caseUUID);
         if (caseData != null) {
-            log.info("Got Case: {}", caseData.getUuid());
+            log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
             return caseData;
         } else {
-            throw new EntityNotFoundException("Case: %s, not found!", caseUUID);
+            log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
         }
     }
 
@@ -57,7 +61,7 @@ public class CaseDataService {
             CaseData caseData = getCase(caseUUID);
             caseData.update(data, objectMapper);
             caseDataRepository.save(caseData);
-            log.info("Updated Case Data for Case: {}", caseUUID);
+            log.info("Updated Case Data for Case: {}", caseUUID, value(EVENT, CASE_UPDATED));
         }
     }
 
@@ -66,13 +70,13 @@ public class CaseDataService {
         CaseData caseData = getCase(caseUUID);
         caseData.setPriority(priority);
         caseDataRepository.save(caseData);
-        log.info("Updated Case Data for Case: {}", caseUUID);
+        log.info("Updated Case Data for Case: {}", caseUUID, value(EVENT, PRIORITY_UPDATED));
     }
 
     @Transactional
     public void deleteCase(UUID caseUUID) {
         caseDataRepository.deleteCase(caseUUID);
-        log.info("Deleted Case: {}", caseUUID);
+        log.info("Deleted Case: {}", caseUUID, value(EVENT, CASE_DELETED));
 
     }
 

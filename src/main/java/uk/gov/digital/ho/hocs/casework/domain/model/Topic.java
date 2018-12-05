@@ -2,12 +2,16 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TOPIC_CREATE_FAILED;
 
 @NoArgsConstructor
 @Entity
@@ -41,7 +45,7 @@ public class Topic implements Serializable {
 
     public Topic(UUID caseUUID, String topicName, UUID topicNameUUID) {
         if (caseUUID == null || topicName == null || topicNameUUID == null) {
-            throw new EntityCreationException("Cannot create Topic(%s, %s, %s).", caseUUID, topicName, topicNameUUID);
+            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Topic(%s, %s, %s).", caseUUID, topicName, topicNameUUID), TOPIC_CREATE_FAILED);
         }
 
         this.uuid = UUID.randomUUID();
