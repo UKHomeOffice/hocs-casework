@@ -71,7 +71,7 @@ public class SecurityIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenNotInCaseTypeGroup() {
+    public void shouldReturnForbiddenWhenNotInCaseTypeGroup() {
         UUID caseUUID = UUID.randomUUID();
 
 

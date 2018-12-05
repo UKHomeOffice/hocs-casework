@@ -11,6 +11,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAUTHORISED;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthorisationAspectTest {
@@ -115,7 +117,7 @@ public class AuthorisationAspectTest {
         CaseDataType type = new CaseDataType("MIN", "a1");
         Object[] args = new Object[1];
         args[0] = caseUUID;
-        when(userService.getMaxAccessLevel(any())).thenThrow(new SecurityExceptions.PermissionCheckException("User does not have any permission onf this case type"));
+        when(userService.getMaxAccessLevel(any())).thenThrow(new SecurityExceptions.PermissionCheckException("User does not have any permission onf this case type", SECURITY_UNAUTHORISED));
         when(caseService.getCaseTypeByUUID(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
