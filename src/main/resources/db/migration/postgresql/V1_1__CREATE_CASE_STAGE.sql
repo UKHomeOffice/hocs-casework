@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS case_data
   primary_topic_uuid         UUID,
   primary_correspondent_uuid UUID,
   case_deadline              DATE        NOT NULL,
+  date_received              DATE        NOT NULL,
   deleted                    BOOLEAN     NOT NULL DEFAULT FALSE,
 
   CONSTRAINT case_uuid_idempotent UNIQUE (uuid),

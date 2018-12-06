@@ -21,8 +21,8 @@ public class CaseDataTest {
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -32,7 +32,7 @@ public class CaseDataTest {
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
         assertThat(caseData.getCaseDeadline()).isEqualTo(caseDeadline);
-
+        assertThat(caseData.getDateReceived()).isEqualTo(caseReceived);
     }
 
     @Test
@@ -44,8 +44,8 @@ public class CaseDataTest {
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         assertThat(caseData.getReference()).matches("[A-Z]{3,4}/[0-9]{7}/[0-9]{2}");
 
@@ -64,8 +64,8 @@ public class CaseDataTest {
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
-        new CaseData(null, caseNumber, data, objectMapper, caseDeadline);
+        LocalDate caseReceived = LocalDate.now();
+        new CaseData(null, caseNumber, data, objectMapper, caseDeadline, caseReceived);
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
@@ -75,8 +75,8 @@ public class CaseDataTest {
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
-        new CaseData(type, null, data, objectMapper, caseDeadline);
+        LocalDate caseReceived = LocalDate.now();
+        new CaseData(type, null, data, objectMapper, caseDeadline,caseReceived);
     }
 
     @Test
@@ -87,8 +87,8 @@ public class CaseDataTest {
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -98,6 +98,7 @@ public class CaseDataTest {
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
         assertThat(caseData.getCaseDeadline()).isEqualTo(caseDeadline);
+        assertThat(caseData.getDateReceived()).isEqualTo(caseReceived);
 
         Map<String, String> newData = new HashMap<>();
         newData.put("new", "anyValue");
@@ -114,6 +115,7 @@ public class CaseDataTest {
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
         assertThat(caseData.getCaseDeadline()).isEqualTo(caseDeadline);
+        assertThat(caseData.getDateReceived()).isEqualTo(caseReceived);
     }
 
 
@@ -125,10 +127,11 @@ public class CaseDataTest {
         Map<String, String> data = new HashMap<>();
         data.put("old", "anyOldValue");
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         Map<String, String> newData = new HashMap<>();
         newData.put("new", "anyValue");
@@ -149,10 +152,10 @@ public class CaseDataTest {
         Map<String, String> data = new HashMap<>();
         data.put("new", "anyOldValue");
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
+        LocalDate caseReceived = LocalDate.now();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         Map<String, String> newData = new HashMap<>();
         newData.put("new", "anyValue");
@@ -171,10 +174,11 @@ public class CaseDataTest {
         Map<String, String> data = new HashMap<>();
         data.put("new", "anyOldValue");
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         Map<String, String> newData = new HashMap<>();
 
@@ -192,10 +196,10 @@ public class CaseDataTest {
         Map<String, String> data = new HashMap<>();
         data.put("new", "anyOldValue");
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
+        LocalDate caseReceived = LocalDate.now();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         caseData.update(null, objectMapper);
 
@@ -212,8 +216,8 @@ public class CaseDataTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -245,10 +249,10 @@ public class CaseDataTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
+        LocalDate caseReceived = LocalDate.now();
         UUID primary = UUID.randomUUID();
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -281,10 +285,10 @@ public class CaseDataTest {
 
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
+        LocalDate caseReceived = LocalDate.now();
         UUID primary = UUID.randomUUID();
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());

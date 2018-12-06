@@ -33,7 +33,7 @@ public class CaseDataResourceTest {
     private CaseDataResource caseDataResource;
     private ObjectMapper objectMapper = new ObjectMapper();
     private LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
+    LocalDate caseReceived = LocalDate.now();
     @Before
     public void setUp() {
         caseDataResource = new CaseDataResource(caseDataService);
@@ -42,14 +42,14 @@ public class CaseDataResourceTest {
     @Test
     public void shouldCreateCase() {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseDeadline);
-        CreateCaseRequest request = new CreateCaseRequest(caseDataType, data, caseDeadline);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseDeadline, caseReceived);
+        CreateCaseRequest request = new CreateCaseRequest(caseDataType, data, caseDeadline,caseReceived);
 
-        when(caseDataService.createCase(caseDataType, data, caseDeadline)).thenReturn(caseData);
+        when(caseDataService.createCase(caseDataType, data, caseDeadline, caseReceived)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseDataType, data, caseDeadline);
+        verify(caseDataService, times(1)).createCase(caseDataType, data, caseDeadline,caseReceived);
 
         verifyNoMoreInteractions(caseDataService);
 
@@ -60,7 +60,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCase() {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseDeadline);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseDeadline,caseReceived);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 

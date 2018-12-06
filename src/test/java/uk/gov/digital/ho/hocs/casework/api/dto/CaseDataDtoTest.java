@@ -21,8 +21,8 @@ public class CaseDataDtoTest {
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline,caseReceived);
 
         CaseDataDto caseDataDto = CaseDataDto.from(caseData);
 
@@ -45,8 +45,8 @@ public class CaseDataDtoTest {
         Long caseNumber = 1234L;
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
-        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper, caseDeadline);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper, caseDeadline, caseReceived);
 
         CaseDataDto caseDataDto = CaseDataDto.from(caseData);
 

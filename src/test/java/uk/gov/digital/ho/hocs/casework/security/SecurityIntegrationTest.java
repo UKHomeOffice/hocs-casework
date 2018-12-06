@@ -19,6 +19,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
+import java.rmi.registry.LocateRegistry;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -56,7 +57,7 @@ public class SecurityIntegrationTest {
         }};
 
 
-        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now(), LocalDate.now());
 
         when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
         when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("MIN", "a1"));
@@ -79,7 +80,7 @@ public class SecurityIntegrationTest {
             put("key","value");
         }};
 
-        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, new ObjectMapper(), LocalDate.now());
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, new ObjectMapper(), LocalDate.now(), LocalDate.now());
 
         when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
         when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("MIN", "1a"));

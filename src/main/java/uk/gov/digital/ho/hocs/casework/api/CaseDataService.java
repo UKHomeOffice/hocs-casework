@@ -1,6 +1,9 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.amazonaws.util.StringUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -8,12 +11,17 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import javax.transaction.Transactional;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -34,9 +42,9 @@ public class CaseDataService {
     }
 
     @Transactional
-    public CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline) {
+    public CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
         Long caseNumber = caseDataRepository.getNextSeriesId();
-        CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline);
+        CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline, dateReceived);
 
         caseDataRepository.save(caseData);
         log.info("Created Case Type: {} UUID: {}", caseType.getDisplayCode(), caseData.getUuid(), value(EVENT, CASE_CREATED));
@@ -83,5 +91,27 @@ public class CaseDataService {
     public CaseDataType getCaseTypeByUUID(UUID uuid) {
         String shortCode = uuid.toString().substring(34);
         return infoClient.getCaseTypeByShortCode(shortCode);
+    }
+
+    public CaseSummary getCaseSummary(UUID caseUUID) throws IOException {
+        CaseData caseData = caseDataRepository.findByUuid(caseUUID);
+        Map<String, String> additionalData = new HashMap<>();
+        if (caseData != null) {
+            Set<String> fieldSchema = infoClient.getCaseSummaryFields(caseData.getType());
+
+            Map<StageType, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
+
+            if(!StringUtils.isNullOrEmpty(caseData.getData())) {
+                Map<String, String> jsonData = objectMapper.readValue(caseData.getData(), new TypeReference<Map<String, Object>>() {
+                });
+                additionalData = jsonData.entrySet().stream()
+                        .filter(d -> fieldSchema.contains(d.getKey()))
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+            }
+            return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalData);
+        } else {
+            log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
+        }
     }
 }

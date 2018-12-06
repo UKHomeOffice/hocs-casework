@@ -10,16 +10,19 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
+import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.UUID;
+import java.util.*;
 
+import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataServiceTest {
+
 
     private static final long caseID = 12345L;
     private final CaseDataType caseType = new CaseDataType("MIN", "a1");
@@ -31,6 +34,8 @@ public class CaseDataServiceTest {
     private CaseDataService caseDataService;
     private ObjectMapper objectMapper = new ObjectMapper();
     private LocalDate caseDeadline = LocalDate.now().plusDays(20);
+    private LocalDate caseReceived = LocalDate.now();
+
 
     @Before
     public void setUp() {
@@ -42,7 +47,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
-        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>(), caseDeadline);
+        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>(), caseDeadline, caseReceived);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
@@ -55,7 +60,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
-        CaseData caseData = caseDataService.createCase(caseType, null, caseDeadline);
+        CaseData caseData = caseDataService.createCase(caseType, null, caseDeadline, caseReceived);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
@@ -67,7 +72,7 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
 
-        caseDataService.createCase(null, new HashMap<>(),caseDeadline);
+        caseDataService.createCase(null, new HashMap<>(),caseDeadline, caseReceived);
     }
 
     @Test()
@@ -76,7 +81,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         try {
-            caseDataService.createCase(null, new HashMap<>(),caseDeadline);
+            caseDataService.createCase(null, new HashMap<>(),caseDeadline, caseReceived);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
@@ -87,9 +92,71 @@ public class CaseDataServiceTest {
     }
 
     @Test
+    public void shouldGetCaseSummaryWithValidParams() throws ApplicationExceptions.EntityNotFoundException, IOException {
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline, caseReceived);
+        Set<String> filterFields =new HashSet<String>(){{ add("TEMPCReference"); }};
+
+        Map<StageType, LocalDate> deadlines = new HashMap<StageType, LocalDate>(){{
+            put(StageType.DCU_DTEN_COPY_NUMBER_TEN, LocalDate.now().plusDays(10));
+            put(StageType.DCU_DTEN_DATA_INPUT, LocalDate.now().plusDays(20));
+        }};
+
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
+        when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+
+        CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
+
+        assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
+        assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
+        assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
+
+
+        verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
+        verify(infoClient, times(1)).getDeadlines(caseData.getType(), caseData.getDateReceived());
+        verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
+    }
+
+    @Test
+    public void shouldGetCaseOnlyFilteredAdditionalData() throws ApplicationExceptions.EntityNotFoundException, IOException {
+
+        Map<String, String> additionalData = new HashMap<String, String>(){{
+            put("TEMPCReference", "test ref");
+            put("CopyNumberTen", "true");
+            put("UnfilteredField", "some value");
+        }};
+
+        CaseData caseData = new CaseData(caseType, caseID, additionalData, objectMapper,caseDeadline, caseReceived);
+
+        Set<String> filterFields =new HashSet<String>(){{
+            add("TEMPCReference");
+            add("CopyNumberTen");
+        }};
+
+        Map<StageType, LocalDate> deadlines = new HashMap<StageType, LocalDate>(){{
+            put(StageType.DCU_DTEN_COPY_NUMBER_TEN, LocalDate.now().plusDays(10));
+            put(StageType.DCU_DTEN_DATA_INPUT, LocalDate.now().plusDays(20));
+        }};
+
+
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
+        when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+
+        CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
+
+        assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
+        assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
+        assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
+        assertThat(result.getAdditionalFields().get("TEMPCReference")).isEqualTo("test ref");
+        assertThat(result.getAdditionalFields().get("CopyNumberTen")).isEqualTo("true");
+        assertThat(result.getAdditionalFields()).doesNotContainKey("UnfilteredField");
+    }
+
+    @Test
     public void shouldGetCaseWithValidParams() throws ApplicationExceptions.EntityNotFoundException {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline, caseReceived);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -149,7 +216,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldUpdateCase() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -164,7 +231,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldUpdateCaseNullData() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
 
         caseDataService.updateCaseData(caseData.getUuid(), null);
 
@@ -194,7 +261,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldUpdatePriorityCase() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline );
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline , caseReceived);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 

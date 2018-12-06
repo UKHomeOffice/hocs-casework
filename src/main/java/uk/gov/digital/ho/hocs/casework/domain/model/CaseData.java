@@ -67,12 +67,17 @@ public class CaseData {
     @Column(name = "case_deadline")
     private LocalDate caseDeadline;
 
-    public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline) {
-        this(type, caseNumber, caseDeadline);
+    @Setter
+    @Getter
+    @Column(name = "date_received")
+    private LocalDate dateReceived;
+
+    public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived) {
+        this(type, caseNumber, caseDeadline, dateReceived);
         update(data, objectMapper);
     }
 
-    public CaseData(CaseDataType type, Long caseNumber, LocalDate caseDeadline) {
+    public CaseData(CaseDataType type, Long caseNumber, LocalDate caseDeadline, LocalDate dateReceived) {
         if (type == null || caseNumber == null) {
             throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
         }
@@ -81,6 +86,7 @@ public class CaseData {
         this.reference = generateCaseReference(caseNumber);
         this.uuid = randomUUID(type.getShortCode());
         this.caseDeadline = caseDeadline;
+        this.dateReceived = dateReceived;
     }
 
     private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {

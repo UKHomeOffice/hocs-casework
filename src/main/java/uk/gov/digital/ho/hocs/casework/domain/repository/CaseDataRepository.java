@@ -20,4 +20,6 @@ public interface CaseDataRepository extends CrudRepository<CaseData, Long> {
     @Modifying
     @Query(value = "UPDATE case_data SET deleted = TRUE WHERE uuid = ?1", nativeQuery = true)
     int deleteCase(UUID caseUUID);
+
+
 }
