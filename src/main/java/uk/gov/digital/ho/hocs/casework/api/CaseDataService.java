@@ -7,11 +7,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.dto.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import javax.transaction.Transactional;
@@ -33,12 +33,18 @@ public class CaseDataService {
     private final CaseDataRepository caseDataRepository;
     private final ObjectMapper objectMapper;
     private final InfoClient infoClient;
+    private final CorrespondentService correspondentService;
+    private final StageService stageService;
 
     @Autowired
-    public CaseDataService(CaseDataRepository caseDataRepository, InfoClient infoClient, ObjectMapper objectMapper) {
+    public CaseDataService(CaseDataRepository caseDataRepository, InfoClient infoClient,
+                           ObjectMapper objectMapper, CorrespondentService correspondentService,
+                            StageService stageService) {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.objectMapper = objectMapper;
+        this.correspondentService = correspondentService;
+        this.stageService = stageService;
     }
 
     @Transactional
@@ -95,23 +101,25 @@ public class CaseDataService {
 
     public CaseSummary getCaseSummary(UUID caseUUID) throws IOException {
         CaseData caseData = caseDataRepository.findByUuid(caseUUID);
-        Map<String, String> additionalData = new HashMap<>();
-        if (caseData != null) {
-            Set<String> fieldSchema = infoClient.getCaseSummaryFields(caseData.getType());
-
-            Map<StageType, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
-
-            if(!StringUtils.isNullOrEmpty(caseData.getData())) {
-                Map<String, String> jsonData = objectMapper.readValue(caseData.getData(), new TypeReference<Map<String, Object>>() {
-                });
-                additionalData = jsonData.entrySet().stream()
-                        .filter(d -> fieldSchema.contains(d.getKey()))
-                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-            }
-            return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalData);
-        } else {
+        if (caseData == null) {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
         }
+
+        Map<String, String> additionalData = new HashMap<>();
+        Set<String> fieldSchema = infoClient.getCaseSummaryFields(caseData.getType());
+        Map<StageType, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
+
+        if(!StringUtils.isNullOrEmpty(caseData.getData())) {
+            Map<String, String> jsonData = objectMapper.readValue(caseData.getData(), new TypeReference<Map<String, Object>>() {
+            });
+            additionalData.putAll(jsonData.entrySet().stream()
+                    .filter(d -> fieldSchema.contains(d.getKey()))
+                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
+        }
+        Correspondent primaryCorrespondent = correspondentService.getCorrespondent(caseData.getUuid(), caseData.getPrimaryCorrespondentUUID());
+        Set<ActiveStage> activeStages = stageService.getActiveStagesByCaseUUID(caseUUID).stream().map(stage -> ActiveStage.from(stage)).collect(Collectors.toSet());
+        return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalData,primaryCorrespondent, activeStages);
+
     }
 }
