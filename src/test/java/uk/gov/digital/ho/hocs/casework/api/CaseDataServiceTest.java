@@ -111,12 +111,16 @@ public class CaseDataServiceTest {
             put(StageType.DCU_DTEN_COPY_NUMBER_TEN, LocalDate.now().plusDays(10));
             put(StageType.DCU_DTEN_DATA_INPUT, LocalDate.now().plusDays(20));
         }};
+        Correspondent correspondent = new  Correspondent(caseData.getUuid(),CorrespondentType.CORRESPONDENT, "some name,",
+                new Address("","","","",""), "12345","some email", "some ref");
+
+
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
         when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
         when(stageService.getActiveStagesByCaseUUID(caseData.getUuid())).thenReturn(activeStages);
-        when(correspondentService.getCorrespondent(caseData.getUuid(), primaryCorrespondentUUID)).thenReturn(new Correspondent());
+        when(correspondentService.getCorrespondent(caseData.getUuid(), primaryCorrespondentUUID)).thenReturn(correspondent);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -159,12 +163,14 @@ public class CaseDataServiceTest {
             put(StageType.DCU_DTEN_DATA_INPUT, LocalDate.now().plusDays(20));
         }};
 
+        Correspondent correspondent = new  Correspondent(caseData.getUuid(),CorrespondentType.CORRESPONDENT, "some name,",
+                new Address("","","","",""), "12345","some email", "some ref");
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
         when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
         when(stageService.getActiveStagesByCaseUUID(caseData.getUuid())).thenReturn(activeStages);
-        when(correspondentService.getCorrespondent(caseData.getUuid(), primaryCorrespondentUUID)).thenReturn(new Correspondent());
+        when(correspondentService.getCorrespondent(caseData.getUuid(), primaryCorrespondentUUID)).thenReturn(correspondent);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 

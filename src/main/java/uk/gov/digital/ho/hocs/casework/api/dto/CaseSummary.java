@@ -17,6 +17,6 @@ public class CaseSummary {
     LocalDate caseDeadline;
     Map<StageType, LocalDate> stageDeadlines;
     Map<String,String> additionalFields;
-    Correspondent primaryCorrespondent;
+    CorrespondentDto primaryCorrespondent;
     Set<ActiveStage> activeStages;
 }
