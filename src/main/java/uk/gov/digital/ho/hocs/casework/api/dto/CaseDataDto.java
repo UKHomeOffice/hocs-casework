@@ -39,6 +39,9 @@ public class CaseDataDto {
     @JsonProperty("caseDeadline")
     private LocalDate caseDeadline;
 
+    @JsonProperty("dateReceived")
+    private LocalDate dateReceived;
+
     public static CaseDataDto from(CaseData caseData) {
 
         String primaryCorrespondent = null;
@@ -59,6 +62,7 @@ public class CaseDataDto {
                 caseData.getData(),
                 primaryTopic,
                 primaryCorrespondent,
-                caseData.getCaseDeadline());
+                caseData.getCaseDeadline(),
+                caseData.getDateReceived());
     }
 }

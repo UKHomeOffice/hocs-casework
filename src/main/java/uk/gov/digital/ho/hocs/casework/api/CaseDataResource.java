@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -29,7 +30,7 @@ class CaseDataResource {
     @Authorised()
     @PostMapping(value = "/case", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
-        CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getCaseDeadline());
+        CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getCaseDeadline(), request.getDateReceieved());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
@@ -46,4 +47,12 @@ class CaseDataResource {
         caseDataService.deleteCase(caseUUID);
         return ResponseEntity.ok().build();
     }
+
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
+    @GetMapping(value = "/case/{caseUUID}/summary", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<CaseSummary> getCaseSummary(@PathVariable UUID caseUUID) throws IOException {
+        CaseSummary caseData = caseDataService.getCaseSummary(caseUUID);
+        return ResponseEntity.ok(caseData);
+    }
+
 }
