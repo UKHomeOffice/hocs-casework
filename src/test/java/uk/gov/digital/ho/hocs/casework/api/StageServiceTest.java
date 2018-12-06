@@ -185,6 +185,16 @@ public class StageServiceTest {
     }
 
     @Test
+    public void shouldGetActiveStagesCaseUUID() {
+
+        stageService.getActiveStagesByCaseUUID(caseUUID);
+
+        verify(stageRepository, times(1)).findActiveStagesByCaseUUID(caseUUID);
+
+        verifyNoMoreInteractions(stageRepository);
+    }
+
+    @Test
     public void shouldGetActiveStagesUserUUID() {
 
         stageService.getActiveStagesByUserUUID(userUUID);

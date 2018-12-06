@@ -6,11 +6,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.io.IOException;
@@ -35,11 +34,17 @@ public class CaseDataServiceTest {
     private ObjectMapper objectMapper = new ObjectMapper();
     private LocalDate caseDeadline = LocalDate.now().plusDays(20);
     private LocalDate caseReceived = LocalDate.now();
+    private UUID primaryCorrespondentUUID = UUID.randomUUID();
+
+    @Mock
+    private StageService stageService;
+    @Mock
+    private CorrespondentService correspondentService;
 
 
     @Before
     public void setUp() {
-        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper);
+        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper, correspondentService, stageService);
     }
 
     @Test
@@ -93,8 +98,14 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldGetCaseSummaryWithValidParams() throws ApplicationExceptions.EntityNotFoundException, IOException {
+
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline, caseReceived);
+        caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
         Set<String> filterFields =new HashSet<String>(){{ add("TEMPCReference"); }};
+
+        Set<Stage> activeStages = new HashSet<Stage>(){{
+            add(new Stage(UUID.randomUUID(), StageType.DCU_DTEN_COPY_NUMBER_TEN,UUID.randomUUID(), LocalDate.now()));
+        }};
 
         Map<StageType, LocalDate> deadlines = new HashMap<StageType, LocalDate>(){{
             put(StageType.DCU_DTEN_COPY_NUMBER_TEN, LocalDate.now().plusDays(10));
@@ -104,14 +115,19 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
         when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(stageService.getActiveStagesByCaseUUID(caseData.getUuid())).thenReturn(activeStages);
+        when(correspondentService.getCorrespondent(caseData.getUuid(), primaryCorrespondentUUID)).thenReturn(new Correspondent());
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
         assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
+        assertThat(result.getActiveStages().size()).isEqualTo(1);
 
 
+        verify(stageService, times(1)).getActiveStagesByCaseUUID(caseData.getUuid());
+        verify(correspondentService, times(1)).getCorrespondent(caseData.getUuid(), primaryCorrespondentUUID);
         verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
         verify(infoClient, times(1)).getDeadlines(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
@@ -120,6 +136,15 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseOnlyFilteredAdditionalData() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
+        Set<String> filterFields =new HashSet<String>(){{
+            add("TEMPCReference");
+            add("CopyNumberTen");
+        }};
+
+        Set<Stage> activeStages = new HashSet<Stage>(){{
+            add(new Stage(UUID.randomUUID(), StageType.DCU_DTEN_COPY_NUMBER_TEN,UUID.randomUUID(), LocalDate.now()));
+        }};
+
         Map<String, String> additionalData = new HashMap<String, String>(){{
             put("TEMPCReference", "test ref");
             put("CopyNumberTen", "true");
@@ -127,11 +152,7 @@ public class CaseDataServiceTest {
         }};
 
         CaseData caseData = new CaseData(caseType, caseID, additionalData, objectMapper,caseDeadline, caseReceived);
-
-        Set<String> filterFields =new HashSet<String>(){{
-            add("TEMPCReference");
-            add("CopyNumberTen");
-        }};
+        caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
 
         Map<StageType, LocalDate> deadlines = new HashMap<StageType, LocalDate>(){{
             put(StageType.DCU_DTEN_COPY_NUMBER_TEN, LocalDate.now().plusDays(10));
@@ -142,6 +163,8 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
         when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(stageService.getActiveStagesByCaseUUID(caseData.getUuid())).thenReturn(activeStages);
+        when(correspondentService.getCorrespondent(caseData.getUuid(), primaryCorrespondentUUID)).thenReturn(new Correspondent());
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
