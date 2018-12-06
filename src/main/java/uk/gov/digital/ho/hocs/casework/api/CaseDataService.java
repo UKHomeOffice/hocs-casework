@@ -10,7 +10,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
-import javax.transaction.Transactional;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,7 +28,6 @@ public class CaseDataService {
         this.objectMapper = objectMapper;
     }
 
-    @Transactional
     public CaseData createCase(CaseDataType caseType, Map<String, String> data) {
         Long caseNumber = caseDataRepository.getNextSeriesId();
         CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper);
@@ -38,7 +36,6 @@ public class CaseDataService {
         return caseData;
     }
 
-    @Transactional
     public CaseData getCase(UUID caseUUID) {
         CaseData caseData = caseDataRepository.findByUuid(caseUUID);
         if (caseData != null) {
@@ -49,7 +46,6 @@ public class CaseDataService {
         }
     }
 
-    @Transactional
     public void updateCaseData(UUID caseUUID, Map<String, String> data) {
         if (data != null) {
             CaseData caseData = getCase(caseUUID);
@@ -59,7 +55,6 @@ public class CaseDataService {
         }
     }
 
-    @Transactional
     public void updatePriority(UUID caseUUID, boolean priority) {
         CaseData caseData = getCase(caseUUID);
         caseData.setPriority(priority);
@@ -67,15 +62,19 @@ public class CaseDataService {
         log.info("Updated Case Data for Case: {}", caseUUID);
     }
 
-    @Transactional
     public void deleteCase(UUID caseUUID) {
         caseDataRepository.deleteCase(caseUUID);
         log.info("Deleted Case: {}", caseUUID);
 
     }
 
-    public CaseDataType getCaseTypeByUUID(UUID uuid) {
-        String shortCode = uuid.toString().substring(34);
-        return infoClient.getCaseTypeByShortCode(shortCode);
+    public String getCaseType(UUID caseUUID) {
+        CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(caseUUID.toString().substring(34));
+        if (caseDataType == null) {
+            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID);
+            return getCase(caseUUID).getType();
+        } else {
+            return caseDataType.getDisplayCode();
+        }
     }
 }

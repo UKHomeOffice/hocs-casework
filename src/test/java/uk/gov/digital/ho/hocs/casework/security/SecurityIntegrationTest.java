@@ -55,7 +55,7 @@ public class SecurityIntegrationTest {
 
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper);
         when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
-        when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("MIN", "a1"));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
 
 
         headers.add(RequestData.USER_ID_HEADER, userId);
@@ -70,14 +70,7 @@ public class SecurityIntegrationTest {
     public void shouldReturnUnauthorisedWhenNotInCaseTypeGroup() {
         UUID caseUUID = UUID.randomUUID();
 
-
-        Map<String,String> caseSubData = new HashMap<String, String>(){{
-            put("key","value");
-        }};
-
-        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, new ObjectMapper());
-        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
-        when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("MIN", "1a"));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");
@@ -90,8 +83,7 @@ public class SecurityIntegrationTest {
     @Test
     public void shouldReturnNotFoundIfCaseUUIDNotFound() {
         UUID caseUUID = UUID.randomUUID();
-        when(caseDataService.getCase(caseUUID)).thenThrow(new EntityNotFoundException("Not found"));
-        when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("TRO", "1b"));
+        when(caseDataService.getCaseType(caseUUID)).thenThrow(new EntityNotFoundException("Not found"));
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");

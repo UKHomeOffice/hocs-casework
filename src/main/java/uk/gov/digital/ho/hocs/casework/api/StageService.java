@@ -9,7 +9,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +27,6 @@ public class StageService {
         this.userPermissionsService = userPermissionsService;
     }
 
-    @Transactional
     public Stage getStage(UUID caseUUID, UUID stageUUID) {
         Stage stage = stageRepository.findByUuid(caseUUID, stageUUID);
         if (stage != null) {
@@ -39,7 +37,16 @@ public class StageService {
         }
     }
 
-    @Transactional
+    public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        return stage.getUserUUID();
+    }
+
+    public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        return stage.getTeamUUID();
+    }
+
     public Stage createStage(UUID caseUUID, StageType stageType, UUID teamUUID, LocalDate deadline) {
         Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
         stageRepository.save(stage);
@@ -47,7 +54,6 @@ public class StageService {
         return stage;
     }
 
-    @Transactional
     public void updateDeadline(UUID caseUUID, UUID stageUUID, LocalDate deadline) {
         Stage stage = getStage(caseUUID, stageUUID);
         stage.setDeadline(deadline);
@@ -55,7 +61,6 @@ public class StageService {
         log.info("Set Stage Deadline: {} ({}) for Case {}", stageUUID, deadline, caseUUID);
     }
 
-    @Transactional
     public void updateTeam(UUID caseUUID, UUID stageUUID, UUID teamUUID) {
         Stage stage = getStage(caseUUID, stageUUID);
         stage.setTeam(teamUUID);
@@ -63,7 +68,6 @@ public class StageService {
         log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, teamUUID, caseUUID);
     }
 
-    @Transactional
     public void updateUser(UUID caseUUID, UUID stageUUID, UUID userUUID) {
         Stage stage = getStage(caseUUID, stageUUID);
         stage.setUser(userUUID);
@@ -71,7 +75,6 @@ public class StageService {
         log.info("Set Stage User: {} ({}) for Case {}", stageUUID, userUUID, caseUUID);
     }
 
-    @Transactional
     public void completeStage(UUID caseUUID, UUID stageUUID) {
         Stage stage = getStage(caseUUID, stageUUID);
         stage.completeStage();

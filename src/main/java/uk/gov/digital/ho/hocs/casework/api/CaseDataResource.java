@@ -46,4 +46,11 @@ class CaseDataResource {
         caseDataService.deleteCase(caseUUID);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping(value = "/case/{caseUUID}/type", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<String> getCaseUser(@PathVariable UUID caseUUID) {
+        String caseDataType = caseDataService.getCaseType(caseUUID);
+        return ResponseEntity.ok(caseDataType);
+    }
+
 }
