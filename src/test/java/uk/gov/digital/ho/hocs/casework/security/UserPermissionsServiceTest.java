@@ -128,8 +128,8 @@ public class UserPermissionsServiceTest {
 
         when(requestData.groups()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Set<CaseDataType> caseTypes = service.getUserCaseTypes();
-        assertThat(caseTypes.stream().anyMatch(c -> c.getDisplayCode().equals("TRO"))).isTrue();
-        assertThat(caseTypes.stream().anyMatch(c -> c.getDisplayCode().equals("MIN"))).isTrue();
+        Set<String> caseTypes = service.getUserCaseTypes();
+        assertThat(caseTypes.stream().anyMatch(c -> c.equals("TRO"))).isTrue();
+        assertThat(caseTypes.stream().anyMatch(c -> c.equals("MIN"))).isTrue();
     }
 }
