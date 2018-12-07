@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,9 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import javax.transaction.Transactional;
@@ -118,7 +119,10 @@ public class CaseDataService {
                     .filter(d -> fieldSchema.contains(d.getKey()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         }
-        CorrespondentDto primaryCorrespondent = CorrespondentDto.from(correspondentService.getCorrespondent(caseData.getUuid(), caseData.getPrimaryCorrespondentUUID()));
+        CorrespondentDto primaryCorrespondent = null;
+        if (caseData.getPrimaryCorrespondentUUID() != null) {
+            primaryCorrespondent = CorrespondentDto.from(correspondentService.getCorrespondent(caseData.getUuid(), caseData.getPrimaryCorrespondentUUID()));
+        }
         Set<ActiveStage> activeStages = stageService.getActiveStagesByCaseUUID(caseUUID).stream().map(stage -> ActiveStage.from(stage)).collect(Collectors.toSet());
         return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalData,primaryCorrespondent, activeStages);
 
