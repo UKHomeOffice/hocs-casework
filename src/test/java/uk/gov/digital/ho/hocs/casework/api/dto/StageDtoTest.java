@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -18,13 +17,13 @@ public class StageDtoTest {
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
-        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, teamUUID, deadline);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
 
         StageDto stageDto = StageDto.from(stage);
 
         assertThat(stageDto.getUuid()).isEqualTo(stage.getUuid());
         assertThat(stageDto.getCreated()).isEqualTo(stage.getCreated());
-        assertThat(stageDto.getStageType()).isEqualTo(stage.getStageType().toString());
+        assertThat(stageDto.getStageType()).isEqualTo(stage.getStageType());
         assertThat(stageDto.getDeadline()).isEqualTo(stage.getDeadline());
         assertThat(stageDto.getStatus()).isEqualTo(stage.getStageStatusType().toString());
         assertThat(stageDto.getCaseUUID()).isEqualTo(stage.getCaseUUID());
@@ -41,13 +40,13 @@ public class StageDtoTest {
 
         UUID caseUUID = UUID.randomUUID();
 
-        Stage stage = new Stage(caseUUID, StageType.DCU_MIN_MARKUP, null, null);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", null, null);
 
         StageDto stageDto = StageDto.from(stage);
 
         assertThat(stageDto.getUuid()).isEqualTo(stage.getUuid());
         assertThat(stageDto.getCreated()).isEqualTo(stage.getCreated());
-        assertThat(stageDto.getStageType()).isEqualTo(stage.getStageType().toString());
+        assertThat(stageDto.getStageType()).isEqualTo(stage.getStageType());
         assertThat(stageDto.getDeadline()).isEqualTo(stage.getDeadline());
         assertThat(stageDto.getStatus()).isEqualTo(stage.getStageStatusType().toString());
         assertThat(stageDto.getCaseUUID()).isEqualTo(stage.getCaseUUID());

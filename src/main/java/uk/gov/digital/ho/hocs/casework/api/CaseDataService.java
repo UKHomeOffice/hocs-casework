@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,8 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import javax.transaction.Transactional;
@@ -109,7 +109,7 @@ public class CaseDataService {
 
         Map<String, String> additionalData = new HashMap<>();
         Set<String> fieldSchema = infoClient.getCaseSummaryFields(caseData.getType());
-        Map<StageType, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
+        Map<String, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
 
         if(!StringUtils.isNullOrEmpty(caseData.getData())) {
             Map<String, String> jsonData = objectMapper.readValue(caseData.getData(), new TypeReference<Map<String, Object>>() {

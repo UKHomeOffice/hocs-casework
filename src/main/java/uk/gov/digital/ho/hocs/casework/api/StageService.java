@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
@@ -43,7 +42,7 @@ public class StageService {
     }
 
     @Transactional
-    public Stage createStage(UUID caseUUID, StageType stageType, UUID teamUUID, LocalDate deadline) {
+    public Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline) {
         Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
         stageRepository.save(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));

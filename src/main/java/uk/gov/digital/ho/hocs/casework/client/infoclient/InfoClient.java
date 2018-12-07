@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -52,9 +51,9 @@ public class InfoClient {
         // ResponseEntity<Set<String>> response = restHelper.get(serviceBaseURL, String.format("/caseType/shortCode/%s/summary", shortCode), Set<String>.class);
     }
 
-    public Map<StageType, LocalDate> getDeadlines(String caseType, LocalDate localDate) {
+    public Map<String, LocalDate> getDeadlines(String caseType, LocalDate localDate) {
         ResponseEntity<InfoGetDeadlinesResponse> response = restHelper.get(serviceBaseURL, String.format("/casetype/%s/deadlines/%s", caseType, localDate), InfoGetDeadlinesResponse.class);
-        Map<StageType, LocalDate> deadlines = response.getBody().getDeadlines();
+        Map<String, LocalDate> deadlines = response.getBody().getDeadlines();
         return deadlines;
     }
 

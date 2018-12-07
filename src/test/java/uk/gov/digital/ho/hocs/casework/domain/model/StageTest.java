@@ -16,7 +16,7 @@ public class StageTest {
     public void getStage() {
 
         UUID caseUUID = UUID.randomUUID();
-        StageType stageType = StageType.DCU_MIN_MARKUP;
+        String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
@@ -39,7 +39,7 @@ public class StageTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getStageNullCaseUUID() {
 
-        StageType stageType = StageType.DCU_MIN_MARKUP;
+        String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
