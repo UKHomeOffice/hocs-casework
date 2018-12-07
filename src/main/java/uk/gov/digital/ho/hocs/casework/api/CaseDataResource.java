@@ -60,5 +60,4 @@ class CaseDataResource {
         CaseSummary caseData = caseDataService.getCaseSummary(caseUUID);
         return ResponseEntity.ok(caseData);
     }
-
 }
