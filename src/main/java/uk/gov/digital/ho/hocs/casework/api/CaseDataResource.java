@@ -53,6 +53,7 @@ class CaseDataResource {
     public ResponseEntity<String> getCaseUser(@PathVariable UUID caseUUID) {
         String caseDataType = caseDataService.getCaseType(caseUUID);
         return ResponseEntity.ok(caseDataType);
+    }
 
     @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/{caseUUID}/summary", produces = APPLICATION_JSON_UTF8_VALUE)

@@ -7,7 +7,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 
 import java.util.Set;
 import java.util.UUID;
@@ -54,7 +53,7 @@ public class AllocatedAspect {
                 }
                 break;
             default:
-                throw new SecurityExceptions.PermissionCheckException("Invalid Allocation type");
+                throw new SecurityExceptions.PermissionCheckException("Invalid Allocation type", SECURITY_PARSE_ERROR);
         }
 
         return joinPoint.proceed();

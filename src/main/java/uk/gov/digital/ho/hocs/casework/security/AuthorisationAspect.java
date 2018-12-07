@@ -9,13 +9,11 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.util.UUID;
 
-import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_PARSE_ERROR;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAUTHORISED;
 
 @Aspect
 @Component
@@ -73,11 +71,11 @@ public class AuthorisationAspect {
                 CreateCaseRequest createCaseRequest = (CreateCaseRequest) joinPoint.getArgs()[0];
                 caseType = createCaseRequest.getType().getDisplayCode();
             } else {
-                throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName());
+                throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName(), SECURITY_PARSE_ERROR);
             }
             return userService.getMaxAccessLevel(caseType);
         } else {
-            throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without case UUID parameters");
+            throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without case UUID parameters", SECURITY_PARSE_ERROR);
         }
     }
 }

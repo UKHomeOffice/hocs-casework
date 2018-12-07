@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.security;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +18,6 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
-import java.rmi.registry.LocateRegistry;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -90,7 +88,7 @@ public class SecurityIntegrationTest {
         UUID caseUUID = UUID.randomUUID();
 
         when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
-        when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("TRO", "1b"));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("TRO");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");

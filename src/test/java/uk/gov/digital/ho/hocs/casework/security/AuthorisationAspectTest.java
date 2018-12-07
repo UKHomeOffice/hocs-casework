@@ -11,7 +11,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.time.LocalDate;
@@ -76,7 +75,7 @@ public class AuthorisationAspectTest {
 
     @Test
     public void shouldNotCallCaseServiceWhenNewCase() throws Throwable {
-        String type = "MIN";
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Object[] args = new Object[1];
         args[0] = new CreateCaseRequest(type, new HashMap<>(), LocalDate.now(), LocalDate.now());
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
@@ -85,7 +84,7 @@ public class AuthorisationAspectTest {
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
         verify(caseService, never()).getCase(caseUUID);
-        verify(userService, times(1)).getMaxAccessLevel(type);
+        verify(userService, times(1)).getMaxAccessLevel(type.getDisplayCode());
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
 
@@ -111,11 +110,11 @@ public class AuthorisationAspectTest {
     @Test(expected = SecurityExceptions.PermissionCheckException.class)
     public void shouldNotProceedIfUserDoesNotHavePermission() throws Throwable {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        String type = "MIN";
         Object[] args = new Object[1];
         args[0] = caseUUID;
         when(userService.getMaxAccessLevel(any())).thenThrow(new SecurityExceptions.PermissionCheckException("User does not have any permission onf this case type", SECURITY_UNAUTHORISED));
-        when(caseService.getCaseTypeByUUID(any())).thenReturn(type);
+        when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
