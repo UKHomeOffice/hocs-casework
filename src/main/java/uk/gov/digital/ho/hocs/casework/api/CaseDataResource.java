@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
@@ -29,7 +31,7 @@ class CaseDataResource {
     @Authorised()
     @PostMapping(value = "/case", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
-        CaseData caseData = caseDataService.createCase(request.getType(), request.getData());
+        CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getCaseDeadline(), request.getDateReceieved());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
@@ -51,6 +53,12 @@ class CaseDataResource {
     public ResponseEntity<String> getCaseUser(@PathVariable UUID caseUUID) {
         String caseDataType = caseDataService.getCaseType(caseUUID);
         return ResponseEntity.ok(caseDataType);
+
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
+    @GetMapping(value = "/case/{caseUUID}/summary", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<CaseSummary> getCaseSummary(@PathVariable UUID caseUUID) throws IOException {
+        CaseSummary caseData = caseDataService.getCaseSummary(caseUUID);
+        return ResponseEntity.ok(caseData);
     }
 
 }

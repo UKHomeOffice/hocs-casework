@@ -5,6 +5,7 @@ import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,8 +20,9 @@ public class CaseDataDtoTest {
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline,caseReceived);
 
         CaseDataDto caseDataDto = CaseDataDto.from(caseData);
 
@@ -31,6 +33,8 @@ public class CaseDataDtoTest {
         assertThat(caseDataDto.getData()).isEqualTo(caseData.getData());
         assertThat(caseDataDto.getPrimaryTopic()).isEqualTo(caseData.getPrimaryTopicUUID());
         assertThat(caseDataDto.getPrimaryCorrespondent()).isEqualTo(caseData.getPrimaryCorrespondentUUID());
+        assertThat(caseDataDto.getPrimaryCorrespondent()).isEqualTo(caseData.getPrimaryCorrespondentUUID());
+        assertThat(caseDataDto.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
     }
 
@@ -40,8 +44,9 @@ public class CaseDataDtoTest {
         CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         ObjectMapper objectMapper = new ObjectMapper();
-
-        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper);
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper, caseDeadline, caseReceived);
 
         CaseDataDto caseDataDto = CaseDataDto.from(caseData);
 
@@ -52,6 +57,7 @@ public class CaseDataDtoTest {
         assertThat(caseDataDto.getData()).isEqualTo(caseData.getData());
         assertThat(caseDataDto.getPrimaryTopic()).isEqualTo(caseData.getPrimaryTopicUUID());
         assertThat(caseDataDto.getPrimaryCorrespondent()).isEqualTo(caseData.getPrimaryCorrespondentUUID());
+        assertThat(caseDataDto.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
     }
 

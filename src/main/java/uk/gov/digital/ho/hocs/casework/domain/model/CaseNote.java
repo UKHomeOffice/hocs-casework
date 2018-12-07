@@ -2,11 +2,13 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOTE_CREATE_FAILURE;
 
 @NoArgsConstructor
 @Entity
@@ -39,7 +41,8 @@ public class CaseNote {
 
     public CaseNote(UUID caseUUID, CaseNoteType caseNoteType, String text) {
         if (caseUUID == null || caseNoteType == null || text == null) {
-            throw new EntityCreationException("Cannot create case note(%s,%s,%s).", caseUUID, caseNoteType, text);
+            throw new ApplicationExceptions.EntityCreationException(
+                    String.format("Cannot create case note(%s,%s,%s).", caseUUID, caseNoteType, text), CASE_NOTE_CREATE_FAILURE);
         }
 
         this.uuid = UUID.randomUUID();

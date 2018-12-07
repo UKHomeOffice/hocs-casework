@@ -13,11 +13,14 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
+import java.rmi.registry.LocateRegistry;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -53,7 +56,9 @@ public class SecurityIntegrationTest {
             put("key","value");
         }};
 
-        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper);
+
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now(), LocalDate.now());
+
         when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
         when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
 
@@ -67,7 +72,7 @@ public class SecurityIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenNotInCaseTypeGroup() {
+    public void shouldReturnForbiddenWhenNotInCaseTypeGroup() {
         UUID caseUUID = UUID.randomUUID();
 
         when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
@@ -83,7 +88,9 @@ public class SecurityIntegrationTest {
     @Test
     public void shouldReturnNotFoundIfCaseUUIDNotFound() {
         UUID caseUUID = UUID.randomUUID();
-        when(caseDataService.getCaseType(caseUUID)).thenThrow(new EntityNotFoundException("Not found"));
+
+        when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
+        when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("TRO", "1b"));
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");

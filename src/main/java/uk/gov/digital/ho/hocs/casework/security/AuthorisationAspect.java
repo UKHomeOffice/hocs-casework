@@ -9,8 +9,13 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.util.UUID;
+
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Aspect
 @Component
@@ -31,7 +36,7 @@ public class AuthorisationAspect {
         if (getUserAccessLevel(joinPoint).getLevel() >= getRequiredAccessLevel(authorised).getLevel()) {
             return joinPoint.proceed();
         } else {
-            throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource");
+            throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource", SECURITY_UNAUTHORISED);
         }
     }
 
@@ -46,7 +51,7 @@ public class AuthorisationAspect {
             case "DELETE":
                 return AccessLevel.WRITE;
             default:
-                throw new SecurityExceptions.PermissionCheckException("Unknown access request type " + method);
+                throw new SecurityExceptions.PermissionCheckException("Unknown access request type " + method, SECURITY_PARSE_ERROR);
         }
     }
 

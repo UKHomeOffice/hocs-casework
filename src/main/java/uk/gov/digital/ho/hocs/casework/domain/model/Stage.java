@@ -2,13 +2,16 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
 
 @NoArgsConstructor
 @Entity
@@ -64,7 +67,7 @@ public class Stage implements Serializable {
 
     public Stage(UUID caseUUID, StageType stageType, UUID teamUUID, LocalDate deadline) {
         if (caseUUID == null || stageType == null) {
-            throw new EntityCreationException("Cannot create Stage (%s, %s).", caseUUID, stageType);
+            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
         }
 
         this.uuid = UUID.randomUUID();

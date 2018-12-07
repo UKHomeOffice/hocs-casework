@@ -5,8 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNoteType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseNoteRepository;
@@ -32,7 +31,7 @@ public class CaseNoteServiceTest {
     }
 
     @Test
-    public void shouldGetCaseNotes() throws EntityNotFoundException {
+    public void shouldGetCaseNotes() throws ApplicationExceptions.EntityNotFoundException {
         HashSet<CaseNote> caseNoteData = new HashSet<>();
         caseNoteData.add(new CaseNote(caseUUID, CaseNoteType.MANUAL, text));
 
@@ -45,7 +44,7 @@ public class CaseNoteServiceTest {
         verifyNoMoreInteractions(caseNoteRepository);
     }
 
-    @Test(expected = EntityNotFoundException.class)
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetCaseNotesWithValidParamsNotFoundException() {
 
         when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(null);
@@ -60,7 +59,7 @@ public class CaseNoteServiceTest {
 
         try {
             caseNoteService.getCaseNotes(caseUUID);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -82,7 +81,7 @@ public class CaseNoteServiceTest {
     }
 
     @Test
-    public void shouldCreateCaseNote() throws EntityCreationException {
+    public void shouldCreateCaseNote() throws ApplicationExceptions.EntityCreationException {
 
         caseNoteService.createCaseNote(caseUUID, caseNoteType, text);
 
@@ -91,8 +90,8 @@ public class CaseNoteServiceTest {
         verifyNoMoreInteractions(caseNoteRepository);
     }
 
-    @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateCaseNoteMissingCaseUUIDException() throws EntityCreationException {
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void shouldNotCreateCaseNoteMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
         caseNoteService.createCaseNote(null, caseNoteType, text);
     }
 
@@ -101,7 +100,7 @@ public class CaseNoteServiceTest {
 
         try {
             caseNoteService.createCaseNote(null, caseNoteType, text);
-        } catch (EntityCreationException e) {
+        } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
 
@@ -109,8 +108,8 @@ public class CaseNoteServiceTest {
 
     }
 
-    @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateCaseNoteMissingCaseNoteTypeException() throws EntityCreationException {
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void shouldNotCreateCaseNoteMissingCaseNoteTypeException() throws ApplicationExceptions.EntityCreationException {
         caseNoteService.createCaseNote(caseUUID, null, text);
     }
 
@@ -119,7 +118,7 @@ public class CaseNoteServiceTest {
 
         try {
             caseNoteService.createCaseNote(caseUUID, null, text);
-        } catch (EntityCreationException e) {
+        } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
 
@@ -127,8 +126,8 @@ public class CaseNoteServiceTest {
 
     }
 
-    @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateCaseNoteMissingTextException() throws EntityCreationException {
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void shouldNotCreateCaseNoteMissingTextException() throws ApplicationExceptions.EntityCreationException {
         caseNoteService.createCaseNote(caseUUID, caseNoteType, null);
     }
 
@@ -137,7 +136,7 @@ public class CaseNoteServiceTest {
 
         try {
             caseNoteService.createCaseNote(caseUUID, caseNoteType, null);
-        } catch (EntityCreationException e) {
+        } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
 
