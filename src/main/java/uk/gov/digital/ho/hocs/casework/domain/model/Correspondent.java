@@ -27,8 +27,9 @@ public class Correspondent {
     @Column(name = "created")
     private LocalDateTime created;
 
+    @Getter
     @Column(name = "type")
-    private String type;
+    private String correspondentType;
 
     @Getter
     @Column(name = "case_uuid")
@@ -70,7 +71,7 @@ public class Correspondent {
     @Column(name = "reference")
     private String reference;
 
-    public Correspondent(UUID caseUUID, CorrespondentType correspondentType, String fullName, Address address, String telephone, String email, String reference) {
+    public Correspondent(UUID caseUUID, String correspondentType, String fullName, Address address, String telephone, String email, String reference) {
         if (caseUUID == null || correspondentType == null) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Correspondent(%s, %s, %s, %s, %s, %s).", caseUUID, correspondentType, fullName, "Address", telephone, email), LogEvent.CORRESPONDENT_CREATE_FAILURE);
         }
@@ -78,7 +79,7 @@ public class Correspondent {
         this.uuid = UUID.randomUUID();
         this.created = LocalDateTime.now();
         this.caseUUID = caseUUID;
-        this.type = correspondentType.toString();
+        this.correspondentType = correspondentType;
         this.fullName = fullName;
         if (address != null) {
             this.postcode = address.getPostcode();
@@ -90,10 +91,6 @@ public class Correspondent {
         this.telephone = telephone;
         this.email = email;
         this.reference = reference;
-    }
-
-    public CorrespondentType getCorrespondentType() {
-        return CorrespondentType.valueOf(this.type);
     }
 
 }

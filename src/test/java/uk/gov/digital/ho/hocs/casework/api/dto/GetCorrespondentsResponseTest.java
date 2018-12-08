@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +16,7 @@ public class GetCorrespondentsResponseTest {
     public void getGetCorrespondentsResponse() {
 
         UUID caseUUID = UUID.randomUUID();
-        CorrespondentType type = CorrespondentType.CORRESPONDENT;
+        String type = "CORRESPONDENT";
         String fullName = "anyFullName";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";

@@ -11,7 +11,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentType;
 
 import java.util.HashSet;
 import java.util.UUID;
@@ -53,7 +52,7 @@ public class CorrespondentResourceTest {
     public void shouldGetCorrespondent() {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, CorrespondentType.CORRESPONDENT, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
 
         when(correspondentService.getCorrespondent(caseUUID, correspondentUUID)).thenReturn(correspondent);
 
@@ -71,7 +70,7 @@ public class CorrespondentResourceTest {
     public void shouldGetPrimaryCorrespondent() {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, CorrespondentType.CORRESPONDENT, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
 
         when(correspondentService.getPrimaryCorrespondent(caseUUID)).thenReturn(correspondent);
 
