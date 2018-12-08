@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNoteType;
 
 import java.util.UUID;
 
@@ -14,7 +13,7 @@ public class CaseNoteDtoTest {
     public void getCaseNoteDto() {
 
         UUID caseUUID = UUID.randomUUID();
-        CaseNoteType type = CaseNoteType.MANUAL;
+        String type = "MANUAL";
         String text = "anyText";
 
         CaseNote caseNote = new CaseNote(caseUUID, type, text);
@@ -23,7 +22,7 @@ public class CaseNoteDtoTest {
 
         assertThat(caseNoteDto.getUuid()).isEqualTo(caseNote.getUuid());
         assertThat(caseNoteDto.getCreated()).isEqualTo(caseNote.getCreated());
-        assertThat(caseNoteDto.getType()).isEqualTo(caseNote.getCaseNoteType().toString());
+        assertThat(caseNoteDto.getType()).isEqualTo(caseNote.getCaseNoteType());
         assertThat(caseNoteDto.getCaseUUID()).isEqualTo(caseNote.getCaseUUID());
         assertThat(caseNoteDto.getText()).isEqualTo(caseNote.getText());
 

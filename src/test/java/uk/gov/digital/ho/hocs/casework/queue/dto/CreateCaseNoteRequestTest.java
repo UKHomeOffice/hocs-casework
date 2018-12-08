@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.*;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseContext;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNoteType;
 
 import java.util.UUID;
 
@@ -45,7 +44,7 @@ public class CreateCaseNoteRequestTest {
     public void getCreateCaseNoteRequest() {
 
         UUID caseUUID = UUID.randomUUID();
-        CaseNoteType caseNoteType = CaseNoteType.MANUAL;
+        String caseNoteType = "MANUAL";
         String caseNote = "anyNote";
 
         CreateCaseNoteRequest createCaseNoteRequest = new CreateCaseNoteRequest(caseUUID, caseNoteType, caseNote);
@@ -59,7 +58,7 @@ public class CreateCaseNoteRequestTest {
     @Test
     public void shouldCallCollaboratorsExecute() {
         UUID caseUUID = UUID.randomUUID();
-        CaseNoteType caseNoteType = CaseNoteType.MANUAL;
+        String caseNoteType = "MANUAL";
         String caseNote = "anyNote";
 
         doNothing().when(caseNoteService).createCaseNote(caseUUID, caseNoteType, caseNote);
