@@ -4,10 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetStagesResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.StageDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
@@ -39,6 +36,12 @@ class StageResource {
     public ResponseEntity<StageDto> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
         Stage stage = stageService.getStage(caseUUID, stageUUID);
         return ResponseEntity.ok(StageDto.from(stage));
+    }
+
+    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity allocateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateStageRequest request) {
+        stageService.updateUser(caseUUID, stageUUID, request.getUserUUID());
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/user/{userUUID}/stage", produces = APPLICATION_JSON_UTF8_VALUE)

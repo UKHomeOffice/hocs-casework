@@ -7,10 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetStagesResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.StageDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.time.LocalDate;
@@ -85,6 +82,40 @@ public class StageResourceTest {
         ResponseEntity<StageDto> response = stageResource.getStage(caseUUID, stageUUID);
 
         verify(stageService, times(1)).getStage(caseUUID, stageUUID);
+
+        verifyNoMoreInteractions(stageService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldAllocateStage() {
+
+        doNothing().when(stageService).updateUser(caseUUID, stageUUID, userUUID);
+
+        AllocateStageRequest allocateStageRequest = new AllocateStageRequest(userUUID);
+
+        ResponseEntity response = stageResource.allocateStage(caseUUID, stageUUID, allocateStageRequest);
+
+        verify(stageService, times(1)).updateUser(caseUUID, stageUUID, userUUID);
+
+        verifyNoMoreInteractions(stageService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldAllocateStageNull() {
+
+        doNothing().when(stageService).updateUser(caseUUID, stageUUID, null);
+
+        AllocateStageRequest allocateStageRequest = new AllocateStageRequest(null);
+
+        ResponseEntity response = stageResource.allocateStage(caseUUID, stageUUID, allocateStageRequest);
+
+        verify(stageService, times(1)).updateUser(caseUUID, stageUUID, null);
 
         verifyNoMoreInteractions(stageService);
 
