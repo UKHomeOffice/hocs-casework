@@ -124,40 +124,6 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldGetActiveStagesByUserUUID() {
-
-        Set<Stage> stages = new HashSet<>();
-
-        when(stageService.getActiveStagesByUserUUID(userUUID)).thenReturn(stages);
-
-        ResponseEntity<GetStagesResponse> response = stageResource.getActiveStagesByUserUUID(userUUID);
-
-        verify(stageService, times(1)).getActiveStagesByUserUUID(userUUID);
-
-        verifyNoMoreInteractions(stageService);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
-    public void shouldGetActiveStagesByTeamUUID() {
-
-        Set<Stage> stages = new HashSet<>();
-
-        when(stageService.getActiveStagesByTeamUUID(teamUUID)).thenReturn(stages);
-
-        ResponseEntity<GetStagesResponse> response = stageResource.getActiveStagesByTeamUUID(teamUUID);
-
-        verify(stageService, times(1)).getActiveStagesByTeamUUID(teamUUID);
-
-        verifyNoMoreInteractions(stageService);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
     public void shouldGetActiveStages() {
 
         Set<Stage> stages = new HashSet<>();
