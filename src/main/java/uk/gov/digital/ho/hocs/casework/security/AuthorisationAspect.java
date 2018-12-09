@@ -49,7 +49,7 @@ public class AuthorisationAspect {
                 CreateCaseRequest createCaseRequest = (CreateCaseRequest) joinPoint.getArgs()[0];
                 caseType = createCaseRequest.getType();
             } else {
-                throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName(), SECURITY_PARSE_ERROR);
+                throw new SecurityExceptions.PermissionCheckException("Unable to parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName(), SECURITY_PARSE_ERROR);
             }
         } else {
             throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without case UUID parameters", SECURITY_PARSE_ERROR);

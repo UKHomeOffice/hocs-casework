@@ -46,7 +46,7 @@ public class UserPermissionsService {
     }
 
     public AccessLevel getMaxAccessLevel(CaseDataType caseType) {
-
+        // The orElseThow here will happen if the users has no access at all, likely the frontend isn't sending the headers.
         return getUserPermission()
                 .flatMap(unit -> unit.getValue().values().stream())
                 .flatMap(type -> type.getOrDefault(caseType.getDisplayCode(), new HashSet<>()).stream())

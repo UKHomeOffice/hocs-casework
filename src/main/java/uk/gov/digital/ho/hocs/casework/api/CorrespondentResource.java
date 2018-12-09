@@ -30,7 +30,7 @@ public class CorrespondentResource {
         this.correspondentService = correspondentService;
     }
 
-    @Allocated(allocatedTo = AllocationLevel.USER)
+    @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/case/{caseUUID}/correspondent", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity addCorrespondentToCase(@PathVariable UUID caseUUID, @RequestBody CreateCorrespondentRequest request) {
         Address addr = new Address(request.getPostcode(), request.getAddress1(), request.getAddress2(), request.getAddress3(), request.getCountry());
