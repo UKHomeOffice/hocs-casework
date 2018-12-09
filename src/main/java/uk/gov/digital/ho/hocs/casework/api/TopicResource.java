@@ -29,6 +29,7 @@ public class TopicResource {
         this.topicService = topicService;
     }
 
+    @Allocated(allocatedTo = AllocationLevel.USER)
     @PostMapping(value = "/case/{caseUUID}/topic", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity addTopicToCase(@PathVariable UUID caseUUID, @RequestBody CreateTopicRequest request) {
         topicService.createTopic(caseUUID, request.getTopicUUID());
