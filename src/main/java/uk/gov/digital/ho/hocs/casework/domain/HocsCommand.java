@@ -5,7 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.api.*;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.api.CaseNoteService;
+import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.queue.dto.*;
 
 @JsonTypeInfo(
@@ -26,9 +28,7 @@ public abstract class HocsCommand implements Command {
 
     protected CaseDataService caseDataService;
     protected CaseNoteService caseNoteService;
-    protected CorrespondentService correspondentService;
     protected StageService stageService;
-    protected TopicService topicService;
 
     @Getter
     @JsonProperty("command")
@@ -42,9 +42,7 @@ public abstract class HocsCommand implements Command {
     protected void initialiseDependencies(HocsCaseContext hocsCaseContext) {
         caseDataService = hocsCaseContext.getCaseDataService();
         caseNoteService = hocsCaseContext.getCaseNoteService();
-        correspondentService = hocsCaseContext.getCorrespondentService();
         stageService = hocsCaseContext.getStageService();
-        topicService = hocsCaseContext.getTopicService();
     }
 
 }
