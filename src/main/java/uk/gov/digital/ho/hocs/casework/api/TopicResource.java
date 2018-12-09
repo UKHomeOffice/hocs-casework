@@ -3,10 +3,8 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateTopicRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicsResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.TopicDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
@@ -29,6 +27,12 @@ public class TopicResource {
     @Autowired
     public TopicResource(TopicService topicService) {
         this.topicService = topicService;
+    }
+
+    @PostMapping(value = "/case/{caseUUID}/topic", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity addTopicToCase(@PathVariable UUID caseUUID, @RequestBody CreateTopicRequest request) {
+        topicService.createTopic(caseUUID, request.getTopicUUID());
+        return ResponseEntity.ok().build();
     }
 
     @Authorised(accessLevel = AccessLevel.SUMMARY)

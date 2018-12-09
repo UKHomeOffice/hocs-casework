@@ -5,6 +5,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.domain.repository.TopicDataRepository;
@@ -23,11 +25,13 @@ public class TopicServiceTest {
     private final UUID topicNameUUID = UUID.randomUUID();
     @Mock
     private TopicDataRepository topicRepository;
+    @Mock
+    private InfoClient infoClient;
     private TopicService topicService;
 
     @Before
     public void setUp() {
-        topicService = new TopicService(topicRepository);
+        topicService = new TopicService(topicRepository, infoClient);
     }
 
     @Test
@@ -82,64 +86,34 @@ public class TopicServiceTest {
     @Test
     public void shouldCreateTopic() throws ApplicationExceptions.EntityCreationException {
 
-        topicService.createTopic(caseUUID, topicName, topicNameUUID);
+        when(infoClient.getTopic(topicNameUUID)).thenReturn(new InfoTopic(topicName, topicNameUUID));
+
+        topicService.createTopic(caseUUID, topicNameUUID);
 
         verify(topicRepository, times(1)).save(any(Topic.class));
+        verify(infoClient, times(1)).getTopic(topicNameUUID);
 
         verifyNoMoreInteractions(topicRepository);
-    }
-
-    @Test(expected = ApplicationExceptions.EntityCreationException.class)
-    public void shouldNotCreateTopicMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
-        topicService.createTopic(null, topicName, topicNameUUID);
-    }
-
-    @Test
-    public void shouldNotCreateTopicMissingCaseUUID() {
-
-        try {
-            topicService.createTopic(null, topicName, topicNameUUID);
-        } catch (ApplicationExceptions.EntityCreationException e) {
-            // Do nothing.
-        }
-
-        verifyZeroInteractions(topicRepository);
-
-    }
-
-    @Test(expected = ApplicationExceptions.EntityCreationException.class)
-    public void shouldNotCreateTopicMissingTopicTypeException() throws ApplicationExceptions.EntityCreationException {
-        topicService.createTopic(caseUUID, null, topicNameUUID);
-    }
-
-    @Test
-    public void shouldNotCreateTopicMissingTopicType() {
-
-        try {
-            topicService.createTopic(caseUUID, null, topicNameUUID);
-        } catch (ApplicationExceptions.EntityCreationException e) {
-            // Do nothing.
-        }
-
-        verifyZeroInteractions(topicRepository);
+        verifyNoMoreInteractions(infoClient);
 
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateTopicMissingTextException() throws ApplicationExceptions.EntityCreationException {
-        topicService.createTopic(caseUUID, topicName, null);
+        topicService.createTopic(caseUUID, null);
     }
 
     @Test
     public void shouldNotCreateTopicMissingText() {
 
         try {
-            topicService.createTopic(caseUUID, topicName, null);
+            topicService.createTopic(caseUUID, null);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
 
         verifyZeroInteractions(topicRepository);
+        verifyZeroInteractions(infoClient);
 
     }
 

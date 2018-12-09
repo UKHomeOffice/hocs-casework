@@ -3,6 +3,8 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.domain.repository.TopicDataRepository;
@@ -19,10 +21,12 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 public class TopicService {
 
     private final TopicDataRepository topicDataRepository;
+    private final InfoClient infoClient;
 
     @Autowired
-    public TopicService(TopicDataRepository topicDataRepository) {
+    public TopicService(TopicDataRepository topicDataRepository, InfoClient infoClient) {
         this.topicDataRepository = topicDataRepository;
+        this.infoClient = infoClient;
     }
 
     @Transactional
@@ -59,10 +63,15 @@ public class TopicService {
     }
 
     @Transactional
-    public void createTopic(UUID caseUUID, String topicName, UUID topicUUID) {
-        Topic topic = new Topic(caseUUID, topicName, topicUUID);
-        topicDataRepository.save(topic);
-        log.info("Created Topic: {} for Case: {}", topic.getUuid(), caseUUID, value(EVENT, CASE_TOPIC_CREATE));
+    public void createTopic(UUID caseUUID, UUID topicUUID) {
+        if (topicUUID != null) {
+            InfoTopic infoTopic = infoClient.getTopic(topicUUID);
+            Topic topic = new Topic(caseUUID, infoTopic.getLabel(), topicUUID);
+            topicDataRepository.save(topic);
+            log.info("Created Topic: {} for Case: {}", topic.getUuid(), caseUUID, value(EVENT, CASE_TOPIC_CREATE));
+        } else {
+            throw new ApplicationExceptions.EntityCreationException(String.format("No TopicUUID given for Case: %s", caseUUID), CASE_TOPIC_UUID_NOT_GIVEN);
+        }
     }
 
     @Transactional

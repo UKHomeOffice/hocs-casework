@@ -3,12 +3,11 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
+import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
@@ -26,6 +25,13 @@ public class CorrespondentResource {
     @Autowired
     public CorrespondentResource(CorrespondentService correspondentService) {
         this.correspondentService = correspondentService;
+    }
+
+    @PostMapping(value = "/case/{caseUUID}/correspondent", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity addCorrespondentToCase(@PathVariable UUID caseUUID, @RequestBody CreateCorrespondentRequest request) {
+        Address addr = new Address(request.getPostcode(), request.getAddress1(), request.getAddress2(), request.getAddress3(), request.getCountry());
+        correspondentService.createCorrespondent(caseUUID, request.getType(), request.getFullname(), addr, request.getTelephone(), request.getEmail(), request.getReference());
+        return ResponseEntity.ok().build();
     }
 
     @Authorised
