@@ -10,8 +10,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
-import uk.gov.digital.ho.hocs.casework.security.Allocated;
-import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.util.Set;
@@ -38,28 +36,28 @@ public class CorrespondentResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY)
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/correspondent", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetCorrespondentsResponse> getCorrespondents(@PathVariable UUID caseUUID) {
         Set<Correspondent> correspondents = correspondentService.getCorrespondents(caseUUID);
         return ResponseEntity.ok(GetCorrespondentsResponse.from(correspondents));
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY)
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/correspondent/{correspondentUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CorrespondentDto> getCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID correspondentUUID) {
         Correspondent correspondent = correspondentService.getCorrespondent(caseUUID, correspondentUUID);
         return ResponseEntity.ok(CorrespondentDto.from(correspondent));
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY)
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/correspondent/primary", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CorrespondentDto> getPrimaryCorrespondent(@PathVariable UUID caseUUID) {
         Correspondent correspondent = correspondentService.getPrimaryCorrespondent(caseUUID);
         return ResponseEntity.ok(CorrespondentDto.from(correspondent));
     }
 
-    @Allocated(allocatedTo = AllocationLevel.USER)
+    @Authorised(accessLevel = AccessLevel.WRITE)
     @DeleteMapping(value = "/case/{caseUUID}/correspondent/{correspondentUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CorrespondentDto> deleteCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID correspondentUUID) {
         correspondentService.deleteCorrespondent(caseUUID, correspondentUUID);
