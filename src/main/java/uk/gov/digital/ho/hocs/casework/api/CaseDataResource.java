@@ -49,11 +49,16 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping(value = "/case/{caseUUID}/type", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<String> getCaseUser(@PathVariable UUID caseUUID) {
+        String caseDataType = caseDataService.getCaseType(caseUUID);
+        return ResponseEntity.ok(caseDataType);
+    }
+
     @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/{caseUUID}/summary", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<CaseSummary> getCaseSummary(@PathVariable UUID caseUUID) throws IOException {
         CaseSummary caseData = caseDataService.getCaseSummary(caseUUID);
         return ResponseEntity.ok(caseData);
     }
-
 }
