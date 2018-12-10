@@ -18,23 +18,26 @@ public class CreateCaseRequestTest {
         Map<String, String> data = new HashMap<>();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
         LocalDate caseReceived = LocalDate.now();
+        String allocationType = "anyType";
 
-        CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseDataType, data, caseDeadline, caseReceived);
+        CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseDataType, data, caseDeadline, caseReceived, allocationType);
 
         assertThat(createCaseRequest.getType()).isEqualTo(caseDataType);
         assertThat(createCaseRequest.getData()).isEqualTo(data);
         assertThat(createCaseRequest.getCaseDeadline()).isEqualTo(caseDeadline);
+        assertThat(createCaseRequest.getAllocationType()).isEqualTo(allocationType);
 
     }
 
     @Test
     public void getCreateCaseRequestNull() {
 
-        CreateCaseRequest createCaseRequest = new CreateCaseRequest(null, null, null, null);
+        CreateCaseRequest createCaseRequest = new CreateCaseRequest(null, null, null, null, null);
 
         assertThat(createCaseRequest.getType()).isNull();
         assertThat(createCaseRequest.getData()).isNull();
         assertThat(createCaseRequest.getCaseDeadline()).isNull();
+        assertThat(createCaseRequest.getAllocationType()).isNull();
 
     }
 

@@ -42,9 +42,10 @@ public class StageService {
     }
 
     @Transactional
-    public Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline) {
+    public Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline, String allocationType) {
         Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
         stageRepository.save(stage);
+
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
         return stage;
     }
@@ -58,7 +59,7 @@ public class StageService {
     }
 
     @Transactional
-    public void updateTeam(UUID caseUUID, UUID stageUUID, UUID teamUUID) {
+    public void updateTeam(UUID caseUUID, UUID stageUUID, UUID teamUUID, String allocationType) {
         Stage stage = getStage(caseUUID, stageUUID);
         stage.setTeam(teamUUID);
         stageRepository.save(stage);
@@ -68,6 +69,8 @@ public class StageService {
     @Transactional
     public void updateUser(UUID caseUUID, UUID stageUUID, UUID userUUID) {
         Stage stage = getStage(caseUUID, stageUUID);
+        UUID currentUser = stage.getUserUUID();
+
         stage.setUser(userUUID);
         stageRepository.save(stage);
         log.info("Set Stage User: {} ({}) for Case {}", stageUUID, userUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_USER));

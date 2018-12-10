@@ -23,21 +23,25 @@ public class UpdateStageTeamRequest extends HocsCommand {
 
     private UUID teamUUID;
 
+    private String allocationType;
+
     @JsonCreator
     public UpdateStageTeamRequest(@JsonProperty(value = "caseUUID", required = true) UUID caseUUID,
                                   @JsonProperty(value = "stageUUID", required = true) UUID stageUUID,
-                                  @JsonProperty(value = "teamUUID", required = true) UUID teamUUID) {
+                                  @JsonProperty(value = "teamUUID", required = true) UUID teamUUID,
+                                  @JsonProperty(value = "allocationType", required = true) String allocationType) {
         super(UPDATE_STAGE_TEAM_COMMAND);
         this.caseUUID = caseUUID;
         this.stageUUID = stageUUID;
         this.teamUUID = teamUUID;
+        this.allocationType = allocationType;
 
     }
 
     @Override
     public void execute(HocsCaseContext hocsCaseContext) {
         initialiseDependencies(hocsCaseContext);
-        stageService.updateTeam(caseUUID, stageUUID, teamUUID);
+        stageService.updateTeam(caseUUID, stageUUID, teamUUID, allocationType);
 
     }
 }
