@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.Allocated;
+import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.util.Set;
@@ -25,14 +27,14 @@ class StageResource {
         this.stageService = stageService;
     }
 
-    @Authorised
+    @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/case/{caseUUID}/stage")
     public ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
         Stage stage = stageService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getDeadline());
         return ResponseEntity.ok(CreateStageResponse.from(stage));
     }
 
-    @Authorised
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
     public ResponseEntity<StageDto> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
         Stage stage = stageService.getStage(caseUUID, stageUUID);

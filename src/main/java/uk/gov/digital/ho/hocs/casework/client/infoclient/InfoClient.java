@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -37,6 +38,11 @@ public class InfoClient {
     @Cacheable(value = "getCaseTypeByShortCode")
     public CaseDataType getCaseTypeByShortCode(String shortCode) {
         ResponseEntity<CaseDataType> response = restHelper.get(serviceBaseURL, String.format("/caseType/shortCode/%s", shortCode), CaseDataType.class);
+        return response.getBody();
+    }
+
+    public InfoTopic getTopic(UUID topicUUID) {
+        ResponseEntity<InfoTopic> response = restHelper.get(serviceBaseURL, String.format("/topic/%s", topicUUID), InfoTopic.class);
         return response.getBody();
     }
 

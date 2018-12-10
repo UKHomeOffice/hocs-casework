@@ -46,7 +46,6 @@ public class UserPermissionsService {
     }
 
     public AccessLevel getMaxAccessLevel(String caseType) {
-
         return getUserPermission()
                 .flatMap(unit -> unit.getValue().values().stream())
                 .flatMap(type -> type.getOrDefault(caseType, new HashSet<>()).stream())
