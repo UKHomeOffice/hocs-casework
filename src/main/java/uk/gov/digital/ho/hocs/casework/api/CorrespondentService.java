@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
 import javax.transaction.Transactional;
@@ -61,13 +60,7 @@ public class CorrespondentService {
     }
 
     @Transactional
-    public void createCorrespondent(UUID caseUUID, CorrespondentType correspondentType, String fullname, String postcode, String address1, String address2, String address3, String country, String telephone, String email, String reference) {
-        Address address = new Address(postcode,
-                address1,
-                address2,
-                address3,
-                country);
-
+    public void createCorrespondent(UUID caseUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference) {
         Correspondent correspondent = new Correspondent(caseUUID,
                 correspondentType,
                 fullname,

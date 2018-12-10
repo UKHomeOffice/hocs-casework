@@ -111,7 +111,7 @@ public class CaseDataServiceTest {
             put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10));
             put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
         }};
-        Correspondent correspondent = new  Correspondent(caseData.getUuid(),CorrespondentType.CORRESPONDENT, "some name,",
+        Correspondent correspondent = new Correspondent(caseData.getUuid(), "CORRESPONDENT", "some name,",
                 new Address("","","","",""), "12345","some email", "some ref");
 
 
@@ -202,7 +202,7 @@ public class CaseDataServiceTest {
             put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
         }};
 
-        Correspondent correspondent = new  Correspondent(caseData.getUuid(),CorrespondentType.CORRESPONDENT, "some name,",
+        Correspondent correspondent = new Correspondent(caseData.getUuid(), "CORRESPONDENT", "some name,",
                 new Address("","","","",""), "12345","some email", "some ref");
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);

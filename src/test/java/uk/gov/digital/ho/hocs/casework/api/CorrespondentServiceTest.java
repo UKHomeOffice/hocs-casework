@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
 import java.util.HashSet;
@@ -35,7 +34,7 @@ public class CorrespondentServiceTest {
         HashSet<Correspondent> correspondentData = new HashSet<>();
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, CorrespondentType.CORRESPONDENT, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
 
         correspondentData.add(correspondent);
 
@@ -86,7 +85,8 @@ public class CorrespondentServiceTest {
     @Test
     public void shouldCreateCorrespondent() throws ApplicationExceptions.EntityCreationException {
 
-        correspondentService.createCorrespondent(caseUUID, CorrespondentType.CORRESPONDENT, "anyFullName", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
+        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+        correspondentService.createCorrespondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
 
         verify(correspondentRepository, times(1)).save(any(Correspondent.class));
 
@@ -95,14 +95,16 @@ public class CorrespondentServiceTest {
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCorrespondentMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
-        correspondentService.createCorrespondent(null, CorrespondentType.CORRESPONDENT, "anyFullName", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
+        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+        correspondentService.createCorrespondent(null, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
     }
 
     @Test
     public void shouldNotCreateCorrespondentMissingCaseUUID() {
 
         try {
-            correspondentService.createCorrespondent(null, CorrespondentType.CORRESPONDENT, "anyFullName", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
+            Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+            correspondentService.createCorrespondent(null, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
@@ -113,14 +115,16 @@ public class CorrespondentServiceTest {
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCorrespondentMissingCorrespondentTypeException() throws ApplicationExceptions.EntityCreationException {
-        correspondentService.createCorrespondent(caseUUID, null, "anyFullName", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
+        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+        correspondentService.createCorrespondent(caseUUID, null, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
     }
 
     @Test
     public void shouldNotCreateCorrespondentMissingCorrespondentType() {
 
         try {
-            correspondentService.createCorrespondent(caseUUID, null, "anyFullName", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
+            Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+            correspondentService.createCorrespondent(caseUUID, null, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
@@ -133,7 +137,7 @@ public class CorrespondentServiceTest {
     public void shouldGetCorrespondent() throws ApplicationExceptions.EntityNotFoundException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, CorrespondentType.CORRESPONDENT, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
 
@@ -215,7 +219,7 @@ public class CorrespondentServiceTest {
     public void shouldGetCaseWithValidParams() throws ApplicationExceptions.EntityNotFoundException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, CorrespondentType.CORRESPONDENT, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
 
         when(correspondentRepository.getPrimaryCorrespondent(correspondent.getCaseUUID())).thenReturn(correspondent);
 
