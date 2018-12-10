@@ -31,24 +31,31 @@ public class NotifyClient {
         this.URL = URL;
     }
 
-    public void sendEmail(String caseUUIDString, String caseRef, String stageUUIDString, String teamUUIDString, NotifyType notifyType) {
-        String link = URL + "/case/" + caseUUIDString + "/stage/" + stageUUIDString;
-        log.info("Generating email personalisation");
-        Set<InfoNominatedPeople> nominatedPeopleSet = infoClient.getNominatedPeople(UUID.fromString(teamUUIDString));
-        log.info("Nominated people set size - " + nominatedPeopleSet.size());
-        for (InfoNominatedPeople nominatedPeople : nominatedPeopleSet) {
-            Map<String, String> personalisation = new HashMap<>();
-            personalisation.put("link", link);
-            personalisation.put("caseRef", caseRef);
-            sendEmail(notifyType, nominatedPeople.getEmailAddress(), personalisation);
+    public void sendTeamEmail(UUID caseUUID, UUID stageUUID, UUID teamUUID, String caseReference, NotifyType notifyType) {
+        Set<InfoNominatedPeople> nominatedPeople = infoClient.getNominatedPeople(teamUUID);
+        for (InfoNominatedPeople contact : nominatedPeople) {
+            sendEmail(caseUUID, stageUUID, contact.getEmailAddress(), caseReference, notifyType);
         }
+    }
+
+    public void sendUserEmail(UUID caseUUID, UUID stageUUID, UUID userUUID, String caseReference, NotifyType notifyType) {
+        String emailAddress = "SOME USER EMAIL";
+        sendEmail(caseUUID, stageUUID, emailAddress, caseReference, notifyType);
+    }
+
+    private void sendEmail(UUID caseUUID, UUID stageUUID, String emailAddress, String caseReference, NotifyType notifyType) {
+        String link = String.format("%s/case/%s/stage/%s", URL, caseUUID, stageUUID);
+        Map<String, String> personalisation = new HashMap<>();
+        personalisation.put("link", link);
+        personalisation.put("caseRef", caseReference);
+        sendEmail(notifyType, emailAddress, personalisation);
     }
 
     private void sendEmail(NotifyType notifyType, String emailAddress, Map<String, String> personalisation) {
         log.info("Received request to sendEmailRequest {}, template Name {}, template ID {}", emailAddress, notifyType, notifyType.getDisplayValue());
-        //TODO auditService
 
         try {
+
             notifyClient.sendEmail(notifyType.getDisplayValue(), emailAddress, personalisation, null);
         } catch (NotificationClientException e) {
             log.error(e.getLocalizedMessage());
