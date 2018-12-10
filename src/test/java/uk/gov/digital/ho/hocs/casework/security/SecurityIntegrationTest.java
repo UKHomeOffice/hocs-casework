@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.security;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +18,6 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
-import java.rmi.registry.LocateRegistry;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -60,7 +58,7 @@ public class SecurityIntegrationTest {
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now(), LocalDate.now());
 
         when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
-        when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("MIN", "a1"));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
 
 
         headers.add(RequestData.USER_ID_HEADER, userId);
@@ -75,15 +73,7 @@ public class SecurityIntegrationTest {
     public void shouldReturnForbiddenWhenNotInCaseTypeGroup() {
         UUID caseUUID = UUID.randomUUID();
 
-
-        Map<String,String> caseSubData = new HashMap<String, String>(){{
-            put("key","value");
-        }};
-
-        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, new ObjectMapper(), LocalDate.now(), LocalDate.now());
-
-        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
-        when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("MIN", "1a"));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");
@@ -96,8 +86,9 @@ public class SecurityIntegrationTest {
     @Test
     public void shouldReturnNotFoundIfCaseUUIDNotFound() {
         UUID caseUUID = UUID.randomUUID();
+
         when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
-        when(caseDataService.getCaseTypeByUUID(caseUUID)).thenReturn(new CaseDataType("TRO", "1b"));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("TRO");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");
