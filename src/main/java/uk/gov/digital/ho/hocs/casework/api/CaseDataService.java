@@ -48,7 +48,6 @@ public class CaseDataService {
         this.stageService = stageService;
     }
 
-    @Transactional
     public CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
         Long caseNumber = caseDataRepository.getNextSeriesId();
         CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline, dateReceived);
@@ -58,7 +57,6 @@ public class CaseDataService {
         return caseData;
     }
 
-    @Transactional
     public CaseData getCase(UUID caseUUID) {
         CaseData caseData = caseDataRepository.findByUuid(caseUUID);
         if (caseData != null) {
@@ -70,7 +68,6 @@ public class CaseDataService {
         }
     }
 
-    @Transactional
     public void updateCaseData(UUID caseUUID, Map<String, String> data) {
         if (data != null) {
             CaseData caseData = getCase(caseUUID);
@@ -80,7 +77,6 @@ public class CaseDataService {
         }
     }
 
-    @Transactional
     public void updatePriority(UUID caseUUID, boolean priority) {
         CaseData caseData = getCase(caseUUID);
         caseData.setPriority(priority);
@@ -88,16 +84,20 @@ public class CaseDataService {
         log.info("Updated Case Data for Case: {}", caseUUID, value(EVENT, PRIORITY_UPDATED));
     }
 
-    @Transactional
     public void deleteCase(UUID caseUUID) {
         caseDataRepository.deleteCase(caseUUID);
         log.info("Deleted Case: {}", caseUUID, value(EVENT, CASE_DELETED));
 
     }
 
-    public CaseDataType getCaseTypeByUUID(UUID uuid) {
-        String shortCode = uuid.toString().substring(34);
-        return infoClient.getCaseTypeByShortCode(shortCode);
+    public String getCaseType(UUID caseUUID) {
+        CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(caseUUID.toString().substring(34));
+        if (caseDataType == null) {
+            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID);
+            return getCase(caseUUID).getType();
+        } else {
+            return caseDataType.getDisplayCode();
+        }
     }
 
     public CaseSummary getCaseSummary(UUID caseUUID) throws IOException {
