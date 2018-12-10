@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.auditClient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -31,6 +32,8 @@ public class CaseDataServiceTest {
     @Mock
     private InfoClient infoClient;
     private CaseDataService caseDataService;
+    @Mock
+    private AuditClient auditClient;
     private ObjectMapper objectMapper = new ObjectMapper();
     private LocalDate caseDeadline = LocalDate.now().plusDays(20);
     private LocalDate caseReceived = LocalDate.now();
@@ -44,7 +47,7 @@ public class CaseDataServiceTest {
 
     @Before
     public void setUp() {
-        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper, correspondentService, stageService);
+        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper, correspondentService, stageService, auditClient);
     }
 
     @Test
@@ -73,6 +76,18 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
     }
 
+    @Test
+    public void shouldAuditCreateCase() throws ApplicationExceptions.EntityCreationException {
+
+        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+
+        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>(), caseDeadline, caseReceived);
+
+
+        verify(auditClient, times(1)).createCaseAudit(caseData);
+
+        verifyNoMoreInteractions(auditClient);
+    }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
@@ -135,6 +150,45 @@ public class CaseDataServiceTest {
         verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
         verify(infoClient, times(1)).getDeadlines(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
+    }
+
+    @Test
+    public void shouldGetCaseSummaryWithValidParamsPrimaryCorrespondentNull() throws ApplicationExceptions.EntityNotFoundException, IOException {
+
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
+        caseData.setPrimaryCorrespondentUUID(null);
+        Set<String> filterFields = new HashSet<String>() {{
+            add("TEMPCReference");
+        }};
+
+        Set<Stage> activeStages = new HashSet<Stage>() {{
+            add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now()));
+        }};
+
+        Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
+            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10));
+            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
+        }};
+
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
+        when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(stageService.getActiveStagesByCaseUUID(caseData.getUuid())).thenReturn(activeStages);
+
+        CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
+
+        assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
+        assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
+        assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
+        assertThat(result.getActiveStages().size()).isEqualTo(1);
+
+
+        verify(stageService, times(1)).getActiveStagesByCaseUUID(caseData.getUuid());
+        verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
+        verify(infoClient, times(1)).getDeadlines(caseData.getType(), caseData.getDateReceived());
+        verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
+
+        verifyZeroInteractions(correspondentService);
     }
 
     @Test

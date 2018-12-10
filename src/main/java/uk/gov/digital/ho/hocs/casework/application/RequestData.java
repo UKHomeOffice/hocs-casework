@@ -94,4 +94,8 @@ public class RequestData implements HandlerInterceptor {
         return MDC.get(GROUP_HEADER);
     }
 
+    public String[] groupsArray() {
+        return groups().split(",");
+    }
+
 }

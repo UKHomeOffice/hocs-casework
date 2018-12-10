@@ -19,6 +19,12 @@ import org.springframework.context.annotation.Profile;
 @Profile({"local"})
 public class LocalStackConfiguration {
 
+
+    @Bean("auditSqsClient")
+    public AmazonSQS auditSqsClient() {
+        return sqsClient();
+    }
+
     private final AWSCredentialsProvider awsCredentialsProvider = new AWSCredentialsProvider() {
 
         @Override
