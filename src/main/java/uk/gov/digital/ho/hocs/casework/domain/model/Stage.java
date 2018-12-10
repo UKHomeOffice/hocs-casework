@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
@@ -31,8 +30,9 @@ public class Stage implements Serializable {
     @Column(name = "created")
     private LocalDateTime created;
 
+    @Getter
     @Column(name = "type")
-    private String type;
+    private String stageType;
 
     @Getter
     @Column(name = "deadline")
@@ -65,7 +65,7 @@ public class Stage implements Serializable {
     @Column(name = "data", insertable = false, updatable = false)
     private String data;
 
-    public Stage(UUID caseUUID, StageType stageType, UUID teamUUID, LocalDate deadline) {
+    public Stage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline) {
         if (caseUUID == null || stageType == null) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
         }
@@ -73,13 +73,9 @@ public class Stage implements Serializable {
         this.uuid = UUID.randomUUID();
         this.created = LocalDateTime.now();
         this.caseUUID = caseUUID;
-        this.type = stageType.toString();
+        this.stageType = stageType;
         setDeadline(deadline);
         setTeam(teamUUID);
-    }
-
-    public StageType getStageType() {
-        return StageType.valueOf(this.type);
     }
 
     public StageStatusType getStageStatusType() {

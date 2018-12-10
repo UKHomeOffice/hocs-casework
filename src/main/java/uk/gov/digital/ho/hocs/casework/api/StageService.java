@@ -3,9 +3,9 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
@@ -40,17 +40,8 @@ public class StageService {
         }
     }
 
-    public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
-        Stage stage = getStage(caseUUID, stageUUID);
-        return stage.getUserUUID();
-    }
-
-    public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
-        Stage stage = getStage(caseUUID, stageUUID);
-        return stage.getTeamUUID();
-    }
-
-    public Stage createStage(UUID caseUUID, StageType stageType, UUID teamUUID, LocalDate deadline) {
+    @Transactional
+    public Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline) {
         Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
         stageRepository.save(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
@@ -62,6 +53,16 @@ public class StageService {
         stage.setDeadline(deadline);
         stageRepository.save(stage);
         log.info("Set Stage Deadline: {} ({}) for Case {}", stageUUID, deadline, caseUUID, value(EVENT, STAGE_DEADLINE_UPDATED));
+    }
+
+    public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        return stage.getUserUUID();
+    }
+
+    public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        return stage.getTeamUUID();
     }
 
     public void updateTeam(UUID caseUUID, UUID stageUUID, UUID teamUUID) {

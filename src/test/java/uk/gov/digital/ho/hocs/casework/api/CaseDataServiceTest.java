@@ -104,12 +104,12 @@ public class CaseDataServiceTest {
         Set<String> filterFields =new HashSet<String>(){{ add("TEMPCReference"); }};
 
         Set<Stage> activeStages = new HashSet<Stage>(){{
-            add(new Stage(UUID.randomUUID(), StageType.DCU_DTEN_COPY_NUMBER_TEN,UUID.randomUUID(), LocalDate.now()));
+            add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now()));
         }};
 
-        Map<StageType, LocalDate> deadlines = new HashMap<StageType, LocalDate>(){{
-            put(StageType.DCU_DTEN_COPY_NUMBER_TEN, LocalDate.now().plusDays(10));
-            put(StageType.DCU_DTEN_DATA_INPUT, LocalDate.now().plusDays(20));
+        Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
+            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10));
+            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
         }};
         Correspondent correspondent = new  Correspondent(caseData.getUuid(),CorrespondentType.CORRESPONDENT, "some name,",
                 new Address("","","","",""), "12345","some email", "some ref");
@@ -147,12 +147,12 @@ public class CaseDataServiceTest {
         }};
 
         Set<Stage> activeStages = new HashSet<Stage>() {{
-            add(new Stage(UUID.randomUUID(), StageType.DCU_DTEN_COPY_NUMBER_TEN, UUID.randomUUID(), LocalDate.now()));
+            add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now()));
         }};
 
-        Map<StageType, LocalDate> deadlines = new HashMap<StageType, LocalDate>() {{
-            put(StageType.DCU_DTEN_COPY_NUMBER_TEN, LocalDate.now().plusDays(10));
-            put(StageType.DCU_DTEN_DATA_INPUT, LocalDate.now().plusDays(20));
+        Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
+            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10));
+            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
         }};
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
@@ -185,7 +185,7 @@ public class CaseDataServiceTest {
         }};
 
         Set<Stage> activeStages = new HashSet<Stage>(){{
-            add(new Stage(UUID.randomUUID(), StageType.DCU_DTEN_COPY_NUMBER_TEN,UUID.randomUUID(), LocalDate.now()));
+            add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now()));
         }};
 
         Map<String, String> additionalData = new HashMap<String, String>(){{
@@ -197,9 +197,9 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, additionalData, objectMapper,caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
 
-        Map<StageType, LocalDate> deadlines = new HashMap<StageType, LocalDate>(){{
-            put(StageType.DCU_DTEN_COPY_NUMBER_TEN, LocalDate.now().plusDays(10));
-            put(StageType.DCU_DTEN_DATA_INPUT, LocalDate.now().plusDays(20));
+        Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
+            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10));
+            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
         }};
 
         Correspondent correspondent = new  Correspondent(caseData.getUuid(),CorrespondentType.CORRESPONDENT, "some name,",

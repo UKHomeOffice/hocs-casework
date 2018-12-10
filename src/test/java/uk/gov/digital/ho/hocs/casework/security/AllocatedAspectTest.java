@@ -11,7 +11,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -54,7 +53,7 @@ public class AllocatedAspectTest {
     @Test
     public void shouldCallCollaboratorsForUser() throws Throwable {
 
-        Stage stage = new Stage(UUID.randomUUID(), StageType.DCU_DTEN_DATA_INPUT, teamId, LocalDate.now());
+        Stage stage = new Stage(UUID.randomUUID(), "DCU_DTEN_DATA_INPUT", teamId, LocalDate.now());
         stage.setUser(userId);
 
         Object[] args = new Object[2];
@@ -96,7 +95,7 @@ public class AllocatedAspectTest {
     @Test
     public void shouldProceedIfUserIsAllocatedToCase() throws Throwable {
 
-        Stage stage = new Stage(UUID.randomUUID(), StageType.DCU_DTEN_DATA_INPUT, teamId, LocalDate.now());
+        Stage stage = new Stage(UUID.randomUUID(), "DCU_DTEN_DATA_INPUT", teamId, LocalDate.now());
         stage.setUser(userId);
 
         Object[] args = new Object[2];
@@ -118,6 +117,7 @@ public class AllocatedAspectTest {
         Object[] args = new Object[2];
         args[0] = caseUUID;
         args[1] = stageUUID;
+
         when(stageService.getStageTeam(caseUUID, stageUUID)).thenReturn(teamId);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.TEAM);
