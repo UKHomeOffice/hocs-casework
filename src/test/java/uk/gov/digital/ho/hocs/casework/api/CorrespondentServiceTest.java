@@ -5,11 +5,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
 import java.util.HashSet;
@@ -32,11 +30,11 @@ public class CorrespondentServiceTest {
     }
 
     @Test
-    public void shouldGetCorrespondents() throws EntityNotFoundException {
+    public void shouldGetCorrespondents() throws ApplicationExceptions.EntityNotFoundException {
         HashSet<Correspondent> correspondentData = new HashSet<>();
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, CorrespondentType.CORRESPONDENT, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
 
         correspondentData.add(correspondent);
 
@@ -49,7 +47,7 @@ public class CorrespondentServiceTest {
         verifyNoMoreInteractions(correspondentRepository);
     }
 
-    @Test(expected = EntityNotFoundException.class)
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetCorrespondentsNotFoundException() {
 
         when(correspondentRepository.findAllByCaseUUID(caseUUID)).thenReturn(null);
@@ -64,7 +62,7 @@ public class CorrespondentServiceTest {
 
         try {
             correspondentService.getCorrespondents(caseUUID);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -75,7 +73,7 @@ public class CorrespondentServiceTest {
     }
 
     @Test
-    public void shouldNotGetCorrespondentsMissingUUIDException() throws EntityNotFoundException {
+    public void shouldNotGetCorrespondentsMissingUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
         correspondentService.getCorrespondents(null);
 
@@ -85,26 +83,29 @@ public class CorrespondentServiceTest {
     }
 
     @Test
-    public void shouldCreateCorrespondent() throws EntityCreationException {
+    public void shouldCreateCorrespondent() throws ApplicationExceptions.EntityCreationException {
 
-        correspondentService.createCorrespondent(caseUUID, CorrespondentType.CORRESPONDENT, "anyFullName", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
+        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+        correspondentService.createCorrespondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
 
         verify(correspondentRepository, times(1)).save(any(Correspondent.class));
 
         verifyNoMoreInteractions(correspondentRepository);
     }
 
-    @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateCorrespondentMissingCaseUUIDException() throws EntityCreationException {
-        correspondentService.createCorrespondent(null, CorrespondentType.CORRESPONDENT, "anyFullName", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void shouldNotCreateCorrespondentMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
+        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+        correspondentService.createCorrespondent(null, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
     }
 
     @Test
     public void shouldNotCreateCorrespondentMissingCaseUUID() {
 
         try {
-            correspondentService.createCorrespondent(null, CorrespondentType.CORRESPONDENT, "anyFullName", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
-        } catch (EntityCreationException e) {
+            Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+            correspondentService.createCorrespondent(null, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
 
@@ -112,17 +113,19 @@ public class CorrespondentServiceTest {
 
     }
 
-    @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateCorrespondentMissingCorrespondentTypeException() throws EntityCreationException {
-        correspondentService.createCorrespondent(caseUUID, null, "anyFullName", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void shouldNotCreateCorrespondentMissingCorrespondentTypeException() throws ApplicationExceptions.EntityCreationException {
+        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+        correspondentService.createCorrespondent(caseUUID, null, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
     }
 
     @Test
     public void shouldNotCreateCorrespondentMissingCorrespondentType() {
 
         try {
-            correspondentService.createCorrespondent(caseUUID, null, "anyFullName", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
-        } catch (EntityCreationException e) {
+            Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+            correspondentService.createCorrespondent(caseUUID, null, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
 
@@ -131,10 +134,10 @@ public class CorrespondentServiceTest {
     }
 
     @Test
-    public void shouldGetCorrespondent() throws EntityNotFoundException {
+    public void shouldGetCorrespondent() throws ApplicationExceptions.EntityNotFoundException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, CorrespondentType.CORRESPONDENT, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
 
@@ -146,7 +149,7 @@ public class CorrespondentServiceTest {
 
     }
 
-    @Test(expected = EntityNotFoundException.class)
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetCorrespondentNotFoundException() {
 
         when(correspondentRepository.findByUUID(caseUUID, correspondentUUID)).thenReturn(null);
@@ -161,7 +164,7 @@ public class CorrespondentServiceTest {
 
         try {
             correspondentService.getCorrespondent(caseUUID, correspondentUUID);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -170,8 +173,8 @@ public class CorrespondentServiceTest {
         verifyNoMoreInteractions(correspondentRepository);
     }
 
-    @Test(expected = EntityNotFoundException.class)
-    public void shouldNotGetCorrespondentMissingCaseUUIDException() throws EntityNotFoundException {
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotGetCorrespondentMissingCaseUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
         correspondentService.getCorrespondent(null, correspondentUUID);
 
@@ -182,7 +185,7 @@ public class CorrespondentServiceTest {
 
         try {
             correspondentService.getCorrespondent(null, correspondentUUID);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -191,8 +194,8 @@ public class CorrespondentServiceTest {
         verifyNoMoreInteractions(correspondentRepository);
     }
 
-    @Test(expected = EntityNotFoundException.class)
-    public void shouldNotGetCorrespondentMissingCorrespondentUUIDException() throws EntityNotFoundException {
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotGetCorrespondentMissingCorrespondentUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
         correspondentService.getCorrespondent(caseUUID, null);
 
@@ -203,7 +206,7 @@ public class CorrespondentServiceTest {
 
         try {
             correspondentService.getPrimaryCorrespondent(caseUUID);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -213,10 +216,10 @@ public class CorrespondentServiceTest {
     }
 
     @Test
-    public void shouldGetCaseWithValidParams() throws EntityNotFoundException {
+    public void shouldGetCaseWithValidParams() throws ApplicationExceptions.EntityNotFoundException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, CorrespondentType.CORRESPONDENT, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
 
         when(correspondentRepository.getPrimaryCorrespondent(correspondent.getCaseUUID())).thenReturn(correspondent);
 
@@ -228,7 +231,7 @@ public class CorrespondentServiceTest {
 
     }
 
-    @Test(expected = EntityNotFoundException.class)
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetPrimaryCorrespondentNotFoundException() {
 
         when(correspondentRepository.getPrimaryCorrespondent(caseUUID)).thenReturn(null);
@@ -243,7 +246,7 @@ public class CorrespondentServiceTest {
 
         try {
             correspondentService.getPrimaryCorrespondent(caseUUID);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -252,8 +255,8 @@ public class CorrespondentServiceTest {
         verifyNoMoreInteractions(correspondentRepository);
     }
 
-    @Test(expected = EntityNotFoundException.class)
-    public void shouldNotGetPrimaryCorrespondentMissingCaseUUIDException() throws EntityNotFoundException {
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotGetPrimaryCorrespondentMissingCaseUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
         correspondentService.getPrimaryCorrespondent(null);
 
@@ -264,7 +267,7 @@ public class CorrespondentServiceTest {
 
         try {
             correspondentService.getPrimaryCorrespondent(null);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 

@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -14,7 +14,7 @@ public class CorrespondentTest {
     public void getCorrespondent() {
 
         UUID caseUUID = UUID.randomUUID();
-        CorrespondentType type = CorrespondentType.CORRESPONDENT;
+        String type = "CORRESPONDENT";
         String fullName = "anyFullName";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
@@ -40,10 +40,10 @@ public class CorrespondentTest {
     }
 
 
-    @Test(expected = EntityCreationException.class)
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getCorrespondentNullCaseUUID() {
 
-        CorrespondentType type = CorrespondentType.CORRESPONDENT;
+        String type = "CORRESPONDENT";
         String fullName = "anyFullName";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
@@ -54,7 +54,7 @@ public class CorrespondentTest {
 
     }
 
-    @Test(expected = EntityCreationException.class)
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getCorrespondentNullType() {
 
         UUID caseUUID = UUID.randomUUID();

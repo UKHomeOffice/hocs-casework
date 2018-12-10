@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -21,7 +20,7 @@ public class CorrespondentDto {
     private LocalDateTime created;
 
     @JsonProperty("type")
-    private CorrespondentType type;
+    private String type;
 
     @JsonProperty("caseUUID")
     private UUID caseUUID;
@@ -29,20 +28,8 @@ public class CorrespondentDto {
     @JsonProperty("fullname")
     private String fullname;
 
-    @JsonProperty("postcode")
-    private String postcode;
-
-    @JsonProperty("address1")
-    private String address1;
-
-    @JsonProperty("address2")
-    private String address2;
-
-    @JsonProperty("address3")
-    private String address3;
-
-    @JsonProperty("country")
-    private String country;
+    @JsonProperty("address")
+    private AddressDto address;
 
     @JsonProperty("telephone")
     private String telephone;
@@ -60,11 +47,7 @@ public class CorrespondentDto {
                 correspondent.getCorrespondentType(),
                 correspondent.getCaseUUID(),
                 correspondent.getFullName(),
-                correspondent.getPostcode(),
-                correspondent.getAddress1(),
-                correspondent.getAddress2(),
-                correspondent.getAddress3(),
-                correspondent.getCountry(),
+                AddressDto.from(correspondent),
                 correspondent.getTelephone(),
                 correspondent.getEmail(),
                 correspondent.getReference()

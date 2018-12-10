@@ -1,8 +1,10 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 @Getter
+@EqualsAndHashCode
 public class Address {
 
     private String postcode;

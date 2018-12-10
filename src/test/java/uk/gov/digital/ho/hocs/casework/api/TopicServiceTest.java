@@ -5,8 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.domain.repository.TopicDataRepository;
 
@@ -32,7 +31,7 @@ public class TopicServiceTest {
     }
 
     @Test
-    public void shouldGetTopics() throws EntityNotFoundException {
+    public void shouldGetTopics() throws ApplicationExceptions.EntityNotFoundException {
         HashSet<Topic> topicData = new HashSet<>();
         topicData.add(new Topic(caseUUID, topicName, topicNameUUID));
 
@@ -45,7 +44,7 @@ public class TopicServiceTest {
         verifyNoMoreInteractions(topicRepository);
     }
 
-    @Test(expected = EntityNotFoundException.class)
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetTopicsNotFoundException() {
 
         when(topicRepository.findAllByCaseUUID(caseUUID)).thenReturn(null);
@@ -60,7 +59,7 @@ public class TopicServiceTest {
 
         try {
             topicService.getTopics(caseUUID);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -71,7 +70,7 @@ public class TopicServiceTest {
     }
 
     @Test
-    public void shouldNotGetTopicsMissingUUIDException() throws EntityNotFoundException {
+    public void shouldNotGetTopicsMissingUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
         topicService.getTopics(null);
 
@@ -81,7 +80,7 @@ public class TopicServiceTest {
     }
 
     @Test
-    public void shouldCreateTopic() throws EntityCreationException {
+    public void shouldCreateTopic() throws ApplicationExceptions.EntityCreationException {
 
         topicService.createTopic(caseUUID, topicName, topicNameUUID);
 
@@ -90,8 +89,8 @@ public class TopicServiceTest {
         verifyNoMoreInteractions(topicRepository);
     }
 
-    @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateTopicMissingCaseUUIDException() throws EntityCreationException {
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void shouldNotCreateTopicMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
         topicService.createTopic(null, topicName, topicNameUUID);
     }
 
@@ -100,7 +99,7 @@ public class TopicServiceTest {
 
         try {
             topicService.createTopic(null, topicName, topicNameUUID);
-        } catch (EntityCreationException e) {
+        } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
 
@@ -108,8 +107,8 @@ public class TopicServiceTest {
 
     }
 
-    @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateTopicMissingTopicTypeException() throws EntityCreationException {
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void shouldNotCreateTopicMissingTopicTypeException() throws ApplicationExceptions.EntityCreationException {
         topicService.createTopic(caseUUID, null, topicNameUUID);
     }
 
@@ -118,7 +117,7 @@ public class TopicServiceTest {
 
         try {
             topicService.createTopic(caseUUID, null, topicNameUUID);
-        } catch (EntityCreationException e) {
+        } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
 
@@ -126,8 +125,8 @@ public class TopicServiceTest {
 
     }
 
-    @Test(expected = EntityCreationException.class)
-    public void shouldNotCreateTopicMissingTextException() throws EntityCreationException {
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void shouldNotCreateTopicMissingTextException() throws ApplicationExceptions.EntityCreationException {
         topicService.createTopic(caseUUID, topicName, null);
     }
 
@@ -136,7 +135,7 @@ public class TopicServiceTest {
 
         try {
             topicService.createTopic(caseUUID, topicName, null);
-        } catch (EntityCreationException e) {
+        } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
 
@@ -145,7 +144,7 @@ public class TopicServiceTest {
     }
 
     @Test
-    public void shouldGetTopic() throws EntityNotFoundException {
+    public void shouldGetTopic() throws ApplicationExceptions.EntityNotFoundException {
 
         Topic topic = new Topic(caseUUID, topicName, topicNameUUID);
 
@@ -159,7 +158,7 @@ public class TopicServiceTest {
 
     }
 
-    @Test(expected = EntityNotFoundException.class)
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetTopicNotFoundException() {
 
         when(topicRepository.findByUUID(caseUUID, topicUUID)).thenReturn(null);
@@ -174,7 +173,7 @@ public class TopicServiceTest {
 
         try {
             topicService.getTopic(caseUUID, topicUUID);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -183,8 +182,8 @@ public class TopicServiceTest {
         verifyNoMoreInteractions(topicRepository);
     }
 
-    @Test(expected = EntityNotFoundException.class)
-    public void shouldNotGetTopicMissingCaseUUIDException() throws EntityNotFoundException {
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotGetTopicMissingCaseUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
         topicService.getTopic(null, topicUUID);
 
@@ -195,7 +194,7 @@ public class TopicServiceTest {
 
         try {
             topicService.getTopic(null, topicUUID);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -204,8 +203,8 @@ public class TopicServiceTest {
         verifyNoMoreInteractions(topicRepository);
     }
 
-    @Test(expected = EntityNotFoundException.class)
-    public void shouldNotGetTopicMissingTopicUUIDException() throws EntityNotFoundException {
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotGetTopicMissingTopicUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
         topicService.getTopic(caseUUID, null);
 
@@ -216,7 +215,7 @@ public class TopicServiceTest {
 
         try {
             topicService.getPrimaryTopic(caseUUID);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -226,7 +225,7 @@ public class TopicServiceTest {
     }
 
     @Test
-    public void shouldGetCaseWithValidParams() throws EntityNotFoundException {
+    public void shouldGetCaseWithValidParams() throws ApplicationExceptions.EntityNotFoundException {
 
         Topic topic = new Topic(caseUUID, topicName, topicNameUUID);
 
@@ -240,7 +239,7 @@ public class TopicServiceTest {
 
     }
 
-    @Test(expected = EntityNotFoundException.class)
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetPrimaryTopicNotFoundException() {
 
         when(topicRepository.getPrimaryTopic(caseUUID)).thenReturn(null);
@@ -255,7 +254,7 @@ public class TopicServiceTest {
 
         try {
             topicService.getPrimaryTopic(caseUUID);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
@@ -264,8 +263,8 @@ public class TopicServiceTest {
         verifyNoMoreInteractions(topicRepository);
     }
 
-    @Test(expected = EntityNotFoundException.class)
-    public void shouldNotGetPrimaryTopicMissingCaseUUIDException() throws EntityNotFoundException {
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotGetPrimaryTopicMissingCaseUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
         topicService.getPrimaryTopic(null);
 
@@ -276,7 +275,7 @@ public class TopicServiceTest {
 
         try {
             topicService.getPrimaryTopic(null);
-        } catch (EntityNotFoundException e) {
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 

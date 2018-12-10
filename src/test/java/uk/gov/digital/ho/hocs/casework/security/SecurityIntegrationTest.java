@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.security;
 
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,13 +12,17 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -38,6 +41,7 @@ public class SecurityIntegrationTest {
     CaseDataService caseDataService;
 
     String userId = UUID.randomUUID().toString();
+    CaseDataType caseDataType = new CaseDataType("MIN", "a1");
 
     @Autowired
     ObjectMapper mapper;
@@ -50,8 +54,12 @@ public class SecurityIntegrationTest {
             put("key","value");
         }};
 
-        CaseData caseData = new CaseData(CaseDataType.MIN,123456L, caseSubData, mapper);
+
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now(), LocalDate.now());
+
         when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
+
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/MIN/WRITE," +
@@ -62,16 +70,10 @@ public class SecurityIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenNotInCaseTypeGroup() {
+    public void shouldReturnForbiddenWhenNotInCaseTypeGroup() {
         UUID caseUUID = UUID.randomUUID();
 
-
-        Map<String,String> caseSubData = new HashMap<String, String>(){{
-            put("key","value");
-        }};
-
-        CaseData caseData = new CaseData(CaseDataType.MIN,123456L, caseSubData, new ObjectMapper());
-        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");
@@ -84,7 +86,10 @@ public class SecurityIntegrationTest {
     @Test
     public void shouldReturnNotFoundIfCaseUUIDNotFound() {
         UUID caseUUID = UUID.randomUUID();
-        when(caseDataService.getCase(caseUUID)).thenThrow(new EntityNotFoundException("Not found"));
+
+        when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("TRO");
+
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");
         HttpEntity httpEntity = new HttpEntity(headers);

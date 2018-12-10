@@ -11,7 +11,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -37,49 +36,47 @@ public class UserPermissionsServiceTest {
 
     @Test
     public void shouldParseValidUserGroups() {
-        String groups =
-                "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
+        String[] groups =
+                ("/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
                         "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/WRITE," +
                         "/DCU/f1825c7d-baff-4c09-8056-2166760ccbd2/MIN/WRITE," +
                         "/ABC/1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d/MIN/WRITE," +
-                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER";
+                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER").split(",");
 
-        when(requestData.groups()).thenReturn(groups);
+        when(requestData.groupsArray()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Map<String, Map<String, Map<CaseDataType,Set<AccessLevel>>>> permissions = service.getUserPermission();
-        assertThat(permissions.size()).isEqualTo(2);
+        assertThat(service.getUserPermission().count()).isEqualTo(2);
     }
 
 
     @Test
     public void shouldIgnoreInvalidUserGroups() {
-        String groups =
-                "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
-                        "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/," +
-                        "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01," +
+        String[] groups =
+                ("/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
+                        "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/WRITE," +
+                        "/DCU/f1825c7d-baff-4c09-8056-2166760ccbd2/MIN/WRITE," +
                         "/ABC/," +
-                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER";
+                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER").split(",");
 
-        when(requestData.groups()).thenReturn(groups);
+        when(requestData.groupsArray()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Map<String, Map<String, Map<CaseDataType,Set<AccessLevel>>>> permissions = service.getUserPermission();
-        assertThat(permissions.size()).isEqualTo(2);
+        assertThat(service.getUserPermission().count()).isEqualTo(2);
     }
 
 
 
     @Test
     public void shouldGetPermissionsForCaseType() {
-        String groups =
-                "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
+        String[] groups =
+                ("/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
                         "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/WRITE," +
                         "/DCU/f1825c7d-baff-4c09-8056-2166760ccbd2/MIN/WRITE," +
                         "/ABC/1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d/MIN/WRITE," +
-                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER";
+                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER").split(",");
 
-        when(requestData.groups()).thenReturn(groups);
+        when(requestData.groupsArray()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Set<AccessLevel> userAccessLevels = service.getUserAccessLevels(CaseDataType.MIN);
+        Set<AccessLevel> userAccessLevels = service.getUserAccessLevels(new CaseDataType("MIN", "MIN"));
         assertThat(userAccessLevels.size()).isEqualTo(2);
         assertThat(userAccessLevels).contains(AccessLevel.WRITE);
         assertThat(userAccessLevels).contains(AccessLevel.OWNER);
@@ -88,14 +85,14 @@ public class UserPermissionsServiceTest {
 
     @Test
     public void shouldGetUnitsForUser() {
-        String groups =
-                "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
+        String[] groups =
+                ("/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
                         "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/WRITE," +
                         "/DCU/f1825c7d-baff-4c09-8056-2166760ccbd2/MIN/WRITE," +
                         "/ABC/1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d/MIN/WRITE," +
-                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER";
+                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER").split(",");
 
-        when(requestData.groups()).thenReturn(groups);
+        when(requestData.groupsArray()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
         Set<String> units = service.getUserUnits();
         assertThat(units).contains("DCU");
@@ -105,14 +102,14 @@ public class UserPermissionsServiceTest {
 
     @Test
     public void shouldGetTeamsForUser() {
-        String groups =
-                "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
+        String[] groups =
+                ("/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
                         "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/WRITE," +
                         "/DCU/f1825c7d-baff-4c09-8056-2166760ccbd2/MIN/WRITE," +
                         "/ABC/1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d/MIN/WRITE," +
-                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER";
+                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER").split(",");
 
-        when(requestData.groups()).thenReturn(groups);
+        when(requestData.groupsArray()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
         Set<UUID> teams = service.getUserTeams();
         assertThat(teams).contains(UUID.fromString("1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d"));
@@ -122,17 +119,17 @@ public class UserPermissionsServiceTest {
 
     @Test
     public void shouldGetCaseTypesForUser() {
-        String groups =
-                "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
+        String[] groups =
+                ("/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/READ," +
                         "/DCU/1325fe16-b864-42c7-85c2-7cab2863fe01/TRO/WRITE," +
                         "/DCU/f1825c7d-baff-4c09-8056-2166760ccbd2/MIN/WRITE," +
                         "/ABC/1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d/MIN/WRITE," +
-                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER";
+                        "/ABC/1325fe16-b864-42c7-85c2-7cab2863fe01/MIN/OWNER").split(",");
 
-        when(requestData.groups()).thenReturn(groups);
+        when(requestData.groupsArray()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Set<CaseDataType> caseTypes = service.getUserCaseTypes();
-        assertThat(caseTypes).contains(CaseDataType.TRO);
-        assertThat(caseTypes).contains(CaseDataType.MIN);
+        Set<String> caseTypes = service.getUserCaseTypes();
+        assertThat(caseTypes.stream().anyMatch(c -> c.equals("TRO"))).isTrue();
+        assertThat(caseTypes.stream().anyMatch(c -> c.equals("MIN"))).isTrue();
     }
 }

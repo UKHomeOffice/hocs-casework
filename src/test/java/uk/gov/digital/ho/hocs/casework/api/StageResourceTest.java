@@ -12,7 +12,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStagesResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.StageDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -30,7 +29,7 @@ public class StageResourceTest {
     private final UUID userUUID = UUID.randomUUID();
     private final UUID stageUUID = UUID.randomUUID();
     private final LocalDate deadline = LocalDate.now();
-    private final StageType stageType = StageType.DCU_MIN_MARKUP;
+    private final String stageType = "DCU_MIN_MARKUP";
     @Mock
     private StageService stageService;
     private StageResource stageResource;

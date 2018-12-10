@@ -2,13 +2,15 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
 
 @NoArgsConstructor
 @Entity
@@ -28,8 +30,9 @@ public class Stage implements Serializable {
     @Column(name = "created")
     private LocalDateTime created;
 
+    @Getter
     @Column(name = "type")
-    private String type;
+    private String stageType;
 
     @Getter
     @Column(name = "deadline")
@@ -54,40 +57,29 @@ public class Stage implements Serializable {
     @Column(name = "case_reference", insertable = false, updatable = false)
     private String caseReference;
 
+    @Getter
     @Column(name = "case_type", insertable = false, updatable = false)
-    private String caseType;
+    private String caseDataType;
 
     @Getter
     @Column(name = "data", insertable = false, updatable = false)
     private String data;
 
-    public Stage(UUID caseUUID, StageType stageType, UUID teamUUID, LocalDate deadline) {
+    public Stage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline) {
         if (caseUUID == null || stageType == null) {
-            throw new EntityCreationException("Cannot create Stage (%s, %s).", caseUUID, stageType);
+            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
         }
 
         this.uuid = UUID.randomUUID();
         this.created = LocalDateTime.now();
         this.caseUUID = caseUUID;
-        this.type = stageType.toString();
+        this.stageType = stageType;
         setDeadline(deadline);
         setTeam(teamUUID);
     }
 
-    public StageType getStageType() {
-        return StageType.valueOf(this.type);
-    }
-
     public StageStatusType getStageStatusType() {
         return StageStatusType.valueOf(this.status);
-    }
-
-    public CaseDataType getCaseDataType() {
-        if (this.caseType == null) {
-            return null;
-        } else {
-            return CaseDataType.valueOf(this.caseType);
-        }
     }
 
     public void setDeadline(LocalDate deadline) {

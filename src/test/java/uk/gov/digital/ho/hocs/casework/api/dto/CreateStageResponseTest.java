@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -16,7 +15,7 @@ public class CreateStageResponseTest {
 
 
         UUID caseUUID = UUID.randomUUID();
-        StageType stageType = StageType.DCU_MIN_MARKUP;
+        String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 

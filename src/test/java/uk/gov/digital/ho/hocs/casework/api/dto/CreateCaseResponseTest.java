@@ -5,6 +5,7 @@ import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -15,12 +16,13 @@ public class CreateCaseResponseTest {
     @Test
     public void getCreateCaseResponse() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline,caseReceived);
 
         CreateCaseResponse createCaseResponse = CreateCaseResponse.from(caseData);
 
@@ -32,11 +34,13 @@ public class CreateCaseResponseTest {
     @Test
     public void getCreateCaseResponseNull() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
-        ObjectMapper objectMapper = new ObjectMapper();
 
-        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper);
+        ObjectMapper objectMapper = new ObjectMapper();
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper, caseDeadline,caseReceived);
 
         CreateCaseResponse createCaseResponse = CreateCaseResponse.from(caseData);
 

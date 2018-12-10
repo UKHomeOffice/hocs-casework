@@ -6,8 +6,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.*;
+import uk.gov.digital.ho.hocs.casework.api.dto.AddressDto;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseContext;
-import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentType;
+import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 
 import java.util.UUID;
 
@@ -45,7 +46,7 @@ public class CreateCorrespondentRequestTest {
     public void getCompleteStageRequest() {
 
         UUID caseUUID = UUID.randomUUID();
-        CorrespondentType correspondentType = CorrespondentType.CORRESPONDENT;
+        String correspondentType = "CORRESPONDENT";
         String fullname = "anyName";
         String postcode = "anyPostcode";
         String address1 = "anyAddress1";
@@ -56,15 +57,16 @@ public class CreateCorrespondentRequestTest {
         String email = "anyEmail";
         String reference = "anyRef";
 
+        AddressDto addressDto = new AddressDto(postcode,
+                address1,
+                address2,
+                address3,
+                country);
         CreateCorrespondentRequest createCorrespondentRequest =
                 new CreateCorrespondentRequest(caseUUID,
                         correspondentType,
                         fullname,
-                        postcode,
-                        address1,
-                        address2,
-                        address3,
-                        country,
+                        addressDto,
                         telephone,
                         email,
                         reference);
@@ -73,11 +75,11 @@ public class CreateCorrespondentRequestTest {
         assertThat(createCorrespondentRequest.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(createCorrespondentRequest.getType()).isEqualTo(correspondentType);
         assertThat(createCorrespondentRequest.getFullname()).isEqualTo(fullname);
-        assertThat(createCorrespondentRequest.getPostcode()).isEqualTo(postcode);
-        assertThat(createCorrespondentRequest.getAddress1()).isEqualTo(address1);
-        assertThat(createCorrespondentRequest.getAddress2()).isEqualTo(address2);
-        assertThat(createCorrespondentRequest.getAddress3()).isEqualTo(address3);
-        assertThat(createCorrespondentRequest.getCountry()).isEqualTo(country);
+        assertThat(createCorrespondentRequest.getAddress().getPostcode()).isEqualTo(postcode);
+        assertThat(createCorrespondentRequest.getAddress().getAddress1()).isEqualTo(address1);
+        assertThat(createCorrespondentRequest.getAddress().getAddress2()).isEqualTo(address2);
+        assertThat(createCorrespondentRequest.getAddress().getAddress3()).isEqualTo(address3);
+        assertThat(createCorrespondentRequest.getAddress().getCountry()).isEqualTo(country);
         assertThat(createCorrespondentRequest.getTelephone()).isEqualTo(telephone);
         assertThat(createCorrespondentRequest.getEmail()).isEqualTo(email);
         assertThat(createCorrespondentRequest.getReference()).isEqualTo(reference);
@@ -86,7 +88,7 @@ public class CreateCorrespondentRequestTest {
     @Test
     public void shouldCallCollaboratorsExecute() {
         UUID caseUUID = UUID.randomUUID();
-        CorrespondentType correspondentType = CorrespondentType.CORRESPONDENT;
+        String correspondentType = "CORRESPONDENT";
         String fullname = "anyName";
         String postcode = "anyPostcode";
         String address1 = "anyAddress1";
@@ -97,13 +99,19 @@ public class CreateCorrespondentRequestTest {
         String email = "anyEmail";
         String reference = "anyRef";
 
-        doNothing().when(correspondentService).createCorrespondent(caseUUID, correspondentType, fullname, postcode, address1, address2, address3, country, telephone, email, reference);
+        Address address = new Address(postcode, address1, address2, address3, country);
+        doNothing().when(correspondentService).createCorrespondent(caseUUID, correspondentType, fullname, address, telephone, email, reference);
 
-        CreateCorrespondentRequest createCorrespondentRequest = new CreateCorrespondentRequest(caseUUID, correspondentType, fullname, postcode, address1, address2, address3, country, telephone, email, reference);
+        AddressDto addressDto = new AddressDto(postcode,
+                address1,
+                address2,
+                address3,
+                country);
+        CreateCorrespondentRequest createCorrespondentRequest = new CreateCorrespondentRequest(caseUUID, correspondentType, fullname, addressDto, telephone, email, reference);
 
         createCorrespondentRequest.execute(hocsCaseContext);
 
-        verify(correspondentService, times(1)).createCorrespondent(caseUUID, correspondentType, fullname, postcode, address1, address2, address3, country, telephone, email, reference);
+        verify(correspondentService, times(1)).createCorrespondent(eq(caseUUID), eq(correspondentType), eq(fullname), eq(address), eq(telephone), eq(email), eq(reference));
 
         verifyZeroInteractions(caseDataService);
         verifyZeroInteractions(caseNoteService);

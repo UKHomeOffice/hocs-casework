@@ -1,16 +1,16 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-public enum CaseDataType {
-    MIN("MIN"),
-    TRO("TRO"),
-    DTEN("DTEN");
+@Getter
+@AllArgsConstructor
+public class CaseDataType {
 
-    @Getter
-    private String displayValue;
+    @JsonProperty("displayCode")
+    private String displayCode;
 
-    CaseDataType(String value) {
-        displayValue = value;
-    }
+    @JsonProperty("shortCode")
+    private String shortCode;
 }

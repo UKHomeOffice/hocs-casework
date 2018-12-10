@@ -1,22 +1,33 @@
 package uk.gov.digital.ho.hocs.casework.security;
 
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
+
 public interface SecurityExceptions {
     class StageNotAssignedToLoggedInUserException extends RuntimeException {
-        public StageNotAssignedToLoggedInUserException(String s) {
+        LogEvent event;
+        public StageNotAssignedToLoggedInUserException(String s, LogEvent event) {
             super(s);
+            this.event = event;
         }
+        public LogEvent getEvent() {return event;}
     }
 
     class StageNotAssignedToUserTeamException extends RuntimeException {
-        public StageNotAssignedToUserTeamException(String s) {
+        LogEvent event;
+        public StageNotAssignedToUserTeamException(String s, LogEvent event) {
             super(s);
+            this.event = event;
         }
+        public LogEvent getEvent() {return event;}
     }
 
     class PermissionCheckException extends RuntimeException {
-        public PermissionCheckException(String s) {
+        LogEvent event;
+        public PermissionCheckException(String s, LogEvent event) {
             super(s);
+            this.event = event;
         }
+        public LogEvent getEvent() {return event;}
     }
 
 

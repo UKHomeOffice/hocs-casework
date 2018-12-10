@@ -2,8 +2,9 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,78 +16,89 @@ public class CaseDataTest {
 
     @Test
     public void getCaseData() {
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
-
+        assertThat(caseData.getCaseDeadline()).isEqualTo(caseDeadline);
+        assertThat(caseData.getDateReceived()).isEqualTo(caseReceived);
     }
 
     @Test
     public void getCaseDataReferenceFormat() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         long caseNumber = 1234L;
+
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         assertThat(caseData.getReference()).matches("[A-Z]{3,4}/[0-9]{7}/[0-9]{2}");
 
-        assertThat(caseData.getReference()).startsWith(type.getDisplayValue());
+        assertThat(caseData.getReference()).startsWith(type.getDisplayCode());
         assertThat(caseData.getReference()).contains(String.valueOf(caseNumber));
         assertThat(caseData.getReference()).endsWith(String.valueOf(caseData.getCreated().getYear()).substring(2, 4));
 
+        // We encode the type into the UUID for quicker lookup (assuming type data is cached)
+        assertThat(caseData.getUuid().toString()).endsWith(type.getShortCode());
     }
 
-    @Test(expected = EntityCreationException.class)
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getCaseDataNullType() {
 
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-
-        new CaseData(null, caseNumber, data, objectMapper);
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
+        new CaseData(null, caseNumber, data, objectMapper, caseDeadline, caseReceived);
     }
 
-    @Test(expected = EntityCreationException.class)
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getCaseDataNullNumber() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-
-        new CaseData(type, null, data, objectMapper);
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
+        new CaseData(type, null, data, objectMapper, caseDeadline,caseReceived);
     }
 
     @Test
     public void update() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+        assertThat(caseData.getCaseDeadline()).isEqualTo(caseDeadline);
+        assertThat(caseData.getDateReceived()).isEqualTo(caseReceived);
 
         Map<String, String> newData = new HashMap<>();
         newData.put("new", "anyValue");
@@ -98,24 +110,28 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+        assertThat(caseData.getCaseDeadline()).isEqualTo(caseDeadline);
+        assertThat(caseData.getDateReceived()).isEqualTo(caseReceived);
     }
 
 
     @Test
     public void updateWithExistingData() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("old", "anyOldValue");
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         Map<String, String> newData = new HashMap<>();
         newData.put("new", "anyValue");
@@ -131,14 +147,15 @@ public class CaseDataTest {
     @Test
     public void updateWithOverwriteExistingData() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("new", "anyOldValue");
-
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         Map<String, String> newData = new HashMap<>();
         newData.put("new", "anyValue");
@@ -152,14 +169,16 @@ public class CaseDataTest {
     @Test
     public void updateWithEmptyData() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("new", "anyOldValue");
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         Map<String, String> newData = new HashMap<>();
 
@@ -172,14 +191,15 @@ public class CaseDataTest {
     @Test
     public void updateWithNullData() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("new", "anyOldValue");
-
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
         ObjectMapper objectMapper = new ObjectMapper();
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         caseData.update(null, objectMapper);
 
@@ -190,97 +210,105 @@ public class CaseDataTest {
     @Test
     public void shouldUpdatePriority() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
 
         ObjectMapper objectMapper = new ObjectMapper();
-
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+        assertThat(caseData.getCaseDeadline()).isEqualTo(caseDeadline);
 
         caseData.setPriority(true);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(true);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
-
+        assertThat(caseData.getCaseDeadline()).isEqualTo(caseDeadline);
     }
 
     @Test
     public void shouldSetPrimaryCorrespondent() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
 
         ObjectMapper objectMapper = new ObjectMapper();
-
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
         UUID primary = UUID.randomUUID();
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+        assertThat(caseData.getCaseDeadline()).isEqualTo(caseDeadline);
 
         caseData.setPrimaryCorrespondentUUID(primary);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(primary);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+        assertThat(caseData.getCaseDeadline()).isEqualTo(caseDeadline);
 
     }
 
     @Test
     public void updatePriority() {
 
-        CaseDataType type = CaseDataType.MIN;
+        CaseDataType type = new CaseDataType("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
 
         ObjectMapper objectMapper = new ObjectMapper();
-
+        LocalDate caseDeadline = LocalDate.now().plusDays(20);
+        LocalDate caseReceived = LocalDate.now();
         UUID primary = UUID.randomUUID();
 
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline, caseReceived);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+        assertThat(caseData.getCaseDeadline()).isEqualTo(caseDeadline);
 
         caseData.setPrimaryTopicUUID(primary);
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getCaseDataType()).isEqualTo(type);
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isEqualTo(false);
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(primary);
+        assertThat(caseData.getCaseDeadline()).isEqualTo(caseDeadline);
 
     }
 

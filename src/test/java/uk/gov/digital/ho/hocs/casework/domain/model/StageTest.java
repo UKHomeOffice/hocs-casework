@@ -2,7 +2,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,7 +16,7 @@ public class StageTest {
     public void getStage() {
 
         UUID caseUUID = UUID.randomUUID();
-        StageType stageType = StageType.DCU_MIN_MARKUP;
+        String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
@@ -36,10 +36,10 @@ public class StageTest {
         assertThat(stage.getData()).isEqualTo(null);
     }
 
-    @Test(expected = EntityCreationException.class)
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getStageNullCaseUUID() {
 
-        StageType stageType = StageType.DCU_MIN_MARKUP;
+        String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
@@ -47,7 +47,7 @@ public class StageTest {
 
     }
 
-    @Test(expected = EntityCreationException.class)
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getStageNullType() {
 
         UUID caseUUID = UUID.randomUUID();
