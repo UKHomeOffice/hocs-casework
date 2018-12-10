@@ -45,6 +45,7 @@ class StageResource {
     public ResponseEntity allocateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateStageRequest request) {
         stageService.updateUser(caseUUID, stageUUID, request.getUserUUID());
         return ResponseEntity.ok().build();
+    }
 
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user")
     public ResponseEntity<UUID> getStageUser(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
