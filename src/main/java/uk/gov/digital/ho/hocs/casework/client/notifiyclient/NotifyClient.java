@@ -38,12 +38,13 @@ public class NotifyClient {
         }
     }
 
-    public void sendUserEmail(UUID caseUUID, UUID stageUUID, UUID userUUID, String caseReference, NotifyType notifyType) {
+    public void sendUserEmail(UUID caseUUID, UUID stageUUID, UUID userUUID, String caseReference, String allocationType) {
         String emailAddress = "SOME USER EMAIL";
+
         sendEmail(caseUUID, stageUUID, emailAddress, caseReference, notifyType);
     }
 
-    private void sendEmail(UUID caseUUID, UUID stageUUID, String emailAddress, String caseReference, NotifyType notifyType) {
+    private void sendEmail(UUID caseUUID, UUID stageUUID, String emailAddress, String caseReference, String allocationType) {
         String link = String.format("%s/case/%s/stage/%s", URL, caseUUID, stageUUID);
         Map<String, String> personalisation = new HashMap<>();
         personalisation.put("link", link);
