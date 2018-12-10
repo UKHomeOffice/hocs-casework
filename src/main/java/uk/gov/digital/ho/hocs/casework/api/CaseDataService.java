@@ -53,7 +53,7 @@ public class CaseDataService {
     public CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
         Long caseNumber = caseDataRepository.getNextSeriesId();
         CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline, dateReceived);
-        auditClient.createCaseAudit(caseData);
+        //auditClient.createCaseAudit(caseData);
         caseDataRepository.save(caseData);
         log.info("Created Case Type: {} UUID: {}", caseType.getDisplayCode(), caseData.getUuid(), value(EVENT, CASE_CREATED));
         return caseData;

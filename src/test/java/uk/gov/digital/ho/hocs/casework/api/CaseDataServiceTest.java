@@ -75,19 +75,19 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(caseDataRepository);
     }
-
-    @Test
-    public void shouldAuditCreateCase() throws ApplicationExceptions.EntityCreationException {
-
-        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-
-        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>(), caseDeadline, caseReceived);
-
-
-        verify(auditClient, times(1)).createCaseAudit(caseData);
-
-        verifyNoMoreInteractions(auditClient);
-    }
+//
+//    @Test
+//    public void shouldAuditCreateCase() throws ApplicationExceptions.EntityCreationException {
+//
+//        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+//
+//        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>(), caseDeadline, caseReceived);
+//
+//
+//        verify(auditClient, times(1)).createCaseAudit(caseData);
+//
+//        verifyNoMoreInteractions(auditClient);
+//    }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
