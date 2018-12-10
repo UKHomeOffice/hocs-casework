@@ -16,7 +16,6 @@ import org.springframework.util.StringUtils;
 @Profile({"sqs"})
 public class SqsConfiguration {
 
-
     @Bean("auditSqsClient")
     public AmazonSQS auditSqsClient(@Value("${audit.aws.sqs.access.key}") String accessKey,
                                    @Value("${audit.aws.sqs.secret.key}") String secretKey,
@@ -24,9 +23,9 @@ public class SqsConfiguration {
         return sqsClient(accessKey, secretKey, region);
     }
 
-    @Bean
-    public AmazonSQS sqsClient(@Value("${aws.sqs.access.key}") String accessKey,
-                               @Value("${aws.sqs.secret.key}") String secretKey,
+    @Bean("caseSqsClient")
+    public AmazonSQS sqsClient(@Value("${case.aws.sqs.access.key}") String accessKey,
+                               @Value("${case.aws.sqs.secret.key}") String secretKey,
                                @Value("${aws.sqs.region}") String region) {
 
         if (StringUtils.isEmpty(accessKey)) {

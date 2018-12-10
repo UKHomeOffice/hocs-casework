@@ -43,7 +43,7 @@ public class AuditClient {
         this.requestData = requestData;
     }
 
-    public void createCaseAudit(CaseData caseData) throws ApplicationExceptions.EntityCreationException {
+    public void createCaseAudit(CaseData caseData) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
         CreateAuditRequest request = new CreateAuditRequest(
                 requestData.correlationId(),
