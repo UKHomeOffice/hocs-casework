@@ -6,10 +6,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.auditClient.AuditClient;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityNotFoundException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.auditClient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -79,11 +77,12 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldAuditCreateCase() throws EntityCreationException {
+    public void shouldAuditCreateCase() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
-        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>());
+        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>(), caseDeadline, caseReceived);
+
 
         verify(auditClient, times(1)).createCaseAudit(caseData);
 

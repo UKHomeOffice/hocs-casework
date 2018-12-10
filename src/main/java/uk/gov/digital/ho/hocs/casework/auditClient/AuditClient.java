@@ -7,14 +7,14 @@ import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.auditClient.dto.CreateAuditRequest;
-import uk.gov.digital.ho.hocs.casework.domain.exception.EntityCreationException;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
-
 import java.time.LocalDateTime;
+
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUDIT_FAILED;
 
 @Slf4j
 @Component
@@ -43,7 +43,7 @@ public class AuditClient {
         this.requestData = requestData;
     }
 
-    public void createCaseAudit(CaseData caseData) throws EntityCreationException {
+    public void createCaseAudit(CaseData caseData) throws ApplicationExceptions.EntityCreationException {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
         CreateAuditRequest request = new CreateAuditRequest(
                 requestData.correlationId(),
@@ -57,7 +57,7 @@ public class AuditClient {
             producerTemplate.sendBody(auditQueue, objectMapper.writeValueAsString(request));
             log.info("Create audit for Create Case, Case UUID: {}, correlationID: {}, UserID: {}", caseData.getUuid(), requestData.correlationId(), requestData.userId());
         } catch (JsonProcessingException e) {
-            throw new EntityCreationException("Could not create audit; %s", e.toString());
+            throw new ApplicationExceptions.EntityCreationException(String.format("Could not create audit; %s", e.toString()), AUDIT_FAILED);
         }
     }
 }
