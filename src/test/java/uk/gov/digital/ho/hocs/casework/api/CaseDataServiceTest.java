@@ -147,12 +147,12 @@ public class CaseDataServiceTest {
         }};
 
         Set<Stage> activeStages = new HashSet<Stage>() {{
-            add(new Stage(UUID.randomUUID(), StageType.DCU_DTEN_COPY_NUMBER_TEN, UUID.randomUUID(), LocalDate.now()));
+            add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now()));
         }};
 
-        Map<StageType, LocalDate> deadlines = new HashMap<StageType, LocalDate>() {{
-            put(StageType.DCU_DTEN_COPY_NUMBER_TEN, LocalDate.now().plusDays(10));
-            put(StageType.DCU_DTEN_DATA_INPUT, LocalDate.now().plusDays(20));
+        Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
+            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10));
+            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
         }};
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);

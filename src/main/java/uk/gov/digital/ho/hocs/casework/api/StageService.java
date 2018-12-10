@@ -40,7 +40,6 @@ public class StageService {
         }
     }
 
-
     @Transactional
     public Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline) {
         Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
@@ -54,6 +53,16 @@ public class StageService {
         stage.setDeadline(deadline);
         stageRepository.save(stage);
         log.info("Set Stage Deadline: {} ({}) for Case {}", stageUUID, deadline, caseUUID, value(EVENT, STAGE_DEADLINE_UPDATED));
+    }
+
+    public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        return stage.getUserUUID();
+    }
+
+    public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        return stage.getTeamUUID();
     }
 
     public void updateTeam(UUID caseUUID, UUID stageUUID, UUID teamUUID) {
