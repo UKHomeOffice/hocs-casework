@@ -32,7 +32,7 @@ public class CaseNoteDto {
         return new CaseNoteDto(
                 caseNote.getUuid(),
                 caseNote.getCreated(),
-                caseNote.getCaseNoteType().toString(),
+                caseNote.getCaseNoteType(),
                 caseNote.getCaseUUID(),
                 caseNote.getText());
     }

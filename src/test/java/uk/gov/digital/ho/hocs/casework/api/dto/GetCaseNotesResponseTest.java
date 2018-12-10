@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNoteType;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +15,7 @@ public class GetCaseNotesResponseTest {
     public void getCaseNoteDto() {
 
         UUID caseUUID = UUID.randomUUID();
-        CaseNoteType type = CaseNoteType.MANUAL;
+        String type = "MANUAL";
         String text = "anyText";
 
         CaseNote caseNote = new CaseNote(caseUUID, type, text);

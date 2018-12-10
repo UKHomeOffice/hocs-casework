@@ -6,7 +6,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseContext;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCommand;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNoteType;
 
 import java.util.UUID;
 
@@ -20,13 +19,13 @@ public class CreateCaseNoteRequest extends HocsCommand {
 
     private UUID caseUUID;
 
-    private CaseNoteType caseNoteType;
+    private String caseNoteType;
 
     private String caseNote;
 
     @JsonCreator
     public CreateCaseNoteRequest(@JsonProperty(value = "caseUUID", required = true) UUID caseUUID,
-                                 @JsonProperty(value = "caseNoteType", required = true) CaseNoteType caseNoteType,
+                                 @JsonProperty(value = "caseNoteType", required = true) String caseNoteType,
                                  @JsonProperty(value = "caseNote", required = true) String caseNote) {
         super(ADD_CASE_NOTE_DATA_COMMAND);
         this.caseUUID = caseUUID;

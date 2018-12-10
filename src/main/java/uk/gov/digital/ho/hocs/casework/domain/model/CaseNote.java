@@ -28,8 +28,9 @@ public class CaseNote {
     @Column(name = "created")
     private LocalDateTime created;
 
+    @Getter
     @Column(name = "type")
-    private String type;
+    private String caseNoteType;
 
     @Getter
     @Column(name = "case_uuid")
@@ -39,7 +40,7 @@ public class CaseNote {
     @Column(name = "text")
     private String text;
 
-    public CaseNote(UUID caseUUID, CaseNoteType caseNoteType, String text) {
+    public CaseNote(UUID caseUUID, String caseNoteType, String text) {
         if (caseUUID == null || caseNoteType == null || text == null) {
             throw new ApplicationExceptions.EntityCreationException(
                     String.format("Cannot create case note(%s,%s,%s).", caseUUID, caseNoteType, text), CASE_NOTE_CREATE_FAILURE);
@@ -47,13 +48,9 @@ public class CaseNote {
 
         this.uuid = UUID.randomUUID();
         this.created = LocalDateTime.now();
-        this.type = caseNoteType.toString();
+        this.caseNoteType = caseNoteType;
         this.caseUUID = caseUUID;
         this.text = text;
-    }
-
-    public CaseNoteType getCaseNoteType() {
-        return CaseNoteType.valueOf(this.type);
     }
 
 }

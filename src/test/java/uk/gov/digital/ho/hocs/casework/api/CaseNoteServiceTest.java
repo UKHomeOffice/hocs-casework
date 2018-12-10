@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNoteType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseNoteRepository;
 
 import java.util.HashSet;
@@ -19,7 +18,7 @@ import static org.mockito.Mockito.*;
 public class CaseNoteServiceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
-    private final CaseNoteType caseNoteType = CaseNoteType.MANUAL;
+    private final String caseNoteType = "MANUAL";
     private static final String text = "CASE_NOTE";
     @Mock
     private CaseNoteRepository caseNoteRepository;
@@ -33,7 +32,7 @@ public class CaseNoteServiceTest {
     @Test
     public void shouldGetCaseNotes() throws ApplicationExceptions.EntityNotFoundException {
         HashSet<CaseNote> caseNoteData = new HashSet<>();
-        caseNoteData.add(new CaseNote(caseUUID, CaseNoteType.MANUAL, text));
+        caseNoteData.add(new CaseNote(caseUUID, "MANUAL", text));
 
         when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(caseNoteData);
 

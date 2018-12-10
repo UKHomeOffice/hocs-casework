@@ -14,7 +14,7 @@ public class CaseNoteTest {
     public void getCaseNote() {
 
         UUID caseUUID = UUID.randomUUID();
-        CaseNoteType type = CaseNoteType.MANUAL;
+        String type = "MANUAL";
         String text = "anyText";
 
         CaseNote caseNote = new CaseNote(caseUUID, type, text);
@@ -30,7 +30,7 @@ public class CaseNoteTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getCaseNoteNullCaseUUID() {
 
-        CaseNoteType type = CaseNoteType.MANUAL;
+        String type = "MANUAL";
         String text = "anyText";
 
         new CaseNote(null, type, text);
@@ -49,7 +49,7 @@ public class CaseNoteTest {
     public void getCaseNoteNullText() {
 
         UUID caseUUID = UUID.randomUUID();
-        CaseNoteType type = CaseNoteType.MANUAL;
+        String type = "MANUAL";
 
         new CaseNote(caseUUID, type, null);
     }
