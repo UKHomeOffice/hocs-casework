@@ -24,7 +24,7 @@ public class SqsConfiguration {
         return sqsClient(accessKey, secretKey, region);
     }
 
-    @Bean("docsSqsClient")
+    @Bean("caseSqsClient")
     public AmazonSQS sqsClient(@Value("${case.aws.sqs.access.key}") String accessKey,
                                @Value("${case.aws.sqs.secret.key}") String secretKey,
                                @Value("${aws.sqs.region}") String region) {
