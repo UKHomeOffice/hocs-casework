@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -48,7 +49,7 @@ public class UserPermissionsService {
 
         return getUserPermission()
                 .flatMap(unit -> unit.getValue().values().stream())
-                .flatMap(type -> type.getOrDefault(caseType.getDisplayCode(), new HashSet<>()).stream())
+                .flatMap(type -> type.getOrDefault(caseType, new HashSet<>()).stream())
                 .max(Comparator.comparing(AccessLevel::getLevel))
                 .orElseThrow(() ->
                         new SecurityExceptions.PermissionCheckException("User does not have any permissions for this case type", SECURITY_UNAUTHORISED));
