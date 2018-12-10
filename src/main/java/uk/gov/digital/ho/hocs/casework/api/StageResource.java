@@ -41,7 +41,7 @@ class StageResource {
         return ResponseEntity.ok(StageDto.from(stage));
     }
 
-    @Allocated(allocatedTo = AllocationLevel.TEAM)
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity allocateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateStageRequest request) {
         stageService.updateUser(caseUUID, stageUUID, request.getUserUUID());
