@@ -45,11 +45,11 @@ public class UserPermissionsService {
         }
     }
 
-    public AccessLevel getMaxAccessLevel(CaseDataType caseType) {
+    public AccessLevel getMaxAccessLevel(String caseType) {
 
         return getUserPermission()
                 .flatMap(unit -> unit.getValue().values().stream())
-                .flatMap(type -> type.getOrDefault(caseType.getDisplayCode(), new HashSet<>()).stream())
+                .flatMap(type -> type.getOrDefault(caseType, new HashSet<>()).stream())
                 .max(Comparator.comparing(AccessLevel::getLevel))
                 .orElseThrow(() ->
                         new SecurityExceptions.PermissionCheckException("User does not have any permissions for this case type", SECURITY_UNAUTHORISED));
@@ -62,6 +62,7 @@ public class UserPermissionsService {
                 .flatMap(type -> type.getOrDefault(caseType.getDisplayCode(), new HashSet<>()).stream())
                 .collect(Collectors.toSet());
     }
+
 
     public Set<String> getUserUnits() {
         return getUserPermission()
@@ -87,13 +88,12 @@ public class UserPermissionsService {
     Stream<Map.Entry<String, Map<String, Map<String, Set<AccessLevel>>>>> getUserPermission() {
         Map<String, Map<String, Map<String, Set<AccessLevel>>>> permissions = new HashMap<>();
 
-        Arrays.stream(requestData.groups().split(","))
+        Arrays.stream(requestData.groupsArray())
                 .map(group -> group.split("/"))
                 .filter(group -> group.length >= 5)
                 .forEach(group -> getAccessLevel(permissions, group));
 
         return permissions.entrySet().stream();
     }
-
 
 }

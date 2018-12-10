@@ -11,7 +11,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.time.LocalDate;
@@ -55,17 +54,17 @@ public class AuthorisationAspectTest {
     @Test
     public void shouldCaseServiceLookupWhenExistingCase() throws Throwable {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        String type = "MIN";
         Object[] args = new Object[1];
         args[0] = caseUUID;
 
-        when(caseService.getCaseTypeByUUID(caseUUID)).thenReturn(type);
+        when(caseService.getCaseType(caseUUID)).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
 
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
-        verify(caseService, times(1)).getCaseTypeByUUID(caseUUID);
+        verify(caseService, times(1)).getCaseType(caseUUID);
         verify(userService, times(1)).getMaxAccessLevel(type);
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
 
@@ -76,19 +75,16 @@ public class AuthorisationAspectTest {
 
     @Test
     public void shouldNotCallCaseServiceWhenNewCase() throws Throwable {
-
         CaseDataType type = new CaseDataType("MIN", "a1");
         Object[] args = new Object[1];
-
         args[0] = new CreateCaseRequest(type, new HashMap<>(), LocalDate.now(), LocalDate.now());
-
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
         verify(caseService, never()).getCase(caseUUID);
-        verify(userService, times(1)).getMaxAccessLevel(type);
+        verify(userService, times(1)).getMaxAccessLevel(type.getDisplayCode());
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
 
@@ -96,17 +92,17 @@ public class AuthorisationAspectTest {
     @Test
     public void shouldProceedIfUserHasPermission() throws Throwable {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        String type = "MIN";
         Object[] args = new Object[1];
         args[0] = caseUUID;
-        when(caseService.getCaseTypeByUUID(any())).thenReturn(type);
+        when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
         verify(proceedingJoinPoint, times(1)).proceed();
-        verify(caseService, times(1)).getCaseTypeByUUID(caseUUID);
+        verify(caseService, times(1)).getCaseType(caseUUID);
 
         verifyNoMoreInteractions(caseService);
     }
@@ -114,18 +110,17 @@ public class AuthorisationAspectTest {
     @Test(expected = SecurityExceptions.PermissionCheckException.class)
     public void shouldNotProceedIfUserDoesNotHavePermission() throws Throwable {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        String type = "MIN";
         Object[] args = new Object[1];
         args[0] = caseUUID;
         when(userService.getMaxAccessLevel(any())).thenThrow(new SecurityExceptions.PermissionCheckException("User does not have any permission onf this case type", SECURITY_UNAUTHORISED));
-        when(caseService.getCaseTypeByUUID(any())).thenReturn(type);
+        when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
-        when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
         verify(proceedingJoinPoint, never()).proceed();
-        verify(caseService, times(1)).getCaseTypeByUUID(caseUUID);
+        verify(caseService, times(1)).getCaseType(caseUUID);
 
         verifyNoMoreInteractions(caseService);
     }
@@ -135,7 +130,6 @@ public class AuthorisationAspectTest {
 
         Object[] args = new Object[1];
         args[0] = "bad UUID";
-        when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
@@ -154,18 +148,18 @@ public class AuthorisationAspectTest {
 
     @Test
     public void shouldGetRequestedPermissionTypeFromRequestWhenAnnotationIsSet() throws Throwable {
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        String type = "MIN";
         Object[] args = new Object[1];
         args[0] = caseUUID;
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.OWNER);
-        when(caseService.getCaseTypeByUUID(any())).thenReturn(type);
+        when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
         verify(annotation, times(2)).accessLevel();
-        verify(caseService, times(1)).getCaseTypeByUUID(caseUUID);
+        verify(caseService, times(1)).getCaseType(caseUUID);
 
         verifyNoMoreInteractions(caseService);
 
@@ -173,7 +167,7 @@ public class AuthorisationAspectTest {
 
     @Test
     public void shouldGetRequestedPermissionTypeFromRequestWhenUNSET() throws Throwable {
-        CaseDataType type = new CaseDataType("NEW", "a1");
+        String type = "MIN";
         Object[] args = new Object[1];
         args[0] = caseUUID;
 
@@ -182,14 +176,14 @@ public class AuthorisationAspectTest {
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
 
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.OWNER);
-        when(caseService.getCaseTypeByUUID(any())).thenReturn(type);
+        when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.UNSET);
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
         verify(annotation, times(1)).accessLevel();
-        verify(caseService, times(1)).getCaseTypeByUUID(caseUUID);
+        verify(caseService, times(1)).getCaseType(caseUUID);
 
         verifyNoMoreInteractions(caseService);
 
