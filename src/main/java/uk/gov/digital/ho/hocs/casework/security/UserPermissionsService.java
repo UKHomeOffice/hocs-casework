@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,7 +44,7 @@ public class UserPermissionsService {
         }
     }
 
-    public AccessLevel getMaxAccessLevel(CaseDataType caseType) {
+    public AccessLevel getMaxAccessLevel(String caseType) {
 
         return getUserPermission()
                 .flatMap(unit -> unit.getValue().values().stream())
@@ -62,6 +61,7 @@ public class UserPermissionsService {
                 .flatMap(type -> type.getOrDefault(caseType.getDisplayCode(), new HashSet<>()).stream())
                 .collect(Collectors.toSet());
     }
+
 
     public Set<String> getUserUnits() {
         return getUserPermission()
@@ -87,13 +87,12 @@ public class UserPermissionsService {
     Stream<Map.Entry<String, Map<String, Map<String, Set<AccessLevel>>>>> getUserPermission() {
         Map<String, Map<String, Map<String, Set<AccessLevel>>>> permissions = new HashMap<>();
 
-        Arrays.stream(requestData.groups().split(","))
+        Arrays.stream(requestData.groupsArray())
                 .map(group -> group.split("/"))
                 .filter(group -> group.length >= 5)
                 .forEach(group -> getAccessLevel(permissions, group));
 
         return permissions.entrySet().stream();
     }
-
 
 }

@@ -41,6 +41,18 @@ class StageResource {
         return ResponseEntity.ok(StageDto.from(stage));
     }
 
+    @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user")
+    public ResponseEntity<UUID> getStageUser(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
+        UUID user = stageService.getStageUser(caseUUID, stageUUID);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/team")
+    public ResponseEntity<UUID> getStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
+        UUID team = stageService.getStageTeam(caseUUID, stageUUID);
+        return ResponseEntity.ok(team);
+    }
+
     @GetMapping(value = "/user/{userUUID}/stage", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetStagesResponse> getActiveStagesByUserUUID(@PathVariable UUID userUUID) {
         Set<Stage> activeStages = stageService.getActiveStagesByUserUUID(userUUID);

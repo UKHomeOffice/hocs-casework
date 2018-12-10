@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,7 +11,9 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import javax.transaction.Transactional;
@@ -48,7 +49,6 @@ public class CaseDataService {
         this.stageService = stageService;
     }
 
-    @Transactional
     public CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
         Long caseNumber = caseDataRepository.getNextSeriesId();
         CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline, dateReceived);
@@ -58,7 +58,6 @@ public class CaseDataService {
         return caseData;
     }
 
-    @Transactional
     public CaseData getCase(UUID caseUUID) {
         CaseData caseData = caseDataRepository.findByUuid(caseUUID);
         if (caseData != null) {
@@ -70,7 +69,6 @@ public class CaseDataService {
         }
     }
 
-    @Transactional
     public void updateCaseData(UUID caseUUID, Map<String, String> data) {
         if (data != null) {
             CaseData caseData = getCase(caseUUID);
@@ -80,7 +78,6 @@ public class CaseDataService {
         }
     }
 
-    @Transactional
     public void updatePriority(UUID caseUUID, boolean priority) {
         CaseData caseData = getCase(caseUUID);
         caseData.setPriority(priority);
@@ -88,16 +85,20 @@ public class CaseDataService {
         log.info("Updated Case Data for Case: {}", caseUUID, value(EVENT, PRIORITY_UPDATED));
     }
 
-    @Transactional
     public void deleteCase(UUID caseUUID) {
         caseDataRepository.deleteCase(caseUUID);
         log.info("Deleted Case: {}", caseUUID, value(EVENT, CASE_DELETED));
 
     }
 
-    public CaseDataType getCaseTypeByUUID(UUID uuid) {
-        String shortCode = uuid.toString().substring(34);
-        return infoClient.getCaseTypeByShortCode(shortCode);
+    public String getCaseType(UUID caseUUID) {
+        CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(caseUUID.toString().substring(34));
+        if (caseDataType == null) {
+            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID);
+            return getCase(caseUUID).getType();
+        } else {
+            return caseDataType.getDisplayCode();
+        }
     }
 
     public CaseSummary getCaseSummary(UUID caseUUID) throws IOException {
@@ -118,7 +119,10 @@ public class CaseDataService {
                     .filter(d -> fieldSchema.contains(d.getKey()))
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
         }
-        CorrespondentDto primaryCorrespondent = CorrespondentDto.from(correspondentService.getCorrespondent(caseData.getUuid(), caseData.getPrimaryCorrespondentUUID()));
+        CorrespondentDto primaryCorrespondent = null;
+        if (caseData.getPrimaryCorrespondentUUID() != null) {
+            primaryCorrespondent = CorrespondentDto.from(correspondentService.getCorrespondent(caseData.getUuid(), caseData.getPrimaryCorrespondentUUID()));
+        }
         Set<ActiveStage> activeStages = stageService.getActiveStagesByCaseUUID(caseUUID).stream().map(stage -> ActiveStage.from(stage)).collect(Collectors.toSet());
         return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalData,primaryCorrespondent, activeStages);
 

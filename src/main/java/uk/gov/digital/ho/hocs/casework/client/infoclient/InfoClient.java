@@ -11,7 +11,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageType;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,19 +42,14 @@ public class InfoClient {
     }
 
 
-    //TODO: call info service endpoint to get case summary field filter once end point is complete
-    public Set<String> getCaseSummaryFields(String shortCode) {
-       return new HashSet<String>(){{
-           add("TEMPCReference");
-           add("CopyNumberTen");
-       }};
-        // ResponseEntity<Set<String>> response = restHelper.get(serviceBaseURL, String.format("/caseType/shortCode/%s/summary", shortCode), Set<String>.class);
+    public Set<String> getCaseSummaryFields(String type) {
+        ResponseEntity<GetSummaryFieldsResponse> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/summary", type), GetSummaryFieldsResponse.class);
+        return response.getBody().getFields();
     }
 
     public Map<StageType, LocalDate> getDeadlines(String caseType, LocalDate localDate) {
         ResponseEntity<InfoGetDeadlinesResponse> response = restHelper.get(serviceBaseURL, String.format("/casetype/%s/deadlines/%s", caseType, localDate), InfoGetDeadlinesResponse.class);
-        Map<StageType, LocalDate> deadlines = response.getBody().getDeadlines();
-        return deadlines;
+        return response.getBody().getDeadlines();
     }
 
 
