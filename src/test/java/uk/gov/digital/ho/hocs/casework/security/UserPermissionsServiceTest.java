@@ -9,6 +9,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.util.Set;
 import java.util.UUID;
@@ -75,7 +76,7 @@ public class UserPermissionsServiceTest {
 
         when(requestData.groupsArray()).thenReturn(groups);
         service = new UserPermissionsService(requestData);
-        Set<AccessLevel> userAccessLevels = service.getUserAccessLevels("MIN");
+        Set<AccessLevel> userAccessLevels = service.getUserAccessLevels(new CaseDataType("MIN", "MIN"));
         assertThat(userAccessLevels.size()).isEqualTo(2);
         assertThat(userAccessLevels).contains(AccessLevel.WRITE);
         assertThat(userAccessLevels).contains(AccessLevel.OWNER);

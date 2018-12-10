@@ -3,8 +3,8 @@ package uk.gov.digital.ho.hocs.casework.security;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -55,6 +55,15 @@ public class UserPermissionsService {
                         new SecurityExceptions.PermissionCheckException("User does not have any permissions for this case type", SECURITY_UNAUTHORISED));
     }
 
+    public Set<AccessLevel> getUserAccessLevels(CaseDataType caseType) {
+
+        return getUserPermission()
+                .flatMap(unit -> unit.getValue().values().stream())
+                .flatMap(type -> type.getOrDefault(caseType.getDisplayCode(), new HashSet<>()).stream())
+                .collect(Collectors.toSet());
+    }
+
+
     public Set<String> getUserUnits() {
         return getUserPermission()
                 .map(Map.Entry::getKey)
@@ -65,14 +74,6 @@ public class UserPermissionsService {
         return getUserPermission()
                 .flatMap(unit -> unit.getValue().entrySet().stream())
                 .map(team -> UUID.fromString(team.getKey()))
-                .collect(Collectors.toSet());
-    }
-
-    public Set<AccessLevel> getUserAccessLevels(String caseType) {
-
-        return getUserPermission()
-                .flatMap(unit -> unit.getValue().values().stream())
-                .flatMap(type -> type.getOrDefault(caseType, new HashSet<>()).stream())
                 .collect(Collectors.toSet());
     }
 
