@@ -16,7 +16,6 @@ import org.springframework.util.StringUtils;
 @Profile({"sqs"})
 public class SqsConfiguration {
 
-
     @Bean("auditSqsClient")
     public AmazonSQS auditSqsClient(@Value("${audit.aws.sqs.access.key}") String accessKey,
                                    @Value("${audit.aws.sqs.secret.key}") String secretKey,
