@@ -49,7 +49,6 @@ public class StageService {
         Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
         stageRepository.save(stage);
         notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, stage.getCaseReference(), allocationType);
-
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
         return stage;
     }
@@ -67,17 +66,20 @@ public class StageService {
         Stage stage = getStage(caseUUID, stageUUID);
         stage.setTeam(teamUUID);
         stageRepository.save(stage);
+        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, stage.getCaseReference(), allocationType);
         log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, teamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
     }
 
     @Transactional
-    public void updateUser(UUID caseUUID, UUID stageUUID, UUID userUUID) {
+    public void updateUser(UUID caseUUID, UUID stageUUID, UUID newUserUUID) {
         Stage stage = getStage(caseUUID, stageUUID);
-        UUID currentUser = stage.getUserUUID();
-
-        stage.setUser(userUUID);
-        stageRepository.save(stage);
-        log.info("Set Stage User: {} ({}) for Case {}", stageUUID, userUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_USER));
+        UUID currentUserUUID = stage.getUserUUID();
+        if ((newUserUUID != null && !newUserUUID.equals(currentUserUUID)) || (currentUserUUID != null && !currentUserUUID.equals(newUserUUID))) {
+            stage.setUser(newUserUUID);
+            stageRepository.save(stage);
+            log.info("Set Stage User: {} ({}) for Case {}", stageUUID, newUserUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_USER));
+            notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, stage.getCaseReference());
+        }
     }
 
     @Transactional

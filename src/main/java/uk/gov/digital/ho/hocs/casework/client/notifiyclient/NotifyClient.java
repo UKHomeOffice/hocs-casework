@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoNominatedPeople;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.service.notify.NotificationClient;
 import uk.gov.service.notify.NotificationClientException;
 
@@ -31,20 +32,38 @@ public class NotifyClient {
         this.URL = URL;
     }
 
-    public void sendTeamEmail(UUID caseUUID, UUID stageUUID, UUID teamUUID, String caseReference, NotifyType notifyType) {
+    public void sendTeamEmail(UUID caseUUID, UUID stageUUID, UUID teamUUID, String caseReference, String allocationType) {
         Set<InfoNominatedPeople> nominatedPeople = infoClient.getNominatedPeople(teamUUID);
+        NotifyType notifyType = NotifyType.valueOf(allocationType);
         for (InfoNominatedPeople contact : nominatedPeople) {
             sendEmail(caseUUID, stageUUID, contact.getEmailAddress(), caseReference, notifyType);
         }
     }
 
-    public void sendUserEmail(UUID caseUUID, UUID stageUUID, UUID userUUID, String caseReference, String allocationType) {
-        String emailAddress = "SOME USER EMAIL";
-
-        sendEmail(caseUUID, stageUUID, emailAddress, caseReference, notifyType);
+    public void sendUserEmail(UUID caseUUID, UUID stageUUID, UUID currentUserUUID, UUID newUserUUID, String caseReference) {
+        if (newUserUUID != null) {
+            if (currentUserUUID != null && !newUserUUID.equals(currentUserUUID)) {
+                sendUnAllocateUserEmail(caseUUID, stageUUID, currentUserUUID, caseReference);
+                sendAllocateUserEmail(caseUUID, stageUUID, newUserUUID, caseReference);
+            } else {
+                sendAllocateUserEmail(caseUUID, stageUUID, newUserUUID, caseReference);
+            }
+        } else if (currentUserUUID != null) {
+            sendUnAllocateUserEmail(caseUUID, stageUUID, currentUserUUID, caseReference);
+        }
     }
 
-    private void sendEmail(UUID caseUUID, UUID stageUUID, String emailAddress, String caseReference, String allocationType) {
+    private void sendAllocateUserEmail(UUID caseUUID, UUID stageUUID, UUID userUUID, String caseReference) {
+        UserDto user = infoClient.getUser(userUUID);
+        sendEmail(caseUUID, stageUUID, user.getEmail(), caseReference, NotifyType.ALLOCATE_INDIVIDUAL);
+    }
+
+    private void sendUnAllocateUserEmail(UUID caseUUID, UUID stageUUID, UUID userUUID, String caseReference) {
+        UserDto user = infoClient.getUser(userUUID);
+        sendEmail(caseUUID, stageUUID, user.getEmail(), caseReference, NotifyType.UNALLOCATE_INDIVIDUAL);
+    }
+
+    private void sendEmail(UUID caseUUID, UUID stageUUID, String emailAddress, String caseReference, NotifyType notifyType) {
         String link = String.format("%s/case/%s/stage/%s", URL, caseUUID, stageUUID);
         Map<String, String> personalisation = new HashMap<>();
         personalisation.put("link", link);
@@ -53,7 +72,7 @@ public class NotifyClient {
     }
 
     private void sendEmail(NotifyType notifyType, String emailAddress, Map<String, String> personalisation) {
-        log.info("Received request to sendEmailRequest {}, template Name {}, template ID {}", emailAddress, notifyType, notifyType.getDisplayValue());
+        log.info("Sending email to {}, template ID {}", emailAddress, notifyType.getDisplayValue());
 
         try {
 

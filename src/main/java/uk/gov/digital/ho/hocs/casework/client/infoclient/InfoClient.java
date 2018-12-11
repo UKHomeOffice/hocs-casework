@@ -68,6 +68,11 @@ public class InfoClient {
         return response.getBody().getNominatedPeople();
     }
 
+    public UserDto getUser(UUID userUUD) {
+        ResponseEntity<UserDto> response = restHelper.get(serviceBaseURL, String.format("/user/%s", userUUD), UserDto.class);
+        return response.getBody();
+    }
+
 
 
 }

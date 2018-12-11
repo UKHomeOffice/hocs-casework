@@ -23,7 +23,7 @@ public class Stage implements Serializable {
     private Long id;
 
     @Getter
-    @Column(name = "uuid")
+    @Column(name = "uuid", columnDefinition = "uuid")
     private UUID uuid;
 
     @Getter
@@ -42,15 +42,15 @@ public class Stage implements Serializable {
     private String status;
 
     @Getter
-    @Column(name = "case_uuid")
+    @Column(name = "case_uuid", columnDefinition = "uuid")
     private UUID caseUUID;
 
     @Getter
-    @Column(name = "team_uuid")
+    @Column(name = "team_uuid", columnDefinition = "uuid")
     private UUID teamUUID;
 
     @Getter
-    @Column(name = "user_uuid")
+    @Column(name = "user_uuid", columnDefinition = "uuid")
     private UUID userUUID;
 
     @Getter
