@@ -14,7 +14,7 @@ public enum NotifyType {
     ALLOCATE_INDIVIDUAL("3dfbd276-2bcc-4b08-81b1-d4f0583cdf39"),
     NRN_REJECT("8d4f8da4-a646-468b-8e91-3063c12ae812"),
     TRANSFER_OGD_REJECT("d860dd8a-6873-4b07-be85-022aa505a9e2"),
-    UNALLOCATE_INDIVIDUAL("");
+    UNALLOCATE_INDIVIDUAL("6c76fa5b-9bf4-4e39-8ac3-452d49f919b2");
 
     @Getter
     private String displayValue;

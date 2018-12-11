@@ -36,7 +36,7 @@ public class NotifyClient {
         Set<InfoNominatedPeople> nominatedPeople = infoClient.getNominatedPeople(teamUUID);
         NotifyType notifyType = NotifyType.valueOf(allocationType);
         for (InfoNominatedPeople contact : nominatedPeople) {
-            sendEmail(caseUUID, stageUUID, contact.getEmailAddress(), caseReference, notifyType);
+            sendEmail(caseUUID, stageUUID, contact.getEmailAddress(), "Team", caseReference, notifyType);
         }
     }
 
@@ -55,19 +55,20 @@ public class NotifyClient {
 
     private void sendAllocateUserEmail(UUID caseUUID, UUID stageUUID, UUID userUUID, String caseReference) {
         UserDto user = infoClient.getUser(userUUID);
-        sendEmail(caseUUID, stageUUID, user.getEmail(), caseReference, NotifyType.ALLOCATE_INDIVIDUAL);
+        sendEmail(caseUUID, stageUUID, user.getEmail(), user.getFirstName(), caseReference, NotifyType.ALLOCATE_INDIVIDUAL);
     }
 
     private void sendUnAllocateUserEmail(UUID caseUUID, UUID stageUUID, UUID userUUID, String caseReference) {
         UserDto user = infoClient.getUser(userUUID);
-        sendEmail(caseUUID, stageUUID, user.getEmail(), caseReference, NotifyType.UNALLOCATE_INDIVIDUAL);
+        sendEmail(caseUUID, stageUUID, user.getEmail(), user.getFirstName(), caseReference, NotifyType.UNALLOCATE_INDIVIDUAL);
     }
 
-    private void sendEmail(UUID caseUUID, UUID stageUUID, String emailAddress, String caseReference, NotifyType notifyType) {
+    private void sendEmail(UUID caseUUID, UUID stageUUID, String emailAddress, String firstname, String caseReference, NotifyType notifyType) {
         String link = String.format("%s/case/%s/stage/%s", URL, caseUUID, stageUUID);
         Map<String, String> personalisation = new HashMap<>();
         personalisation.put("link", link);
         personalisation.put("caseRef", caseReference);
+        personalisation.put("user", firstname);
         sendEmail(notifyType, emailAddress, personalisation);
     }
 
