@@ -33,7 +33,6 @@ public class CaseDataIntegrationTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody().getReference()).isNotNull();
         assertThat(result.getBody().getUuid()).isNotNull();
-
     }
 
     @Test
@@ -43,7 +42,6 @@ public class CaseDataIntegrationTest {
                 getBasePath() + "/case", POST, new HttpEntity(createBody("MIN"), createValidAuthHeaders("READ")), Void.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-
     }
 
     //is this right????
@@ -54,7 +52,6 @@ public class CaseDataIntegrationTest {
                 getBasePath() + "/case", POST, new HttpEntity(null, createValidAuthHeaders("OWNER")), Void.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-
     }
 
     @Test
@@ -64,7 +61,6 @@ public class CaseDataIntegrationTest {
                 getBasePath() + "/case", POST, new HttpEntity(createBody("FRED"), createValidAuthHeaders("OWNER")), Void.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-
     }
 
     @Test
@@ -74,29 +70,28 @@ public class CaseDataIntegrationTest {
                 getBasePath() + "/case", POST, new HttpEntity(createBody(null), createValidAuthHeaders("OWNER")), Void.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-
     }
+
     @Test
     public void shouldCreateAValidCaseWithEmptyData() {
 
         ResponseEntity<CreateCaseResponse> result = testRestTemplate.exchange(
-                getBasePath() + "/case", POST, new HttpEntity(createBodyData("MIN","{}"), createValidAuthHeaders("OWNER")), CreateCaseResponse.class);
+                getBasePath() + "/case", POST, new HttpEntity(createBodyData("MIN", "{}"), createValidAuthHeaders("OWNER")), CreateCaseResponse.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody().getReference()).isNotNull();
         assertThat(result.getBody().getUuid()).isNotNull();
-
     }
+
     @Test
     public void shouldCreateAValidCaseWithNullData() {
 
         ResponseEntity<CreateCaseResponse> result = testRestTemplate.exchange(
-                getBasePath() + "/case", POST, new HttpEntity(createBodyData("MIN",null), createValidAuthHeaders("OWNER")), CreateCaseResponse.class);
+                getBasePath() + "/case", POST, new HttpEntity(createBodyData("MIN", null), createValidAuthHeaders("OWNER")), CreateCaseResponse.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody().getReference()).isNotNull();
         assertThat(result.getBody().getUuid()).isNotNull();
-
     }
 
     @Test
@@ -137,10 +132,10 @@ public class CaseDataIntegrationTest {
 
         assertThat(result1.getBody().getReference()).isLessThan(result3.getBody().getReference());
 
-        int r1 = Integer.parseInt(result1.getBody().getReference().substring(4, result1.getBody().getReference().length()-3));
-        int r3 = Integer.parseInt(result3.getBody().getReference().substring(4, result3.getBody().getReference().length()-3));
+        int r1 = Integer.parseInt(result1.getBody().getReference().substring(4, result1.getBody().getReference().length() - 3));
+        int r3 = Integer.parseInt(result3.getBody().getReference().substring(4, result3.getBody().getReference().length() - 3));
 
-        assertThat(r3).isEqualTo(r1+1);
+        assertThat(r3).isEqualTo(r1 + 1);
     }
 
 
@@ -170,12 +165,10 @@ public class CaseDataIntegrationTest {
     private String createBodyData(String caseType, String data) {
         String body = "{\n" +
                 "  \"type\":{\"displayCode\":\"" + caseType + "\",\"shortCode\":\"a1\"},\n" +
-                "  \"data\": "+data+",\n" +
+                "  \"data\": " + data + ",\n" +
                 "  \"received\":\"2018-01-01\",\n" +
                 "  \"deadline\":\"2018-01-01\"\n" +
                 "}";
         return body;
     }
-//    {"DateReceived":"2018-01-01"}
-
 }
