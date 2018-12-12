@@ -54,11 +54,12 @@ public class AuditClient {
                 LocalDateTime.now(),
                 EventType.CASE_CREATED.toString(),
                 requestData.userId());
+
         try {
             producerTemplate.sendBody(auditQueue, objectMapper.writeValueAsString(request));
             log.info("Create audit for Create Case, Case UUID: {}, correlationID: {}, UserID: {}", caseData.getUuid(), requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_EVENT_CREATED));
         } catch (Exception e) {
-            log.error("Failed to create audit event for case UUID {} for reason {}", caseData.getUuid(), e.getMessage(), value(EVENT, AUDIT_FAILED));
+            log.error("Failed to create audit event for case UUID {} for reason {}", caseData.getUuid(), e, value(EVENT, AUDIT_FAILED));
         }
     }
 }
