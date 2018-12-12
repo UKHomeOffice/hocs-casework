@@ -14,7 +14,8 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
 import java.time.LocalDateTime;
 
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUDIT_FAILED;
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Slf4j
 @Component
@@ -55,9 +56,9 @@ public class AuditClient {
                 requestData.userId());
         try {
             producerTemplate.sendBody(auditQueue, objectMapper.writeValueAsString(request));
-            log.info("Create audit for Create Case, Case UUID: {}, correlationID: {}, UserID: {}", caseData.getUuid(), requestData.correlationId(), requestData.userId());
-        } catch (JsonProcessingException e) {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Could not create audit; %s", e.toString()), AUDIT_FAILED);
+            log.info("Create audit for Create Case, Case UUID: {}, correlationID: {}, UserID: {}", caseData.getUuid(), requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_EVENT_CREATED));
+        } catch (Exception e) {
+            log.error("Failed to create audit event for case UUID {} for reason {}", caseData.getUuid(), e.getMessage(), value(EVENT, AUDIT_FAILED));
         }
     }
 }

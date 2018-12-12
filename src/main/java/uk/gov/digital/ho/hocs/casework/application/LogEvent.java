@@ -47,6 +47,7 @@ public enum LogEvent {
     SECURITY_UNAUTHORISED,
     SECURITY_CASE_NOT_ALLOCATED_TO_USER,
     SECURITY_CASE_NOT_ALLOCATED_TO_TEAM,
+    AUDIT_EVENT_CREATED,
     AUDIT_FAILED;
     public static final String EVENT = "event_id";
 }
