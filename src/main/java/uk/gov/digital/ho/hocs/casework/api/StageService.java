@@ -94,6 +94,10 @@ public class StageService {
         log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID, value(EVENT, STAGE_COMPLETED));
     }
 
+    public Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
+        return stageRepository.findAllByTeamUUID(teamUUID);
+    }
+
     public Set<Stage> getActiveStagesByCaseUUID(UUID caseUUID) { return stageRepository.findActiveStagesByCaseUUID(caseUUID); }
 
     public Set<Stage> getActiveStages() {
