@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageStatusType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
@@ -345,14 +346,9 @@ public class StageServiceTest {
     @Test
     public void shouldCompleteStage() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
-
-        when(stageRepository.findActiveByUuid(caseUUID, stageUUID)).thenReturn(stage);
-
         stageService.completeStage(caseUUID, stageUUID);
 
-        verify(stageRepository, times(1)).findActiveByUuid(caseUUID, stageUUID);
-        verify(stageRepository, times(1)).save(stage);
+        verify(stageRepository, times(1)).setStatus(caseUUID, stageUUID, StageStatusType.COMPLETED.toString());
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);

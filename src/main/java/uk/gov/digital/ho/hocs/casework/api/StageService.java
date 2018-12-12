@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageStatusType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
@@ -43,7 +44,6 @@ public class StageService {
         }
     }
 
-    @Transactional
     public Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline, String allocationType) {
         Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
         stageRepository.save(stage);
@@ -69,7 +69,6 @@ public class StageService {
         return stage.getTeamUUID();
     }
 
-      @Transactional
     public void updateTeam(UUID caseUUID, UUID stageUUID, UUID teamUUID, String allocationType) {
         // This only happens on a reject path, the problem is getStages uses a view that filters out completed stages.
         // so we have to not use the Active_Stages view.
@@ -89,10 +88,9 @@ public class StageService {
         notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, stage.getCaseReference());
     }
 
+    @Transactional
     public void completeStage(UUID caseUUID, UUID stageUUID) {
-        Stage stage = getStage(caseUUID, stageUUID);
-        stage.completeStage();
-        stageRepository.save(stage);
+        stageRepository.setStatus(caseUUID, stageUUID, StageStatusType.COMPLETED.toString());
         log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID, value(EVENT, STAGE_COMPLETED));
     }
 
