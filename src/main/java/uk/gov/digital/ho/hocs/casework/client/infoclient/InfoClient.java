@@ -58,6 +58,16 @@ public class InfoClient {
         return deadlines;
     }
 
+    public Set<InfoNominatedPeople> getNominatedPeople(UUID teamUUID) {
+        ResponseEntity<InfoGetNominatedPeopleResponse> response = restHelper.get(serviceBaseURL, String.format("/nominatedpeople/%s", teamUUID), InfoGetNominatedPeopleResponse.class);
+        return response.getBody().getNominatedPeople();
+    }
+
+    public UserDto getUser(UUID userUUD) {
+        ResponseEntity<UserDto> response = restHelper.get(serviceBaseURL, String.format("/user/%s", userUUD), UserDto.class);
+        return response.getBody();
+    }
+
 
 
 }

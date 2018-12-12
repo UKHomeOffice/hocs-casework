@@ -35,7 +35,6 @@ public class CreateCaseRequestTest {
         assertThat(createCaseRequest.getType()).isNull();
         assertThat(createCaseRequest.getData()).isNull();
         assertThat(createCaseRequest.getCaseDeadline()).isNull();
-
     }
 
 }

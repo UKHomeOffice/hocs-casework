@@ -42,13 +42,16 @@ public class UpdateStageTeamRequestTest {
         UUID caseUUID = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
+        String allocationType = "anyAllocation";
 
-        UpdateStageTeamRequest updateStageTeamRequest = new UpdateStageTeamRequest(caseUUID, stageUUID, teamUUID);
+        UpdateStageTeamRequest updateStageTeamRequest = new UpdateStageTeamRequest(caseUUID, stageUUID, teamUUID, allocationType);
 
         assertThat(updateStageTeamRequest.getCommand()).isEqualTo(commandName);
         assertThat(updateStageTeamRequest.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(updateStageTeamRequest.getStageUUID()).isEqualTo(stageUUID);
         assertThat(updateStageTeamRequest.getTeamUUID()).isEqualTo(teamUUID);
+        assertThat(updateStageTeamRequest.getAllocationType()).isEqualTo(allocationType);
+
     }
 
     @Test
@@ -56,12 +59,13 @@ public class UpdateStageTeamRequestTest {
         UUID caseUUID = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
+        String allocationType = "anyAllocation";
 
-        UpdateStageTeamRequest updateStageTeamRequest = new UpdateStageTeamRequest(caseUUID, stageUUID, teamUUID);
+        UpdateStageTeamRequest updateStageTeamRequest = new UpdateStageTeamRequest(caseUUID, stageUUID, teamUUID, allocationType);
 
         updateStageTeamRequest.execute(hocsCaseContext);
 
-        verify(stageService, times(1)).updateTeam(caseUUID, stageUUID, teamUUID);
+        verify(stageService, times(1)).updateTeam(caseUUID, stageUUID, teamUUID, allocationType);
 
         verifyZeroInteractions(caseDataService);
         verifyZeroInteractions(caseNoteService);

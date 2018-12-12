@@ -27,6 +27,7 @@ public class StageResourceTest {
     private final UUID stageUUID = UUID.randomUUID();
     private final LocalDate deadline = LocalDate.now();
     private final String stageType = "DCU_MIN_MARKUP";
+    private final String allocationType = "anyAllocation";
     @Mock
     private StageService stageService;
     private StageResource stageResource;
@@ -40,13 +41,13 @@ public class StageResourceTest {
     public void shouldCreateStage() {
 
         Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
-        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, deadline);
+        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, deadline, allocationType);
 
-        when(stageService.createStage(caseUUID, stageType, teamUUID, deadline)).thenReturn(stage);
+        when(stageService.createStage(caseUUID, stageType, teamUUID, deadline, allocationType)).thenReturn(stage);
 
         ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
 
-        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, deadline);
+        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, deadline, allocationType);
 
         verifyNoMoreInteractions(stageService);
 
@@ -58,13 +59,13 @@ public class StageResourceTest {
     public void shouldCreateStageNoDeadline() {
 
         Stage stage = new Stage(caseUUID, stageType, teamUUID, null);
-        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, null);
+        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, null, allocationType);
 
-        when(stageService.createStage(caseUUID, stageType, teamUUID, null)).thenReturn(stage);
+        when(stageService.createStage(caseUUID, stageType, teamUUID, null, allocationType)).thenReturn(stage);
 
         ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
 
-        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, null);
+        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, null, allocationType);
 
         verifyNoMoreInteractions(stageService);
 
