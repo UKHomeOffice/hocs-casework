@@ -35,7 +35,7 @@ public class StageService {
 
     @Transactional
     public Stage getStage(UUID caseUUID, UUID stageUUID) {
-        Stage stage = stageRepository.findByUuid(caseUUID, stageUUID);
+        Stage stage = stageRepository.findActiveByUuid(caseUUID, stageUUID);
         if (stage != null) {
             log.info("Got Stage: {} for Case: {}", stageUUID, caseUUID);
             return stage;
@@ -63,7 +63,9 @@ public class StageService {
 
     @Transactional
     public void updateTeam(UUID caseUUID, UUID stageUUID, UUID teamUUID, String allocationType) {
-        Stage stage = getStage(caseUUID, stageUUID);
+        // This only happens on a reject path, the problem is getStages uses a view that filters out completed stages.
+        // so we have to not use the Active_Stages view.
+        Stage stage = stageRepository.findByUuid(caseUUID, stageUUID);
         stage.setTeam(teamUUID);
         stageRepository.save(stage);
         notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, stage.getCaseReference(), allocationType);
@@ -74,12 +76,10 @@ public class StageService {
     public void updateUser(UUID caseUUID, UUID stageUUID, UUID newUserUUID) {
         Stage stage = getStage(caseUUID, stageUUID);
         UUID currentUserUUID = stage.getUserUUID();
-        if ((newUserUUID != null && !newUserUUID.equals(currentUserUUID)) || (currentUserUUID != null && !currentUserUUID.equals(newUserUUID))) {
-            stage.setUser(newUserUUID);
-            stageRepository.save(stage);
-            log.info("Set Stage User: {} ({}) for Case {}", stageUUID, newUserUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_USER));
-            notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, stage.getCaseReference());
-        }
+        stage.setUser(newUserUUID);
+        stageRepository.save(stage);
+        log.info("Set Stage User: {} ({}) for Case {}", stageUUID, newUserUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_USER));
+        notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, stage.getCaseReference());
     }
 
     @Transactional

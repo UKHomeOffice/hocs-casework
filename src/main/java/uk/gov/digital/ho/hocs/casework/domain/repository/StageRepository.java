@@ -12,6 +12,9 @@ import java.util.UUID;
 public interface StageRepository extends CrudRepository<Stage, Long> {
 
     @Query(value = "SELECT sd.* FROM active_stage sd WHERE sd.case_uuid = ?1 AND sd.uuid = ?2", nativeQuery = true)
+    Stage findActiveByUuid(UUID caseUUID, UUID stageUUID);
+
+    @Query(value = "SELECT sd.* FROM stage_data sd WHERE sd.case_uuid = ?1 AND sd.uuid = ?2", nativeQuery = true)
     Stage findByUuid(UUID caseUUID, UUID stageUUID);
 
     @Query(value = "SELECT sd.* FROM active_stage sd WHERE sd.case_uuid = ?1", nativeQuery = true)
