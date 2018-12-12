@@ -36,7 +36,7 @@ public class CaseConsumerTest extends CamelTestSupport {
 
     @Override
     public RouteBuilder createRouteBuilder() {
-        HocsCaseContext hocsCaseContext = new HocsCaseContext(mockDataService, null, null, null, null);
+        HocsCaseContext hocsCaseContext = new HocsCaseContext(mockDataService, null, null);
         hocsCaseDomain = new HocsCaseDomain(hocsCaseContext);
 
         return new CaseConsumer(

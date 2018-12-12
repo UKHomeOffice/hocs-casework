@@ -41,11 +41,24 @@ class StageResource {
         return ResponseEntity.ok(StageDto.from(stage));
     }
 
-    @Allocated(allocatedTo = AllocationLevel.TEAM)
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity allocateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateStageRequest request) {
         stageService.updateUser(caseUUID, stageUUID, request.getUserUUID());
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user")
+    public ResponseEntity<UUID> getStageUser(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
+        UUID user = stageService.getStageUser(caseUUID, stageUUID);
+        return ResponseEntity.ok(user);
+    }
+
+    @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/team")
+    public ResponseEntity<UUID> getStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
+        UUID team = stageService.getStageTeam(caseUUID, stageUUID);
+        return ResponseEntity.ok(team);
+
     }
 
     @GetMapping(value = "/stage", produces = APPLICATION_JSON_UTF8_VALUE)

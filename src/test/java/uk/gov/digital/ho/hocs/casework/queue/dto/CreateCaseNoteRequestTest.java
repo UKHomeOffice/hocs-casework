@@ -5,7 +5,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.api.*;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.api.CaseNoteService;
+import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.domain.HocsCaseContext;
 
 import java.util.UUID;
@@ -23,13 +25,7 @@ public class CreateCaseNoteRequestTest {
     CaseNoteService caseNoteService;
 
     @Mock
-    CorrespondentService correspondentService;
-
-    @Mock
     StageService stageService;
-
-    @Mock
-    TopicService topicService;
 
     private HocsCaseContext hocsCaseContext;
 
@@ -37,7 +33,7 @@ public class CreateCaseNoteRequestTest {
 
     @Before
     public void setUp() {
-        this.hocsCaseContext = new HocsCaseContext(caseDataService, caseNoteService, correspondentService, stageService, topicService);
+        this.hocsCaseContext = new HocsCaseContext(caseDataService, caseNoteService, stageService);
     }
 
     @Test
@@ -71,9 +67,7 @@ public class CreateCaseNoteRequestTest {
 
         verifyZeroInteractions(caseDataService);
         verifyNoMoreInteractions(caseNoteService);
-        verifyZeroInteractions(correspondentService);
         verifyZeroInteractions(stageService);
-        verifyZeroInteractions(topicService);
 
     }
 

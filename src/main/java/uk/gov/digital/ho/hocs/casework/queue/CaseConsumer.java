@@ -42,7 +42,7 @@ public class CaseConsumer extends RouteBuilder {
 
         errorHandler(deadLetterChannel(dlq)
                 .loggingLevel(LoggingLevel.ERROR)
-                .log("Failed to add document after configured back-off.")
+                .log("Failed to action command after configured back-off.")
                 .useOriginalMessage()
                 .retryAttemptedLogLevel(LoggingLevel.WARN)
                 .maximumRedeliveries(maximumRedeliveries)

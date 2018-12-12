@@ -3,13 +3,13 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
-import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,7 +33,6 @@ public class StageService {
         this.notifyClient = notifyClient;
     }
 
-    @Transactional
     public Stage getStage(UUID caseUUID, UUID stageUUID) {
         Stage stage = stageRepository.findActiveByUuid(caseUUID, stageUUID);
         if (stage != null) {
@@ -53,7 +52,6 @@ public class StageService {
         return stage;
     }
 
-    @Transactional
     public void updateDeadline(UUID caseUUID, UUID stageUUID, LocalDate deadline) {
         Stage stage = getStage(caseUUID, stageUUID);
         stage.setDeadline(deadline);
@@ -61,7 +59,17 @@ public class StageService {
         log.info("Set Stage Deadline: {} ({}) for Case {}", stageUUID, deadline, caseUUID, value(EVENT, STAGE_DEADLINE_UPDATED));
     }
 
-    @Transactional
+    public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        return stage.getUserUUID();
+    }
+
+    public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
+        Stage stage = getStage(caseUUID, stageUUID);
+        return stage.getTeamUUID();
+    }
+
+      @Transactional
     public void updateTeam(UUID caseUUID, UUID stageUUID, UUID teamUUID, String allocationType) {
         // This only happens on a reject path, the problem is getStages uses a view that filters out completed stages.
         // so we have to not use the Active_Stages view.
@@ -72,7 +80,6 @@ public class StageService {
         log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, teamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
     }
 
-    @Transactional
     public void updateUser(UUID caseUUID, UUID stageUUID, UUID newUserUUID) {
         Stage stage = getStage(caseUUID, stageUUID);
         UUID currentUserUUID = stage.getUserUUID();
@@ -82,7 +89,6 @@ public class StageService {
         notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, stage.getCaseReference());
     }
 
-    @Transactional
     public void completeStage(UUID caseUUID, UUID stageUUID) {
         Stage stage = getStage(caseUUID, stageUUID);
         stage.completeStage();

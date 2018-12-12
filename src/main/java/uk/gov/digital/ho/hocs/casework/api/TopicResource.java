@@ -34,7 +34,7 @@ public class TopicResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/topic", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetTopicsResponse> getCaseTopics(@PathVariable UUID caseUUID) {
         Set<Topic> topics = topicService.getTopics(caseUUID);

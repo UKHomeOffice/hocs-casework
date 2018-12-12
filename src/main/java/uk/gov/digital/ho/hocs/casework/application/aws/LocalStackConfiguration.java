@@ -19,6 +19,17 @@ import org.springframework.context.annotation.Profile;
 @Profile({"local"})
 public class LocalStackConfiguration {
 
+
+    @Bean("auditSqsClient")
+    public AmazonSQS auditSqsClient() {
+        return sqsClient();
+    }
+
+    @Bean("caseSqsClient")
+    public AmazonSQS caseSqsClient() {
+        return sqsClient();
+    }
+
     private final AWSCredentialsProvider awsCredentialsProvider = new AWSCredentialsProvider() {
 
         @Override
@@ -35,7 +46,6 @@ public class LocalStackConfiguration {
     @Value("${aws.local.host:localhost}")
     private String awsHost;
 
-    @Bean
     public AmazonSQS sqsClient() {
 
         String host = String.format("http://%s:4576/", awsHost);
