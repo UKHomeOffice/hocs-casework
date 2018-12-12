@@ -55,9 +55,7 @@ public class AuditClient {
                 EventType.CASE_CREATED.toString(),
                 requestData.userId());
 
-
         try {
-
             producerTemplate.sendBody(auditQueue, objectMapper.writeValueAsString(request));
             log.info("Create audit for Create Case, Case UUID: {}, correlationID: {}, UserID: {}", caseData.getUuid(), requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_EVENT_CREATED));
         } catch (Exception e) {
