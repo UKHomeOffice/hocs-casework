@@ -10,9 +10,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class AllocateStageRequest {
+public class AllocateTeamRequest {
 
-    @JsonProperty("userUUID")
-    private UUID userUUID;
+    @JsonProperty("teamUUID")
+    private UUID teamUUID;
 
+    @JsonProperty("allocationType")
+    private String allocationType;
 }

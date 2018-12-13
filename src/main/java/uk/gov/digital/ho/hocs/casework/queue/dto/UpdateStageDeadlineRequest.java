@@ -38,7 +38,7 @@ public class UpdateStageDeadlineRequest extends HocsCommand {
     @Override
     public void execute(HocsCaseContext hocsCaseContext) {
         initialiseDependencies(hocsCaseContext);
-        stageService.updateDeadline(caseUUID, stageUUID, deadline);
+        stageService.updateStageDeadline(caseUUID, stageUUID, deadline);
 
     }
 }

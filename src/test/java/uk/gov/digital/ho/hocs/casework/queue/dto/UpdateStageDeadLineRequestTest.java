@@ -62,7 +62,7 @@ public class UpdateStageDeadLineRequestTest {
 
         updateStageDeadlineRequest.execute(hocsCaseContext);
 
-        verify(stageService, times(1)).updateDeadline(caseUUID, stageUUID, deadline);
+        verify(stageService, times(1)).updateStageDeadline(caseUUID, stageUUID, deadline);
 
         verifyZeroInteractions(caseDataService);
         verifyZeroInteractions(caseNoteService);

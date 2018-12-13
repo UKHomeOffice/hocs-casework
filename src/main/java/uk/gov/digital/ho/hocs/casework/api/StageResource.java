@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
-import uk.gov.digital.ho.hocs.casework.security.Allocated;
-import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.util.Set;
@@ -41,10 +39,17 @@ class StageResource {
         return ResponseEntity.ok(StageDto.from(stage));
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY)
-    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity allocateStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateStageRequest request) {
-        stageService.updateUser(caseUUID, stageUUID, request.getUserUUID());
+    @Authorised(accessLevel = AccessLevel.READ)
+    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user")
+    public ResponseEntity allocateStageUser(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateUserRequest request) {
+        stageService.updateStageUser(caseUUID, stageUUID, request.getUserUUID());
+        return ResponseEntity.ok().build();
+    }
+
+    @Authorised(accessLevel = AccessLevel.READ)
+    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/team")
+    public ResponseEntity allocateStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateTeamRequest request) {
+        stageService.updateStageTeam(caseUUID, stageUUID, request.getTeamUUID(), request.getAllocationType());
         return ResponseEntity.ok().build();
     }
 
@@ -63,7 +68,7 @@ class StageResource {
 
     @GetMapping(value = "/stage", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetStagesResponse> getActiveStages() {
-        Set<Stage> activeStages = stageService.getActiveStages();
+        Set<Stage> activeStages = stageService.getActiveStagesForUser();
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 

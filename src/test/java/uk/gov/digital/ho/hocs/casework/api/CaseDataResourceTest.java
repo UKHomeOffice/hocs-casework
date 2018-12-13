@@ -9,11 +9,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.UUID;
@@ -33,7 +35,7 @@ public class CaseDataResourceTest {
     private CaseDataResource caseDataResource;
     private ObjectMapper objectMapper = new ObjectMapper();
     private LocalDate caseDeadline = LocalDate.now().plusDays(20);
-    LocalDate caseReceived = LocalDate.now();
+    private LocalDate caseReceived = LocalDate.now();
     @Before
     public void setUp() {
         caseDataResource = new CaseDataResource(caseDataService);
@@ -82,6 +84,39 @@ public class CaseDataResourceTest {
         ResponseEntity response = caseDataResource.deleteCase(uuid);
 
         verify(caseDataService, times(1)).deleteCase(uuid);
+
+        verifyNoMoreInteractions(caseDataService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+
+    @Test
+    public void shouldGetCaseType() {
+        CaseDataType caseDataType = new CaseDataType("MIN", "a1");
+
+        when(caseDataService.getCaseType(uuid)).thenReturn(caseDataType.getDisplayCode());
+
+        ResponseEntity response = caseDataResource.getCaseType(uuid);
+
+        verify(caseDataService, times(1)).getCaseType(uuid);
+
+        verifyNoMoreInteractions(caseDataService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetCaseSummary() throws IOException {
+        CaseSummary caseSummary = new CaseSummary();
+
+        when(caseDataService.getCaseSummary(uuid)).thenReturn(caseSummary);
+
+        ResponseEntity response = caseDataResource.getCaseSummary(uuid);
+
+        verify(caseDataService, times(1)).getCaseSummary(uuid);
 
         verifyNoMoreInteractions(caseDataService);
 
