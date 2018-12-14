@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentDto;
@@ -86,8 +87,11 @@ public class CaseDataService {
         log.info("Updated Case Data for Case: {}", caseUUID, value(EVENT, PRIORITY_UPDATED));
     }
 
+    @Transactional
     public void deleteCase(UUID caseUUID) {
-        caseDataRepository.deleteCase(caseUUID);
+        CaseData caseData = getCase(caseUUID);
+        caseData.delete();
+        caseDataRepository.save(caseData);
         log.info("Deleted Case: {}", caseUUID, value(EVENT, CASE_DELETED));
 
     }

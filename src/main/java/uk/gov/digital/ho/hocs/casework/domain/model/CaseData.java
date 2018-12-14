@@ -72,6 +72,11 @@ public class CaseData {
     @Column(name = "date_received")
     private LocalDate dateReceived;
 
+    @Setter
+    @Getter
+    @Column(name = "deleted")
+    private Boolean deleted;
+
     public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived) {
         this(type, caseNumber, caseDeadline, dateReceived);
         update(data, objectMapper);
@@ -87,6 +92,7 @@ public class CaseData {
         this.uuid = randomUUID(type.getShortCode());
         this.caseDeadline = caseDeadline;
         this.dateReceived = dateReceived;
+        this.deleted = Boolean.FALSE;
     }
 
     private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {
@@ -131,6 +137,10 @@ public class CaseData {
         } else {
             throw new ApplicationExceptions.EntityCreationException("shortCode is null", CASE_CREATE_FAILURE);
         }
+    }
+
+    public void delete(){
+        this.deleted = Boolean.TRUE;
     }
 
 }
