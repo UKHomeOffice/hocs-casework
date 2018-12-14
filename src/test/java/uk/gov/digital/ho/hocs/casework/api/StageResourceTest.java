@@ -95,9 +95,9 @@ public class StageResourceTest {
 
         doNothing().when(stageService).updateStageUser(caseUUID, stageUUID, userUUID);
 
-        AllocateUserRequest allocateUserRequest = new AllocateUserRequest(userUUID);
+        UpdateStageUserRequest updateStageUserRequest = new UpdateStageUserRequest(userUUID);
 
-        ResponseEntity response = stageResource.updateStageUser(caseUUID, stageUUID, allocateUserRequest);
+        ResponseEntity response = stageResource.updateStageUser(caseUUID, stageUUID, updateStageUserRequest);
 
         verify(stageService, times(1)).updateStageUser(caseUUID, stageUUID, userUUID);
 
@@ -112,9 +112,9 @@ public class StageResourceTest {
 
         doNothing().when(stageService).updateStageUser(caseUUID, stageUUID, null);
 
-        AllocateUserRequest allocateUserRequest = new AllocateUserRequest(null);
+        UpdateStageUserRequest updateStageUserRequest = new UpdateStageUserRequest(null);
 
-        ResponseEntity response = stageResource.updateStageUser(caseUUID, stageUUID, allocateUserRequest);
+        ResponseEntity response = stageResource.updateStageUser(caseUUID, stageUUID, updateStageUserRequest);
 
         verify(stageService, times(1)).updateStageUser(caseUUID, stageUUID, null);
 

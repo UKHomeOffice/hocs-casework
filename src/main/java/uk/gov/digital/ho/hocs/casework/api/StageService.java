@@ -58,11 +58,13 @@ public class StageService {
     }
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
-        return stageRepository.findStageUserUUID(caseUUID, stageUUID);
+        Stage stage = getStage(caseUUID, stageUUID);
+        return stage.getUserUUID();
     }
 
     public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
-        return stageRepository.findStageTeamUUID(caseUUID, stageUUID);
+        Stage stage = getStage(caseUUID, stageUUID);
+        return stage.getTeamUUID();
     }
 
     public void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID teamUUID, String allocationType) {

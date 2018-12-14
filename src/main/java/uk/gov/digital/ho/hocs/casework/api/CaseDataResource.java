@@ -4,12 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.Allocated;
+import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.io.IOException;
@@ -42,14 +41,21 @@ class CaseDataResource {
         return ResponseEntity.ok(CaseDataDto.from(caseData));
     }
 
+    @Allocated(allocatedTo = AllocationLevel.USER)
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data", consumes = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {
+        caseDataService.updateCaseData(caseUUID, stageUUID, request.getData());
+        return ResponseEntity.ok().build();
+    }
+
     @Authorised(accessLevel = AccessLevel.OWNER)
-    @DeleteMapping(value = "/case/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @DeleteMapping(value = "/case/{caseUUID}", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity deleteCase(@PathVariable UUID caseUUID) {
         caseDataService.deleteCase(caseUUID);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/case/{caseUUID}/type", produces = APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/case/{caseUUID}/type", consumes = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<String> getCaseType(@PathVariable UUID caseUUID) {
         String caseDataType = caseDataService.getCaseType(caseUUID);
         return ResponseEntity.ok(caseDataType);

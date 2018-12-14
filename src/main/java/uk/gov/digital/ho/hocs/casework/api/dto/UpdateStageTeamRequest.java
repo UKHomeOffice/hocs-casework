@@ -10,7 +10,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
-public class AllocateTeamRequest {
+public class UpdateStageTeamRequest {
 
     @JsonProperty("teamUUID")
     private UUID teamUUID;

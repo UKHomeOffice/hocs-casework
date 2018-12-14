@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @AllArgsConstructor
 @Getter
-public class UpdateStatusRequest {
+public class UpdateStageUserRequest {
 
-    @JsonProperty("status")
-    private String status;
+    @JsonProperty("userUUID")
+    private UUID userUUID;
 
 }

@@ -70,7 +70,7 @@ public class CaseDataService {
         }
     }
 
-    public void updateCaseData(UUID caseUUID, Map<String, String> data) {
+    public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         if (data != null) {
             CaseData caseData = getCase(caseUUID);
             caseData.update(data, objectMapper);

@@ -23,10 +23,4 @@ public interface StageRepository extends CrudRepository<Stage, Long> {
     @Query(value = "SELECT * FROM active_stage_data sd WHERE sd.team_uuid IN ?1", nativeQuery = true)
     Set<Stage> findAllActiveByTeamUUIDIn(Set<UUID> teamUUID);
 
-    @Query(value = "SELECT s.user_uuid FROM stage s WHERE s.case_uuid = ?1 AND s.uuid = ?2", nativeQuery = true)
-    UUID findStageUserUUID(UUID caseUUID, UUID stageUUID);
-
-    @Query(value = "SELECT s.team_uuid FROM stage s WHERE s.case_uuid = ?1 AND s.uuid = ?2", nativeQuery = true)
-    UUID findStageTeamUUID(UUID caseUUID, UUID stageUUID);
-
 }
