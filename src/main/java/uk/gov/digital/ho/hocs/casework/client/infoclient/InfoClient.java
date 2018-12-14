@@ -54,8 +54,7 @@ public class InfoClient {
 
     public Map<String, LocalDate> getDeadlines(String caseType, LocalDate localDate) {
         ResponseEntity<InfoGetDeadlinesResponse> response = restHelper.get(serviceBaseURL, String.format("/casetype/%s/deadlines/%s", caseType, localDate), InfoGetDeadlinesResponse.class);
-        Map<String, LocalDate> deadlines = response.getBody().getDeadlines();
-        return deadlines;
+        return response.getBody().getDeadlines();
     }
 
     public Set<InfoNominatedPeople> getNominatedPeople(UUID teamUUID) {
