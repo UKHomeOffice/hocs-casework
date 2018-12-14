@@ -95,7 +95,7 @@ public class StageService {
     }
   
     public Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
-        return stageRepository.findAllByTeamUUID(teamUUID);
+        return stageRepository.findAllActiveByTeamUUID(teamUUID);
     }
 
     public Set<Stage> getActiveStagesForUser() {
