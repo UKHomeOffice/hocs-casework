@@ -93,6 +93,10 @@ public class StageService {
     public Set<Stage> getActiveStagesByCaseUUID(UUID caseUUID) {
         return stageRepository.findAllActiveByCaseUUID(caseUUID);
     }
+  
+    public Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
+        return stageRepository.findAllByTeamUUID(teamUUID);
+    }
 
     public Set<Stage> getActiveStagesForUser() {
         Set<UUID> teams = userPermissionsService.getUserTeams();

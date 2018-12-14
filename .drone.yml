@@ -79,26 +79,6 @@ pipeline:
     when:
       branch: master
       event: [push, tag]
-      
-  clone-test-project:
-    image: plugins/git
-    commands:
-      - git clone https://github.com/UKHomeOffice/hocs-serenity-automation.git
-    when:
-      event: deployment
-      environment: [dev, qa]   
-
-  execute-tests:
-    image: quay.io/ukhomeofficedigital/java8-mvn
-    secrets:
-       - artifactory_username
-       - artifactory_password
-    commands:    
-      - cd hocs-serenity-automation
-      - sh bin/smoke-tests.sh
-    when:
-      event: deployment
-      environment: [dev, qa]
 
   deployment:
     image: quay.io/ukhomeofficedigital/kd:v0.8.0

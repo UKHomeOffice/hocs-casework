@@ -65,6 +65,12 @@ class StageResource {
         return ResponseEntity.ok(team);
     }
 
+    @GetMapping(value = "/stage/team/{teamUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<GetStagesResponse> getActiveStagesByTeamUUID(@PathVariable UUID teamUUID) {
+        Set<Stage> activeStages = stageService.getActiveStagesByTeamUUID(teamUUID);
+        return ResponseEntity.ok(GetStagesResponse.from(activeStages));
+    }
+
     @GetMapping(value = "/stage", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<GetStagesResponse> getActiveStages() {
         Set<Stage> activeStages = stageService.getActiveStagesForUser();
