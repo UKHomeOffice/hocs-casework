@@ -41,7 +41,7 @@ public class CaseDataService {
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository, InfoClient infoClient,
                            ObjectMapper objectMapper, CorrespondentService correspondentService,
-                            StageService stageService, AuditClient auditClient) {
+                           StageService stageService, AuditClient auditClient) {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
@@ -93,12 +93,17 @@ public class CaseDataService {
     }
 
     public String getCaseType(UUID caseUUID) {
-        CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(caseUUID.toString().substring(34));
-        if (caseDataType == null) {
-            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID);
-            return getCase(caseUUID).getType();
-        } else {
+        try {
+            CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(caseUUID.toString().substring(34));
             return caseDataType.getDisplayCode();
+        } catch (NullPointerException e) {
+            CaseData caseData = caseDataRepository.findByUuid(caseUUID);
+            if (caseData != null) {
+                return caseData.getType();
+            } else {
+                log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
+                throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
+            }
         }
     }
 
@@ -113,7 +118,7 @@ public class CaseDataService {
         Set<String> fieldSchema = infoClient.getCaseSummaryFields(caseData.getType());
         Map<String, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
 
-        if(!StringUtils.isNullOrEmpty(caseData.getData())) {
+        if (!StringUtils.isNullOrEmpty(caseData.getData())) {
             Map<String, String> jsonData = objectMapper.readValue(caseData.getData(), new TypeReference<Map<String, Object>>() {
             });
             additionalData.putAll(jsonData.entrySet().stream()
@@ -125,7 +130,7 @@ public class CaseDataService {
             primaryCorrespondent = CorrespondentDto.from(correspondentService.getCorrespondent(caseData.getUuid(), caseData.getPrimaryCorrespondentUUID()));
         }
         Set<ActiveStage> activeStages = stageService.getActiveStagesByCaseUUID(caseUUID).stream().map(stage -> ActiveStage.from(stage)).collect(Collectors.toSet());
-        return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalData,primaryCorrespondent, activeStages);
+        return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalData, primaryCorrespondent, activeStages);
 
     }
 }

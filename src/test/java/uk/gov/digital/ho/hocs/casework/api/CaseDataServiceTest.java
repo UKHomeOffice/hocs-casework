@@ -92,7 +92,7 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
 
-        caseDataService.createCase(null, new HashMap<>(),caseDeadline, caseReceived);
+        caseDataService.createCase(null, new HashMap<>(), caseDeadline, caseReceived);
     }
 
     @Test()
@@ -101,7 +101,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         try {
-            caseDataService.createCase(null, new HashMap<>(),caseDeadline, caseReceived);
+            caseDataService.createCase(null, new HashMap<>(), caseDeadline, caseReceived);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
@@ -114,11 +114,13 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseSummaryWithValidParams() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        Set<String> filterFields =new HashSet<String>(){{ add("TEMPCReference"); }};
+        Set<String> filterFields = new HashSet<String>() {{
+            add("TEMPCReference");
+        }};
 
-        Set<Stage> activeStages = new HashSet<Stage>(){{
+        Set<Stage> activeStages = new HashSet<Stage>() {{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now()));
         }};
 
@@ -127,8 +129,7 @@ public class CaseDataServiceTest {
             put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
         }};
         Correspondent correspondent = new Correspondent(caseData.getUuid(), "CORRESPONDENT", "some name,",
-                new Address("","","","",""), "12345","some email", "some ref");
-
+                new Address("", "", "", "", ""), "12345", "some email", "some ref");
 
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
@@ -194,22 +195,22 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseOnlyFilteredAdditionalData() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
-        Set<String> filterFields =new HashSet<String>(){{
+        Set<String> filterFields = new HashSet<String>() {{
             add("TEMPCReference");
             add("CopyNumberTen");
         }};
 
-        Set<Stage> activeStages = new HashSet<Stage>(){{
+        Set<Stage> activeStages = new HashSet<Stage>() {{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now()));
         }};
 
-        Map<String, String> additionalData = new HashMap<String, String>(){{
+        Map<String, String> additionalData = new HashMap<String, String>() {{
             put("TEMPCReference", "test ref");
             put("CopyNumberTen", "true");
             put("UnfilteredField", "some value");
         }};
 
-        CaseData caseData = new CaseData(caseType, caseID, additionalData, objectMapper,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, additionalData, objectMapper, caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
 
         Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
@@ -218,7 +219,7 @@ public class CaseDataServiceTest {
         }};
 
         Correspondent correspondent = new Correspondent(caseData.getUuid(), "CORRESPONDENT", "some name,",
-                new Address("","","","",""), "12345","some email", "some ref");
+                new Address("", "", "", "", ""), "12345", "some email", "some ref");
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
@@ -239,7 +240,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseWithValidParams() throws ApplicationExceptions.EntityNotFoundException {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -344,7 +345,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldUpdatePriorityCase() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline , caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -394,5 +395,40 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).deleteCase(null);
 
         verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
+    public void shouldGetCaseType() {
+        String caseTypeShortCode = caseUUID.toString().substring(34);
+        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(new CaseDataType("MIN", "a1"));
+
+        caseDataService.getCaseType(caseUUID);
+
+        verify(infoClient, times(1)).getCaseTypeByShortCode(caseTypeShortCode);
+        verifyNoMoreInteractions(infoClient);
+        verifyNoMoreInteractions(caseDataRepository);
+
+    }
+
+    @Test
+    public void shouldReturnCaseTypeWhenNullReturnedFromInfoClientAndButCaseInCaseDataOnGetCaseType() {
+        String caseTypeShortCode = caseUUID.toString().substring(34);
+        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(null);
+        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData());
+
+        caseDataService.getCaseType(caseUUID);
+
+        verify(infoClient, times(1)).getCaseTypeByShortCode(caseTypeShortCode);
+        verifyNoMoreInteractions(infoClient);
+        verify(caseDataRepository, times(1)).findByUuid(caseUUID);
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldThrowEntityNotFoundExceptionWhenNullReturnedFromInfoClientAndNoCaseInCaseDataOnGetCaseType() {
+        String caseTypeShortCode = caseUUID.toString().substring(34);
+        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(null);
+
+        caseDataService.getCaseType(caseUUID);
     }
 }

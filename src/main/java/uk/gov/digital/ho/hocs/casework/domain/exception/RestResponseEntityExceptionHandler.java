@@ -2,12 +2,12 @@ package uk.gov.digital.ho.hocs.casework.domain.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.UNCAUGHT_EXCEPTION;
 
@@ -25,6 +25,11 @@ public class RestResponseEntityExceptionHandler {
     public ResponseEntity handle(ApplicationExceptions.EntityNotFoundException e) {
         log.error("ApplicationExceptions.EntityNotFoundException: {}", e.getMessage(),value(EVENT, e.getEvent()));
         return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
+    }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity handle(HttpMessageNotReadableException e) {
+        log.error("HttpMessageNotReadableException: {}", e.getMessage(),value(EVENT, UNCAUGHT_EXCEPTION));
+        return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(Exception.class)
