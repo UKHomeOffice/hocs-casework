@@ -299,10 +299,9 @@ public class StageServiceTest {
 
         verify(stageRepository, times(1)).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository, times(1)).save(stage);
-        verify(notifyClient, times(1)).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(null), eq(null), eq(allocationType));
 
         verifyNoMoreInteractions(stageRepository);
-        verifyNoMoreInteractions(notifyClient);
+        verifyZeroInteractions(notifyClient);
 
     }
 
@@ -342,19 +341,4 @@ public class StageServiceTest {
 
     }
 
-    @Test
-    public void shouldCompleteStage() {
-
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
-
-        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
-
-        stageService.completeStage(caseUUID, stageUUID);
-
-        verify(stageRepository, times(1)).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
-        verify(stageRepository, times(1)).save(stage);
-
-        verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
-    }
 }

@@ -34,10 +34,12 @@ public class NotifyClient {
 
     public void sendTeamEmail(UUID caseUUID, UUID stageUUID, UUID teamUUID, String caseReference, String allocationType) {
         try {
-            Set<InfoNominatedPeople> nominatedPeople = infoClient.getNominatedPeople(teamUUID);
-            NotifyType notifyType = NotifyType.valueOf(allocationType);
-            for (InfoNominatedPeople contact : nominatedPeople) {
-                sendEmail(caseUUID, stageUUID, contact.getEmailAddress(), "Team", caseReference, notifyType);
+            if (teamUUID != null) {
+                Set<InfoNominatedPeople> nominatedPeople = infoClient.getNominatedPeople(teamUUID);
+                NotifyType notifyType = NotifyType.valueOf(allocationType);
+                for (InfoNominatedPeople contact : nominatedPeople) {
+                    sendEmail(caseUUID, stageUUID, contact.getEmailAddress(), "Team", caseReference, notifyType);
+                }
             }
         } catch (Exception e) {
             log.error(e.getLocalizedMessage());

@@ -41,14 +41,14 @@ class StageResource {
 
     @Authorised(accessLevel = AccessLevel.READ)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user")
-    public ResponseEntity allocateStageUser(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateUserRequest request) {
+    public ResponseEntity updateStageUser(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateUserRequest request) {
         stageService.updateStageUser(caseUUID, stageUUID, request.getUserUUID());
         return ResponseEntity.ok().build();
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/team")
-    public ResponseEntity allocateStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateTeamRequest request) {
+    public ResponseEntity updateStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody AllocateTeamRequest request) {
         stageService.updateStageTeam(caseUUID, stageUUID, request.getTeamUUID(), request.getAllocationType());
         return ResponseEntity.ok().build();
     }

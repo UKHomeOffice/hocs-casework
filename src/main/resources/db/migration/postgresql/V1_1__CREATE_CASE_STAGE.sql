@@ -51,7 +51,6 @@ CREATE TABLE IF NOT EXISTS stage
   created   TIMESTAMP   NOT NULL,
   type      TEXT        NOT NULL,
   deadline  DATE,
-  status    VARCHAR(16) NOT NULL,
   case_uuid UUID        NOT NULL,
   team_uuid UUID,
   user_uuid UUID,
@@ -63,7 +62,7 @@ CREATE TABLE IF NOT EXISTS stage
 -- GetStage
 CREATE INDEX stage_case_uuid_complete
   ON stage (uuid, case_uuid)
-  WHERE status <> 'COMPLETED';
+  WHERE team_uuid NOTNULL;
 
 CREATE INDEX stage_case_uuid
   ON stage (uuid, case_uuid);
@@ -71,18 +70,18 @@ CREATE INDEX stage_case_uuid
 -- Workstacks
 CREATE INDEX stage_team_uuid_complete
   ON stage (team_uuid, case_uuid)
-  WHERE status <> 'COMPLETED';
+  WHERE team_uuid NOTNULL;
 CREATE INDEX stage_user_uuid_complete
   ON stage (user_uuid, case_uuid)
-  WHERE status <> 'COMPLETED';
+  WHERE team_uuid NOTNULL;
 
 CREATE OR REPLACE VIEW stage_data AS
   SELECT c.reference AS case_reference, c.type AS case_type, c.data as data, s.*
   FROM stage s
          JOIN active_case c ON s.case_uuid = c.uuid;
 
-CREATE OR REPLACE VIEW active_stage AS
+CREATE OR REPLACE VIEW active_stage_data AS
   SELECT c.reference AS case_reference, c.type AS case_type, c.data as data, s.*
   FROM stage s
          JOIN active_case c ON s.case_uuid = c.uuid
-  WHERE s.status <> 'COMPLETED';
+  WHERE s.team_uuid NOTNULL;

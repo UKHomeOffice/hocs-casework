@@ -27,9 +27,6 @@ public class StageDto {
     @JsonProperty("deadline")
     private LocalDate deadline;
 
-    @JsonProperty("status")
-    private String status;
-
     @JsonProperty("caseUUID")
     private UUID caseUUID;
 
@@ -57,9 +54,8 @@ public class StageDto {
         return new StageDto(
                 stage.getUuid(),
                 stage.getCreated(),
-                stage.getStageType().toString(),
+                stage.getStageType(),
                 stage.getDeadline(),
-                stage.getStageStatusType().toString(),
                 stage.getCaseUUID(),
                 stage.getTeamUUID(),
                 stage.getUserUUID(),

@@ -66,13 +66,17 @@ public class StageService {
     }
 
     public void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID teamUUID, String allocationType) {
-        // This only happens on a reject path, the problem is getStages uses a view that filters out completed stages.
+        // This can happen on a reject path, the problem is getStages uses a view that filters out completed stages.
         // so we have to not use the Active_Stages view.
         Stage stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
         stage.setTeam(teamUUID);
         stageRepository.save(stage);
-        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, stage.getCaseReference(), allocationType);
-        log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, teamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
+        if (teamUUID == null) {
+            log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID, value(EVENT, STAGE_COMPLETED));
+        } else {
+            log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, teamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
+            notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, stage.getCaseReference(), allocationType);
+        }
     }
 
     public void updateStageUser(UUID caseUUID, UUID stageUUID, UUID newUserUUID) {
@@ -82,13 +86,6 @@ public class StageService {
         stageRepository.save(stage);
         log.info("Set Stage User: {} ({}) for Case {}", stageUUID, newUserUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_USER));
         notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, stage.getCaseReference());
-    }
-
-    public void completeStage(UUID caseUUID, UUID stageUUID) {
-        Stage stage = getStage(caseUUID, stageUUID);
-        stage.completeStage();
-        stageRepository.save(stage);
-        log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID, value(EVENT, STAGE_COMPLETED));
     }
 
     public Set<Stage> getActiveStagesByCaseUUID(UUID caseUUID) {

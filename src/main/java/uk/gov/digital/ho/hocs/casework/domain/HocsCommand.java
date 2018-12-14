@@ -8,7 +8,7 @@ import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.CaseNoteService;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
-import uk.gov.digital.ho.hocs.casework.queue.dto.*;
+import uk.gov.digital.ho.hocs.casework.queue.dto.UpdateCaseDataRequest;
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -16,11 +16,7 @@ import uk.gov.digital.ho.hocs.casework.queue.dto.*;
         property = "command"
 )
 @JsonSubTypes({ // Keep this list alphabetical
-        @JsonSubTypes.Type(value = CompleteStageRequest.class),
-        @JsonSubTypes.Type(value = CreateCaseNoteRequest.class),
         @JsonSubTypes.Type(value = UpdateCaseDataRequest.class),
-        @JsonSubTypes.Type(value = UpdateCasePriorityRequest.class),
-        @JsonSubTypes.Type(value = UpdateStageDeadlineRequest.class),
 })
 
 public abstract class HocsCommand implements Command {
