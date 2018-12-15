@@ -31,10 +31,10 @@ public class CaseDataDto {
     private String data;
 
     @JsonProperty("primaryTopic")
-    private String primaryTopic;
+    private UUID primaryTopic;
 
     @JsonProperty("primaryCorrespondent")
-    private String primaryCorrespondent;
+    private UUID primaryCorrespondent;
 
     @JsonProperty("caseDeadline")
     private LocalDate caseDeadline;
@@ -44,24 +44,14 @@ public class CaseDataDto {
 
     public static CaseDataDto from(CaseData caseData) {
 
-        String primaryCorrespondent = null;
-        if (caseData.getPrimaryCorrespondentUUID() != null) {
-            primaryCorrespondent = caseData.getPrimaryCorrespondentUUID().toString();
-        }
-
-        String primaryTopic = null;
-        if (caseData.getPrimaryTopicUUID() != null) {
-            primaryTopic = caseData.getPrimaryTopicUUID().toString();
-        }
-
         return new CaseDataDto(
                 caseData.getUuid(),
                 caseData.getCreated(),
                 caseData.getType(),
                 caseData.getReference(),
                 caseData.getData(),
-                primaryTopic,
-                primaryCorrespondent,
+                caseData.getPrimaryTopicUUID(),
+                caseData.getPrimaryCorrespondentUUID(),
                 caseData.getCaseDeadline(),
                 caseData.getDateReceived());
     }

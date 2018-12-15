@@ -47,10 +47,6 @@ public class StageDto {
 
     public static StageDto from(Stage stage) {
 
-        String caseDataType = null;
-        if (stage.getCaseDataType() != null) {
-            caseDataType = stage.getCaseDataType();
-        }
         return new StageDto(
                 stage.getUuid(),
                 stage.getCreated(),
@@ -60,7 +56,7 @@ public class StageDto {
                 stage.getTeamUUID(),
                 stage.getUserUUID(),
                 stage.getCaseReference(),
-                caseDataType,
+                stage.getCaseDataType(),
                 stage.getData());
     }
 }

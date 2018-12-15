@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
@@ -8,10 +9,9 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class CorrespondentDto {
-
 
     @JsonProperty("uuid")
     private UUID uuid;

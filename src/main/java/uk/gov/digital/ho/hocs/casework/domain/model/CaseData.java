@@ -5,13 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
@@ -87,6 +88,13 @@ public class CaseData {
         this.uuid = randomUUID(type.getShortCode());
         this.caseDeadline = caseDeadline;
         this.dateReceived = dateReceived;
+    }
+
+    public Map<String, String> getFilteredDataMap(Set<String> fields, ObjectMapper objectMapper) {
+        Map<String, String> sourceData = CaseData.getDataMap(this.getData(), objectMapper);
+        Map<String, String> filteredData = new HashMap<>();
+        fields.forEach(f -> filteredData.put(f, sourceData.getOrDefault(f, null)));
+        return filteredData;
     }
 
     private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {

@@ -110,7 +110,8 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldGetCaseSummary() throws IOException {
-        CaseSummary caseSummary = new CaseSummary();
+
+        CaseSummary caseSummary = CaseSummary.from(null, null, null, null, null);
 
         when(caseDataService.getCaseSummary(uuid)).thenReturn(caseSummary);
 

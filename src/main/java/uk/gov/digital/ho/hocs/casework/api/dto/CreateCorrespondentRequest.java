@@ -8,7 +8,6 @@ import lombok.Getter;
 @Getter
 public class CreateCorrespondentRequest {
 
-
     @JsonProperty("type")
     String type;
 
