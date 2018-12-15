@@ -64,21 +64,6 @@ public class TopicResourceTest {
     }
 
     @Test
-    public void shouldGetPrimaryTopic() {
-
-        when(topicService.getPrimaryTopic(caseUUID)).thenReturn(new Topic(caseUUID, topicName, topicUUID));
-
-        ResponseEntity<GetTopicResponse> response = topicResource.getPrimaryTopic(caseUUID);
-
-        verify(topicService, times(1)).getPrimaryTopic(caseUUID);
-
-        verifyNoMoreInteractions(topicService);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
     public void shouldDeleteTopicFromCase() {
 
         doNothing().when(topicService).deleteTopic(caseUUID, topicUUID);
