@@ -97,15 +97,15 @@ public class CaseDataService {
         }
     }
 
-    CaseSummary getCaseSummary(UUID caseUUID) {
+    public CaseSummary getCaseSummary(UUID caseUUID) {
         CaseData caseData = getCase(caseUUID);
-
-        // All Stage Deadlines
-        Map<String, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
 
         // Field Data
         Set<String> fieldSchema = infoClient.getCaseSummaryFields(caseData.getType());
         Map<String, String> additionalData = caseData.getFilteredDataMap(fieldSchema, objectMapper);
+
+        // All Stage Deadlines
+        Map<String, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
 
         // Primary Correspondent
         Correspondent correspondent = null;
