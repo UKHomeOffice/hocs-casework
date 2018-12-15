@@ -27,44 +27,44 @@ class CaseDataResource {
         this.caseDataService = caseDataService;
     }
 
+    @Authorised(accessLevel = AccessLevel.READ)
+    @GetMapping(value = "/case/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
+    ResponseEntity<GetCaseDataResponse> getCase(@PathVariable UUID caseUUID) {
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        return ResponseEntity.ok(GetCaseDataResponse.from(caseData));
+    }
+
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
+    @GetMapping(value = "/case/{caseUUID}/summary", produces = APPLICATION_JSON_UTF8_VALUE)
+    ResponseEntity<GetCaseSummaryResponse> getCaseSummary(@PathVariable UUID caseUUID) throws IOException {
+        GetCaseSummaryResponse caseData = caseDataService.getCaseSummary(caseUUID);
+        return ResponseEntity.ok(caseData);
+    }
+
+    @GetMapping(value = "/case/{caseUUID}/type", consumes = APPLICATION_JSON_UTF8_VALUE)
+    ResponseEntity<String> getCaseType(@PathVariable UUID caseUUID) {
+        String caseDataType = caseDataService.getCaseType(caseUUID);
+        return ResponseEntity.ok(caseDataType);
+    }
+
     @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/case", consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
+    ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getCaseDeadline(), request.getDateReceieved());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
-    @Authorised(accessLevel = AccessLevel.READ)
-    @GetMapping(value = "/case/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CaseDataDto> getCase(@PathVariable UUID caseUUID) {
-        CaseData caseData = caseDataService.getCase(caseUUID);
-        return ResponseEntity.ok(CaseDataDto.from(caseData));
-    }
-
     @Allocated(allocatedTo = AllocationLevel.USER)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data", consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {
+    ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {
         caseDataService.updateCaseData(caseUUID, stageUUID, request.getData());
         return ResponseEntity.ok().build();
     }
 
     @Authorised(accessLevel = AccessLevel.OWNER)
     @DeleteMapping(value = "/case/{caseUUID}", consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity deleteCase(@PathVariable UUID caseUUID) {
+    ResponseEntity deleteCase(@PathVariable UUID caseUUID) {
         caseDataService.deleteCase(caseUUID);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping(value = "/case/{caseUUID}/type", consumes = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<String> getCaseType(@PathVariable UUID caseUUID) {
-        String caseDataType = caseDataService.getCaseType(caseUUID);
-        return ResponseEntity.ok(caseDataType);
-    }
-
-    @Authorised(accessLevel = AccessLevel.SUMMARY)
-    @GetMapping(value = "/case/{caseUUID}/summary", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<CaseSummary> getCaseSummary(@PathVariable UUID caseUUID) throws IOException {
-        CaseSummary caseData = caseDataService.getCaseSummary(caseUUID);
-        return ResponseEntity.ok(caseData);
     }
 }

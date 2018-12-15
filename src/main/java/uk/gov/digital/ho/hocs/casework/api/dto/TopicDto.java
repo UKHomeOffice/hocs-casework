@@ -29,6 +29,11 @@ public class TopicDto {
     private UUID topicUUID;
 
     public static TopicDto from(Topic topic) {
-        return new TopicDto(topic.getUuid(), topic.getCreated(), topic.getCaseUUID(), topic.getText(), topic.getTextUUID());
+        return new TopicDto(
+                topic.getUuid(),
+                topic.getCreated(),
+                topic.getCaseUUID(),
+                topic.getText(),
+                topic.getTextUUID());
     }
 }

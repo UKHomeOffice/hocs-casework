@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -138,7 +138,7 @@ public class CaseDataServiceTest {
         when(stageService.getActiveStagesByCaseUUID(caseData.getUuid())).thenReturn(activeStages);
         when(correspondentService.getCorrespondent(caseData.getUuid(), primaryCorrespondentUUID)).thenReturn(correspondent);
 
-        CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
+        GetCaseSummaryResponse result = caseDataService.getCaseSummary(caseData.getUuid());
 
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
         assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
@@ -176,7 +176,7 @@ public class CaseDataServiceTest {
         when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
         when(stageService.getActiveStagesByCaseUUID(caseData.getUuid())).thenReturn(activeStages);
 
-        CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
+        GetCaseSummaryResponse result = caseDataService.getCaseSummary(caseData.getUuid());
 
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
         assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
@@ -227,7 +227,7 @@ public class CaseDataServiceTest {
         when(stageService.getActiveStagesByCaseUUID(caseData.getUuid())).thenReturn(activeStages);
         when(correspondentService.getCorrespondent(caseData.getUuid(), primaryCorrespondentUUID)).thenReturn(correspondent);
 
-        CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
+        GetCaseSummaryResponse result = caseDataService.getCaseSummary(caseData.getUuid());
 
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
         assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
@@ -380,19 +380,33 @@ public class CaseDataServiceTest {
     @Test
     public void shouldDeleteCase() {
 
-        caseDataService.deleteCase(caseUUID);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
 
-        verify(caseDataRepository, times(1)).deleteCase(caseUUID);
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+
+        caseDataService.deleteCase(caseData.getUuid());
+
+        verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
+        verify(caseDataRepository, times(1)).save(caseData);
 
         verifyNoMoreInteractions(caseDataRepository);
     }
 
-    @Test
-    public void shouldDeleteCaseNull() {
-
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotDeleteCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
         caseDataService.deleteCase(null);
+    }
 
-        verify(caseDataRepository, times(1)).deleteCase(null);
+    @Test()
+    public void shouldNotDeleteCaseMissingCaseUUID() {
+
+        try {
+            caseDataService.deleteCase(null);
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
+            // Do nothing.
+        }
+
+        verify(caseDataRepository, times(1)).findByUuid(null);
 
         verifyNoMoreInteractions(caseDataRepository);
     }

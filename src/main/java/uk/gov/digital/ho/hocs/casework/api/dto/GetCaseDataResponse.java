@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class CaseDataDto {
+public class GetCaseDataResponse {
 
     @JsonProperty("uuid")
     private UUID uuid;
@@ -31,10 +31,10 @@ public class CaseDataDto {
     private String data;
 
     @JsonProperty("primaryTopic")
-    private String primaryTopic;
+    private UUID primaryTopic;
 
     @JsonProperty("primaryCorrespondent")
-    private String primaryCorrespondent;
+    private UUID primaryCorrespondent;
 
     @JsonProperty("caseDeadline")
     private LocalDate caseDeadline;
@@ -42,26 +42,16 @@ public class CaseDataDto {
     @JsonProperty("dateReceived")
     private LocalDate dateReceived;
 
-    public static CaseDataDto from(CaseData caseData) {
+    public static GetCaseDataResponse from(CaseData caseData) {
 
-        String primaryCorrespondent = null;
-        if (caseData.getPrimaryCorrespondentUUID() != null) {
-            primaryCorrespondent = caseData.getPrimaryCorrespondentUUID().toString();
-        }
-
-        String primaryTopic = null;
-        if (caseData.getPrimaryTopicUUID() != null) {
-            primaryTopic = caseData.getPrimaryTopicUUID().toString();
-        }
-
-        return new CaseDataDto(
+        return new GetCaseDataResponse(
                 caseData.getUuid(),
                 caseData.getCreated(),
                 caseData.getType(),
                 caseData.getReference(),
                 caseData.getData(),
-                primaryTopic,
-                primaryCorrespondent,
+                caseData.getPrimaryTopicUUID(),
+                caseData.getPrimaryCorrespondentUUID(),
                 caseData.getCaseDeadline(),
                 caseData.getDateReceived());
     }

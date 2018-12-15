@@ -5,13 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
@@ -47,6 +48,11 @@ public class CaseData {
     @Getter
     @Column(name = "priority")
     private boolean priority;
+
+    @Setter
+    @Getter
+    @Column(name = "deleted")
+    private boolean deleted;
 
     @Getter
     @Column(name = "data")
@@ -108,6 +114,13 @@ public class CaseData {
             throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to read data value!", CASE_DATA_JSON_PARSE_ERROR);
         }
         return dataMap;
+    }
+
+    public Map<String, String> getFilteredDataMap(Set<String> fields, ObjectMapper objectMapper) {
+        Map<String, String> sourceData = CaseData.getDataMap(this.getData(), objectMapper);
+        Map<String, String> filteredData = new HashMap<>();
+        fields.forEach(f -> filteredData.put(f, sourceData.getOrDefault(f, null)));
+        return filteredData;
     }
 
     private String generateCaseReference(Long caseNumber) {

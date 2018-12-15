@@ -8,10 +8,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseDataResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
@@ -66,7 +66,7 @@ public class CaseDataResourceTest {
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
-        ResponseEntity<CaseDataDto> response = caseDataResource.getCase(uuid);
+        ResponseEntity<GetCaseDataResponse> response = caseDataResource.getCase(uuid);
 
         verify(caseDataService, times(1)).getCase(uuid);
 
@@ -110,9 +110,9 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldGetCaseSummary() throws IOException {
-        CaseSummary caseSummary = new CaseSummary();
+        GetCaseSummaryResponse getCaseSummaryResponse = GetCaseSummaryResponse.from(null, null, null, null, null);
 
-        when(caseDataService.getCaseSummary(uuid)).thenReturn(caseSummary);
+        when(caseDataService.getCaseSummary(uuid)).thenReturn(getCaseSummaryResponse);
 
         ResponseEntity response = caseDataResource.getCaseSummary(uuid);
 

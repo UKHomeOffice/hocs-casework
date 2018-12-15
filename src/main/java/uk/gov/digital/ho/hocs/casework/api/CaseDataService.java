@@ -1,28 +1,23 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.amazonaws.util.StringUtils;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActiveStage;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
-import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -51,9 +46,10 @@ public class CaseDataService {
     }
 
     public CaseData getCase(UUID caseUUID) {
+        log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findByUuid(caseUUID);
         if (caseData != null) {
-            log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+            log.info("Got Case: {}", caseUUID, value(EVENT, CASE_RETRIEVED));
             return caseData;
         } else {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
@@ -62,21 +58,23 @@ public class CaseDataService {
     }
 
     public String getCaseType(UUID caseUUID) {
+        log.debug("Getting CaseType for Case {}", caseUUID);
         CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(caseUUID.toString().substring(34));
-        if (caseDataType == null) {
+        if (caseDataType != null) {
+            return caseDataType.getDisplayCode();
+        } else {
             log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID);
             return getCase(caseUUID).getType();
-        } else {
-            return caseDataType.getDisplayCode();
         }
     }
 
     CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
+        log.debug("Creating new Case of Type {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
         CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline, dateReceived);
         caseDataRepository.save(caseData);
         auditClient.createCaseAudit(caseData);
-        log.info("Created Case Type: {} UUID: {}", caseType.getDisplayCode(), caseData.getUuid(), value(EVENT, CASE_CREATED));
+        log.info("Created Case of Type: {} UUID: {}", caseType.getDisplayCode(), caseData.getUuid(), value(EVENT, CASE_CREATED));
         return caseData;
     }
 
@@ -90,42 +88,44 @@ public class CaseDataService {
     }
 
     void updatePriority(UUID caseUUID, boolean priority) {
+        log.debug("Setting Case Priority {} for Case {}", priority, caseUUID);
         CaseData caseData = getCase(caseUUID);
         caseData.setPriority(priority);
         caseDataRepository.save(caseData);
-        log.info("Updated Case Data for Case: {}", caseUUID, value(EVENT, PRIORITY_UPDATED));
+        log.info("Setting Case Priority {} for Case {}", priority, caseUUID, value(EVENT, PRIORITY_UPDATED));
     }
 
     void deleteCase(UUID caseUUID) {
-        caseDataRepository.deleteCase(caseUUID);
+        log.debug("Deleting Case {}", caseUUID);
+        CaseData caseData = getCase(caseUUID);
+        caseData.setDeleted(true);
+        caseDataRepository.save(caseData);
         log.info("Deleted Case: {}", caseUUID, value(EVENT, CASE_DELETED));
-
     }
 
-    CaseSummary getCaseSummary(UUID caseUUID) throws IOException {
-        CaseData caseData = caseDataRepository.findByUuid(caseUUID);
-        if (caseData == null) {
-            log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
-        }
+    GetCaseSummaryResponse getCaseSummary(UUID caseUUID) {
+        CaseData caseData = getCase(caseUUID);
 
-        Map<String, String> additionalData = new HashMap<>();
-        Set<String> fieldSchema = infoClient.getCaseSummaryFields(caseData.getType());
+        // All Stage Deadlines
         Map<String, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
 
-        if(!StringUtils.isNullOrEmpty(caseData.getData())) {
-            Map<String, String> jsonData = objectMapper.readValue(caseData.getData(), new TypeReference<Map<String, Object>>() {
-            });
-            additionalData.putAll(jsonData.entrySet().stream()
-                    .filter(d -> fieldSchema.contains(d.getKey()))
-                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
-        }
-        CorrespondentDto primaryCorrespondent = null;
-        if (caseData.getPrimaryCorrespondentUUID() != null) {
-            primaryCorrespondent = CorrespondentDto.from(correspondentService.getCorrespondent(caseData.getUuid(), caseData.getPrimaryCorrespondentUUID()));
-        }
-        Set<ActiveStage> activeStages = stageService.getActiveStagesByCaseUUID(caseUUID).stream().map(ActiveStage::from).collect(Collectors.toSet());
-        return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalData,primaryCorrespondent, activeStages);
+        // Field Data
+        Set<String> fieldSchema = infoClient.getCaseSummaryFields(caseData.getType());
+        Map<String, String> additionalData = caseData.getFilteredDataMap(fieldSchema, objectMapper);
 
+        // Primary Correspondent
+        Correspondent correspondent = null;
+        if (caseData.getPrimaryCorrespondentUUID() != null) {
+            try {
+                correspondent = correspondentService.getCorrespondent(caseData.getUuid(), caseData.getPrimaryCorrespondentUUID());
+            } catch (ApplicationExceptions.EntityNotFoundException e) {
+                log.warn("Case {} referenced a non-existent Correspondent {}", caseUUID, caseData.getPrimaryCorrespondentUUID(), value(EVENT, INVALID_PRIMARY_CORRESPONDENT));
+            }
+        }
+
+        // Active Stages
+        Set<Stage> activeStages = stageService.getActiveStagesByCaseUUID(caseUUID);
+
+        return GetCaseSummaryResponse.from(caseData.getCaseDeadline(), stageDeadlines, additionalData, correspondent, activeStages);
     }
 }
