@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 public class GetCorrespondentsResponse {
 
     @JsonProperty("correspondents")
-    Set<CorrespondentDto> correspondents;
+    Set<GetCorrespondentResponse> correspondents;
 
     public static GetCorrespondentsResponse from(Set<Correspondent> correspondentData) {
-        Set<CorrespondentDto> correspondents = correspondentData
+        Set<GetCorrespondentResponse> correspondents = correspondentData
                 .stream()
-                .map(CorrespondentDto::from)
+                .map(GetCorrespondentResponse::from)
                 .collect(Collectors.toSet());
 
         return new GetCorrespondentsResponse(correspondents);

@@ -52,17 +52,6 @@ public class TopicService {
     }
 
     @Transactional
-    public Topic getPrimaryTopic(UUID caseUUID) {
-        Topic topic = topicDataRepository.getPrimaryTopic(caseUUID);
-        if (topic != null) {
-            log.info("Got Primary Topic: {} for Case: {}", topic.getUuid(), caseUUID, value(EVENT, CASE_PRIMARY_TOPIC_RETRIEVED));
-            return topic;
-        } else {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Primary Topic not found for Case: %s", caseUUID), CASE_PRIMARY_TOPIC_NOT_FOUND);
-        }
-    }
-
-    @Transactional
     public void createTopic(UUID caseUUID, UUID topicUUID) {
         if (topicUUID != null) {
             InfoTopic infoTopic = infoClient.getTopic(topicUUID);

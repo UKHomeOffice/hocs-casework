@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class CorrespondentDto {
+public class GetCorrespondentResponse {
 
     @JsonProperty("uuid")
     private UUID uuid;
@@ -40,8 +40,8 @@ public class CorrespondentDto {
     @JsonProperty("reference")
     private String reference;
 
-    public static CorrespondentDto from(Correspondent correspondent) {
-        return new CorrespondentDto(
+    public static GetCorrespondentResponse from(Correspondent correspondent) {
+        return new GetCorrespondentResponse(
                 correspondent.getUuid(),
                 correspondent.getCreated(),
                 correspondent.getCorrespondentType(),

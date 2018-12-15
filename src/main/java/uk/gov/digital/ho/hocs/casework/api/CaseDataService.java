@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.auditClient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
@@ -120,6 +120,7 @@ public class CaseDataService {
         // Active Stages
         Set<Stage> stages = stageService.getActiveStagesByCaseUUID(caseUUID);
 
-        return CaseSummary.from(caseData.getCaseDeadline(), stageDeadlines, additionalData, correspondent, stages);
+
+        return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalData, correspondent, stages);
     }
 }

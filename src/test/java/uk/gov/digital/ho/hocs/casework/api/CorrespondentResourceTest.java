@@ -7,7 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
@@ -56,7 +56,7 @@ public class CorrespondentResourceTest {
 
         when(correspondentService.getCorrespondent(caseUUID, correspondentUUID)).thenReturn(correspondent);
 
-        ResponseEntity<CorrespondentDto> response = correspondentResource.getCorrespondent(caseUUID, correspondentUUID);
+        ResponseEntity<GetCorrespondentResponse> response = correspondentResource.getCorrespondent(caseUUID, correspondentUUID);
 
         verify(correspondentService, times(1)).getCorrespondent(caseUUID, correspondentUUID);
 
@@ -74,7 +74,7 @@ public class CorrespondentResourceTest {
 
         when(correspondentService.getPrimaryCorrespondent(caseUUID)).thenReturn(correspondent);
 
-        ResponseEntity<CorrespondentDto> response = correspondentResource.getPrimaryCorrespondent(caseUUID);
+        ResponseEntity<GetCorrespondentResponse> response = correspondentResource.getPrimaryCorrespondent(caseUUID);
 
         verify(correspondentService, times(1)).getPrimaryCorrespondent(caseUUID);
 

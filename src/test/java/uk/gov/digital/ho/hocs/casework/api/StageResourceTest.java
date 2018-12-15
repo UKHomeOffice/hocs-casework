@@ -80,7 +80,7 @@ public class StageResourceTest {
 
         when(stageService.getStage(caseUUID, stageUUID)).thenReturn(stage);
 
-        ResponseEntity<StageDto> response = stageResource.getStage(caseUUID, stageUUID);
+        ResponseEntity<GetStageResponse> response = stageResource.getStage(caseUUID, stageUUID);
 
         verify(stageService, times(1)).getStage(caseUUID, stageUUID);
 

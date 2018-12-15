@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class ActiveStage {
+public class ActiveStageDto {
 
     @JsonProperty("stageUUID")
     private UUID stageUUID;
@@ -24,8 +24,8 @@ public class ActiveStage {
     @JsonProperty("assignedToTeamUUID")
     private UUID assignedToTeamUUID;
 
-    public static ActiveStage from(Stage stage) {
-        return new ActiveStage(stage.getUuid(), stage.getStageType(),stage.getUserUUID(), stage.getTeamUUID());
+    public static ActiveStageDto from(Stage stage) {
+        return new ActiveStageDto(stage.getUuid(), stage.getStageType(),stage.getUserUUID(), stage.getTeamUUID());
 
     }
 }

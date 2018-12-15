@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 public class GetTopicsResponse {
 
     @JsonProperty("topics")
-    private Set<TopicDto> topics;
+    private Set<GetTopicResponse> topics;
 
     public static GetTopicsResponse from(Set<Topic> topicData) {
-        Set<TopicDto> topicsResponses = topicData
+        Set<GetTopicResponse> topicsResponses = topicData
                 .stream()
-                .map(TopicDto::from)
+                .map(GetTopicResponse::from)
                 .collect(Collectors.toSet());
 
         return new GetTopicsResponse(topicsResponses);

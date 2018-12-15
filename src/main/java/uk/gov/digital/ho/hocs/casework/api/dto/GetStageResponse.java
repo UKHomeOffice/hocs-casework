@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class StageDto {
+public class GetStageResponse {
 
     @JsonProperty("uuid")
     private UUID uuid;
@@ -45,9 +45,9 @@ public class StageDto {
     @JsonRawValue
     private String data;
 
-    public static StageDto from(Stage stage) {
+    public static GetStageResponse from(Stage stage) {
 
-        return new StageDto(
+        return new GetStageResponse(
                 stage.getUuid(),
                 stage.getCreated(),
                 stage.getStageType(),

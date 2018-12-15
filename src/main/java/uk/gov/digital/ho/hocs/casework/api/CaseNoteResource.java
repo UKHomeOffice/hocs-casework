@@ -14,8 +14,6 @@ import uk.gov.digital.ho.hocs.casework.security.Authorised;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-
 @Slf4j
 @RestController
 public class CaseNoteResource {
@@ -28,8 +26,8 @@ public class CaseNoteResource {
     }
 
     @Authorised(accessLevel = AccessLevel.SUMMARY)
-    @GetMapping(value = "/case/{caseUUID}/note", produces = APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<GetCaseNotesResponse> getCaseNotesForCase(@PathVariable UUID caseUUID) {
+    @GetMapping(value = "/case/{caseUUID}/note")
+    ResponseEntity<GetCaseNotesResponse> getCaseNotesForCase(@PathVariable UUID caseUUID) {
         Set<CaseNote> caseNoteData = caseNoteService.getCaseNotes(caseUUID);
         return ResponseEntity.ok(GetCaseNotesResponse.from(caseNoteData));
     }

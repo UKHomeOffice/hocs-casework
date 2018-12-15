@@ -14,12 +14,12 @@ import java.util.stream.Collectors;
 public class GetCaseNotesResponse {
 
     @JsonProperty("caseNotes")
-    private Set<CaseNoteDto> caseNotes;
+    private Set<GetCaseNotResponse> caseNotes;
 
     public static GetCaseNotesResponse from(Set<CaseNote> caseNoteData) {
-        Set<CaseNoteDto> caseNotesResponses = caseNoteData
+        Set<GetCaseNotResponse> caseNotesResponses = caseNoteData
                 .stream()
-                .map(CaseNoteDto::from)
+                .map(GetCaseNotResponse::from)
                 .collect(Collectors.toSet());
 
         return new GetCaseNotesResponse(caseNotesResponses);

@@ -8,7 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicsResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.TopicDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 
 import java.util.HashSet;
@@ -53,7 +53,7 @@ public class TopicResourceTest {
 
         when(topicService.getTopic(caseUUID, topicUUID)).thenReturn(new Topic(caseUUID, topicName, topicUUID));
 
-        ResponseEntity<TopicDto> response = topicResource.getTopic(caseUUID, topicUUID);
+        ResponseEntity<GetTopicResponse> response = topicResource.getTopic(caseUUID, topicUUID);
 
         verify(topicService, times(1)).getTopic(caseUUID, topicUUID);
 
@@ -68,7 +68,7 @@ public class TopicResourceTest {
 
         when(topicService.getPrimaryTopic(caseUUID)).thenReturn(new Topic(caseUUID, topicName, topicUUID));
 
-        ResponseEntity<TopicDto> response = topicResource.getPrimaryTopic(caseUUID);
+        ResponseEntity<GetTopicResponse> response = topicResource.getPrimaryTopic(caseUUID);
 
         verify(topicService, times(1)).getPrimaryTopic(caseUUID);
 

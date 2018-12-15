@@ -49,17 +49,6 @@ public class CorrespondentService {
     }
 
     @Transactional
-    public Correspondent getPrimaryCorrespondent(UUID caseUUID) {
-        Correspondent correspondent = correspondentRepository.getPrimaryCorrespondent(caseUUID);
-        if (correspondent != null) {
-            log.info("Got Primary Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID, value(EVENT, CORRESPONDENT_RETRIEVED));
-            return correspondent;
-        } else {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Primary Correspondent not found for Case: %s", caseUUID), CORRESPONDENT_NOT_FOUND);
-        }
-    }
-
-    @Transactional
     public void createCorrespondent(UUID caseUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference) {
         Correspondent correspondent = new Correspondent(caseUUID,
                 correspondentType,
