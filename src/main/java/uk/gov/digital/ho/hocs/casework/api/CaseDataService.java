@@ -118,8 +118,8 @@ public class CaseDataService {
         }
 
         // Active Stages
-        Set<Stage> activeStages = stageService.getActiveStagesByCaseUUID(caseUUID);
+        Set<Stage> stages = stageService.getActiveStagesByCaseUUID(caseUUID);
 
-        return CaseSummary.from(caseData.getCaseDeadline(), stageDeadlines, additionalData, correspondent, activeStages);
+        return CaseSummary.from(caseData.getCaseDeadline(), stageDeadlines, additionalData, correspondent, stages);
     }
 }
