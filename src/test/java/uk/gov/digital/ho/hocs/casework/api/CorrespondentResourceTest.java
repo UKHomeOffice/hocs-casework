@@ -67,24 +67,6 @@ public class CorrespondentResourceTest {
     }
 
     @Test
-    public void shouldGetPrimaryCorrespondent() {
-
-        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
-
-        when(correspondentService.getPrimaryCorrespondent(caseUUID)).thenReturn(correspondent);
-
-        ResponseEntity<GetCorrespondentResponse> response = correspondentResource.getPrimaryCorrespondent(caseUUID);
-
-        verify(correspondentService, times(1)).getPrimaryCorrespondent(caseUUID);
-
-        verifyNoMoreInteractions(correspondentService);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
     public void shouldDeleteCorrespondentFromCase() {
 
         doNothing().when(correspondentService).deleteCorrespondent(caseUUID, correspondentUUID);
