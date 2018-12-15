@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.auditclient;
+package uk.gov.digital.ho.hocs.casework.client.auditclient;
 
 public enum EventType {
     CASE_ALLOCATED_SELF,
