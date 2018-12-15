@@ -65,7 +65,6 @@ public class SecurityIntegrationTest {
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/MIN/WRITE," +
                                                           "/DCU/team3/MIN/READ");
-        headers.add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE);
         HttpEntity httpEntity = new HttpEntity(headers);
         ResponseEntity<String> result = restTemplate.exchange( getBasePath()  + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -79,7 +78,6 @@ public class SecurityIntegrationTest {
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");
-        headers.add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE);
         HttpEntity httpEntity = new HttpEntity(headers);
         ResponseEntity result = restTemplate.exchange( getBasePath()  + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -95,7 +93,6 @@ public class SecurityIntegrationTest {
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/DCU/team3/TRO/WRITE");
-        headers.add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON_UTF8_VALUE);
         HttpEntity httpEntity = new HttpEntity(headers);
         ResponseEntity result = restTemplate.exchange( getBasePath()  + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
