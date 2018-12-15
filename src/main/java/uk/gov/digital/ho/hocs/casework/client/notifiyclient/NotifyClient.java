@@ -33,23 +33,35 @@ public class NotifyClient {
     }
 
     public void sendTeamEmail(UUID caseUUID, UUID stageUUID, UUID teamUUID, String caseReference, String allocationType) {
-        Set<InfoNominatedPeople> nominatedPeople = infoClient.getNominatedPeople(teamUUID);
-        NotifyType notifyType = NotifyType.valueOf(allocationType);
-        for (InfoNominatedPeople contact : nominatedPeople) {
-            sendEmail(caseUUID, stageUUID, contact.getEmailAddress(), "Team", caseReference, notifyType);
+        try {
+            if (teamUUID != null) {
+                Set<InfoNominatedPeople> nominatedPeople = infoClient.getNominatedPeople(teamUUID);
+                NotifyType notifyType = NotifyType.valueOf(allocationType);
+                for (InfoNominatedPeople contact : nominatedPeople) {
+                    sendEmail(caseUUID, stageUUID, contact.getEmailAddress(), "Team", caseReference, notifyType);
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getLocalizedMessage());
+            log.warn("Email failed to send  Case:{} Stage:{} Team:{}", caseReference, stageUUID, teamUUID);
         }
     }
 
     public void sendUserEmail(UUID caseUUID, UUID stageUUID, UUID currentUserUUID, UUID newUserUUID, String caseReference) {
-        if (newUserUUID != null) {
-            if (currentUserUUID != null && !newUserUUID.equals(currentUserUUID)) {
+        try {
+            if (newUserUUID != null) {
+                if (currentUserUUID != null && !newUserUUID.equals(currentUserUUID)) {
+                    sendUnAllocateUserEmail(caseUUID, stageUUID, currentUserUUID, caseReference);
+                    sendAllocateUserEmail(caseUUID, stageUUID, newUserUUID, caseReference);
+                } else {
+                    sendAllocateUserEmail(caseUUID, stageUUID, newUserUUID, caseReference);
+                }
+            } else if (currentUserUUID != null) {
                 sendUnAllocateUserEmail(caseUUID, stageUUID, currentUserUUID, caseReference);
-                sendAllocateUserEmail(caseUUID, stageUUID, newUserUUID, caseReference);
-            } else {
-                sendAllocateUserEmail(caseUUID, stageUUID, newUserUUID, caseReference);
             }
-        } else if (currentUserUUID != null) {
-            sendUnAllocateUserEmail(caseUUID, stageUUID, currentUserUUID, caseReference);
+        } catch (Exception e) {
+            log.error(e.getLocalizedMessage());
+            log.warn("Email failed to send  Case:{} Stage:{} CurrentUser:{} NewUser:()", caseReference, stageUUID, currentUserUUID, newUserUUID);
         }
     }
 

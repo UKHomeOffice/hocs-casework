@@ -93,13 +93,13 @@ public class StageResourceTest {
     @Test
     public void shouldAllocateStage() {
 
-        doNothing().when(stageService).updateUser(caseUUID, stageUUID, userUUID);
+        doNothing().when(stageService).updateStageUser(caseUUID, stageUUID, userUUID);
 
-        AllocateStageRequest allocateStageRequest = new AllocateStageRequest(userUUID);
+        UpdateStageUserRequest updateStageUserRequest = new UpdateStageUserRequest(userUUID);
 
-        ResponseEntity response = stageResource.allocateStage(caseUUID, stageUUID, allocateStageRequest);
+        ResponseEntity response = stageResource.updateStageUser(caseUUID, stageUUID, updateStageUserRequest);
 
-        verify(stageService, times(1)).updateUser(caseUUID, stageUUID, userUUID);
+        verify(stageService, times(1)).updateStageUser(caseUUID, stageUUID, userUUID);
 
         verifyNoMoreInteractions(stageService);
 
@@ -110,13 +110,13 @@ public class StageResourceTest {
     @Test
     public void shouldAllocateStageNull() {
 
-        doNothing().when(stageService).updateUser(caseUUID, stageUUID, null);
+        doNothing().when(stageService).updateStageUser(caseUUID, stageUUID, null);
 
-        AllocateStageRequest allocateStageRequest = new AllocateStageRequest(null);
+        UpdateStageUserRequest updateStageUserRequest = new UpdateStageUserRequest(null);
 
-        ResponseEntity response = stageResource.allocateStage(caseUUID, stageUUID, allocateStageRequest);
+        ResponseEntity response = stageResource.updateStageUser(caseUUID, stageUUID, updateStageUserRequest);
 
-        verify(stageService, times(1)).updateUser(caseUUID, stageUUID, null);
+        verify(stageService, times(1)).updateStageUser(caseUUID, stageUUID, null);
 
         verifyNoMoreInteractions(stageService);
 
@@ -129,11 +129,11 @@ public class StageResourceTest {
 
         Set<Stage> stages = new HashSet<>();
 
-        when(stageService.getActiveStages()).thenReturn(stages);
+        when(stageService.getActiveStagesForUser()).thenReturn(stages);
 
         ResponseEntity<GetStagesResponse> response = stageResource.getActiveStages();
 
-        verify(stageService, times(1)).getActiveStages();
+        verify(stageService, times(1)).getActiveStagesForUser();
 
         verifyNoMoreInteractions(stageService);
 

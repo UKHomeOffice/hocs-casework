@@ -48,10 +48,7 @@ dependencies {
 	compile('net.logstash.logback:logstash-logback-encoder:5.2')
 
 	compile group: 'org.apache.camel', name: 'camel-spring-boot', version: camelVersion
-	compile group: 'org.apache.camel', name: 'camel-jackson', version: camelVersion
 	compile group: 'org.apache.camel', name: 'camel-aws', version: camelVersion
-	compile group: 'org.apache.camel', name: 'camel-http4', version: camelVersion
-	compile group: 'org.apache.httpcomponents', name: 'httpmime', version: '4.5.6'
 	compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.455'
 
 	compile 'uk.gov.service.notify:notifications-java-client:3.12.0-RELEASE'

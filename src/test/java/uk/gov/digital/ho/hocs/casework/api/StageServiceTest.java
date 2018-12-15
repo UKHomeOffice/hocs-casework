@@ -8,7 +8,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageStatusType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
@@ -113,11 +112,11 @@ public class StageServiceTest {
 
         Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
-        when(stageRepository.findActiveByUuid(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
         stageService.getStage(caseUUID, stageUUID);
 
-        verify(stageRepository, times(1)).findActiveByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
@@ -127,7 +126,7 @@ public class StageServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetStageWithValidParamsNotFoundException() {
 
-        when(stageRepository.findActiveByUuid(caseUUID, stageUUID)).thenReturn(null);
+        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(null);
 
         stageService.getStage(caseUUID, stageUUID);
     }
@@ -135,7 +134,7 @@ public class StageServiceTest {
     @Test
     public void shouldNotGetStageWithValidParamsNotFound() {
 
-        when(stageRepository.findActiveByUuid(caseUUID, stageUUID)).thenReturn(null);
+        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(null);
 
         try {
             stageService.getStage(caseUUID, stageUUID);
@@ -143,7 +142,7 @@ public class StageServiceTest {
             // Do nothing.
         }
 
-        verify(stageRepository, times(1)).findActiveByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
@@ -165,7 +164,7 @@ public class StageServiceTest {
             // Do nothing.
         }
 
-        verify(stageRepository, times(1)).findActiveByUuid(null, stageUUID);
+        verify(stageRepository, times(1)).findActiveByCaseUuidStageUUID(null, stageUUID);
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
@@ -187,7 +186,7 @@ public class StageServiceTest {
             // Do nothing.
         }
 
-        verify(stageRepository, times(1)).findActiveByUuid(caseUUID, null);
+        verify(stageRepository, times(1)).findActiveByCaseUuidStageUUID(caseUUID, null);
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
@@ -199,7 +198,7 @@ public class StageServiceTest {
 
         stageService.getActiveStagesByCaseUUID(caseUUID);
 
-        verify(stageRepository, times(1)).findActiveStagesByCaseUUID(caseUUID);
+        verify(stageRepository, times(1)).findAllActiveByCaseUUID(caseUUID);
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
@@ -213,9 +212,9 @@ public class StageServiceTest {
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
 
-        stageService.getActiveStages();
+        stageService.getActiveStagesForUser();
 
-        verify(stageRepository, times(1)).findAllBy(teams);
+        verify(stageRepository, times(1)).findAllActiveByTeamUUIDIn(teams);
 
         verifyZeroInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
@@ -228,7 +227,7 @@ public class StageServiceTest {
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
 
-        stageService.getActiveStages();
+        stageService.getActiveStagesForUser();
 
         // We don't try and get active stages with no teams (empty set) because we're going to get 0 results.
 
@@ -242,11 +241,11 @@ public class StageServiceTest {
 
         Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
 
-        when(stageRepository.findActiveByUuid(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.updateDeadline(caseUUID, stageUUID, deadline);
+        stageService.updateStageDeadline(caseUUID, stageUUID, deadline);
 
-        verify(stageRepository, times(1)).findActiveByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository, times(1)).save(stage);
 
         verifyNoMoreInteractions(stageRepository);
@@ -259,11 +258,11 @@ public class StageServiceTest {
 
         Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
 
-        when(stageRepository.findActiveByUuid(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.updateDeadline(caseUUID, stageUUID, null);
+        stageService.updateStageDeadline(caseUUID, stageUUID, null);
 
-        verify(stageRepository, times(1)).findActiveByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository, times(1)).save(stage);
 
         verifyNoMoreInteractions(stageRepository);
@@ -276,11 +275,11 @@ public class StageServiceTest {
 
         Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
 
-        when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.updateTeam(caseUUID, stageUUID, teamUUID, allocationType);
+        stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, allocationType);
 
-        verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository, times(1)).save(stage);
         verify(notifyClient, times(1)).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
 
@@ -294,16 +293,15 @@ public class StageServiceTest {
 
         Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
 
-        when(stageRepository.findByUuid(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.updateTeam(caseUUID, stageUUID, null, allocationType);
+        stageService.updateStageTeam(caseUUID, stageUUID, null, allocationType);
 
-        verify(stageRepository, times(1)).findByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository, times(1)).save(stage);
-        verify(notifyClient, times(1)).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(null), eq(null), eq(allocationType));
 
         verifyNoMoreInteractions(stageRepository);
-        verifyNoMoreInteractions(notifyClient);
+        verifyZeroInteractions(notifyClient);
 
     }
 
@@ -312,11 +310,11 @@ public class StageServiceTest {
 
         Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
 
-        when(stageRepository.findActiveByUuid(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.updateUser(caseUUID, stageUUID, userUUID);
+        stageService.updateStageUser(caseUUID, stageUUID, userUUID);
 
-        verify(stageRepository, times(1)).findActiveByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository, times(1)).save(stage);
         verify(notifyClient, times(1)).sendUserEmail(eq(caseUUID), any(UUID.class), eq(null), eq(userUUID), eq(null));
 
@@ -330,11 +328,11 @@ public class StageServiceTest {
 
         Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
 
-        when(stageRepository.findActiveByUuid(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.updateUser(caseUUID, stageUUID, null);
+        stageService.updateStageUser(caseUUID, stageUUID, null);
 
-        verify(stageRepository, times(1)).findActiveByUuid(caseUUID, stageUUID);
+        verify(stageRepository, times(1)).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository, times(1)).save(stage);
         verify(notifyClient, times(1)).sendUserEmail(eq(caseUUID), any(UUID.class), eq(null), eq(null), eq(null));
 
@@ -343,14 +341,4 @@ public class StageServiceTest {
 
     }
 
-    @Test
-    public void shouldCompleteStage() {
-
-        stageService.completeStage(caseUUID, stageUUID);
-
-        verify(stageRepository, times(1)).setStatus(caseUUID, stageUUID, StageStatusType.COMPLETED.toString());
-
-        verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
-    }
 }

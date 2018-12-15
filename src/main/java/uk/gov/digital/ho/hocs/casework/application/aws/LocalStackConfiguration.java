@@ -6,8 +6,6 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,11 +23,6 @@ public class LocalStackConfiguration {
         return sqsClient();
     }
 
-    @Bean("caseSqsClient")
-    public AmazonSQS caseSqsClient() {
-        return sqsClient();
-    }
-
     private final AWSCredentialsProvider awsCredentialsProvider = new AWSCredentialsProvider() {
 
         @Override
@@ -41,8 +34,8 @@ public class LocalStackConfiguration {
         public void refresh() {
 
         }
-
     };
+
     @Value("${aws.local.host:localhost}")
     private String awsHost;
 
@@ -54,21 +47,6 @@ public class LocalStackConfiguration {
         return AmazonSQSClientBuilder.standard()
                 .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
                 .withCredentials(awsCredentialsProvider)
-                .withEndpointConfiguration(endpoint)
-                .build();
-    }
-
-    @Bean
-    public AmazonS3 s3Client() {
-
-        String host = String.format("http://%s:4572/", awsHost);
-
-        AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(host, "eu-west-2");
-
-        return AmazonS3ClientBuilder.standard()
-                .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
-                .withCredentials(awsCredentialsProvider)
-                .withPathStyleAccessEnabled(true)
                 .withEndpointConfiguration(endpoint)
                 .build();
     }

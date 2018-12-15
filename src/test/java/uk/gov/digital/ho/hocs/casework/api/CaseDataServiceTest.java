@@ -38,6 +38,7 @@ public class CaseDataServiceTest {
     private LocalDate caseDeadline = LocalDate.now().plusDays(20);
     private LocalDate caseReceived = LocalDate.now();
     private UUID primaryCorrespondentUUID = UUID.randomUUID();
+    private UUID stageUUID = UUID.randomUUID();
 
     @Mock
     private StageService stageService;
@@ -303,7 +304,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
-        caseDataService.updateCaseData(caseData.getUuid(), new HashMap<>());
+        caseDataService.updateCaseData(caseData.getUuid(), stageUUID, new HashMap<>());
 
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
         verify(caseDataRepository, times(1)).save(caseData);
@@ -316,7 +317,7 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
 
-        caseDataService.updateCaseData(caseData.getUuid(), null);
+        caseDataService.updateCaseData(caseData.getUuid(), stageUUID, null);
 
         verifyZeroInteractions(caseDataRepository);
     }
@@ -324,14 +325,14 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotUpdateCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
 
-        caseDataService.updateCaseData(null, new HashMap<>());
+        caseDataService.updateCaseData(null, stageUUID, new HashMap<>());
     }
 
     @Test()
     public void shouldNotUpdateCaseMissingCaseUUID() {
 
         try {
-            caseDataService.updateCaseData(null, new HashMap<>());
+            caseDataService.updateCaseData(null, stageUUID, new HashMap<>());
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }

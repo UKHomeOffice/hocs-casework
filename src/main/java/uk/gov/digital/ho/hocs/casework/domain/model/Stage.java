@@ -38,9 +38,6 @@ public class Stage implements Serializable {
     @Column(name = "deadline")
     private LocalDate deadline;
 
-    @Column(name = "status")
-    private String status;
-
     @Getter
     @Column(name = "case_uuid", columnDefinition = "uuid")
     private UUID caseUUID;
@@ -78,9 +75,6 @@ public class Stage implements Serializable {
         setTeam(teamUUID);
     }
 
-    public StageStatusType getStageStatusType() {
-        return StageStatusType.valueOf(this.status);
-    }
 
     public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;
@@ -89,17 +83,10 @@ public class Stage implements Serializable {
     public void setTeam(UUID teamUUID) {
         this.teamUUID = teamUUID;
         this.userUUID = null;
-        this.status = StageStatusType.TEAM_ASSIGNED.toString();
     }
 
     public void setUser(UUID userUUID) {
         this.userUUID = userUUID;
-        this.status = StageStatusType.USER_ASSIGNED.toString();
-
-    }
-
-    public void completeStage() {
-        this.status = StageStatusType.COMPLETED.toString();
     }
 
 }
