@@ -4,8 +4,8 @@ import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 
 public interface SecurityExceptions {
     class StageNotAssignedToLoggedInUserException extends RuntimeException {
-        LogEvent event;
-        public StageNotAssignedToLoggedInUserException(String s, LogEvent event) {
+        final LogEvent event;
+        StageNotAssignedToLoggedInUserException(String s, LogEvent event) {
             super(s);
             this.event = event;
         }
@@ -13,8 +13,8 @@ public interface SecurityExceptions {
     }
 
     class StageNotAssignedToUserTeamException extends RuntimeException {
-        LogEvent event;
-        public StageNotAssignedToUserTeamException(String s, LogEvent event) {
+        final LogEvent event;
+        StageNotAssignedToUserTeamException(String s, LogEvent event) {
             super(s);
             this.event = event;
         }
@@ -22,8 +22,8 @@ public interface SecurityExceptions {
     }
 
     class PermissionCheckException extends RuntimeException {
-        LogEvent event;
-        public PermissionCheckException(String s, LogEvent event) {
+        final LogEvent event;
+        PermissionCheckException(String s, LogEvent event) {
             super(s);
             this.event = event;
         }
