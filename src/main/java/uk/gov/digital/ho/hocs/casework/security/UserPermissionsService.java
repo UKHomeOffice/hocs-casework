@@ -35,10 +35,14 @@ public class UserPermissionsService {
             String caseType = Optional.ofNullable(permission[3]).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Invalid case type Found",SECURITY_PARSE_ERROR));
             String accessLevel = Optional.ofNullable(permission[4]).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Invalid access type Found",SECURITY_PARSE_ERROR));
 
-            permissions.computeIfAbsent(unit, map -> new HashMap<>())
-                    .computeIfAbsent(team, map -> new HashMap<>())
-                    .computeIfAbsent(caseType, map -> new HashSet<>())
-                    .add(AccessLevel.valueOf(accessLevel));
+            try{
+                permissions.computeIfAbsent(unit, map -> new HashMap<>())
+                        .computeIfAbsent(team, map -> new HashMap<>())
+                        .computeIfAbsent(caseType, map -> new HashSet<>())
+                        .add(AccessLevel.valueOf(accessLevel));
+            } catch (IllegalArgumentException e){
+                log.error("invalid access level found - {}", accessLevel, value(EVENT, INVALID_ACCESS_LEVEL_FOUND));
+            }
 
         } catch (SecurityExceptions.PermissionCheckException e) {
             log.error(e.getMessage(),value(EVENT, SECURITY_PARSE_ERROR));

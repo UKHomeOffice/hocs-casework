@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
-@NoArgsConstructor
 @Getter
 public class InfoGetNominatedPeopleResponse {
 
