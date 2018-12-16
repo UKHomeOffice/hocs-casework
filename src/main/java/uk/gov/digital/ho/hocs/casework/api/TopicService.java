@@ -9,7 +9,6 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.domain.repository.TopicDataRepository;
 
-import javax.transaction.Transactional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -29,9 +28,9 @@ public class TopicService {
         this.infoClient = infoClient;
     }
 
-    @Transactional
-    public Set<Topic> getTopics(UUID caseUUID) {
-        Set<Topic> topics = topicDataRepository.findAllByCaseUUID(caseUUID);
+     Set<Topic> getTopics(UUID caseUUID) {
+         log.debug("Getting all Topics for Case: {}", caseUUID);
+         Set<Topic> topics = topicDataRepository.findAllByCaseUUID(caseUUID);
         if (topics != null) {
             log.info("Got {} Topics for Case: {}", topics.size(), caseUUID, value(EVENT, CASE_TOPICS_RETRIEVED));
             return topics;
@@ -40,19 +39,20 @@ public class TopicService {
         }
     }
 
-    @Transactional
-    public Topic getTopic(UUID caseUUID, UUID topicUUID) {
+    Topic getTopic(UUID caseUUID, UUID topicUUID) {
+        log.debug("Getting Topic: {} for Case: {}", topicUUID, caseUUID);
         Topic topic = topicDataRepository.findByUUID(caseUUID, topicUUID);
         if (topic != null) {
             log.info("Got Topic: {} for Case: {}", topicUUID, caseUUID, value(EVENT, CASE_TOPIC_RETRIEVED));
             return topic;
         } else {
+            log.error("topic: {} for Case UUID: {} not found!", topicUUID, caseUUID, value(EVENT, CASE_TOPIC_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Topic %s not found for Case: %s", topicUUID, caseUUID), CASE_TOPIC_NOT_FOUND);
         }
     }
 
-    @Transactional
-    public void createTopic(UUID caseUUID, UUID topicUUID) {
+    void createTopic(UUID caseUUID, UUID topicUUID) {
+        log.debug("Creating Topic of Type: {} for Case: {}", topicUUID, caseUUID);
         if (topicUUID != null) {
             InfoTopic infoTopic = infoClient.getTopic(topicUUID);
             Topic topic = new Topic(caseUUID, infoTopic.getLabel(), topicUUID);
@@ -63,8 +63,8 @@ public class TopicService {
         }
     }
 
-    @Transactional
-    public void deleteTopic(UUID caseUUID, UUID topicUUID) {
+    void deleteTopic(UUID caseUUID, UUID topicUUID) {
+        log.debug("Deleting Topic: {} for Case: {}", topicUUID, caseUUID);
         topicDataRepository.deleteTopic(topicUUID);
         log.info("Deleted Topic: {} for Case: {}", topicUUID, caseUUID, value(EVENT, CASE_TOPIC_DELETED));
     }

@@ -380,19 +380,34 @@ public class CaseDataServiceTest {
     @Test
     public void shouldDeleteCase() {
 
-        caseDataService.deleteCase(caseUUID);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline , caseReceived);
 
-        verify(caseDataRepository, times(1)).deleteCase(caseUUID);
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+
+        caseDataService.deleteCase(caseData.getUuid());
+
+        verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
+        verify(caseDataRepository, times(1)).save(caseData);
 
         verifyNoMoreInteractions(caseDataRepository);
     }
 
-    @Test
-    public void shouldDeleteCaseNull() {
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotDeleteCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
 
         caseDataService.deleteCase(null);
+    }
 
-        verify(caseDataRepository, times(1)).deleteCase(null);
+    @Test()
+    public void shouldNotDeleteCaseMissingCaseUUID() {
+
+        try {
+            caseDataService.deleteCase(null);
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
+            // Do nothing.
+        }
+
+        verify(caseDataRepository, times(1)).findByUuid(null);
 
         verifyNoMoreInteractions(caseDataRepository);
     }

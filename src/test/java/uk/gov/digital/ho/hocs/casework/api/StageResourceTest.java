@@ -78,11 +78,11 @@ public class StageResourceTest {
 
         Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
-        when(stageService.getStage(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageService.getActiveStage(caseUUID, stageUUID)).thenReturn(stage);
 
         ResponseEntity<GetStageResponse> response = stageResource.getStage(caseUUID, stageUUID);
 
-        verify(stageService, times(1)).getStage(caseUUID, stageUUID);
+        verify(stageService, times(1)).getActiveStage(caseUUID, stageUUID);
 
         verifyNoMoreInteractions(stageService);
 

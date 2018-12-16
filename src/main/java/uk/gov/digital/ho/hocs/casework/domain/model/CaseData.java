@@ -49,6 +49,11 @@ public class CaseData {
     @Column(name = "priority")
     private boolean priority;
 
+    @Setter
+    @Getter
+    @Column(name = "deleted")
+    private boolean deleted;
+
     @Getter
     @Column(name = "data")
     private String data = "{}";

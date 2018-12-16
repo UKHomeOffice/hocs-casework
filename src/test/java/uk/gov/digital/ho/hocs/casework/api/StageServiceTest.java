@@ -114,7 +114,7 @@ public class StageServiceTest {
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.getStage(caseUUID, stageUUID);
+        stageService.getActiveStage(caseUUID, stageUUID);
 
         verify(stageRepository, times(1)).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
 
@@ -128,7 +128,7 @@ public class StageServiceTest {
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(null);
 
-        stageService.getStage(caseUUID, stageUUID);
+        stageService.getActiveStage(caseUUID, stageUUID);
     }
 
     @Test
@@ -137,7 +137,7 @@ public class StageServiceTest {
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(null);
 
         try {
-            stageService.getStage(caseUUID, stageUUID);
+            stageService.getActiveStage(caseUUID, stageUUID);
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
@@ -152,14 +152,14 @@ public class StageServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetStageMissingCaseUUIDException() {
 
-        stageService.getStage(null, stageUUID);
+        stageService.getActiveStage(null, stageUUID);
     }
 
     @Test()
     public void shouldNotGetStageMissingCaseUUID() {
 
         try {
-            stageService.getStage(null, stageUUID);
+            stageService.getActiveStage(null, stageUUID);
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
@@ -174,14 +174,14 @@ public class StageServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetStageMissingStageUUIDException() {
 
-        stageService.getStage(caseUUID, null);
+        stageService.getActiveStage(caseUUID, null);
     }
 
     @Test()
     public void shouldNotGetStageMissingStageUUID() {
 
         try {
-            stageService.getStage(caseUUID, null);
+            stageService.getActiveStage(caseUUID, null);
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
