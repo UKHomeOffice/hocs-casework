@@ -33,7 +33,7 @@ class StageResource {
     @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
     ResponseEntity<GetStageResponse> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
-        Stage stage = stageService.getStage(caseUUID, stageUUID);
+        Stage stage = stageService.getActiveStage(caseUUID, stageUUID);
         return ResponseEntity.ok(GetStageResponse.from(stage));
     }
 

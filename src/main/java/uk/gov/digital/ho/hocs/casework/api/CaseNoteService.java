@@ -7,7 +7,6 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseNoteRepository;
 
-import javax.transaction.Transactional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,19 +24,20 @@ public class CaseNoteService {
         this.caseNoteRepository = caseNoteRepository;
     }
 
-    @Transactional
-    public Set<CaseNote> getCaseNotes(UUID caseUUID) {
+    Set<CaseNote> getCaseNotes(UUID caseUUID) {
+        log.debug("Getting all CaseNotes for Case: {}", caseUUID);
         Set<CaseNote> caseNotes = caseNoteRepository.findAllByCaseUUID(caseUUID);
         if (caseNotes != null) {
             log.info("Got {} CaseNotes for Case: {}", caseNotes.size(), caseUUID, value(EVENT, CASE_NOTE_RETRIEVED));
             return caseNotes;
         } else {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("CaseNotes for Case UUID: %s not found!", caseUUID), CASE_NOTE_NOT_FOUND);
+            log.error("CaseNotes for Case: {} not found!", caseUUID, value(EVENT, CASE_NOTE_NOT_FOUND));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("CaseNotes for Case: %s not found!", caseUUID), CASE_NOTE_NOT_FOUND);
         }
     }
 
-    @Transactional
-    public void createCaseNote(UUID caseUUID, String caseNoteType, String text) {
+    void createCaseNote(UUID caseUUID, String caseNoteType, String text) {
+        log.debug("Creating CaseNote of Type: {} for Case: {}", caseNoteType, caseUUID);
         CaseNote caseNote = new CaseNote(caseUUID, caseNoteType, text);
         caseNoteRepository.save(caseNote);
         log.info("Created CaseNote: {} for Case: {}", caseNote.getUuid(), caseUUID, value(EVENT, CASE_NOTE_CREATED));
