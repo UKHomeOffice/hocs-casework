@@ -18,9 +18,6 @@ public interface CorrespondentRepository extends CrudRepository<Correspondent, L
     @Query(value = "SELECT aco.* FROM active_correspondent aco WHERE aco.case_uuid = ?1", nativeQuery = true)
     Set<Correspondent> findAllByCaseUUID(UUID caseUUID);
 
-    @Query(value = "SELECT pco.* FROM primary_correspondent pco WHERE pco.case_uuid = ?1", nativeQuery = true)
-    Correspondent getPrimaryCorrespondent(UUID caseUUID);
-
     @Modifying
     @Query(value = "UPDATE correspondent SET deleted = TRUE WHERE uuid = ?1", nativeQuery = true)
     int deleteCorrespondent(UUID correspondentUUID);

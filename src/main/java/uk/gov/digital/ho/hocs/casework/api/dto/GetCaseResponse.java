@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class CaseDataDto {
+public class GetCaseResponse {
 
     @JsonProperty("uuid")
     private UUID uuid;
@@ -42,9 +42,9 @@ public class CaseDataDto {
     @JsonProperty("dateReceived")
     private LocalDate dateReceived;
 
-    public static CaseDataDto from(CaseData caseData) {
+    public static GetCaseResponse from(CaseData caseData) {
 
-        return new CaseDataDto(
+        return new GetCaseResponse(
                 caseData.getUuid(),
                 caseData.getCreated(),
                 caseData.getType(),

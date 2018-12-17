@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class TopicDto {
+public class GetTopicResponse {
 
     @JsonProperty("value")
     private UUID uuid;
@@ -28,7 +28,7 @@ public class TopicDto {
     @JsonProperty("topicUUID")
     private UUID topicUUID;
 
-    public static TopicDto from(Topic topic) {
-        return new TopicDto(topic.getUuid(), topic.getCreated(), topic.getCaseUUID(), topic.getText(), topic.getTextUUID());
+    public static GetTopicResponse from(Topic topic) {
+        return new GetTopicResponse(topic.getUuid(), topic.getCreated(), topic.getCaseUUID(), topic.getText(), topic.getTextUUID());
     }
 }
