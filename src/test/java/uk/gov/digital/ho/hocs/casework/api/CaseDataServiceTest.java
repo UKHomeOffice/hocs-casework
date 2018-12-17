@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -23,21 +24,30 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataServiceTest {
 
-
     private static final long caseID = 12345L;
+
     private final CaseDataType caseType = new CaseDataType("MIN", "a1");
+
     private final UUID caseUUID = UUID.randomUUID();
+
     @Mock
     private CaseDataRepository caseDataRepository;
+
     @Mock
     private InfoClient infoClient;
     private CaseDataService caseDataService;
+
     @Mock
     private AuditClient auditClient;
+
     private ObjectMapper objectMapper = new ObjectMapper();
+
     private LocalDate caseDeadline = LocalDate.now().plusDays(20);
+
     private LocalDate caseReceived = LocalDate.now();
+
     private UUID primaryCorrespondentUUID = UUID.randomUUID();
+
     private UUID stageUUID = UUID.randomUUID();
 
     @Mock
@@ -410,5 +420,41 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).findByUuid(null);
 
         verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
+    public void shouldGetCaseType() {
+        String caseTypeShortCode = caseUUID.toString().substring(34);
+        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(new CaseDataType("MIN", "a1"));
+
+        caseDataService.getCaseType(caseUUID);
+
+        verify(infoClient, times(1)).getCaseTypeByShortCode(caseTypeShortCode);
+        verifyNoMoreInteractions(infoClient);
+        verifyNoMoreInteractions(caseDataRepository);
+
+    }
+
+    @Test
+    public void shouldReturnCaseTypeWhenNullReturnedFromInfoClientAndButCaseInCaseDataOnGetCaseType() {
+        String caseTypeShortCode = caseUUID.toString().substring(34);
+        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
+        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData());
+
+        caseDataService.getCaseType(caseUUID);
+
+        verify(infoClient, times(1)).getCaseTypeByShortCode(caseTypeShortCode);
+        verifyNoMoreInteractions(infoClient);
+        verify(caseDataRepository, times(1)).findByUuid(caseUUID);
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldThrowEntityNotFoundExceptionWhenNullReturnedFromInfoClientAndNoCaseInCaseDataOnGetCaseType() {
+        String caseTypeShortCode = caseUUID.toString().substring(34);
+        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
+        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(null);
+
+        caseDataService.getCaseType(caseUUID);
     }
 }

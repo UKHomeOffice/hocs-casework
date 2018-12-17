@@ -60,16 +60,14 @@ public class CaseDataService {
     public String getCaseType(UUID caseUUID) {
         String shortCode = caseUUID.toString().substring(34);
         log.debug("Looking up CaseType for Case: {} Shortcode: {}", caseUUID, shortCode);
-        CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(shortCode);
-
         String caseType;
-        if (caseDataType != null) {
+        try {
+            CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(shortCode);
             caseType = caseDataType.getDisplayCode();
-        } else {
+        } catch(ApplicationExceptions.ClientException e) {
             log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED) );
             caseType = getCase(caseUUID).getType();
         }
-
         log.debug("CaseType {} found for Case: {}", caseType, caseUUID);
         return caseType;
     }
