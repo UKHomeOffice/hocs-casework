@@ -27,13 +27,8 @@ public class CaseNoteService {
     Set<CaseNote> getCaseNotes(UUID caseUUID) {
         log.debug("Getting all CaseNotes for Case: {}", caseUUID);
         Set<CaseNote> caseNotes = caseNoteRepository.findAllByCaseUUID(caseUUID);
-        if (caseNotes != null) {
-            log.info("Got {} CaseNotes for Case: {}", caseNotes.size(), caseUUID, value(EVENT, CASE_NOTE_RETRIEVED));
-            return caseNotes;
-        } else {
-            log.error("CaseNotes for Case: {} not found!", caseUUID, value(EVENT, CASE_NOTE_NOT_FOUND));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("CaseNotes for Case: %s not found!", caseUUID), CASE_NOTE_NOT_FOUND);
-        }
+        log.info("Got {} CaseNotes for Case: {}", caseNotes.size(), caseUUID, value(EVENT, CASE_NOTE_RETRIEVED));
+        return caseNotes;
     }
 
     void createCaseNote(UUID caseUUID, String caseNoteType, String text) {
