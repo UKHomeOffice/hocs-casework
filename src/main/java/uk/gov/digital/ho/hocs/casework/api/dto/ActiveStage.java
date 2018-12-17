@@ -1,18 +1,27 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.util.UUID;
 
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class ActiveStage {
 
+    @JsonProperty("stageUUID")
     private UUID stageUUID;
+
+    @JsonProperty("stage")
     private String stage;
+
+    @JsonProperty("assignedToUserUUID")
     private UUID assignedToUserUUID;
+
+    @JsonProperty("assignedToTeamUUID")
     private UUID assignedToTeamUUID;
 
     public static ActiveStage from(Stage stage) {
