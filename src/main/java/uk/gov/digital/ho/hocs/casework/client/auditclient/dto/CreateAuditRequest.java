@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.auditClient.dto;
+package uk.gov.digital.ho.hocs.casework.client.auditclient.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

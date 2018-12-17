@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentDto;
-import uk.gov.digital.ho.hocs.casework.auditClient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
