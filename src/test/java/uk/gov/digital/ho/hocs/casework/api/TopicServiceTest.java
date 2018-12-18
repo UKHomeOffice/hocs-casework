@@ -154,7 +154,6 @@ public class TopicServiceTest {
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetTopicMissingTopicUUIDException() throws ApplicationExceptions.EntityNotFoundException {
-
         topicService.getTopic(caseUUID, null);
 
     }
