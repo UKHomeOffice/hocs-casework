@@ -38,6 +38,7 @@ public class AllocatedAspectTest {
 
     private UUID userId = UUID.randomUUID();
     private UUID teamId = UUID.randomUUID();
+    private UUID transitionNoteUUID = UUID.randomUUID();
 
     @Mock
     private ProceedingJoinPoint proceedingJoinPoint;
@@ -53,7 +54,7 @@ public class AllocatedAspectTest {
     @Test
     public void shouldCallCollaboratorsForUser() throws Throwable {
 
-        Stage stage = new Stage(UUID.randomUUID(), "DCU_DTEN_DATA_INPUT", teamId, LocalDate.now());
+        Stage stage = new Stage(UUID.randomUUID(), "DCU_DTEN_DATA_INPUT", teamId, LocalDate.now(), transitionNoteUUID);
         stage.setUser(userId);
 
         Object[] args = new Object[2];
@@ -95,7 +96,7 @@ public class AllocatedAspectTest {
     @Test
     public void shouldProceedIfUserIsAllocatedToCase() throws Throwable {
 
-        Stage stage = new Stage(UUID.randomUUID(), "DCU_DTEN_DATA_INPUT", teamId, LocalDate.now());
+        Stage stage = new Stage(UUID.randomUUID(), "DCU_DTEN_DATA_INPUT", teamId, LocalDate.now(),transitionNoteUUID);
         stage.setUser(userId);
 
         Object[] args = new Object[2];

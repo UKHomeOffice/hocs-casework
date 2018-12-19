@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public class GetCaseNotResponse {
+public class GetCaseNoteResponse {
 
     @JsonProperty("uuid")
     private UUID uuid;
@@ -28,8 +28,8 @@ public class GetCaseNotResponse {
     @JsonProperty("text")
     private String text;
 
-    public static GetCaseNotResponse from(CaseNote caseNote) {
-        return new GetCaseNotResponse(
+    public static GetCaseNoteResponse from(CaseNote caseNote) {
+        return new GetCaseNoteResponse(
                 caseNote.getUuid(),
                 caseNote.getCreated(),
                 caseNote.getCaseNoteType(),

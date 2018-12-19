@@ -31,8 +31,18 @@ public class CaseNoteService {
             log.info("Got {} CaseNotes for Case: {}", caseNotes.size(), caseUUID, value(EVENT, CASE_NOTE_RETRIEVED));
             return caseNotes;
         } else {
-            log.error("CaseNotes for Case: {} not found!", caseUUID, value(EVENT, CASE_NOTE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("CaseNotes for Case: %s not found!", caseUUID), CASE_NOTE_NOT_FOUND);
+        }
+    }
+
+    public CaseNote getCaseNote(UUID caseNoteUUID) {
+        CaseNote caseNote = caseNoteRepository.findByUuid(caseNoteUUID);
+        if (caseNote != null) {
+            log.info("GotCaseNote for UUID: {}", caseNoteUUID, value(EVENT, CASE_NOTE_RETRIEVED));
+            return caseNote;
+        }
+        else {
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("CaseNote for UUID: %s not found!", caseNoteUUID), CASE_NOTE_NOT_FOUND);
         }
     }
 

@@ -18,8 +18,8 @@ public class GetStagesResponseTest {
         UUID caseUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
-
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
+        UUID transitionNoteUUID = UUID.randomUUID();
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
 
         Set<Stage> stages = new HashSet<>();
         stages.add(stage);

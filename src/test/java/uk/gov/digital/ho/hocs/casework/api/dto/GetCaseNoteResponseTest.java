@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class GetCaseNotResponseTest {
+public class GetCaseNoteResponseTest {
 
     @Test
     public void getCaseNoteDto() {
@@ -18,7 +18,7 @@ public class GetCaseNotResponseTest {
 
         CaseNote caseNote = new CaseNote(caseUUID, type, text);
 
-        GetCaseNotResponse getCaseNotResponse = GetCaseNotResponse.from(caseNote);
+        GetCaseNoteResponse getCaseNotResponse = GetCaseNoteResponse.from(caseNote);
 
         assertThat(getCaseNotResponse.getUuid()).isEqualTo(caseNote.getUuid());
         assertThat(getCaseNotResponse.getCreated()).isEqualTo(caseNote.getCreated());

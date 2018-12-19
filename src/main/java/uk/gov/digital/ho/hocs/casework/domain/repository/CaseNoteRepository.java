@@ -13,4 +13,6 @@ public interface CaseNoteRepository extends CrudRepository<CaseNote, Long> {
 
     @Query(value = "SELECT acn.* FROM active_case_note acn WHERE acn.case_uuid = ?1", nativeQuery = true)
     Set<CaseNote> findAllByCaseUUID(UUID caseUUID);
+
+    CaseNote findByUuid(UUID caseNoteUUID);
 }

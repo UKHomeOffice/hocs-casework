@@ -130,7 +130,7 @@ public class CaseDataServiceTest {
         Set<String> filterFields =new HashSet<String>(){{ add("TEMPCReference"); }};
 
         Set<Stage> activeStages = new HashSet<Stage>(){{
-            add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now()));
+            add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
         }};
 
         Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
@@ -173,7 +173,7 @@ public class CaseDataServiceTest {
         }};
 
         Set<Stage> activeStages = new HashSet<Stage>() {{
-            add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now()));
+            add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
         }};
 
         Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
@@ -211,7 +211,7 @@ public class CaseDataServiceTest {
         }};
 
         Set<Stage> activeStages = new HashSet<Stage>(){{
-            add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now()));
+            add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
         }};
 
         Map<String, String> additionalData = new HashMap<String, String>(){{

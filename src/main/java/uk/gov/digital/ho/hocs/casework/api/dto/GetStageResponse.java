@@ -42,6 +42,9 @@ public class GetStageResponse {
     @JsonProperty("caseType")
     private String caseDataType;
 
+    @JsonProperty("transitionNote")
+    private UUID transitionNoteUUID;
+
     @JsonRawValue
     private String data;
 
@@ -57,6 +60,7 @@ public class GetStageResponse {
                 stage.getUserUUID(),
                 stage.getCaseReference(),
                 stage.getCaseDataType(),
+                stage.getTransitionNoteUUID(),
                 stage.getData());
     }
 }
