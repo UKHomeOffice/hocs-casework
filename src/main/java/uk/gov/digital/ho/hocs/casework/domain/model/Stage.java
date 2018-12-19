@@ -1,7 +1,9 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
@@ -12,7 +14,7 @@ import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "stage")
 public class Stage implements Serializable {
@@ -34,6 +36,7 @@ public class Stage implements Serializable {
     @Column(name = "type")
     private String stageType;
 
+    @Setter
     @Getter
     @Column(name = "deadline")
     private LocalDate deadline;
@@ -73,11 +76,6 @@ public class Stage implements Serializable {
         this.stageType = stageType;
         setDeadline(deadline);
         setTeam(teamUUID);
-    }
-
-
-    public void setDeadline(LocalDate deadline) {
-        this.deadline = deadline;
     }
 
     public void setTeam(UUID teamUUID) {

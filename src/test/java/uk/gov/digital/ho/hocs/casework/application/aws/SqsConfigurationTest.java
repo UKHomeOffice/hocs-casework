@@ -19,19 +19,19 @@ public class SqsConfigurationTest {
 
     @Test
     public void shouldThrowExceptionWhenNullAccessKey() {
-        assertThatThrownBy(() -> config.sqsClient(null, "some secret key", "some region")).
+        assertThatThrownBy(() -> config.auditSqsClient(null, "some secret key", "some region")).
                 isInstanceOf(BeanCreationException.class);
     }
 
     @Test
     public void shouldThrowExceptionWhenNullSecretKey() {
-        assertThatThrownBy(() -> config.sqsClient("some access key", null, "some region")).
+        assertThatThrownBy(() -> config.auditSqsClient("some access key", null, "some region")).
                 isInstanceOf(BeanCreationException.class);
     }
 
     @Test
     public void shouldThrowExceptionWhenNullRegion() {
-        assertThatThrownBy(() -> config.sqsClient("some access key", "some secret key", null)).
+        assertThatThrownBy(() -> config.auditSqsClient("some access key", "some secret key", null)).
                 isInstanceOf(BeanCreationException.class);
     }
 

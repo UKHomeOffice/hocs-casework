@@ -57,8 +57,10 @@ public class CorrespondentService {
     }
 
     void deleteCorrespondent(UUID caseUUID, UUID correspondentUUID) {
-        log.debug("Deleting Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
-        correspondentRepository.deleteCorrespondent(correspondentUUID);
-        log.info("Deleted Correspondent: {} for Case: {}", correspondentUUID, caseUUID, value(EVENT, CORRESPONDENT_DELETED));
+        log.debug("Deleting Correspondent: {}", correspondentUUID);
+        Correspondent correspondent = getCorrespondent(caseUUID, correspondentUUID);
+        correspondent.setDeleted(true);
+        correspondentRepository.save(correspondent);
+        log.info("Deleted Topic: {}", caseUUID, value(EVENT, CORRESPONDENT_DELETED));
     }
 }

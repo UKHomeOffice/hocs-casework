@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -10,7 +11,7 @@ import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOTE_CREATE_FAILURE;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "case_note")
 public class CaseNote {

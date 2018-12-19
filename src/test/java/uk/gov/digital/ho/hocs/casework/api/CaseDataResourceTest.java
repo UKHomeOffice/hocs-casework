@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCaseDataRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
@@ -117,6 +118,22 @@ public class CaseDataResourceTest {
         ResponseEntity response = caseDataResource.getCaseSummary(uuid);
 
         verify(caseDataService, times(1)).getCaseSummary(uuid);
+
+        verifyNoMoreInteractions(caseDataService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldUpdateCaseData() {
+        UpdateCaseDataRequest updateCaseDataRequest = new UpdateCaseDataRequest(data);
+
+        doNothing().when(caseDataService).updateCaseData(uuid, uuid, data);
+
+        ResponseEntity response = caseDataResource.updateCaseData(uuid, uuid, updateCaseDataRequest);
+
+        verify(caseDataService, times(1)).updateCaseData(uuid, uuid, data);
 
         verifyNoMoreInteractions(caseDataService);
 
