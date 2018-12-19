@@ -30,7 +30,7 @@ public class TopicService {
 
      Set<Topic> getTopics(UUID caseUUID) {
         log.debug("Getting all Topics for Case: {}", caseUUID);
-        Set<Topic> topics = topicDataRepository.findAllByCaseUUID(caseUUID);
+        Set<Topic> topics = topicRepository.findAllByCaseUUID(caseUUID);
         log.info("Got {} Topics for Case: {}", topics.size(), caseUUID, value(EVENT, CASE_TOPICS_RETRIEVED));
         return topics;
     }
