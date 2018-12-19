@@ -35,6 +35,161 @@ public class StageTest {
         assertThat(stage.getData()).isEqualTo(null);
     }
 
+    @Test
+    public void SetStageTeam() {
+
+        UUID caseUUID = UUID.randomUUID();
+        String stageType = "DCU_MIN_MARKUP";
+        UUID teamUUID = UUID.randomUUID();
+        UUID newTeamUUID = UUID.randomUUID();
+
+        LocalDate deadline = LocalDate.now();
+
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
+
+        assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(stage.getStageType()).isEqualTo(stageType);
+        assertThat(stage.getTeamUUID()).isEqualTo(teamUUID);
+        assertThat(stage.getUserUUID()).isEqualTo(null);
+        assertThat(stage.getDeadline()).isEqualTo(deadline);
+
+        assertThat(stage.getCaseReference()).isEqualTo(null);
+        assertThat(stage.getCaseDataType()).isEqualTo(null);
+        assertThat(stage.getData()).isEqualTo(null);
+
+        stage.setTeam(newTeamUUID);
+
+        assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(stage.getStageType()).isEqualTo(stageType);
+        assertThat(stage.getTeamUUID()).isEqualTo(newTeamUUID);
+        assertThat(stage.getUserUUID()).isEqualTo(null);
+        assertThat(stage.getDeadline()).isEqualTo(deadline);
+
+        assertThat(stage.getCaseReference()).isEqualTo(null);
+        assertThat(stage.getCaseDataType()).isEqualTo(null);
+        assertThat(stage.getData()).isEqualTo(null);
+    }
+
+    @Test
+    public void SetStageTeamNull() {
+
+        UUID caseUUID = UUID.randomUUID();
+        String stageType = "DCU_MIN_MARKUP";
+        UUID teamUUID = UUID.randomUUID();
+
+        LocalDate deadline = LocalDate.now();
+
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
+
+        assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(stage.getStageType()).isEqualTo(stageType);
+        assertThat(stage.getTeamUUID()).isEqualTo(teamUUID);
+        assertThat(stage.getUserUUID()).isEqualTo(null);
+        assertThat(stage.getDeadline()).isEqualTo(deadline);
+
+        assertThat(stage.getCaseReference()).isEqualTo(null);
+        assertThat(stage.getCaseDataType()).isEqualTo(null);
+        assertThat(stage.getData()).isEqualTo(null);
+
+        stage.setTeam(null);
+
+        assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(stage.getStageType()).isEqualTo(stageType);
+        assertThat(stage.getTeamUUID()).isEqualTo(null);
+        assertThat(stage.getUserUUID()).isEqualTo(null);
+        assertThat(stage.getDeadline()).isEqualTo(deadline);
+
+        assertThat(stage.getCaseReference()).isEqualTo(null);
+        assertThat(stage.getCaseDataType()).isEqualTo(null);
+        assertThat(stage.getData()).isEqualTo(null);
+    }
+
+    @Test
+    public void SetStageUser() {
+
+        UUID caseUUID = UUID.randomUUID();
+        String stageType = "DCU_MIN_MARKUP";
+        UUID teamUUID = UUID.randomUUID();
+        UUID newuserUUID = UUID.randomUUID();
+
+        LocalDate deadline = LocalDate.now();
+
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
+
+        assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(stage.getStageType()).isEqualTo(stageType);
+        assertThat(stage.getTeamUUID()).isEqualTo(teamUUID);
+        assertThat(stage.getUserUUID()).isEqualTo(null);
+        assertThat(stage.getDeadline()).isEqualTo(deadline);
+
+        assertThat(stage.getCaseReference()).isEqualTo(null);
+        assertThat(stage.getCaseDataType()).isEqualTo(null);
+        assertThat(stage.getData()).isEqualTo(null);
+
+        stage.setUser(newuserUUID);
+
+        assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(stage.getStageType()).isEqualTo(stageType);
+        assertThat(stage.getTeamUUID()).isEqualTo(teamUUID);
+        assertThat(stage.getUserUUID()).isEqualTo(newuserUUID);
+        assertThat(stage.getDeadline()).isEqualTo(deadline);
+
+        assertThat(stage.getCaseReference()).isEqualTo(null);
+        assertThat(stage.getCaseDataType()).isEqualTo(null);
+        assertThat(stage.getData()).isEqualTo(null);
+    }
+
+    @Test
+    public void SetStageUserNull() {
+
+        UUID caseUUID = UUID.randomUUID();
+        String stageType = "DCU_MIN_MARKUP";
+        UUID teamUUID = UUID.randomUUID();
+        UUID newuserUUID = UUID.randomUUID();
+
+        LocalDate deadline = LocalDate.now();
+
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
+
+        assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(stage.getStageType()).isEqualTo(stageType);
+        assertThat(stage.getTeamUUID()).isEqualTo(teamUUID);
+        assertThat(stage.getUserUUID()).isEqualTo(null);
+        assertThat(stage.getDeadline()).isEqualTo(deadline);
+
+        assertThat(stage.getCaseReference()).isEqualTo(null);
+        assertThat(stage.getCaseDataType()).isEqualTo(null);
+        assertThat(stage.getData()).isEqualTo(null);
+
+        stage.setUser(null);
+
+        assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(stage.getStageType()).isEqualTo(stageType);
+        assertThat(stage.getTeamUUID()).isEqualTo(teamUUID);
+        assertThat(stage.getUserUUID()).isEqualTo(null);
+        assertThat(stage.getDeadline()).isEqualTo(deadline);
+
+        assertThat(stage.getCaseReference()).isEqualTo(null);
+        assertThat(stage.getCaseDataType()).isEqualTo(null);
+        assertThat(stage.getData()).isEqualTo(null);
+    }
+
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getStageNullCaseUUID() {
 

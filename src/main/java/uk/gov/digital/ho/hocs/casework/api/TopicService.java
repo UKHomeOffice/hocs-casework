@@ -7,7 +7,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
-import uk.gov.digital.ho.hocs.casework.domain.repository.TopicDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.TopicRepository;
 
 import java.util.Set;
 import java.util.UUID;
@@ -19,12 +19,12 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 @Service
 public class TopicService {
 
-    private final TopicDataRepository topicDataRepository;
+    private final TopicRepository topicRepository;
     private final InfoClient infoClient;
 
     @Autowired
-    public TopicService(TopicDataRepository topicDataRepository, InfoClient infoClient) {
-        this.topicDataRepository = topicDataRepository;
+    public TopicService(TopicRepository topicRepository, InfoClient infoClient) {
+        this.topicRepository = topicRepository;
         this.infoClient = infoClient;
     }
 
@@ -37,7 +37,7 @@ public class TopicService {
 
     Topic getTopic(UUID caseUUID, UUID topicUUID) {
         log.debug("Getting Topic: {} for Case: {}", topicUUID, caseUUID);
-        Topic topic = topicDataRepository.findByUUID(caseUUID, topicUUID);
+        Topic topic = topicRepository.findByUUID(caseUUID, topicUUID);
         if (topic != null) {
             log.info("Got Topic: {} for Case: {}", topicUUID, caseUUID, value(EVENT, CASE_TOPIC_RETRIEVED));
             return topic;
@@ -52,7 +52,7 @@ public class TopicService {
         if (topicUUID != null) {
             InfoTopic infoTopic = infoClient.getTopic(topicUUID);
             Topic topic = new Topic(caseUUID, infoTopic.getLabel(), topicUUID);
-            topicDataRepository.save(topic);
+            topicRepository.save(topic);
             log.info("Created Topic: {} for Case: {}", topic.getUuid(), caseUUID, value(EVENT, CASE_TOPIC_CREATE));
         } else {
             throw new ApplicationExceptions.EntityCreationException(String.format("No TopicUUID given for Case: %s", caseUUID), CASE_TOPIC_UUID_NOT_GIVEN);
@@ -60,8 +60,11 @@ public class TopicService {
     }
 
     void deleteTopic(UUID caseUUID, UUID topicUUID) {
-        log.debug("Deleting Topic: {} for Case: {}", topicUUID, caseUUID);
-        topicDataRepository.deleteTopic(topicUUID);
-        log.info("Deleted Topic: {} for Case: {}", topicUUID, caseUUID, value(EVENT, CASE_TOPIC_DELETED));
+        log.debug("Deleting Topic: {}", topicUUID);
+        Topic topic = getTopic(caseUUID, topicUUID);
+        topic.setDeleted(true);
+        topicRepository.save(topic);
+        log.info("Deleted Topic: {}", caseUUID, value(EVENT, CASE_TOPIC_DELETED));
     }
+
 }

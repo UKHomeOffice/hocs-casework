@@ -24,6 +24,34 @@ public class TopicTest {
         assertThat(topic.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(topic.getText()).isEqualTo(text);
         assertThat(topic.getTextUUID()).isEqualTo(textUUID);
+        assertThat(topic.isDeleted()).isFalse();
+
+    }
+
+    @Test
+    public void getTopicDeleted() {
+
+        UUID caseUUID = UUID.randomUUID();
+        String text = "anyTitle";
+        UUID textUUID = UUID.randomUUID();
+
+        Topic topic = new Topic(caseUUID, text, textUUID);
+
+        assertThat(topic.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(topic.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(topic.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(topic.getText()).isEqualTo(text);
+        assertThat(topic.getTextUUID()).isEqualTo(textUUID);
+        assertThat(topic.isDeleted()).isFalse();
+
+        topic.setDeleted(true);
+
+        assertThat(topic.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(topic.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(topic.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(topic.getText()).isEqualTo(text);
+        assertThat(topic.getTextUUID()).isEqualTo(textUUID);
+        assertThat(topic.isDeleted()).isTrue();
 
     }
 

@@ -179,29 +179,57 @@ public class CorrespondentServiceTest {
     @Test
     public void shouldDeleteCase() {
 
-        correspondentService.deleteCorrespondent(caseUUID, correspondentUUID);
+        Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null);
 
-        verify(correspondentRepository, times(1)).deleteCorrespondent(correspondentUUID);
+        when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
+
+        correspondentService.deleteCorrespondent(correspondent.getCaseUUID(), correspondent.getUuid());
+
+        verify(correspondentRepository, times(1)).findByUUID(correspondent.getCaseUUID(), correspondent.getUuid());
+        verify(correspondentRepository, times(1)).save(correspondent);
+
 
         verifyNoMoreInteractions(correspondentRepository);
     }
 
-    @Test
-    public void shouldDeleteCorrespondentCaseNull() {
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotDeleteCorrespondentMissingCaseUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
         correspondentService.deleteCorrespondent(null, correspondentUUID);
 
-        verify(correspondentRepository, times(1)).deleteCorrespondent(correspondentUUID);
+    }
+
+    @Test
+    public void shouldNotDeleteCorrespondentMissingCaseUUID() {
+
+        try {
+            correspondentService.deleteCorrespondent(null, correspondentUUID);
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
+            // Do nothing.
+        }
+
+        verify(correspondentRepository, times(1)).findByUUID(null, correspondentUUID);
 
         verifyNoMoreInteractions(correspondentRepository);
     }
 
-    @Test
-    public void shouldDeleteCorrespondentCorrespondentNull() {
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotDeleteCorrespondentMissingCorrespondentUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
         correspondentService.deleteCorrespondent(caseUUID, null);
 
-        verify(correspondentRepository, times(1)).deleteCorrespondent(null);
+    }
+
+    @Test
+    public void shouldNotDeleteCorrespondentMissingCorrespondentUUID() {
+
+        try {
+            correspondentService.deleteCorrespondent(caseUUID, null);
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
+            // Do nothing.
+        }
+
+        verify(correspondentRepository, times(1)).findByUUID(caseUUID, null);
 
         verifyNoMoreInteractions(correspondentRepository);
     }

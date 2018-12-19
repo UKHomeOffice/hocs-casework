@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,7 +19,7 @@ import java.util.UUID;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DATA_JSON_PARSE_ERROR;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "case_data")
 public class CaseData {
@@ -73,7 +74,6 @@ public class CaseData {
     @Column(name = "case_deadline")
     private LocalDate caseDeadline;
 
-    @Setter
     @Getter
     @Column(name = "date_received")
     private LocalDate dateReceived;
@@ -95,21 +95,21 @@ public class CaseData {
         this.dateReceived = dateReceived;
     }
 
+    public void update(Map<String, String> newData, ObjectMapper objectMapper) {
+        if (newData != null && newData.size() > 0) {
+            Map<String, String> dataMap = getDataMap(this.data, objectMapper);
+
+            dataMap.putAll(newData);
+
+            this.data = getDataString(dataMap, objectMapper);
+        }
+    }
+
     public Map<String, String> getFilteredDataMap(Set<String> fields, ObjectMapper objectMapper) {
         Map<String, String> sourceData = CaseData.getDataMap(this.getData(), objectMapper);
         Map<String, String> filteredData = new HashMap<>();
         fields.forEach(f -> filteredData.put(f, sourceData.getOrDefault(f, null)));
         return filteredData;
-    }
-
-    private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {
-        String dataString;
-        try {
-            dataString = objectMapper.writeValueAsString(dataMap);
-        } catch (Exception e) {
-            throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to write value!", CASE_DATA_JSON_PARSE_ERROR);
-        }
-        return dataString;
     }
 
     private static Map<String, String> getDataMap(String dataString, ObjectMapper objectMapper) {
@@ -123,18 +123,18 @@ public class CaseData {
         return dataMap;
     }
 
-    private String generateCaseReference(Long caseNumber) {
-        return String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
+    private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {
+        String dataString;
+        try {
+            dataString = objectMapper.writeValueAsString(dataMap);
+        } catch (Exception e) {
+            throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to write value!", CASE_DATA_JSON_PARSE_ERROR);
+        }
+        return dataString;
     }
 
-    public void update(Map<String, String> newData, ObjectMapper objectMapper) {
-        if (newData != null && newData.size() > 0) {
-            Map<String, String> dataMap = getDataMap(this.data, objectMapper);
-
-            dataMap.putAll(newData);
-
-            this.data = getDataString(dataMap, objectMapper);
-        }
+    private String generateCaseReference(Long caseNumber) {
+        return String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
     }
 
     private static UUID randomUUID(String shortCode) {

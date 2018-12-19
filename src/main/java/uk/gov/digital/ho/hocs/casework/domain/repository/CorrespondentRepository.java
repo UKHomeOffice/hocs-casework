@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.domain.repository;
 
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -17,8 +16,4 @@ public interface CorrespondentRepository extends CrudRepository<Correspondent, L
 
     @Query(value = "SELECT aco.* FROM active_correspondent aco WHERE aco.case_uuid = ?1", nativeQuery = true)
     Set<Correspondent> findAllByCaseUUID(UUID caseUUID);
-
-    @Modifying
-    @Query(value = "UPDATE correspondent SET deleted = TRUE WHERE uuid = ?1", nativeQuery = true)
-    int deleteCorrespondent(UUID correspondentUUID);
 }
