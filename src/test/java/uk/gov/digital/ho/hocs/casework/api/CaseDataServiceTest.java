@@ -464,11 +464,11 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(new CaseDataType("MIN", "a1"));
+        when(infoClient.getCaseType(caseTypeShortCode)).thenReturn(new CaseDataType("MIN", "a1"));
 
         caseDataService.getCaseType(caseUUID);
 
-        verify(infoClient, times(1)).getCaseTypeByShortCode(caseTypeShortCode);
+        verify(infoClient, times(1)).getCaseType(caseTypeShortCode);
         verifyNoMoreInteractions(infoClient);
         verifyNoMoreInteractions(caseDataRepository);
 
@@ -477,12 +477,12 @@ public class CaseDataServiceTest {
     @Test
     public void shouldReturnCaseTypeWhenNullReturnedFromInfoClientAndButCaseInCaseDataOnGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
+        when(infoClient.getCaseType(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData(new CaseDataType("", ""),1L, null, null ));
 
         caseDataService.getCaseType(caseUUID);
 
-        verify(infoClient, times(1)).getCaseTypeByShortCode(caseTypeShortCode);
+        verify(infoClient, times(1)).getCaseType(caseTypeShortCode);
         verifyNoMoreInteractions(infoClient);
         verify(caseDataRepository, times(1)).findByUuid(caseUUID);
         verifyNoMoreInteractions(caseDataRepository);
@@ -491,7 +491,7 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldThrowEntityNotFoundExceptionWhenNullReturnedFromInfoClientAndNoCaseInCaseDataOnGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
+        when(infoClient.getCaseType(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(null);
 
         caseDataService.getCaseType(caseUUID);

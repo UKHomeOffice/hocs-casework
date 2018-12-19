@@ -29,7 +29,8 @@ public class DependentDataPreLoader {
     private void primeCaseTypes() {
         Set<CaseDataType> caseTypesSet = this.infoClient.getCaseTypes();
         for (CaseDataType caseType : caseTypesSet) {
-            this.infoClient.getCaseTypeByShortCode(caseType.getShortCode());
+            this.infoClient.getCaseType(caseType.getShortCode());
+            this.infoClient.getCaseSummaryFields(caseType.getDisplayCode());
         }
     }
 }
