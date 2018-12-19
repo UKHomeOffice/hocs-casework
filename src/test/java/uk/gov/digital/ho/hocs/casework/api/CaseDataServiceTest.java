@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -478,7 +477,7 @@ public class CaseDataServiceTest {
     public void shouldReturnCaseTypeWhenNullReturnedFromInfoClientAndButCaseInCaseDataOnGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
         when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
-        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData(null,null, null, null ));
+        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData(new CaseDataType("", ""),1L, null, null ));
 
         caseDataService.getCaseType(caseUUID);
 
