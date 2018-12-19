@@ -43,31 +43,6 @@ public class CaseNoteServiceTest {
         verifyNoMoreInteractions(caseNoteRepository);
     }
 
-    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void shouldNotGetCaseNotesWithValidParamsNotFoundException() {
-
-        when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(null);
-
-        caseNoteService.getCaseNotes(caseUUID);
-    }
-
-    @Test
-    public void shouldNotGetCaseNotesNotFound() {
-
-        when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(null);
-
-        try {
-            caseNoteService.getCaseNotes(caseUUID);
-        } catch (ApplicationExceptions.EntityNotFoundException e) {
-            // Do nothing.
-        }
-
-        verify(caseNoteRepository, times(1)).findAllByCaseUUID(caseUUID);
-
-        verifyNoMoreInteractions(caseNoteRepository);
-
-    }
-
     @Test
     public void shouldNotGetCaseNotesMissingUUID() {
 

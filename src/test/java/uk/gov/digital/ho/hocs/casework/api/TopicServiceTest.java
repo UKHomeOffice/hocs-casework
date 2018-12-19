@@ -48,31 +48,6 @@ public class TopicServiceTest {
         verifyNoMoreInteractions(topicRepository);
     }
 
-    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void shouldNotGetTopicsNotFoundException() {
-
-        when(topicRepository.findAllByCaseUUID(caseUUID)).thenReturn(null);
-
-        topicService.getTopics(caseUUID);
-    }
-
-    @Test
-    public void shouldNotGetTopicsNotFound() {
-
-        when(topicRepository.findAllByCaseUUID(caseUUID)).thenReturn(null);
-
-        try {
-            topicService.getTopics(caseUUID);
-        } catch (ApplicationExceptions.EntityNotFoundException e) {
-            // Do nothing.
-        }
-
-        verify(topicRepository, times(1)).findAllByCaseUUID(caseUUID);
-
-        verifyNoMoreInteractions(topicRepository);
-
-    }
-
     @Test
     public void shouldNotGetTopicsMissingUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
@@ -179,7 +154,6 @@ public class TopicServiceTest {
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetTopicMissingTopicUUIDException() throws ApplicationExceptions.EntityNotFoundException {
-
         topicService.getTopic(caseUUID, null);
 
     }

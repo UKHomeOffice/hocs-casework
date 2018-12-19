@@ -28,13 +28,8 @@ public class CorrespondentService {
     Set<Correspondent> getCorrespondents(UUID caseUUID) {
         log.debug("Getting all Correspondents for Case: {}", caseUUID);
         Set<Correspondent> correspondents = correspondentRepository.findAllByCaseUUID(caseUUID);
-        if (correspondents != null) {
-            log.info("Got {} Correspondents for Case: {}", correspondents.size(), caseUUID, value(EVENT, CORRESPONDENTS_RETRIEVED));
-            return correspondents;
-        } else {
-            log.error("Correspondents for Case UUID: {} not found!", caseUUID, value(EVENT, CORRESPONDENT_NOT_FOUND));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Correspondents for Case UUID: %s not found!", caseUUID),  CORRESPONDENT_NOT_FOUND);
-        }
+        log.info("Got {} Correspondents for Case: {}", correspondents.size(), caseUUID, value(EVENT, CORRESPONDENTS_RETRIEVED));
+        return correspondents;
     }
 
     Correspondent getCorrespondent(UUID caseUUID, UUID correspondentUUID) {
