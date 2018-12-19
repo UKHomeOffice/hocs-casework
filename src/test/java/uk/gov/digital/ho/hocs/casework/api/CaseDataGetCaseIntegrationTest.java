@@ -163,6 +163,10 @@ public class CaseDataGetCaseIntegrationTest {
 
     @Test
     public void shouldReturnCaseWhenGetValidCaseWithValidPermissionsAndReturnUnauthorisedWithEmptyPermissionsForSameCase() throws JsonProcessingException {
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
         ResponseEntity<String> validPermissionResult = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
         ResponseEntity<String> invalidPermissionResult = testRestTemplate.exchange(
@@ -173,6 +177,10 @@ public class CaseDataGetCaseIntegrationTest {
 
     @Test
     public void shouldReturnCaseWhenGetValidCaseWithValidPermissionsAndReturnUnauthorisedWithInvalidPermissionsForSameCase() throws JsonProcessingException {
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
         ResponseEntity<String> validPermissionResult = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
         ResponseEntity<String> invalidPermissionResult = testRestTemplate.exchange(
