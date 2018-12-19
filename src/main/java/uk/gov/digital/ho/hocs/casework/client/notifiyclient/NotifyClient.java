@@ -94,6 +94,5 @@ public class NotifyClient {
             log.error(e.getLocalizedMessage());
             log.warn("Didn't send email to {}", emailAddress);
         }
-
     }
 }
