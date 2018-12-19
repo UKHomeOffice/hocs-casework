@@ -47,31 +47,6 @@ public class CorrespondentServiceTest {
         verifyNoMoreInteractions(correspondentRepository);
     }
 
-    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void shouldNotGetCorrespondentsNotFoundException() {
-
-        when(correspondentRepository.findAllByCaseUUID(caseUUID)).thenReturn(null);
-
-        correspondentService.getCorrespondents(caseUUID);
-    }
-
-    @Test
-    public void shouldNotGetCorrespondentsNotFound() {
-
-        when(correspondentRepository.findAllByCaseUUID(caseUUID)).thenReturn(null);
-
-        try {
-            correspondentService.getCorrespondents(caseUUID);
-        } catch (ApplicationExceptions.EntityNotFoundException e) {
-            // Do nothing.
-        }
-
-        verify(correspondentRepository, times(1)).findAllByCaseUUID(caseUUID);
-
-        verifyNoMoreInteractions(correspondentRepository);
-
-    }
-
     @Test
     public void shouldNotGetCorrespondentsMissingUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 

@@ -29,14 +29,10 @@ public class TopicService {
     }
 
      Set<Topic> getTopics(UUID caseUUID) {
-         log.debug("Getting all Topics for Case: {}", caseUUID);
-         Set<Topic> topics = topicDataRepository.findAllByCaseUUID(caseUUID);
-        if (topics != null) {
-            log.info("Got {} Topics for Case: {}", topics.size(), caseUUID, value(EVENT, CASE_TOPICS_RETRIEVED));
-            return topics;
-        } else {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Topics for Case UUID: %s not found!", caseUUID), CASE_TOPICS_NOT_FOUND);
-        }
+        log.debug("Getting all Topics for Case: {}", caseUUID);
+        Set<Topic> topics = topicDataRepository.findAllByCaseUUID(caseUUID);
+        log.info("Got {} Topics for Case: {}", topics.size(), caseUUID, value(EVENT, CASE_TOPICS_RETRIEVED));
+        return topics;
     }
 
     Topic getTopic(UUID caseUUID, UUID topicUUID) {
