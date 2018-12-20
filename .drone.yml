@@ -115,7 +115,7 @@ pipeline:
 
 services:
   postgres:
-    image: quay.io/ukhomeofficedigital/postgres
+    image: quay.io/ukhomeofficedigital/postgres-alpine
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: dev
