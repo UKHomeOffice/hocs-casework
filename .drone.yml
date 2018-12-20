@@ -115,7 +115,7 @@ pipeline:
 
 services:
   postgres:
-    image: quay.io/ukhomeofficedigital/postgres
+    image: quay.io/ukhomeofficedigital/postgres-alpine
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: dev
@@ -153,9 +153,9 @@ services:
       HUB_PORT_4444_TCP_PORT: "4444"
       DISPLAY: ":99.0"
 
-  firefox:
-    image: selenium/node-firefox
-    environment:
-      HUB_PORT_4444_TCP_ADDR: selenium
-      HUB_PORT_4444_TCP_PORT: "4444"
-      DISPLAY: ":98.0"
+  #firefox:
+  #  image: selenium/node-firefox
+  #  environment:
+  #    HUB_PORT_4444_TCP_ADDR: selenium
+  #    HUB_PORT_4444_TCP_PORT: "4444"
+  #    DISPLAY: ":98.0"
