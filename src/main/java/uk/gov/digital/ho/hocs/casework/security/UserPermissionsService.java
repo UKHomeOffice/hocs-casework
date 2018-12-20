@@ -28,31 +28,6 @@ public class UserPermissionsService {
         return UUID.fromString(requestData.userId());
     }
 
-    private static void getAccessLevel(Map<String, Map<String, Map<String, Set<AccessLevel>>>> permissions, String[] permission) {
-        try {
-            String unit = Optional.ofNullable(permission[1]).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Null unit Found", SECURITY_PARSE_ERROR));
-            String team = Optional.ofNullable(permission[2]).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Null team Found", SECURITY_PARSE_ERROR));
-            String caseType = Optional.ofNullable(permission[3]).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Invalid case type Found",SECURITY_PARSE_ERROR));
-            String accessLevel = Optional.ofNullable(permission[4]).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Invalid access type Found",SECURITY_PARSE_ERROR));
-
-            buildPermissions(permissions, unit, team, caseType, accessLevel);
-
-        } catch (SecurityExceptions.PermissionCheckException e) {
-            log.error(e.getMessage(),value(EVENT, SECURITY_PARSE_ERROR));
-        }
-    }
-
-    private static void buildPermissions(Map<String, Map<String, Map<String, Set<AccessLevel>>>> permissions, String unit, String team, String caseType, String accessLevel) {
-        try{
-            permissions.computeIfAbsent(unit, map -> new HashMap<>())
-                    .computeIfAbsent(team, map -> new HashMap<>())
-                    .computeIfAbsent(caseType, map -> new HashSet<>())
-                    .add(AccessLevel.valueOf(accessLevel));
-        } catch (IllegalArgumentException e){
-            log.error("invalid access level found - {}", accessLevel, value(EVENT, INVALID_ACCESS_LEVEL_FOUND));
-        }
-    }
-
     public AccessLevel getMaxAccessLevel(String caseType) {
         return getUserPermission()
                 .flatMap(unit -> unit.getValue().values().stream())
@@ -63,13 +38,11 @@ public class UserPermissionsService {
     }
 
     public Set<AccessLevel> getUserAccessLevels(CaseDataType caseType) {
-
         return getUserPermission()
                 .flatMap(unit -> unit.getValue().values().stream())
                 .flatMap(type -> type.getOrDefault(caseType.getDisplayCode(), new HashSet<>()).stream())
                 .collect(Collectors.toSet());
     }
-
 
     public Set<String> getUserUnits() {
         return getUserPermission()
@@ -101,6 +74,31 @@ public class UserPermissionsService {
                 .forEach(group -> getAccessLevel(permissions, group));
 
         return permissions.entrySet().stream();
+    }
+
+    private static void getAccessLevel(Map<String, Map<String, Map<String, Set<AccessLevel>>>> permissions, String[] permission) {
+        try {
+            String unit = Optional.ofNullable(permission[1]).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Null unit Found", SECURITY_PARSE_ERROR));
+            String team = Optional.ofNullable(permission[2]).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Null team Found", SECURITY_PARSE_ERROR));
+            String caseType = Optional.ofNullable(permission[3]).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Invalid case type Found",SECURITY_PARSE_ERROR));
+            String accessLevel = Optional.ofNullable(permission[4]).orElseThrow(() -> new SecurityExceptions.PermissionCheckException("Invalid access type Found",SECURITY_PARSE_ERROR));
+
+            buildPermissions(permissions, unit, team, caseType, accessLevel);
+
+        } catch (SecurityExceptions.PermissionCheckException e) {
+            log.error(e.getMessage(),value(EVENT, SECURITY_PARSE_ERROR));
+        }
+    }
+
+    private static void buildPermissions(Map<String, Map<String, Map<String, Set<AccessLevel>>>> permissions, String unit, String team, String caseType, String accessLevel) {
+        try{
+            permissions.computeIfAbsent(unit, map -> new HashMap<>())
+                    .computeIfAbsent(team, map -> new HashMap<>())
+                    .computeIfAbsent(caseType, map -> new HashSet<>())
+                    .add(AccessLevel.valueOf(accessLevel));
+        } catch (IllegalArgumentException e){
+            log.error("invalid access level found - {}", accessLevel, value(EVENT, INVALID_ACCESS_LEVEL_FOUND));
+        }
     }
 
 }
