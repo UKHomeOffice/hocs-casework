@@ -42,7 +42,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:notes/beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
 @Sql(scripts = "classpath:notes/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 public class CaseNoteIntegrationTest {
     private MockRestServiceServer mockInfoService;
 
