@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.lang.NonNull;
 
 import java.util.UUID;
 
@@ -10,6 +11,7 @@ import java.util.UUID;
 @Getter
 public class CreateTopicRequest {
 
-    @JsonProperty("topicUUID")
+    @NonNull
+    @JsonProperty(value = "topicUUID", required = true)
     private UUID topicUUID;
 }

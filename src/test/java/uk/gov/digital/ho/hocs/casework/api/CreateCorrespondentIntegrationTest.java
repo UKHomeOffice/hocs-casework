@@ -51,9 +51,6 @@ public class CreateCorrespondentIntegrationTest {
     @Autowired
     CorrespondentRepository correspondentRepository;
 
-    @Autowired
-    StageRepository stageRepository;
-
     private ObjectMapper mapper = new ObjectMapper();
 
     private final UUID CASE_UUID1 = UUID.fromString("14915b78-6977-42db-b343-0915a7f412a1");
