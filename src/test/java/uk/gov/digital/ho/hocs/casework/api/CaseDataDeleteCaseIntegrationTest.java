@@ -64,6 +64,14 @@ public class CaseDataDeleteCaseIntegrationTest {
     @Before
     public void setup() throws IOException {
         mockInfoService = buildMockService(restTemplate);
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
@@ -73,184 +81,170 @@ public class CaseDataDeleteCaseIntegrationTest {
     }
 
     @Test
-    public void shouldDeleteValidCaseWithPermissionLevelOwner() throws JsonProcessingException {
+    public void shouldDeleteValidCaseWithPermissionLevelOwner()  {
+
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(originalCaseData).isNotNull();
         assertThat(postDeleteCaseData).isNull();
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelWrite() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelWrite()  {
+
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "WRITE")), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(originalCaseData).isNotNull();
         assertThat(postDeleteCaseData).isNotNull();
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelRead() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelRead()  {
+
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "READ")), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(originalCaseData).isNotNull();
         assertThat(postDeleteCaseData).isNotNull();
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelSummary() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelSummary()  {
+
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(originalCaseData).isNotNull();
         assertThat(postDeleteCaseData).isNotNull();
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelUnset() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelUnset() {
+
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "UNSET")), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(originalCaseData).isNotNull();
         assertThat(postDeleteCaseData).isNotNull();
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelEmpty() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelEmpty()  {
+
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
-        ResponseEntity<String> result = testRestTemplate.exchange(
+
+       ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(originalCaseData).isNotNull();
         assertThat(postDeleteCaseData).isNotNull();
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelInvalid() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelInvalid()  {
+
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "WRONG")), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(originalCaseData).isNotNull();
         assertThat(postDeleteCaseData).isNotNull();
     }
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+    public void shouldReturnNotFoundWhenDeleteInvalidCaseWithPermissionLevelOwner()  {
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelWrite() throws JsonProcessingException {
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelWrite()  {
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "WRITE")), String.class);
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelRead() throws JsonProcessingException {
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelRead()  {
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "READ")), String.class);
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelSummary() throws JsonProcessingException {
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelSummary()  {
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), String.class);
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelUnset() throws JsonProcessingException {
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelUnset() {
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "UNSET")), String.class);
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelInvalid() throws JsonProcessingException {
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelInvalid()  {
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "WRONG")), String.class);
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelEmpty() throws JsonProcessingException {
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelEmpty() {
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -266,21 +260,17 @@ public class CaseDataDeleteCaseIntegrationTest {
     }
 
     @Test
-    public void shouldDeleteValidCaseAndThenReturnNotFoundWhenDeleteSameCaseAgainWithPermissionLevelOwner() throws JsonProcessingException {
+    public void shouldDeleteValidCaseAndThenReturnNotFoundWhenDeleteSameCaseAgainWithPermissionLevelOwner() {
+
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+
         ResponseEntity<String> result1 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
         ResponseEntity<String> result2 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+
         assertThat(originalCaseData).isNotNull();
         assertThat(postDeleteCaseData).isNull();
         assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -295,28 +285,8 @@ public class CaseDataDeleteCaseIntegrationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("X-Auth-Groups", "/UNIT1/44444444-2222-2222-2222-222222222222/" + caseTypePermission + "/" + permissionLevel);
-        headers.add("X-Auth-Userid", "simon.mitchell@digital.homeoffice.gov.uk");
+        headers.add("X-Auth-Userid", "a.person@digital.homeoffice.gov.uk");
         headers.add("X-Correlation-Id", "1");
         return headers;
-    }
-
-    private String createBody(String caseType) {
-        String body = "{\n" +
-                "  \"type\":{\"displayCode\":\"" + caseType + "\",\"shortCode\":\"a1\"},\n" +
-                "  \"data\": {\"DateReceived\":\"2018-01-01\"},\n" +
-                "  \"received\":\"2018-01-01\",\n" +
-                "  \"deadline\":\"2018-01-01\"\n" +
-                "}";
-        return body;
-    }
-
-    private String createBodyData(String caseType, String data) {
-        String body = "{\n" +
-                "  \"type\":{\"displayCode\":\"" + caseType + "\",\"shortCode\":\"a1\"},\n" +
-                "  \"data\": " + data + ",\n" +
-                "  \"received\":\"2018-01-01\",\n" +
-                "  \"deadline\":\"2018-01-01\"\n" +
-                "}";
-        return body;
     }
 }

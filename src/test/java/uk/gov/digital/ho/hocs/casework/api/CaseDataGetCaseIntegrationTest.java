@@ -197,7 +197,7 @@ public class CaseDataGetCaseIntegrationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("X-Auth-Groups", "/UNIT1/44444444-2222-2222-2222-222222222222/" + caseType + "/" + permissionLevel);
-        headers.add("X-Auth-Userid", "simon.mitchell@digital.homeoffice.gov.uk");
+        headers.add("X-Auth-Userid", "a.person@digital.homeoffice.gov.uk");
         headers.add("X-Correlation-Id", "1");
         return headers;
     }
