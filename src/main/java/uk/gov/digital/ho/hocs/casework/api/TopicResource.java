@@ -5,12 +5,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateTopicRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicsResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicsResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.Allocated;
+import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
+import javax.validation.Valid;
 import java.util.Set;
 import java.util.UUID;
 
@@ -25,9 +28,9 @@ public class TopicResource {
         this.topicService = topicService;
     }
 
-    @Authorised(accessLevel = AccessLevel.WRITE)
-    @PostMapping(value = "/case/{caseUUID}/topic")
-    ResponseEntity addTopicToCase(@PathVariable UUID caseUUID, @RequestBody CreateTopicRequest request) {
+    @Allocated(allocatedTo = AllocationLevel.USER)
+    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/topic")
+    ResponseEntity addTopicToCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @Valid @RequestBody CreateTopicRequest request) {
         topicService.createTopic(caseUUID, request.getTopicUUID());
         return ResponseEntity.ok().build();
     }
@@ -46,9 +49,9 @@ public class TopicResource {
         return ResponseEntity.ok(GetTopicResponse.from(topic));
     }
 
-    @Authorised(accessLevel = AccessLevel.WRITE)
-    @DeleteMapping(value = "/case/{caseUUID}/topic/{topicUUID}")
-    ResponseEntity deleteTopic(@PathVariable UUID caseUUID, @PathVariable UUID topicUUID) {
+    @Allocated(allocatedTo = AllocationLevel.USER)
+    @DeleteMapping(value = "/case/{caseUUID}/stage/{stageUUID}/topic/{topicUUID}")
+    ResponseEntity deleteTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @PathVariable UUID topicUUID) {
         topicService.deleteTopic(caseUUID, topicUUID);
         return ResponseEntity.ok().build();
     }
