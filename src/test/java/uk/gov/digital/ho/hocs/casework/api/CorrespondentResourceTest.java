@@ -23,6 +23,7 @@ import static org.mockito.Mockito.*;
 public class CorrespondentResourceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
+    private final UUID stageUUID = UUID.randomUUID();
     private final UUID correspondentUUID = UUID.randomUUID();
     @Mock
     private CorrespondentService correspondentService;
@@ -42,7 +43,7 @@ public class CorrespondentResourceTest {
         doNothing().when(correspondentService).createCorrespondent(eq(caseUUID), eq("any"), eq("anyFullName"), any(Address.class), eq("anyPhone"), eq("anyEmail"), eq("anyReference"));
 
         CreateCorrespondentRequest createCorrespondentRequest = new CreateCorrespondentRequest("any", "anyFullName","anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
-        ResponseEntity response = correspondentResource.addCorrespondentToCase(caseUUID, createCorrespondentRequest);
+        ResponseEntity response = correspondentResource.addCorrespondentToCase(caseUUID, stageUUID, createCorrespondentRequest);
 
         verify(correspondentService, times(1)).createCorrespondent(eq(caseUUID), eq("any"), eq("anyFullName"), any(Address.class), eq("anyPhone"), eq("anyEmail"), eq("anyReference"));
 
@@ -90,7 +91,7 @@ public class CorrespondentResourceTest {
 
         doNothing().when(correspondentService).deleteCorrespondent(caseUUID, correspondentUUID);
 
-        ResponseEntity response = correspondentResource.deleteCorrespondent(caseUUID, correspondentUUID);
+        ResponseEntity response = correspondentResource.deleteCorrespondent(caseUUID, stageUUID, correspondentUUID);
 
         verify(correspondentService, times(1)).deleteCorrespondent(caseUUID, correspondentUUID);
 

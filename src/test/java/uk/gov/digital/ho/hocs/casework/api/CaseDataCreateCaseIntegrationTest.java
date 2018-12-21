@@ -25,9 +25,9 @@ import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.IS
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 //@Sql(scripts = "classpath:beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
 @Sql(scripts = "classpath:afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 public class CaseDataCreateCaseIntegrationTest {
-    TestRestTemplate testRestTemplate = new TestRestTemplate();
+
+    private TestRestTemplate testRestTemplate = new TestRestTemplate();
 
     @LocalServerPort
     int port;
@@ -37,117 +37,165 @@ public class CaseDataCreateCaseIntegrationTest {
 
     @Test
     public void shouldCreateACaseWithPermissionLevelOwner() {
+
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBody("TEST"), "TEST", "OWNER");
+
         CaseData caseData = caseDataRepository.findByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody().getReference()).isNotNull();
         assertThat(result.getBody().getUuid()).isNotNull();
         assertThat(caseData).isNotNull();
-        assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore + 1l);
+        assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore + 1L);
     }
 
     @Test
     public void shouldCreateACaseWithPermissionLevelWrite() {
+
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBody("TEST"), "TEST", "WRITE");
+
         CaseData caseData = caseDataRepository.findByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody().getReference()).isNotNull();
         assertThat(result.getBody().getUuid()).isNotNull();
         assertThat(caseData).isNotNull();
-        assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore + 1l);
+        assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore + 1L);
     }
 
     @Test
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelRead() {
+
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "READ");
+
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
     }
 
     @Test
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelSummary() {
+
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "SUMMARY");
+
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
     }
 
     @Test
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelUnset() {
+
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "UNSET");
+
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
     }
 
     @Test
     public void shouldReturnUnauthorisedAndNotCreateACaseWithInvalidPermission() {
+
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "WRONG");
+
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
     }
 
     @Test
     public void shouldReturnUnauthorisedAndNotCreateACaseWithEmptyPermission() {
+
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "");
+
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
     }
 
     @Test
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelNull() {
+
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", null);
+
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
     }
 
     @Test
     public void shouldReturnBadRequestAndNotCreateACaseWhenNoRequestBody() {
+
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<Void> result = getCreateCaseVoidResponse(null, "TEST", "OWNER");
+
         long numberOfCasesAfter = caseDataRepository.count();
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
     }
 
     @Test
     public void shouldReturnUnauthorisedAndNotCreateACaseWhenInvalidCaseType() {
+
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("WRONG"), "TEST", "OWNER");
+
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
     }
 
     @Test
     public void shouldReturnUnauthorisedNotCreateAValidCaseWithNullCaseType() {
+
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody(null), "TEST", "OWNER");
+
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
     }
 
     @Test
     public void shouldCreateAValidCaseWithEmptyData() {
+
         long numberOfCasesBefore = caseDataRepository.count();
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST", "{}"), "TEST", "OWNER");
+
+        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST","{}"), "TEST", "OWNER");
+
         CaseData caseData = caseDataRepository.findByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody().getReference()).isNotNull();
         assertThat(result.getBody().getUuid()).isNotNull();
@@ -158,9 +206,12 @@ public class CaseDataCreateCaseIntegrationTest {
     @Test
     public void shouldCreateAValidCaseWithNullData() {
         long numberOfCasesBefore = caseDataRepository.count();
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST", null), "TEST", "OWNER");
+
+        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST",null), "TEST", "OWNER");
+
         CaseData caseData = caseDataRepository.findByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody().getReference()).isNotNull();
         assertThat(result.getBody().getUuid()).isNotNull();
@@ -171,11 +222,14 @@ public class CaseDataCreateCaseIntegrationTest {
     @Test
     public void shouldCreateTwoValidCasesNumberedSequential() {
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<CreateCaseResponse> result1 = getCreateCaseResponse(createBody("TEST"), "TEST", "OWNER");
         ResponseEntity<CreateCaseResponse> result2 = getCreateCaseResponse(createBody("TEST"), "TEST", "OWNER");
+
         CaseData caseData1 = caseDataRepository.findByUuid(result1.getBody().getUuid());
         CaseData caseData2 = caseDataRepository.findByUuid(result2.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result1.getBody().getReference()).isNotNull();
         assertThat(result1.getBody().getUuid()).isNotNull();
@@ -184,19 +238,24 @@ public class CaseDataCreateCaseIntegrationTest {
         assertThat(result2.getBody().getUuid()).isNotNull();
         assertThat(caseData1).isNotNull();
         assertThat(caseData2).isNotNull();
+
         assertThat(result1.getBody().getReference()).isLessThan(result2.getBody().getReference());
-        assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore + 2l);
+        assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore + 2L);
     }
 
     @Test
     public void shouldCreateValidCaseInvalidCaseValidCaseAndOnlyValidCasesAreNumberedSequential() {
+
         long numberOfCasesBefore = caseDataRepository.count();
+
         ResponseEntity<CreateCaseResponse> result1 = getCreateCaseResponse(createBody("TEST"), "TEST", "OWNER");
         ResponseEntity<Void> result2 = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "READ");
         ResponseEntity<CreateCaseResponse> result3 = getCreateCaseResponse(createBody("TEST"), "TEST", "OWNER");
+
         CaseData caseData1 = caseDataRepository.findByUuid(result1.getBody().getUuid());
         CaseData caseData2 = caseDataRepository.findByUuid(result3.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
+
         assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result1.getBody().getReference()).isNotNull();
         assertThat(result1.getBody().getUuid()).isNotNull();
@@ -207,9 +266,11 @@ public class CaseDataCreateCaseIntegrationTest {
         assertThat(result1.getBody().getReference()).isLessThan(result3.getBody().getReference());
         assertThat(caseData1).isNotNull();
         assertThat(caseData2).isNotNull();
-        assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore + 2l);
+        assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore + 2L);
+
         int r1 = Integer.parseInt(result1.getBody().getReference().substring(5, result1.getBody().getReference().length() - 3));
         int r3 = Integer.parseInt(result3.getBody().getReference().substring(5, result3.getBody().getReference().length() - 3));
+
         assertThat(r3).isEqualTo(r1 + 1);
     }
 
@@ -231,7 +292,7 @@ public class CaseDataCreateCaseIntegrationTest {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("X-Auth-Groups", "/UNIT1/44444444-2222-2222-2222-222222222222/" + caseType + "/" + permissionLevel);
-        headers.add("X-Auth-Userid", "simon.mitchell@digital.homeoffice.gov.uk");
+        headers.add("X-Auth-Userid", "a.person@digital.homeoffice.gov.uk");
         headers.add("X-Correlation-Id", "1");
         return headers;
     }

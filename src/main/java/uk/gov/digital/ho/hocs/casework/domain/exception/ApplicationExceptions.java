@@ -16,6 +16,19 @@ public interface ApplicationExceptions {
         }
     }
 
+    class CorrespondentCreationException extends RuntimeException {
+        private final LogEvent event;
+
+        public CorrespondentCreationException(String msg, LogEvent event, Object... args) {
+            super(String.format(msg, args));
+            this.event = event;
+        }
+
+        public LogEvent getEvent() {
+            return event;
+        }
+    }
+
     class EntityNotFoundException extends RuntimeException {
         private final LogEvent event;
 
