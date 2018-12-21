@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -23,6 +24,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 import static org.springframework.test.web.client.MockRestServiceServer.bindTo;
@@ -36,7 +38,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @Sql(scripts = "classpath:afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
 public class GetCorrespondentsIntegrationTest {
 
-    private final String EMPTY_CORRESPONDENTS_EXPECTED_RESULT = "{\n\"correspondents\" : [ ]\n}";
+    private final String EMPTY_CORRESPONDENTS_EXPECTED_RESULT = "{\n " +
+            " \"correspondents\" : [ ]\n" +
+            "}";
 
     private TestRestTemplate testRestTemplate = new TestRestTemplate();
 
@@ -149,6 +153,7 @@ public class GetCorrespondentsIntegrationTest {
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "READ")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(EMPTY_CORRESPONDENTS_EXPECTED_RESULT);
+
     }
 
     @Test
@@ -156,6 +161,7 @@ public class GetCorrespondentsIntegrationTest {
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
     }
 
     @Test

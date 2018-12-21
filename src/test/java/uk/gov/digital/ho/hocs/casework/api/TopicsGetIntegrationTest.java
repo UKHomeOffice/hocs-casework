@@ -36,7 +36,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @Sql(scripts = "classpath:afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
 public class TopicsGetIntegrationTest {
 
-    private final String EMPTY_TOPICS_EXPECTED_RESULT = "{\n\"topics\" : [ ]\n}";
+    private final String EMPTY_TOPICS_EXPECTED_RESULT = "{\n " +
+            " \"topics\" : [ ]\n" +
+            "}";
 
     private TestRestTemplate testRestTemplate = new TestRestTemplate();
 
