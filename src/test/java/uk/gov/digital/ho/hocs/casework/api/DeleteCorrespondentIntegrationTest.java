@@ -26,6 +26,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.*;
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_CLASS;
 import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
@@ -38,7 +39,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
 @Sql(scripts = "classpath:afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
-@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 public class DeleteCorrespondentIntegrationTest {
 
     private MockRestServiceServer mockInfoService;
@@ -144,7 +144,6 @@ public class DeleteCorrespondentIntegrationTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-
     @Test
     public void shouldReturnOkWhenDeleteACorrespondentForACaseThatIsAllocatedToYouThenReturnForbiddenWhenTheCaseIsAllocatedToAnotherTeam() throws JsonProcessingException {
 
@@ -170,7 +169,7 @@ public class DeleteCorrespondentIntegrationTest {
         assertThat(result2.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result3.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 
-        assertThat(after).isEqualTo(before - 1l);
+        assertThat(after).isEqualTo(before - 1L);
     }
 
     @Test
@@ -197,7 +196,7 @@ public class DeleteCorrespondentIntegrationTest {
         assertThat(result2.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result3.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        assertThat(after).isEqualTo(before - 1l);
+        assertThat(after).isEqualTo(before - 1L);
     }
 
     @Test
@@ -218,7 +217,7 @@ public class DeleteCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenCaseIsDeletedAndThenDeleteCorrespondent() throws JsonProcessingException {
+    public void shouldReturnOkWhenCaseIsDeletedAndThenNotFoundDeleteCorrespondent() {
         Correspondent correspondentBefore = correspondentRepository.findByUUID(CASE_UUID1, CORRESPONDENT_UUID);
 
         ResponseEntity<String> result1 = testRestTemplate.exchange(
