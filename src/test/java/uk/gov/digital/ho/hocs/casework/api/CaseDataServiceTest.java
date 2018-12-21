@@ -477,7 +477,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldReturnCaseTypeWhenNullReturnedFromInfoClientAndButCaseInCaseDataOnGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseType(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
+        when(infoClient.getCaseType(caseTypeShortCode)).thenThrow(ApplicationExceptions.ResourceServerException.class);
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData(new CaseDataType("", ""),1L, null, null ));
 
         caseDataService.getCaseType(caseUUID);
@@ -491,7 +491,7 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldThrowEntityNotFoundExceptionWhenNullReturnedFromInfoClientAndNoCaseInCaseDataOnGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseType(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
+        when(infoClient.getCaseType(caseTypeShortCode)).thenThrow(ApplicationExceptions.ResourceServerException.class);
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(null);
 
         caseDataService.getCaseType(caseUUID);

@@ -64,7 +64,7 @@ public class CaseDataService {
         try {
             CaseDataType caseDataType = infoClient.getCaseType(shortCode);
             caseType = caseDataType.getDisplayCode();
-        } catch(ApplicationExceptions.ClientException e) {
+        } catch(ApplicationExceptions.ResourceException e) {
             log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED) );
             caseType = getCase(caseUUID).getType();
         }
