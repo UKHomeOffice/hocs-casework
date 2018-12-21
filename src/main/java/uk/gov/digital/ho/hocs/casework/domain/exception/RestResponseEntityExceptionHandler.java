@@ -39,6 +39,7 @@ public class RestResponseEntityExceptionHandler {
     public ResponseEntity handle(ApplicationExceptions.ResourceNotFoundException e) {
         log.error("ApplicationExceptions.ResourceNotFoundException: {}", e.getMessage(),value(EVENT, e.getEvent()));
         return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handle(MethodArgumentNotValidException e) {
