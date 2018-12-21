@@ -23,10 +23,10 @@ public class DependentDataPreLoader {
 
     @EventListener
     public void onApplicationEvent(ApplicationReadyEvent event) {
-        primeCaseTypes();
+        primeCaches();
     }
 
-    private void primeCaseTypes() {
+    private void primeCaches() {
         Set<CaseDataType> caseTypesSet = this.infoClient.getCaseTypes();
         for (CaseDataType caseType : caseTypesSet) {
             this.infoClient.getCaseType(caseType.getShortCode());

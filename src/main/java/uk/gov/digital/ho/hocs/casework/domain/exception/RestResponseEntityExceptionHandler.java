@@ -27,6 +27,18 @@ public class RestResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
     }
 
+    @ExceptionHandler(ApplicationExceptions.ResourceServerException.class)
+    public ResponseEntity handle(ApplicationExceptions.ResourceServerException e) {
+        log.error("ApplicationExceptions.ResourceServerException: {}", e.getMessage(),value(EVENT, e.getEvent()));
+        return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ApplicationExceptions.ResourceNotFoundException.class)
+    public ResponseEntity handle(ApplicationExceptions.ResourceNotFoundException e) {
+        log.error("ApplicationExceptions.ResourceNotFoundException: {}", e.getMessage(),value(EVENT, e.getEvent()));
+        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity handle(Exception e) {
         log.error("Exception: {}", e.getMessage(), value(EVENT, UNCAUGHT_EXCEPTION));

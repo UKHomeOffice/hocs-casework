@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
-import org.mockito.Mock;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDate;
