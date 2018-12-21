@@ -16,8 +16,8 @@ public class GetStageResponseTest {
         UUID caseUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
-
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
+        UUID transitionNoteUUID = UUID.randomUUID();
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
 
         GetStageResponse getStageResponse = GetStageResponse.from(stage);
 
@@ -28,6 +28,7 @@ public class GetStageResponseTest {
         assertThat(getStageResponse.getCaseUUID()).isEqualTo(stage.getCaseUUID());
         assertThat(getStageResponse.getTeamUUID()).isEqualTo(stage.getTeamUUID());
         assertThat(getStageResponse.getUserUUID()).isEqualTo(stage.getUserUUID());
+        assertThat(getStageResponse.getTransitionNoteUUID()).isEqualTo(stage.getTransitionNoteUUID());
         assertThat(getStageResponse.getCaseReference()).isEqualTo(stage.getCaseReference());
         assertThat(getStageResponse.getCaseDataType()).isEqualTo(stage.getCaseDataType());
         assertThat(getStageResponse.getData()).isEqualTo(stage.getData());
@@ -39,7 +40,7 @@ public class GetStageResponseTest {
 
         UUID caseUUID = UUID.randomUUID();
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", null, null);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", null, null, null);
 
         GetStageResponse getStageResponse = GetStageResponse.from(stage);
 
@@ -50,6 +51,7 @@ public class GetStageResponseTest {
         assertThat(getStageResponse.getCaseUUID()).isEqualTo(stage.getCaseUUID());
         assertThat(getStageResponse.getTeamUUID()).isEqualTo(stage.getTeamUUID());
         assertThat(getStageResponse.getUserUUID()).isEqualTo(stage.getUserUUID());
+        assertThat(getStageResponse.getTransitionNoteUUID()).isEqualTo(stage.getTransitionNoteUUID());
         assertThat(getStageResponse.getCaseReference()).isEqualTo(stage.getCaseReference());
         assertThat(getStageResponse.getCaseDataType()).isEqualTo(stage.getCaseDataType());
         assertThat(getStageResponse.getData()).isEqualTo(stage.getData());

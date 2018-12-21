@@ -23,4 +23,6 @@ public class CreateStageRequest {
     @JsonProperty("allocationType")
     private String allocationType;
 
+    @JsonProperty("transitionNote")
+    private UUID transitionNoteUUID;
 }

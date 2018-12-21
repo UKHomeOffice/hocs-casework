@@ -57,14 +57,23 @@ public class StageService {
         }
     }
 
-    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline, String emailType) {
+    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline, String emailType, UUID transitionNoteUUID) {
         log.debug("Creating Stage of type: {}", stageType);
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
         stageRepository.save(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
         notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, stage.getCaseReference(), emailType);
         return stage;
     }
+
+    void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
+        log.debug("Updating Transitoin Note for Stage: {}", stageUUID);
+        Stage stage = getActiveStage(caseUUID, stageUUID);
+        stage.setTransitionNote(transitionNoteUUID);
+        stageRepository.save(stage);
+        log.info("Set Stage Transition Note: {} ({}) for Case {}", stageUUID, transitionNoteUUID, caseUUID, value(EVENT, STAGE_TRANSITION_NOTE_UPDATED));
+    }
+
 
     void updateStageDeadline(UUID caseUUID, UUID stageUUID, LocalDate deadline) {
         log.debug("Updating Deadline for Stage: {}", stageUUID);

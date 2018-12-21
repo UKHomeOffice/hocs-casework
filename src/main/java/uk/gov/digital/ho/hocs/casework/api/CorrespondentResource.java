@@ -10,8 +10,11 @@ import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.Allocated;
+import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
+import javax.validation.Valid;
 import java.util.Set;
 import java.util.UUID;
 
@@ -26,9 +29,9 @@ public class CorrespondentResource {
         this.correspondentService = correspondentService;
     }
 
-    @Authorised(accessLevel = AccessLevel.WRITE)
-    @PostMapping(value = "/case/{caseUUID}/correspondent")
-    ResponseEntity addCorrespondentToCase(@PathVariable UUID caseUUID, @RequestBody CreateCorrespondentRequest request) {
+    @Allocated(allocatedTo = AllocationLevel.USER)
+    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent")
+    ResponseEntity addCorrespondentToCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @Valid @RequestBody CreateCorrespondentRequest request) {
         Address address = new Address(request.getPostcode(), request.getAddress1(), request.getAddress2(), request.getAddress3(), request.getCountry());
         correspondentService.createCorrespondent(caseUUID, request.getType(), request.getFullname(), address, request.getTelephone(), request.getEmail(), request.getReference());
         return ResponseEntity.ok().build();
@@ -48,9 +51,9 @@ public class CorrespondentResource {
         return ResponseEntity.ok(GetCorrespondentResponse.from(correspondent));
     }
 
-    @Authorised(accessLevel = AccessLevel.WRITE)
-    @DeleteMapping(value = "/case/{caseUUID}/correspondent/{correspondentUUID}")
-    ResponseEntity<GetCorrespondentResponse> deleteCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID correspondentUUID) {
+    @Allocated(allocatedTo = AllocationLevel.USER)
+    @DeleteMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent/{correspondentUUID}")
+    ResponseEntity<GetCorrespondentResponse> deleteCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID ,@PathVariable UUID correspondentUUID) {
         correspondentService.deleteCorrespondent(caseUUID, correspondentUUID);
         return ResponseEntity.ok().build();
     }

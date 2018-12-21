@@ -46,14 +46,15 @@ DROP TABLE IF EXISTS stage;
 
 CREATE TABLE IF NOT EXISTS stage
 (
-  id        BIGSERIAL PRIMARY KEY,
-  uuid      UUID        NOT NULL,
-  created   TIMESTAMP   NOT NULL,
-  type      TEXT        NOT NULL,
-  deadline  DATE,
-  case_uuid UUID        NOT NULL,
-  team_uuid UUID,
-  user_uuid UUID,
+  id                    BIGSERIAL PRIMARY KEY,
+  uuid                  UUID        NOT NULL,
+  created               TIMESTAMP   NOT NULL,
+  type                  TEXT        NOT NULL,
+  deadline              DATE,
+  transition_note_uuid  UUID,
+  case_uuid             UUID        NOT NULL,
+  team_uuid             UUID,
+  user_uuid             UUID,
 
   CONSTRAINT stage_id_idempotent UNIQUE (uuid),
   CONSTRAINT fk_stage_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)

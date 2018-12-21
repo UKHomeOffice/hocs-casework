@@ -31,10 +31,22 @@ public class CaseNoteService {
         return caseNotes;
     }
 
-    void createCaseNote(UUID caseUUID, String caseNoteType, String text) {
+    public CaseNote getCaseNote(UUID caseNoteUUID) {
+        CaseNote caseNote = caseNoteRepository.findByUuid(caseNoteUUID);
+        if (caseNote != null) {
+            log.info("GotCaseNote for UUID: {}", caseNoteUUID, value(EVENT, CASE_NOTE_RETRIEVED));
+            return caseNote;
+        }
+        else {
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("CaseNote for UUID: %s not found!", caseNoteUUID), CASE_NOTE_NOT_FOUND);
+        }
+    }
+
+    public CaseNote createCaseNote(UUID caseUUID, String caseNoteType, String text) {
         log.debug("Creating CaseNote of Type: {} for Case: {}", caseNoteType, caseUUID);
         CaseNote caseNote = new CaseNote(caseUUID, caseNoteType, text);
         caseNoteRepository.save(caseNote);
         log.info("Created CaseNote: {} for Case: {}", caseNote.getUuid(), caseUUID, value(EVENT, CASE_NOTE_CREATED));
+        return caseNote;
     }
 }
