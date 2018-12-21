@@ -46,10 +46,11 @@ public class CaseNoteService {
         }
     }
 
-    void createCaseNote(UUID caseUUID, String caseNoteType, String text) {
+    public CaseNote createCaseNote(UUID caseUUID, String caseNoteType, String text) {
         log.debug("Creating CaseNote of Type: {} for Case: {}", caseNoteType, caseUUID);
         CaseNote caseNote = new CaseNote(caseUUID, caseNoteType, text);
         caseNoteRepository.save(caseNote);
         log.info("Created CaseNote: {} for Case: {}", caseNote.getUuid(), caseUUID, value(EVENT, CASE_NOTE_CREATED));
+        return caseNote;
     }
 }

@@ -9,7 +9,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor()
 @Getter
 public class GetCaseNoteResponse {
 

@@ -7,8 +7,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseNoteRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseNoteResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseNoteResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseNotesResponse;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -40,6 +46,38 @@ public class CaseNoteResourceTest {
         verifyNoMoreInteractions(caseNoteService);
 
         assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetCaseNote() {
+        UUID noteUUID = UUID.randomUUID();
+
+        when(caseNoteService.getCaseNote(noteUUID)).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "",caseUUID,""));
+
+        ResponseEntity<GetCaseNoteResponse> response = caseNoteResource.getCaseNote(caseUUID, noteUUID);
+
+        verify(caseNoteService, times(1)).getCaseNote(noteUUID);
+        verifyNoMoreInteractions(caseNoteService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+
+    @Test
+    public void shouldCreateCaseNote() {
+        UUID noteUUID = UUID.randomUUID();
+
+        when(caseNoteService.createCaseNote(caseUUID, "TYPE", "case note")).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "TYPE",caseUUID,"case note"));
+
+        ResponseEntity<CreateCaseNoteResponse> response = caseNoteResource.createCaseNote(caseUUID, new CreateCaseNoteRequest("TYPE","case note"));
+
+        verify(caseNoteService, times(1)).createCaseNote(caseUUID, "TYPE", "case note");
+        verifyNoMoreInteractions(caseNoteService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getBody().getUuid()).isEqualTo(noteUUID);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 }

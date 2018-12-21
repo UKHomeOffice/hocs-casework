@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseNoteRepository;
 import java.util.HashSet;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -82,8 +83,9 @@ public class CaseNoteServiceTest {
     @Test
     public void shouldCreateCaseNote() throws ApplicationExceptions.EntityCreationException {
 
-        caseNoteService.createCaseNote(caseUUID, caseNoteType, text);
+        CaseNote caseNote = caseNoteService.createCaseNote(caseUUID, caseNoteType, text);
 
+        assertThat(caseNote.getUuid()).isNotNull();
         verify(caseNoteRepository, times(1)).save(any(CaseNote.class));
 
         verifyNoMoreInteractions(caseNoteRepository);

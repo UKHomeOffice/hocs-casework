@@ -81,5 +81,4 @@ class StageResource {
         Set<Stage> activeStages = stageService.getActiveStagesForUser();
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
-
 }
