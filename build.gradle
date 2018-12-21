@@ -24,6 +24,16 @@ task copyLombok(type: Copy) {
 	from configurations.compileOnly
 }
 
+tasks.withType(JavaCompile) {
+
+    options.fork = true  // Fork your compilation into a child process
+    options.forkOptions.setMemoryMaximumSize("256m")
+}
+
+test {
+    maxHeapSize = "256m"
+}
+
 build.dependsOn(copyLombok)
 
 group = 'uk.gov.digital.ho.hocs'

@@ -3,15 +3,22 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.lang.NonNull;
+
+import javax.validation.constraints.NotEmpty;
+
 
 @AllArgsConstructor
 @Getter
 public class CreateCorrespondentRequest {
 
-    @JsonProperty("type")
+    @NonNull
+    @JsonProperty(value = "type", required = true)
     String type;
 
-    @JsonProperty("fullname")
+    @NonNull
+    @NotEmpty
+    @JsonProperty(value = "fullname", required = true)
     String fullname;
 
     @JsonProperty("postcode")
