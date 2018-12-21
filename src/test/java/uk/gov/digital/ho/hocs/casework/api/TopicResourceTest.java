@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateTopicRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicsResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
@@ -32,6 +33,21 @@ public class TopicResourceTest {
         topicResource = new TopicResource(topicService);
     }
 
+    @Test
+    public void shouldAddTopicToCase() {
+
+        doNothing().when(topicService).createTopic(caseUUID, topicUUID);
+
+        CreateTopicRequest createTopicRequest = new CreateTopicRequest(topicUUID);
+        ResponseEntity response = topicResource.addTopicToCase(caseUUID, createTopicRequest);
+
+        verify(topicService, times(1)).createTopic(caseUUID, topicUUID);
+
+        verifyNoMoreInteractions(topicService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 
     @Test
     public void shouldGetTopics() {

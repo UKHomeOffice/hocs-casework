@@ -1,7 +1,9 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
@@ -9,11 +11,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TOPIC_CREATE_FAILED;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "topic")
 public class Topic implements Serializable {
@@ -42,6 +42,11 @@ public class Topic implements Serializable {
     @Column(name = "text_uuid")
     @Getter
     private UUID textUUID;
+
+    @Setter
+    @Getter
+    @Column(name = "deleted")
+    private boolean deleted;
 
     public Topic(UUID caseUUID, String topicName, UUID topicNameUUID) {
         if (caseUUID == null || topicName == null || topicNameUUID == null) {

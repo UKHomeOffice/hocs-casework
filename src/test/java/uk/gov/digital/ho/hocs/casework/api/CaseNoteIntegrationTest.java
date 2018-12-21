@@ -99,7 +99,7 @@ public class CaseNoteIntegrationTest {
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST", "OWNER");
         long numberOfCasesAfter = caseNoteRepository.count();
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
     }
 
@@ -117,7 +117,7 @@ public class CaseNoteIntegrationTest {
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST", "OWNER");
         long numberOfCasesAfter = caseNoteRepository.count();
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
     }
 

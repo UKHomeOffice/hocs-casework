@@ -1,7 +1,7 @@
 buildscript {
 	ext {
-		springBootVersion = '2.1.0.RELEASE'
-		camelVersion = '2.22.2'
+		springBootVersion = '2.1.1.RELEASE'
+		camelVersion = '2.23.0'
 	}
 	repositories {
 		mavenCentral()
@@ -24,6 +24,16 @@ task copyLombok(type: Copy) {
 	from configurations.compileOnly
 }
 
+tasks.withType(JavaCompile) {
+
+    options.fork = true  // Fork your compilation into a child process
+    options.forkOptions.setMemoryMaximumSize("256m")
+}
+
+test {
+    maxHeapSize = "256m"
+}
+
 build.dependsOn(copyLombok)
 
 group = 'uk.gov.digital.ho.hocs'
@@ -36,30 +46,27 @@ repositories {
 }
 
 dependencies {
-	compile("org.springframework.boot:spring-boot-starter-web") {
-		exclude module: "spring-boot-starter-tomcat"
-	}
 
-	compile('org.springframework.boot:spring-boot-starter-actuator')
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile('org.springframework.boot:spring-boot-starter-json')
-	compile('org.springframework.boot:spring-boot-starter-undertow')
+    implementation('org.springframework.boot:spring-boot-starter-web') {
+        exclude(module: 'spring-boot-starter-tomcat')
+    }
+    implementation('org.springframework.boot:spring-boot-starter-undertow')
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation('org.springframework.boot:spring-boot-starter-json')
+    implementation('org.springframework.boot:spring-boot-starter-cache')
+    implementation("org.apache.camel:camel-spring-boot-starter:${camelVersion}")
+    implementation('com.github.ben-manes.caffeine:caffeine')
+    implementation('com.amazonaws:aws-java-sdk:1.11.470')
 
-	compile('net.logstash.logback:logstash-logback-encoder:5.2')
+    implementation('org.flywaydb:flyway-core')
+    implementation('net.logstash.logback:logstash-logback-encoder:5.2')
+    implementation('uk.gov.service.notify:notifications-java-client:3.12.0-RELEASE')
 
-	compile group: 'org.apache.camel', name: 'camel-spring-boot', version: camelVersion
-	compile group: 'org.apache.camel', name: 'camel-aws', version: camelVersion
-	compile group: 'com.amazonaws', name: 'aws-java-sdk', version: '1.11.455'
+    runtimeOnly('org.postgresql:postgresql')
+    compileOnly('org.projectlombok:lombok')
 
-	compile 'uk.gov.service.notify:notifications-java-client:3.12.0-RELEASE'
-	compile('org.flywaydb:flyway-core')
-
-	runtime('org.postgresql:postgresql')
-
-	compileOnly('org.projectlombok:lombok')
-
-	testCompile group: 'org.apache.camel', name: 'camel-test-spring', version: camelVersion
-	testCompile('org.springframework.boot:spring-boot-starter-test')
-	testCompile('org.assertj:assertj-core')
-	testCompile('org.hsqldb:hsqldb')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+    testImplementation("org.apache.camel:camel-test-spring:${camelVersion}")
+    testImplementation('org.assertj:assertj-core')
 }

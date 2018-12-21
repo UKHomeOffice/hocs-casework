@@ -19,17 +19,17 @@ import java.util.UUID;
 @Slf4j
 public class NotifyClient {
 
-    private final NotificationClient notifyClient;
+    private final NotificationClient notificationClient;
     private final InfoClient infoClient;
-    private final String URL;
+    private final String url;
 
     @Autowired
     public NotifyClient(InfoClient infoClient,
                         @Value("${notify.apiKey}") String apiKey,
-                        @Value("${hocs.url}") String URL) {
-        this.notifyClient = new NotificationClient(apiKey);
+                        @Value("${hocs.url}") String url) {
+        this.notificationClient = new NotificationClient(apiKey);
         this.infoClient = infoClient;
-        this.URL = URL;
+        this.url = url;
     }
 
     public void sendTeamEmail(UUID caseUUID, UUID stageUUID, UUID teamUUID, String caseReference, String allocationType) {
@@ -76,7 +76,7 @@ public class NotifyClient {
     }
 
     private void sendEmail(UUID caseUUID, UUID stageUUID, String emailAddress, String firstname, String caseReference, NotifyType notifyType) {
-        String link = String.format("%s/case/%s/stage/%s", URL, caseUUID, stageUUID);
+        String link = String.format("%s/case/%s/stage/%s", url, caseUUID, stageUUID);
         Map<String, String> personalisation = new HashMap<>();
         personalisation.put("link", link);
         personalisation.put("caseRef", caseReference);
@@ -89,11 +89,10 @@ public class NotifyClient {
 
         try {
 
-            notifyClient.sendEmail(notifyType.getDisplayValue(), emailAddress, personalisation, null);
+            notificationClient.sendEmail(notifyType.getDisplayValue(), emailAddress, personalisation, null);
         } catch (NotificationClientException e) {
             log.error(e.getLocalizedMessage());
             log.warn("Didn't send email to {}", emailAddress);
         }
-
     }
 }

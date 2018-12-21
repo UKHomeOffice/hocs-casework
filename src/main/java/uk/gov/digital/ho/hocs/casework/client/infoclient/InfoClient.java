@@ -33,31 +33,36 @@ public class InfoClient {
         return response.getCaseTypes();
     }
 
-    @Cacheable(value = "getCaseTypeByShortCode")
-    public CaseDataType getCaseTypeByShortCode(String shortCode) {
+    @Cacheable(value = "InfoClientGetCaseType")
+    public CaseDataType getCaseType(String shortCode) {
         return restHelper.get(serviceBaseURL, String.format("/caseType/shortCode/%s", shortCode), CaseDataType.class);
     }
 
+    @Cacheable(value = "InfoClientGetTopic")
     public InfoTopic getTopic(UUID topicUUID) {
         return restHelper.get(serviceBaseURL, String.format("/topic/%s", topicUUID), InfoTopic.class);
     }
 
+    @Cacheable(value = "InfoClientGetCaseSummaryFields")
     public Set<String> getCaseSummaryFields(String type) {
         GetSummaryFieldsResponse response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/summary", type), GetSummaryFieldsResponse.class);
         return response.getFields();
     }
 
+    @Cacheable(value = "InfoClientGetDeadlines")
     public Map<String, LocalDate> getDeadlines(String caseType, LocalDate localDate) {
         InfoGetDeadlinesResponse response = restHelper.get(serviceBaseURL, String.format("/casetype/%s/deadlines/%s", caseType, localDate), InfoGetDeadlinesResponse.class);
         return response.getDeadlines();
     }
 
+    @Cacheable(value = "InfoClientGetNominatedPeople")
     public Set<InfoNominatedPeople> getNominatedPeople(UUID teamUUID) {
         InfoGetNominatedPeopleResponse response = restHelper.get(serviceBaseURL, String.format("/nominatedpeople/%s", teamUUID), InfoGetNominatedPeopleResponse.class);
         return response.getNominatedPeople();
     }
 
-    public UserDto getUser(UUID userUUD) {
-        return restHelper.get(serviceBaseURL, String.format("/user/%s", userUUD), UserDto.class);
+    @Cacheable(value = "InfoClientGetUser")
+    public UserDto getUser(UUID userUUID) {
+        return restHelper.get(serviceBaseURL, String.format("/user/%s", userUUID), UserDto.class);
     }
 }

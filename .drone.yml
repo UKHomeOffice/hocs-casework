@@ -9,7 +9,7 @@ pipeline:
       - export CASE_QUEUE_DLQ_NAME='case-queue-dlq'
       - export DB_HOST='postgres'
       - export AWS_LOCAL_HOST='localstack'
-      - ./gradlew build
+      - ./gradlew cleanTest build --no-daemon --max-workers 2
     when:
       event: [push, pull_request, tag]
 
@@ -115,7 +115,7 @@ pipeline:
 
 services:
   postgres:
-    image: quay.io/ukhomeofficedigital/postgres
+    image: quay.io/ukhomeofficedigital/postgres-alpine
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: dev
@@ -143,19 +143,19 @@ services:
       AWS_ACCESS_KEY_ID: UNSET
       AWS_SECRET_ACCESS_KEY: UNSET
       AWS_DEFAULT_REGION: 'eu-west-2'
-  selenium:
-    image: selenium/hub
+#  selenium:
+#    image: selenium/hub
+#
+#  chrome:
+#    image: selenium/node-chrome
+#    environment:
+#      HUB_PORT_4444_TCP_ADDR: selenium
+#      HUB_PORT_4444_TCP_PORT: "4444"
+#      DISPLAY: ":99.0"
 
-  chrome:
-    image: selenium/node-chrome
-    environment:
-      HUB_PORT_4444_TCP_ADDR: selenium
-      HUB_PORT_4444_TCP_PORT: "4444"
-      DISPLAY: ":99.0"
-
-  firefox:
-    image: selenium/node-firefox
-    environment:
-      HUB_PORT_4444_TCP_ADDR: selenium
-      HUB_PORT_4444_TCP_PORT: "4444"
-      DISPLAY: ":98.0"
+  #firefox:
+  #  image: selenium/node-firefox
+  #  environment:
+  #    HUB_PORT_4444_TCP_ADDR: selenium
+  #    HUB_PORT_4444_TCP_PORT: "4444"
+  #    DISPLAY: ":98.0"

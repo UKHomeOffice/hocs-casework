@@ -1,7 +1,9 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
@@ -9,7 +11,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "correspondent")
 public class Correspondent {
@@ -70,6 +72,11 @@ public class Correspondent {
     @Getter
     @Column(name = "reference")
     private String reference;
+
+    @Setter
+    @Getter
+    @Column(name = "deleted")
+    private boolean deleted;
 
     public Correspondent(UUID caseUUID, String correspondentType, String fullName, Address address, String telephone, String email, String reference) {
         if (caseUUID == null || correspondentType == null) {

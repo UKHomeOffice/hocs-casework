@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
+
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -200,6 +200,45 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
 
         verifyZeroInteractions(correspondentService);
+    }
+
+    @Test
+    public void shouldGetCaseSummaryWithValidParamsPrimaryCorrespondentException() throws ApplicationExceptions.EntityNotFoundException, IOException {
+
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
+        caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
+        Set<String> filterFields = new HashSet<String>() {{
+            add("TEMPCReference");
+        }};
+
+        Set<Stage> activeStages = new HashSet<Stage>() {{
+            add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
+        }};
+
+        Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
+            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10));
+            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
+        }};
+
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
+        when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(stageService.getActiveStagesByCaseUUID(caseData.getUuid())).thenReturn(activeStages);
+
+        when(correspondentService.getCorrespondent(caseData.getUuid(), caseData.getPrimaryCorrespondentUUID())).thenThrow(ApplicationExceptions.EntityNotFoundException.class);
+
+        CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
+
+        assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
+        assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
+        assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
+        assertThat(result.getActiveStages().size()).isEqualTo(1);
+
+
+        verify(stageService, times(1)).getActiveStagesByCaseUUID(caseData.getUuid());
+        verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
+        verify(infoClient, times(1)).getDeadlines(caseData.getType(), caseData.getDateReceived());
+        verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
     }
 
     @Test
@@ -425,11 +464,11 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(new CaseDataType("MIN", "a1"));
+        when(infoClient.getCaseType(caseTypeShortCode)).thenReturn(new CaseDataType("MIN", "a1"));
 
         caseDataService.getCaseType(caseUUID);
 
-        verify(infoClient, times(1)).getCaseTypeByShortCode(caseTypeShortCode);
+        verify(infoClient, times(1)).getCaseType(caseTypeShortCode);
         verifyNoMoreInteractions(infoClient);
         verifyNoMoreInteractions(caseDataRepository);
 
@@ -438,12 +477,12 @@ public class CaseDataServiceTest {
     @Test
     public void shouldReturnCaseTypeWhenNullReturnedFromInfoClientAndButCaseInCaseDataOnGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
-        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData());
+        when(infoClient.getCaseType(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
+        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData(new CaseDataType("", ""),1L, null, null ));
 
         caseDataService.getCaseType(caseUUID);
 
-        verify(infoClient, times(1)).getCaseTypeByShortCode(caseTypeShortCode);
+        verify(infoClient, times(1)).getCaseType(caseTypeShortCode);
         verifyNoMoreInteractions(infoClient);
         verify(caseDataRepository, times(1)).findByUuid(caseUUID);
         verifyNoMoreInteractions(caseDataRepository);
@@ -452,7 +491,7 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldThrowEntityNotFoundExceptionWhenNullReturnedFromInfoClientAndNoCaseInCaseDataOnGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
+        when(infoClient.getCaseType(caseTypeShortCode)).thenThrow(ApplicationExceptions.ClientException.class);
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(null);
 
         caseDataService.getCaseType(caseUUID);

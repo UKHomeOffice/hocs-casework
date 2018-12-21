@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
@@ -34,6 +35,7 @@ public class Stage implements Serializable {
     @Column(name = "type")
     private String stageType;
 
+    @Setter
     @Getter
     @Column(name = "deadline")
     private LocalDate deadline;
