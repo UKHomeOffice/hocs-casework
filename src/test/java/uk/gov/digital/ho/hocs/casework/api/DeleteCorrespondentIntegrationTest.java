@@ -72,6 +72,10 @@ public class DeleteCorrespondentIntegrationTest {
                 .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
@@ -216,17 +220,15 @@ public class DeleteCorrespondentIntegrationTest {
     @Test
     public void shouldReturnNotFoundWhenCaseIsDeletedAndThenDeleteCorrespondent() throws JsonProcessingException {
         Correspondent correspondentBefore = correspondentRepository.findByUUID(CASE_UUID1, CORRESPONDENT_UUID);
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+
         ResponseEntity<String> result1 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
-
 
         ResponseEntity<String> result2 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CORRESPONDENT_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
 
+        assertThat(correspondentBefore).isNotNull();
+        assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result2.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
