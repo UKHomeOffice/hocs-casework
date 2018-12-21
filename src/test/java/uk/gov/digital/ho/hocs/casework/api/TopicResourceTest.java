@@ -8,8 +8,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateTopicRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicsResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicsResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 
 import java.util.HashSet;
@@ -22,6 +22,7 @@ import static org.mockito.Mockito.*;
 public class TopicResourceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
+    private final UUID stageUUID = UUID.randomUUID();
     private final UUID topicUUID = UUID.randomUUID();
     private static final String topicName = "topicName";
     @Mock
@@ -39,7 +40,7 @@ public class TopicResourceTest {
         doNothing().when(topicService).createTopic(caseUUID, topicUUID);
 
         CreateTopicRequest createTopicRequest = new CreateTopicRequest(topicUUID);
-        ResponseEntity response = topicResource.addTopicToCase(caseUUID, createTopicRequest);
+        ResponseEntity response = topicResource.addTopicToCase(caseUUID, stageUUID, createTopicRequest);
 
         verify(topicService, times(1)).createTopic(caseUUID, topicUUID);
 
@@ -84,7 +85,7 @@ public class TopicResourceTest {
 
         doNothing().when(topicService).deleteTopic(caseUUID, topicUUID);
 
-        ResponseEntity response = topicResource.deleteTopic(caseUUID, topicUUID);
+        ResponseEntity response = topicResource.deleteTopic(caseUUID, stageUUID, topicUUID);
 
         verify(topicService, times(1)).deleteTopic(caseUUID, topicUUID);
 

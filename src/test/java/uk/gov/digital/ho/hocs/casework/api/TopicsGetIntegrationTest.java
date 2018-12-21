@@ -15,7 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.TopicRepository;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -34,9 +34,9 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
 @Sql(scripts = "classpath:afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
-public class GetCorrespondentsIntegrationTest {
+public class TopicsGetIntegrationTest {
 
-    private final String EMPTY_CORRESPONDENTS_EXPECTED_RESULT = "{\n\"correspondents\" : [ ]\n}";
+    private final String EMPTY_TOPICS_EXPECTED_RESULT = "{\n\"topics\" : [ ]\n}";
 
     private TestRestTemplate testRestTemplate = new TestRestTemplate();
 
@@ -47,13 +47,13 @@ public class GetCorrespondentsIntegrationTest {
     private RestTemplate restTemplate;
 
     @Autowired
-    CorrespondentRepository correspondentRepository;
+    TopicRepository topicRepository;
 
     private ObjectMapper mapper = new ObjectMapper();
 
     private final UUID CASE_UUID = UUID.fromString("14915b78-6977-42db-b343-0915a7f412a1");
     private final UUID STAGE_UUID = UUID.fromString("e9151b83-7602-4419-be83-bff1c924c80d");
-    private final UUID CORRESPONDENT_UUID = UUID.fromString("2c9e1eb9-ee78-4f57-a626-b8b75cf3b937");
+    private final UUID TOPIC_UUID = UUID.fromString("d472a1a9-d32d-46cb-a08a-56c22637c584");
 
     private final UUID INVALID_CASE_UUID = UUID.fromString("89334528-7769-2db4-b432-456091f132a1");
 
@@ -79,118 +79,120 @@ public class GetCorrespondentsIntegrationTest {
     }
 
     @Test
-    public void shouldReturnCorrespondentsForValidCaseWithPermissionLevelOwner() {
+    public void shouldReturnTopicsForValidCaseWithPermissionLevelOwner() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void shouldReturnCorrespondentsForValidCaseWithPermissionLevelWrite() {
+    public void shouldReturnTopicsForValidCaseWithPermissionLevelWrite() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "WRITE")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "WRITE")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void shouldReturnCorrespondentsForValidCaseWithPermissionLevelRead() {
+    public void shouldReturnTopicsForValidCaseWithPermissionLevelRead() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "READ")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "READ")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetCorrespondentsForValidCaseWithPermissionLevelSummary() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithPermissionLevelSummary() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetCorrespondentsForValidCaseWithPermissionLevelUnset() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithPermissionLevelUnset() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "UNSET")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "UNSET")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetCorrespondentsForValidCaseWithPermissionLevelEmpty() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithPermissionLevelEmpty() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetCorrespondentsForValidCaseWithPermissionLevelNull() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithPermissionLevelNull() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", null)), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", null)), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnOkAndEmptySetSetWhenGetCorrespondentsForInvalidCaseWithPermissionLevelOwner() {
+    public void shouldReturnOkAndEmptySetSetWhenGetTopicsForInvalidCaseWithPermissionLevelOwner() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(EMPTY_CORRESPONDENTS_EXPECTED_RESULT);
+        assertThat(result.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
     }
 
     @Test
-    public void shouldReturnOkAndEmptySetWhenGetCorrespondentsForInvalidCaseWithPermissionLevelWrite() {
+    public void shouldReturnOkAndEmptySetWhenGetTopicsForInvalidCaseWithPermissionLevelWrite() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "WRITE")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "WRITE")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(EMPTY_CORRESPONDENTS_EXPECTED_RESULT);
+        assertThat(result.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
     }
 
     @Test
-    public void shouldReturnOkAndEmptySetWhenGetCorrespondentsForInvalidCaseWithPermissionLevelRead() {
+    public void shouldReturnOkAndEmptySetWhenGetTopicsForInvalidCaseWithPermissionLevelRead() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "READ")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "READ")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(EMPTY_CORRESPONDENTS_EXPECTED_RESULT);
+        assertThat(result.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
+
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelSummary() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelSummary() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), String.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+    }
+
+    @Test
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelUnset() {
+        ResponseEntity<String> result = testRestTemplate.exchange(
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "UNSET")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelUnset() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelEmpty() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "UNSET")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelEmpty() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelNull() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", null)), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelNull() {
-        ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", null)), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-    }
-
-    @Test
-    public void shouldReturnOkWhenGetCorrespondentAndThenOkAndEmptySetWhenCorrespondentsDeleted() {
+    public void shouldReturnOkWhenGetTopicAndThenOkAndEmptySetWhenCorrespondentsDeleted() {
         ResponseEntity<String> result1 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
         assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.OK);
         ResponseEntity<String> result2 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/stage/" + STAGE_UUID + "/correspondent/" + CORRESPONDENT_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/stage/" + STAGE_UUID + "/topic/" + TOPIC_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
         assertThat(result2.getStatusCode()).isEqualTo(HttpStatus.OK);
         ResponseEntity<String> result3 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
         assertThat(result3.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result3.getBody()).isEqualTo(EMPTY_CORRESPONDENTS_EXPECTED_RESULT);
+        assertThat(result3.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
     }
 
     private String getBasePath() {
