@@ -10,9 +10,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.time.LocalDate;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -88,6 +86,19 @@ public class InfoClient {
             log.error("Could not get deadlines for CaseType {} and Date {}", caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINES_FAILURE));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get deadlines for CaseType %s and Date %s", caseType, localDate), INFO_CLIENT_GET_DEADLINES_FAILURE);
         }
+    }
+
+    @Cacheable(value = "InfoClientGetCaseNoteStageTypes")
+    public Set<String> getCaseNoteStageTypes(String stageType) {
+        //try {
+        //    InfoGetCaseNoteStageTypeResponse response = restHelper.get(serviceBaseURL, String.format("/stagetype/%s/caseNoteStageType", stageType), InfoGetCaseNoteStageTypeResponse.class);
+        //    log.info("Got {} case note stage types for stageType {}", response.getCaseNoteStageTypes().size(), stageType, value(EVENT, INFO_CLIENT_GET_CASE_NOTE_STAGE_TYPE_SUCCESS));
+        //    return response.getCaseNoteStageTypes();
+        //} catch (ApplicationExceptions.ResourceException e) {
+        //    log.error("Could not get case note stage types for stageType {}", stageType, value(EVENT, INFO_CLIENT_GET_CASE_NOTE_STAGE_TYPE_FAILURE));
+        //    throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get case note stage types for stageType %s", stageType), INFO_CLIENT_GET_CASE_NOTE_STAGE_TYPE_FAILURE);
+        //}
+        return new HashSet<>(Arrays.asList("DCU_MIN_DATA_INPUT","DCU_MIN_MARKUP"));
     }
 
     @Cacheable(value = "InfoClientGetNominatedPeople")
