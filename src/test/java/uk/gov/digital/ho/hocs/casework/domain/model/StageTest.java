@@ -29,7 +29,6 @@ public class StageTest {
         assertThat(stage.getTeamUUID()).isEqualTo(teamUUID);
         assertThat(stage.getUserUUID()).isEqualTo(null);
         assertThat(stage.getDeadline()).isEqualTo(deadline);
-        assertThat(stage.getTransitionNoteUUID()).isEqualTo(transitionNoteUUID);
         assertThat(stage.getCaseReference()).isEqualTo(null);
         assertThat(stage.getCaseDataType()).isEqualTo(null);
         assertThat(stage.getData()).isEqualTo(null);

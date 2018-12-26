@@ -66,15 +66,6 @@ public class StageService {
         return stage;
     }
 
-    void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
-        log.debug("Updating Transitoin Note for Stage: {}", stageUUID);
-        Stage stage = getActiveStage(caseUUID, stageUUID);
-        stage.setTransitionNote(transitionNoteUUID);
-        stageRepository.save(stage);
-        log.info("Set Stage Transition Note: {} ({}) for Case {}", stageUUID, transitionNoteUUID, caseUUID, value(EVENT, STAGE_TRANSITION_NOTE_UPDATED));
-    }
-
-
     void updateStageDeadline(UUID caseUUID, UUID stageUUID, LocalDate deadline) {
         log.debug("Updating Deadline for Stage: {}", stageUUID);
         Stage stage = getActiveStage(caseUUID, stageUUID);

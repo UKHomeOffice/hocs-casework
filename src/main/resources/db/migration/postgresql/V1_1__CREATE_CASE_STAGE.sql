@@ -51,7 +51,6 @@ CREATE TABLE IF NOT EXISTS stage
   created               TIMESTAMP   NOT NULL,
   type                  TEXT        NOT NULL,
   deadline              DATE,
-  transition_note_uuid  UUID,
   case_uuid             UUID        NOT NULL,
   team_uuid             UUID,
   user_uuid             UUID,

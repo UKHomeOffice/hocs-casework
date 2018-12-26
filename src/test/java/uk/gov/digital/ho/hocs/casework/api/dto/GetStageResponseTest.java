@@ -28,7 +28,6 @@ public class GetStageResponseTest {
         assertThat(getStageResponse.getCaseUUID()).isEqualTo(stage.getCaseUUID());
         assertThat(getStageResponse.getTeamUUID()).isEqualTo(stage.getTeamUUID());
         assertThat(getStageResponse.getUserUUID()).isEqualTo(stage.getUserUUID());
-        assertThat(getStageResponse.getTransitionNoteUUID()).isEqualTo(stage.getTransitionNoteUUID());
         assertThat(getStageResponse.getCaseReference()).isEqualTo(stage.getCaseReference());
         assertThat(getStageResponse.getCaseDataType()).isEqualTo(stage.getCaseDataType());
         assertThat(getStageResponse.getData()).isEqualTo(stage.getData());
@@ -51,7 +50,6 @@ public class GetStageResponseTest {
         assertThat(getStageResponse.getCaseUUID()).isEqualTo(stage.getCaseUUID());
         assertThat(getStageResponse.getTeamUUID()).isEqualTo(stage.getTeamUUID());
         assertThat(getStageResponse.getUserUUID()).isEqualTo(stage.getUserUUID());
-        assertThat(getStageResponse.getTransitionNoteUUID()).isEqualTo(stage.getTransitionNoteUUID());
         assertThat(getStageResponse.getCaseReference()).isEqualTo(stage.getCaseReference());
         assertThat(getStageResponse.getCaseDataType()).isEqualTo(stage.getCaseDataType());
         assertThat(getStageResponse.getData()).isEqualTo(stage.getData());

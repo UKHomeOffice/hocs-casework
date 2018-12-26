@@ -41,10 +41,6 @@ public class Stage implements Serializable {
     private LocalDate deadline;
 
     @Getter
-    @Column(name = "transition_note_uuid", columnDefinition = "uuid")
-    private UUID transitionNoteUUID;
-
-    @Getter
     @Column(name = "case_uuid", columnDefinition = "uuid")
     private UUID caseUUID;
 
@@ -77,18 +73,12 @@ public class Stage implements Serializable {
         this.created = LocalDateTime.now();
         this.caseUUID = caseUUID;
         this.stageType = stageType;
-        this.transitionNoteUUID = transitionNoteUUID;
         setDeadline(deadline);
         setTeam(teamUUID);
     }
 
-
     public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;
-    }
-
-    public void setTransitionNote(UUID transitionNoteUUID) {
-        this.transitionNoteUUID = transitionNoteUUID;
     }
 
     public void setTeam(UUID teamUUID) {
