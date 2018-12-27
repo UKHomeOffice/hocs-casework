@@ -25,7 +25,6 @@ public class StageResourceTest {
     private final UUID teamUUID = UUID.randomUUID();
     private final UUID userUUID = UUID.randomUUID();
     private final UUID stageUUID = UUID.randomUUID();
-    private final UUID transitionNoteUUID = UUID.randomUUID();
     private final LocalDate deadline = LocalDate.now();
     private final String stageType = "DCU_MIN_MARKUP";
     private final String allocationType = "anyAllocation";
@@ -41,14 +40,14 @@ public class StageResourceTest {
     @Test
     public void shouldCreateStage() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
-        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, deadline, allocationType, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
+        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, deadline, allocationType);
 
-        when(stageService.createStage(caseUUID, stageType, teamUUID, deadline, allocationType, transitionNoteUUID)).thenReturn(stage);
+        when(stageService.createStage(caseUUID, stageType, teamUUID, deadline, allocationType)).thenReturn(stage);
 
         ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
 
-        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, deadline, allocationType, transitionNoteUUID);
+        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, deadline, allocationType);
 
         verifyNoMoreInteractions(stageService);
 
@@ -59,32 +58,14 @@ public class StageResourceTest {
     @Test
     public void shouldCreateStageNoDeadline() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, null, transitionNoteUUID);
-        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, null, allocationType, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, null);
+        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, null, allocationType);
 
-        when(stageService.createStage(caseUUID, stageType, teamUUID, null, allocationType, transitionNoteUUID)).thenReturn(stage);
-
-        ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
-
-        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, null, allocationType, transitionNoteUUID);
-
-        verifyNoMoreInteractions(stageService);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
-    public void shouldCreateStageNoTransitionNote() {
-
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, null);
-        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, deadline, allocationType, null);
-
-        when(stageService.createStage(caseUUID, stageType, teamUUID, deadline, allocationType, null)).thenReturn(stage);
+        when(stageService.createStage(caseUUID, stageType, teamUUID, null, allocationType)).thenReturn(stage);
 
         ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
 
-        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, deadline, allocationType, null);
+        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, null, allocationType);
 
         verifyNoMoreInteractions(stageService);
 
@@ -95,7 +76,7 @@ public class StageResourceTest {
     @Test
     public void shouldGetStage() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
         when(stageService.getActiveStage(caseUUID, stageUUID)).thenReturn(stage);
 

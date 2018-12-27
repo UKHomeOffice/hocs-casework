@@ -16,7 +16,9 @@ public class CreateCaseNoteRequestTest {
 
         String type = "TYPE";
         String text = "Text";
-        CreateCaseNoteRequest createCaseNoteRequest = new CreateCaseNoteRequest(type, text);
+        String stageType = "STAGETYPE";
+
+        CreateCaseNoteRequest createCaseNoteRequest = new CreateCaseNoteRequest(type, text, stageType);
         assertThat(createCaseNoteRequest.getType()).isEqualTo(type);
         assertThat(createCaseNoteRequest.getText()).isEqualTo(text);
     }

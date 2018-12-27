@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
@@ -28,7 +29,6 @@ public class StageServiceTest {
     private final String stageType = "DCU_MIN_MARKUP";
     private final LocalDate deadline = LocalDate.now();
     private final String allocationType = "anyAllocate";
-    private final UUID transitionNoteUUID = UUID.randomUUID();
     @Mock
     private StageRepository stageRepository;
     private StageService stageService;
@@ -36,81 +36,94 @@ public class StageServiceTest {
     private UserPermissionsService userPermissionsService;
     @Mock
     private NotifyClient notifyClient;
+    @Mock
+    private CaseNoteService caseNoteService;
+    @Mock
+    private InfoClient infoClient;
+
 
     @Before
     public void setUp() {
-        this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient);
+        this.stageService = new StageService(stageRepository, caseNoteService, userPermissionsService, infoClient, notifyClient);
     }
 
     @Test
     public void shouldCreateStage() {
 
-        stageService.createStage(caseUUID, stageType, teamUUID, deadline, allocationType, transitionNoteUUID);
+        stageService.createStage(caseUUID, stageType, teamUUID, deadline, allocationType);
 
         verify(stageRepository, times(1)).save(any(Stage.class));
         verify(notifyClient, times(1)).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
 
         verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 
     @Test
     public void shouldCreateStageNoDeadline() {
 
-        stageService.createStage(caseUUID, stageType, teamUUID, null, allocationType, transitionNoteUUID);
+        stageService.createStage(caseUUID, stageType, teamUUID, null, allocationType);
 
         verify(stageRepository, times(1)).save(any(Stage.class));
         verify(notifyClient, times(1)).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
 
         verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateStageMissingCaseUUIDException() {
 
-        stageService.createStage(null, stageType, teamUUID, deadline, null, transitionNoteUUID);
+        stageService.createStage(null, stageType, teamUUID, deadline, null);
     }
 
     @Test()
     public void shouldNotCreateStageMissingCaseUUID() {
 
         try {
-            stageService.createStage(null, stageType, teamUUID, deadline, null, transitionNoteUUID);
+            stageService.createStage(null, stageType, teamUUID, deadline, null);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
 
         verifyZeroInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateStageMissingTypeException() {
 
-        stageService.createStage(caseUUID, null, teamUUID, deadline, null, transitionNoteUUID);
+        stageService.createStage(caseUUID, null, teamUUID, deadline, null);
     }
 
     @Test()
     public void shouldNotCreateStageMissingType() {
 
         try {
-            stageService.createStage(caseUUID, null, teamUUID, deadline, null, transitionNoteUUID);
+            stageService.createStage(caseUUID, null, teamUUID, deadline, null);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
 
         verifyZeroInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 
     @Test
     public void shouldGetStageWithValidParams() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -120,6 +133,8 @@ public class StageServiceTest {
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 
@@ -146,6 +161,8 @@ public class StageServiceTest {
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 
@@ -168,6 +185,8 @@ public class StageServiceTest {
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 
@@ -190,6 +209,8 @@ public class StageServiceTest {
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 
@@ -202,6 +223,8 @@ public class StageServiceTest {
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 
@@ -218,6 +241,8 @@ public class StageServiceTest {
 
         verifyZeroInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 
@@ -233,13 +258,15 @@ public class StageServiceTest {
 
         verifyZeroInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 
     @Test
     public void shouldUpdateStageDeadline() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -250,13 +277,15 @@ public class StageServiceTest {
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 
     @Test
     public void shouldUpdateStageDeadlineNull() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -267,48 +296,62 @@ public class StageServiceTest {
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 
     @Test
     public void shouldUpdateStageTeam() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
+        Set<String> stageTypes = new HashSet<>();
 
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+        when(infoClient.getCaseNoteStageTypes("DCU_MIN_MARKUP")).thenReturn(stageTypes);
 
         stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, allocationType);
 
         verify(stageRepository, times(1)).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository, times(1)).save(stage);
         verify(notifyClient, times(1)).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
+        verify(infoClient, times(1)).getCaseNoteStageTypes("DCU_MIN_MARKUP");
+        verify(caseNoteService, times(1)).getLatestCaseNotes(caseUUID, stageTypes);
 
         verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(notifyClient);
+        verifyNoMoreInteractions(infoClient);
+        verifyNoMoreInteractions(caseNoteService);
 
     }
 
     @Test
     public void shouldUpdateStageTeamNull() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
+        Set<String> stageTypes = new HashSet<>();
 
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+        when(infoClient.getCaseNoteStageTypes("DCU_MIN_MARKUP")).thenReturn(stageTypes);
 
         stageService.updateStageTeam(caseUUID, stageUUID, null, allocationType);
 
         verify(stageRepository, times(1)).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository, times(1)).save(stage);
+        verify(infoClient, times(1)).getCaseNoteStageTypes("DCU_MIN_MARKUP");
+        verify(caseNoteService, times(1)).getLatestCaseNotes(caseUUID, stageTypes);
 
         verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+        verifyNoMoreInteractions(notifyClient);
+        verifyNoMoreInteractions(infoClient);
+        verifyNoMoreInteractions(caseNoteService);
 
     }
 
     @Test
     public void shouldUpdateStageUser() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -320,13 +363,14 @@ public class StageServiceTest {
 
         verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(notifyClient);
-
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
     }
 
     @Test
     public void shouldUpdateStageUserNull() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline);
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -338,6 +382,8 @@ public class StageServiceTest {
 
         verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(notifyClient);
+        verifyZeroInteractions(infoClient);
+        verifyZeroInteractions(caseNoteService);
 
     }
 

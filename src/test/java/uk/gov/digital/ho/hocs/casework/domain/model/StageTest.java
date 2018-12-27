@@ -20,7 +20,7 @@ public class StageTest {
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
         UUID transitionNoteUUID = UUID.randomUUID();
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -44,7 +44,7 @@ public class StageTest {
         UUID transitionNoteUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -82,7 +82,7 @@ public class StageTest {
         UUID transitionNoteUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -121,7 +121,7 @@ public class StageTest {
         UUID transitionNoteUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -160,7 +160,7 @@ public class StageTest {
         UUID transitionNoteUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -196,7 +196,7 @@ public class StageTest {
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
         UUID transitionNoteUUID = UUID.randomUUID();
-        new Stage(null, stageType, teamUUID, deadline, transitionNoteUUID);
+        new Stage(null, stageType, teamUUID, deadline);
 
     }
 
@@ -207,7 +207,7 @@ public class StageTest {
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
         UUID transitionNoteUUID = UUID.randomUUID();
-        new Stage(caseUUID, null, teamUUID, deadline, transitionNoteUUID);
+        new Stage(caseUUID, null, teamUUID, deadline);
 
     }
 

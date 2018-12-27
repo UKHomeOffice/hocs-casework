@@ -16,8 +16,9 @@ public class CaseNoteTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "MANUAL";
         String text = "anyText";
+        String stageType = "anyType";
 
-        CaseNote caseNote = new CaseNote(caseUUID, type, text);
+        CaseNote caseNote = new CaseNote(caseUUID, type, text, stageType);
 
         assertThat(caseNote.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseNote.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -32,8 +33,9 @@ public class CaseNoteTest {
 
         String type = "MANUAL";
         String text = "anyText";
+        String stageType = "anyType";
 
-        new CaseNote(null, type, text);
+        new CaseNote(null, type, text, stageType);
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
@@ -41,8 +43,9 @@ public class CaseNoteTest {
 
         UUID caseUUID = UUID.randomUUID();
         String text = "anyText";
+        String stageType = "anyType";
 
-        new CaseNote(caseUUID, null, text);
+        new CaseNote(caseUUID, null, text, stageType);
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
@@ -50,8 +53,20 @@ public class CaseNoteTest {
 
         UUID caseUUID = UUID.randomUUID();
         String type = "MANUAL";
+        String stageType = "anyType";
 
-        new CaseNote(caseUUID, type, null);
+        new CaseNote(caseUUID, type, null, stageType);
+    }
+
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void getCaseNoteNullStageType() {
+
+        UUID caseUUID = UUID.randomUUID();
+        String type = "MANUAL";
+        String text = "anyText";
+
+        new CaseNote(caseUUID, type, text, null);
+
     }
 
 }

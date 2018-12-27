@@ -15,8 +15,9 @@ public class GetCaseNoteResponseTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "MANUAL";
         String text = "anyText";
+        String stageType = "anyStageType";
 
-        CaseNote caseNote = new CaseNote(caseUUID, type, text);
+        CaseNote caseNote = new CaseNote(caseUUID, type, text, stageType);
 
         GetCaseNoteResponse getCaseNotResponse = GetCaseNoteResponse.from(caseNote);
 

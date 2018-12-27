@@ -20,7 +20,7 @@ public class CreateStageResponseTest {
         LocalDate deadline = LocalDate.now();
         UUID transitionNoteUUID = UUID.randomUUID();
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline,transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
 
         CreateStageResponse createStageResponse = CreateStageResponse.from(stage);
 

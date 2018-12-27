@@ -171,7 +171,7 @@ public class CaseNoteIntegrationTest {
     }
 
     private String createBody() throws JsonProcessingException {
-        CreateCaseNoteRequest request = new CreateCaseNoteRequest("TEST", "Case Note Text");
+        CreateCaseNoteRequest request = new CreateCaseNoteRequest("TEST", "Case Note Text", "anyStageType");
         return mapper.writeValueAsString(request);
     }
 }

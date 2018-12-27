@@ -19,7 +19,7 @@ public class CreateCaseNoteResponseTest {
     @Test
     public void getCreateCaseNoteResponse() {
         UUID uuid = UUID.randomUUID();
-        CaseNote caseNote = new CaseNote(1L,uuid, LocalDateTime.now(), "TYPE", UUID.randomUUID(),"text" );
+        CaseNote caseNote = new CaseNote(uuid,"TYPE", "text", "STAGETYPE" );
         CreateCaseNoteResponse createCaseNoteResponse = CreateCaseNoteResponse.from(caseNote);
         assertThat(createCaseNoteResponse.getUuid()).isEqualTo(caseNote.getUuid());
     }
