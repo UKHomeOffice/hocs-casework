@@ -5,11 +5,14 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -36,6 +39,9 @@ public class GetStageResponse {
     @JsonProperty("userUUID")
     private UUID userUUID;
 
+    @JsonProperty("caseNotes")
+    private Set<GetCaseNoteResponse> caseNotes;
+
     @JsonProperty("caseReference")
     private String caseReference;
 
@@ -47,6 +53,11 @@ public class GetStageResponse {
 
     public static GetStageResponse from(Stage stage) {
 
+        Set<GetCaseNoteResponse> caseNoteResponses = stage.getCaseNotes()
+                .stream()
+                .map(GetCaseNoteResponse::from)
+                .collect(Collectors.toSet());
+
         return new GetStageResponse(
                 stage.getUuid(),
                 stage.getCreated(),
@@ -55,6 +66,7 @@ public class GetStageResponse {
                 stage.getCaseUUID(),
                 stage.getTeamUUID(),
                 stage.getUserUUID(),
+                caseNoteResponses,
                 stage.getCaseReference(),
                 stage.getCaseDataType(),
                 stage.getData());

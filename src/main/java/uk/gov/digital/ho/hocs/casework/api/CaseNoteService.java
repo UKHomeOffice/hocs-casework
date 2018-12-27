@@ -7,6 +7,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseNoteRepository;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,7 +32,7 @@ public class CaseNoteService {
         return caseNotes;
     }
 
-    public CaseNote getCaseNote(UUID caseNoteUUID) {
+    CaseNote getCaseNote(UUID caseNoteUUID) {
         CaseNote caseNote = caseNoteRepository.findByUuid(caseNoteUUID);
         if (caseNote != null) {
             log.info("GotCaseNote for UUID: {}", caseNoteUUID, value(EVENT, CASE_NOTE_RETRIEVED));
@@ -42,9 +43,16 @@ public class CaseNoteService {
         }
     }
 
-    public CaseNote createCaseNote(UUID caseUUID, String caseNoteType, String text) {
+    Set<CaseNote> getLatestCaseNotes(UUID caseUUID, Set<String> stageTypes) {
+        log.debug("Getting latest CaseNotes for Case: {}", caseUUID);
+        Set<CaseNote> caseNotes = caseNoteRepository.findLatestByStageTypeForStageUUID(caseUUID, stageTypes);
+        log.debug("Got {} CaseNotes for Case: {}", caseNotes.size(), caseUUID);
+        return caseNotes;
+    }
+
+    CaseNote createCaseNote(UUID caseUUID, String caseNoteType, String text, String stageType) {
         log.debug("Creating CaseNote of Type: {} for Case: {}", caseNoteType, caseUUID);
-        CaseNote caseNote = new CaseNote(caseUUID, caseNoteType, text);
+        CaseNote caseNote = new CaseNote(caseUUID, caseNoteType, text, stageType);
         caseNoteRepository.save(caseNote);
         log.info("Created CaseNote: {} for Case: {}", caseNote.getUuid(), caseUUID, value(EVENT, CASE_NOTE_CREATED));
         return caseNote;

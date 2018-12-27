@@ -2,13 +2,14 @@ DROP TABLE IF EXISTS case_note cascade;
 
 CREATE TABLE IF NOT EXISTS case_note
 (
-  id        BIGSERIAL PRIMARY KEY,
-  uuid      UUID      NOT NULL,
-  created   TIMESTAMP NOT NULL,
-  case_uuid UUID      NOT NULL,
-  type      TEXT      NOT NULL,
-  text      TEXT      NOT NULL,
-  deleted   BOOLEAN   NOT NULL DEFAULT FALSE,
+  id              BIGSERIAL PRIMARY KEY,
+  uuid            UUID      NOT NULL,
+  created         TIMESTAMP NOT NULL,
+  case_uuid       UUID      NOT NULL,
+  case_note_type  TEXT      NOT NULL,
+  stage_type      TEXT      NOT NULL,
+  text            TEXT      NOT NULL,
+  deleted         BOOLEAN   NOT NULL DEFAULT FALSE,
 
   CONSTRAINT case_note_uuid_idempotent UNIQUE (uuid),
   CONSTRAINT fk_case_note_id FOREIGN KEY (case_uuid) REFERENCES case_data (uuid)
@@ -16,6 +17,9 @@ CREATE TABLE IF NOT EXISTS case_note
 
 CREATE INDEX case_note_case_uuid
   ON case_note (case_uuid, deleted);
+
+CREATE INDEX case_note_stage_type
+  ON case_note (stage_type, deleted);
 
 CREATE OR REPLACE VIEW active_case_note AS
   SELECT c.*

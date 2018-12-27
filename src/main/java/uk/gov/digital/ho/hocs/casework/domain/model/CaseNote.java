@@ -31,8 +31,12 @@ public class CaseNote {
     private LocalDateTime created;
 
     @Getter
-    @Column(name = "type")
+    @Column(name = "case_note_type")
     private String caseNoteType;
+
+    @Getter
+    @Column(name = "stage_type")
+    private String stageType;
 
     @Getter
     @Column(name = "case_uuid")
@@ -42,10 +46,10 @@ public class CaseNote {
     @Column(name = "text")
     private String text;
 
-    public CaseNote(UUID caseUUID, String caseNoteType, String text) {
-        if (caseUUID == null || caseNoteType == null || text == null) {
+    public CaseNote(UUID caseUUID, String caseNoteType, String text, String stageType) {
+        if (caseUUID == null || caseNoteType == null || text == null || stageType == null) {
             throw new ApplicationExceptions.EntityCreationException(
-                    String.format("Cannot create case note(%s,%s,%s).", caseUUID, caseNoteType, text), CASE_NOTE_CREATE_FAILURE);
+                    String.format("Cannot create case note(%s,%s,%s,%s).", caseUUID, caseNoteType, text, stageType), CASE_NOTE_CREATE_FAILURE);
         }
 
         this.uuid = UUID.randomUUID();
@@ -53,6 +57,7 @@ public class CaseNote {
         this.caseNoteType = caseNoteType;
         this.caseUUID = caseUUID;
         this.text = text;
+        this.stageType = stageType;
     }
 
 }

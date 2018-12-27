@@ -9,6 +9,8 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
@@ -64,7 +66,11 @@ public class Stage implements Serializable {
     @Column(name = "data", insertable = false, updatable = false)
     private String data;
 
-    public Stage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline, UUID transitionNoteUUID) {
+    @Getter
+    @Transient
+    private Set<CaseNote> caseNotes = new HashSet<>();
+
+    public Stage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline) {
         if (caseUUID == null || stageType == null) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
         }
@@ -88,6 +94,10 @@ public class Stage implements Serializable {
 
     public void setUser(UUID userUUID) {
         this.userUUID = userUUID;
+    }
+
+    public void setCaseNotes(Set<CaseNote> caseNotes) {
+        this.caseNotes.addAll(caseNotes);
     }
 
 }

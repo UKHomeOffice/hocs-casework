@@ -3,8 +3,10 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
@@ -22,13 +24,17 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 public class StageService {
 
     private final StageRepository stageRepository;
+    private final CaseNoteService caseNoteService;
     private final UserPermissionsService userPermissionsService;
+    private final InfoClient infoClient;
     private final NotifyClient notifyClient;
 
     @Autowired
-    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient) {
+    public StageService(StageRepository stageRepository, CaseNoteService caseNoteService, UserPermissionsService userPermissionsService, InfoClient infoClient, NotifyClient notifyClient) {
         this.stageRepository = stageRepository;
+        this.caseNoteService = caseNoteService;
         this.userPermissionsService = userPermissionsService;
+        this.infoClient = infoClient;
         this.notifyClient = notifyClient;
     }
 
@@ -57,9 +63,9 @@ public class StageService {
         }
     }
 
-    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline, String emailType, UUID transitionNoteUUID) {
+    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline, String emailType) {
         log.debug("Creating Stage of type: {}", stageType);
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline);
         stageRepository.save(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
         notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, stage.getCaseReference(), emailType);
@@ -125,7 +131,10 @@ public class StageService {
         log.debug("Getting Stage: {} for Case: {}", stageUUID, caseUUID);
         Stage stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
         if (stage != null) {
-            log.info("Got Stage: {} for Case: {}", stageUUID, caseUUID);
+            Set<String> caseNoteStageTypes = infoClient.getCaseNoteStageTypes(stage.getStageType());
+            Set<CaseNote> caseNotes = caseNoteService.getLatestCaseNotes(stage.getCaseUUID(), caseNoteStageTypes);
+            stage.setCaseNotes(caseNotes);
+            log.info("Got Stage: {} for Case: {}", stageUUID, caseUUID, value(EVENT, STAGE_RETRIEVED));
             return stage;
         } else {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Stage UUID: %s not found!", stageUUID), STAGE_NOT_FOUND);

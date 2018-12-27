@@ -44,7 +44,7 @@ public class CaseNoteResource {
     @Authorised(accessLevel = AccessLevel.READ)
     @PostMapping(value = "/case/{caseUUID}/note")
     public ResponseEntity<CreateCaseNoteResponse> createCaseNote(@PathVariable UUID caseUUID,@Valid @RequestBody CreateCaseNoteRequest createCaseNoteRequest) {
-        CaseNote caseNote= caseNoteService.createCaseNote(caseUUID, createCaseNoteRequest.getType(), createCaseNoteRequest.getText());
+        CaseNote caseNote= caseNoteService.createCaseNote(caseUUID, createCaseNoteRequest.getType(), createCaseNoteRequest.getText(), createCaseNoteRequest.getStageType());
         return ResponseEntity.ok(CreateCaseNoteResponse.from(caseNote));
     }
 }
