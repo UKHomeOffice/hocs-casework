@@ -37,7 +37,7 @@ public class DependentDataPreLoader {
         Set<CaseDataType> caseTypesSet = this.infoClient.getCaseTypes();
         for (CaseDataType caseType : caseTypesSet) {
             this.infoClient.getCaseType(caseType.getShortCode());
-            this.infoClient.getCaseSummaryFields(caseType.getDisplayCode());
+            this.infoClient.getCaseSummaryFields(caseType.getType());
         }
         } catch(Exception e) {
             log.warn("Failed to prime cache.", value(EVENT, CACHE_PRIME_FAILED));

@@ -7,17 +7,13 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
-import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.time.LocalDate;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -63,7 +59,7 @@ public class CaseDataService {
         String caseType;
         try {
             CaseDataType caseDataType = infoClient.getCaseType(shortCode);
-            caseType = caseDataType.getDisplayCode();
+            caseType = caseDataType.getType();
         } catch(ApplicationExceptions.ResourceException e) {
             log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED) );
             caseType = getCase(caseUUID).getType();
@@ -73,7 +69,7 @@ public class CaseDataService {
     }
 
     CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
-        log.debug("Creating Case of type: {}", caseType);
+        log.debug("Creating Case of type: {}", caseType.getType());
         Long caseNumber = caseDataRepository.getNextSeriesId();
         log.debug("Allocating Ref: {}", caseNumber);
         CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline, dateReceived);
@@ -97,11 +93,27 @@ public class CaseDataService {
     }
 
     void updatePriority(UUID caseUUID, boolean priority) {
-        log.debug("Updating priority for Case: {} Priority {}", caseUUID, priority);
+        log.debug("Updating priority for Case: {} Priority: {}", caseUUID, priority);
         CaseData caseData = getCase(caseUUID);
         caseData.setPriority(priority);
         caseDataRepository.save(caseData);
-        log.info("Updated priority Case: {} Priority {}", caseUUID, priority, value(EVENT, PRIORITY_UPDATED));
+        log.info("Updated priority Case: {} Priority: {}", caseUUID, priority, value(EVENT, PRIORITY_UPDATED));
+    }
+
+    void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) {
+        log.debug("Updating Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID);
+        CaseData caseData = getCase(caseUUID);
+        caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
+        caseDataRepository.save(caseData);
+        log.info("Updated Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID, value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
+    }
+
+    void updatePrimaryTopic(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID) {
+        log.debug("Updating Primary Topic for Case: {} Topic: {}", caseUUID, primaryTopicUUID);
+        CaseData caseData = getCase(caseUUID);
+        caseData.setPrimaryTopicUUID(primaryTopicUUID);
+        caseDataRepository.save(caseData);
+        log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));
     }
 
     void deleteCase(UUID caseUUID) {
@@ -118,13 +130,15 @@ public class CaseDataService {
         CaseData caseData = getCase(caseUUID);
 
         // Field Data
-        Set<String> dataFilter = infoClient.getCaseSummaryFields(caseData.getType());
-        Map<String, String> filteredData = caseData.getFilteredDataMap(dataFilter, objectMapper);
+        HocsFormData[] dataFilter = infoClient.getCaseSummaryFields(caseData.getType());
+        Stream<HocsFormField> fields = Arrays.stream(dataFilter).map(f -> f.getData());
+        Set<HocsFormProperty> properties = fields.map(field -> field.props).collect(Collectors.toSet());
+        Map<String, String> filteredData = caseData.getFilteredDataMap(properties, objectMapper);
         log.debug("filteredData size: {}", filteredData.size());
 
 
         // All Stage Deadlines
-        Map<String, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
+        Map<String, String> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
 
         // Primary Correspondent
         Correspondent correspondent = null;

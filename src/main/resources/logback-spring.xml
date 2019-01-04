@@ -12,7 +12,7 @@
                 <Pattern>${CONSOLE_LOG_PATTERN}</Pattern>
             </layout>
         </appender>
-        <logger name="uk.gov" additivity="false" level="INFO">
+        <logger name="uk.gov" additivity="false" level="DEBUG">
             <appender-ref ref="consoleAppender"/>
         </logger>
     </springProfile>

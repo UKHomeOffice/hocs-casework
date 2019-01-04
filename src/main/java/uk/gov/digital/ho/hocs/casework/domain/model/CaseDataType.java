@@ -8,9 +8,12 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CaseDataType {
 
-    @JsonProperty("displayCode")
-    private String displayCode;
+    @JsonProperty("displayName")
+    private String displayName;
 
     @JsonProperty("shortCode")
     private String shortCode;
+
+    @JsonProperty("type")
+    private String type;
 }

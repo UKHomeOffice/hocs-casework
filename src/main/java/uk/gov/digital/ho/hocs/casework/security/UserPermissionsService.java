@@ -40,7 +40,7 @@ public class UserPermissionsService {
     public Set<AccessLevel> getUserAccessLevels(CaseDataType caseType) {
         return getUserPermission()
                 .flatMap(unit -> unit.getValue().values().stream())
-                .flatMap(type -> type.getOrDefault(caseType.getDisplayCode(), new HashSet<>()).stream())
+                .flatMap(type -> type.getOrDefault(caseType.getType(), new HashSet<>()).stream())
                 .collect(Collectors.toSet());
     }
 

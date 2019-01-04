@@ -7,7 +7,6 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseNoteRepository;
 
-import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -35,7 +34,7 @@ public class CaseNoteService {
     CaseNote getCaseNote(UUID caseNoteUUID) {
         CaseNote caseNote = caseNoteRepository.findByUuid(caseNoteUUID);
         if (caseNote != null) {
-            log.info("GotCaseNote for UUID: {}", caseNoteUUID, value(EVENT, CASE_NOTE_RETRIEVED));
+            log.info("Got CaseNote for UUID: {}", caseNoteUUID, value(EVENT, CASE_NOTE_RETRIEVED));
             return caseNote;
         }
         else {
