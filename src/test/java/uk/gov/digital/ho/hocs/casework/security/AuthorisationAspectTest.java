@@ -84,7 +84,7 @@ public class AuthorisationAspectTest {
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
         verify(caseService, never()).getCase(caseUUID);
-        verify(userService, times(1)).getMaxAccessLevel(type.getDisplayCode());
+        verify(userService, times(1)).getMaxAccessLevel(type.getType());
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
 

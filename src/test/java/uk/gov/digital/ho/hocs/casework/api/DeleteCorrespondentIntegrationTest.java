@@ -148,7 +148,7 @@ public class DeleteCorrespondentIntegrationTest {
     public void shouldReturnOkWhenDeleteACorrespondentForACaseThatIsAllocatedToYouThenReturnForbiddenWhenTheCaseIsAllocatedToAnotherTeam() throws JsonProcessingException {
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/nominatedpeople/44444444-2222-2222-2222-222222222221"))
+                .expect(requestTo("http://localhost:8085/team/44444444-2222-2222-2222-222222222221/contact"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess("{\"emailAddress\":\"bob\"}", MediaType.APPLICATION_JSON));
 

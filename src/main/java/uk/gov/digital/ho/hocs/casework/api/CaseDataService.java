@@ -69,7 +69,6 @@ public class CaseDataService {
     }
 
     CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
-        log.debug("Creating Case of type: {}", caseType.getType());
         Long caseNumber = caseDataRepository.getNextSeriesId();
         log.debug("Allocating Ref: {}", caseNumber);
         CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline, dateReceived);

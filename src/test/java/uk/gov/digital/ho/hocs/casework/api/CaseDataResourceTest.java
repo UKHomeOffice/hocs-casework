@@ -96,7 +96,7 @@ public class CaseDataResourceTest {
     public void shouldGetCaseType() {
         CaseDataType caseDataType = new CaseDataType("MIN", "a1");
 
-        when(caseDataService.getCaseType(uuid)).thenReturn(caseDataType.getDisplayCode());
+        when(caseDataService.getCaseType(uuid)).thenReturn(caseDataType.getType());
 
         ResponseEntity response = caseDataResource.getCaseType(uuid);
 

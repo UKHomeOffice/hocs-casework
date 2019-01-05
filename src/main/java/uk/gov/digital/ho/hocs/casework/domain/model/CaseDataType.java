@@ -16,4 +16,10 @@ public class CaseDataType {
 
     @JsonProperty("type")
     private String type;
+
+    public CaseDataType(String type, String shortCode) {
+        this.displayName = type;
+        this.type = type;
+        this.shortCode = shortCode;
+    }
 }

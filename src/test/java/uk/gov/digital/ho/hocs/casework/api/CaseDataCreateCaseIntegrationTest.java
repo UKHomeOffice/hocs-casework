@@ -298,7 +298,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
     private String createBody(String caseType) {
         return "{\n" +
-                "  \"type\":{\"displayCode\":\"" + caseType + "\",\"shortCode\":\"a1\"},\n" +
+                "  \"type\":{\"type\":\"" + caseType + "\",\"shortCode\":\"a1\"},\n" +
                 "  \"data\": {\"DateReceived\":\"2018-01-01\"},\n" +
                 "  \"received\":\"2018-01-01\",\n" +
                 "  \"deadline\":\"2018-01-01\"\n" +
@@ -307,7 +307,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
     private String createBodyData(String caseType, String data) {
         return "{\n" +
-                "  \"type\":{\"displayCode\":\"" + caseType + "\",\"shortCode\":\"a1\"},\n" +
+                "  \"type\":{\"type\":\"" + caseType + "\",\"shortCode\":\"a1\"},\n" +
                 "  \"data\": " + data + ",\n" +
                 "  \"received\":\"2018-01-01\",\n" +
                 "  \"deadline\":\"2018-01-01\"\n" +
