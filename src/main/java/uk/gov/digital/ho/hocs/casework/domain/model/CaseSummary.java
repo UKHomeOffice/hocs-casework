@@ -13,7 +13,7 @@ public class CaseSummary {
 
     LocalDate caseDeadline;
 
-    Map<String, LocalDate> stageDeadlines;
+    Map<String, String> stageDeadlines;
 
     Map<String,String> additionalFields;
 

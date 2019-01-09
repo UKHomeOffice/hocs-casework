@@ -7,17 +7,16 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
-import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -96,6 +95,22 @@ public class CaseDataService {
         }
     }
 
+    void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) {
+        log.debug("Updating Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID);
+        CaseData caseData = getCase(caseUUID);
+        caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
+        caseDataRepository.save(caseData);
+        log.info("Updated Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID, value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
+    }
+
+    void updatePrimaryTopic(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID) {
+        log.debug("Updating Primary Topic for Case: {} Topic: {}", caseUUID, primaryTopicUUID);
+        CaseData caseData = getCase(caseUUID);
+        caseData.setPrimaryTopicUUID(primaryTopicUUID);
+        caseDataRepository.save(caseData);
+        log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));
+    }
+
     void updatePriority(UUID caseUUID, boolean priority) {
         log.debug("Updating priority for Case: {} Priority {}", caseUUID, priority);
         CaseData caseData = getCase(caseUUID);
@@ -118,13 +133,14 @@ public class CaseDataService {
         CaseData caseData = getCase(caseUUID);
 
         // Field Data
-        Set<String> dataFilter = infoClient.getCaseSummaryFields(caseData.getType());
-        Map<String, String> filteredData = caseData.getFilteredDataMap(dataFilter, objectMapper);
+        HocsFormData[] dataFilter = infoClient.getCaseSummaryFields(caseData.getType());
+        Stream<HocsFormField> fields = Arrays.stream(dataFilter).map(f -> f.getData());
+        Set<HocsFormProperty> properties = fields.map(field -> field.props).collect(Collectors.toSet());
+        Map<String, String> filteredData = caseData.getFilteredDataMap(properties, objectMapper);
         log.debug("filteredData size: {}", filteredData.size());
 
-
         // All Stage Deadlines
-        Map<String, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
+        Map<String, String> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
 
         // Primary Correspondent
         Correspondent correspondent = null;
