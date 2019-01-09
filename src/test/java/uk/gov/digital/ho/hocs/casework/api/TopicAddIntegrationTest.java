@@ -33,8 +33,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@Sql(scripts = "classpath:beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
-@Sql(scripts = "classpath:afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:case/beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
+@Sql(scripts = "classpath:case/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
 public class TopicAddIntegrationTest {
 
     private MockRestServiceServer mockInfoService;
@@ -198,7 +198,7 @@ public class TopicAddIntegrationTest {
     public void shouldReturnOkWhenAddATopicForACaseThatIsAllocatedToYouThenReturnForbiddenWhenTheCaseIsAllocatedToAnotherTeam() throws JsonProcessingException {
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/nominatedpeople/44444444-2222-2222-2222-222222222221"))
+                .expect(requestTo("http://localhost:8085/team/44444444-2222-2222-2222-222222222221/contact"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess("{\"emailAddress\":\"bob\"}", MediaType.APPLICATION_JSON));
 
