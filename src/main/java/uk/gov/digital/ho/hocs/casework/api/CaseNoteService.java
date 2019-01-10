@@ -34,7 +34,7 @@ public class CaseNoteService {
     public CaseNote getCaseNote(UUID caseNoteUUID) {
         CaseNote caseNote = caseNoteRepository.findByUuid(caseNoteUUID);
         if (caseNote != null) {
-            log.info("GotCaseNote for UUID: {}", caseNoteUUID, value(EVENT, CASE_NOTE_RETRIEVED));
+            log.info("Got CaseNote for UUID: {}", caseNoteUUID, value(EVENT, CASE_NOTE_RETRIEVED));
             return caseNote;
         }
         else {

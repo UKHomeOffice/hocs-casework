@@ -45,7 +45,7 @@ public class CaseDataRepositoryIntTest {
         CaseData caseData = repository.findByUuid(caseUUID);
         assertThat(caseData.getType()).isEqualTo("TEST");
         assertThat(caseData.getCreated().toLocalDate()).isEqualTo(LocalDate.now());
-        assertThat(caseData.getReference()).isEqualTo("TEST/0000101/18");
+        assertThat(caseData.getReference()).isEqualTo("TEST/0000101/" + String.format("%ty", caseData.getCreated()));
         assertThat(caseData.isPriority()).isFalse();
         assertThat(caseData.getPrimaryTopicUUID()).isNull();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isNull();

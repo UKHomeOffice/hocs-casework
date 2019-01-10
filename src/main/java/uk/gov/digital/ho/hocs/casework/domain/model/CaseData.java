@@ -11,10 +11,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DATA_JSON_PARSE_ERROR;
@@ -104,12 +101,28 @@ public class CaseData {
             this.data = getDataString(dataMap, objectMapper);
         }
     }
-
-    public Map<String, String> getFilteredDataMap(Set<String> fields, ObjectMapper objectMapper) {
+    public Map<String, String> getFilteredDataMap(Set<HocsFormProperty> fields, ObjectMapper objectMapper) {
         Map<String, String> sourceData = CaseData.getDataMap(this.getData(), objectMapper);
         Map<String, String> filteredData = new HashMap<>();
-        fields.forEach(f -> filteredData.put(f, sourceData.getOrDefault(f, null)));
+        fields.forEach(f -> filteredData.put(getLabel(f), sourceData.getOrDefault(f.name, null)));
+        // This line removes null values - remove if we want all questions showing.
+        filteredData.values().removeIf(Objects::isNull);
         return filteredData;
+    }
+
+    private static String getLabel(HocsFormProperty property) {
+        String label;
+        if(property.label.isEmpty()) {
+            if(property.choices.length == 1) {
+                label = property.choices[0].label;
+            } else {
+                label = property.name;
+            }
+        } else
+        {
+            label = property.label;
+        }
+        return label;
     }
 
     private static Map<String, String> getDataMap(String dataString, ObjectMapper objectMapper) {

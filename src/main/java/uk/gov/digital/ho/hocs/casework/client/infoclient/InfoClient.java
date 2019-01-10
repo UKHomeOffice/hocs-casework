@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.domain.model.HocsFormData;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -67,11 +68,11 @@ public class InfoClient {
     }
 
     @Cacheable(value = "InfoClientGetCaseSummaryFields")
-    public Set<String> getCaseSummaryFields(String caseType) {
+    public HocsFormData[] getCaseSummaryFields(String caseType) {
         try {
-            GetSummaryFieldsResponse response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/summary", caseType), GetSummaryFieldsResponse.class);
-            log.info("Got {} case summary fields for CaseType {}", response.getFields().size(), caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
-            return response.getFields();
+            HocsFormData[] response = restHelper.get(serviceBaseURL, String.format("/form/caseType/%s/summary", caseType), HocsFormData[].class);
+            log.info("Got {} case summary fields for CaseType {}", response.length, caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
+            return response;
         } catch (ApplicationExceptions.ResourceException e) {
             log.error("Could not get case summary fields for CaseType {}", caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_FAILURE));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get case summary fields for CaseType %s", caseType), INFO_CLIENT_GET_SUMMARY_FIELDS_FAILURE);
@@ -79,11 +80,11 @@ public class InfoClient {
     }
 
     @Cacheable(value = "InfoClientGetDeadlines")
-    public Map<String, LocalDate> getDeadlines(String caseType, LocalDate localDate) {
+    public Map<String, String> getDeadlines(String caseType, LocalDate localDate) {
         try {
-            InfoGetDeadlinesResponse response = restHelper.get(serviceBaseURL, String.format("/casetype/%s/deadlines/%s", caseType, localDate), InfoGetDeadlinesResponse.class);
-            log.info("Got {} case deadlines for CaseType {} and Date {}", response.getDeadlines().size(), caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
-            return response.getDeadlines();
+            Map<String,String> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, localDate), Map.class);
+            log.info("Got {} case deadlines for CaseType {} and Date {}", response.size(), caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
+            return response;
         } catch (ApplicationExceptions.ResourceException e) {
             log.error("Could not get deadlines for CaseType {} and Date {}", caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINES_FAILURE));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get deadlines for CaseType %s and Date %s", caseType, localDate), INFO_CLIENT_GET_DEADLINES_FAILURE);
@@ -93,7 +94,7 @@ public class InfoClient {
     @Cacheable(value = "InfoClientGetNominatedPeople")
     public Set<InfoNominatedPeople> getNominatedPeople(UUID teamUUID) {
         try {
-            InfoGetNominatedPeopleResponse response = restHelper.get(serviceBaseURL, String.format("/nominatedpeople/%s", teamUUID), InfoGetNominatedPeopleResponse.class);
+            InfoGetNominatedPeopleResponse response = restHelper.get(serviceBaseURL, String.format("/team/%s/contact", teamUUID), InfoGetNominatedPeopleResponse.class);
             log.info("Got {} contacts for Team {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_SUCCESS));
             return response.getNominatedPeople();
         } catch (ApplicationExceptions.ResourceException e) {

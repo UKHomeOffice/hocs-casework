@@ -127,15 +127,15 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        Set<String> filterFields =new HashSet<String>(){{ add("TEMPCReference"); }};
+        HocsFormData[] filterFields = new HocsFormData[]{};
 
         Set<Stage> activeStages = new HashSet<Stage>(){{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
         }};
 
-        Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
-            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10));
-            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
+        Map<String, String> deadlines = new HashMap<String, String>() {{
+            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString());
+            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
         }};
         Correspondent correspondent = new Correspondent(caseData.getUuid(), "CORRESPONDENT", "some name,",
                 new Address("","","","",""), "12345","some email", "some ref");
@@ -168,17 +168,15 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(null);
-        Set<String> filterFields = new HashSet<String>() {{
-            add("TEMPCReference");
-        }};
+        HocsFormData[] filterFields = new HocsFormData[]{};
 
         Set<Stage> activeStages = new HashSet<Stage>() {{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
         }};
 
-        Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
-            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10));
-            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
+        Map<String, String> deadlines = new HashMap<String, String>() {{
+            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString());
+            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
         }};
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
@@ -207,17 +205,15 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        Set<String> filterFields = new HashSet<String>() {{
-            add("TEMPCReference");
-        }};
+        HocsFormData[] filterFields = new HocsFormData[]{};
 
         Set<Stage> activeStages = new HashSet<Stage>() {{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
         }};
 
-        Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
-            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10));
-            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
+        Map<String, String> deadlines = new HashMap<String, String>() {{
+            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString());
+            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
         }};
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
@@ -244,10 +240,13 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseOnlyFilteredAdditionalData() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
-        Set<String> filterFields =new HashSet<String>(){{
-            add("TEMPCReference");
-            add("CopyNumberTen");
-        }};
+        HocsFormData[] filterFields = new HocsFormData[2];
+
+        HocsFormField field0 = new HocsFormField("Text", new ArrayList<>(), new HocsFormProperty("TEMPCReference", "what is your TEMPCReference", new HocsFormFieldKVP[0] ));
+        filterFields[0] = new HocsFormData(field0);
+
+        HocsFormField field1 = new HocsFormField("Text", new ArrayList<>(), new HocsFormProperty("CopyNumberTen",  "what is your CopyNumberTen", new HocsFormFieldKVP[0] ));
+        filterFields[1] = new HocsFormData(field1);
 
         Set<Stage> activeStages = new HashSet<Stage>(){{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
@@ -262,9 +261,9 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, additionalData, objectMapper,caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
 
-        Map<String, LocalDate> deadlines = new HashMap<String, LocalDate>() {{
-            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10));
-            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
+        Map<String, String> deadlines = new HashMap<String, String>() {{
+            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString());
+            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
         }};
 
         Correspondent correspondent = new Correspondent(caseData.getUuid(), "CORRESPONDENT", "some name,",
@@ -281,8 +280,8 @@ public class CaseDataServiceTest {
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
         assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
-        assertThat(result.getAdditionalFields().get("TEMPCReference")).isEqualTo("test ref");
-        assertThat(result.getAdditionalFields().get("CopyNumberTen")).isEqualTo("true");
+        assertThat(result.getAdditionalFields().get("what is your TEMPCReference")).isEqualTo("test ref");
+        assertThat(result.getAdditionalFields().get("what is your CopyNumberTen")).isEqualTo("true");
         assertThat(result.getAdditionalFields()).doesNotContainKey("UnfilteredField");
     }
 
