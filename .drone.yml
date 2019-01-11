@@ -47,6 +47,7 @@ pipeline:
     environment:
       - echo ${DOCKER_HOST}
       - DOCKER_HOST=tcp://172.17.0.1:2375
+      - DOCKER_API_VERSION=1.39
     secrets:
       - github_password
       - docker_password
