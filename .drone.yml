@@ -74,8 +74,10 @@ pipeline:
     secrets:
       - hocs_casework_qa
     commands:
-      - cat /app/version.txt
-      - source /app/version.txt
+      - ls
+      - ls /app
+      - cat version.txt
+      - source version.txt
       - echo $VERSION
     when:
       branch: versioning
