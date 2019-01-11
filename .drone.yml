@@ -43,7 +43,7 @@ pipeline:
       event: push
 
   docker-semver-tag:
-    image: quay.io/ukhomeofficedigital/hocs-version-bot:latest
+    image: quay.io/ukhomeofficedigital/hocs-version-bot:build-15
     secrets:
       - github_password
       - docker_password
