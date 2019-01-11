@@ -44,6 +44,8 @@ pipeline:
 
   docker-semver-tag:
     image: quay.io/ukhomeofficedigital/hocs-version-bot:build-15
+    environment:
+      - DOCKER_HOST=tcp://172.17.0.1:2375
     secrets:
       - github_password
       - docker_password
