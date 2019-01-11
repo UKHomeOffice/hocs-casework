@@ -51,6 +51,9 @@ pipeline:
       - github_password
       - docker_password
     commands:
+      - pwd
+      - ls
+      - mkdir -p hocs-versions
       - /app/hocs-deploy --version "PATCH" --service=hocs-casework --gitToken=$${GITHUB_PASSWORD} --gitRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=build-${DRONE_BUILD_NUMBER} --registryUser=ukhomeofficedigital+hocs --registryPassword=$${DOCKER_PASSWORD}
     when:
       branch: [master, versioning]
