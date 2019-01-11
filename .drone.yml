@@ -53,7 +53,7 @@ pipeline:
     commands:
       - echo $DOCKER_HOST
       - cd /app
-      - ./hocs-deploy --version "PATCH" --service=hocs-casework --gitToken=$${GITHUB_PASSWORD} --gitRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=build-${DRONE_BUILD_NUMBER} --registryPassword=$${DOCKER_PASSWORD}
+      - ./hocs-deploy --version "PATCH" --service=hocs-casework --gitToken=$${GITHUB_PASSWORD} --gitRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=build-${DRONE_BUILD_NUMBER} --registryUser=ukhomeofficedigital+hocs --registryPassword=$${DOCKER_PASSWORD}
     when:
       branch: [master, versioning]
       event: [push, tag]
@@ -74,8 +74,8 @@ pipeline:
     secrets:
       - hocs_casework_qa
     commands:
-      - cat version.txt
-      - source version.txt
+      - cat /app/version.txt
+      - source /app/version.txt
       - echo $VERSION
     when:
       branch: versioning
