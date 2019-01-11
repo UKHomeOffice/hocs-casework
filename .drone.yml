@@ -45,15 +45,12 @@ pipeline:
   docker-semver-tag:
     image: quay.io/ukhomeofficedigital/hocs-version-bot:build-15
     environment:
+      - echo ${DOCKER_HOST}
       - DOCKER_HOST=tcp://172.17.0.1:2375
     secrets:
       - github_password
       - docker_password
     commands:
-      - pwd
-      - ls
-      - cd /app
-      - ls -al
       - ./hocs-deploy --version "PATCH" --service=hocs-casework --gitToken=$${GITHUB_PASSWORD} --gitRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=build-${DRONE_BUILD_NUMBER} --registryPassword=$${DOCKER_PASSWORD}
     when:
       branch: [master, versioning]
