@@ -15,9 +15,11 @@ public class CaseSummary {
 
     Map<String, String> stageDeadlines;
 
-    Map<String,String> additionalFields;
+    Set<AdditionalField> additionalFields;
 
     Correspondent primaryCorrespondent;
+
+    Topic primaryTopic;
 
     Set<Stage> activeStages;
 }

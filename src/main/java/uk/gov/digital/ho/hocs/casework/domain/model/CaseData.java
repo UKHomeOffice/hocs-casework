@@ -101,28 +101,9 @@ public class CaseData {
             this.data = getDataString(dataMap, objectMapper);
         }
     }
-    public Map<String, String> getFilteredDataMap(Set<HocsFormProperty> fields, ObjectMapper objectMapper) {
-        Map<String, String> sourceData = CaseData.getDataMap(this.getData(), objectMapper);
-        Map<String, String> filteredData = new HashMap<>();
-        fields.forEach(f -> filteredData.put(getLabel(f), sourceData.getOrDefault(f.name, null)));
-        // This line removes null values - remove if we want all questions showing.
-        filteredData.values().removeIf(Objects::isNull);
-        return filteredData;
-    }
 
-    private static String getLabel(HocsFormProperty property) {
-        String label;
-        if(property.label.isEmpty()) {
-            if(property.choices.length == 1) {
-                label = property.choices[0].label;
-            } else {
-                label = property.name;
-            }
-        } else
-        {
-            label = property.label;
-        }
-        return label;
+    public Map<String,String> getDataMap(ObjectMapper objectMapper) {
+        return getDataMap(this.getData(), objectMapper);
     }
 
     private static Map<String, String> getDataMap(String dataString, ObjectMapper objectMapper) {

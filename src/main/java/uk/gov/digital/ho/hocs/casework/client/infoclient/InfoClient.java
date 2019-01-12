@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.domain.model.HocsFormData;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -68,9 +68,9 @@ public class InfoClient {
     }
 
     @Cacheable(value = "InfoClientGetCaseSummaryFields")
-    public HocsFormData[] getCaseSummaryFields(String caseType) {
+    public FieldDto[] getCaseSummaryFields(String caseType) {
         try {
-            HocsFormData[] response = restHelper.get(serviceBaseURL, String.format("/form/caseType/%s/summary", caseType), HocsFormData[].class);
+            FieldDto[] response = restHelper.get(serviceBaseURL, String.format("/schema/caseType/%s/summary", caseType), FieldDto[].class);
             log.info("Got {} case summary fields for CaseType {}", response.length, caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
             return response;
         } catch (ApplicationExceptions.ResourceException e) {

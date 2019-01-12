@@ -127,7 +127,7 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        HocsFormData[] filterFields = new HocsFormData[]{};
+        Schema[] filterFields = new Schema[]{};
 
         Set<Stage> activeStages = new HashSet<Stage>(){{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
@@ -168,7 +168,7 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(null);
-        HocsFormData[] filterFields = new HocsFormData[]{};
+        Schema[] filterFields = new Schema[]{};
 
         Set<Stage> activeStages = new HashSet<Stage>() {{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
@@ -205,7 +205,7 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        HocsFormData[] filterFields = new HocsFormData[]{};
+        Schema[] filterFields = new Schema[]{};
 
         Set<Stage> activeStages = new HashSet<Stage>() {{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
@@ -240,13 +240,13 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseOnlyFilteredAdditionalData() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
-        HocsFormData[] filterFields = new HocsFormData[2];
+        Schema[] filterFields = new Schema[2];
 
         HocsFormField field0 = new HocsFormField("Text", new ArrayList<>(), new HocsFormProperty("TEMPCReference", "what is your TEMPCReference", new HocsFormFieldKVP[0] ));
-        filterFields[0] = new HocsFormData(field0);
+        filterFields[0] = new Schema(field0);
 
         HocsFormField field1 = new HocsFormField("Text", new ArrayList<>(), new HocsFormProperty("CopyNumberTen",  "what is your CopyNumberTen", new HocsFormFieldKVP[0] ));
-        filterFields[1] = new HocsFormData(field1);
+        filterFields[1] = new Schema(field1);
 
         Set<Stage> activeStages = new HashSet<Stage>(){{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));

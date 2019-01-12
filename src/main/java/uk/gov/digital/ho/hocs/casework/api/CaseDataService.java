@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.PropertyDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -16,7 +18,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -30,17 +31,19 @@ public class CaseDataService {
     private final ObjectMapper objectMapper;
     private final InfoClient infoClient;
     private final CorrespondentService correspondentService;
+    private final TopicService topicService;
     private final StageService stageService;
 
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository, InfoClient infoClient,
-                           ObjectMapper objectMapper, CorrespondentService correspondentService,
+                           ObjectMapper objectMapper, CorrespondentService correspondentService, TopicService topicService,
                             StageService stageService, AuditClient auditClient) {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
         this.objectMapper = objectMapper;
         this.correspondentService = correspondentService;
+        this.topicService = topicService;
         this.stageService = stageService;
     }
 
@@ -132,12 +135,12 @@ public class CaseDataService {
 
         CaseData caseData = getCase(caseUUID);
 
-        // Field Data
-        HocsFormData[] dataFilter = infoClient.getCaseSummaryFields(caseData.getType());
-        Stream<HocsFormField> fields = Arrays.stream(dataFilter).map(f -> f.getData());
-        Set<HocsFormProperty> properties = fields.map(field -> field.props).collect(Collectors.toSet());
-        Map<String, String> filteredData = caseData.getFilteredDataMap(properties, objectMapper);
-        log.debug("filteredData size: {}", filteredData.size());
+        // Additional Fields
+        FieldDto[] summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
+
+        Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
+
+        Set<AdditionalField> additionalFields = Arrays.stream(summaryFields).map(field -> new AdditionalField(getLabel(field.getProperties()), caseDataMap.getOrDefault(field.getProperties().getName(), ""), field.getComponent())).collect(Collectors.toSet());
 
         // All Stage Deadlines
         Map<String, String> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
@@ -154,10 +157,26 @@ public class CaseDataService {
             log.debug("PrimaryCorrespondentUUID for Case: {} was null", caseUUID);
         }
 
+        // Primary Topic
+        Topic topic = null;
+        if (caseData.getPrimaryTopicUUID() != null) {
+            try {
+                topic = topicService.getTopic(caseData.getUuid(), caseData.getPrimaryTopicUUID());
+            } catch (ApplicationExceptions.EntityNotFoundException e) {
+                // Do Nothing - topic is null.
+            }
+        } else {
+            log.debug("PrimaryTopicUUID for Case: {} was null", caseUUID);
+        }
+
         // Active Stages
         Set<Stage> stages = stageService.getActiveStagesByCaseUUID(caseUUID);
 
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
-        return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, filteredData, correspondent, stages);
+        return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalFields, correspondent, topic, stages);
+    }
+
+    private static String getLabel(PropertyDto propertyDto) {
+        return propertyDto.getLabel().isEmpty() ? propertyDto.getName() : propertyDto.getLabel();
     }
 }
