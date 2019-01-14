@@ -2,13 +2,12 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.util.UUID;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor()
 @Getter
 public class FieldDto {
 
