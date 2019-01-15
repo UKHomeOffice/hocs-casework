@@ -22,10 +22,13 @@ public class GetCaseSummaryResponse {
     Map<String, String> stageDeadlines;
 
     @JsonProperty("additionalFields")
-    Map<String,String> additionalFields;
+    Set<AdditionalFieldDto> additionalFields;
 
     @JsonProperty("primaryCorrespondent")
     GetCorrespondentResponse primaryCorrespondent;
+
+    @JsonProperty("primaryTopic")
+    GetTopicResponse primaryTopic;
 
     @JsonProperty("activeStages")
     Set<ActiveStageDto> activeStages;
@@ -35,10 +38,21 @@ public class GetCaseSummaryResponse {
         if (caseSummary.getPrimaryCorrespondent() != null) {
             getCorrespondentResponse = GetCorrespondentResponse.from(caseSummary.getPrimaryCorrespondent());
         }
+
+        GetTopicResponse getTopicsResponse = null;
+        if (caseSummary.getPrimaryTopic() != null) {
+            getTopicsResponse = GetTopicResponse.from(caseSummary.getPrimaryTopic());
+        }
+
         Set<ActiveStageDto> activeStageDtos = null;
         if (caseSummary.getActiveStages() != null) {
             activeStageDtos = caseSummary.getActiveStages().stream().map(ActiveStageDto::from).collect(Collectors.toSet());
         }
-        return new GetCaseSummaryResponse(caseSummary.getCaseDeadline(), caseSummary.getStageDeadlines(), caseSummary.getAdditionalFields(), getCorrespondentResponse, activeStageDtos);
+
+        Set<AdditionalFieldDto> additionalFieldDtos = null;
+        if (caseSummary.getAdditionalFields() != null) {
+            additionalFieldDtos = caseSummary.getAdditionalFields().stream().map(AdditionalFieldDto::from).collect(Collectors.toSet());
+        }
+        return new GetCaseSummaryResponse(caseSummary.getCaseDeadline(), caseSummary.getStageDeadlines(), additionalFieldDtos, getCorrespondentResponse, getTopicsResponse, activeStageDtos);
     }
 }

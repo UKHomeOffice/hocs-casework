@@ -7,6 +7,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.PropertyDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -35,10 +37,14 @@ public class CaseDataServiceTest {
 
     @Mock
     private InfoClient infoClient;
-    private CaseDataService caseDataService;
 
     @Mock
     private AuditClient auditClient;
+
+    @Mock
+    private TopicService topicService;
+
+    private CaseDataService caseDataService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -58,7 +64,7 @@ public class CaseDataServiceTest {
 
     @Before
     public void setUp() {
-        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper, correspondentService, stageService, auditClient);
+        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper, correspondentService, topicService, stageService, auditClient);
     }
 
     @Test
@@ -127,7 +133,7 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        HocsFormData[] filterFields = new HocsFormData[]{};
+        FieldDto[] filterFields = new FieldDto[]{};
 
         Set<Stage> activeStages = new HashSet<Stage>(){{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
@@ -168,7 +174,7 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(null);
-        HocsFormData[] filterFields = new HocsFormData[]{};
+        FieldDto[] filterFields = new FieldDto[]{};
 
         Set<Stage> activeStages = new HashSet<Stage>() {{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
@@ -205,7 +211,7 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        HocsFormData[] filterFields = new HocsFormData[]{};
+        FieldDto[] filterFields = new FieldDto[]{};
 
         Set<Stage> activeStages = new HashSet<Stage>() {{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
@@ -240,13 +246,13 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseOnlyFilteredAdditionalData() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
-        HocsFormData[] filterFields = new HocsFormData[2];
+        FieldDto[] filterFields = new FieldDto[2];
 
-        HocsFormField field0 = new HocsFormField("Text", new ArrayList<>(), new HocsFormProperty("TEMPCReference", "what is your TEMPCReference", new HocsFormFieldKVP[0] ));
-        filterFields[0] = new HocsFormData(field0);
+        FieldDto field0 = new FieldDto(UUID.randomUUID(),"Text", new String[]{}, new PropertyDto("TEMPCReference", "what is your TEMPCReference"), true, true);
+        filterFields[0] = field0;
 
-        HocsFormField field1 = new HocsFormField("Text", new ArrayList<>(), new HocsFormProperty("CopyNumberTen",  "what is your CopyNumberTen", new HocsFormFieldKVP[0] ));
-        filterFields[1] = new HocsFormData(field1);
+        FieldDto field1 = new FieldDto(UUID.randomUUID(),"Text",  new String[]{}, new PropertyDto("CopyNumberTen",  "what is your CopyNumberTen"), true, true);
+        filterFields[1] = field1;
 
         Set<Stage> activeStages = new HashSet<Stage>(){{
             add(new Stage(UUID.randomUUID(), "DCU_DTEN_COPY_NUMBER_TEN", UUID.randomUUID(), LocalDate.now(), UUID.randomUUID()));
@@ -280,9 +286,9 @@ public class CaseDataServiceTest {
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
         assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
-        assertThat(result.getAdditionalFields().get("what is your TEMPCReference")).isEqualTo("test ref");
-        assertThat(result.getAdditionalFields().get("what is your CopyNumberTen")).isEqualTo("true");
-        assertThat(result.getAdditionalFields()).doesNotContainKey("UnfilteredField");
+        assertThat(result.getAdditionalFields().stream().filter(f -> f.getLabel().equals("what is your TEMPCReference")).findFirst().get().getValue()).isEqualTo("test ref");
+        assertThat(result.getAdditionalFields().stream().filter(f -> f.getLabel().equals("what is your CopyNumberTen")).findFirst().get().getValue()).isEqualTo("true");
+        assertThat(result.getAdditionalFields().stream().noneMatch(f -> f.getLabel().equals("UnfilteredField")));
     }
 
     @Test
