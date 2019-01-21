@@ -4,11 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoNominatedPeople;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.service.notify.NotificationClient;
-import uk.gov.service.notify.NotificationClientException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,14 +22,17 @@ public class NotifyClient {
     private final NotificationClient notificationClient;
     private final InfoClient infoClient;
     private final String url;
+    private final RequestData requestData;
 
     @Autowired
     public NotifyClient(InfoClient infoClient,
                         @Value("${notify.apiKey}") String apiKey,
-                        @Value("${hocs.url}") String url) {
+                        @Value("${hocs.url}") String url,
+                        RequestData requestData) {
         this.notificationClient = new NotificationClient(apiKey);
         this.infoClient = infoClient;
         this.url = url;
+        this.requestData = requestData;
     }
 
     public void sendTeamEmail(UUID caseUUID, UUID stageUUID, UUID teamUUID, String caseReference, String allocationType) {
@@ -52,9 +55,13 @@ public class NotifyClient {
             if (newUserUUID != null) {
                 if (currentUserUUID != null && !newUserUUID.equals(currentUserUUID)) {
                     sendUnAllocateUserEmail(caseUUID, stageUUID, currentUserUUID, caseReference);
-                    sendAllocateUserEmail(caseUUID, stageUUID, newUserUUID, caseReference);
+                    if(!newUserUUID.equals(requestData.userIdUUID())) {
+                        sendAllocateUserEmail(caseUUID, stageUUID, newUserUUID, caseReference);
+                    }
                 } else {
-                    sendAllocateUserEmail(caseUUID, stageUUID, newUserUUID, caseReference);
+                    if(!newUserUUID.equals(requestData.userIdUUID())) {
+                        sendAllocateUserEmail(caseUUID, stageUUID, newUserUUID, caseReference);
+                    }
                 }
             } else if (currentUserUUID != null) {
                 sendUnAllocateUserEmail(caseUUID, stageUUID, currentUserUUID, caseReference);
@@ -90,7 +97,7 @@ public class NotifyClient {
         try {
 
             notificationClient.sendEmail(notifyType.getDisplayValue(), emailAddress, personalisation, null);
-        } catch (NotificationClientException e) {
+        } catch (Exception e) {
             log.error(e.getLocalizedMessage());
             log.warn("Didn't send email to {}", emailAddress);
         }
