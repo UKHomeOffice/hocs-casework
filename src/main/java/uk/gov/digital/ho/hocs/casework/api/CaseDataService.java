@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.PropertyDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -140,7 +139,7 @@ public class CaseDataService {
 
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
 
-        Set<AdditionalField> additionalFields = Arrays.stream(summaryFields).map(field -> new AdditionalField(getLabel(field.getProperties()), caseDataMap.getOrDefault(field.getProperties().getName(), ""), field.getComponent())).collect(Collectors.toSet());
+        Set<AdditionalField> additionalFields = Arrays.stream(summaryFields).map(field -> new AdditionalField(getLabel(field), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent())).collect(Collectors.toSet());
 
         // All Stage Deadlines
         Map<String, String> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
@@ -176,7 +175,7 @@ public class CaseDataService {
         return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalFields, correspondent, topic, stages);
     }
 
-    private static String getLabel(PropertyDto propertyDto) {
-        return propertyDto.getLabel().isEmpty() ? propertyDto.getName() : propertyDto.getLabel();
+    private static String getLabel(FieldDto fieldDto) {
+        return fieldDto.getLabel().isEmpty() ? fieldDto.getName() : fieldDto.getLabel();
     }
 }
