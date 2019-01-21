@@ -71,7 +71,7 @@ CREATE TABLE IF NOT EXISTS correspondent
   country   TEXT,
   telephone TEXT,
   email     TEXT,
-  reference TEXT      NOT NULL,
+  reference TEXT,
   deleted   BOOLEAN   NOT NULL DEFAULT FALSE,
 
   CONSTRAINT correspondent_uuid_idempotent UNIQUE (uuid),

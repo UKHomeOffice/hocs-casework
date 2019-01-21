@@ -14,14 +14,17 @@ public class FieldDto {
     @JsonProperty("uuid")
     private UUID uuid;
 
+    @JsonProperty("name")
+    private String name;
+
+    @JsonProperty("label")
+    private String label;
+
     @JsonProperty("component")
     private String component;
 
     @JsonRawValue
     private String[] validation;
-
-    @JsonProperty("props")
-    private PropertyDto properties;
 
     @JsonProperty("summary")
     private boolean summary;

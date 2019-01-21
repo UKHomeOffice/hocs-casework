@@ -8,7 +8,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.PropertyDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -248,10 +247,10 @@ public class CaseDataServiceTest {
 
         FieldDto[] filterFields = new FieldDto[2];
 
-        FieldDto field0 = new FieldDto(UUID.randomUUID(),"Text", new String[]{}, new PropertyDto("TEMPCReference", "what is your TEMPCReference"), true, true);
+        FieldDto field0 = new FieldDto(UUID.randomUUID(),"TEMPCReference", "what is your TEMPCReference", "Text", new String[]{}, true, true);
         filterFields[0] = field0;
 
-        FieldDto field1 = new FieldDto(UUID.randomUUID(),"Text",  new String[]{}, new PropertyDto("CopyNumberTen",  "what is your CopyNumberTen"), true, true);
+        FieldDto field1 = new FieldDto(UUID.randomUUID(),"CopyNumberTen",  "what is your CopyNumberTen", "Text", new String[]{},  true, true);
         filterFields[1] = field1;
 
         Set<Stage> activeStages = new HashSet<Stage>(){{
