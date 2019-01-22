@@ -132,25 +132,18 @@ public class CaseDataService {
 
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
 
-        Set<AdditionalField> additionalFields = Arrays.stream(summaryFields).map(field -> new AdditionalField(getLabel(field), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent())).collect(Collectors.toSet());
+        Set<AdditionalField> additionalFields = Arrays.stream(summaryFields).map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent())).collect(Collectors.toSet());
 
         // All Stage Deadlines
         Map<String, String> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
 
-        // Primary Correspondent
-        Correspondent correspondent = caseData.getPrimaryCorrespondent();
-
-        // Primary Topic
-        Topic topic = caseData.getPrimaryTopic();
-
-        // Active Stages
-        Set<ActiveStage> stages = caseData.getActiveStages();
-
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
-        return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalFields, correspondent, topic, stages);
-    }
-
-    private static String getLabel(FieldDto fieldDto) {
-        return fieldDto.getLabel().isEmpty() ? fieldDto.getName() : fieldDto.getLabel();
+        return new CaseSummary(
+                caseData.getCaseDeadline(),
+                stageDeadlines,
+                additionalFields,
+                caseData.getPrimaryCorrespondent(),
+                caseData.getPrimaryTopic(),
+                caseData.getActiveStages());
     }
 }
