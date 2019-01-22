@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 
 import java.util.UUID;
 
@@ -24,7 +24,7 @@ public class ActiveStageDto {
     @JsonProperty("assignedToTeamUUID")
     private UUID assignedToTeamUUID;
 
-    public static ActiveStageDto from(Stage stage) {
+    public static ActiveStageDto from(ActiveStage stage) {
         return new ActiveStageDto(stage.getUuid(), stage.getStageType(),stage.getUserUUID(), stage.getTeamUUID());
     }
 }

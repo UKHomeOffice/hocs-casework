@@ -29,21 +29,14 @@ public class CaseDataService {
     private final AuditClient auditClient;
     private final ObjectMapper objectMapper;
     private final InfoClient infoClient;
-    private final CorrespondentService correspondentService;
-    private final TopicService topicService;
-    private final StageService stageService;
 
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository, InfoClient infoClient,
-                           ObjectMapper objectMapper, CorrespondentService correspondentService, TopicService topicService,
-                            StageService stageService, AuditClient auditClient) {
+                           ObjectMapper objectMapper, AuditClient auditClient) {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
         this.objectMapper = objectMapper;
-        this.correspondentService = correspondentService;
-        this.topicService = topicService;
-        this.stageService = stageService;
     }
 
     public CaseData getCase(UUID caseUUID) {
@@ -139,43 +132,18 @@ public class CaseDataService {
 
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
 
-        Set<AdditionalField> additionalFields = Arrays.stream(summaryFields).map(field -> new AdditionalField(getLabel(field), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent())).collect(Collectors.toSet());
+        Set<AdditionalField> additionalFields = Arrays.stream(summaryFields).map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent())).collect(Collectors.toSet());
 
         // All Stage Deadlines
         Map<String, String> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
 
-        // Primary Correspondent
-        Correspondent correspondent = null;
-        if (caseData.getPrimaryCorrespondentUUID() != null) {
-            try {
-                correspondent = correspondentService.getCorrespondent(caseData.getUuid(), caseData.getPrimaryCorrespondentUUID());
-            } catch (ApplicationExceptions.EntityNotFoundException e) {
-                // Do Nothing - correspondent is null.
-            }
-        } else {
-            log.debug("PrimaryCorrespondentUUID for Case: {} was null", caseUUID);
-        }
-
-        // Primary Topic
-        Topic topic = null;
-        if (caseData.getPrimaryTopicUUID() != null) {
-            try {
-                topic = topicService.getTopic(caseData.getUuid(), caseData.getPrimaryTopicUUID());
-            } catch (ApplicationExceptions.EntityNotFoundException e) {
-                // Do Nothing - topic is null.
-            }
-        } else {
-            log.debug("PrimaryTopicUUID for Case: {} was null", caseUUID);
-        }
-
-        // Active Stages
-        Set<Stage> stages = stageService.getActiveStagesByCaseUUID(caseUUID);
-
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
-        return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalFields, correspondent, topic, stages);
-    }
-
-    private static String getLabel(FieldDto fieldDto) {
-        return fieldDto.getLabel().isEmpty() ? fieldDto.getName() : fieldDto.getLabel();
+        return new CaseSummary(
+                caseData.getCaseDeadline(),
+                stageDeadlines,
+                additionalFields,
+                caseData.getPrimaryCorrespondent(),
+                caseData.getPrimaryTopic(),
+                caseData.getActiveStages());
     }
 }
