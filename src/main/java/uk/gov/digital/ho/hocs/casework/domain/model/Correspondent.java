@@ -8,13 +8,14 @@ import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "correspondent")
-public class Correspondent {
+public class Correspondent implements Serializable {
 
     @Id
     @Column(name = "id")

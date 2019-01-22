@@ -40,9 +40,6 @@ public class CaseDataServiceTest {
     @Mock
     private AuditClient auditClient;
 
-    @Mock
-    private TopicService topicService;
-
     private CaseDataService caseDataService;
 
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -57,13 +54,11 @@ public class CaseDataServiceTest {
 
     @Mock
     private StageService stageService;
-    @Mock
-    private CorrespondentService correspondentService;
 
 
     @Before
     public void setUp() {
-        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper, correspondentService, topicService, stageService, auditClient);
+        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper, stageService, auditClient);
     }
 
     @Test
@@ -151,7 +146,6 @@ public class CaseDataServiceTest {
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
         when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
         when(stageService.getActiveStagesByCaseUUID(caseData.getUuid())).thenReturn(activeStages);
-        when(correspondentService.getCorrespondent(caseData.getUuid(), primaryCorrespondentUUID)).thenReturn(correspondent);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -162,7 +156,6 @@ public class CaseDataServiceTest {
 
 
         verify(stageService, times(1)).getActiveStagesByCaseUUID(caseData.getUuid());
-        verify(correspondentService, times(1)).getCorrespondent(caseData.getUuid(), primaryCorrespondentUUID);
         verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
         verify(infoClient, times(1)).getDeadlines(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());

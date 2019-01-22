@@ -29,21 +29,14 @@ public class CaseDataService {
     private final AuditClient auditClient;
     private final ObjectMapper objectMapper;
     private final InfoClient infoClient;
-    private final CorrespondentService correspondentService;
-    private final TopicService topicService;
-    private final StageService stageService;
 
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository, InfoClient infoClient,
-                           ObjectMapper objectMapper, CorrespondentService correspondentService, TopicService topicService,
-                            StageService stageService, AuditClient auditClient) {
+                           ObjectMapper objectMapper, AuditClient auditClient) {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
         this.objectMapper = objectMapper;
-        this.correspondentService = correspondentService;
-        this.topicService = topicService;
-        this.stageService = stageService;
     }
 
     public CaseData getCase(UUID caseUUID) {
@@ -145,31 +138,13 @@ public class CaseDataService {
         Map<String, String> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
 
         // Primary Correspondent
-        Correspondent correspondent = null;
-        if (caseData.getPrimaryCorrespondentUUID() != null) {
-            try {
-                correspondent = correspondentService.getCorrespondent(caseData.getUuid(), caseData.getPrimaryCorrespondentUUID());
-            } catch (ApplicationExceptions.EntityNotFoundException e) {
-                // Do Nothing - correspondent is null.
-            }
-        } else {
-            log.debug("PrimaryCorrespondentUUID for Case: {} was null", caseUUID);
-        }
+        Correspondent correspondent = caseData.getPrimaryCorrespondent();
 
         // Primary Topic
-        Topic topic = null;
-        if (caseData.getPrimaryTopicUUID() != null) {
-            try {
-                topic = topicService.getTopic(caseData.getUuid(), caseData.getPrimaryTopicUUID());
-            } catch (ApplicationExceptions.EntityNotFoundException e) {
-                // Do Nothing - topic is null.
-            }
-        } else {
-            log.debug("PrimaryTopicUUID for Case: {} was null", caseUUID);
-        }
+        Topic topic = caseData.getPrimaryTopic();
 
         // Active Stages
-        Set<Stage> stages = stageService.getActiveStagesByCaseUUID(caseUUID);
+        Set<ActiveStage> stages = caseData.getActiveStages();
 
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
         return new CaseSummary(caseData.getCaseDeadline(), stageDeadlines, additionalFields, correspondent, topic, stages);

@@ -9,6 +9,7 @@ import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -19,7 +20,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DATA_JSO
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "case_data")
-public class CaseData {
+public class CaseData implements Serializable {
 
     @Id
     @Column(name = "id")
@@ -61,10 +62,20 @@ public class CaseData {
     @Column(name = "primary_topic_uuid")
     private UUID primaryTopicUUID;
 
+    @Getter
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "primary_topic_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
+    private Topic primaryTopic;
+
     @Setter
     @Getter
     @Column(name = "primary_correspondent_uuid")
     private UUID primaryCorrespondentUUID;
+
+    @Getter
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "primary_correspondent_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
+    private Correspondent primaryCorrespondent;
 
     @Setter
     @Getter
@@ -74,6 +85,12 @@ public class CaseData {
     @Getter
     @Column(name = "date_received")
     private LocalDate dateReceived;
+
+    @Getter
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
+    private Set<ActiveStage> activeStages;
+
 
     public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived) {
         this(type, caseNumber, caseDeadline, dateReceived);

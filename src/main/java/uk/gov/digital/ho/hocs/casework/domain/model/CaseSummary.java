@@ -21,5 +21,5 @@ public class CaseSummary {
 
     Topic primaryTopic;
 
-    Set<Stage> activeStages;
+    Set<ActiveStage> activeStages;
 }
