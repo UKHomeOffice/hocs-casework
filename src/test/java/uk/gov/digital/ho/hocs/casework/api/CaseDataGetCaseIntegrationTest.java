@@ -77,7 +77,7 @@ public class CaseDataGetCaseIntegrationTest {
     public void shouldReturnCaseDetailsWhenGetValidCaseWithPermissionLevelOwner() throws JsonProcessingException {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -86,7 +86,7 @@ public class CaseDataGetCaseIntegrationTest {
     public void shouldReturnCaseDetailsWhenGetValidCaseWithPermissionLevelWrite() throws JsonProcessingException {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "WRITE")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "3")), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -95,7 +95,7 @@ public class CaseDataGetCaseIntegrationTest {
     public void shouldReturnCaseDetailsWhenGetValidCaseWithPermissionLevelRead() throws JsonProcessingException {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "READ")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -104,7 +104,7 @@ public class CaseDataGetCaseIntegrationTest {
     public void shouldReturnUnauthorisedWhenGetValidCaseWithPermissionLevelSummary() throws JsonProcessingException {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -131,7 +131,7 @@ public class CaseDataGetCaseIntegrationTest {
     public void shouldReturnNotFoundWhenGetInValidCaseWithPermissionLevelOwner() throws JsonProcessingException {
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), Void.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), Void.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -140,7 +140,7 @@ public class CaseDataGetCaseIntegrationTest {
     public void shouldReturnNotFoundWhenGetInValidCaseWithPermissionLevelWrite() throws JsonProcessingException {
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "WRITE")), Void.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "3")), Void.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -149,7 +149,7 @@ public class CaseDataGetCaseIntegrationTest {
     public void shouldReturnNotFoundWhenGetInValidCaseWithPermissionLevelRead() throws JsonProcessingException {
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "READ")), Void.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "2")), Void.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -158,7 +158,7 @@ public class CaseDataGetCaseIntegrationTest {
     public void shouldReturnUnauthorisedForInValidCaseWithPermissionLevelSummary() throws JsonProcessingException {
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), Void.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "1")), Void.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -167,7 +167,7 @@ public class CaseDataGetCaseIntegrationTest {
     public void shouldReturnUnauthorisedForInValidCaseWithPermissionLevelUnset() throws JsonProcessingException {
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "UNSET")), Void.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "0")), Void.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -194,7 +194,7 @@ public class CaseDataGetCaseIntegrationTest {
     public void shouldReturnCaseWhenGetValidCaseWithValidPermissionsAndReturnUnauthorisedWithEmptyPermissionsForSameCase() throws JsonProcessingException {
 
         ResponseEntity<String> validPermissionResult = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
 
         ResponseEntity<String> invalidPermissionResult = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
@@ -207,7 +207,7 @@ public class CaseDataGetCaseIntegrationTest {
     public void shouldReturnCaseWhenGetValidCaseWithValidPermissionsAndReturnUnauthorisedWithInvalidPermissionsForSameCase() throws JsonProcessingException {
 
         ResponseEntity<String> validPermissionResult = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
 
         ResponseEntity<String> invalidPermissionResult = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders("TEST", "FRED")), String.class);
@@ -223,7 +223,7 @@ public class CaseDataGetCaseIntegrationTest {
     private HttpHeaders createValidAuthHeaders(String caseType, String permissionLevel) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-Auth-Groups", "/UNIT1/44444444-2222-2222-2222-222222222222/" + caseType + "/" + permissionLevel);
+        headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg/" + caseType + "/" + permissionLevel);
         headers.add("X-Auth-Userid", "a.person@digital.homeoffice.gov.uk");
         headers.add("X-Correlation-Id", "1");
         return headers;
