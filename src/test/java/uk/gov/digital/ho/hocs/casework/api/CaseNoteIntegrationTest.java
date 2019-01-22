@@ -78,21 +78,21 @@ public class CaseNoteIntegrationTest {
     @Test
     public void shouldReturnCaseNotesWhenGetValidCaseWithPermissionLevelOwner() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/note", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/note", GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     public void shouldReturnCaseNoteWhenGetValidCaseNoteWithPermissionLevelOwner() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/note/a2bb3622-b38a-479d-b390-f633bf15f329", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/note/a2bb3622-b38a-479d-b390-f633bf15f329", GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     public void shouldReturnBadRequestAndNotCreateACaseNoteWhenNoRequestBody() {
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST", "OWNER");
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST", "5");
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -101,7 +101,7 @@ public class CaseNoteIntegrationTest {
     @Test
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelSummary() throws JsonProcessingException {
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST", "SUMMARY");
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST", "1");
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -110,7 +110,7 @@ public class CaseNoteIntegrationTest {
     @Test
     public void shouldReturnBadRequestAndNotCreateACaseWhenNoRequestBody() {
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST", "OWNER");
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST", "5");
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -119,7 +119,7 @@ public class CaseNoteIntegrationTest {
     @Test
     public void shouldReturnBadRequestAndNotCreateACaseWhenCaseUUIDInvalid() throws JsonProcessingException {
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteInavlidCaseUUIDResponse(createBody(), "TEST", "OWNER");
+        ResponseEntity<Void> result = getCreateCaseNoteInavlidCaseUUIDResponse(createBody(), "TEST", "5");
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -132,7 +132,7 @@ public class CaseNoteIntegrationTest {
     private HttpHeaders createValidAuthHeaders(String caseType, String permissionLevel) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-Auth-Groups", "/UNIT1/44444444-2222-2222-2222-222222222222/" + caseType + "/" + permissionLevel);
+        headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg/" + caseType + "/" + permissionLevel);
         headers.add("X-Auth-Userid", "simon.mitchell@digital.homeoffice.gov.uk");
         headers.add("X-Correlation-Id", "1");
         return headers;
@@ -141,7 +141,7 @@ public class CaseNoteIntegrationTest {
     @Test
     public void shouldCreateACaseNoteWithPermissionLevelRead() throws JsonProcessingException {
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<UUID> result = getCreateCaseNoteResponse(createBody(), "TEST","READ");
+        ResponseEntity<UUID> result = getCreateCaseNoteResponse(createBody(), "TEST","2");
         CaseNote caseData = caseNoteRepository.findByUuid(result.getBody());
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);

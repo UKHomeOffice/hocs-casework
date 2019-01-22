@@ -158,7 +158,7 @@ public class DeleteCorrespondentIntegrationTest {
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CORRESPONDENT_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "")), Void.class);
 
         ResponseEntity<Void> result2 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/team", PUT, new HttpEntity(createBodyUpdateTeam(), createValidAuthHeaders("TEST", "OWNER")), Void.class);
+                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/team", PUT, new HttpEntity(createBodyUpdateTeam(), createValidAuthHeaders("TEST", "5")), Void.class);
 
         ResponseEntity<Void> result3 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CORRESPONDENT_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "")), Void.class);
@@ -185,7 +185,7 @@ public class DeleteCorrespondentIntegrationTest {
                 getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/correspondent/" + CORRESPONDENT_UUID2, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "")), Void.class);
 
         ResponseEntity<Void> result2 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/user", PUT, new HttpEntity(createBodyUpdateUser(), createValidAuthHeaders("TEST", "OWNER")), Void.class);
+                getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/user", PUT, new HttpEntity(createBodyUpdateUser(), createValidAuthHeaders("TEST", "5")), Void.class);
 
         ResponseEntity<Void> result3 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/correspondent/" + CORRESPONDENT_UUID2, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "")), Void.class);
@@ -221,7 +221,7 @@ public class DeleteCorrespondentIntegrationTest {
         Correspondent correspondentBefore = correspondentRepository.findByUUID(CASE_UUID1, CORRESPONDENT_UUID);
 
         ResponseEntity<String> result1 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID1, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID1, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
 
         ResponseEntity<String> result2 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CORRESPONDENT_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
@@ -238,7 +238,7 @@ public class DeleteCorrespondentIntegrationTest {
     private HttpHeaders createValidAuthHeaders(String caseType, String permissionLevel) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-Auth-Groups", "/UNIT1/44444444-2222-2222-2222-222222222222/" + caseType + "/" + permissionLevel);
+        headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg/" + caseType + "/" + permissionLevel);
         headers.add("X-Auth-Userid", "4035d37f-9c1d-436e-99de-1607866634d4");
         headers.add("X-Correlation-Id", "1");
         return headers;

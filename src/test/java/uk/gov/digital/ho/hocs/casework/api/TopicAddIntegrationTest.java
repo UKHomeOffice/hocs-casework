@@ -208,7 +208,7 @@ public class TopicAddIntegrationTest {
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/topic", POST, new HttpEntity(createBody(), createValidAuthHeaders("TEST", "")), Void.class);
 
         ResponseEntity<Void> result2 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/team", PUT, new HttpEntity(createBodyUpdateTeam(), createValidAuthHeaders("TEST", "OWNER")), Void.class);
+                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/team", PUT, new HttpEntity(createBodyUpdateTeam(), createValidAuthHeaders("TEST", "5")), Void.class);
 
         ResponseEntity<Void> result3 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/topic", POST, new HttpEntity(createBody(), createValidAuthHeaders("TEST", "")), Void.class);
@@ -235,7 +235,7 @@ public class TopicAddIntegrationTest {
                 getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/topic", POST, new HttpEntity(createBody(), createValidAuthHeaders("TEST", "")), Void.class);
 
         ResponseEntity<Void> result2 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/user", PUT, new HttpEntity(createBodyUpdateUser(), createValidAuthHeaders("TEST", "OWNER")), Void.class);
+                getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/user", PUT, new HttpEntity(createBodyUpdateUser(), createValidAuthHeaders("TEST", "5")), Void.class);
 
         ResponseEntity<Void> result3 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/topic", POST, new HttpEntity(createBody(), createValidAuthHeaders("TEST", "")), Void.class);
@@ -256,7 +256,7 @@ public class TopicAddIntegrationTest {
     private HttpHeaders createValidAuthHeaders(String caseType, String permissionLevel) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-Auth-Groups", "/UNIT1/44444444-2222-2222-2222-222222222222/" + caseType + "/" + permissionLevel);
+        headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg/" + caseType + "/" + permissionLevel);
         headers.add("X-Auth-Userid", "4035d37f-9c1d-436e-99de-1607866634d4");
         headers.add("X-Correlation-Id", "1");
         return headers;
