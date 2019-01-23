@@ -5,21 +5,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.omg.CORBA.BAD_CONTEXT;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseNoteRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseNoteResponse;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseNoteRepository;
@@ -30,7 +26,6 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.POST;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 import static org.springframework.test.web.client.MockRestServiceServer.bindTo;
@@ -146,18 +141,18 @@ public class CaseNoteIntegrationTest {
     @Test
     public void shouldCreateACaseNoteWithPermissionLevelRead() throws JsonProcessingException {
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<CreateCaseNoteResponse> result = getCreateCaseNoteResponse(createBody(), "TEST","READ");
-        CaseNote caseData = caseNoteRepository.findByUuid(result.getBody().getUuid());
+        ResponseEntity<UUID> result = getCreateCaseNoteResponse(createBody(), "TEST","READ");
+        CaseNote caseData = caseNoteRepository.findByUuid(result.getBody());
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody().getUuid()).isNotNull();
+        assertThat(result.getBody()).isNotNull();
         assertThat(caseData).isNotNull();
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore + 1l);
     }
 
-    private ResponseEntity<CreateCaseNoteResponse> getCreateCaseNoteResponse(String body, String caseTypePermission, String permissionLevel) {
+    private ResponseEntity<UUID> getCreateCaseNoteResponse(String body, String caseTypePermission, String permissionLevel) {
         return testRestTemplate.exchange(
-                getBasePath() + "/case/"+ CASE_UUID +"/note", POST, new HttpEntity(body, createValidAuthHeaders(caseTypePermission, permissionLevel)), CreateCaseNoteResponse.class);
+                getBasePath() + "/case/"+ CASE_UUID +"/note", POST, new HttpEntity(body, createValidAuthHeaders(caseTypePermission, permissionLevel)), UUID.class);
     }
 
     private ResponseEntity<Void> getCreateCaseNoteVoidResponse(String body, String caseTypePermission, String permissionLevel) {

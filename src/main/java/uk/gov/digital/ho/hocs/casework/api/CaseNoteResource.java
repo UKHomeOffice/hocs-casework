@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseNoteRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseNoteResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseNoteResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseNotesResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
@@ -43,8 +42,8 @@ public class CaseNoteResource {
 
     @Authorised(accessLevel = AccessLevel.READ)
     @PostMapping(value = "/case/{caseUUID}/note")
-    public ResponseEntity<CreateCaseNoteResponse> createCaseNote(@PathVariable UUID caseUUID,@Valid @RequestBody CreateCaseNoteRequest createCaseNoteRequest) {
+    public ResponseEntity<UUID> createCaseNote(@PathVariable UUID caseUUID,@Valid @RequestBody CreateCaseNoteRequest createCaseNoteRequest) {
         CaseNote caseNote= caseNoteService.createCaseNote(caseUUID, createCaseNoteRequest.getType(), createCaseNoteRequest.getText());
-        return ResponseEntity.ok(CreateCaseNoteResponse.from(caseNote));
+        return ResponseEntity.ok(caseNote.getUuid());
     }
 }
