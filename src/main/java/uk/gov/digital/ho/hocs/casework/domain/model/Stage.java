@@ -45,6 +45,11 @@ public class Stage implements Serializable {
     private UUID transitionNoteUUID;
 
     @Getter
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "transition_note_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
+    private CaseNote transitionNote;
+
+    @Getter
     @Column(name = "case_uuid", columnDefinition = "uuid")
     private UUID caseUUID;
 
