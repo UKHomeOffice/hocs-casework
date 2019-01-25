@@ -26,7 +26,7 @@ public class FieldDto {
     @JsonRawValue
     private String[] validation;
 
-    @JsonProperty("1")
+    @JsonProperty("summary")
     private boolean summary;
 
     @JsonProperty("active")
