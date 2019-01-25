@@ -39,7 +39,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
 
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBody("TEST"), "TEST", "OWNER");
+        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
 
         CaseData caseData = caseDataRepository.findByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
@@ -56,7 +56,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
 
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBody("TEST"), "TEST", "WRITE");
+        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBody("TEST"), "TEST", "3");
 
         CaseData caseData = caseDataRepository.findByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
@@ -73,7 +73,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
 
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "READ");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "2");
 
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -86,7 +86,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
 
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "SUMMARY");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "1");
 
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -99,7 +99,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
 
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "UNSET");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "0");
 
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -151,7 +151,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
 
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(null, "TEST", "OWNER");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(null, "TEST", "5");
 
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -164,7 +164,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
 
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("WRONG"), "TEST", "OWNER");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("WRONG"), "TEST", "5");
 
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -177,7 +177,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
 
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody(null), "TEST", "OWNER");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody(null), "TEST", "5");
 
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -190,7 +190,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
 
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST","{}"), "TEST", "OWNER");
+        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST","{}"), "TEST", "5");
 
         CaseData caseData = caseDataRepository.findByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
@@ -206,7 +206,7 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldCreateAValidCaseWithNullData() {
         long numberOfCasesBefore = caseDataRepository.count();
 
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST",null), "TEST", "OWNER");
+        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST",null), "TEST", "5");
 
         CaseData caseData = caseDataRepository.findByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
@@ -222,8 +222,8 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldCreateTwoValidCasesNumberedSequential() {
         long numberOfCasesBefore = caseDataRepository.count();
 
-        ResponseEntity<CreateCaseResponse> result1 = getCreateCaseResponse(createBody("TEST"), "TEST", "OWNER");
-        ResponseEntity<CreateCaseResponse> result2 = getCreateCaseResponse(createBody("TEST"), "TEST", "OWNER");
+        ResponseEntity<CreateCaseResponse> result1 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
+        ResponseEntity<CreateCaseResponse> result2 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
 
         CaseData caseData1 = caseDataRepository.findByUuid(result1.getBody().getUuid());
         CaseData caseData2 = caseDataRepository.findByUuid(result2.getBody().getUuid());
@@ -247,9 +247,9 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
 
-        ResponseEntity<CreateCaseResponse> result1 = getCreateCaseResponse(createBody("TEST"), "TEST", "OWNER");
-        ResponseEntity<Void> result2 = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "READ");
-        ResponseEntity<CreateCaseResponse> result3 = getCreateCaseResponse(createBody("TEST"), "TEST", "OWNER");
+        ResponseEntity<CreateCaseResponse> result1 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
+        ResponseEntity<Void> result2 = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "2");
+        ResponseEntity<CreateCaseResponse> result3 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
 
         CaseData caseData1 = caseDataRepository.findByUuid(result1.getBody().getUuid());
         CaseData caseData2 = caseDataRepository.findByUuid(result3.getBody().getUuid());
@@ -290,7 +290,7 @@ public class CaseDataCreateCaseIntegrationTest {
     private HttpHeaders createValidAuthHeaders(String caseType, String permissionLevel) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-Auth-Groups", "/UNIT1/44444444-2222-2222-2222-222222222222/" + caseType + "/" + permissionLevel);
+        headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg/" + caseType + "/" + permissionLevel);
         headers.add("X-Auth-Userid", "a.person@digital.homeoffice.gov.uk");
         headers.add("X-Correlation-Id", "1");
         return headers;
