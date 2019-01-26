@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
@@ -12,6 +13,9 @@ public class CreateAuditRequest {
 
     @JsonProperty(value= "correlation_id", required = true)
     private String correlationID;
+
+    @JsonProperty(value= "caseUUID", required = true)
+    private UUID caseUUID;
 
     @JsonProperty(value= "raising_service", required = true)
     private String raisingService;

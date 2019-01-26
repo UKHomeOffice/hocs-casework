@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -72,7 +73,7 @@ public class CaseDataService {
         log.debug("Allocating Ref: {}", caseNumber);
         CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline, dateReceived);
         caseDataRepository.save(caseData);
-        auditClient.createCaseAudit(caseData);
+        auditClient.createCaseAudit(caseData.getUuid(), caseData.getReference());
         log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
         return caseData;
     }
@@ -145,5 +146,10 @@ public class CaseDataService {
                 caseData.getPrimaryCorrespondent(),
                 caseData.getPrimaryTopic(),
                 caseData.getActiveStages());
+    }
+
+    void getCaseTimeline(UUID caseUUID) {
+        Set<GetAuditResponse> audit = auditClient.getAuditLinesForCase(caseUUID);
+
     }
 }
