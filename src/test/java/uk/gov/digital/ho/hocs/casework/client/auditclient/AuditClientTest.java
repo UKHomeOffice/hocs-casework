@@ -10,6 +10,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
+import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -34,8 +35,16 @@ public class AuditClientTest {
 
     @Mock
     ProducerTemplate producerTemplate;
+
+    @Mock
+    RestHelper restHelper;
+
+
+
     SpringConfiguration configuration = new SpringConfiguration();
     ObjectMapper mapper;
+
+
 
     private AuditClient auditClient;
 
@@ -58,7 +67,7 @@ public class AuditClientTest {
         when(requestData.userId()).thenReturn("some user");
         doNothing().when(producerTemplate).sendBody(eq(auditQueue), any());
         mapper = configuration.initialiseObjectMapper();
-        auditClient = new AuditClient(producerTemplate, auditQueue,"hocs-casework","namespace", mapper, requestData);
+        auditClient = new AuditClient(producerTemplate, auditQueue,"hocs-casework","namespace", mapper, requestData, restHelper, "http://audit-service");
     }
 
     @Test

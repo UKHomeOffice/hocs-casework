@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
+import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -21,6 +22,9 @@ public class AuditClientIntegrationTest extends CamelTestSupport {
 
     @Mock
     RequestData requestData;
+
+    @Mock
+    RestHelper restHelper;
 
     private final String toEndpoint = "mock:audit-queue";
 
@@ -36,9 +40,8 @@ public class AuditClientIntegrationTest extends CamelTestSupport {
     public void setup() {
         when(requestData.correlationId()).thenReturn(UUID.randomUUID().toString());
         when(requestData.userId()).thenReturn("some user");
-        auditClient = new AuditClient(template, toEndpoint,"hocs-casework","namespace", mapper, requestData);
+        auditClient = new AuditClient(template, toEndpoint,"hocs-casework","namespace", mapper, requestData, restHelper, "http://audit-service");
     }
-
 
     @Test
     public void shouldPutMessageOnAuditQueue() throws InterruptedException {

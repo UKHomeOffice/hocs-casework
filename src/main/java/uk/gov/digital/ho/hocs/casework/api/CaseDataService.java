@@ -8,6 +8,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -171,5 +172,10 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         auditClient.viewTemplateAudit(caseData);
         return infoClient.getTemplate(caseData.getType());
+    }
+
+    void getCaseTimeline(UUID caseUUID) {
+        Set<GetAuditResponse> audit = auditClient.getAuditLinesForCase(caseUUID);
+
     }
 }

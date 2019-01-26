@@ -7,10 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
+import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -28,19 +34,28 @@ public class AuditClient {
     private final ObjectMapper objectMapper;
     private final RequestData requestData;
 
+    private final RestHelper restHelper;
+    private final String serviceBaseURL;
+
+
     @Autowired
     public AuditClient(ProducerTemplate producerTemplate,
                        @Value("${audit.queue}") String auditQueue,
                        @Value("${auditing.deployment.name}") String raisingService,
                        @Value("${auditing.deployment.namespace}") String namespace,
                        ObjectMapper objectMapper,
-                       RequestData requestData) {
+                       RequestData requestData,
+                       RestHelper restHelper,
+                       @Value("${hocs.audit-service}") String auditService) {
         this.producerTemplate = producerTemplate;
         this.auditQueue = auditQueue;
         this.raisingService = raisingService;
         this.namespace = namespace;
         this.objectMapper = objectMapper;
         this.requestData = requestData;
+        this.restHelper = restHelper;
+        this.serviceBaseURL = auditService;
+
     }
 
     public void updateCaseAudit(CaseData caseData) {
@@ -128,11 +143,33 @@ public class AuditClient {
                 requestData.userId());
 
         try {
-            producerTemplate.sendBody(auditQueue, objectMapper.writeValueAsString(request));
+            producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), getQueueHeaders());
             log.info("Create audit for Case UUID: {}, correlationID: {}, UserID: {}", caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_FAILED));
         } catch (Exception e) {
             log.error("Failed to create audit event for case UUID {} for reason {}", caseUUID, e, value(EVENT, AUDIT_FAILED));
         }
 
+    }
+
+    public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID) {
+        try {
+            String events = String.join(",", EventType.CASE_CREATED.toString());
+            GetAuditListResponse response = restHelper.get(serviceBaseURL, String.format("/audit/case/%s?types=%s", caseUUID, events), GetAuditListResponse.class);
+            log.info("Got {} audits", response.getAudits().size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
+            return response.getAudits();
+        } catch (ApplicationExceptions.ResourceException e) {
+            log.error("Could not get case types", value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
+            throw new ApplicationExceptions.EntityNotFoundException("Could not get case types", AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE);
+        }
+
+    }
+
+    private Map<String, Object> getQueueHeaders() {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(RequestData.CORRELATION_ID_HEADER, requestData.correlationId());
+        headers.put(RequestData.USER_ID_HEADER, requestData.userId());
+        headers.put(RequestData.USERNAME_HEADER, requestData.username());
+        headers.put(RequestData.GROUP_HEADER, requestData.groups());
+        return headers;
     }
 }
