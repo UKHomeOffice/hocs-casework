@@ -4,7 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -145,5 +149,15 @@ public class CaseDataService {
                 caseData.getPrimaryCorrespondent(),
                 caseData.getPrimaryTopic(),
                 caseData.getActiveStages());
+    }
+
+    GetStandardLineResponse getStandardLine(UUID caseUUID) {
+        CaseData caseData = getCase(caseUUID);
+        return infoClient.getStandardLine(caseData.getPrimaryTopic().getTextUUID());
+    }
+
+    GetTemplateResponse getTemplate(UUID caseUUID) {
+        CaseData caseData = getCase(caseUUID);
+        return infoClient.getTemplate(caseData.getType());
     }
 }

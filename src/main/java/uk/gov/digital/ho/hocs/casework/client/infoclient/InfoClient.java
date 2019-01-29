@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
@@ -64,6 +66,30 @@ public class InfoClient {
         } catch (ApplicationExceptions.ResourceException e) {
             log.error("Could not get Topic {}", topicUUID, value(EVENT, INFO_CLIENT_GET_TOPIC_FAILURE));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get Topic %s", topicUUID), INFO_CLIENT_GET_TOPIC_FAILURE);
+        }
+    }
+
+    @Cacheable(value = "InfoClientGetStandardLine")
+    public GetStandardLineResponse getStandardLine(UUID topicUUID) {
+        try {
+            GetStandardLineResponse standardLine = restHelper.get(serviceBaseURL, String.format("/topic/%s/standardLine", topicUUID), GetStandardLineResponse.class);
+            log.info("Got StandardLine {} for Topic {}", standardLine.getDisplayName(), topicUUID, value(EVENT, INFO_CLIENT_GET_STANDARD_LINE_SUCCESS));
+            return standardLine;
+        } catch (ApplicationExceptions.ResourceException e) {
+            log.error("Could not get StandardLine for Topic {}", topicUUID, value(EVENT, INFO_CLIENT_GET_STANDARD_LINE_FAILURE));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get StandardLine for Topic %s", topicUUID), INFO_CLIENT_GET_STANDARD_LINE_FAILURE);
+        }
+    }
+
+    @Cacheable(value = "InfoClientGetTemplate")
+    public GetTemplateResponse getTemplate(String caseType) {
+        try {
+            GetTemplateResponse template = restHelper.get(serviceBaseURL, String.format("/caseType/%s/template", caseType), GetTemplateResponse.class);
+            log.info("Got Template {} for CaseType {}", template.getDisplayName(), caseType, value(EVENT, INFO_CLIENT_GET_TEMPLATE_SUCCESS));
+            return template;
+        } catch (ApplicationExceptions.ResourceException e) {
+            log.error("Could not get Template for CaseType {}", caseType, value(EVENT, INFO_CLIENT_GET_TEMPLATE_FAILURE));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get Template for CaseType %s", caseType), INFO_CLIENT_GET_TEMPLATE_FAILURE);
         }
     }
 
