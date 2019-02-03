@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
@@ -11,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.security.Team;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -138,6 +140,18 @@ public class InfoClient {
         } catch (ApplicationExceptions.ResourceException e) {
             log.error("Could not get User for UserUUID {}", userUUID, value(EVENT, INFO_CLIENT_GET_USER_FAILURE));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get User for UserUUID %s", userUUID), INFO_CLIENT_GET_USER_FAILURE);
+        }
+    }
+
+    @Cacheable(value = "InfoClientGetTeams")
+    public Set<Team> getTeams() {
+        try {
+            Set<Team> teams = restHelper.get(serviceBaseURL, "/team", new ParameterizedTypeReference<Set<Team>>() {});
+            log.info("Got teams", value(EVENT, INFO_CLIENT_GET_USER_SUCCESS));
+            return teams;
+        } catch (ApplicationExceptions.ResourceException e) {
+            log.error("Could not get teams", value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
+            throw new ApplicationExceptions.EntityNotFoundException("Could not get teams", INFO_CLIENT_GET_TEAMS_FAILURE);
         }
     }
 }

@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,8 +17,13 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.TopicRepository;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.Permission;
+import uk.gov.digital.ho.hocs.casework.security.Team;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,10 +66,11 @@ public class TopicsGetIntegrationTest {
     private final UUID INVALID_CASE_UUID = UUID.fromString("89334528-7769-2db4-b432-456091f132a1");
 
     private static final CaseDataType CASE_DATA_TYPE = new CaseDataType("TEST", "a1");
+    private MockRestServiceServer mockInfoService;
 
     @Before
     public void setup() throws IOException {
-        MockRestServiceServer mockInfoService = buildMockService(restTemplate);
+        mockInfoService = buildMockService(restTemplate);
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
@@ -81,56 +88,56 @@ public class TopicsGetIntegrationTest {
     }
 
     @Test
-    public void shouldReturnTopicsForValidCaseWithPermissionLevelOwner() {
+    public void shouldReturnTopicsForValidCaseWithPermissionLevelOwner() throws JsonProcessingException {
+        setupMockTeams("TEST", 5);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void shouldReturnTopicsForValidCaseWithPermissionLevelWrite() {
+    public void shouldReturnTopicsForValidCaseWithPermissionLevelWrite() throws JsonProcessingException {
+        setupMockTeams("TEST", 3);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "3")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void shouldReturnTopicsForValidCaseWithPermissionLevelRead() {
+    public void shouldReturnTopicsForValidCaseWithPermissionLevelRead() throws JsonProcessingException {
+        setupMockTeams("TEST", 2);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithPermissionLevelSummary() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithPermissionLevelSummary() throws JsonProcessingException {
+        setupMockTeams("TEST", 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithPermissionLevelUnset() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithPermissionLevelUnset() throws JsonProcessingException {
+        setupMockTeams("TEST", 0);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "0")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithPermissionLevelEmpty() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithoutPermission() throws JsonProcessingException {
+        setupMockTeams("TEST1", 5);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithPermissionLevelNull() {
-        ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", null)), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-    }
-
-    @Test
-    public void shouldReturnOkAndEmptySetSetWhenGetTopicsForInvalidCaseWithPermissionLevelOwner() {
+    public void shouldReturnOkAndEmptySetSetWhenGetTopicsForInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
+        setupMockTeams("TEST", 5);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -138,7 +145,8 @@ public class TopicsGetIntegrationTest {
     }
 
     @Test
-    public void shouldReturnOkAndEmptySetWhenGetTopicsForInvalidCaseWithPermissionLevelWrite() {
+    public void shouldReturnOkAndEmptySetWhenGetTopicsForInvalidCaseWithPermissionLevelWrite() throws JsonProcessingException {
+        setupMockTeams("TEST", 3);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "3")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -146,7 +154,8 @@ public class TopicsGetIntegrationTest {
     }
 
     @Test
-    public void shouldReturnOkAndEmptySetWhenGetTopicsForInvalidCaseWithPermissionLevelRead() {
+    public void shouldReturnOkAndEmptySetWhenGetTopicsForInvalidCaseWithPermissionLevelRead() throws JsonProcessingException {
+        setupMockTeams("TEST", 2);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -155,7 +164,8 @@ public class TopicsGetIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelSummary() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelSummary() throws JsonProcessingException {
+        setupMockTeams("TEST", 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -163,28 +173,27 @@ public class TopicsGetIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelUnset() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelUnset() throws JsonProcessingException {
+        setupMockTeams("TEST", 0);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "0")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelEmpty() {
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithoutPermission() throws JsonProcessingException {
+        setupMockTeams("TEST1", 5);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelNull() {
-        ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", null)), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-    }
+    public void shouldReturnOkWhenGetTopicAndThenOkAndEmptySetWhenCorrespondentsDeleted() throws JsonProcessingException {
+        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", 5);
 
-    @Test
-    public void shouldReturnOkWhenGetTopicAndThenOkAndEmptySetWhenCorrespondentsDeleted() {
         ResponseEntity<String> result1 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -204,10 +213,23 @@ public class TopicsGetIntegrationTest {
     private HttpHeaders createValidAuthHeaders(String caseType, String permissionLevel) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg/" + caseType + "/" + permissionLevel);
+        headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg");
         headers.add("X-Auth-Userid", "4035d37f-9c1d-436e-99de-1607866634d4");
         headers.add("X-Correlation-Id", "1");
         return headers;
+    }
+
+    private void setupMockTeams(String caseType, int permission) throws JsonProcessingException {
+        Set<Team> teams = new HashSet<>();
+        Set<Permission> permissions = new HashSet<>();
+        permissions.add(new Permission(caseType, AccessLevel.from(permission)));
+        Team team = new Team("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissions);
+        teams.add(team);
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/team"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(teams), MediaType.APPLICATION_JSON));
     }
 
 }
