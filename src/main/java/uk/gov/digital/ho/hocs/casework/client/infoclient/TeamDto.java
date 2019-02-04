@@ -5,12 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
 public class TeamDto {
 
@@ -23,7 +21,18 @@ public class TeamDto {
     @JsonProperty("active")
     private boolean active;
 
-    @JsonProperty("permissionDtos")
+    @JsonProperty("permissions")
     private Set<PermissionDto> permissionDtos;
+
+    public TeamDto() {
+        permissionDtos = new HashSet<>();
+    }
+
+    public TeamDto(String displayName, UUID uuid, boolean active, Set<PermissionDto> permissionDtos) {
+        this.displayName = displayName;
+        this.uuid = uuid;
+        this.active = active;
+        this.permissionDtos = permissionDtos;
+    }
 
 }
