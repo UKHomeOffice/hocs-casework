@@ -227,7 +227,7 @@ public class TopicsGetIntegrationTest {
         teamDtos.add(teamDto);
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/teamDto"))
+                .expect(requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
     }
