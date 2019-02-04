@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 
 import java.nio.BufferUnderflowException;
 import java.util.*;
@@ -103,12 +105,12 @@ public class UserPermissionsService {
     }
 
     public AccessLevel getMaxAccessLevel(String caseType) {
-        Set<Permission> permissions = getUserPermission();
-        Optional<Permission> maxPermission = permissions.stream()
+        Set<PermissionDto> permissionDtos = getUserPermission();
+        Optional<PermissionDto> maxPermission = permissionDtos.stream()
                 .filter(e-> e.getCaseTypeCode().equals(caseType))
                 .max(Comparator.comparing(e -> e.getAccessLevel()));
         return maxPermission.orElseThrow(
-                () -> new SecurityExceptions.PermissionCheckException("No permissions found for case type",SECURITY_PARSE_ERROR)
+                () -> new SecurityExceptions.PermissionCheckException("No permissionDtos found for case type",SECURITY_PARSE_ERROR)
         ).getAccessLevel();
     }
 
@@ -129,12 +131,12 @@ public class UserPermissionsService {
 
     }
 
-    Set<Permission> getUserPermission() {
-        Set<Team> teams = infoClient.getTeams();
+    Set<PermissionDto> getUserPermission() {
+        Set<TeamDto> teamDtos = infoClient.getTeams();
         Set<UUID> userTeams = getUserTeams();
-        Set<Permission> set = teams.stream()
+        Set<PermissionDto> set = teamDtos.stream()
                 .filter(t -> userTeams.contains(t.getUuid()))
-                .flatMap(t -> t.getPermissions().stream())
+                .flatMap(t -> t.getPermissionDtos().stream())
                 .collect(Collectors.toSet());
         return set;
     }

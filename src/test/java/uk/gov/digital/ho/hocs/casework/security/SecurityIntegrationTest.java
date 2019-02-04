@@ -13,12 +13,12 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
@@ -28,9 +28,7 @@ import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.test.web.client.MockRestServiceServer.bindTo;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
@@ -111,13 +109,13 @@ public class SecurityIntegrationTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    private Set<Team>  setupMockTeams(String caseType, int permission) {
-        Set<Team> teams = new HashSet<>();
-        Set<Permission> permissions = new HashSet<>();
-        permissions.add(new Permission(caseType, AccessLevel.from(permission)));
-        Team team = new Team("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissions);
-        teams.add(team);
-        return teams;
+    private Set<TeamDto>  setupMockTeams(String caseType, int permission) {
+        Set<TeamDto> teamDtos = new HashSet<>();
+        Set<PermissionDto> permissionDtos = new HashSet<>();
+        permissionDtos.add(new PermissionDto(caseType, AccessLevel.from(permission)));
+        TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissionDtos);
+        teamDtos.add(teamDto);
+        return teamDtos;
     }
 
     private String getBasePath() {

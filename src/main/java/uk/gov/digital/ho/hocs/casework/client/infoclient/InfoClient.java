@@ -12,7 +12,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.security.Team;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -123,11 +122,11 @@ public class InfoClient {
     public Set<InfoNominatedPeople> getNominatedPeople(UUID teamUUID) {
         try {
             InfoGetNominatedPeopleResponse response = restHelper.get(serviceBaseURL, String.format("/team/%s/contact", teamUUID), InfoGetNominatedPeopleResponse.class);
-            log.info("Got {} contacts for Team {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_SUCCESS));
+            log.info("Got {} contacts for TeamDto {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_SUCCESS));
             return response.getNominatedPeople();
         } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get contacts for Team {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get contacts for Team %s", teamUUID), INFO_CLIENT_GET_CONTACTS_FAILURE);
+            log.error("Could not get contacts for TeamDto {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_FAILURE));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get contacts for TeamDto %s", teamUUID), INFO_CLIENT_GET_CONTACTS_FAILURE);
         }
     }
 
@@ -144,11 +143,11 @@ public class InfoClient {
     }
 
     @Cacheable(value = "InfoClientGetTeams")
-    public Set<Team> getTeams() {
+    public Set<TeamDto> getTeams() {
         try {
-            Set<Team> teams = restHelper.get(serviceBaseURL, "/team", new ParameterizedTypeReference<Set<Team>>() {});
-            log.info("Got teams", value(EVENT, INFO_CLIENT_GET_USER_SUCCESS));
-            return teams;
+            Set<TeamDto> teamDtos = restHelper.get(serviceBaseURL, "/team", new ParameterizedTypeReference<Set<TeamDto>>() {});
+            log.info("Got teamDtos", value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
+            return teamDtos;
         } catch (ApplicationExceptions.ResourceException e) {
             log.error("Could not get teams", value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
             throw new ApplicationExceptions.EntityNotFoundException("Could not get teams", INFO_CLIENT_GET_TEAMS_FAILURE);

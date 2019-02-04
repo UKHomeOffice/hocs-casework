@@ -10,6 +10,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -104,22 +106,22 @@ public class UserPermissionsServiceTest {
 
     private void setupInfoClientMocks() {
 
-        Set<Team> teams = new HashSet<>();
-        Set<Permission> permissions1 = new HashSet<>();
-        permissions1.add(new Permission("MIN", AccessLevel.READ));
-        permissions1.add(new Permission("MIN", AccessLevel.OWNER));
-        Team team1 = new Team("TEAM 1", UUID.fromString("1325fe16-b864-42c7-85c2-7cab2863fe01"), true, permissions1);
-        teams.add(team1);
+        Set<TeamDto> teamDtos = new HashSet<>();
+        Set<PermissionDto> permissions1 = new HashSet<>();
+        permissions1.add(new PermissionDto("MIN", AccessLevel.READ));
+        permissions1.add(new PermissionDto("MIN", AccessLevel.OWNER));
+        TeamDto teamDto1 = new TeamDto("TEAM 1", UUID.fromString("1325fe16-b864-42c7-85c2-7cab2863fe01"), true, permissions1);
+        teamDtos.add(teamDto1);
 
-        Set<Permission> permissions2 = new HashSet<>();
-        permissions2.add(new Permission("MIN", AccessLevel.READ));
-        permissions2.add(new Permission("TRO",   AccessLevel.OWNER));
-        Team team2 = new Team("TEAM 2", UUID.fromString("f1825c7d-baff-4c09-8056-2166760ccbd2"), true, permissions2);
-        teams.add(team2);
+        Set<PermissionDto> permissions2 = new HashSet<>();
+        permissions2.add(new PermissionDto("MIN", AccessLevel.READ));
+        permissions2.add(new PermissionDto("TRO",   AccessLevel.OWNER));
+        TeamDto teamDto2 = new TeamDto("TEAM 2", UUID.fromString("f1825c7d-baff-4c09-8056-2166760ccbd2"), true, permissions2);
+        teamDtos.add(teamDto2);
 
-        Team team3 = new Team("TEAM 3", UUID.fromString("f1825c7d-baff-4c09-8056-2166760ccbd2"), true, new HashSet<>());
-        teams.add(team3);
+        TeamDto teamDto3 = new TeamDto("TEAM 3", UUID.fromString("f1825c7d-baff-4c09-8056-2166760ccbd2"), true, new HashSet<>());
+        teamDtos.add(teamDto3);
 
-        when(infoClient.getTeams()).thenReturn(teams);
+        when(infoClient.getTeams()).thenReturn(teamDtos);
     }
 }

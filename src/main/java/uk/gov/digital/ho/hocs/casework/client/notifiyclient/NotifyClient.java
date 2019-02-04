@@ -41,12 +41,12 @@ public class NotifyClient {
                 Set<InfoNominatedPeople> nominatedPeople = infoClient.getNominatedPeople(teamUUID);
                 NotifyType notifyType = NotifyType.valueOf(allocationType);
                 for (InfoNominatedPeople contact : nominatedPeople) {
-                    sendEmail(caseUUID, stageUUID, contact.getEmailAddress(), "Team", caseReference, notifyType);
+                    sendEmail(caseUUID, stageUUID, contact.getEmailAddress(), "TeamDto", caseReference, notifyType);
                 }
             }
         } catch (Exception e) {
             log.error(e.getLocalizedMessage());
-            log.warn("Email failed to send  Case:{} Stage:{} Team:{}", caseReference, stageUUID, teamUUID);
+            log.warn("Email failed to send  Case:{} Stage:{} TeamDto:{}", caseReference, stageUUID, teamUUID);
         }
     }
 

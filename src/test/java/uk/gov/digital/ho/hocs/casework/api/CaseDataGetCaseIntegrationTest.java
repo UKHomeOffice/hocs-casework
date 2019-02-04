@@ -10,16 +10,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
-import uk.gov.digital.ho.hocs.casework.security.Permission;
-import uk.gov.digital.ho.hocs.casework.security.Team;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -28,7 +27,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 import static org.springframework.test.web.client.MockRestServiceServer.bindTo;
@@ -205,15 +203,15 @@ public class CaseDataGetCaseIntegrationTest {
     }
 
     private void setupMockTeams(String caseType, int permission) throws JsonProcessingException {
-        Set<Team> teams = new HashSet<>();
-        Set<Permission> permissions = new HashSet<>();
-        permissions.add(new Permission(caseType, AccessLevel.from(permission)));
-        Team team = new Team("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissions);
-        teams.add(team);
+        Set<TeamDto> teamDtos = new HashSet<>();
+        Set<PermissionDto> permissionDtos = new HashSet<>();
+        permissionDtos.add(new PermissionDto(caseType, AccessLevel.from(permission)));
+        TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissionDtos);
+        teamDtos.add(teamDto);
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/team"))
+                .expect(requestTo("http://localhost:8085/teamDto"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(teams), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
     }
 }
