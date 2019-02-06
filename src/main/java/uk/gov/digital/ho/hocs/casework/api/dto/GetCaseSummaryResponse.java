@@ -7,6 +7,7 @@ import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,6 +34,8 @@ public class GetCaseSummaryResponse {
     @JsonProperty("activeStages")
     Set<ActiveStageDto> activeStages;
 
+
+
     public static GetCaseSummaryResponse from(CaseSummary caseSummary) {
         GetCorrespondentResponse getCorrespondentResponse = null;
         if (caseSummary.getPrimaryCorrespondent() != null) {
@@ -44,14 +47,14 @@ public class GetCaseSummaryResponse {
             getTopicsResponse = GetTopicResponse.from(caseSummary.getPrimaryTopic());
         }
 
-        Set<ActiveStageDto> activeStageDtos = null;
+        Set<ActiveStageDto> activeStageDtos = new HashSet<>();
         if (caseSummary.getActiveStages() != null) {
-            activeStageDtos = caseSummary.getActiveStages().stream().map(ActiveStageDto::from).collect(Collectors.toSet());
+            activeStageDtos.addAll(caseSummary.getActiveStages().stream().map(ActiveStageDto::from).collect(Collectors.toSet()));
         }
 
-        Set<AdditionalFieldDto> additionalFieldDtos = null;
+        Set<AdditionalFieldDto> additionalFieldDtos = new HashSet<>();;
         if (caseSummary.getAdditionalFields() != null) {
-            additionalFieldDtos = caseSummary.getAdditionalFields().stream().map(AdditionalFieldDto::from).collect(Collectors.toSet());
+            additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream().map(AdditionalFieldDto::from).collect(Collectors.toSet()));
         }
         return new GetCaseSummaryResponse(caseSummary.getCaseDeadline(), caseSummary.getStageDeadlines(), additionalFieldDtos, getCorrespondentResponse, getTopicsResponse, activeStageDtos);
     }
