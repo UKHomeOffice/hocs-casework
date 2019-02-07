@@ -83,19 +83,16 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(caseDataRepository);
     }
-//
-//    @Test
-//    public void shouldAuditCreateCase() throws ApplicationExceptions.EntityCreationException {
-//
-//        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-//
-//        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>(), caseDeadline, caseReceived);
-//
-//
-//        verify(auditclient, times(1)).createCaseAudit(caseData);
-//
-//        verifyNoMoreInteractions(auditclient);
-//    }
+
+    @Test
+    public void shouldAuditCreateCase() throws ApplicationExceptions.EntityCreationException {
+        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+
+        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>(), caseDeadline, caseReceived);
+
+        verify(auditClient, times(1)).createCaseAudit(caseData);
+        verifyNoMoreInteractions(auditClient);
+    }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
@@ -146,6 +143,25 @@ public class CaseDataServiceTest {
         verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
         verify(infoClient, times(1)).getDeadlines(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
+    }
+
+    @Test
+    public void shouldAuditGetCaseSummary()  {
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
+        FieldDto[] filterFields = new FieldDto[]{};
+
+        Map<String, String> deadlines = new HashMap<String, String>() {{
+            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString());
+            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
+        }};
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
+        when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+
+        CaseSummary caseSummary = caseDataService.getCaseSummary(caseData.getUuid());
+
+        verify(auditClient, times(1)).viewCaseSummaryAudit(caseData, caseSummary);
+        verifyNoMoreInteractions(auditClient);
     }
 
     @Test
@@ -323,6 +339,18 @@ public class CaseDataServiceTest {
     }
 
     @Test
+    public void shouldAuditUpdateCase() throws ApplicationExceptions.EntityCreationException {
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
+
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+
+        caseDataService.updateCaseData(caseData.getUuid(), stageUUID, new HashMap<>());
+
+        verify(auditClient, times(1)).updateCaseAudit(caseData);
+        verifyNoMoreInteractions(auditClient);
+    }
+
+    @Test
     public void shouldUpdateCaseNullData() {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
@@ -400,6 +428,18 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).save(caseData);
 
         verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
+    public void shouldAuditDeleteCase() {
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline , caseReceived);
+
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+
+        caseDataService.deleteCase(caseData.getUuid());
+
+        verify(auditClient, times(1)).deleteCaseAudit(caseData);
+        verifyNoMoreInteractions(auditClient);
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)

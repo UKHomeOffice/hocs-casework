@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -22,11 +23,13 @@ public class TopicService {
 
     private final TopicRepository topicRepository;
     private final InfoClient infoClient;
+    private final AuditClient auditClient;
 
     @Autowired
-    public TopicService(TopicRepository topicRepository, InfoClient infoClient) {
+    public TopicService(TopicRepository topicRepository, InfoClient infoClient, AuditClient auditClient) {
         this.topicRepository = topicRepository;
         this.infoClient = infoClient;
+        this.auditClient = auditClient;
     }
 
      Set<Topic> getTopics(UUID caseUUID) {
@@ -54,6 +57,7 @@ public class TopicService {
             InfoTopic infoTopic = infoClient.getTopic(topicUUID);
             Topic topic = new Topic(caseUUID, infoTopic.getLabel(), topicUUID);
             topicRepository.save(topic);
+            auditClient.createTopicAudit(caseUUID, topicUUID);
             log.info("Created Topic: {} for Case: {}", topic.getUuid(), caseUUID, value(EVENT, CASE_TOPIC_CREATE));
         } else {
             throw new ApplicationExceptions.EntityCreationException(String.format("No TopicUUID given for Case: %s", caseUUID), CASE_TOPIC_UUID_NOT_GIVEN);
@@ -65,6 +69,7 @@ public class TopicService {
         Topic topic = getTopic(caseUUID, topicUUID);
         topic.setDeleted(true);
         topicRepository.save(topic);
+        auditClient.deleteTopicAudit(caseUUID, topicUUID);
         log.info("Deleted Topic: {}", caseUUID, value(EVENT, CASE_TOPIC_DELETED));
     }
 

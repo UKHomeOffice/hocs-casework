@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseNoteRepository;
@@ -18,16 +19,19 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 public class CaseNoteService {
 
     private final CaseNoteRepository caseNoteRepository;
+    private final AuditClient auditClient;
 
     @Autowired
-    public CaseNoteService(CaseNoteRepository caseNoteRepository) {
+    public CaseNoteService(CaseNoteRepository caseNoteRepository, AuditClient auditClient) {
         this.caseNoteRepository = caseNoteRepository;
+        this.auditClient = auditClient;
     }
 
     Set<CaseNote> getCaseNotes(UUID caseUUID) {
         log.debug("Getting all CaseNotes for Case: {}", caseUUID);
         Set<CaseNote> caseNotes = caseNoteRepository.findAllByCaseUUID(caseUUID);
         log.info("Got {} CaseNotes for Case: {}", caseNotes.size(), caseUUID, value(EVENT, CASE_NOTE_RETRIEVED));
+        auditClient.viewCaseNotesAudit(caseUUID, caseNotes);
         return caseNotes;
     }
 
@@ -35,6 +39,7 @@ public class CaseNoteService {
         CaseNote caseNote = caseNoteRepository.findByUuid(caseNoteUUID);
         if (caseNote != null) {
             log.info("Got CaseNote for UUID: {}", caseNoteUUID, value(EVENT, CASE_NOTE_RETRIEVED));
+            auditClient.viewCaseNoteAudit(caseNote);
             return caseNote;
         }
         else {
@@ -47,6 +52,7 @@ public class CaseNoteService {
         CaseNote caseNote = new CaseNote(caseUUID, caseNoteType, text);
         caseNoteRepository.save(caseNote);
         log.info("Created CaseNote: {} for Case: {}", caseNote.getUuid(), caseUUID, value(EVENT, CASE_NOTE_CREATED));
+        auditClient.createCaseNoteAudit(caseNote);
         return caseNote;
     }
 }
