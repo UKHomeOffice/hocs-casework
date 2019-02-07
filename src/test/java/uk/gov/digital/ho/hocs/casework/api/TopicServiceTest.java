@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -28,10 +29,12 @@ public class TopicServiceTest {
     @Mock
     private InfoClient infoClient;
     private TopicService topicService;
+    @Mock
+    private AuditClient auditClient;
 
     @Before
     public void setUp() {
-        topicService = new TopicService(topicRepository, infoClient);
+        topicService = new TopicService(topicRepository, infoClient, auditClient);
     }
 
     @Test
@@ -70,6 +73,20 @@ public class TopicServiceTest {
 
         verifyNoMoreInteractions(topicRepository);
         verifyNoMoreInteractions(infoClient);
+
+    }
+
+    @Test
+    public void shouldAuditCreateTopic() throws ApplicationExceptions.EntityCreationException {
+
+        when(infoClient.getTopic(topicNameUUID)).thenReturn(new InfoTopic(topicName, topicNameUUID));
+
+        topicService.createTopic(caseUUID, topicNameUUID);
+
+        verify(auditClient, times(1)).createTopicAudit(caseUUID, topicNameUUID);
+
+        verifyNoMoreInteractions(auditClient);
+
 
     }
 
@@ -159,7 +176,23 @@ public class TopicServiceTest {
     }
 
     @Test
-    public void shouldDeleteCase() {
+    public void shouldDeleteTopicFromCase() {
+
+        Topic topic = new Topic(caseUUID, topicName, topicNameUUID);
+
+        when(topicRepository.findByUUID(topic.getCaseUUID(), topic.getUuid())).thenReturn(topic);
+
+        topicService.deleteTopic(topic.getCaseUUID(), topic.getUuid());
+
+        verify(topicRepository, times(1)).findByUUID(topic.getCaseUUID(), topic.getUuid());
+        verify(topicRepository, times(1)).save(topic);
+
+
+        verifyNoMoreInteractions(topicRepository);
+    }
+
+    @Test
+    public void shouldAuditDeleteTopicFromCase() {
 
         Topic topic = new Topic(caseUUID, topicName, topicNameUUID);
 

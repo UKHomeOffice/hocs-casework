@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
@@ -23,10 +24,12 @@ public class CorrespondentServiceTest {
     @Mock
     private CorrespondentRepository correspondentRepository;
     private CorrespondentService correspondentService;
+    @Mock
+    private AuditClient auditClient;
 
     @Before
     public void setUp() {
-        correspondentService = new CorrespondentService(correspondentRepository);
+        correspondentService = new CorrespondentService(correspondentRepository, auditClient);
     }
 
     @Test
@@ -66,6 +69,17 @@ public class CorrespondentServiceTest {
         verify(correspondentRepository, times(1)).save(any(Correspondent.class));
 
         verifyNoMoreInteractions(correspondentRepository);
+    }
+
+    @Test
+    public void shouldAuditCreateCorrespondent() throws ApplicationExceptions.EntityCreationException {
+
+        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+        correspondentService.createCorrespondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+
+        verify(auditClient, times(1)).createCorrespondentAudit(any(Correspondent.class));
+
+        verifyNoMoreInteractions(auditClient);
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
@@ -177,7 +191,7 @@ public class CorrespondentServiceTest {
     }
 
     @Test
-    public void shouldDeleteCase() {
+    public void shouldDeleteCorrespondent() {
 
         Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null);
 
@@ -190,6 +204,21 @@ public class CorrespondentServiceTest {
 
 
         verifyNoMoreInteractions(correspondentRepository);
+    }
+
+    @Test
+    public void shouldAuditDeleteCorrespondent() {
+
+        Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null);
+
+        when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
+
+        correspondentService.deleteCorrespondent(correspondent.getCaseUUID(), correspondent.getUuid());
+
+        verify(auditClient, times(1)).deleteCorrespondentAudit(correspondent);
+
+
+        verifyNoMoreInteractions(auditClient);
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
