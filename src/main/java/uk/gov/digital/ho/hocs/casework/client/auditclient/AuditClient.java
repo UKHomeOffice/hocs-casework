@@ -57,9 +57,9 @@ public class AuditClient {
 
     }
 
-    public void createCaseAudit(UUID caseUUID, String reference) {
+    public void createCaseAudit(UUID caseUUID, UUID stageUUID, String reference) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", reference);
-        sendAuditMessage(caseUUID, auditPayload, EventType.CASE_CREATED);
+        sendAuditMessage(caseUUID, stageUUID, auditPayload, EventType.CASE_CREATED);
     }
 
     public void updateCaseAudit(CaseData caseData) {
