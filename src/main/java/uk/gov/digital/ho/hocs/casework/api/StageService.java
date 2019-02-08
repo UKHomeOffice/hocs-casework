@@ -70,7 +70,7 @@ public class StageService {
     }
 
     void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
-        log.debug("Updating Transitoin Note for Stage: {}", stageUUID);
+        log.debug("Updating Transition Note for Stage: {}", stageUUID);
         Stage stage = getActiveStage(caseUUID, stageUUID);
         stage.setTransitionNote(transitionNoteUUID);
         stageRepository.save(stage);

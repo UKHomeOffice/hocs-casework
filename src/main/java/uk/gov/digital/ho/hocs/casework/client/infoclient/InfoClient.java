@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
@@ -125,7 +126,7 @@ public class InfoClient {
             return response.getNominatedPeople();
         } catch (ApplicationExceptions.ResourceException e) {
             log.error("Could not get contacts for Team {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get contacts for Team %s", teamUUID), INFO_CLIENT_GET_CONTACTS_FAILURE);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get contacts for TeamDto %s", teamUUID), INFO_CLIENT_GET_CONTACTS_FAILURE);
         }
     }
 
@@ -138,6 +139,18 @@ public class InfoClient {
         } catch (ApplicationExceptions.ResourceException e) {
             log.error("Could not get User for UserUUID {}", userUUID, value(EVENT, INFO_CLIENT_GET_USER_FAILURE));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get User for UserUUID %s", userUUID), INFO_CLIENT_GET_USER_FAILURE);
+        }
+    }
+
+    @Cacheable(value = "InfoClientGetTeams")
+    public Set<TeamDto> getTeams() {
+        try {
+            Set<TeamDto> teamDtos = restHelper.get(serviceBaseURL, "/team", new ParameterizedTypeReference<Set<TeamDto>>() {});
+            log.info("Got teamDtos", value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
+            return teamDtos;
+        } catch (ApplicationExceptions.ResourceException e) {
+            log.error("Could not get teams", value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
+            throw new ApplicationExceptions.EntityNotFoundException("Could not get teams", INFO_CLIENT_GET_TEAMS_FAILURE);
         }
     }
 }

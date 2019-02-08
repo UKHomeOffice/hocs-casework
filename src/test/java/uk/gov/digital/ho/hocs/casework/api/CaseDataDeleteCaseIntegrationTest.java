@@ -10,23 +10,26 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.test.annotation.DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 import static org.springframework.test.web.client.MockRestServiceServer.bindTo;
@@ -80,12 +83,13 @@ public class CaseDataDeleteCaseIntegrationTest {
     }
 
     @Test
-    public void shouldDeleteValidCaseWithPermissionLevelOwner()  {
+    public void shouldDeleteValidCaseWithPermissionLevelOwner() throws JsonProcessingException {
 
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
+        setupMockTeams("TEST", 5);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -95,12 +99,12 @@ public class CaseDataDeleteCaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelWrite()  {
+    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelWrite() throws JsonProcessingException {
 
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-
+        setupMockTeams("TEST", 3);
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "3")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -110,12 +114,12 @@ public class CaseDataDeleteCaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelRead()  {
+    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelRead() throws JsonProcessingException {
 
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-
+        setupMockTeams("TEST", 2);
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -125,12 +129,12 @@ public class CaseDataDeleteCaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelSummary()  {
+    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelSummary() throws JsonProcessingException {
 
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-
+        setupMockTeams("TEST", 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -140,12 +144,12 @@ public class CaseDataDeleteCaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelUnset() {
+    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelUnset() throws JsonProcessingException {
 
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-
+        setupMockTeams("TEST", 0);
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "0")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -155,12 +159,11 @@ public class CaseDataDeleteCaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelEmpty()  {
-
+    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelEmpty() throws JsonProcessingException {
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-
-       ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
+        setupMockTeams("TEST1", 5);
+        ResponseEntity<String> result = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -169,104 +172,83 @@ public class CaseDataDeleteCaseIntegrationTest {
         assertThat(postDeleteCaseData).isNotNull();
     }
 
-    @Test
-    public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelInvalid()  {
-
-        CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-
-        ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "WRONG")), String.class);
-
-        CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
-
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-        assertThat(originalCaseData).isNotNull();
-        assertThat(postDeleteCaseData).isNotNull();
-    }
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteInvalidCaseWithPermissionLevelOwner()  {
-
+    public void shouldReturnNotFoundWhenDeleteInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
+        setupMockTeams("TEST", 5);
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelWrite()  {
-
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelWrite() throws JsonProcessingException {
+        setupMockTeams("TEST", 3);
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "3")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelRead()  {
-
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelRead() throws JsonProcessingException {
+        setupMockTeams("TEST", 2);
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelSummary()  {
-
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelSummary() throws JsonProcessingException {
+        setupMockTeams("TEST", 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelUnset() {
-
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelUnset() throws JsonProcessingException {
+        setupMockTeams("TEST", 0);
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "0")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelInvalid()  {
-
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelEmpty() throws JsonProcessingException {
+        setupMockTeams("TEST1", 0);
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "WRONG")), String.class);
-
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-    }
-
-    @Test
-    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelEmpty() {
-
-        ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
     public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelNull() throws JsonProcessingException {
+        setupMockTeams("TEST1", 5);
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", null)), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldDeleteValidCaseAndThenReturnNotFoundWhenDeleteSameCaseAgainWithPermissionLevelOwner() {
+    public void shouldDeleteValidCaseAndThenReturnNotFoundWhenDeleteSameCaseAgainWithPermissionLevelOwner() throws JsonProcessingException {
 
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
-
+        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", 5);
         ResponseEntity<String> result1 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
         ResponseEntity<String> result2 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -280,12 +262,25 @@ public class CaseDataDeleteCaseIntegrationTest {
         return "http://localhost:" + port;
     }
 
-    private HttpHeaders createValidAuthHeaders(String caseTypePermission, String permissionLevel) {
+    private HttpHeaders createValidAuthHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg/" + caseTypePermission + "/" + permissionLevel);
+        headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg");
         headers.add("X-Auth-Userid", "a.person@digital.homeoffice.gov.uk");
         headers.add("X-Correlation-Id", "1");
         return headers;
+    }
+
+    private void setupMockTeams(String caseType, int permission) throws JsonProcessingException {
+        Set<TeamDto> teamDtos = new HashSet<>();
+        Set<PermissionDto> permissionDtos = new HashSet<>();
+        permissionDtos.add(new PermissionDto(caseType, AccessLevel.from(permission)));
+        TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissionDtos);
+        teamDtos.add(teamDto);
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/team"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
     }
 }

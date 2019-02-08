@@ -41,7 +41,7 @@ public class NotifyClient {
                 Set<InfoNominatedPeople> nominatedPeople = infoClient.getNominatedPeople(teamUUID);
                 NotifyType notifyType = NotifyType.valueOf(allocationType);
                 for (InfoNominatedPeople contact : nominatedPeople) {
-                    sendEmail(caseUUID, stageUUID, contact.getEmailAddress(), "Team", caseReference, notifyType);
+                    sendEmail(caseUUID, stageUUID, contact.getEmailAddress(), "TeamDto", caseReference, notifyType);
                 }
             }
         } catch (Exception e) {

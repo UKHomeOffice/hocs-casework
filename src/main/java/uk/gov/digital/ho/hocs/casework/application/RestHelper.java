@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.application;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -33,6 +34,11 @@ public class RestHelper {
     }
 
     public <R> R get(String serviceBaseURL, String url, Class<R> responseType) {
+        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
+        return validateResponse(response);
+    }
+
+    public <R> R get(String serviceBaseURL, String url, ParameterizedTypeReference<R> responseType) {
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
         return validateResponse(response);
     }
