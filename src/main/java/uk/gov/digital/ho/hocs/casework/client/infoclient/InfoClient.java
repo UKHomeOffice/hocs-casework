@@ -122,10 +122,10 @@ public class InfoClient {
     public Set<InfoNominatedPeople> getNominatedPeople(UUID teamUUID) {
         try {
             InfoGetNominatedPeopleResponse response = restHelper.get(serviceBaseURL, String.format("/team/%s/contact", teamUUID), InfoGetNominatedPeopleResponse.class);
-            log.info("Got {} contacts for TeamDto {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_SUCCESS));
+            log.info("Got {} contacts for Team {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_SUCCESS));
             return response.getNominatedPeople();
         } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get contacts for TeamDto {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_FAILURE));
+            log.error("Could not get contacts for Team {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_FAILURE));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get contacts for TeamDto %s", teamUUID), INFO_CLIENT_GET_CONTACTS_FAILURE);
         }
     }

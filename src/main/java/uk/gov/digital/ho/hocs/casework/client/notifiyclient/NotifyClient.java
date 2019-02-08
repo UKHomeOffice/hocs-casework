@@ -46,7 +46,7 @@ public class NotifyClient {
             }
         } catch (Exception e) {
             log.error(e.getLocalizedMessage());
-            log.warn("Email failed to send  Case:{} Stage:{} TeamDto:{}", caseReference, stageUUID, teamUUID);
+            log.warn("Email failed to send  Case:{} Stage:{} Team:{}", caseReference, stageUUID, teamUUID);
         }
     }
 

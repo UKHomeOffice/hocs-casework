@@ -40,9 +40,9 @@ public class StageService {
     }
 
     public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
-        log.debug("Getting TeamDto for Stage: {}", stageUUID);
+        log.debug("Getting Team for Stage: {}", stageUUID);
         Stage stage = getActiveStage(caseUUID, stageUUID);
-        log.debug("Got TeamDto: {} for Stage: {}", stage.getTeamUUID(), stageUUID);
+        log.debug("Got Team: {} for Stage: {}", stage.getTeamUUID(), stageUUID);
         return stage.getTeamUUID();
     }
 
@@ -67,7 +67,7 @@ public class StageService {
     }
 
     void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
-        log.debug("Updating Transitoin Note for Stage: {}", stageUUID);
+        log.debug("Updating Transition Note for Stage: {}", stageUUID);
         Stage stage = getActiveStage(caseUUID, stageUUID);
         stage.setTransitionNote(transitionNoteUUID);
         stageRepository.save(stage);
@@ -84,7 +84,7 @@ public class StageService {
     }
 
     void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID, String emailType) {
-        log.debug("Updating TeamDto: {} for Stage: {}", newTeamUUID, stageUUID);
+        log.debug("Updating Team: {} for Stage: {}", newTeamUUID, stageUUID);
         // Check all stages because when rejecting back the stage will not be active.
         Stage stage = getStage(caseUUID, stageUUID);
         stage.setTeam(newTeamUUID);
@@ -92,7 +92,7 @@ public class StageService {
         if (newTeamUUID == null) {
             log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID, value(EVENT, STAGE_COMPLETED));
         } else {
-            log.info("Set Stage TeamDto: {} ({}) for Case {}", stageUUID, newTeamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
+            log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, newTeamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
             notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), newTeamUUID, stage.getCaseReference(), emailType);
         }
     }
@@ -113,7 +113,7 @@ public class StageService {
     }
   
     Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
-        log.debug("Getting Active Stages for TeamDto: {}", teamUUID);
+        log.debug("Getting Active Stages for Team: {}", teamUUID);
         return stageRepository.findAllActiveByTeamUUID(teamUUID);
     }
 
