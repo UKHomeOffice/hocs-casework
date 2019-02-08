@@ -45,7 +45,7 @@ public interface ApplicationExceptions {
     class ResourceException extends RuntimeException {
         private final LogEvent event;
 
-        ResourceException(String msg, LogEvent event, Object... args) {
+        public ResourceException(String msg, LogEvent event, Object... args) {
             super(String.format(msg, args));
             this.event = event;
         }

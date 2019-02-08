@@ -14,6 +14,12 @@ public class GetAuditResponse {
     @JsonProperty(value = "uuid")
     private UUID uuid;
 
+    @JsonProperty(value = "caseUUID")
+    private UUID caseUUID;
+
+    @JsonProperty(value = "stageUUID")
+    private UUID stageUUID;
+
     @JsonProperty(value = "correlation_id")
     private String correlationID;
 

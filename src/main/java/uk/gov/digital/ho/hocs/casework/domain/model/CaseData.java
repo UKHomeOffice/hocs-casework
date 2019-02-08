@@ -91,6 +91,11 @@ public class CaseData implements Serializable {
     @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
     private Set<ActiveStage> activeStages;
 
+    @Getter
+    @Setter
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
+    private Set<CaseNote> caseNotes;
 
     public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived) {
         this(type, caseNumber, caseDeadline, dateReceived);

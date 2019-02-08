@@ -15,13 +15,16 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListRespon
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
 
 @Slf4j
 @Component
@@ -37,6 +40,16 @@ public class AuditClient {
     private final RestHelper restHelper;
     private final String serviceBaseURL;
 
+    public static final Set<String> TIMELINE_EVENTS = Set.of(
+            CASE_CREATED.toString(),
+            CASE_UPDATED.toString(),
+            CASE_TOPIC_CREATED.toString(),
+            CASE_TOPIC_DELETED.toString(),
+            STAGE_ALLOCATED_TO_TEAM.toString(),
+            STAGE_ALLOCATED_TO_USER.toString(),
+            CORRESPONDENT_DELETED.toString(),
+            CORRESPONDENT_CREATED.toString()
+            );
 
     @Autowired
     public AuditClient(ProducerTemplate producerTemplate,
@@ -60,7 +73,7 @@ public class AuditClient {
 
     public void updateCaseAudit(CaseData caseData) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_UPDATED);
+        sendAuditMessage(caseData.getUuid(), auditPayload, CASE_UPDATED);
     }
 
     public void viewCaseAudit(CaseData caseData) {
@@ -101,34 +114,33 @@ public class AuditClient {
     }
 
     public void createCorrespondentAudit(Correspondent correspondent) {
-        sendAuditMessage(correspondent.getCaseUUID(), "", EventType.CORRESPONDENT_CREATED);
+        sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_CREATED);
     }
 
     public void deleteCorrespondentAudit(Correspondent correspondent) {
-        sendAuditMessage(correspondent.getCaseUUID(), "", EventType.CORRESPONDENT_DELETED);
+        sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_DELETED);
     }
 
     public void createTopicAudit(UUID caseUUID, UUID topicNameUUID) {
-        sendAuditMessage(caseUUID, "", EventType.CASE_TOPIC_CREATED);
+        sendAuditMessage(caseUUID, "", CASE_TOPIC_CREATED);
     }
 
     public void deleteTopicAudit(UUID caseUUID, UUID topicNameUUID) {
-        sendAuditMessage(caseUUID, "", EventType.CASE_TOPIC_DELETED);
+        sendAuditMessage(caseUUID, "", CASE_TOPIC_DELETED);
+    }
+    public void createCaseAudit(CaseData caseData) {
+        String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
+        sendAuditMessage(caseData.getUuid(), auditPayload, CASE_CREATED);
     }
 
     public void updateStageUser(Stage stage) {
         String auditPayload = String.format("{\"stage\":\"%s\", \"user\":\"%s\"}",  stage.getStageType(), stage.getUserUUID());
-        sendAuditMessage(stage.getCaseUUID(), auditPayload, EventType.STAGE_ALLOCATED_TO_USER);
+        sendAuditMessage(stage.getCaseUUID(), auditPayload, STAGE_ALLOCATED_TO_USER);
     }
 
     public void updateStageTeam(Stage stage) {
-        String auditPayload = String.format("{\"stage\":\"%s\", \"team\":\"%s\"}",  stage.getStageType(), stage.getTeamUUID());
-        sendAuditMessage(stage.getCaseUUID(), auditPayload, EventType.STAGE_ALLOCATED_TO_TEAM);
-    }
-
-    public void createCaseAudit(CaseData caseData) {
-        String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_CREATED);
+        String auditPayload = String.format("{\"stage\":\"%s\", \"user\":\"%s\"}",  stage.getStageType(), stage.getTeamUUID());
+        sendAuditMessage(stage.getCaseUUID(), auditPayload, STAGE_ALLOCATED_TO_TEAM);
     }
 
     private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType){
@@ -148,18 +160,18 @@ public class AuditClient {
         } catch (Exception e) {
             log.error("Failed to create audit event for case UUID {} for reason {}", caseUUID, e, value(EVENT, AUDIT_FAILED));
         }
-
     }
+
 
     public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID) {
         try {
-            String events = String.join(",", EventType.CASE_CREATED.toString());
+            String events = String.join(",", TIMELINE_EVENTS);
             GetAuditListResponse response = restHelper.get(serviceBaseURL, String.format("/audit/case/%s?types=%s", caseUUID, events), GetAuditListResponse.class);
             log.info("Got {} audits", response.getAudits().size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
             return response.getAudits();
         } catch (ApplicationExceptions.ResourceException e) {
             log.error("Could not get case types", value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException("Could not get case types", AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE);
+            return new HashSet<>();
         }
 
     }

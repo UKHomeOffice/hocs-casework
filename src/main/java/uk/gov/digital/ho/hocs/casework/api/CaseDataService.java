@@ -15,11 +15,9 @@ import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -174,8 +172,22 @@ public class CaseDataService {
         return infoClient.getTemplate(caseData.getType());
     }
 
-    void getCaseTimeline(UUID caseUUID) {
-        Set<GetAuditResponse> audit = auditClient.getAuditLinesForCase(caseUUID);
+    Stream<TimelineItem> getCaseTimeline(UUID caseUUID) {
+        log.debug("Building Timeline for Case: {}", caseUUID);
+
+        CaseData caseData = getCaseData(caseUUID);
+        Set<GetAuditResponse> audit = new HashSet<>();
+        try {
+            audit.addAll(auditClient.getAuditLinesForCase(caseUUID));
+        }
+        catch(Exception e) { }
+
+        Set<CaseNote> notes = caseData.getCaseNotes();
+
+        Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp(), a.getUserID(), a.getType(), a.getAuditPayload()));
+        Stream<TimelineItem> notesTimeline = notes.stream().map(n -> new TimelineItem(n.getCaseUUID(), null, n.getCreated(), null, n.getCaseNoteType(), n.getText()));
+
+        return Stream.concat(auditTimeline, notesTimeline);
 
     }
 }
