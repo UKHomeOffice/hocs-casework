@@ -85,7 +85,7 @@ public class CaseDataDeleteCaseIntegrationTest {
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -100,7 +100,7 @@ public class CaseDataDeleteCaseIntegrationTest {
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "WRITE")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "3")), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -115,7 +115,7 @@ public class CaseDataDeleteCaseIntegrationTest {
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "READ")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -130,7 +130,7 @@ public class CaseDataDeleteCaseIntegrationTest {
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -145,7 +145,7 @@ public class CaseDataDeleteCaseIntegrationTest {
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "UNSET")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "0")), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -188,7 +188,7 @@ public class CaseDataDeleteCaseIntegrationTest {
     public void shouldReturnNotFoundWhenDeleteInvalidCaseWithPermissionLevelOwner()  {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
@@ -197,7 +197,7 @@ public class CaseDataDeleteCaseIntegrationTest {
     public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelWrite()  {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "WRITE")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "3")), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -206,7 +206,7 @@ public class CaseDataDeleteCaseIntegrationTest {
     public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelRead()  {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "READ")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -215,7 +215,7 @@ public class CaseDataDeleteCaseIntegrationTest {
     public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelSummary()  {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -224,7 +224,7 @@ public class CaseDataDeleteCaseIntegrationTest {
     public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelUnset() {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "UNSET")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "0")), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -264,9 +264,9 @@ public class CaseDataDeleteCaseIntegrationTest {
         CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
         ResponseEntity<String> result1 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         ResponseEntity<String> result2 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
 
         CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
 
@@ -283,7 +283,7 @@ public class CaseDataDeleteCaseIntegrationTest {
     private HttpHeaders createValidAuthHeaders(String caseTypePermission, String permissionLevel) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-Auth-Groups", "/UNIT1/44444444-2222-2222-2222-222222222222/" + caseTypePermission + "/" + permissionLevel);
+        headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg/" + caseTypePermission + "/" + permissionLevel);
         headers.add("X-Auth-Userid", "a.person@digital.homeoffice.gov.uk");
         headers.add("X-Correlation-Id", "1");
         return headers;

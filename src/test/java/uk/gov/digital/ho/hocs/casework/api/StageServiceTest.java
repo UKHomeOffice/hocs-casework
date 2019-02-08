@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
@@ -36,10 +37,12 @@ public class StageServiceTest {
     private UserPermissionsService userPermissionsService;
     @Mock
     private NotifyClient notifyClient;
+    @Mock
+    private AuditClient auditClient;
 
     @Before
     public void setUp() {
-        this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient);
+        this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient);
     }
 
     @Test
@@ -354,6 +357,20 @@ public class StageServiceTest {
 
         verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(notifyClient);
+
+    }
+
+    @Test
+    public void shouldAuditUpdateStageUser() {
+
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
+
+        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+
+        stageService.updateStageUser(caseUUID, stageUUID, userUUID);
+
+        verify(auditClient, times(1)).updateStageUser(stage);
+        verifyNoMoreInteractions(auditClient);
 
     }
 

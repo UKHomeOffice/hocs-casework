@@ -91,4 +91,18 @@ class CaseDataResource {
         caseDataService.updatePrimaryTopic(caseUUID, stageUUID, primaryTopicUUID);
         return ResponseEntity.ok().build();
     }
+
+    @Authorised(accessLevel = AccessLevel.READ)
+    @GetMapping(value = "/case/{caseUUID}/standardLine")
+    ResponseEntity<GetStandardLineResponse> getStandardLine(@PathVariable UUID caseUUID) {
+        GetStandardLineResponse standardLine = caseDataService.getStandardLine(caseUUID);
+        return ResponseEntity.ok(standardLine);
+    }
+
+    @Authorised(accessLevel = AccessLevel.READ)
+    @GetMapping(value = "/case/{caseUUID}/template")
+    public ResponseEntity<GetTemplateResponse> getTemplate(@PathVariable UUID caseUUID) {
+        GetTemplateResponse template =  caseDataService.getTemplate(caseUUID);
+        return ResponseEntity.ok(template);
+    }
 }

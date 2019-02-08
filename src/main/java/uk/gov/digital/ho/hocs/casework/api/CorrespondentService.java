@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
@@ -20,10 +21,12 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 public class CorrespondentService {
 
     private final CorrespondentRepository correspondentRepository;
+    private final AuditClient auditClient;
 
     @Autowired
-    public CorrespondentService(CorrespondentRepository correspondentRepository) {
+    public CorrespondentService(CorrespondentRepository correspondentRepository, AuditClient auditClient) {
         this.correspondentRepository = correspondentRepository;
+        this.auditClient = auditClient;
     }
 
     Set<Correspondent> getCorrespondents(UUID caseUUID) {
@@ -50,6 +53,7 @@ public class CorrespondentService {
         Correspondent correspondent = new Correspondent(caseUUID, correspondentType, fullname, address, telephone, email, reference);
         try {
             correspondentRepository.save(correspondent);
+            auditClient.createCorrespondentAudit(correspondent);
         } catch (DataIntegrityViolationException e) {
             throw new ApplicationExceptions.CorrespondentCreationException(String.format("Failed to create correspondent %s for Case: %s", correspondent.getUuid(), caseUUID), CORRESPONDENT_CREATE_FAILURE);
         }
@@ -61,6 +65,7 @@ public class CorrespondentService {
         Correspondent correspondent = getCorrespondent(caseUUID, correspondentUUID);
         correspondent.setDeleted(true);
         correspondentRepository.save(correspondent);
+        auditClient.deleteCorrespondentAudit(correspondent);
         log.info("Deleted Topic: {}", caseUUID, value(EVENT, CORRESPONDENT_DELETED));
     }
 }

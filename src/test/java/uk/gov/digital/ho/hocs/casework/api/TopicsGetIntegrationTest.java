@@ -83,35 +83,35 @@ public class TopicsGetIntegrationTest {
     @Test
     public void shouldReturnTopicsForValidCaseWithPermissionLevelOwner() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     public void shouldReturnTopicsForValidCaseWithPermissionLevelWrite() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "WRITE")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "3")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     public void shouldReturnTopicsForValidCaseWithPermissionLevelRead() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "READ")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithPermissionLevelSummary() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
     public void shouldReturnUnauthorisedWhenGetTopicsForValidCaseWithPermissionLevelUnset() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "UNSET")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "0")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -132,7 +132,7 @@ public class TopicsGetIntegrationTest {
     @Test
     public void shouldReturnOkAndEmptySetSetWhenGetTopicsForInvalidCaseWithPermissionLevelOwner() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
     }
@@ -140,7 +140,7 @@ public class TopicsGetIntegrationTest {
     @Test
     public void shouldReturnOkAndEmptySetWhenGetTopicsForInvalidCaseWithPermissionLevelWrite() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "WRITE")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "3")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
     }
@@ -148,7 +148,7 @@ public class TopicsGetIntegrationTest {
     @Test
     public void shouldReturnOkAndEmptySetWhenGetTopicsForInvalidCaseWithPermissionLevelRead() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "READ")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
 
@@ -157,7 +157,7 @@ public class TopicsGetIntegrationTest {
     @Test
     public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelSummary() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "SUMMARY")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
     }
@@ -165,7 +165,7 @@ public class TopicsGetIntegrationTest {
     @Test
     public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelUnset() {
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "UNSET")), String.class);
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "0")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -186,13 +186,13 @@ public class TopicsGetIntegrationTest {
     @Test
     public void shouldReturnOkWhenGetTopicAndThenOkAndEmptySetWhenCorrespondentsDeleted() {
         ResponseEntity<String> result1 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.OK);
         ResponseEntity<String> result2 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/stage/" + STAGE_UUID + "/topic/" + TOPIC_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/stage/" + STAGE_UUID + "/topic/" + TOPIC_UUID, DELETE, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         assertThat(result2.getStatusCode()).isEqualTo(HttpStatus.OK);
         ResponseEntity<String> result3 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "OWNER")), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         assertThat(result3.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result3.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
     }
@@ -204,7 +204,7 @@ public class TopicsGetIntegrationTest {
     private HttpHeaders createValidAuthHeaders(String caseType, String permissionLevel) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add("X-Auth-Groups", "/UNIT1/44444444-2222-2222-2222-222222222222/" + caseType + "/" + permissionLevel);
+        headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg/" + caseType + "/" + permissionLevel);
         headers.add("X-Auth-Userid", "4035d37f-9c1d-436e-99de-1607866634d4");
         headers.add("X-Correlation-Id", "1");
         return headers;

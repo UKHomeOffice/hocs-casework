@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -61,6 +62,74 @@ public class AuditClient {
         sendAuditMessage(caseUUID, stageUUID, auditPayload, EventType.CASE_CREATED);
     }
 
+    public void updateCaseAudit(CaseData caseData) {
+        String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_UPDATED);
+    }
+
+    public void viewCaseAudit(CaseData caseData) {
+        String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_VIEWED);
+    }
+
+    public void viewCaseSummaryAudit(CaseData caseData, CaseSummary caseSummary) {
+        String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_SUMMARY_VIEWED);
+    }
+
+    public void viewStandardLineAudit(CaseData caseData) {
+        String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.STANDARD_LINE_VIEWED);
+    }
+
+    public void viewTemplateAudit(CaseData caseData) {
+        String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.TEMPLATE_VIEWED);
+    }
+
+    public void deleteCaseAudit(CaseData caseData) {
+        String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_DELETED);
+    }
+
+    public void viewCaseNotesAudit(UUID caseUUID, Set<CaseNote> caseNotes) {
+        sendAuditMessage(caseUUID, "", EventType.CASE_NOTES_VIEWED);
+    }
+
+    public void viewCaseNoteAudit(CaseNote caseNote) {
+        sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_VIEWED);
+    }
+
+    public void createCaseNoteAudit(CaseNote caseNote) {
+        sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_CREATED);
+    }
+
+    public void createCorrespondentAudit(Correspondent correspondent) {
+        sendAuditMessage(correspondent.getCaseUUID(), "", EventType.CORRESPONDENT_CREATED);
+    }
+
+    public void deleteCorrespondentAudit(Correspondent correspondent) {
+        sendAuditMessage(correspondent.getCaseUUID(), "", EventType.CORRESPONDENT_DELETED);
+    }
+
+    public void createTopicAudit(UUID caseUUID, UUID topicNameUUID) {
+        sendAuditMessage(caseUUID, "", EventType.CASE_TOPIC_CREATED);
+    }
+
+    public void deleteTopicAudit(UUID caseUUID, UUID topicNameUUID) {
+        sendAuditMessage(caseUUID, "", EventType.CASE_TOPIC_DELETED);
+    }
+
+    public void updateStageUser(Stage stage) {
+        String auditPayload = String.format("{\"stage\":\"%s\", \"user\":\"%s\"}",  stage.getStageType(), stage.getUserUUID());
+        sendAuditMessage(stage.getCaseUUID(), "", EventType.STAGE_ALLOCATED_TO);
+    }
+
+    public void createCaseAudit(CaseData caseData) {
+        String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_CREATED);
+    }
+  
     private void sendAuditMessage(UUID caseUUID, UUID stageUUID, String payload, EventType eventType){
         CreateAuditRequest request = new CreateAuditRequest(
                 requestData.correlationId(),
@@ -70,15 +139,14 @@ public class AuditClient {
                 payload,
                 namespace,
                 LocalDateTime.now(),
-                eventType.toString(),
+                eventType,
                 requestData.userId());
 
         try {
             producerTemplate.sendBody(auditQueue, objectMapper.writeValueAsString(request));
-            log.info("Create audit for Create Case, Case UUID: {}, correlationID: {}, UserID: {}", caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, eventType));
+            log.info("Create audit for Case UUID: {}, correlationID: {}, UserID: {}", caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_FAILED));
         } catch (Exception e) {
             log.error("Failed to create audit event for case UUID {} for reason {}", caseUUID, e, value(EVENT, AUDIT_FAILED));
-        }
 
     }
 
@@ -93,5 +161,6 @@ public class AuditClient {
             log.error("Could not get case types", value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
             throw new ApplicationExceptions.EntityNotFoundException("Could not get case types", AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE);
         }
+
     }
 }

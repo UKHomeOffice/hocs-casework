@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.client.auditclient.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.EventType;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -33,7 +34,7 @@ public class CreateAuditRequest {
     private LocalDateTime auditTimestamp;
 
     @JsonProperty(value= "type", required = true)
-    private String type;
+    private EventType type;
 
     @JsonProperty(value= "user_id", required = true)
     private String userID;
