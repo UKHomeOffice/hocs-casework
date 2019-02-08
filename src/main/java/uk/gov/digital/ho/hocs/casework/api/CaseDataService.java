@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -73,7 +74,7 @@ public class CaseDataService {
         log.debug("Allocating Ref: {}", caseNumber);
         CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline, dateReceived);
         caseDataRepository.save(caseData);
-        auditClient.createCaseAudit(caseData.getUuid(), caseData.getReference());
+        auditClient.createCaseAudit(caseData.getUuid(), null, caseData.getReference());
         log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
         return caseData;
     }
@@ -148,8 +149,18 @@ public class CaseDataService {
                 caseData.getActiveStages());
     }
 
-    void getCaseTimeline(UUID caseUUID) {
+    Stream<TimelineItem> getCaseTimeline(UUID caseUUID) {
+        log.debug("Building Timeline for Case: {}", caseUUID);
+
+        CaseData caseData = getCase(caseUUID);
+
         Set<GetAuditResponse> audit = auditClient.getAuditLinesForCase(caseUUID);
+        Set<CaseNote> notes = caseData.getCaseNotes();
+
+        Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp(), a.getUserID(), a.getType(), a.getAuditPayload()));
+        Stream<TimelineItem> notesTimeline = notes.stream().map(n -> new TimelineItem(n.getCaseUUID(), null, n.getCreated(), null, n.getCaseNoteType(), n.getText()));
+
+        return Stream.concat(auditTimeline, notesTimeline);
 
     }
 }

@@ -56,15 +56,16 @@ public class AuditClient {
 
     }
 
-    public void createCaseAudit(UUID caseUUID, String reference) {
+    public void createCaseAudit(UUID caseUUID, UUID stageUUID, String reference) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", reference);
-        sendAuditMessage(caseUUID, auditPayload, EventType.CASE_CREATED);
+        sendAuditMessage(caseUUID, stageUUID, auditPayload, EventType.CASE_CREATED);
     }
 
-    private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType){
+    private void sendAuditMessage(UUID caseUUID, UUID stageUUID, String payload, EventType eventType){
         CreateAuditRequest request = new CreateAuditRequest(
                 requestData.correlationId(),
                 caseUUID,
+                stageUUID,
                 raisingService,
                 payload,
                 namespace,
