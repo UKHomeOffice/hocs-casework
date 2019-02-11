@@ -218,7 +218,18 @@ public class AuditClientTest {
         auditClient.updateStageUser(stage);
         verify(producerTemplate, times(1)).sendBody(eq(auditQueue), jsonCaptor.capture());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.STAGE_ALLOCATED_TO);
+        assertThat(request.getType()).isEqualTo(EventType.STAGE_ALLOCATED_TO_USER);
+        assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
+    }
+
+    @Test
+    public void updateStageTeam() throws IOException {
+        Stage stage = new Stage(caseUUID,"SOME_STAGE",UUID.randomUUID(),LocalDate.now(),UUID.randomUUID());
+        stage.setUser(UUID.randomUUID());
+        auditClient.updateStageTeam(stage);
+        verify(producerTemplate, times(1)).sendBody(eq(auditQueue), jsonCaptor.capture());
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.STAGE_ALLOCATED_TO_TEAM);
         assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
     }
 
