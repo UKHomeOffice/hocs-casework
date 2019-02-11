@@ -129,8 +129,11 @@ public class AuditClient {
         String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
         sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_CREATED);
     }
-  
-    private void sendAuditMessage(UUID caseUUID, UUID stageUUID, String payload, EventType eventType){
+
+    private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType) {
+        sendAuditMessage(caseUUID, null, payload, eventType);
+    }
+    private void sendAuditMessage(UUID caseUUID, UUID stageUUID, String payload, EventType eventType) {
         CreateAuditRequest request = new CreateAuditRequest(
                 requestData.correlationId(),
                 caseUUID,
@@ -148,12 +151,13 @@ public class AuditClient {
         } catch (Exception e) {
             log.error("Failed to create audit event for case UUID {} for reason {}", caseUUID, e, value(EVENT, AUDIT_FAILED));
 
+        }
     }
 
     public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID) {
         try {
             //TODO: this list should be in info service?
-            String events = String.join(",", EventType.CASE_CREATED.toString(), EventType.CASE_ALLOCATED_SELF.toString());
+            String events = String.join(",", EventType.CASE_CREATED.toString());
             GetAuditListResponse response = restHelper.get(serviceBaseURL, String.format("/audit/case/%s?types=%s", caseUUID, events), GetAuditListResponse.class);
             log.info("Got {} audits", response.getAudits().size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
             return response.getAudits();
