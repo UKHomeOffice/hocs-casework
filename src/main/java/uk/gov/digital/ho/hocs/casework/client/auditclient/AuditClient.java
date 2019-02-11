@@ -153,7 +153,7 @@ public class AuditClient {
     public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID) {
         try {
             //TODO: this list should be in info service?
-            String events = String.join(",", EventType.CASE_CREATED.toString());
+            String events = String.join(",", EventType.CASE_CREATED.toString(), EventType.CASE_ALLOCATED_SELF.toString());
             GetAuditListResponse response = restHelper.get(serviceBaseURL, String.format("/audit/case/%s?types=%s", caseUUID, events), GetAuditListResponse.class);
             log.info("Got {} audits", response.getAudits().size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
             return response.getAudits();
