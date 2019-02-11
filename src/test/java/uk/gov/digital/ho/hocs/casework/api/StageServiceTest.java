@@ -325,6 +325,22 @@ public class StageServiceTest {
 
     }
 
+
+    @Test
+    public void shouldAuditUpdateStageTeam() {
+
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
+
+        when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+
+        stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, null);
+
+        verify(auditClient, times(1)).updateStageTeam(stage);
+        verifyNoMoreInteractions(auditClient);
+
+    }
+
+
     @Test
     public void shouldUpdateStageTeamNull() {
 

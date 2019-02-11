@@ -104,7 +104,12 @@ public class AuditClient {
 
     public void updateStageUser(Stage stage) {
         String auditPayload = String.format("{\"stage\":\"%s\", \"user\":\"%s\"}",  stage.getStageType(), stage.getUserUUID());
-        sendAuditMessage(stage.getCaseUUID(), "", EventType.STAGE_ALLOCATED_TO);
+        sendAuditMessage(stage.getCaseUUID(), auditPayload, EventType.STAGE_ALLOCATED_TO_USER);
+    }
+
+    public void updateStageTeam(Stage stage) {
+        String auditPayload = String.format("{\"stage\":\"%s\", \"user\":\"%s\"}",  stage.getStageType(), stage.getTeamUUID());
+        sendAuditMessage(stage.getCaseUUID(), auditPayload, EventType.STAGE_ALLOCATED_TO_TEAM);
     }
 
     public void createCaseAudit(CaseData caseData) {

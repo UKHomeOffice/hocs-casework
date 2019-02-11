@@ -92,6 +92,7 @@ public class StageService {
         Stage stage = getStage(caseUUID, stageUUID);
         stage.setTeam(newTeamUUID);
         stageRepository.save(stage);
+        auditClient.updateStageTeam(stage);
         if (newTeamUUID == null) {
             log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID, value(EVENT, STAGE_COMPLETED));
         } else {
