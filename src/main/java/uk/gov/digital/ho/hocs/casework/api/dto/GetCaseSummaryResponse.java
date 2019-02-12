@@ -54,7 +54,7 @@ public class GetCaseSummaryResponse {
 
         Set<AdditionalFieldDto> additionalFieldDtos = new HashSet<>();;
         if (caseSummary.getAdditionalFields() != null) {
-            additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream().map(AdditionalFieldDto::from).collect(Collectors.toSet()));
+            additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream().filter(field -> !field.getValue().equals("")).map(AdditionalFieldDto::from).collect(Collectors.toSet()));
         }
         return new GetCaseSummaryResponse(caseSummary.getCaseDeadline(), caseSummary.getStageDeadlines(), additionalFieldDtos, getCorrespondentResponse, getTopicsResponse, activeStageDtos);
     }

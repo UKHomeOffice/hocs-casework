@@ -5,24 +5,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @RestController
 class CaseDataResource {
 
     private final CaseDataService caseDataService;
+    private final AuditClient auditClient;
 
     @Autowired
-    public CaseDataResource(CaseDataService caseDataService) {
+    public CaseDataResource(CaseDataService caseDataService, AuditClient auditClient) {
         this.caseDataService = caseDataService;
+        this.auditClient = auditClient;
     }
 
     @Authorised(accessLevel = AccessLevel.WRITE)
@@ -57,6 +64,13 @@ class CaseDataResource {
     ResponseEntity<GetCaseSummaryResponse> getCaseSummary(@PathVariable UUID caseUUID) {
         CaseSummary caseSummary = caseDataService.getCaseSummary(caseUUID);
         return ResponseEntity.ok(GetCaseSummaryResponse.from(caseSummary));
+    }
+
+    @Authorised(accessLevel = AccessLevel.READ)
+    @GetMapping(value = "/case/{caseUUID}/timeline")
+    ResponseEntity<Set<TimelineItemDto>> getCaseTimeline(@PathVariable UUID caseUUID) {
+        Stream<TimelineItem> timeline = caseDataService.getCaseTimeline(caseUUID);
+        return ResponseEntity.ok(timeline.map(TimelineItemDto::from).collect(Collectors.toSet()));
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER)
