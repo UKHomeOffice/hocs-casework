@@ -26,7 +26,6 @@ public class AuditClient {
     private final String namespace;
     private final ProducerTemplate producerTemplate;
     private final ObjectMapper objectMapper;
-
     private final RequestData requestData;
 
     @Autowired
@@ -108,7 +107,7 @@ public class AuditClient {
     }
 
     public void updateStageTeam(Stage stage) {
-        String auditPayload = String.format("{\"stage\":\"%s\", \"user\":\"%s\"}",  stage.getStageType(), stage.getTeamUUID());
+        String auditPayload = String.format("{\"stage\":\"%s\", \"team\":\"%s\"}",  stage.getStageType(), stage.getTeamUUID());
         sendAuditMessage(stage.getCaseUUID(), auditPayload, EventType.STAGE_ALLOCATED_TO_TEAM);
     }
 

@@ -35,7 +35,6 @@ public class Stage implements Serializable {
     @Column(name = "type")
     private String stageType;
 
-    @Setter
     @Getter
     @Column(name = "deadline")
     private LocalDate deadline;

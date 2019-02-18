@@ -22,6 +22,7 @@ import java.util.UUID;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -72,6 +73,15 @@ public class AuditClientTest {
         assertThat(request.getNamespace()).isEqualTo("namespace");
         assertThat(request.getRaisingService()).isEqualTo("hocs-casework");
         assertThat(request.getUserID()).isEqualTo(requestData.userId());
+    }
+
+    @Test
+    public void shouldNotThrowExceptionOnFailure() throws IOException {
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
+        doThrow(new RuntimeException("An error occured")).when(producerTemplate).sendBody(eq(auditQueue), any());
+        assertThatCode(() -> { auditClient.updateCaseAudit(caseData);}).doesNotThrowAnyException();
+        verify(producerTemplate, times(1)).sendBody(eq(auditQueue), jsonCaptor.capture());
+
     }
 
     @Test
