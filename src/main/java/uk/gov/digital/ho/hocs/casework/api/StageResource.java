@@ -81,4 +81,10 @@ class StageResource {
         Set<Stage> activeStages = stageService.getActiveStagesForUser();
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
+
+    @GetMapping(value = "/stage/team/{teamUUID}/user/{userUUID}")
+    ResponseEntity<Set<UUID>> getActiveStageCaseUUIDsForUserAndTeam(@PathVariable UUID userUUID, @PathVariable UUID teamUUID){
+        Set<UUID> caseUUIDs = stageService.getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
+        return ResponseEntity.ok(caseUUIDs);
+    }
 }

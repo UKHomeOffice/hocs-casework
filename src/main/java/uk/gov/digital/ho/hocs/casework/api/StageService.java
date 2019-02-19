@@ -145,4 +145,15 @@ public class StageService {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Stage UUID: %s not found!", stageUUID), STAGE_NOT_FOUND);
         }
     }
+
+    Set<UUID> getActiveStageCaseUUIDsForUserAndTeam(UUID userUUID, UUID teamUUID) {
+        log.debug("Getting Active Stages for User in Team");
+        Set<Stage> stages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(userUUID, teamUUID);
+        log.info("Returning CaseUUIDs for Active Stages for User {} in team {}", userUUID, teamUUID, value(EVENT, STAGE_LIST_RETRIEVED));
+        Set<UUID> caseUUIDs = new HashSet<>();
+        for (Stage stage: stages){
+            caseUUIDs.add(stage.getCaseUUID());
+        }
+        return caseUUIDs;
+    }
 }

@@ -408,4 +408,20 @@ public class StageServiceTest {
 
     }
 
+
+    @Test
+    public void shouldGetActiveStageCaseUUIDsForUserAndTeam() {
+
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
+        Set<Stage> stages = new HashSet<>();
+        stages.add(stage);
+
+        when(stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(userUUID, teamUUID)).thenReturn(stages);
+
+        stageService.getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
+
+        verify(stageRepository, times(1)).findStageCaseUUIDsByUserUUIDTeamUUID(userUUID, teamUUID);
+        verifyNoMoreInteractions(stageRepository);
+
+    }
 }
