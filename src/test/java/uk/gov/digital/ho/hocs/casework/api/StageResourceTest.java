@@ -159,4 +159,20 @@ public class StageResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
+    @Test
+    public void shouldGetActiveStageCaseUUIDsForUserAndTeam(){
+
+        UUID userUUID = UUID.randomUUID();
+        UUID teamUUID = UUID.randomUUID();
+
+        ResponseEntity<Set<UUID>> response = stageResource.getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
+
+        verify(stageService, times(1)).getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
+        verifyNoMoreInteractions(stageService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+    }
 }
