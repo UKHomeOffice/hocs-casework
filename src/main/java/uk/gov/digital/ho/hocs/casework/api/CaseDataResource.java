@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +28,7 @@ class CaseDataResource {
 
     @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/case")
-    ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
+    ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) throws JsonProcessingException {
         CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getCaseDeadline(), request.getDateReceieved());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
@@ -61,19 +62,19 @@ class CaseDataResource {
 
     @Allocated(allocatedTo = AllocationLevel.USER)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data")
-    ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {
+    ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) throws JsonProcessingException {
         caseDataService.updateCaseData(caseUUID, stageUUID, request.getData());
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryCorrespondent")
-    ResponseEntity updateCasePrimaryCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryCorrespondentUUID) {
+    ResponseEntity updateCasePrimaryCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryCorrespondentUUID) throws JsonProcessingException {
         caseDataService.updatePrimaryCorrespondent(caseUUID, stageUUID, primaryCorrespondentUUID);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryTopic")
-    ResponseEntity updateCasePrimaryTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryTopicUUID) {
+    ResponseEntity updateCasePrimaryTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryTopicUUID) throws JsonProcessingException {
         caseDataService.updatePrimaryTopic(caseUUID, stageUUID, primaryTopicUUID);
         return ResponseEntity.ok().build();
     }

@@ -24,6 +24,9 @@ public class CreateAuditRequest {
     @JsonProperty(value= "audit_payload")
     private String auditPayload;
 
+    @JsonProperty(value= "data")
+    private String data;
+
     @JsonProperty(value= "namespace", required = true)
     private String namespace;
 

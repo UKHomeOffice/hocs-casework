@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
@@ -76,12 +77,21 @@ public class AuditClientTest {
     }
 
     @Test
-    public void shouldNotThrowExceptionOnFailure() throws IOException {
+    public void shouldSetDataField() throws IOException {
+        UUID topicUUID = UUID.randomUUID();
+        UUID caseUUID = UUID.randomUUID();
+        auditClient.createTopicAudit(caseUUID, topicUUID);
+        verify(producerTemplate, times(1)).sendBody(eq(auditQueue), jsonCaptor.capture());
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getData()).isEqualTo(String.format("{\"uuid\":\"%s\"}",  topicUUID));
+    }
+
+    @Test
+    public void shouldNotThrowExceptionOnFailure()  {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
-        doThrow(new RuntimeException("An error occured")).when(producerTemplate).sendBody(eq(auditQueue), any());
+        doThrow(new RuntimeException("An error occurred")).when(producerTemplate).sendBody(eq(auditQueue), any());
         assertThatCode(() -> { auditClient.updateCaseAudit(caseData);}).doesNotThrowAnyException();
         verify(producerTemplate, times(1)).sendBody(eq(auditQueue), jsonCaptor.capture());
-
     }
 
     @Test
