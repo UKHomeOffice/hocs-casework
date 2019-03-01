@@ -7,12 +7,12 @@ import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicResponse;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.UpdateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 
 import java.time.LocalDateTime;
@@ -50,7 +50,7 @@ public class AuditClient {
 
     public void updateCaseAudit(CaseData caseData) throws JsonProcessingException {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        GetCaseResponse data = GetCaseResponse.from(caseData);
+        UpdateCaseRequest data = UpdateCaseRequest.from(caseData);
         sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_UPDATED, objectMapper.writeValueAsString(data));
     }
 
@@ -93,7 +93,7 @@ public class AuditClient {
     }
 
     public void createCorrespondentAudit(Correspondent correspondent) throws JsonProcessingException {
-        GetCorrespondentResponse data = GetCorrespondentResponse.from(correspondent);
+        CreateCorrespondentRequest data = CreateCorrespondentRequest.from(correspondent);
         sendAuditMessage(correspondent.getCaseUUID(), "", EventType.CORRESPONDENT_CREATED, objectMapper.writeValueAsString(data));
     }
 
@@ -124,7 +124,7 @@ public class AuditClient {
 
     public void createCaseAudit(CaseData caseData) throws JsonProcessingException {
         String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
-        CreateCaseResponse data = CreateCaseResponse.from(caseData);
+        CreateCaseRequest data = CreateCaseRequest.from(caseData);
         sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_CREATED, objectMapper.writeValueAsString(data));
     }
 
