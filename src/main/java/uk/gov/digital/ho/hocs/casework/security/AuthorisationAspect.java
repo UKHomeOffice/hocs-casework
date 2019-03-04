@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -19,6 +20,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAU
 @Aspect
 @Component
 @Slf4j
+@Profile("!migration")
 public class AuthorisationAspect {
 
     private CaseDataService caseService;
