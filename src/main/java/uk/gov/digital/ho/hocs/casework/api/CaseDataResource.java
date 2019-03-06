@@ -35,7 +35,7 @@ class CaseDataResource {
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
-    @GetMapping(value = "/case/r/{reference:[A-Z]{2,}%2F[0-9]{7}%2F[0-9]{2}}")
+    @GetMapping(value = "/case/r/{reference:[a-zA-Z]{2,}%2F[0-9]{7}%2F[0-9]{2}}")
     ResponseEntity<GetCaseResponse> getCase(@PathVariable String reference) throws UnsupportedEncodingException {
         String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8.name());
         UUID caseUUID = caseDataService.getCaseUUIDByReference(decodedRef);
