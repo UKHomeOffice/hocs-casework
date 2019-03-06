@@ -16,6 +16,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.UUID;
@@ -69,6 +70,25 @@ public class CaseDataResourceTest {
         ResponseEntity<GetCaseResponse> response = caseDataResource.getCase(uuid);
 
         verify(caseDataService, times(1)).getCase(uuid);
+
+        verifyNoMoreInteractions(caseDataService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetCaseByReference() throws UnsupportedEncodingException {
+
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseDeadline,caseReceived);
+
+        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(caseDataService.getCaseUUIDByReference(caseData.getReference())).thenReturn(caseData.getUuid());
+
+        ResponseEntity<GetCaseResponse> response = caseDataResource.getCase(caseData.getReference());
+
+        verify(caseDataService, times(1)).getCase(caseData.getUuid());
+        verify(caseDataService, times(1)).getCaseUUIDByReference(caseData.getReference());
 
         verifyNoMoreInteractions(caseDataService);
 

@@ -264,6 +264,70 @@ public class CaseDataServiceTest {
     }
 
     @Test
+    public void shouldGetCaseByReferenceWithValidParams() throws ApplicationExceptions.EntityNotFoundException {
+
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline, caseReceived);
+
+        when(caseDataRepository.findByReference(caseData.getReference())).thenReturn(caseData);
+
+        caseDataService.getCaseUUIDByReference(caseData.getReference());
+
+        verify(caseDataRepository, times(1)).findByReference(caseData.getReference());
+
+        verifyNoMoreInteractions(caseDataRepository);
+
+    }
+
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotGetCaseByReferenceWithValidParamsNotFoundException() {
+
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline, caseReceived);
+
+        when(caseDataRepository.findByReference(caseData.getReference())).thenReturn(null);
+
+        caseDataService.getCaseUUIDByReference(caseData.getReference());
+    }
+
+    @Test
+    public void shouldNotGetCaseByReferenceWithValidParamsNotFound() {
+
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline, caseReceived);
+
+        when(caseDataRepository.findByReference(caseData.getReference())).thenReturn(null);
+
+        try {
+            caseDataService.getCaseUUIDByReference(caseData.getReference());
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
+            // Do nothing.
+        }
+
+        verify(caseDataRepository, times(1)).findByReference(caseData.getReference());
+
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotGetCaseByReferenceMissingUUIDException() throws ApplicationExceptions.EntityNotFoundException {
+
+        caseDataService.getCaseUUIDByReference(null);
+
+    }
+
+    @Test
+    public void shouldNotGetCaseReferenceMissingUUID() {
+
+        try {
+            caseDataService.getCaseUUIDByReference(null);
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
+            // Do nothing.
+        }
+
+        verify(caseDataRepository, times(1)).findByReference(null);
+
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
     public void shouldGetCaseWithValidParams() throws ApplicationExceptions.EntityNotFoundException {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper,caseDeadline, caseReceived);

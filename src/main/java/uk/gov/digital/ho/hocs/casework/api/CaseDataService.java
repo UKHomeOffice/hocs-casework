@@ -14,10 +14,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -47,17 +44,29 @@ public class CaseDataService {
         return caseData;
     }
 
-
     private CaseData getCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findByUuid(caseUUID);
         if (caseData != null) {
             log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
-
             return caseData;
         } else {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
+        }
+    }
+
+    // this needs to return a UUID and pass to getCaseData at the resource level for permissions to be enforced.
+    // We struggled to get UUID or String to return via custom query for null values so CaseData is returned.
+    public UUID getCaseUUIDByReference(String reference) {
+        log.debug("Getting Case by reference: {}", reference);
+        CaseData caseData = caseDataRepository.findByReference(reference);
+        if (caseData != null) {
+            log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+            return caseData.getUuid();
+        } else {
+            log.error("Case: {}, not found!", reference, value(EVENT, CASE_NOT_FOUND));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", reference), CASE_NOT_FOUND);
         }
     }
 

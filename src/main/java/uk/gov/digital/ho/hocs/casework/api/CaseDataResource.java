@@ -12,6 +12,9 @@ import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Slf4j
@@ -30,6 +33,13 @@ class CaseDataResource {
     ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getCaseDeadline(), request.getDateReceieved());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
+    }
+
+    @GetMapping(value = "/case/r/{reference:[A-Z]{2,}%2F[0-9]{7}%2F[0-9]{2}}")
+    ResponseEntity<GetCaseResponse> getCase(@PathVariable String reference) throws UnsupportedEncodingException {
+        String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8.name());
+        UUID caseUUID = caseDataService.getCaseUUIDByReference(decodedRef);
+        return getCase(caseUUID);
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
