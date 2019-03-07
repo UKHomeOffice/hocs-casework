@@ -56,20 +56,6 @@ public class CaseDataService {
         }
     }
 
-    // this needs to return a UUID and pass to getCaseData at the resource level for permissions to be enforced.
-    // We struggled to get UUID or String to return via custom query for null values so CaseData is returned.
-    public UUID getCaseUUIDByReference(String reference) {
-        log.debug("Getting Case by reference: {}", reference);
-        CaseData caseData = caseDataRepository.findByReference(reference);
-        if (caseData != null) {
-            log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
-            return caseData.getUuid();
-        } else {
-            log.error("Case: {}, not found!", reference, value(EVENT, CASE_NOT_FOUND));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", reference), CASE_NOT_FOUND);
-        }
-    }
-
     public String getCaseType(UUID caseUUID) {
         String shortCode = caseUUID.toString().substring(34);
         log.debug("Looking up CaseType for Case: {} Shortcode: {}", caseUUID, shortCode);

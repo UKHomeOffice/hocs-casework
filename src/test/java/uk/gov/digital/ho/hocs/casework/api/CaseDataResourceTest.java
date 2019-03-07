@@ -78,25 +78,6 @@ public class CaseDataResourceTest {
     }
 
     @Test
-    public void shouldGetCaseByReference() throws UnsupportedEncodingException {
-
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseDeadline,caseReceived);
-
-        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(caseDataService.getCaseUUIDByReference(caseData.getReference())).thenReturn(caseData.getUuid());
-
-        ResponseEntity<GetCaseResponse> response = caseDataResource.getCase(caseData.getReference());
-
-        verify(caseDataService, times(1)).getCase(caseData.getUuid());
-        verify(caseDataService, times(1)).getCaseUUIDByReference(caseData.getReference());
-
-        verifyNoMoreInteractions(caseDataService);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
     public void shouldDeleteCase() {
 
         doNothing().when(caseDataService).deleteCase(uuid);

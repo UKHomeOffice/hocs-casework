@@ -13,9 +13,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.mockito.Mockito.*;
 
@@ -106,6 +104,40 @@ public class StageServiceTest {
         }
 
         verifyZeroInteractions(stageRepository);
+        verifyZeroInteractions(notifyClient);
+
+    }
+
+    @Test
+    public void shouldGetStageByCaseReferenceWithValidParams() {
+        String ref = "MIN/0123456/19";
+
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
+
+        when(stageRepository.findByCaseReference(ref)).thenReturn(new HashSet<>(Arrays.asList(stage)));
+
+        stageService.getActiveStagesByCaseReference(ref);
+
+        verify(stageRepository, times(1)).findByCaseReference(ref);
+
+        verifyNoMoreInteractions(stageRepository);
+        verifyZeroInteractions(notifyClient);
+
+    }
+
+    @Test
+    public void shouldGetStageByCaseReferenceWithMissingReference() {
+        String ref = "MIN/0123456/19";
+
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
+
+        when(stageRepository.findByCaseReference(null)).thenReturn(new HashSet<>(Arrays.asList(stage)));
+
+        stageService.getActiveStagesByCaseReference(null);
+
+        verify(stageRepository, times(1)).findByCaseReference(null);
+
+        verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
 
     }
