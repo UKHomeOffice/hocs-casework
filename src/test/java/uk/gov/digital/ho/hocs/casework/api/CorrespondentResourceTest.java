@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,7 +37,7 @@ public class CorrespondentResourceTest {
 
 
     @Test
-    public void shouldAddCorrespondentToCase() {
+    public void shouldAddCorrespondentToCase() throws JsonProcessingException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
 

@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,7 +77,7 @@ public class CaseDataService {
         return caseType;
     }
 
-    CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
+    CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) throws JsonProcessingException {
         log.debug("Creating Case of type: {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
         log.debug("Allocating Ref: {}", caseNumber);
@@ -87,7 +88,7 @@ public class CaseDataService {
         return caseData;
     }
 
-    void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
+    void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) throws JsonProcessingException {
         log.debug("Updating data for Case: {}", caseUUID);
         if (data != null) {
             log.debug("Data size {}", data.size());
@@ -101,7 +102,7 @@ public class CaseDataService {
         }
     }
 
-    void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) {
+    void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) throws JsonProcessingException {
         log.debug("Updating Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
@@ -110,7 +111,7 @@ public class CaseDataService {
         log.info("Updated Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID, value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
     }
 
-    void updatePrimaryTopic(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID) {
+    void updatePrimaryTopic(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID) throws JsonProcessingException {
         log.debug("Updating Primary Topic for Case: {} Topic: {}", caseUUID, primaryTopicUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryTopicUUID(primaryTopicUUID);
@@ -119,7 +120,7 @@ public class CaseDataService {
         log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));
     }
 
-    void updatePriority(UUID caseUUID, boolean priority) {
+    void updatePriority(UUID caseUUID, boolean priority) throws JsonProcessingException {
         log.debug("Updating priority for Case: {} Priority {}", caseUUID, priority);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPriority(priority);

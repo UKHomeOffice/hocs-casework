@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -61,7 +62,7 @@ public class CorrespondentServiceTest {
     }
 
     @Test
-    public void shouldCreateCorrespondent() throws ApplicationExceptions.EntityCreationException {
+    public void shouldCreateCorrespondent() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         correspondentService.createCorrespondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
@@ -72,7 +73,7 @@ public class CorrespondentServiceTest {
     }
 
     @Test
-    public void shouldAuditCreateCorrespondent() throws ApplicationExceptions.EntityCreationException {
+    public void shouldAuditCreateCorrespondent() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         correspondentService.createCorrespondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
@@ -83,13 +84,13 @@ public class CorrespondentServiceTest {
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
-    public void shouldNotCreateCorrespondentMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
+    public void shouldNotCreateCorrespondentMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         correspondentService.createCorrespondent(null, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
     }
 
     @Test
-    public void shouldNotCreateCorrespondentMissingCaseUUID() {
+    public void shouldNotCreateCorrespondentMissingCaseUUID() throws JsonProcessingException {
 
         try {
             Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
@@ -103,13 +104,13 @@ public class CorrespondentServiceTest {
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
-    public void shouldNotCreateCorrespondentMissingCorrespondentTypeException() throws ApplicationExceptions.EntityCreationException {
+    public void shouldNotCreateCorrespondentMissingCorrespondentTypeException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         correspondentService.createCorrespondent(caseUUID, null, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
     }
 
     @Test
-    public void shouldNotCreateCorrespondentMissingCorrespondentType() {
+    public void shouldNotCreateCorrespondentMissingCorrespondentType() throws JsonProcessingException {
 
         try {
             Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");

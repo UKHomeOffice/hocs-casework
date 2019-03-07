@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +43,7 @@ public class CaseDataResourceTest {
     }
 
     @Test
-    public void shouldCreateCase() {
+    public void shouldCreateCase() throws JsonProcessingException {
 
         CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseDeadline, caseReceived);
         CreateCaseRequest request = new CreateCaseRequest(caseDataType, data, caseDeadline,caseReceived);
@@ -124,7 +125,7 @@ public class CaseDataResourceTest {
     }
 
     @Test
-    public void shouldUpdateCaseData() {
+    public void shouldUpdateCaseData() throws JsonProcessingException {
         UpdateCaseDataRequest updateCaseDataRequest = new UpdateCaseDataRequest(data);
 
         doNothing().when(caseDataService).updateCaseData(uuid, uuid, data);
