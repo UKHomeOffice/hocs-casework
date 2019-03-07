@@ -151,9 +151,15 @@ public class StageService {
         Set<Stage> stages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(userUUID, teamUUID);
         log.info("Returning CaseUUIDs for Active Stages for User {} in team {}", userUUID, teamUUID, value(EVENT, STAGE_LIST_RETRIEVED));
         Set<UUID> caseUUIDs = new HashSet<>();
-        for (Stage stage: stages){
+        for (Stage stage: stages ){
             caseUUIDs.add(stage.getCaseUUID());
         }
         return caseUUIDs;
+    }
+
+    Set<Stage> getActiveStagesByCaseReference(String reference) {
+        log.debug("Getting Active Stages for reference: {}", reference);
+        Set<Stage> stages = stageRepository.findByCaseReference(reference);
+        return stages;
     }
 }

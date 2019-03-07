@@ -15,10 +15,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -48,13 +45,11 @@ public class CaseDataService {
         return caseData;
     }
 
-
     private CaseData getCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findByUuid(caseUUID);
         if (caseData != null) {
             log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
-
             return caseData;
         } else {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));

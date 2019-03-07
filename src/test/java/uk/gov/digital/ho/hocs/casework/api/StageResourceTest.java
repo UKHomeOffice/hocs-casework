@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
@@ -153,6 +154,24 @@ public class StageResourceTest {
         ResponseEntity<GetStagesResponse> response = stageResource.getActiveStages();
 
         verify(stageService, times(1)).getActiveStagesForUser();
+
+        verifyNoMoreInteractions(stageService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetActiveStagesCaseRef() throws UnsupportedEncodingException {
+        String ref = "MIN/0123456/19";
+
+        Set<Stage> stages = new HashSet<>();
+
+        when(stageService.getActiveStagesByCaseReference(ref)).thenReturn(stages);
+
+        ResponseEntity<GetStagesResponse> response = stageResource.getActiveStagesForCase(ref);
+
+        verify(stageService, times(1)).getActiveStagesByCaseReference(ref);
 
         verifyNoMoreInteractions(stageService);
 
