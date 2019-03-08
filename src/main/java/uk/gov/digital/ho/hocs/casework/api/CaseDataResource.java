@@ -24,10 +24,12 @@ import java.util.stream.Stream;
 class CaseDataResource {
 
     private final CaseDataService caseDataService;
+    private final AuditClient auditClient;
 
     @Autowired
-    public CaseDataResource(CaseDataService caseDataService) {
+    public CaseDataResource(CaseDataService caseDataService, AuditClient auditClient) {
         this.caseDataService = caseDataService;
+        this.auditClient = auditClient;
     }
 
     @Authorised(accessLevel = AccessLevel.WRITE)

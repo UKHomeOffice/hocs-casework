@@ -18,6 +18,9 @@ public class CreateAuditRequest {
     @JsonProperty(value= "caseUUID", required = true)
     private UUID caseUUID;
 
+    @JsonProperty(value= "stageUUID", required = true)
+    private UUID stageUUID;
+
     @JsonProperty(value= "raising_service", required = true)
     private String raisingService;
 
