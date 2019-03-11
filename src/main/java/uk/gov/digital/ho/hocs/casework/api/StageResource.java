@@ -9,6 +9,9 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.UUID;
 
@@ -79,6 +82,13 @@ class StageResource {
     @GetMapping(value = "/stage")
     ResponseEntity<GetStagesResponse> getActiveStages() {
         Set<Stage> activeStages = stageService.getActiveStagesForUser();
+        return ResponseEntity.ok(GetStagesResponse.from(activeStages));
+    }
+
+    @GetMapping(value = "/case/{reference:[a-zA-Z]{2,}%2F[0-9]{7}%2F[0-9]{2}}/stage")
+    ResponseEntity<GetStagesResponse> getActiveStagesForCase(@PathVariable String reference) throws UnsupportedEncodingException {
+        String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8.name());
+        Set<Stage> activeStages = stageService.getActiveStagesByCaseReference(decodedRef);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 

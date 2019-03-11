@@ -1,15 +1,20 @@
 package uk.gov.digital.ho.hocs.casework.client.auditclient;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.UpdateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -70,7 +75,6 @@ public class AuditClient {
         this.serviceBaseURL = auditService;
 
     }
-
 
     public void updateCaseAudit(CaseData caseData, UUID stageUUID) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
@@ -151,16 +155,25 @@ public class AuditClient {
                 stageUUID,
                 raisingService,
                 payload,
+                data,
                 namespace,
                 LocalDateTime.now(),
                 eventType,
                 requestData.userId());
+        sendMessage(request);
+    }
 
+    private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType) {
+        sendAuditMessage(caseUUID, payload, eventType, "");
+    }
+
+    private void sendMessage(CreateAuditRequest request) {
         try {
+
             producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), getQueueHeaders());
             log.info("Create audit for Case UUID: {}, correlationID: {}, UserID: {}", caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_FAILED));
         } catch (Exception e) {
-            log.error("Failed to create audit event for case UUID {} for reason {}", caseUUID, e, value(EVENT, AUDIT_FAILED));
+            log.error("Failed to create audit event for case UUID {} for reason {}", request.getCaseUUID(), e, value(EVENT, AUDIT_FAILED));
         }
     }
 
@@ -186,4 +199,5 @@ public class AuditClient {
         headers.put(RequestData.GROUP_HEADER, requestData.groups());
         return headers;
     }
+
 }

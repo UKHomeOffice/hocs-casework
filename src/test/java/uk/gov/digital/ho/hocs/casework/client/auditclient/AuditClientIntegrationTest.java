@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.client.auditclient;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
@@ -44,7 +45,7 @@ public class AuditClientIntegrationTest extends CamelTestSupport {
     }
 
     @Test
-    public void shouldPutMessageOnAuditQueue() throws InterruptedException {
+    public void shouldPutMessageOnAuditQueue() throws InterruptedException, JsonProcessingException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
         MockEndpoint mockEndpoint = getMockEndpoint(toEndpoint);
         auditClient.updateCaseAudit(caseData, stageUUID);

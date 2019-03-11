@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,7 +64,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldCreateCase() throws ApplicationExceptions.EntityCreationException {
+    public void shouldCreateCase() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
@@ -76,7 +77,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldCreateCaseWithValidParamsNullData() throws ApplicationExceptions.EntityCreationException {
+    public void shouldCreateCaseWithValidParamsNullData() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
@@ -89,7 +90,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldAuditCreateCase() throws ApplicationExceptions.EntityCreationException {
+    public void shouldAuditCreateCase() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         CaseData caseData = caseDataService.createCase(caseType, new HashMap<>(), caseDeadline, caseReceived);
@@ -99,13 +100,13 @@ public class CaseDataServiceTest {
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
-    public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
+    public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
 
         caseDataService.createCase(null, new HashMap<>(),caseDeadline, caseReceived);
     }
 
     @Test()
-    public void shouldNotCreateCaseMissingType() {
+    public void shouldNotCreateCaseMissingType() throws JsonProcessingException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
@@ -385,7 +386,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldUpdateCase() {
+    public void shouldUpdateCase() throws JsonProcessingException {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
 
@@ -400,7 +401,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldAuditUpdateCase() throws ApplicationExceptions.EntityCreationException {
+    public void shouldAuditUpdateCase() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
@@ -412,7 +413,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldUpdateCaseNullData() {
+    public void shouldUpdateCaseNullData() throws JsonProcessingException {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
 
@@ -422,13 +423,13 @@ public class CaseDataServiceTest {
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void shouldNotUpdateCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
+    public void shouldNotUpdateCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
 
         caseDataService.updateCaseData(null, stageUUID, new HashMap<>());
     }
 
     @Test()
-    public void shouldNotUpdateCaseMissingCaseUUID() {
+    public void shouldNotUpdateCaseMissingCaseUUID() throws JsonProcessingException {
 
         try {
             caseDataService.updateCaseData(null, stageUUID, new HashMap<>());
@@ -442,7 +443,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldUpdatePriorityCase() {
+    public void shouldUpdatePriorityCase() throws JsonProcessingException {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline , caseReceived);
 
@@ -457,13 +458,13 @@ public class CaseDataServiceTest {
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void shouldNotUpdatePriorityCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
+    public void shouldNotUpdatePriorityCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
 
         caseDataService.updatePriority(null, false);
     }
 
     @Test()
-    public void shouldNotUpdatePriorityCaseMissingCaseUUID() {
+    public void shouldNotUpdatePriorityCaseMissingCaseUUID() throws JsonProcessingException {
 
         try {
             caseDataService.updatePriority(null, false);

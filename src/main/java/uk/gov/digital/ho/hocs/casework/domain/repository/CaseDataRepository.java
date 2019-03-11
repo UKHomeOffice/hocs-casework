@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
