@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,6 +17,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.UUID;
@@ -42,7 +44,7 @@ public class CaseDataResourceTest {
     }
 
     @Test
-    public void shouldCreateCase() {
+    public void shouldCreateCase() throws JsonProcessingException {
 
         CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseDeadline, caseReceived);
         CreateCaseRequest request = new CreateCaseRequest(caseDataType, data, caseDeadline,caseReceived);
@@ -124,7 +126,7 @@ public class CaseDataResourceTest {
     }
 
     @Test
-    public void shouldUpdateCaseData() {
+    public void shouldUpdateCaseData() throws JsonProcessingException {
         UpdateCaseDataRequest updateCaseDataRequest = new UpdateCaseDataRequest(data);
 
         doNothing().when(caseDataService).updateCaseData(uuid, uuid, data);
