@@ -93,7 +93,7 @@ public class CaseDataService {
             CaseData caseData = getCaseData(caseUUID);
             caseData.update(data, objectMapper);
             caseDataRepository.save(caseData);
-            auditClient.updateCaseAudit(caseData);
+            auditClient.updateCaseAudit(caseData, stageUUID);
             log.info("Updated Case Data for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_UPDATED));
         } else {
             log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
@@ -105,7 +105,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
         log.info("Updated Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID, value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
     }
 
@@ -114,7 +114,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryTopicUUID(primaryTopicUUID);
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
         log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));
     }
 
@@ -123,7 +123,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPriority(priority);
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData);
+        auditClient.updateCaseAudit(caseData, null);
         log.info("Updated priority Case: {} Priority {}", caseUUID, priority, value(EVENT, PRIORITY_UPDATED));
     }
 
@@ -185,7 +185,7 @@ public class CaseDataService {
         Set<CaseNote> notes = caseData.getCaseNotes();
 
         Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp(), a.getUserID(), a.getType(), a.getAuditPayload()));
-        Stream<TimelineItem> notesTimeline = notes.stream().map(n -> new TimelineItem(n.getCaseUUID(), null, n.getCreated(), null, n.getCaseNoteType(), n.getText()));
+        Stream<TimelineItem> notesTimeline = notes.stream().map(n -> new TimelineItem(n.getCaseUUID(),null, n.getCreated(), null, n.getCaseNoteType(), n.getText()));
 
         return Stream.concat(auditTimeline, notesTimeline);
 

@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.client.auditclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.junit4.CamelTestSupport;
 import org.junit.Before;
@@ -35,6 +34,7 @@ public class AuditClientIntegrationTest extends CamelTestSupport {
     private final CaseDataType caseType = new CaseDataType("MIN", "a1");
     private LocalDate caseDeadline = LocalDate.now().plusDays(20);
     private LocalDate caseReceived = LocalDate.now();
+    private UUID stageUUID = UUID.randomUUID();
 
     @Before
     public void setup() {
@@ -47,7 +47,7 @@ public class AuditClientIntegrationTest extends CamelTestSupport {
     public void shouldPutMessageOnAuditQueue() throws InterruptedException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
         MockEndpoint mockEndpoint = getMockEndpoint(toEndpoint);
-        auditClient.updateCaseAudit(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
         mockEndpoint.assertIsSatisfied();
         mockEndpoint.expectedBodyReceived().body().convertToString().contains(String.format("\"reference\":\"%s\"", caseData.getReference()));
     }

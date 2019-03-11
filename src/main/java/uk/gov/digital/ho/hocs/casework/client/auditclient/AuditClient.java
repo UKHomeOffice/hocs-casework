@@ -72,82 +72,83 @@ public class AuditClient {
     }
 
 
-    public void updateCaseAudit(CaseData caseData) {
+    public void updateCaseAudit(CaseData caseData, UUID stageUUID) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, CASE_UPDATED);
+        sendAuditMessage(caseData.getUuid(), auditPayload, CASE_UPDATED, stageUUID);
     }
 
     public void viewCaseAudit(CaseData caseData) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_VIEWED);
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_VIEWED, null);
     }
 
     public void viewCaseSummaryAudit(CaseData caseData, CaseSummary caseSummary) {
         String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_SUMMARY_VIEWED);
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_SUMMARY_VIEWED, null);
     }
 
     public void viewStandardLineAudit(CaseData caseData) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.STANDARD_LINE_VIEWED);
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.STANDARD_LINE_VIEWED, null);
     }
 
     public void viewTemplateAudit(CaseData caseData) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.TEMPLATE_VIEWED);
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.TEMPLATE_VIEWED, null);
     }
 
     public void deleteCaseAudit(CaseData caseData) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_DELETED);
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_DELETED, null);
     }
 
     public void viewCaseNotesAudit(UUID caseUUID, Set<CaseNote> caseNotes) {
-        sendAuditMessage(caseUUID, "", EventType.CASE_NOTES_VIEWED);
+        sendAuditMessage(caseUUID, "", EventType.CASE_NOTES_VIEWED, null);
     }
 
     public void viewCaseNoteAudit(CaseNote caseNote) {
-        sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_VIEWED);
+        sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_VIEWED,null);
     }
 
     public void createCaseNoteAudit(CaseNote caseNote) {
-        sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_CREATED);
+        sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_CREATED, null);
     }
 
     public void createCorrespondentAudit(Correspondent correspondent) {
-        sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_CREATED);
+        sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_CREATED, null);
     }
 
     public void deleteCorrespondentAudit(Correspondent correspondent) {
-        sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_DELETED);
+        sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_DELETED, null);
     }
 
     public void createTopicAudit(UUID caseUUID, UUID topicNameUUID) {
-        sendAuditMessage(caseUUID, "", CASE_TOPIC_CREATED);
+        sendAuditMessage(caseUUID, "", CASE_TOPIC_CREATED, null);
     }
 
     public void deleteTopicAudit(UUID caseUUID, UUID topicNameUUID) {
-        sendAuditMessage(caseUUID, "", CASE_TOPIC_DELETED);
+        sendAuditMessage(caseUUID, "", CASE_TOPIC_DELETED, null);
     }
     public void createCaseAudit(CaseData caseData) {
         String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, CASE_CREATED);
+        sendAuditMessage(caseData.getUuid(), auditPayload, CASE_CREATED, null);
     }
 
     public void updateStageUser(Stage stage) {
         String auditPayload = String.format("{\"stage\":\"%s\", \"user\":\"%s\"}",  stage.getStageType(), stage.getUserUUID());
-        sendAuditMessage(stage.getCaseUUID(), auditPayload, STAGE_ALLOCATED_TO_USER);
+        sendAuditMessage(stage.getCaseUUID(), auditPayload, STAGE_ALLOCATED_TO_USER, stage.getUuid());
     }
 
     public void updateStageTeam(Stage stage) {
         String auditPayload = String.format("{\"stage\":\"%s\", \"user\":\"%s\"}",  stage.getStageType(), stage.getTeamUUID());
-        sendAuditMessage(stage.getCaseUUID(), auditPayload, STAGE_ALLOCATED_TO_TEAM);
+        sendAuditMessage(stage.getCaseUUID(), auditPayload, STAGE_ALLOCATED_TO_TEAM, stage.getUuid());
     }
 
-    private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType){
+    private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType, UUID stageUUID){
         CreateAuditRequest request = new CreateAuditRequest(
                 requestData.correlationId(),
                 caseUUID,
+                stageUUID,
                 raisingService,
                 payload,
                 namespace,
