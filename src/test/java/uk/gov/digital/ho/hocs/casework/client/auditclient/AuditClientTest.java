@@ -98,15 +98,6 @@ public class AuditClientTest {
         assertThatCode(() -> { auditClient.updateCaseAudit(caseData, stageUUID);}).doesNotThrowAnyException();
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
     }
-  
-    public void shouldSetDataField() throws IOException {
-        UUID topicUUID = UUID.randomUUID();
-        UUID caseUUID = UUID.randomUUID();
-        auditClient.createTopicAudit(caseUUID, topicUUID);
-        verify(producerTemplate, times(1)).sendBody(eq(auditQueue), jsonCaptor.capture());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getData()).isEqualTo(String.format("{\"uuid\":\"%s\"}",  topicUUID));
-    }
 
     @Test
     public void createCaseAudit() throws IOException {
