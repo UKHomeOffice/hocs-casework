@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -18,10 +19,13 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataServiceTest {
@@ -117,6 +121,67 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
     }
 
+
+    @Test
+    public void shouldGetCaseTimeline()  {
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
+        Set<CaseNote> caseNoteData = Set.of(
+                new CaseNote(caseUUID, "MANUAL", "case note 1"),
+                new CaseNote(caseUUID, "MANUAL", "case note 2"));
+        caseData.setCaseNotes(caseNoteData);
+
+        UUID auditResponseUUID = UUID.randomUUID();
+        Set<GetAuditResponse> auditResponse = Set.of(new GetAuditResponse(auditResponseUUID,
+                caseUUID,
+                null,
+                "correlation Id",
+                "hocs-casework","",
+                "namespace", LocalDateTime.now(), CASE_CREATED.toString(),
+                "user"));
+
+
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        when(auditClient.getAuditLinesForCase(caseData.getUuid())).thenReturn(auditResponse);
+
+        List<TimelineItem> timeline = caseDataService.getCaseTimeline(caseData.getUuid()).collect(Collectors.toList());
+
+
+
+        assertThat(timeline.size()).isEqualTo(3);
+
+        assertThat(timeline).anyMatch(t -> t.getMessage().equals("case note 2"));
+        assertThat(timeline).anyMatch(t -> t.getMessage().equals("case note 1"));
+        assertThat(timeline).anyMatch(t -> t.getType().equals(CASE_CREATED.toString()));
+
+        verify(auditClient, times(1)).getAuditLinesForCase(caseData.getUuid());
+        verifyNoMoreInteractions(auditClient);
+    }
+
+
+    @Test
+    public void shouldGetCaseNotesOnlyTimelineOnAuditFailure()  {
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
+        Set<CaseNote> caseNoteData = Set.of(
+                new CaseNote(caseUUID, "MANUAL", "case note 1"),
+                new CaseNote(caseUUID, "MANUAL", "case note 2"));
+        caseData.setCaseNotes(caseNoteData);
+
+
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        when(auditClient.getAuditLinesForCase(caseData.getUuid())).thenThrow(new RuntimeException("Error"));
+
+        List<TimelineItem> timeline = caseDataService.getCaseTimeline(caseData.getUuid()).collect(Collectors.toList());
+
+        assertThat(timeline.size()).isEqualTo(2);
+
+        assertThat(timeline).anyMatch(t -> t.getMessage().equals("case note 2"));
+        assertThat(timeline).anyMatch(t -> t.getMessage().equals("case note 1"));
+        assertThat(timeline).noneMatch(t -> t.getType().equals(CASE_CREATED.toString()));
+
+        verify(auditClient, times(1)).getAuditLinesForCase(caseData.getUuid());
+        verifyNoMoreInteractions(auditClient);
+    }
+
     @Test
     public void shouldGetCaseSummaryWithValidParams() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
@@ -124,10 +189,10 @@ public class CaseDataServiceTest {
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
         FieldDto[] filterFields = new FieldDto[]{};
 
-        Map<String, String> deadlines = new HashMap<String, String>() {{
-            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString());
-            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
-        }};
+        Map<String, String> deadlines = Map.of(
+                "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString(),
+                "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
+
         Correspondent correspondent = new Correspondent(caseData.getUuid(), "CORRESPONDENT", "some name,",
                 new Address("","","","",""), "12345","some email", "some ref");
 
@@ -151,10 +216,9 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
         FieldDto[] filterFields = new FieldDto[]{};
 
-        Map<String, String> deadlines = new HashMap<String, String>() {{
-            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString());
-            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
-        }};
+        Map<String, String> deadlines = Map.of(
+                "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString(),
+                "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
         when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
@@ -172,10 +236,9 @@ public class CaseDataServiceTest {
         caseData.setPrimaryCorrespondentUUID(null);
         FieldDto[] filterFields = new FieldDto[]{};
 
-        Map<String, String> deadlines = new HashMap<String, String>() {{
-            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString());
-            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
-        }};
+        Map<String, String> deadlines = Map.of(
+                "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString(),
+                "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
@@ -201,10 +264,9 @@ public class CaseDataServiceTest {
         FieldDto[] filterFields = new FieldDto[]{};
 
 
-        Map<String, String> deadlines = new HashMap<String, String>() {{
-            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString());
-            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
-        }};
+        Map<String, String> deadlines = Map.of(
+                "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString(),
+                "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
@@ -233,19 +295,18 @@ public class CaseDataServiceTest {
         filterFields[1] = field1;
 
 
-        Map<String, String> additionalData = new HashMap<String, String>(){{
-            put("TEMPCReference", "test ref");
-            put("CopyNumberTen", "true");
-            put("UnfilteredField", "some value");
-        }};
+        Map<String, String> additionalData = Map.of(
+            "TEMPCReference", "test ref",
+            "CopyNumberTen", "true",
+            "UnfilteredField", "some value"
+        );
 
         CaseData caseData = new CaseData(caseType, caseID, additionalData, objectMapper,caseDeadline, caseReceived);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
 
-        Map<String, String> deadlines = new HashMap<String, String>() {{
-            put("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString());
-            put("DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
-        }};
+        Map<String, String> deadlines = Map.of(
+                "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString(),
+                "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
 
         Correspondent correspondent = new Correspondent(caseData.getUuid(), "CORRESPONDENT", "some name,",
                 new Address("","","","",""), "12345","some email", "some ref");
@@ -347,7 +408,7 @@ public class CaseDataServiceTest {
 
         caseDataService.updateCaseData(caseData.getUuid(), stageUUID, new HashMap<>());
 
-        verify(auditClient, times(1)).updateCaseAudit(caseData);
+        verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
         verifyNoMoreInteractions(auditClient);
     }
 

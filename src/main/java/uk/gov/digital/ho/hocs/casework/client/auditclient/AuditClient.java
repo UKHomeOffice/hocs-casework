@@ -1,26 +1,30 @@
 package uk.gov.digital.ho.hocs.casework.client.auditclient;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
+import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateCorrespondentRequest;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.UpdateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDateTime;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
 
 @Slf4j
 @Component
@@ -33,126 +37,153 @@ public class AuditClient {
     private final ObjectMapper objectMapper;
     private final RequestData requestData;
 
+    private final RestHelper restHelper;
+    private final String serviceBaseURL;
+
+    public static final Set<String> TIMELINE_EVENTS = Set.of(
+            CASE_CREATED.toString(),
+            CASE_UPDATED.toString(),
+            CASE_TOPIC_CREATED.toString(),
+            CASE_TOPIC_DELETED.toString(),
+            STAGE_ALLOCATED_TO_TEAM.toString(),
+            STAGE_ALLOCATED_TO_USER.toString(),
+            CORRESPONDENT_DELETED.toString(),
+            CORRESPONDENT_CREATED.toString()
+            );
+
     @Autowired
     public AuditClient(ProducerTemplate producerTemplate,
                        @Value("${audit.queue}") String auditQueue,
                        @Value("${auditing.deployment.name}") String raisingService,
                        @Value("${auditing.deployment.namespace}") String namespace,
                        ObjectMapper objectMapper,
-                       RequestData requestData) {
+                       RequestData requestData,
+                       RestHelper restHelper,
+                       @Value("${hocs.audit-service}") String auditService) {
         this.producerTemplate = producerTemplate;
         this.auditQueue = auditQueue;
         this.raisingService = raisingService;
         this.namespace = namespace;
         this.objectMapper = objectMapper;
         this.requestData = requestData;
+        this.restHelper = restHelper;
+        this.serviceBaseURL = auditService;
+
     }
 
-    public void updateCaseAudit(CaseData caseData) throws JsonProcessingException {
+
+    public void updateCaseAudit(CaseData caseData, UUID stageUUID) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        UpdateCaseRequest data = UpdateCaseRequest.from(caseData);
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_UPDATED, objectMapper.writeValueAsString(data));
+        sendAuditMessage(caseData.getUuid(), auditPayload, CASE_UPDATED, stageUUID);
     }
 
     public void viewCaseAudit(CaseData caseData) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_VIEWED);
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_VIEWED, null);
     }
 
     public void viewCaseSummaryAudit(CaseData caseData, CaseSummary caseSummary) {
         String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_SUMMARY_VIEWED);
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_SUMMARY_VIEWED, null);
     }
 
     public void viewStandardLineAudit(CaseData caseData) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.STANDARD_LINE_VIEWED );
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.STANDARD_LINE_VIEWED, null);
     }
 
     public void viewTemplateAudit(CaseData caseData) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.TEMPLATE_VIEWED);
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.TEMPLATE_VIEWED, null);
     }
 
     public void deleteCaseAudit(CaseData caseData) {
         String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        String data = String.format("{\"uuid\":\"%s\"}", caseData.getUuid());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_DELETED, data);
+        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_DELETED, null);
     }
 
     public void viewCaseNotesAudit(UUID caseUUID, Set<CaseNote> caseNotes) {
-        sendAuditMessage(caseUUID, "", EventType.CASE_NOTES_VIEWED);
+        sendAuditMessage(caseUUID, "", EventType.CASE_NOTES_VIEWED, null);
     }
 
     public void viewCaseNoteAudit(CaseNote caseNote) {
-        sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_VIEWED);
+        sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_VIEWED,null);
     }
 
     public void createCaseNoteAudit(CaseNote caseNote) {
-        sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_CREATED);
+        sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_CREATED, null);
     }
 
-    public void createCorrespondentAudit(Correspondent correspondent) throws JsonProcessingException {
-        CreateCorrespondentRequest data = CreateCorrespondentRequest.from(correspondent);
-        sendAuditMessage(correspondent.getCaseUUID(), "", EventType.CORRESPONDENT_CREATED, objectMapper.writeValueAsString(data));
+    public void createCorrespondentAudit(Correspondent correspondent) {
+        sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_CREATED, null);
     }
 
     public void deleteCorrespondentAudit(Correspondent correspondent) {
-        String data = String.format("{\"uuid\":\"%s\"}",  correspondent.getUuid());
-        sendAuditMessage(correspondent.getCaseUUID(), "", EventType.CORRESPONDENT_DELETED, data);
+        sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_DELETED, null);
     }
 
     public void createTopicAudit(UUID caseUUID, UUID topicNameUUID) {
-        String data = String.format("{\"uuid\":\"%s\"}",  topicNameUUID);
-        sendAuditMessage(caseUUID, "", EventType.CASE_TOPIC_CREATED, data);
+        sendAuditMessage(caseUUID, "", CASE_TOPIC_CREATED, null);
     }
 
     public void deleteTopicAudit(UUID caseUUID, UUID topicNameUUID) {
-        String data = String.format("{\"uuid\":\"%s\"}",  topicNameUUID);
-        sendAuditMessage(caseUUID, "", EventType.CASE_TOPIC_DELETED, data);
+        sendAuditMessage(caseUUID, "", CASE_TOPIC_DELETED, null);
+    }
+    public void createCaseAudit(CaseData caseData) {
+        String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
+        sendAuditMessage(caseData.getUuid(), auditPayload, CASE_CREATED, null);
     }
 
     public void updateStageUser(Stage stage) {
         String auditPayload = String.format("{\"stage\":\"%s\", \"user\":\"%s\"}",  stage.getStageType(), stage.getUserUUID());
-        sendAuditMessage(stage.getCaseUUID(), auditPayload, EventType.STAGE_ALLOCATED_TO_USER, auditPayload);
+        sendAuditMessage(stage.getCaseUUID(), auditPayload, STAGE_ALLOCATED_TO_USER, stage.getUuid());
     }
 
     public void updateStageTeam(Stage stage) {
-        String auditPayload = String.format("{\"stage\":\"%s\", \"team\":\"%s\"}",  stage.getStageType(), stage.getTeamUUID());
-        sendAuditMessage(stage.getCaseUUID(), auditPayload, EventType.STAGE_ALLOCATED_TO_TEAM, auditPayload);
+        String auditPayload = String.format("{\"stage\":\"%s\", \"user\":\"%s\"}",  stage.getStageType(), stage.getTeamUUID());
+        sendAuditMessage(stage.getCaseUUID(), auditPayload, STAGE_ALLOCATED_TO_TEAM, stage.getUuid());
     }
 
-    public void createCaseAudit(CaseData caseData) throws JsonProcessingException {
-        String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
-        CreateCaseRequest data = CreateCaseRequest.from(caseData);
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_CREATED, objectMapper.writeValueAsString(data));
-    }
-
-    private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType, String data){
+    private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType, UUID stageUUID){
         CreateAuditRequest request = new CreateAuditRequest(
                 requestData.correlationId(),
                 caseUUID,
+                stageUUID,
                 raisingService,
                 payload,
-                data,
                 namespace,
                 LocalDateTime.now(),
                 eventType,
                 requestData.userId());
-        sendMessage(request);
-    }
 
-    private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType) {
-        sendAuditMessage(caseUUID, payload, eventType, "");
-    }
-
-    private void sendMessage(CreateAuditRequest request) {
         try {
-            producerTemplate.sendBody(auditQueue, objectMapper.writeValueAsString(request));
-            log.info("Create audit for Case UUID: {}, correlationID: {}, UserID: {}", request.getCaseUUID(), requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_FAILED));
+            producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), getQueueHeaders());
+            log.info("Create audit for Case UUID: {}, correlationID: {}, UserID: {}", caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_FAILED));
         } catch (Exception e) {
-            log.error("Failed to create audit event for case UUID {} for reason {}", request.getCaseUUID(), e, value(EVENT, AUDIT_FAILED));
+            log.error("Failed to create audit event for case UUID {} for reason {}", caseUUID, e, value(EVENT, AUDIT_FAILED));
         }
     }
 
+
+    public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID) {
+        try {
+            String events = String.join(",", TIMELINE_EVENTS);
+            GetAuditListResponse response = restHelper.get(serviceBaseURL, String.format("/audit/case/%s?types=%s", caseUUID, events), GetAuditListResponse.class);
+            log.info("Got {} audits", response.getAudits().size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
+            return response.getAudits();
+        } catch (ApplicationExceptions.ResourceException e) {
+            log.error("Could not get case types", value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
+            return new HashSet<>();
+        }
+
+    }
+
+    private Map<String, Object> getQueueHeaders() {
+        Map<String, Object> headers = new HashMap<>();
+        headers.put(RequestData.CORRELATION_ID_HEADER, requestData.correlationId());
+        headers.put(RequestData.USER_ID_HEADER, requestData.userId());
+        headers.put(RequestData.USERNAME_HEADER, requestData.username());
+        headers.put(RequestData.GROUP_HEADER, requestData.groups());
+        return headers;
+    }
 }

@@ -18,14 +18,14 @@ public class CreateAuditRequest {
     @JsonProperty(value= "caseUUID", required = true)
     private UUID caseUUID;
 
+    @JsonProperty(value= "stageUUID")
+    private UUID stageUUID;
+
     @JsonProperty(value= "raising_service", required = true)
     private String raisingService;
 
     @JsonProperty(value= "audit_payload")
     private String auditPayload;
-
-    @JsonProperty(value= "data")
-    private String data;
 
     @JsonProperty(value= "namespace", required = true)
     private String namespace;

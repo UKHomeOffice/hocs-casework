@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -17,6 +18,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -90,7 +92,7 @@ public class CaseDataService {
             CaseData caseData = getCaseData(caseUUID);
             caseData.update(data, objectMapper);
             caseDataRepository.save(caseData);
-            auditClient.updateCaseAudit(caseData);
+            auditClient.updateCaseAudit(caseData, stageUUID);
             log.info("Updated Case Data for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_UPDATED));
         } else {
             log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
@@ -102,7 +104,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
         log.info("Updated Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID, value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
     }
 
@@ -111,7 +113,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryTopicUUID(primaryTopicUUID);
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
         log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));
     }
 
@@ -120,7 +122,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPriority(priority);
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData);
+        auditClient.updateCaseAudit(caseData, null);
         log.info("Updated priority Case: {} Priority {}", caseUUID, priority, value(EVENT, PRIORITY_UPDATED));
     }
 
@@ -167,5 +169,24 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         auditClient.viewTemplateAudit(caseData);
         return infoClient.getTemplate(caseData.getType());
+    }
+
+    Stream<TimelineItem> getCaseTimeline(UUID caseUUID) {
+        log.debug("Building Timeline for Case: {}", caseUUID);
+
+        CaseData caseData = getCaseData(caseUUID);
+        Set<GetAuditResponse> audit = new HashSet<>();
+        try {
+            audit.addAll(auditClient.getAuditLinesForCase(caseUUID));
+        }
+        catch(Exception e) { }
+
+        Set<CaseNote> notes = caseData.getCaseNotes();
+
+        Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp(), a.getUserID(), a.getType(), a.getAuditPayload()));
+        Stream<TimelineItem> notesTimeline = notes.stream().map(n -> new TimelineItem(n.getCaseUUID(),null, n.getCreated(), null, n.getCaseNoteType(), n.getText()));
+
+        return Stream.concat(auditTimeline, notesTimeline);
+
     }
 }
