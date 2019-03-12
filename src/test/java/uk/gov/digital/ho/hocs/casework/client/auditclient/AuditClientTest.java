@@ -190,7 +190,7 @@ public class AuditClientTest {
 
     @Test
     public void createTopicAudit() throws IOException {
-        auditClient.createTopicAudit(caseUUID, topic.getTextUUID());
+        auditClient.createTopicAudit(caseUUID, "a topic");
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_TOPIC_CREATED);

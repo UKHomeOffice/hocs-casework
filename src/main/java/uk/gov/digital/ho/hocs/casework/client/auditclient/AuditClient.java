@@ -122,13 +122,14 @@ public class AuditClient {
         sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_DELETED, null);
     }
 
-    public void createTopicAudit(UUID caseUUID, UUID topicNameUUID) {
-        sendAuditMessage(caseUUID, "", CASE_TOPIC_CREATED, null);
+    public void createTopicAudit(UUID caseUUID, String topicName) {
+        sendAuditMessage(caseUUID, String.format("{\"topic\":\"%s\"}", topicName), CASE_TOPIC_CREATED, null);
     }
 
-    public void deleteTopicAudit(UUID caseUUID, UUID topicNameUUID) {
-        sendAuditMessage(caseUUID, "", CASE_TOPIC_DELETED, null);
+    public void deleteTopicAudit(UUID caseUUID, UUID topicUUID) {
+        sendAuditMessage(caseUUID, String.format(""), CASE_TOPIC_DELETED, null);
     }
+
     public void createCaseAudit(CaseData caseData) {
         String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
         sendAuditMessage(caseData.getUuid(), auditPayload, CASE_CREATED, null);
