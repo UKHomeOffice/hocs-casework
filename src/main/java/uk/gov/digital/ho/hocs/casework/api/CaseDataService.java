@@ -178,12 +178,15 @@ public class CaseDataService {
         Set<GetAuditResponse> audit = new HashSet<>();
         try {
             audit.addAll(auditClient.getAuditLinesForCase(caseUUID));
+            log.info("Retrieved {} audit lines", audit.size());
         }
         catch(Exception e) {
             log.error("Failed to retrieve audit lines for case {}", caseUUID, value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
         }
 
         Set<CaseNote> notes = caseData.getCaseNotes();
+
+        log.info("Retrieved {} case notes", notes.size());
 
         Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp(), a.getUserID(), a.getType(), a.getAuditPayload()));
         Stream<TimelineItem> notesTimeline = notes.stream().map(n -> new TimelineItem(n.getCaseUUID(),null, n.getCreated(), null, n.getCaseNoteType(), n.getText()));
