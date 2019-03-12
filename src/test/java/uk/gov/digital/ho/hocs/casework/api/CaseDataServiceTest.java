@@ -149,8 +149,8 @@ public class CaseDataServiceTest {
 
         assertThat(timeline.size()).isEqualTo(3);
 
-        assertThat(timeline).anyMatch(t -> t.getMessage().equals("case note 2"));
-        assertThat(timeline).anyMatch(t -> t.getMessage().equals("case note 1"));
+        assertThat(timeline).anyMatch(t -> t.getMessage().contains("case note 2"));
+        assertThat(timeline).anyMatch(t -> t.getMessage().contains("case note 1"));
         assertThat(timeline).anyMatch(t -> t.getType().equals(CASE_CREATED.toString()));
 
         verify(auditClient, times(1)).getAuditLinesForCase(caseData.getUuid());
@@ -174,8 +174,8 @@ public class CaseDataServiceTest {
 
         assertThat(timeline.size()).isEqualTo(2);
 
-        assertThat(timeline).anyMatch(t -> t.getMessage().equals("case note 2"));
-        assertThat(timeline).anyMatch(t -> t.getMessage().equals("case note 1"));
+        assertThat(timeline).anyMatch(t -> t.getMessage().contains("case note 2"));
+        assertThat(timeline).anyMatch(t -> t.getMessage().contains("case note 1"));
         assertThat(timeline).noneMatch(t -> t.getType().equals(CASE_CREATED.toString()));
 
         verify(auditClient, times(1)).getAuditLinesForCase(caseData.getUuid());
