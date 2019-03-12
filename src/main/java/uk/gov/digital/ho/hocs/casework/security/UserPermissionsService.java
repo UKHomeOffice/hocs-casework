@@ -36,7 +36,7 @@ public class UserPermissionsService {
                 .filter(e-> e.getCaseTypeCode().equals(caseType))
                 .max(Comparator.comparing(e -> e.getAccessLevel()));
         return maxPermission.orElseThrow(
-                () -> new SecurityExceptions.PermissionCheckException("No permissionDtos found for case type",SECURITY_PARSE_ERROR)
+                () -> new SecurityExceptions.PermissionCheckException(String.format("No permissions found for case type %s", caseType),SECURITY_PARSE_ERROR)
         ).getAccessLevel();
     }
 

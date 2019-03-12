@@ -180,7 +180,7 @@ public class CaseDataService {
             audit.addAll(auditClient.getAuditLinesForCase(caseUUID));
         }
         catch(Exception e) {
-            log.error("Failed to retrieve audit linkes for case {}", caseUUID, value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
+            log.error("Failed to retrieve audit lines for case {}", caseUUID, value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
         }
 
         Set<CaseNote> notes = caseData.getCaseNotes();
