@@ -57,7 +57,7 @@ public class TopicService {
             InfoTopic infoTopic = infoClient.getTopic(topicUUID);
             Topic topic = new Topic(caseUUID, infoTopic.getLabel(), topicUUID);
             topicRepository.save(topic);
-            auditClient.createTopicAudit(caseUUID, topicUUID);
+            auditClient.createTopicAudit(caseUUID, infoTopic.getLabel());
             log.info("Created Topic: {} for Case: {}", topic.getUuid(), caseUUID, value(EVENT, CASE_TOPIC_CREATE));
         } else {
             throw new ApplicationExceptions.EntityCreationException(String.format("No TopicUUID given for Case: %s", caseUUID), CASE_TOPIC_UUID_NOT_GIVEN);

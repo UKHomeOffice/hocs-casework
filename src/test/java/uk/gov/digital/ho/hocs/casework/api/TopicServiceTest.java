@@ -83,7 +83,7 @@ public class TopicServiceTest {
 
         topicService.createTopic(caseUUID, topicNameUUID);
 
-        verify(auditClient, times(1)).createTopicAudit(caseUUID, topicNameUUID);
+        verify(auditClient, times(1)).createTopicAudit(caseUUID, topicName);
 
         verifyNoMoreInteractions(auditClient);
 
