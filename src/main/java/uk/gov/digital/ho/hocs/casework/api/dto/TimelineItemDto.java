@@ -24,7 +24,7 @@ public class TimelineItemDto {
     private String type;
 
     @JsonRawValue
-    private String message;
+    private String body;
 
     public static TimelineItemDto from(TimelineItem timelineItem) {
         return new TimelineItemDto(timelineItem.getCaseUUID(), timelineItem.getStageUUID(), timelineItem.getEventTime(), timelineItem.getUserName(), timelineItem.getType(), timelineItem.getMessage());
