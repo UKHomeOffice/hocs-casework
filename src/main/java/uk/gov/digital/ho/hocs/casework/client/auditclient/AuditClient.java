@@ -164,7 +164,7 @@ public class AuditClient {
     public void updateStageUser(Stage stage)  {
 
         try {
-            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageUserAllocation(stage.getUuid(), stage.getUserUUID())), STAGE_ALLOCATED_TO_USER, stage.getUuid());
+            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageUserAllocation(stage.getUuid(), stage.getUserUUID(), stage.getStageType())), STAGE_ALLOCATED_TO_USER, stage.getUuid());
         } catch (JsonProcessingException e) {
             log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
         }
@@ -172,7 +172,7 @@ public class AuditClient {
 
     public void updateStageTeam(Stage stage)  {
         try {
-            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stage.getUuid(), stage.getTeamUUID())), STAGE_ALLOCATED_TO_TEAM, stage.getUuid());
+            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stage.getUuid(), stage.getTeamUUID(),stage.getStageType())), STAGE_ALLOCATED_TO_TEAM, stage.getUuid());
         } catch (JsonProcessingException e) {
             log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
         }
