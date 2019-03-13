@@ -171,7 +171,6 @@ public class AuditClient {
     }
 
     public void updateStageTeam(Stage stage)  {
-        String auditPayload = String.format("{\"stage\":\"%s\", \"team\":\"%s\"}",  stage.getStageType(), stage.getTeamUUID());
         try {
             sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stage.getUuid(), stage.getTeamUUID())), STAGE_ALLOCATED_TO_TEAM, stage.getUuid());
         } catch (JsonProcessingException e) {
