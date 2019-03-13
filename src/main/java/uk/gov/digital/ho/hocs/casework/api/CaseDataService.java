@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -74,7 +75,7 @@ public class CaseDataService {
         return caseType;
     }
 
-    CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) throws JsonProcessingException {
+    CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
         log.debug("Creating Case of type: {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
         log.debug("Allocating Ref: {}", caseNumber);
@@ -85,7 +86,7 @@ public class CaseDataService {
         return caseData;
     }
 
-    void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) throws JsonProcessingException {
+    void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseUUID);
         if (data != null) {
             log.debug("Data size {}", data.size());
@@ -99,7 +100,7 @@ public class CaseDataService {
         }
     }
 
-    void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) throws JsonProcessingException {
+    void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) {
         log.debug("Updating Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
@@ -108,7 +109,7 @@ public class CaseDataService {
         log.info("Updated Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID, value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
     }
 
-    void updatePrimaryTopic(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID) throws JsonProcessingException {
+    void updatePrimaryTopic(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID) {
         log.debug("Updating Primary Topic for Case: {} Topic: {}", caseUUID, primaryTopicUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryTopicUUID(primaryTopicUUID);
@@ -117,7 +118,7 @@ public class CaseDataService {
         log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));
     }
 
-    void updatePriority(UUID caseUUID, boolean priority) throws JsonProcessingException {
+    void updatePriority(UUID caseUUID, boolean priority) {
         log.debug("Updating priority for Case: {} Priority {}", caseUUID, priority);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPriority(priority);
@@ -189,7 +190,15 @@ public class CaseDataService {
         log.info("Retrieved {} case notes", notes.size());
 
         Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp(), a.getUserID(), a.getType(), a.getAuditPayload()));
-        Stream<TimelineItem> notesTimeline = notes.stream().map(n -> new TimelineItem(n.getCaseUUID(),null, n.getCreated(), null, n.getCaseNoteType(), String.format("{ \"note\": \"%s\" }", n.getText())));
+        Stream<TimelineItem> notesTimeline = notes.stream().map(n -> {
+            String auditPayload = "";
+            try {
+                auditPayload = objectMapper.writeValueAsString(new AuditPayload.CaseNote(n.getText()));
+            } catch (JsonProcessingException e) {
+                log.error("Failed to parse case note text for note {}", n.getUuid(), UNCAUGHT_EXCEPTION);
+            }
+            return new TimelineItem(n.getCaseUUID(), null, n.getCreated(), null, n.getCaseNoteType(), auditPayload);
+        });
 
         return Stream.concat(auditTimeline, notesTimeline);
 
