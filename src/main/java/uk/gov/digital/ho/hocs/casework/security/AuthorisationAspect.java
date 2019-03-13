@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.security;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -63,7 +64,7 @@ public class AuthorisationAspect {
         }
     }
 
-    private AccessLevel getUserAccessLevel(ProceedingJoinPoint joinPoint) {
+    private AccessLevel getUserAccessLevel(ProceedingJoinPoint joinPoint) throws JsonProcessingException {
         if (joinPoint.getArgs().length > 0) {
             String caseType;
             if (joinPoint.getArgs()[0] instanceof UUID) {

@@ -1,5 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.client.auditclient;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -68,38 +69,55 @@ public class AuditClient {
         this.requestData = requestData;
         this.restHelper = restHelper;
         this.serviceBaseURL = auditService;
-
     }
 
-
-    public void updateCaseAudit(CaseData caseData, UUID stageUUID) {
-        String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, CASE_UPDATED, stageUUID);
+    public void updateCaseAudit(CaseData caseData, UUID stageUUID)  {
+        try {
+            sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), CASE_UPDATED, stageUUID);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+        }
     }
 
-    public void viewCaseAudit(CaseData caseData) {
-        String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_VIEWED, null);
+    public void viewCaseAudit(CaseData caseData)  {
+        try {
+            sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), EventType.CASE_VIEWED, null);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+        }
     }
 
-    public void viewCaseSummaryAudit(CaseData caseData, CaseSummary caseSummary) {
-        String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_SUMMARY_VIEWED, null);
+    public void viewCaseSummaryAudit(CaseData caseData, CaseSummary caseSummary)  {
+        try {
+            sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), EventType.CASE_SUMMARY_VIEWED, null);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+        }
     }
 
-    public void viewStandardLineAudit(CaseData caseData) {
-        String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.STANDARD_LINE_VIEWED, null);
+    public void viewStandardLineAudit(CaseData caseData)  {
+        try {
+            sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), EventType.STANDARD_LINE_VIEWED, null);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+        }
     }
 
-    public void viewTemplateAudit(CaseData caseData) {
-        String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.TEMPLATE_VIEWED, null);
+    public void viewTemplateAudit(CaseData caseData)  {
+        try {
+            sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), EventType.TEMPLATE_VIEWED, null);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+        }
     }
 
-    public void deleteCaseAudit(CaseData caseData) {
-        String auditPayload = String.format("{\"reference\":\"%s\"}", caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, EventType.CASE_DELETED, null);
+    public void deleteCaseAudit(CaseData caseData)  {
+        AuditPayload.CaseReference auditPayload = new AuditPayload.CaseReference(caseData.getReference());
+        try {
+            sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(auditPayload), EventType.CASE_DELETED, null);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+        }
     }
 
     public void viewCaseNotesAudit(UUID caseUUID, Set<CaseNote> caseNotes) {
@@ -122,27 +140,43 @@ public class AuditClient {
         sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_DELETED, null);
     }
 
-    public void createTopicAudit(UUID caseUUID, String topicName) {
-        sendAuditMessage(caseUUID, String.format("{\"topic\":\"%s\"}", topicName), CASE_TOPIC_CREATED, null);
+    public void createTopicAudit(UUID caseUUID, String topicName)  {
+
+        try {
+            sendAuditMessage(caseUUID, objectMapper.writeValueAsString(new AuditPayload.Topic(topicName)), CASE_TOPIC_CREATED, null);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+        }
     }
 
     public void deleteTopicAudit(UUID caseUUID, UUID topicUUID) {
-        sendAuditMessage(caseUUID, String.format(""), CASE_TOPIC_DELETED, null);
+        sendAuditMessage(caseUUID, "", CASE_TOPIC_DELETED, null);
     }
 
-    public void createCaseAudit(CaseData caseData) {
-        String auditPayload = String.format("{\"reference\":\"%s\"}",  caseData.getReference());
-        sendAuditMessage(caseData.getUuid(), auditPayload, CASE_CREATED, null);
+    public void createCaseAudit(CaseData caseData)  {
+        try {
+            sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), CASE_CREATED, null);
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+        }
     }
 
-    public void updateStageUser(Stage stage) {
-        String auditPayload = String.format("{\"stage\":\"%s\", \"user\":\"%s\"}",  stage.getStageType(), stage.getUserUUID());
-        sendAuditMessage(stage.getCaseUUID(), auditPayload, STAGE_ALLOCATED_TO_USER, stage.getUuid());
+    public void updateStageUser(Stage stage)  {
+
+        try {
+            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageUserAllocation(stage.getUuid(), stage.getUserUUID())), STAGE_ALLOCATED_TO_USER, stage.getUuid());
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+        }
     }
 
-    public void updateStageTeam(Stage stage) {
-        String auditPayload = String.format("{\"stage\":\"%s\", \"user\":\"%s\"}",  stage.getStageType(), stage.getTeamUUID());
-        sendAuditMessage(stage.getCaseUUID(), auditPayload, STAGE_ALLOCATED_TO_TEAM, stage.getUuid());
+    public void updateStageTeam(Stage stage)  {
+        String auditPayload = String.format("{\"stage\":\"%s\", \"team\":\"%s\"}",  stage.getStageType(), stage.getTeamUUID());
+        try {
+            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stage.getUuid(), stage.getTeamUUID())), STAGE_ALLOCATED_TO_TEAM, stage.getUuid());
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+        }
     }
 
     private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType, UUID stageUUID){
@@ -165,7 +199,6 @@ public class AuditClient {
         }
     }
 
-
     public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID) {
         try {
             String events = String.join(",", TIMELINE_EVENTS);
@@ -176,7 +209,6 @@ public class AuditClient {
             log.error("Could not get audit lines", value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
             return new HashSet<>();
         }
-
     }
 
     private Map<String, Object> getQueueHeaders() {
