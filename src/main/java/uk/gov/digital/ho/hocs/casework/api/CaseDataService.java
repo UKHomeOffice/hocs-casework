@@ -189,7 +189,7 @@ public class CaseDataService {
         log.info("Retrieved {} case notes", notes.size());
 
         Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp(), a.getUserID(), a.getType(), a.getAuditPayload()));
-        Stream<TimelineItem> notesTimeline = notes.stream().map(n -> new TimelineItem(n.getCaseUUID(),null, n.getCreated(), null, n.getCaseNoteType(), String.format("\"note\":\"%s\"", n.getText())));
+        Stream<TimelineItem> notesTimeline = notes.stream().map(n -> new TimelineItem(n.getCaseUUID(),null, n.getCreated(), null, n.getCaseNoteType(), String.format("{ \"note\": \"%s\" }", n.getText())));
 
         return Stream.concat(auditTimeline, notesTimeline);
 
