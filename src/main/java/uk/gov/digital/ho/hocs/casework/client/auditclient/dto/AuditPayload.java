@@ -23,6 +23,7 @@ public interface AuditPayload {
     class StageTeamAllocation {
         private UUID stageUUID;
         private UUID teamUUID;
+        private String stage;
     }
 
     @AllArgsConstructor
@@ -30,6 +31,7 @@ public interface AuditPayload {
     class StageUserAllocation {
         private UUID stageUUID;
         private UUID userUUID;
+        private String stage;
     }
 
     @AllArgsConstructor
