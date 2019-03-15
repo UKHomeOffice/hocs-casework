@@ -39,4 +39,12 @@ public interface AuditPayload {
     class CaseNote {
         private String caseNote;
     }
+
+    @AllArgsConstructor
+    @Getter
+    class Document {
+        private UUID documentUUID;
+        private String documentTitle;
+        private String DocumentType;
+    }
 }

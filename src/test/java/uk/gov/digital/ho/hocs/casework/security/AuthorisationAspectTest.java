@@ -11,13 +11,16 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAUTHORISED;
 
@@ -43,12 +46,10 @@ public class AuthorisationAspectTest {
     @Before
     public void setup() {
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.OWNER);
-
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setMethod("GET");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
         aspect = new AuthorisationAspect(caseService, userService);
-
     }
 
     @Test
@@ -70,8 +71,6 @@ public class AuthorisationAspectTest {
 
         verifyNoMoreInteractions(caseService);
     }
-
-    //todo: fallback to checking database tests.
 
     @Test
     public void shouldNotCallCaseServiceWhenNewCase() throws Throwable {
@@ -107,32 +106,122 @@ public class AuthorisationAspectTest {
         verifyNoMoreInteractions(caseService);
     }
 
-    @Test(expected = SecurityExceptions.PermissionCheckException.class)
+    @Test
+    public void shouldProceedIfUserIsInAssignedTeamAndRequiredPermissionIsRead() throws Throwable {
+
+        String type = "MIN";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+        UUID teamUUID = UUID.randomUUID();
+        CaseData caseData = mock(CaseData.class);
+
+        when(userService.getUserTeams()).thenReturn(Set.of(teamUUID));
+        when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.UNSET);
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
+        when(caseService.getCaseTeams(caseUUID)).thenReturn(Set.of(teamUUID));
+
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
+        verify(proceedingJoinPoint, times(1)).proceed();
+        verify(caseService, times(1)).getCaseType(caseUUID);
+        verify(caseService, times(1)).getCaseTeams(caseUUID);
+    }
+
+    @Test
+    public void shouldNotProceedIfUserIsInAssignedTeamAndRequiredPermissionIsWrite() throws Throwable {
+
+        String type = "MIN";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+
+        CaseData caseData = mock(CaseData.class);
+
+        UUID teamUUID =UUID.randomUUID();
+
+        when(userService.getUserTeams()).thenReturn(Set.of(teamUUID));
+        when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.UNSET);
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.WRITE);
+
+        assertThatThrownBy(() -> { aspect.validateUserAccess(proceedingJoinPoint,annotation);})
+                .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
+                .hasMessageContaining("User does not have access to the requested resource");
+
+        verify(proceedingJoinPoint, never()).proceed();
+        verify(caseService, times(1)).getCaseType(caseUUID);
+        verify(caseService, times(1)).getCaseTeams(caseUUID);
+    }
+
+
+    @Test
+    public void shouldNotProceedIfUserIsNotInAssignedTeamAndRequiredPermissionIsRead() throws Throwable {
+
+        String type = "MIN";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+
+        CaseData caseData = mock(CaseData.class);
+
+        UUID teamUUID =UUID.randomUUID();
+        ActiveStage activeStage = new ActiveStage(1L,
+                UUID.randomUUID(),
+                LocalDateTime.now(),
+                "MIN",
+                LocalDate.now(),
+                UUID.randomUUID(),
+                caseUUID,
+                teamUUID,
+                UUID.randomUUID());
+
+        when(userService.getUserTeams()).thenReturn(Set.of(UUID.randomUUID()));
+        when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.UNSET);
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
+        assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
+                .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
+                .hasMessageContaining("ser does not have access to the requested resource");
+
+        verify(proceedingJoinPoint, never()).proceed();
+        verify(caseService, times(1)).getCaseType(caseUUID);
+        verify(caseService, times(1)).getCaseTeams(caseUUID);
+    }
+
+    @Test
     public void shouldNotProceedIfUserDoesNotHavePermission() throws Throwable {
 
         String type = "MIN";
         Object[] args = new Object[1];
         args[0] = caseUUID;
-        when(userService.getMaxAccessLevel(any())).thenThrow(new SecurityExceptions.PermissionCheckException("User does not have any permission onf this case type", SECURITY_UNAUTHORISED));
+
+        CaseData caseData = mock(CaseData.class);
+
+        when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.UNSET);
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
-
-        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
+        assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
+                .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
+                .hasMessageContaining("User does not have access to the requested resource");
 
         verify(proceedingJoinPoint, never()).proceed();
         verify(caseService, times(1)).getCaseType(caseUUID);
-
-        verifyNoMoreInteractions(caseService);
+        verify(caseService, times(1)).getCaseTeams(caseUUID);
     }
 
-    @Test(expected = SecurityExceptions.PermissionCheckException.class)
+    @Test
     public void shouldThrowExceptionOnError() throws Throwable {
 
         Object[] args = new Object[1];
         args[0] = "bad UUID";
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
-        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        assertThatThrownBy(() -> { aspect.validateUserAccess(proceedingJoinPoint,annotation);})
+                .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
+                .hasMessageContaining("Unable parse method parameters for type java.lang.String");
 
         verify(proceedingJoinPoint, never()).proceed();
     }

@@ -12,7 +12,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 
-
+import java.util.Set;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_PARSE_ERROR;
@@ -64,21 +64,33 @@ public class AuthorisationAspect {
         }
     }
 
-    private AccessLevel getUserAccessLevel(ProceedingJoinPoint joinPoint) throws JsonProcessingException {
-        if (joinPoint.getArgs().length > 0) {
-            String caseType;
-            if (joinPoint.getArgs()[0] instanceof UUID) {
-                UUID caseUUID = (UUID) joinPoint.getArgs()[0];
-                caseType = caseService.getCaseType(caseUUID);
-            } else if (joinPoint.getArgs()[0] instanceof CreateCaseRequest) {
-                CreateCaseRequest createCaseRequest = (CreateCaseRequest) joinPoint.getArgs()[0];
-                caseType = createCaseRequest.getType().getDisplayCode();
-            } else {
-                throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName(), SECURITY_PARSE_ERROR);
-            }
-            return userService.getMaxAccessLevel(caseType);
-        } else {
+    private AccessLevel getUserAccessLevel(ProceedingJoinPoint joinPoint) {
+        if (joinPoint.getArgs().length < 1) {
             throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without case UUID parameters", SECURITY_PARSE_ERROR);
         }
+
+        String caseType;
+        UUID caseUUID = null;
+        if (joinPoint.getArgs()[0] instanceof UUID) {
+            caseUUID = (UUID) joinPoint.getArgs()[0];
+            caseType = caseService.getCaseType(caseUUID);
+        } else if (joinPoint.getArgs()[0] instanceof CreateCaseRequest) {
+            CreateCaseRequest createCaseRequest = (CreateCaseRequest) joinPoint.getArgs()[0];
+            caseType = createCaseRequest.getType().getDisplayCode();
+        } else {
+            throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName(), SECURITY_PARSE_ERROR);
+        }
+
+        AccessLevel accessLevel = userService.getMaxAccessLevel(caseType);
+
+        if (caseUUID != null && accessLevel.equals(AccessLevel.UNSET)) {
+            Set<UUID> teams = userService.getUserTeams();
+            if (caseService.getCaseTeams(caseUUID).stream().anyMatch(t -> teams.contains(t))) {
+                return AccessLevel.READ;
+            } else {
+                return AccessLevel.UNSET;
+            }
+        }
+        return accessLevel;
     }
 }

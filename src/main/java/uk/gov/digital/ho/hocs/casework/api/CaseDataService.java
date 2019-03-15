@@ -16,6 +16,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -23,6 +24,14 @@ import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @Service
 @Slf4j
@@ -41,6 +50,19 @@ public class CaseDataService {
         this.auditClient = auditClient;
         this.objectMapper = objectMapper;
     }
+
+    public static final Set<String> TIMELINE_EVENTS = Set.of(
+            CASE_CREATED.toString(),
+            CASE_UPDATED.toString(),
+            CASE_TOPIC_CREATED.toString(),
+            CASE_TOPIC_DELETED.toString(),
+            STAGE_ALLOCATED_TO_TEAM.toString(),
+            STAGE_ALLOCATED_TO_USER.toString(),
+            CORRESPONDENT_DELETED.toString(),
+            CORRESPONDENT_CREATED.toString(),
+            DOCUMENT_CREATED.toString(),
+            DOCUMENT_DELETED.toString()
+    );
 
     public CaseData getCase(UUID caseUUID) {
         CaseData caseData = getCaseData(caseUUID);
@@ -178,8 +200,8 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         Set<GetAuditResponse> audit = new HashSet<>();
         try {
-            audit.addAll(auditClient.getAuditLinesForCase(caseUUID));
-            log.info("Retrieved {} audit lines", audit.size());
+            audit.addAll(auditClient.getAuditLinesForCase(caseUUID, TIMELINE_EVENTS));
+            log.debug("Retrieved {} audit lines", audit.size());
         }
         catch(Exception e) {
             log.error("Failed to retrieve audit lines for case {}", caseUUID, value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
@@ -187,7 +209,7 @@ public class CaseDataService {
 
         Set<CaseNote> notes = caseData.getCaseNotes();
 
-        log.info("Retrieved {} case notes", notes.size());
+        log.debug("Retrieved {} case notes", notes.size());
 
         Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp(), a.getUserID(), a.getType(), a.getAuditPayload()));
         Stream<TimelineItem> notesTimeline = notes.stream().map(n -> {
@@ -202,5 +224,22 @@ public class CaseDataService {
 
         return Stream.concat(auditTimeline, notesTimeline);
 
+    }
+
+    public Set<UUID> getCaseTeams(UUID caseUUID) {
+        log.debug("Retrieving previous teams for : {}", caseUUID);
+
+        Set<GetAuditResponse> auditLines = auditClient.getAuditLinesForCase(caseUUID, Set.of(STAGE_ALLOCATED_TO_TEAM.toString()));
+        log.info("Got {} audits", auditLines.size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
+
+        return auditLines.stream().map( a -> {
+            try {
+                return objectMapper.readValue(a.getAuditPayload(), AuditPayload.StageTeamAllocation.class).getTeamUUID();
+            }
+            catch(IOException e) {
+                log.error("Unable to parse audit payload for reason {}", e.getMessage(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
+                return null;
+            }
+        }).filter(a -> a != null).collect(Collectors.toSet());
     }
 }

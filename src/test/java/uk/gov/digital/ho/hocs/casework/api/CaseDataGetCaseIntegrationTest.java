@@ -15,12 +15,16 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -33,6 +37,7 @@ import static org.springframework.test.web.client.MockRestServiceServer.bindTo;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -49,7 +54,8 @@ public class CaseDataGetCaseIntegrationTest {
     @Autowired
     private RestTemplate restTemplate;
 
-    ObjectMapper mapper = new ObjectMapper();
+    @Autowired
+    ObjectMapper mapper;
 
     private final UUID CASE_UUID = UUID.fromString("14915b78-6977-42db-b343-0915a7f412a1");
 
@@ -114,6 +120,7 @@ public class CaseDataGetCaseIntegrationTest {
 
     @Test
     public void shouldReturnUnauthorisedWhenGetValidCaseWithPermission() throws JsonProcessingException {
+        setupEmptyMockAudit(CASE_UUID);
         setupMockTeams("TEST1", 5);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -159,6 +166,7 @@ public class CaseDataGetCaseIntegrationTest {
 
     @Test
     public void shouldReturnUnauthorisedForInValidCaseWithPermissionLevelUnset() throws JsonProcessingException {
+        setupEmptyMockAudit(INVALID_CASE_UUID);
         setupMockTeams("TEST", 0);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -168,6 +176,7 @@ public class CaseDataGetCaseIntegrationTest {
 
     @Test
     public void shouldReturnUnauthorisedForInValidCaseWithoutPermission() throws JsonProcessingException {
+        setupEmptyMockAudit(INVALID_CASE_UUID);
         setupMockTeams("TEST1", 5);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -175,9 +184,9 @@ public class CaseDataGetCaseIntegrationTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
-
     @Test
     public void shouldReturnCaseWhenGetValidCaseWithValidPermissionsAndReturnUnauthorisedWithEmptyPermissionsForSameCase() throws JsonProcessingException {
+        setupEmptyMockAudit(CASE_UUID);
         setupMockTeams("TEST", 5);
         setupMockTeams("TEST1", 5);
         ResponseEntity<String> validPermissionResult = testRestTemplate.exchange(
@@ -213,5 +222,14 @@ public class CaseDataGetCaseIntegrationTest {
                 .expect(requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
+    }
+
+    private void setupEmptyMockAudit(UUID caseUUID) throws JsonProcessingException {
+        GetAuditListResponse restResponse = new GetAuditListResponse(new HashSet<>());
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8087/audit/case/" + caseUUID + "?types=STAGE_ALLOCATED_TO_TEAM"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(restResponse), MediaType.APPLICATION_JSON));
     }
 }

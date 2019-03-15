@@ -58,6 +58,14 @@ public class UserPermissionsServiceTest {
         assertThat(service.getUserPermission().size()).isEqualTo(3);
     }
 
+    @Test
+    public void shouldReturnUnsetWhenNoPermissionsFoundForCaseType() {
+        when(requestData.groupsArray()).thenReturn(new String[0]);
+        service = new UserPermissionsService(requestData, infoClient);
+
+        assertThat(service.getMaxAccessLevel("MIN")).isEqualTo(AccessLevel.UNSET);
+    }
+
 
     @Test
     public void shouldIgnoreInvalidUserGroups() {
