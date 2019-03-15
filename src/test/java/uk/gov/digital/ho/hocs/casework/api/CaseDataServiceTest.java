@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -26,14 +27,13 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Java6Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataServiceTest {
 
     private static final long caseID = 12345L;
-
     private final CaseDataType caseType = new CaseDataType("MIN", "a1");
-
     private final UUID caseUUID = UUID.randomUUID();
 
     @Mock
@@ -141,7 +141,7 @@ public class CaseDataServiceTest {
 
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
-        when(auditClient.getAuditLinesForCase(caseData.getUuid())).thenReturn(auditResponse);
+        when(auditClient.getAuditLinesForCase(eq(caseData.getUuid()), any())).thenReturn(auditResponse);
 
         List<TimelineItem> timeline = caseDataService.getCaseTimeline(caseData.getUuid()).collect(Collectors.toList());
 
@@ -153,7 +153,7 @@ public class CaseDataServiceTest {
         assertThat(timeline).anyMatch(t -> t.getMessage().contains("case note 1"));
         assertThat(timeline).anyMatch(t -> t.getType().equals(CASE_CREATED.toString()));
 
-        verify(auditClient, times(1)).getAuditLinesForCase(caseData.getUuid());
+        verify(auditClient, times(1)).getAuditLinesForCase(eq(caseData.getUuid()), any());
         verifyNoMoreInteractions(auditClient);
     }
 
@@ -168,7 +168,7 @@ public class CaseDataServiceTest {
 
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
-        when(auditClient.getAuditLinesForCase(caseData.getUuid())).thenThrow(new RuntimeException("Error"));
+        when(auditClient.getAuditLinesForCase(eq(caseData.getUuid()), any())).thenThrow(new RuntimeException("Error"));
 
         List<TimelineItem> timeline = caseDataService.getCaseTimeline(caseData.getUuid()).collect(Collectors.toList());
 
@@ -178,9 +178,39 @@ public class CaseDataServiceTest {
         assertThat(timeline).anyMatch(t -> t.getMessage().contains("case note 1"));
         assertThat(timeline).noneMatch(t -> t.getType().equals(CASE_CREATED.toString()));
 
-        verify(auditClient, times(1)).getAuditLinesForCase(caseData.getUuid());
+        verify(auditClient, times(1)).getAuditLinesForCase(eq(caseData.getUuid()), any());
         verifyNoMoreInteractions(auditClient);
     }
+
+    @Test
+    public void shouldGetCaseTeams() throws JsonProcessingException {
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
+        UUID auditResponseUUID = UUID.randomUUID();
+        UUID teamUUID = UUID.randomUUID();
+
+        String payload = objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stageUUID, teamUUID, "STAGE_TYPE"));
+
+        Set<GetAuditResponse> auditResponse = Set.of(new GetAuditResponse(auditResponseUUID,
+                caseUUID,
+                UUID.randomUUID(),
+                "correlation Id",
+                "hocs-casework",
+                payload,
+                "namespace", LocalDateTime.now(),
+                STAGE_ALLOCATED_TO_TEAM.toString(),
+                "user"));
+
+        when(auditClient.getAuditLinesForCase(eq(caseData.getUuid()), any())).thenReturn(auditResponse);
+
+        Set<UUID> teams = caseDataService.getCaseTeams(caseData.getUuid());
+
+        assertThat(teams.size()).isEqualTo(1);
+        assertThat(teams).contains(teamUUID);
+
+        verify(auditClient, times(1)).getAuditLinesForCase(eq(caseData.getUuid()), any());
+        verifyNoMoreInteractions(auditClient);
+    }
+
 
     @Test
     public void shouldGetCaseSummaryWithValidParams() throws ApplicationExceptions.EntityNotFoundException, IOException {
@@ -308,9 +338,6 @@ public class CaseDataServiceTest {
                 "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString(),
                 "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
 
-        Correspondent correspondent = new Correspondent(caseData.getUuid(), "CORRESPONDENT", "some name,",
-                new Address("","","","",""), "12345","some email", "some ref");
-
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
         when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
@@ -366,9 +393,7 @@ public class CaseDataServiceTest {
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetCaseMissingUUIDException() throws ApplicationExceptions.EntityNotFoundException {
-
         caseDataService.getCase(null);
-
     }
 
     @Test

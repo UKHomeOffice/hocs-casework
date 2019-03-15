@@ -14,7 +14,6 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -40,17 +39,6 @@ public class AuditClient {
 
     private final RestHelper restHelper;
     private final String serviceBaseURL;
-
-    public static final Set<String> TIMELINE_EVENTS = Set.of(
-            CASE_CREATED.toString(),
-            CASE_UPDATED.toString(),
-            CASE_TOPIC_CREATED.toString(),
-            CASE_TOPIC_DELETED.toString(),
-            STAGE_ALLOCATED_TO_TEAM.toString(),
-            STAGE_ALLOCATED_TO_USER.toString(),
-            CORRESPONDENT_DELETED.toString(),
-            CORRESPONDENT_CREATED.toString()
-            );
 
     @Autowired
     public AuditClient(ProducerTemplate producerTemplate,
@@ -198,9 +186,9 @@ public class AuditClient {
         }
     }
 
-    public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID) {
+    public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID, Set<String> requestedEvents) {
         try {
-            String events = String.join(",", TIMELINE_EVENTS);
+            String events = String.join(",", requestedEvents);
             GetAuditListResponse response = restHelper.get(serviceBaseURL, String.format("/audit/case/%s?types=%s", caseUUID, events), GetAuditListResponse.class);
             log.info("Got {} audits", response.getAudits().size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
             return response.getAudits();

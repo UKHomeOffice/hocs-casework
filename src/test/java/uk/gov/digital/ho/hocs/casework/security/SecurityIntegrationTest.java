@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.security;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,15 +21,10 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
-
 import java.time.LocalDate;
 import java.util.*;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.client.MockRestServiceServer.bindTo;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RunWith(SpringRunner.class)
 @Profile("local")
@@ -50,36 +44,66 @@ public class SecurityIntegrationTest {
     InfoClient infoClient;
 
     String userId = UUID.randomUUID().toString();
+    UUID teamUUID = UUID.fromString("44444444-2222-2222-2222-222222222222");
     CaseDataType caseDataType = new CaseDataType("MIN", "a1");
 
     @Autowired
     ObjectMapper mapper;
 
     @Before
-    public void setup() throws JsonProcessingException {
+    public void setup() {
         when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
     }
 
 
     @Test
     public void shouldGetCaseDataWhenInCaseTypeGroup() {
-        UUID caseUUID = UUID.randomUUID();
+        Map<String,String> caseSubData = Map.of("key", "value");
 
-        Map<String,String> caseSubData = new HashMap<String, String>(){{
-            put("key","value");
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now(), LocalDate.now());
+        when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
+        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("MIN");
+
+        headers.add(RequestData.USER_ID_HEADER, userId);
+        headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
+        HttpEntity httpEntity = new HttpEntity(headers);
+        ResponseEntity<String> result = restTemplate.exchange( getBasePath()  + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetCaseDataWhenNoAccessToCaseTypeInTeamPreviouslyAssignedToCase() {
+
+        Map<String,String> caseSubData = new HashMap<>() {{
+            put("key", "value");
         }};
-
 
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now(), LocalDate.now());
 
-        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
-        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
+        when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
+        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("TRO");
+
+        headers.add(RequestData.USER_ID_HEADER, userId);
+        headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
+        HttpEntity httpEntity = new HttpEntity(headers);
+        ResponseEntity<String> result = restTemplate.exchange( getBasePath()  + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldReturnForbiddenWhenNotInCaseTypeAndNotInTeamPreviouslyAssignedToCase() {
+        UUID caseUUID = UUID.randomUUID();
+
+        when(caseDataService.getCaseTeams(caseUUID)).thenReturn(Set.of(UUID.randomUUID()));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("TRO");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
         HttpEntity httpEntity = new HttpEntity(headers);
         ResponseEntity<String> result = restTemplate.exchange( getBasePath()  + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test

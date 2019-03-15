@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "active_stage")
 public class ActiveStage implements Serializable {

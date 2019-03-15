@@ -9,6 +9,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
@@ -270,11 +271,11 @@ public class AuditClientTest {
                 "namespace", LocalDateTime.now(),EventType.CASE_CREATED.toString(),
                 "user")));
 
-        String events = AuditClient.TIMELINE_EVENTS.stream().collect(Collectors.joining(","));
+        String events = CaseDataService.TIMELINE_EVENTS.stream().collect(Collectors.joining(","));
         when(restHelper.get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
                 GetAuditListResponse.class)).thenReturn(restResponse);
 
-        Set<GetAuditResponse> response = auditClient.getAuditLinesForCase(caseUUID);
+        Set<GetAuditResponse> response = auditClient.getAuditLinesForCase(caseUUID, CaseDataService.TIMELINE_EVENTS);
         verify(restHelper, times(1)).get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
                 GetAuditListResponse.class);
         assertThat(response.size()).isEqualTo(1);
@@ -284,11 +285,11 @@ public class AuditClientTest {
     @Test
     public void shouldReturnEmptyCaseHistoryWhenAuditServiceCallFails() {
         UUID caseUUID = UUID.randomUUID();
-        String events = AuditClient.TIMELINE_EVENTS.stream().collect(Collectors.joining(","));
+        String events = CaseDataService.TIMELINE_EVENTS.stream().collect(Collectors.joining(","));
         when(restHelper.get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
                 GetAuditListResponse.class)).thenThrow(new ApplicationExceptions.ResourceException("Error", LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
 
-        Set<GetAuditResponse> response = auditClient.getAuditLinesForCase(caseUUID);
+        Set<GetAuditResponse> response = auditClient.getAuditLinesForCase(caseUUID, CaseDataService.TIMELINE_EVENTS);
         verify(restHelper, times(1)).get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
                 GetAuditListResponse.class);
         assertThat(response.size()).isEqualTo(0);

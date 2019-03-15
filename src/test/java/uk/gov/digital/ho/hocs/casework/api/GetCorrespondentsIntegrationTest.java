@@ -15,6 +15,7 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
@@ -121,6 +122,7 @@ public class GetCorrespondentsIntegrationTest {
 
     @Test
     public void shouldReturnUnauthorisedWhenGetCorrespondentsForValidCaseWithPermissionLevelUnset() throws JsonProcessingException {
+        setupEmptyMockAudit(CASE_UUID);
         setupMockTeams("TEST", 0);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -129,6 +131,7 @@ public class GetCorrespondentsIntegrationTest {
 
     @Test
     public void shouldReturnUnauthorisedWhenGetCorrespondentsForValidCaseWithoutPermission() throws JsonProcessingException {
+        setupEmptyMockAudit(CASE_UUID);
         setupMockTeams("TEST1", 5);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -174,6 +177,7 @@ public class GetCorrespondentsIntegrationTest {
 
     @Test
     public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelUnset() throws JsonProcessingException {
+        setupEmptyMockAudit(INVALID_CASE_UUID);
         setupMockTeams("TEST", 0);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -222,6 +226,15 @@ public class GetCorrespondentsIntegrationTest {
                 .expect(requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
+    }
+
+    private void setupEmptyMockAudit(UUID caseUUID) throws JsonProcessingException {
+        GetAuditListResponse restResponse = new GetAuditListResponse(new HashSet<>());
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8087/audit/case/" + caseUUID + "?types=STAGE_ALLOCATED_TO_TEAM"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(restResponse), MediaType.APPLICATION_JSON));
     }
 
 }
