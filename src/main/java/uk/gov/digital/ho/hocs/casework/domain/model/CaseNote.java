@@ -61,4 +61,19 @@ public class CaseNote implements Serializable {
         this.author = author;
     }
 
+
+//TODO Migration Only Code - remove after migration
+    public CaseNote(UUID caseUUID, String caseNoteType, LocalDateTime created, String text) {
+        if (caseUUID == null || caseNoteType == null || text == null) {
+            throw new ApplicationExceptions.EntityCreationException(
+                    String.format("Cannot create case note(%s,%s,%s).", caseUUID, created, text), CASE_NOTE_CREATE_FAILURE);
+        }
+
+        this.uuid = UUID.randomUUID();
+        this.created = created;
+        this.caseNoteType = caseNoteType;
+        this.caseUUID = caseUUID;
+        this.text = text;
+    }
+
 }
