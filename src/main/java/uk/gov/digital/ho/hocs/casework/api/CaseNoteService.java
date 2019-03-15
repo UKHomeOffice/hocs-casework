@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
@@ -20,11 +21,13 @@ public class CaseNoteService {
 
     private final CaseNoteRepository caseNoteRepository;
     private final AuditClient auditClient;
+    private final RequestData requestData;
 
     @Autowired
-    public CaseNoteService(CaseNoteRepository caseNoteRepository, AuditClient auditClient) {
+    public CaseNoteService(CaseNoteRepository caseNoteRepository, AuditClient auditClient, RequestData requestData) {
         this.caseNoteRepository = caseNoteRepository;
         this.auditClient = auditClient;
+        this.requestData = requestData;
     }
 
     Set<CaseNote> getCaseNotes(UUID caseUUID) {
@@ -49,7 +52,7 @@ public class CaseNoteService {
 
     public CaseNote createCaseNote(UUID caseUUID, String caseNoteType, String text) {
         log.debug("Creating CaseNote of Type: {} for Case: {}", caseNoteType, caseUUID);
-        CaseNote caseNote = new CaseNote(caseUUID, caseNoteType, text);
+        CaseNote caseNote = new CaseNote(caseUUID, caseNoteType, text, requestData.userId());
         caseNoteRepository.save(caseNote);
         log.info("Created CaseNote: {} for Case: {}", caseNote.getUuid(), caseUUID, value(EVENT, CASE_NOTE_CREATED));
         auditClient.createCaseNoteAudit(caseNote);

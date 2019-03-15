@@ -16,14 +16,15 @@ public class CaseNoteTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "MANUAL";
         String text = "anyText";
-
-        CaseNote caseNote = new CaseNote(caseUUID, type, text);
+        String userId = "any user";
+        CaseNote caseNote = new CaseNote(caseUUID, type, text, userId);
 
         assertThat(caseNote.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseNote.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
         assertThat(caseNote.getCaseNoteType()).isEqualTo(type);
         assertThat(caseNote.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(caseNote.getText()).isEqualTo(text);
+        assertThat(caseNote.getAuthor()).isEqualTo(userId);
 
     }
 
@@ -32,8 +33,8 @@ public class CaseNoteTest {
 
         String type = "MANUAL";
         String text = "anyText";
-
-        new CaseNote(null, type, text);
+        UUID userId = UUID.randomUUID();
+        new CaseNote(null, type, text, userId.toString());
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
@@ -41,8 +42,8 @@ public class CaseNoteTest {
 
         UUID caseUUID = UUID.randomUUID();
         String text = "anyText";
-
-        new CaseNote(caseUUID, null, text);
+        String userId = "any user";
+        new CaseNote(caseUUID, null, text, userId);
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
@@ -50,8 +51,8 @@ public class CaseNoteTest {
 
         UUID caseUUID = UUID.randomUUID();
         String type = "MANUAL";
-
-        new CaseNote(caseUUID, type, null);
+        String userId = "any user";
+        new CaseNote(caseUUID, type, null, userId);
     }
 
 }

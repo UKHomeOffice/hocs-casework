@@ -219,7 +219,7 @@ public class CaseDataService {
             } catch (JsonProcessingException e) {
                 log.error("Failed to parse case note text for note {}", n.getUuid(), UNCAUGHT_EXCEPTION);
             }
-            return new TimelineItem(n.getCaseUUID(), null, n.getCreated(), null, n.getCaseNoteType(), auditPayload);
+            return new TimelineItem(n.getCaseUUID(), null, n.getCreated(), n.getAuthor(), n.getCaseNoteType(), auditPayload);
         });
 
         return Stream.concat(auditTimeline, notesTimeline);

@@ -126,8 +126,8 @@ public class CaseDataServiceTest {
     public void shouldGetCaseTimeline()  {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
         Set<CaseNote> caseNoteData = Set.of(
-                new CaseNote(caseUUID, "MANUAL", "case note 1"),
-                new CaseNote(caseUUID, "MANUAL", "case note 2"));
+                new CaseNote(caseUUID, "MANUAL", "case note 1", "a user"),
+                new CaseNote(caseUUID, "MANUAL", "case note 2", "a user"));
         caseData.setCaseNotes(caseNoteData);
 
         UUID auditResponseUUID = UUID.randomUUID();
@@ -162,8 +162,8 @@ public class CaseDataServiceTest {
     public void shouldGetCaseNotesOnlyTimelineOnAuditFailure()  {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseDeadline, caseReceived);
         Set<CaseNote> caseNoteData = Set.of(
-                new CaseNote(caseUUID, "MANUAL", "case note 1"),
-                new CaseNote(caseUUID, "MANUAL", "case note 2"));
+                new CaseNote(caseUUID, "MANUAL", "case note 1", "a user"),
+                new CaseNote(caseUUID, "MANUAL", "case note 2", "a user"));
         caseData.setCaseNotes(caseNoteData);
 
 
@@ -222,9 +222,6 @@ public class CaseDataServiceTest {
         Map<String, String> deadlines = Map.of(
                 "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10).toString(),
                 "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20).toString());
-
-        Correspondent correspondent = new Correspondent(caseData.getUuid(), "CORRESPONDENT", "some name,",
-                new Address("","","","",""), "12345","some email", "some ref");
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
