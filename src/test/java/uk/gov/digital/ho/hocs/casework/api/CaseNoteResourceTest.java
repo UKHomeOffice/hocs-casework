@@ -51,7 +51,7 @@ public class CaseNoteResourceTest {
     public void shouldGetCaseNote() {
         UUID noteUUID = UUID.randomUUID();
 
-        when(caseNoteService.getCaseNote(noteUUID)).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "",caseUUID,""));
+        when(caseNoteService.getCaseNote(noteUUID)).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "",caseUUID,"", "a user"));
 
         ResponseEntity<GetCaseNoteResponse> response = caseNoteResource.getCaseNote(caseUUID, noteUUID);
 
@@ -67,7 +67,7 @@ public class CaseNoteResourceTest {
     public void shouldCreateCaseNote() {
         UUID noteUUID = UUID.randomUUID();
 
-        when(caseNoteService.createCaseNote(caseUUID, "TYPE", "case note")).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "TYPE",caseUUID,"case note"));
+        when(caseNoteService.createCaseNote(caseUUID, "TYPE", "case note")).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "TYPE",caseUUID,"case note", "a user"));
 
         ResponseEntity<UUID> response = caseNoteResource.createCaseNote(caseUUID, new CreateCaseNoteRequest("TYPE","case note"));
 

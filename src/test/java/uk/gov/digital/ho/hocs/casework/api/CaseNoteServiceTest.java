@@ -5,12 +5,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseNoteRepository;
 
 import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,23 +24,27 @@ public class CaseNoteServiceTest {
     private final UUID caseUUID = UUID.randomUUID();
     private final String caseNoteType = "MANUAL";
     private static final String text = "CASE_NOTE";
+    String userId = "any user";
     @Mock
     private CaseNoteRepository caseNoteRepository;
     private CaseNoteService caseNoteService;
     @Mock
     AuditClient auditClient;
 
+    @Mock
+    RequestData requestData;
+
     @Before
     public void setUp() {
-        caseNoteService = new CaseNoteService(caseNoteRepository, auditClient);
+        when(requestData.userId()).thenReturn(userId);
+        caseNoteService = new CaseNoteService(caseNoteRepository, auditClient, requestData);
     }
 
     @Test
     public void shouldGetCaseNotes() throws ApplicationExceptions.EntityNotFoundException {
-        HashSet<CaseNote> caseNoteData = new HashSet<>();
-        caseNoteData.add(new CaseNote(caseUUID, "MANUAL", text));
 
-        when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(caseNoteData);
+
+        when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(Set.of(new CaseNote(caseUUID, "MANUAL", text, userId)));
 
         caseNoteService.getCaseNotes(caseUUID);
 
@@ -49,8 +55,7 @@ public class CaseNoteServiceTest {
 
     @Test
     public void shouldAuditGetCaseNotes() throws ApplicationExceptions.EntityNotFoundException {
-        HashSet<CaseNote> caseNoteData = new HashSet<>();
-        caseNoteData.add(new CaseNote(caseUUID, "MANUAL", text));
+        Set<CaseNote> caseNoteData = Set.of(new CaseNote(caseUUID, "MANUAL", text, userId));
 
         when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(caseNoteData);
 
@@ -74,7 +79,7 @@ public class CaseNoteServiceTest {
     @Test
     public void shouldGetCaseNote() {
 
-        CaseNote caseNote = new CaseNote(caseUUID, "MANUAL", text);
+        CaseNote caseNote = new CaseNote(caseUUID, "MANUAL", text, userId);
 
         when(caseNoteRepository.findByUuid(any(UUID.class))).thenReturn(caseNote);
 
@@ -87,7 +92,7 @@ public class CaseNoteServiceTest {
 
     @Test
     public void shouldAuditGetCaseNote() {
-        CaseNote caseNote = new CaseNote(caseUUID, "MANUAL", text);
+        CaseNote caseNote = new CaseNote(caseUUID, "MANUAL", text, userId);
 
         when(caseNoteRepository.findByUuid(any(UUID.class))).thenReturn(caseNote);
 
@@ -106,6 +111,17 @@ public class CaseNoteServiceTest {
         assertThat(caseNote.getUuid()).isNotNull();
         verify(caseNoteRepository, times(1)).save(any(CaseNote.class));
 
+        verifyNoMoreInteractions(caseNoteRepository);
+    }
+
+    @Test
+    public void shouldCreateCaseNoteWithAuthor() throws ApplicationExceptions.EntityCreationException {
+
+        CaseNote caseNote = caseNoteService.createCaseNote(caseUUID, caseNoteType, text);
+
+        assertThat(caseNote.getUuid()).isNotNull();
+        verify(caseNoteRepository, times(1)).save(any(CaseNote.class));
+        verify(requestData, times(1)).userId();
         verifyNoMoreInteractions(caseNoteRepository);
     }
 

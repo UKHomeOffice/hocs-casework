@@ -52,7 +52,7 @@ public class AuditClientTest {
     SpringConfiguration configuration = new SpringConfiguration();
     ObjectMapper mapper;
     UUID stageUUID = UUID.randomUUID();
-
+    String userId = "any user";
     private AuditClient auditClient;
     private static final long caseID = 12345L;
     private final CaseDataType caseType = new CaseDataType("MIN", "a1");
@@ -209,7 +209,7 @@ public class AuditClientTest {
 
     @Test
     public void viewCaseNotesAudit() throws IOException {
-        CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note");
+        CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note", userId);
         auditClient.viewCaseNotesAudit(caseUUID, new HashSet<CaseNote>(){{ add(caseNote); }});
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -219,7 +219,7 @@ public class AuditClientTest {
 
     @Test
     public void viewCaseNoteAudit() throws IOException {
-        CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note");
+        CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note", userId);
         auditClient.viewCaseNoteAudit(caseNote);
               verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -229,7 +229,7 @@ public class AuditClientTest {
 
     @Test
     public void createCaseNoteAudit() throws IOException {
-        CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note");
+        CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note",userId);
         auditClient.createCaseNoteAudit(caseNote);
               verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);

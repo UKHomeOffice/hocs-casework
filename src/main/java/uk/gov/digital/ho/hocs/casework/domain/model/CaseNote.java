@@ -43,7 +43,11 @@ public class CaseNote implements Serializable {
     @Column(name = "text")
     private String text;
 
-    public CaseNote(UUID caseUUID, String caseNoteType, String text) {
+    @Getter
+    @Column(name = "author")
+    private String author;
+
+    public CaseNote(UUID caseUUID, String caseNoteType, String text, String author) {
         if (caseUUID == null || caseNoteType == null || text == null) {
             throw new ApplicationExceptions.EntityCreationException(
                     String.format("Cannot create case note(%s,%s,%s).", caseUUID, caseNoteType, text), CASE_NOTE_CREATE_FAILURE);
@@ -54,6 +58,7 @@ public class CaseNote implements Serializable {
         this.caseNoteType = caseNoteType;
         this.caseUUID = caseUUID;
         this.text = text;
+        this.author = author;
     }
 
 }

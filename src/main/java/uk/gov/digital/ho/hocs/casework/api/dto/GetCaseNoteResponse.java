@@ -28,12 +28,16 @@ public class GetCaseNoteResponse {
     @JsonProperty("text")
     private String text;
 
+    @JsonProperty("author")
+    private String author;
+
     public static GetCaseNoteResponse from(CaseNote caseNote) {
         return new GetCaseNoteResponse(
                 caseNote.getUuid(),
                 caseNote.getCreated(),
                 caseNote.getCaseNoteType(),
                 caseNote.getCaseUUID(),
-                caseNote.getText());
+                caseNote.getText(),
+                caseNote.getAuthor());
     }
 }

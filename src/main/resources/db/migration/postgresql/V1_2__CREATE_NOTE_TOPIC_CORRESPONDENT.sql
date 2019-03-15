@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS case_note
   case_uuid UUID      NOT NULL,
   type      TEXT      NOT NULL,
   text      TEXT      NOT NULL,
+  author    TEXT      NOT NULL,
   deleted   BOOLEAN   NOT NULL DEFAULT FALSE,
 
   CONSTRAINT case_note_uuid_idempotent UNIQUE (uuid),
