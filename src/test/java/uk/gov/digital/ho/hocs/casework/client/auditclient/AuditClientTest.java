@@ -11,13 +11,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 
@@ -77,6 +77,17 @@ public class AuditClientTest {
         auditClient = new AuditClient(producerTemplate, auditQueue,"hocs-casework","namespace", mapper, requestData, restHelper,
                 auditService);
     }
+
+    public void shouldSetDataField() throws IOException {
+        UUID topicUUID = UUID.randomUUID();
+        UUID caseUUID = UUID.randomUUID();
+        InfoTopic topic = new InfoTopic("topic name", topicUUID);
+        auditClient.createTopicAudit(caseUUID, topic);
+        verify(producerTemplate, times(1)).sendBody(eq(auditQueue), jsonCaptor.capture());
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getData()).isEqualTo(String.format("{\"uuid\":\"%s\"}",  topicUUID));
+    }
+
 
     @Test
     public void shouldSetAuditFields() throws IOException {
@@ -191,7 +202,8 @@ public class AuditClientTest {
 
     @Test
     public void createTopicAudit() throws IOException {
-        auditClient.createTopicAudit(caseUUID, "a topic");
+        InfoTopic topic = new InfoTopic("topic name", UUID.randomUUID());
+        auditClient.createTopicAudit(caseUUID, topic);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_TOPIC_CREATED);
