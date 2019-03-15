@@ -78,12 +78,12 @@ public class TopicServiceTest {
 
     @Test
     public void shouldAuditCreateTopic() throws ApplicationExceptions.EntityCreationException {
-
-        when(infoClient.getTopic(topicNameUUID)).thenReturn(new InfoTopic(topicName, topicNameUUID));
+        InfoTopic topic = new InfoTopic(topicName, topicNameUUID);
+        when(infoClient.getTopic(topicNameUUID)).thenReturn(topic);
 
         topicService.createTopic(caseUUID, topicNameUUID);
 
-        verify(auditClient, times(1)).createTopicAudit(caseUUID, topicName);
+        verify(auditClient, times(1)).createTopicAudit(caseUUID, topic);
 
         verifyNoMoreInteractions(auditClient);
 
