@@ -24,11 +24,9 @@ import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 import static java.util.UUID.randomUUID;
@@ -66,12 +64,19 @@ public class AuditClientTest {
 
     @Captor
     ArgumentCaptor jsonCaptor;
+
+    @Captor
+    ArgumentCaptor<HashMap<String,Object>> headerCaptor;
+
     private String auditService;
 
     @Before
     public void setUp() {
         when(requestData.correlationId()).thenReturn(randomUUID().toString());
-        when(requestData.userId()).thenReturn("some user");
+        when(requestData.userId()).thenReturn("some user id");
+        when(requestData.groups()).thenReturn("some groups");
+        when(requestData.username()).thenReturn("some username");
+
         mapper = configuration.initialiseObjectMapper();
         auditService = "http://audit-service";
         auditClient = new AuditClient(producerTemplate, auditQueue,"hocs-casework","namespace", mapper, requestData, restHelper,
@@ -83,11 +88,28 @@ public class AuditClientTest {
         UUID caseUUID = UUID.randomUUID();
         InfoTopic topic = new InfoTopic("topic name", topicUUID);
         auditClient.createTopicAudit(caseUUID, topic);
-        verify(producerTemplate, times(1)).sendBody(eq(auditQueue), jsonCaptor.capture());
+        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getData()).isEqualTo(String.format("{\"uuid\":\"%s\"}",  topicUUID));
     }
 
+    public void shouldSetHeaders()  {
+        Map<String, Object> expectedHeaders = Map.of(
+        "event_type", EventType.CASE_TOPIC_CREATED,
+        RequestData.CORRELATION_ID_HEADER, requestData.correlationId(),
+        RequestData.USER_ID_HEADER, requestData.userId(),
+        RequestData.USERNAME_HEADER, requestData.username(),
+        RequestData.GROUP_HEADER, requestData.groups());
+
+        UUID topicUUID = UUID.randomUUID();
+        UUID caseUUID = UUID.randomUUID();
+        InfoTopic topic = new InfoTopic("topic name", topicUUID);
+        auditClient.createTopicAudit(caseUUID, topic);
+        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), any(), headerCaptor.capture());
+        Map headers = headerCaptor.getValue();
+
+        assertThat(headers).containsAllEntriesOf(expectedHeaders);
+    }
 
     @Test
     public void shouldSetAuditFields() throws IOException {

@@ -15,6 +15,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import static java.util.Map.of;
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
@@ -202,7 +203,8 @@ public class AuditClient {
                 requestData.userId());
 
         try {
-            producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), getQueueHeaders(eventType.toString()));
+            Map<String, Object> queueHeaders = getQueueHeaders(eventType.toString());
+            producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), queueHeaders);
             log.info("Create audit for Case UUID: {}, correlationID: {}, UserID: {}", caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_FAILED));
         } catch (Exception e) {
             log.error("Failed to create audit event for case UUID {} for reason {}", caseUUID, e, value(EVENT, AUDIT_FAILED));
@@ -226,12 +228,11 @@ public class AuditClient {
     }
 
     private Map<String, Object> getQueueHeaders(String eventType) {
-        Map<String, Object> headers = new HashMap<>();
-        headers.put(EVENT_TYPE_HEADER, eventType);
-        headers.put(RequestData.CORRELATION_ID_HEADER, requestData.correlationId());
-        headers.put(RequestData.USER_ID_HEADER, requestData.userId());
-        headers.put(RequestData.USERNAME_HEADER, requestData.username());
-        headers.put(RequestData.GROUP_HEADER, requestData.groups());
-        return headers;
+        return Map.of(
+        EVENT_TYPE_HEADER, eventType,
+        RequestData.CORRELATION_ID_HEADER, requestData.correlationId(),
+        RequestData.USER_ID_HEADER, requestData.userId(),
+        RequestData.USERNAME_HEADER, requestData.username(),
+        RequestData.GROUP_HEADER, requestData.groups());
     }
 }
