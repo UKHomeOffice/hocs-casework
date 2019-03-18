@@ -4,14 +4,19 @@ import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.util.StringUtils;
 
 @Configuration
 @Profile({"local"})
@@ -36,6 +41,18 @@ public class LocalStackConfiguration {
                 .withEndpointConfiguration(endpoint)
                 .build();
     }
+
+    @Bean("auditSnsClient")
+    public AmazonSNS auditSnsClient() {
+        String host = String.format("http://%s:4575/", awsHost);
+        AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(host, "eu-west-2");
+        return AmazonSNSClientBuilder.standard()
+                .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
+                .withCredentials(awsCredentialsProvider)
+                .withEndpointConfiguration(endpoint)
+                .build();
+    }
+
 
     private final AWSCredentialsProvider awsCredentialsProvider = new AWSCredentialsProvider() {
 
