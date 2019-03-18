@@ -36,6 +36,8 @@ public class AuditClient {
     private final RequestData requestData;
     private final RestHelper restHelper;
     private final String serviceBaseURL;
+    private final String EVENT_TYPE_HEADER ="event_type";
+
 
     @Autowired
     public AuditClient(ProducerTemplate producerTemplate,
@@ -200,7 +202,7 @@ public class AuditClient {
                 requestData.userId());
 
         try {
-            producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), getQueueHeaders());
+            producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), getQueueHeaders(eventType.toString()));
             log.info("Create audit for Case UUID: {}, correlationID: {}, UserID: {}", caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_FAILED));
         } catch (Exception e) {
             log.error("Failed to create audit event for case UUID {} for reason {}", caseUUID, e, value(EVENT, AUDIT_FAILED));
@@ -223,8 +225,9 @@ public class AuditClient {
         }
     }
 
-    private Map<String, Object> getQueueHeaders() {
+    private Map<String, Object> getQueueHeaders(String eventType) {
         Map<String, Object> headers = new HashMap<>();
+        headers.put(EVENT_TYPE_HEADER, eventType);
         headers.put(RequestData.CORRELATION_ID_HEADER, requestData.correlationId());
         headers.put(RequestData.USER_ID_HEADER, requestData.userId());
         headers.put(RequestData.USERNAME_HEADER, requestData.username());
