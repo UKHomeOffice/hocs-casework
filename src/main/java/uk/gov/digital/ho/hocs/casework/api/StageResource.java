@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
+import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -96,5 +97,11 @@ class StageResource {
     ResponseEntity<Set<UUID>> getActiveStageCaseUUIDsForUserAndTeam(@PathVariable UUID userUUID, @PathVariable UUID teamUUID){
         Set<UUID> caseUUIDs = stageService.getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
         return ResponseEntity.ok(caseUUIDs);
+    }
+
+    @PostMapping(value = "/search")
+    ResponseEntity<GetStagesResponse> search(@Valid @RequestBody SearchRequest request) {
+        Set<Stage> stages = stageService.search(request);
+        return ResponseEntity.ok(GetStagesResponse.from(stages));
     }
 }

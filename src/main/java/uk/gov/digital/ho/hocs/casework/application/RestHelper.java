@@ -33,6 +33,11 @@ public class RestHelper {
         this.requestData = requestData;
     }
 
+    public <T,R> R post(String serviceBaseURL, String url, T request, Class<R> responseType) {
+        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.POST, new HttpEntity<>(request, createAuthHeaders()), responseType);
+        return validateResponse(response);
+    }
+
     public <R> R get(String serviceBaseURL, String url, Class<R> responseType) {
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
         return validateResponse(response);
