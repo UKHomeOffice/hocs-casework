@@ -475,12 +475,12 @@ public class StageServiceTest {
         SearchRequest searchRequest = new SearchRequest();
 
         when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
-        when(stageRepository.findAllActiveByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
+        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
 
         stageService.search(searchRequest);
 
         verify(searchClient, times(1)).search(searchRequest);
-        verify(stageRepository, times(1)).findAllActiveByCaseUUIDIn(caseUUIDS);
+        verify(stageRepository, times(1)).findAllByCaseUUIDIn(caseUUIDS);
         verifyNoMoreInteractions(searchClient);
         verifyNoMoreInteractions(stageRepository);
 
@@ -499,7 +499,7 @@ public class StageServiceTest {
         SearchRequest searchRequest = new SearchRequest();
 
         when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
-        when(stageRepository.findAllActiveByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
+        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
 
         stageService.search(searchRequest);
 

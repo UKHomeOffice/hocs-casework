@@ -175,7 +175,7 @@ public class StageService {
             log.warn("No cases - Returning 0 Stages", value(EVENT, SEARCH_STAGE_LIST_EMPTY));
             return new HashSet<>(0);
         } else {
-            Set<Stage> stages = stageRepository.findAllActiveByCaseUUIDIn(caseUUIDs);
+            Set<Stage> stages = stageRepository.findAllByCaseUUIDIn(caseUUIDs);
             log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));
             return stages;
         }
