@@ -3,8 +3,10 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
+import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
@@ -25,14 +27,17 @@ public class StageService {
     private final StageRepository stageRepository;
     private final UserPermissionsService userPermissionsService;
     private final NotifyClient notifyClient;
-    private AuditClient auditClient;
+    private final AuditClient auditClient;
+    private final SearchClient searchClient;
+
 
     @Autowired
-    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient) {
+    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
         this.auditClient = auditClient;
+        this.searchClient = searchClient;
     }
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
@@ -126,11 +131,11 @@ public class StageService {
         log.debug("Getting Active Stages for User");
         Set<UUID> teams = userPermissionsService.getUserTeams();
         if (teams.isEmpty()) {
-            log.warn("No teams - Returning 0 Stages", value(EVENT, STAGE_LIST_EMPTY));
-            return new HashSet<>();
+            log.warn("No teams - Returning 0 Stages", value(EVENT, TEAMS_STAGE_LIST_EMPTY));
+            return new HashSet<>(0);
         } else {
             Set<Stage> stages = stageRepository.findAllActiveByTeamUUIDIn(teams);
-            log.info("Returning {} Stages", stages.size(), value(EVENT, STAGE_LIST_RETRIEVED));
+            log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
             return stages;
         }
     }
@@ -149,7 +154,7 @@ public class StageService {
     Set<UUID> getActiveStageCaseUUIDsForUserAndTeam(UUID userUUID, UUID teamUUID) {
         log.debug("Getting Active Stages for User in Team");
         Set<Stage> stages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(userUUID, teamUUID);
-        log.info("Returning CaseUUIDs for Active Stages for User {} in team {}", userUUID, teamUUID, value(EVENT, STAGE_LIST_RETRIEVED));
+        log.info("Returning CaseUUIDs for Active Stages for User {} in team {}", userUUID, teamUUID, value(EVENT, USERS_TEAMS_STAGE_LIST_RETRIEVED));
         Set<UUID> caseUUIDs = new HashSet<>();
         for (Stage stage: stages ){
             caseUUIDs.add(stage.getCaseUUID());
@@ -161,5 +166,18 @@ public class StageService {
         log.debug("Getting Active Stages for reference: {}", reference);
         Set<Stage> stages = stageRepository.findByCaseReference(reference);
         return stages;
+    }
+
+    Set<Stage> search(SearchRequest searchRequest) {
+        log.debug("Getting Stages for Search Request");
+        Set<UUID> caseUUIDs = searchClient.search(searchRequest);
+        if (caseUUIDs.isEmpty()) {
+            log.warn("No cases - Returning 0 Stages", value(EVENT, SEARCH_STAGE_LIST_EMPTY));
+            return new HashSet<>(0);
+        } else {
+            Set<Stage> stages = stageRepository.findAllByCaseUUIDIn(caseUUIDs);
+            log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));
+            return stages;
+        }
     }
 }

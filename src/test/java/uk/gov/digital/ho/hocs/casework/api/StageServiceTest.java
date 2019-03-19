@@ -5,8 +5,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
+import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
@@ -28,6 +30,7 @@ public class StageServiceTest {
     private final LocalDate deadline = LocalDate.now();
     private final String allocationType = "anyAllocate";
     private final UUID transitionNoteUUID = UUID.randomUUID();
+
     @Mock
     private StageRepository stageRepository;
     private StageService stageService;
@@ -37,10 +40,12 @@ public class StageServiceTest {
     private NotifyClient notifyClient;
     @Mock
     private AuditClient auditClient;
+    @Mock
+    private SearchClient searchClient;
 
     @Before
     public void setUp() {
-        this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient);
+        this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient, searchClient);
     }
 
     @Test
@@ -440,7 +445,6 @@ public class StageServiceTest {
 
     }
 
-
     @Test
     public void shouldGetActiveStageCaseUUIDsForUserAndTeam() {
 
@@ -454,6 +458,53 @@ public class StageServiceTest {
 
         verify(stageRepository, times(1)).findStageCaseUUIDsByUserUUIDTeamUUID(userUUID, teamUUID);
         verifyNoMoreInteractions(stageRepository);
+
+    }
+
+    @Test
+    public void shouldSearch() {
+
+        Set<UUID> caseUUIDS = new HashSet<>();
+        caseUUIDS.add(caseUUID);
+
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
+        Set<Stage> stages = new HashSet<>();
+        stages.add(stage);
+
+
+        SearchRequest searchRequest = new SearchRequest();
+
+        when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
+        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
+
+        stageService.search(searchRequest);
+
+        verify(searchClient, times(1)).search(searchRequest);
+        verify(stageRepository, times(1)).findAllByCaseUUIDIn(caseUUIDS);
+        verifyNoMoreInteractions(searchClient);
+        verifyNoMoreInteractions(stageRepository);
+
+    }
+
+    @Test
+    public void shouldSearchNoResults() {
+
+        Set<UUID> caseUUIDS = new HashSet<>(0);
+
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
+        Set<Stage> stages = new HashSet<>();
+        stages.add(stage);
+
+
+        SearchRequest searchRequest = new SearchRequest();
+
+        when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
+
+        stageService.search(searchRequest);
+
+        verify(searchClient, times(1)).search(searchRequest);
+        verifyNoMoreInteractions(searchClient);
+        verifyZeroInteractions(stageRepository);
 
     }
 }

@@ -194,4 +194,21 @@ public class StageResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
     }
+
+    @Test
+    public void shouldSearch() {
+
+        Set<Stage> stages = new HashSet<>();
+        SearchRequest searchRequest = new SearchRequest();
+
+        when(stageService.search(searchRequest)).thenReturn(stages);
+
+        ResponseEntity<GetStagesResponse> response = stageResource.search(searchRequest);
+
+        verify(stageService, times(1)).search(searchRequest);
+        verifyNoMoreInteractions(stageService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 }
