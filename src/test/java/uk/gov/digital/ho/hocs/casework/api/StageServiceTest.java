@@ -499,7 +499,6 @@ public class StageServiceTest {
         SearchRequest searchRequest = new SearchRequest();
 
         when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
-        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
 
         stageService.search(searchRequest);
 
