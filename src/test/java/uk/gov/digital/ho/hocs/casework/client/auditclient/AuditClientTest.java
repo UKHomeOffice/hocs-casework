@@ -83,6 +83,7 @@ public class AuditClientTest {
                 auditService);
     }
 
+    @Test
     public void shouldSetDataField() throws IOException {
         UUID topicUUID = UUID.randomUUID();
         UUID caseUUID = UUID.randomUUID();
@@ -90,12 +91,13 @@ public class AuditClientTest {
         auditClient.createTopicAudit(caseUUID, topic);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getData()).isEqualTo(String.format("{\"uuid\":\"%s\"}",  topicUUID));
+        assertThat(request.getData()).isEqualTo(String.format("{\"topicUuid\":\"%s\", \"topicName\":\"%s\"}",  topicUUID, "topic name"));
     }
 
+    @Test
     public void shouldSetHeaders()  {
         Map<String, Object> expectedHeaders = Map.of(
-        "event_type", EventType.CASE_TOPIC_CREATED,
+        "event_type", EventType.CASE_TOPIC_CREATED.toString(),
         RequestData.CORRELATION_ID_HEADER, requestData.correlationId(),
         RequestData.USER_ID_HEADER, requestData.userId(),
         RequestData.USERNAME_HEADER, requestData.username(),
