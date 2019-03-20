@@ -36,8 +36,6 @@ services:
       - /bin/sh
       - -c
       - |
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name document-queue
-        aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name document-queue-dlq
         aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name audit-queue
         aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name audit-queue-dlq
         aws --endpoint-url=http://localstack:4576 sqs create-queue --queue-name search-queue
