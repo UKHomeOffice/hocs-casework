@@ -68,7 +68,7 @@ dependencies {
     implementation('com.amazonaws:aws-java-sdk:1.11.470')
 
     implementation('org.flywaydb:flyway-core')
-    implementation('net.logstash.logback:logstash-logback-encoder:5.2')
+    implementation('net.logstash.logback:logstash-logback-encoder:5.3')
     implementation('uk.gov.service.notify:notifications-java-client:3.12.0-RELEASE')
 
     runtimeOnly('org.postgresql:postgresql')
