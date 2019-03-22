@@ -1,4 +1,4 @@
-# hocs-info-service
+# hocs-casework
 
 
 This is the Home Office Correspondence Service (HOCS) casework service.
