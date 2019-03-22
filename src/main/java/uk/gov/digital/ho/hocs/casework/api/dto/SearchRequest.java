@@ -13,7 +13,7 @@ import java.util.Map;
 @Getter
 public class SearchRequest {
 
-    @JsonProperty("caseTypes")
+    @JsonProperty("caseType")
     private List<String> caseTypes;
 
     @JsonProperty("dateReceived")
