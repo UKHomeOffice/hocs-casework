@@ -136,7 +136,7 @@ public class AuditClient {
             log.error("Failed to parse data payload", UNCAUGHT_EXCEPTION);
         }
         
-        sendAuditMessage(correspondent.getCaseUUID(), data, CORRESPONDENT_CREATED, null, data);
+        sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_CREATED, null, data);
     }
 
     public void deleteCorrespondentAudit(Correspondent correspondent) {
