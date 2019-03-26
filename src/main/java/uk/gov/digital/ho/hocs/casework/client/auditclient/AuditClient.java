@@ -131,11 +131,12 @@ public class AuditClient {
     public void createCorrespondentAudit(Correspondent correspondent) {
         String data = "";
         try {
-            objectMapper.writeValueAsString(CreateCorrespondentRequest.from(correspondent));
+            data = objectMapper.writeValueAsString(CreateCorrespondentRequest.from(correspondent));
         } catch (JsonProcessingException e) {
             log.error("Failed to parse data payload", UNCAUGHT_EXCEPTION);
         }
-        sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_CREATED, null, data);
+        
+        sendAuditMessage(correspondent.getCaseUUID(), data, CORRESPONDENT_CREATED, null, data);
     }
 
     public void deleteCorrespondentAudit(Correspondent correspondent) {
