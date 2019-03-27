@@ -60,7 +60,7 @@ public class SecurityIntegrationTest {
     public void shouldGetCaseDataWhenInCaseTypeGroup() {
         Map<String,String> caseSubData = Map.of("key", "value");
 
-        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now(), LocalDate.now());
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("MIN");
@@ -79,7 +79,7 @@ public class SecurityIntegrationTest {
             put("key", "value");
         }};
 
-        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now(), LocalDate.now());
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
 
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);

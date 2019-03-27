@@ -22,7 +22,8 @@ public class GetCaseResponseTest {
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
         LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline,caseReceived);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper,caseReceived);
+        caseData.setCaseDeadline(caseDeadline);
 
         GetCaseResponse getCaseResponse = GetCaseResponse.from(caseData);
 
@@ -46,7 +47,8 @@ public class GetCaseResponseTest {
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
         LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper, caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper, caseReceived);
+        caseData.setCaseDeadline(caseDeadline);
 
         GetCaseResponse getCaseResponse = GetCaseResponse.from(caseData);
 

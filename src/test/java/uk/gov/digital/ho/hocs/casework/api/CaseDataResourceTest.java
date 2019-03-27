@@ -36,7 +36,6 @@ public class CaseDataResourceTest {
     private CaseDataService caseDataService;
     private CaseDataResource caseDataResource;
     private ObjectMapper objectMapper = new ObjectMapper();
-    private LocalDate caseDeadline = LocalDate.now().plusDays(20);
     private LocalDate caseReceived = LocalDate.now();
     @Before
     public void setUp() {
@@ -46,14 +45,14 @@ public class CaseDataResourceTest {
     @Test
     public void shouldCreateCase() throws JsonProcessingException {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseDeadline, caseReceived);
-        CreateCaseRequest request = new CreateCaseRequest(caseDataType, data, caseDeadline,caseReceived);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseReceived);
+        CreateCaseRequest request = new CreateCaseRequest(caseDataType, data,caseReceived);
 
-        when(caseDataService.createCase(caseDataType, data, caseDeadline, caseReceived)).thenReturn(caseData);
+        when(caseDataService.createCase(caseDataType, data, caseReceived)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseDataType, data, caseDeadline,caseReceived);
+        verify(caseDataService, times(1)).createCase(caseDataType, data, caseReceived);
 
         verifyNoMoreInteractions(caseDataService);
 
@@ -64,7 +63,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCase() {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseDeadline,caseReceived);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper,caseReceived);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 

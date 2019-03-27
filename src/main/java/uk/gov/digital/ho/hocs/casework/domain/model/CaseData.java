@@ -97,12 +97,12 @@ public class CaseData implements Serializable {
     @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
     private Set<CaseNote> caseNotes;
 
-    public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived) {
-        this(type, caseNumber, caseDeadline, dateReceived);
+    public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate dateReceived) {
+        this(type, caseNumber, dateReceived);
         update(data, objectMapper);
     }
 
-    public CaseData(CaseDataType type, Long caseNumber, LocalDate caseDeadline, LocalDate dateReceived) {
+    public CaseData(CaseDataType type, Long caseNumber, LocalDate dateReceived) {
         if (type == null || caseNumber == null) {
             throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
         }
@@ -110,7 +110,6 @@ public class CaseData implements Serializable {
         this.type = type.getDisplayCode();
         this.reference = generateCaseReference(caseNumber);
         this.uuid = randomUUID(type.getShortCode());
-        this.caseDeadline = caseDeadline;
         this.dateReceived = dateReceived;
     }
 

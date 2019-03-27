@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
@@ -14,6 +15,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -106,10 +108,22 @@ public class InfoClient {
         }
     }
 
-    @Cacheable(value = "InfoClientGetDeadlines")
-    public Map<String, String> getDeadlines(String caseType, LocalDate localDate) {
+    @Cacheable(value = "InfoClientGetDeadline")
+    public LocalDate getCaseDeadline(String caseType, LocalDate localDate) {
         try {
-            Map<String,String> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, localDate), Map.class);
+            LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s", caseType, localDate), LocalDate.class);
+            log.info("Got {} as deadline for CaseType {} and Date {}", response.toString(), caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINE_SUCCESS));
+            return response;
+        } catch (ApplicationExceptions.ResourceException e) {
+            log.error("Could not get deadlines for CaseType {} and Date {}", caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINE_FAILURE));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get deadlines for CaseType %s and Date %s", caseType, localDate), INFO_CLIENT_GET_DEADLINE_FAILURE);
+        }
+    }
+
+    @Cacheable(value = "InfoClientGetDeadlines")
+    public Map<String, LocalDate> getDeadlines(String caseType, LocalDate localDate) {
+        try {
+            Map<String,LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, localDate), new ParameterizedTypeReference<HashMap<String,LocalDate>>() {});
             log.info("Got {} case deadlines for CaseType {} and Date {}", response.size(), caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
             return response;
         } catch (ApplicationExceptions.ResourceException e) {

@@ -34,8 +34,8 @@ public class CaseDataRepositoryIntTest {
 
     @Before
     public void setup() {
-        newCase = new CaseData(new CaseDataType("TEST", "a1"), 101l, LocalDate.of(2018, 01, 29), LocalDate.of(2018, 01, 01));
-
+        newCase = new CaseData(new CaseDataType("TEST", "a1"), 101l, LocalDate.of(2018, 1, 1));
+        newCase.setCaseDeadline(LocalDate.of(2018,1,29));
         this.entityManager.persist(newCase);
         caseUUID = newCase.getUuid();
     }
@@ -49,13 +49,13 @@ public class CaseDataRepositoryIntTest {
         assertThat(caseData.isPriority()).isFalse();
         assertThat(caseData.getPrimaryTopicUUID()).isNull();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isNull();
-        assertThat(caseData.getCaseDeadline()).isEqualTo(LocalDate.of(2018, 01, 29));
-        assertThat(caseData.getDateReceived()).isEqualTo(LocalDate.of(2018, 01, 01));
+        assertThat(caseData.getCaseDeadline()).isEqualTo(LocalDate.of(2018, 1, 29));
+        assertThat(caseData.getDateReceived()).isEqualTo(LocalDate.of(2018, 1, 1));
     }
 
     @Test(expected = PersistenceException.class)
     public void shouldThrowExceptionWhenDuplicateReferenceNumber() {
-        CaseData newCaseDuplicateReference = new CaseData(new CaseDataType("TEST", "a1"), 101l, LocalDate.of(2018, 01, 29), LocalDate.of(2018, 01, 01));
+        CaseData newCaseDuplicateReference = new CaseData(new CaseDataType("TEST", "a1"), 101l, LocalDate.of(2018, 01, 01));
         this.entityManager.persist(newCaseDuplicateReference);
     }
 

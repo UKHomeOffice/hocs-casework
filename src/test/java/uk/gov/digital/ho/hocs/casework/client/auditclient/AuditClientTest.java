@@ -55,7 +55,6 @@ public class AuditClientTest {
     private static final long caseID = 12345L;
     private final CaseDataType caseType = new CaseDataType("MIN", "a1");
     private final UUID caseUUID = randomUUID();
-    private LocalDate caseDeadline = LocalDate.now().plusDays(20);
     private LocalDate caseReceived = LocalDate.now();
     private String auditQueue ="audit-queue";
     private Address address = new Address("S1 3NS","some street","some town","some count","UK");
@@ -115,7 +114,7 @@ public class AuditClientTest {
 
     @Test
     public void shouldSetAuditFields() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.updateCaseAudit(caseData, stageUUID);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -129,7 +128,7 @@ public class AuditClientTest {
 
     @Test
     public void shouldNotThrowExceptionOnFailure() {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         doThrow(new RuntimeException("An error occurred")).when(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         assertThatCode(() -> { auditClient.updateCaseAudit(caseData, stageUUID);}).doesNotThrowAnyException();
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
@@ -137,7 +136,7 @@ public class AuditClientTest {
 
     @Test
     public void createCaseAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.createCaseAudit(caseData);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -147,7 +146,7 @@ public class AuditClientTest {
 
     @Test
     public void updateCaseAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.updateCaseAudit(caseData, stageUUID);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -157,7 +156,7 @@ public class AuditClientTest {
 
     @Test
     public void viewCaseAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.viewCaseAudit(caseData);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -167,7 +166,7 @@ public class AuditClientTest {
 
     @Test
     public void deleteCaseAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.deleteCaseAudit(caseData);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -177,7 +176,7 @@ public class AuditClientTest {
 
     @Test
     public void viewCaseSummaryAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         CaseSummary caseSummary = new CaseSummary(LocalDate.now(), new HashMap<>(), new HashSet<>(), correspondent, topic, new HashSet<>());
         auditClient.viewCaseSummaryAudit(caseData, caseSummary);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
@@ -188,7 +187,7 @@ public class AuditClientTest {
 
     @Test
     public void viewStandardLineAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.viewStandardLineAudit(caseData);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -198,7 +197,7 @@ public class AuditClientTest {
 
     @Test
     public void viewTemplate() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.viewTemplateAudit(caseData);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
