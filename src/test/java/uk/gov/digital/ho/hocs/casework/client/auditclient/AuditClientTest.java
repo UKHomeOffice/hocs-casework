@@ -274,7 +274,7 @@ public class AuditClientTest {
 
     @Test
     public void updateStageUser() throws IOException {
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(),LocalDate.now(), randomUUID());
+        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID());
         stage.setUser(randomUUID());
         auditClient.updateStageUser(stage);
               verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
@@ -285,7 +285,7 @@ public class AuditClientTest {
 
     @Test
     public void updateStageTeam() throws IOException {
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(),LocalDate.now(), randomUUID());
+        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID());
         stage.setUser(randomUUID());
         auditClient.updateStageTeam(stage);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());

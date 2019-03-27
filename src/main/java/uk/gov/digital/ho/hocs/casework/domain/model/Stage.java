@@ -72,7 +72,7 @@ public class Stage implements Serializable {
     @Column(name = "data", insertable = false, updatable = false)
     private String data;
 
-    public Stage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline, UUID transitionNoteUUID) {
+    public Stage(UUID caseUUID, String stageType, UUID teamUUID, UUID transitionNoteUUID) {
         if (caseUUID == null || stageType == null) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
         }
@@ -82,10 +82,8 @@ public class Stage implements Serializable {
         this.caseUUID = caseUUID;
         this.stageType = stageType;
         this.transitionNoteUUID = transitionNoteUUID;
-        setDeadline(deadline);
         setTeam(teamUUID);
     }
-
 
     public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;

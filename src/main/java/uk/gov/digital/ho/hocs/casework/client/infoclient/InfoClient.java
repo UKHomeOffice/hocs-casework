@@ -108,15 +108,27 @@ public class InfoClient {
         }
     }
 
-    @Cacheable(value = "InfoClientGetDeadline")
+    @Cacheable(value = "InfoClientGetCaseDeadline")
     public LocalDate getCaseDeadline(String caseType, LocalDate localDate) {
         try {
             LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s", caseType, localDate), LocalDate.class);
-            log.info("Got {} as deadline for CaseType {} and Date {}", response.toString(), caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINE_SUCCESS));
+            log.info("Got {} as deadline for CaseType {} and Date {}", response.toString(), caseType, localDate, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
             return response;
         } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get deadlines for CaseType {} and Date {}", caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINE_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get deadlines for CaseType %s and Date %s", caseType, localDate), INFO_CLIENT_GET_DEADLINE_FAILURE);
+            log.error("Could not get deadlines for CaseType {} and Date {}", caseType, localDate, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_FAILURE));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get deadlines for CaseType %s and Date %s", caseType, localDate), INFO_CLIENT_GET_CASE_DEADLINE_FAILURE);
+        }
+    }
+
+    @Cacheable(value = "InfoClientGetStageDeadline")
+    public LocalDate getStageDeadline(String stageType, LocalDate localDate) {
+        try {
+            LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadline?received=%s", stageType, localDate), LocalDate.class);
+            log.info("Got {} as deadline for StageType {} and Date {}", response.toString(), stageType, localDate, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS));
+            return response;
+        } catch (ApplicationExceptions.ResourceException e) {
+            log.error("Could not get deadlines for StageType {} and Date {}", stageType, localDate, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_FAILURE));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get deadlines for StageType %s and Date %s", stageType, localDate), INFO_CLIENT_GET_STAGE_DEADLINE_FAILURE);
         }
     }
 
