@@ -5,9 +5,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
@@ -29,15 +31,18 @@ public class StageService {
     private final NotifyClient notifyClient;
     private final AuditClient auditClient;
     private final SearchClient searchClient;
-
+    private final InfoClient infoClient;
+    private final CaseDataService caseDataService;
 
     @Autowired
-    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient) {
+    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient, CaseDataService caseDataService) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
         this.auditClient = auditClient;
         this.searchClient = searchClient;
+        this.infoClient = infoClient;
+        this.caseDataService = caseDataService;
     }
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
@@ -65,9 +70,13 @@ public class StageService {
         }
     }
 
-    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, LocalDate deadline, String emailType, UUID transitionNoteUUID) {
+    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID,  String emailType, UUID transitionNoteUUID) {
         log.debug("Creating Stage of type: {}", stageType);
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        LocalDate dateReceived = caseData.getDateReceived();
+        LocalDate deadline = infoClient.getStageDeadline(stageType, dateReceived);
+        stage.setDeadline(deadline);
         stageRepository.save(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
         notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, stage.getCaseReference(), emailType);

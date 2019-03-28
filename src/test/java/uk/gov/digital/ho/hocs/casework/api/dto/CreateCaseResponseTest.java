@@ -22,7 +22,7 @@ public class CreateCaseResponseTest {
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
         LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseDeadline,caseReceived);
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper,caseReceived);
 
         CreateCaseResponse createCaseResponse = CreateCaseResponse.from(caseData);
 
@@ -40,7 +40,7 @@ public class CreateCaseResponseTest {
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
         LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper, caseDeadline,caseReceived);
+        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper,caseReceived);
 
         CreateCaseResponse createCaseResponse = CreateCaseResponse.from(caseData);
 

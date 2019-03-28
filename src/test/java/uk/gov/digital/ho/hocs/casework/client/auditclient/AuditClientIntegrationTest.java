@@ -33,7 +33,6 @@ public class AuditClientIntegrationTest extends CamelTestSupport {
     private AuditClient auditClient;
     private static final long caseID = 12345L;
     private final CaseDataType caseType = new CaseDataType("MIN", "a1");
-    private LocalDate caseDeadline = LocalDate.now().plusDays(20);
     private LocalDate caseReceived = LocalDate.now();
     private UUID stageUUID = UUID.randomUUID();
 
@@ -46,7 +45,7 @@ public class AuditClientIntegrationTest extends CamelTestSupport {
 
     @Test
     public void shouldPutMessageOnAuditQueue() throws InterruptedException, JsonProcessingException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper ,caseDeadline, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), mapper, caseReceived);
         MockEndpoint mockEndpoint = getMockEndpoint(toEndpoint);
         auditClient.updateCaseAudit(caseData, stageUUID);
         mockEndpoint.assertIsSatisfied();

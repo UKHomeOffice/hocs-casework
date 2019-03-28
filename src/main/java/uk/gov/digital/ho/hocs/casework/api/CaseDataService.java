@@ -97,11 +97,13 @@ public class CaseDataService {
         return caseType;
     }
 
-    CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
+    CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate dateReceived) {
         log.debug("Creating Case of type: {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
         log.debug("Allocating Ref: {}", caseNumber);
-        CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, caseDeadline, dateReceived);
+        CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, dateReceived);
+        LocalDate deadline = infoClient.getCaseDeadline(caseType.getDisplayCode(), dateReceived);
+        caseData.setCaseDeadline(deadline);
         caseDataRepository.save(caseData);
         auditClient.createCaseAudit(caseData);
         log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
@@ -167,7 +169,7 @@ public class CaseDataService {
         Set<AdditionalField> additionalFields = Arrays.stream(summaryFields)
                 .map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent()))
                 .collect(Collectors.toSet());
-        Map<String, String> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
+        Map<String, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
 
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
 

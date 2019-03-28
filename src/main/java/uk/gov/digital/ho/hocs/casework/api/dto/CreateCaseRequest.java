@@ -18,9 +18,6 @@ public class CreateCaseRequest {
     @JsonProperty("data")
     private Map<String, String> data;
 
-    @JsonProperty("deadline")
-    private LocalDate caseDeadline;
-
     @JsonProperty("received")
     private LocalDate dateReceieved;
 

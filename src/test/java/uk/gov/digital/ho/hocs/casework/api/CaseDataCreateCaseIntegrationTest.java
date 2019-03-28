@@ -299,6 +299,11 @@ public class CaseDataCreateCaseIntegrationTest {
                 .expect(requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/TEST/deadline?received=2018-01-01"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON_UTF8));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
@@ -311,8 +316,7 @@ public class CaseDataCreateCaseIntegrationTest {
         return "{\n" +
                 "  \"type\":{\"type\":\"" + caseType + "\",\"shortCode\":\"a1\"},\n" +
                 "  \"data\": {\"DateReceived\":\"2018-01-01\"},\n" +
-                "  \"received\":\"2018-01-01\",\n" +
-                "  \"deadline\":\"2018-01-01\"\n" +
+                "  \"received\":\"2018-01-01\"\n" +
                 "}";
     }
 
@@ -320,8 +324,7 @@ public class CaseDataCreateCaseIntegrationTest {
         return "{\n" +
                 "  \"type\":{\"type\":\"" + caseType + "\",\"shortCode\":\"a1\"},\n" +
                 "  \"data\": " + data + ",\n" +
-                "  \"received\":\"2018-01-01\",\n" +
-                "  \"deadline\":\"2018-01-01\"\n" +
+                "  \"received\":\"2018-01-01\"\n" +
                 "}";
     }
 }

@@ -20,7 +20,7 @@ public class GetCaseSummaryResponse {
     LocalDate caseDeadline;
 
     @JsonProperty("stageDeadlines")
-    Map<String, String> stageDeadlines;
+    Map<String, LocalDate> stageDeadlines;
 
     @JsonProperty("additionalFields")
     Set<AdditionalFieldDto> additionalFields;

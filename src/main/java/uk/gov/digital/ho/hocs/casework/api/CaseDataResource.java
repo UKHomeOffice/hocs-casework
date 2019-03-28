@@ -14,9 +14,6 @@ import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 import java.util.Set;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -34,8 +31,8 @@ class CaseDataResource {
 
     @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/case")
-    ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) throws JsonProcessingException {
-        CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getCaseDeadline(), request.getDateReceieved());
+    ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
+        CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getDateReceieved());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 

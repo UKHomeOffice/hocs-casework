@@ -17,7 +17,8 @@ public class GetStageResponseTest {
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
         UUID transitionNoteUUID = UUID.randomUUID();
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, deadline, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, transitionNoteUUID);
+        stage.setDeadline(deadline);
 
         GetStageResponse getStageResponse = GetStageResponse.from(stage);
 
@@ -40,7 +41,7 @@ public class GetStageResponseTest {
 
         UUID caseUUID = UUID.randomUUID();
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", null, null, null);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", null, null);
 
         GetStageResponse getStageResponse = GetStageResponse.from(stage);
 
