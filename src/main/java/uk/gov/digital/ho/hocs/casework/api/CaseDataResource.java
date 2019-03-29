@@ -13,6 +13,8 @@ import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
+
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -72,8 +74,8 @@ class CaseDataResource {
 
     @Allocated(allocatedTo = AllocationLevel.USER)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data")
-    ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) throws JsonProcessingException {
-        caseDataService.updateCaseData(caseUUID, stageUUID, request.getData());
+    ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody Map<String,String> request) throws JsonProcessingException {
+        caseDataService.updateCaseData(caseUUID, stageUUID, request);
         return ResponseEntity.ok().build();
     }
 

@@ -29,9 +29,9 @@ class StageResource {
 
     @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/case/{caseUUID}/stage")
-    ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
+    ResponseEntity<UUID> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
         Stage stage = stageService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getAllocationType(), request.getTransitionNoteUUID());
-        return ResponseEntity.ok(CreateStageResponse.from(stage));
+        return ResponseEntity.ok(stage.getUuid());
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
