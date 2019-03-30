@@ -73,21 +73,21 @@ class CaseDataResource {
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER)
-    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data")
-    ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody Map<String,String> request) throws JsonProcessingException {
-        caseDataService.updateCaseData(caseUUID, stageUUID, request);
+    @PutMapping(value = "/case/{caseUUID}/data")
+    ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @RequestBody Map<String,String> request) throws JsonProcessingException {
+        caseDataService.updateCaseData(caseUUID, request);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryCorrespondent")
-    ResponseEntity updateCasePrimaryCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryCorrespondentUUID) throws JsonProcessingException {
-        caseDataService.updatePrimaryCorrespondent(caseUUID, stageUUID, primaryCorrespondentUUID);
+    @PutMapping(value = "/case/{caseUUID}/primaryCorrespondent")
+    ResponseEntity updateCasePrimaryCorrespondent(@PathVariable UUID caseUUID, @RequestBody UUID primaryCorrespondentUUID) throws JsonProcessingException {
+        caseDataService.updatePrimaryCorrespondent(caseUUID, primaryCorrespondentUUID);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryTopic")
-    ResponseEntity updateCasePrimaryTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryTopicUUID) throws JsonProcessingException {
-        caseDataService.updatePrimaryTopic(caseUUID, stageUUID, primaryTopicUUID);
+    @PutMapping(value = "/case/{caseUUID}/primaryTopic")
+    ResponseEntity updateCasePrimaryTopic(@PathVariable UUID caseUUID, @RequestBody UUID primaryTopicUUID) throws JsonProcessingException {
+        caseDataService.updatePrimaryTopic(caseUUID, primaryTopicUUID);
         return ResponseEntity.ok().build();
     }
 

@@ -110,35 +110,35 @@ public class CaseDataService {
         return caseData;
     }
 
-    void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
+    void updateCaseData(UUID caseUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseUUID);
         if (data != null) {
             log.debug("Data size {}", data.size());
             CaseData caseData = getCaseData(caseUUID);
             caseData.update(data, objectMapper);
             caseDataRepository.save(caseData);
-            auditClient.updateCaseAudit(caseData, stageUUID);
-            log.info("Updated Case Data for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_UPDATED));
+            auditClient.updateCaseAudit(caseData);
+            log.info("Updated Case Data for Case: {}", caseUUID, value(EVENT, CASE_UPDATED));
         } else {
-            log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
+            log.warn("Data was null for Case: {}", caseUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
         }
     }
 
-    void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) {
+    void updatePrimaryCorrespondent(UUID caseUUID, UUID primaryCorrespondentUUID) {
         log.debug("Updating Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData, stageUUID);
+        auditClient.updateCaseAudit(caseData);
         log.info("Updated Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID, value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
     }
 
-    void updatePrimaryTopic(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID) {
+    void updatePrimaryTopic(UUID caseUUID, UUID primaryTopicUUID) {
         log.debug("Updating Primary Topic for Case: {} Topic: {}", caseUUID, primaryTopicUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryTopicUUID(primaryTopicUUID);
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData, stageUUID);
+        auditClient.updateCaseAudit(caseData);
         log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));
     }
 
@@ -147,7 +147,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPriority(priority);
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData, null);
+        auditClient.updateCaseAudit(caseData);
         log.info("Updated priority Case: {} Priority {}", caseUUID, priority, value(EVENT, PRIORITY_UPDATED));
     }
 

@@ -59,7 +59,7 @@ public class AuditClient {
         this.serviceBaseURL = auditService;
     }
 
-    public void updateCaseAudit(CaseData caseData, UUID stageUUID)  {
+    public void updateCaseAudit(CaseData caseData)  {
         String data = null;
         try {
             data = objectMapper.writeValueAsString(UpdateCaseRequest.from(caseData));
@@ -68,7 +68,7 @@ public class AuditClient {
         }
 
         try {
-            sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), CASE_UPDATED, stageUUID, data);
+            sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), CASE_UPDATED, null, data);
         } catch (JsonProcessingException e) {
             log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
         }
