@@ -212,7 +212,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: cs-notify
-                  key: api_key                  
+                  key: api_key
           resources:
             limits:
               cpu: 850m
