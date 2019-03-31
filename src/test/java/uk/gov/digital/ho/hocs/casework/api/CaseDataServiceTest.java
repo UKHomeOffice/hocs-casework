@@ -424,7 +424,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
-        caseDataService.updateCaseData(caseData.getUuid(), stageUUID, new HashMap<>());
+        caseDataService.updateCaseData(caseData.getUuid(), new HashMap<>());
 
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
         verify(caseDataRepository, times(1)).save(caseData);
@@ -438,9 +438,9 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
-        caseDataService.updateCaseData(caseData.getUuid(), stageUUID, new HashMap<>());
+        caseDataService.updateCaseData(caseData.getUuid(), new HashMap<>());
 
-        verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
+        verify(auditClient, times(1)).updateCaseAudit(caseData);
         verifyNoMoreInteractions(auditClient);
     }
 
@@ -449,7 +449,7 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
 
-        caseDataService.updateCaseData(caseData.getUuid(), stageUUID, null);
+        caseDataService.updateCaseData(caseData.getUuid(), null);
 
         verifyZeroInteractions(caseDataRepository);
     }
@@ -457,14 +457,14 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotUpdateCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
 
-        caseDataService.updateCaseData(null, stageUUID, new HashMap<>());
+        caseDataService.updateCaseData(null, new HashMap<>());
     }
 
     @Test()
     public void shouldNotUpdateCaseMissingCaseUUID() throws JsonProcessingException {
 
         try {
-            caseDataService.updateCaseData(null, stageUUID, new HashMap<>());
+            caseDataService.updateCaseData(null, new HashMap<>());
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }

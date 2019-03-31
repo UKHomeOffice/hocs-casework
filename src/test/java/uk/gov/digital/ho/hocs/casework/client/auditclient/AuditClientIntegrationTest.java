@@ -47,7 +47,7 @@ public class AuditClientIntegrationTest extends CamelTestSupport {
     public void shouldPutMessageOnAuditQueue() throws InterruptedException, JsonProcessingException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), mapper, caseReceived);
         MockEndpoint mockEndpoint = getMockEndpoint(toEndpoint);
-        auditClient.updateCaseAudit(caseData, stageUUID);
+        auditClient.updateCaseAudit(caseData);
         mockEndpoint.assertIsSatisfied();
         mockEndpoint.expectedBodyReceived().body().convertToString().contains(String.format("\"reference\":\"%s\"", caseData.getReference()));
     }

@@ -47,7 +47,7 @@ public class StageResourceTest {
 
         when(stageService.createStage(caseUUID, stageType, teamUUID, allocationType, transitionNoteUUID)).thenReturn(stage);
 
-        ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
+        ResponseEntity<UUID> response = stageResource.createStage(caseUUID, request);
 
         verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, allocationType, transitionNoteUUID);
 
@@ -65,7 +65,7 @@ public class StageResourceTest {
 
         when(stageService.createStage(caseUUID, stageType, teamUUID, allocationType, null)).thenReturn(stage);
 
-        ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
+        ResponseEntity<UUID> response = stageResource.createStage(caseUUID, request);
 
         verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, allocationType, null);
 

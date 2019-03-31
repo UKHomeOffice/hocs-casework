@@ -49,7 +49,6 @@ public class AuditClientTest {
 
     SpringConfiguration configuration = new SpringConfiguration();
     ObjectMapper mapper;
-    UUID stageUUID = UUID.randomUUID();
     String userId = "any user";
     private AuditClient auditClient;
     private static final long caseID = 12345L;
@@ -115,7 +114,7 @@ public class AuditClientTest {
     @Test
     public void shouldSetAuditFields() throws IOException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
-        auditClient.updateCaseAudit(caseData, stageUUID);
+        auditClient.updateCaseAudit(caseData);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_UPDATED);
@@ -130,7 +129,7 @@ public class AuditClientTest {
     public void shouldNotThrowExceptionOnFailure() {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         doThrow(new RuntimeException("An error occurred")).when(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        assertThatCode(() -> { auditClient.updateCaseAudit(caseData, stageUUID);}).doesNotThrowAnyException();
+        assertThatCode(() -> { auditClient.updateCaseAudit(caseData);}).doesNotThrowAnyException();
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
     }
 
@@ -147,7 +146,7 @@ public class AuditClientTest {
     @Test
     public void updateCaseAudit() throws IOException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
-        auditClient.updateCaseAudit(caseData, stageUUID);
+        auditClient.updateCaseAudit(caseData);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_UPDATED);

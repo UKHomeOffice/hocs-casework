@@ -126,13 +126,12 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldUpdateCaseData() throws JsonProcessingException {
-        UpdateCaseDataRequest updateCaseDataRequest = new UpdateCaseDataRequest(data);
 
-        doNothing().when(caseDataService).updateCaseData(uuid, uuid, data);
+        doNothing().when(caseDataService).updateCaseData(uuid, data);
 
-        ResponseEntity response = caseDataResource.updateCaseData(uuid, uuid, updateCaseDataRequest);
+        ResponseEntity response = caseDataResource.updateCaseData(uuid, data);
 
-        verify(caseDataService, times(1)).updateCaseData(uuid, uuid, data);
+        verify(caseDataService, times(1)).updateCaseData(uuid, data);
 
         verifyNoMoreInteractions(caseDataService);
 

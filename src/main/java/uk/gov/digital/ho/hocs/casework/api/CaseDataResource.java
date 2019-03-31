@@ -76,19 +76,19 @@ class CaseDataResource {
     @PutMapping(value = "/case/{caseUUID}/data")
     ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @RequestBody Map<String,String> request) throws JsonProcessingException {
         caseDataService.updateCaseData(caseUUID, request);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(caseUUID);
     }
 
     @PutMapping(value = "/case/{caseUUID}/primaryCorrespondent")
     ResponseEntity updateCasePrimaryCorrespondent(@PathVariable UUID caseUUID, @RequestBody UUID primaryCorrespondentUUID) throws JsonProcessingException {
         caseDataService.updatePrimaryCorrespondent(caseUUID, primaryCorrespondentUUID);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(caseUUID);
     }
 
     @PutMapping(value = "/case/{caseUUID}/primaryTopic")
     ResponseEntity updateCasePrimaryTopic(@PathVariable UUID caseUUID, @RequestBody UUID primaryTopicUUID) throws JsonProcessingException {
         caseDataService.updatePrimaryTopic(caseUUID, primaryTopicUUID);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(caseUUID);
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
