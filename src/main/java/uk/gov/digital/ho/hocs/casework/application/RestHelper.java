@@ -7,7 +7,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.nio.charset.Charset;
 import java.util.Base64;
@@ -34,18 +33,27 @@ public class RestHelper {
     }
 
     public <T,R> R post(String serviceBaseURL, String url, T request, Class<R> responseType) {
+        log.info("RestHelper making POST request to %s/%s", serviceBaseURL, url, value(EVENT, REST_HELPER_POST));
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.POST, new HttpEntity<>(request, createAuthHeaders()), responseType);
-        return validateResponse(response);
+        return response.getBody();
+    }
+
+    public <T,R> R post(String serviceBaseURL, String url, T request, ParameterizedTypeReference<R> responseType) {
+        log.info("RestHelper making POST request to %s/%s", serviceBaseURL, url, value(EVENT, REST_HELPER_POST));
+        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.POST, new HttpEntity<>(request, createAuthHeaders()), responseType);
+        return response.getBody();
     }
 
     public <R> R get(String serviceBaseURL, String url, Class<R> responseType) {
+        log.info("RestHelper making POST request to %s/%s", serviceBaseURL, url, value(EVENT, REST_HELPER_GET));
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
-        return validateResponse(response);
+        return response.getBody();
     }
 
     public <R> R get(String serviceBaseURL, String url, ParameterizedTypeReference<R> responseType) {
+        log.info("RestHelper making POST request to %s/%s", serviceBaseURL, url, value(EVENT, REST_HELPER_GET));
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
-        return validateResponse(response);
+        return response.getBody();
     }
 
     private HttpHeaders createAuthHeaders() {
@@ -60,23 +68,6 @@ public class RestHelper {
 
     private String getBasicAuth() {
         return String.format("Basic %s", Base64.getEncoder().encodeToString(basicAuth.getBytes(Charset.forName("UTF-8"))));
-    }
-
-    private static <T> T validateResponse(ResponseEntity<T>  responseEntity) {
-        if(responseEntity.getStatusCode().equals(HttpStatus.OK)) {
-            if(responseEntity.hasBody()) {
-                return responseEntity.getBody();
-            } else {
-                log.error("Server returned malformed response %s", responseEntity.getStatusCodeValue() , value(EVENT, REST_HELPER_MALFORMED_RESPONSE));
-                throw new ApplicationExceptions.ResourceServerException("Server returned malformed response", REST_HELPER_MALFORMED_RESPONSE );
-            }
-        } else if(responseEntity.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-            log.error("Server returned not found response %s", responseEntity.getStatusCodeValue() , value(EVENT, REST_HELPER_MALFORMED_RESPONSE));
-            throw new ApplicationExceptions.ResourceNotFoundException("Server returned not found response", REST_HELPER_NOT_FOUND);
-        } else {
-            log.error("Server returned invalid response %s", responseEntity.getStatusCodeValue() , value(EVENT, REST_HELPER_MALFORMED_RESPONSE));
-            throw new ApplicationExceptions.ResourceServerException("Server returned invalid response", REST_HELPER_INTERNAL_SERVER_ERROR);
-        }
     }
 
 }

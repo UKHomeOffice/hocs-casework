@@ -74,26 +74,16 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetStandardLine")
     public GetStandardLineResponse getStandardLine(UUID topicUUID) {
-        try {
-            GetStandardLineResponse standardLine = restHelper.get(serviceBaseURL, String.format("/topic/%s/standardLine", topicUUID), GetStandardLineResponse.class);
-            log.info("Got StandardLine {} for Topic {}", standardLine.getDisplayName(), topicUUID, value(EVENT, INFO_CLIENT_GET_STANDARD_LINE_SUCCESS));
-            return standardLine;
-        } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get StandardLine for Topic {}", topicUUID, value(EVENT, INFO_CLIENT_GET_STANDARD_LINE_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get StandardLine for Topic %s", topicUUID), INFO_CLIENT_GET_STANDARD_LINE_FAILURE);
-        }
+        GetStandardLineResponse standardLine = restHelper.get(serviceBaseURL, String.format("/topic/%s/standardLine", topicUUID), GetStandardLineResponse.class);
+        log.info("Got StandardLine {} for Topic {}", standardLine.getDisplayName(), topicUUID, value(EVENT, INFO_CLIENT_GET_STANDARD_LINE_SUCCESS));
+        return standardLine;
     }
 
     @Cacheable(value = "InfoClientGetTemplate")
     public GetTemplateResponse getTemplate(String caseType) {
-        try {
-            GetTemplateResponse template = restHelper.get(serviceBaseURL, String.format("/caseType/%s/template", caseType), GetTemplateResponse.class);
-            log.info("Got Template {} for CaseType {}", template.getDisplayName(), caseType, value(EVENT, INFO_CLIENT_GET_TEMPLATE_SUCCESS));
-            return template;
-        } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get Template for CaseType {}", caseType, value(EVENT, INFO_CLIENT_GET_TEMPLATE_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get Template for CaseType %s", caseType), INFO_CLIENT_GET_TEMPLATE_FAILURE);
-        }
+        GetTemplateResponse template = restHelper.get(serviceBaseURL, String.format("/caseType/%s/template", caseType), GetTemplateResponse.class);
+        log.info("Got Template {} for CaseType {}", template.getDisplayName(), caseType, value(EVENT, INFO_CLIENT_GET_TEMPLATE_SUCCESS));
+        return template;
     }
 
     @Cacheable(value = "InfoClientGetCaseSummaryFields")
