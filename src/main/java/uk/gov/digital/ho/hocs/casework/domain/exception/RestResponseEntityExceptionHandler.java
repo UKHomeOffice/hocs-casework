@@ -31,7 +31,7 @@ public class RestResponseEntityExceptionHandler {
                 log.error("HttpClientErrorException: {}", e.getMessage(), value(EVENT, REST_HELPER_GET_NOT_FOUND));
                 return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
             default:
-                log.error("HttpClientErrorException: {}", e.getMessage(), value(EVENT, REST_HELPER_GET_BAD_REQEST));
+                log.error("HttpClientErrorException: {}", e.getMessage(), value(EVENT, REST_HELPER_GET_BAD_REQUEST));
                 return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
         }
     }
@@ -54,18 +54,6 @@ public class RestResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
     }
 
-    @ExceptionHandler(ApplicationExceptions.ResourceServerException.class)
-    public ResponseEntity handle(ApplicationExceptions.ResourceServerException e) {
-        log.error("ApplicationExceptions.ResourceServerException: {}", e.getMessage(),value(EVENT, e.getEvent()));
-        return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
-    }
-
-    @ExceptionHandler(ApplicationExceptions.ResourceNotFoundException.class)
-    public ResponseEntity handle(ApplicationExceptions.ResourceNotFoundException e) {
-        log.error("ApplicationExceptions.ResourceNotFoundException: {}", e.getMessage(),value(EVENT, e.getEvent()));
-        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
-    }
-
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity handle(MethodArgumentNotValidException e) {
         log.error("MethodArgumentNotValidException: {}", e.getMessage(),value(EVENT, BAD_REQUEST));
@@ -81,12 +69,6 @@ public class RestResponseEntityExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity handle(HttpMessageNotReadableException e) {
         log.error("HttpMessageNotReadableException: {}", e.getMessage(),value(EVENT, BAD_REQUEST));
-        return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
-    }
-
-    @ExceptionHandler(ApplicationExceptions.CorrespondentCreationException.class)
-    public ResponseEntity handle(ApplicationExceptions.CorrespondentCreationException e) {
-        log.error("DataIntegrityViolationException: {}", e.getMessage(),value(EVENT, BAD_REQUEST));
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 

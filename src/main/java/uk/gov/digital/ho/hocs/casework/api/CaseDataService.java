@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
@@ -89,7 +90,7 @@ public class CaseDataService {
         try {
             CaseDataType caseDataType = infoClient.getCaseType(shortCode);
             caseType = caseDataType.getDisplayCode();
-        } catch(ApplicationExceptions.ResourceException e) {
+        } catch(RestClientException e) {
             log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED) );
             caseType = getCase(caseUUID).getType();
         }

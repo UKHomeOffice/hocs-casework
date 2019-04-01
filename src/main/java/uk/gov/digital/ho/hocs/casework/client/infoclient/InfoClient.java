@@ -5,17 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
-import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -38,38 +35,23 @@ public class InfoClient {
     }
 
     public Set<CaseDataType> getCaseTypes() {
-        try {
-            GetCaseTypesResponse response = restHelper.get(serviceBaseURL, "/caseType", GetCaseTypesResponse.class);
-            log.info("Got {} case types", response.getCaseTypes().size(), value(EVENT, INFO_CLIENT_GET_CASE_TYPES_SUCCESS));
-            return response.getCaseTypes();
-        } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get case types", value(EVENT, INFO_CLIENT_GET_CASE_TYPES_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException("Could not get case types", INFO_CLIENT_GET_CASE_TYPES_FAILURE);
-        }
+        GetCaseTypesResponse response = restHelper.get(serviceBaseURL, "/caseType", GetCaseTypesResponse.class);
+        log.info("Got {} case types", response.getCaseTypes().size(), value(EVENT, INFO_CLIENT_GET_CASE_TYPES_SUCCESS));
+        return response.getCaseTypes();
     }
 
     @Cacheable(value = "InfoClientGetCaseType")
     public CaseDataType getCaseType(String shortCode) {
-        try {
-            CaseDataType caseDataType = restHelper.get(serviceBaseURL, String.format("/caseType/shortCode/%s", shortCode), CaseDataType.class);
-            log.info("Got CaseDataType {} for Short code {}", caseDataType.getDisplayCode(), shortCode, value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
-            return caseDataType;
-        } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get caseType for Short code {}", shortCode, value(EVENT, INFO_CLIENT_GET_CASE_TYPE_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get CaseType for Short code %s", shortCode), INFO_CLIENT_GET_CASE_TYPE_FAILURE);
-        }
+        CaseDataType caseDataType = restHelper.get(serviceBaseURL, String.format("/caseType/shortCode/%s", shortCode), CaseDataType.class);
+        log.info("Got CaseDataType {} for Short code {}", caseDataType.getDisplayCode(), shortCode, value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
+        return caseDataType;
     }
 
     @Cacheable(value = "InfoClientGetTopic")
     public InfoTopic getTopic(UUID topicUUID) {
-        try {
-            InfoTopic infoTopic = restHelper.get(serviceBaseURL, String.format("/topic/%s", topicUUID), InfoTopic.class);
-            log.info("Got Topic {} for Topic {}", infoTopic.getLabel(), topicUUID, value(EVENT, INFO_CLIENT_GET_TOPIC_SUCCESS));
-            return infoTopic;
-        } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get Topic {}", topicUUID, value(EVENT, INFO_CLIENT_GET_TOPIC_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get Topic %s", topicUUID), INFO_CLIENT_GET_TOPIC_FAILURE);
-        }
+        InfoTopic infoTopic = restHelper.get(serviceBaseURL, String.format("/topic/%s", topicUUID), InfoTopic.class);
+        log.info("Got Topic {} for Topic {}", infoTopic.getLabel(), topicUUID, value(EVENT, INFO_CLIENT_GET_TOPIC_SUCCESS));
+        return infoTopic;
     }
 
     @Cacheable(value = "InfoClientGetStandardLine")
@@ -88,85 +70,51 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetCaseSummaryFields")
     public FieldDto[] getCaseSummaryFields(String caseType) {
-        try {
-            FieldDto[] response = restHelper.get(serviceBaseURL, String.format("/schema/caseType/%s/summary", caseType), FieldDto[].class);
-            log.info("Got {} case summary fields for CaseType {}", response.length, caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
-            return response;
-        } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get case summary fields for CaseType {}", caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get case summary fields for CaseType %s", caseType), INFO_CLIENT_GET_SUMMARY_FIELDS_FAILURE);
-        }
+        FieldDto[] response = restHelper.get(serviceBaseURL, String.format("/schema/caseType/%s/summary", caseType), FieldDto[].class);
+        log.info("Got {} case summary fields for CaseType {}", response.length, caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
+        return response;
     }
 
     @Cacheable(value = "InfoClientGetCaseDeadline")
     public LocalDate getCaseDeadline(String caseType, LocalDate localDate) {
-        try {
-            LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s", caseType, localDate), LocalDate.class);
-            log.info("Got {} as deadline for CaseType {} and Date {}", response.toString(), caseType, localDate, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
-            return response;
-        } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get deadlines for CaseType {} and Date {}", caseType, localDate, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get deadlines for CaseType %s and Date %s", caseType, localDate), INFO_CLIENT_GET_CASE_DEADLINE_FAILURE);
-        }
+        LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s", caseType, localDate), LocalDate.class);
+        log.info("Got {} as deadline for CaseType {} and Date {}", response.toString(), caseType, localDate, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
+        return response;
     }
 
     @Cacheable(value = "InfoClientGetStageDeadline")
     public LocalDate getStageDeadline(String stageType, LocalDate localDate) {
-        try {
-            LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadline?received=%s", stageType, localDate), LocalDate.class);
-            log.info("Got {} as deadline for StageType {} and Date {}", response.toString(), stageType, localDate, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS));
-            return response;
-        } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get deadlines for StageType {} and Date {}", stageType, localDate, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get deadlines for StageType %s and Date %s", stageType, localDate), INFO_CLIENT_GET_STAGE_DEADLINE_FAILURE);
-        }
+        LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadline?received=%s", stageType, localDate), LocalDate.class);
+        log.info("Got {} as deadline for StageType {} and Date {}", response.toString(), stageType, localDate, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS));
+        return response;
     }
 
     @Cacheable(value = "InfoClientGetDeadlines")
     public Map<String, LocalDate> getDeadlines(String caseType, LocalDate localDate) {
-        try {
-            Map<String,LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, localDate), new ParameterizedTypeReference<HashMap<String,LocalDate>>() {});
-            log.info("Got {} case deadlines for CaseType {} and Date {}", response.size(), caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
-            return response;
-        } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get deadlines for CaseType {} and Date {}", caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINES_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get deadlines for CaseType %s and Date %s", caseType, localDate), INFO_CLIENT_GET_DEADLINES_FAILURE);
-        }
+        Map<String, LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, localDate), new ParameterizedTypeReference<Map<String, LocalDate> >() {});
+        log.info("Got {} case deadlines for CaseType {} and Date {}", response.size(), caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
+        return response;
     }
 
     @Cacheable(value = "InfoClientGetNominatedPeople")
     public Set<InfoNominatedPeople> getNominatedPeople(UUID teamUUID) {
-        try {
-            InfoGetNominatedPeopleResponse response = restHelper.get(serviceBaseURL, String.format("/team/%s/contact", teamUUID), InfoGetNominatedPeopleResponse.class);
-            log.info("Got {} contacts for Team {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_SUCCESS));
-            return response.getNominatedPeople();
-        } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get contacts for Team {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get contacts for TeamDto %s", teamUUID), INFO_CLIENT_GET_CONTACTS_FAILURE);
-        }
+        InfoGetNominatedPeopleResponse response = restHelper.get(serviceBaseURL, String.format("/team/%s/contact", teamUUID), InfoGetNominatedPeopleResponse.class);
+        log.info("Got {} contacts for Team {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_SUCCESS));
+        return response.getNominatedPeople();
+
     }
 
     @Cacheable(value = "InfoClientGetUser")
     public UserDto getUser(UUID userUUID) {
-        try {
-            UserDto userDto = restHelper.get(serviceBaseURL, String.format("/user/%s", userUUID), UserDto.class);
-            log.info("Got User UserUUID {}", userUUID, value(EVENT, INFO_CLIENT_GET_USER_SUCCESS));
-            return userDto;
-        } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get User for UserUUID {}", userUUID, value(EVENT, INFO_CLIENT_GET_USER_FAILURE));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Could not get User for UserUUID %s", userUUID), INFO_CLIENT_GET_USER_FAILURE);
-        }
+        UserDto userDto = restHelper.get(serviceBaseURL, String.format("/user/%s", userUUID), UserDto.class);
+        log.info("Got User UserUUID {}", userUUID, value(EVENT, INFO_CLIENT_GET_USER_SUCCESS));
+        return userDto;
     }
 
     @Cacheable(value = "InfoClientGetTeams")
     public Set<TeamDto> getTeams() {
-        try {
-            Set<TeamDto> teamDtos = restHelper.get(serviceBaseURL, "/team", new ParameterizedTypeReference<Set<TeamDto>>() {});
-            log.info("Got teamDtos", value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
-            return teamDtos;
-        } catch (ApplicationExceptions.ResourceException e) {
-            log.error("Could not get teams", value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
-            throw new ApplicationExceptions.EntityNotFoundException("Could not get teams", INFO_CLIENT_GET_TEAMS_FAILURE);
-        }
+        Set<TeamDto> teamDtos = restHelper.get(serviceBaseURL, "/team", new ParameterizedTypeReference<Set<TeamDto>>() {});
+        log.info("Got teamDtos", value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
+        return teamDtos;
     }
 }

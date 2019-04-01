@@ -9,6 +9,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
@@ -322,7 +324,7 @@ public class AuditClientTest {
         UUID caseUUID = UUID.randomUUID();
         String events = CaseDataService.TIMELINE_EVENTS.stream().collect(Collectors.joining(","));
         when(restHelper.get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
-                GetAuditListResponse.class)).thenThrow(new ApplicationExceptions.ResourceException("Error", LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
+                GetAuditListResponse.class)).thenThrow(RestClientException.class);
 
         Set<GetAuditResponse> response = auditClient.getAuditLinesForCase(caseUUID, CaseDataService.TIMELINE_EVENTS);
         verify(restHelper, times(1)).get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),

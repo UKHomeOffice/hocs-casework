@@ -56,7 +56,7 @@ public class CorrespondentService {
             correspondentRepository.save(correspondent);
             auditClient.createCorrespondentAudit(correspondent);
         } catch (DataIntegrityViolationException e) {
-            throw new ApplicationExceptions.CorrespondentCreationException(String.format("Failed to create correspondent %s for Case: %s", correspondent.getUuid(), caseUUID), CORRESPONDENT_CREATE_FAILURE);
+            throw new ApplicationExceptions.EntityCreationException(String.format("Failed to create correspondent %s for Case: %s", correspondent.getUuid(), caseUUID), CORRESPONDENT_CREATE_FAILURE);
         }
         log.info("Created Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID, value(EVENT, CORRESPONDENT_CREATED));
     }
