@@ -48,6 +48,9 @@ public class GetStageResponse {
     @JsonRawValue
     private String data;
 
+    @JsonProperty("active")
+    private boolean active;
+
     public static GetStageResponse from(Stage stage) {
 
         return new GetStageResponse(
@@ -61,6 +64,7 @@ public class GetStageResponse {
                 stage.getCaseReference(),
                 stage.getCaseDataType(),
                 stage.getTransitionNoteUUID(),
-                stage.getData());
+                stage.getData(),
+                stage.isActive());
     }
 }

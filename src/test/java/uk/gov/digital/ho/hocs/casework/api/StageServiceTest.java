@@ -20,6 +20,7 @@ import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 import java.time.LocalDate;
 import java.util.*;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -121,7 +122,7 @@ public class StageServiceTest {
 
         Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
 
-        when(stageRepository.findByCaseReference(ref)).thenReturn(new HashSet<>(Arrays.asList(stage)));
+        when(stageRepository.findByCaseReference(ref)).thenReturn(Collections.singleton(stage));
 
         stageService.getActiveStagesByCaseReference(ref);
 
@@ -134,11 +135,10 @@ public class StageServiceTest {
 
     @Test
     public void shouldGetStageByCaseReferenceWithMissingReference() {
-        String ref = "MIN/0123456/19";
 
         Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
 
-        when(stageRepository.findByCaseReference(null)).thenReturn(new HashSet<>(Arrays.asList(stage)));
+        when(stageRepository.findByCaseReference(null)).thenReturn(Collections.singleton(stage));
 
         stageService.getActiveStagesByCaseReference(null);
 
@@ -479,12 +479,72 @@ public class StageServiceTest {
         when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
         when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
 
-        stageService.search(searchRequest);
+        Set<Stage> stageResults = stageService.search(searchRequest);
 
         verify(searchClient, times(1)).search(searchRequest);
         verify(stageRepository, times(1)).findAllByCaseUUIDIn(caseUUIDS);
         verifyNoMoreInteractions(searchClient);
         verifyNoMoreInteractions(stageRepository);
+
+        assertThat(stageResults).hasSize(1);
+
+    }
+
+    @Test
+    public void shouldSearchInactiveStage() {
+
+        Set<UUID> caseUUIDS = new HashSet<>();
+        caseUUIDS.add(caseUUID);
+
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, transitionNoteUUID);
+        Stage stage_old = new Stage(caseUUID, "DCU_MIN_MARKUP", null, transitionNoteUUID);
+        Set<Stage> stages = new HashSet<>();
+        stages.add(stage);
+        stages.add(stage_old);
+
+
+        SearchRequest searchRequest = new SearchRequest();
+
+        when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
+        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
+
+        Set<Stage> stageResults = stageService.search(searchRequest);
+
+        verify(searchClient, times(1)).search(searchRequest);
+        verify(stageRepository, times(1)).findAllByCaseUUIDIn(caseUUIDS);
+        verifyNoMoreInteractions(searchClient);
+        verifyNoMoreInteractions(stageRepository);
+
+        assertThat(stageResults).hasSize(1);
+
+    }
+
+    @Test
+    public void shouldSearchMultipleStages() {
+
+        Set<UUID> caseUUIDS = new HashSet<>();
+        caseUUIDS.add(caseUUID);
+
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, transitionNoteUUID);
+        Stage stage_old = new Stage(UUID.randomUUID(), "DCU_MIN_MARKUP", null, transitionNoteUUID);
+        Set<Stage> stages = new HashSet<>();
+        stages.add(stage);
+        stages.add(stage_old);
+
+
+        SearchRequest searchRequest = new SearchRequest();
+
+        when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
+        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
+
+        Set<Stage> stageResults = stageService.search(searchRequest);
+
+        verify(searchClient, times(1)).search(searchRequest);
+        verify(stageRepository, times(1)).findAllByCaseUUIDIn(caseUUIDS);
+        verifyNoMoreInteractions(searchClient);
+        verifyNoMoreInteractions(stageRepository);
+
+        assertThat(stageResults).hasSize(2);
 
     }
 
@@ -492,11 +552,6 @@ public class StageServiceTest {
     public void shouldSearchNoResults() {
 
         Set<UUID> caseUUIDS = new HashSet<>(0);
-
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, transitionNoteUUID);
-        Set<Stage> stages = new HashSet<>();
-        stages.add(stage);
-
 
         SearchRequest searchRequest = new SearchRequest();
 
