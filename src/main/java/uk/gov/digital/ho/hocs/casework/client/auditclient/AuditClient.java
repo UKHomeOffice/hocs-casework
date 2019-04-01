@@ -12,7 +12,6 @@ import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.*;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
-import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import java.time.LocalDateTime;
 import java.util.*;
 

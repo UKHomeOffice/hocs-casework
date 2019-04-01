@@ -31,7 +31,7 @@ public class RestResponseEntityExceptionHandler {
                 log.error("HttpClientErrorException: {}", e.getMessage(), value(EVENT, REST_HELPER_GET_NOT_FOUND));
                 return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
             default:
-                log.error("HttpClientErrorException: {}", e.getMessage(), value(EVENT, REST_HELPER_GET_BAD_REQEST));
+                log.error("HttpClientErrorException: {}", e.getMessage(), value(EVENT, REST_HELPER_GET_BAD_REQUEST));
                 return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
         }
     }
