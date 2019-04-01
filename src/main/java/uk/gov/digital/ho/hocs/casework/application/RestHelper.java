@@ -33,25 +33,25 @@ public class RestHelper {
     }
 
     public <T,R> R post(String serviceBaseURL, String url, T request, Class<R> responseType) {
-        log.info("RestHelper making POST request to %s/%s", serviceBaseURL, url, value(EVENT, REST_HELPER_POST));
+        log.info("RestHelper making POST request to {}/{}", serviceBaseURL, url, value(EVENT, REST_HELPER_POST));
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.POST, new HttpEntity<>(request, createAuthHeaders()), responseType);
         return response.getBody();
     }
 
     public <T,R> R post(String serviceBaseURL, String url, T request, ParameterizedTypeReference<R> responseType) {
-        log.info("RestHelper making POST request to %s/%s", serviceBaseURL, url, value(EVENT, REST_HELPER_POST));
+        log.info("RestHelper making POST request to {}/{}", serviceBaseURL, url, value(EVENT, REST_HELPER_POST));
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.POST, new HttpEntity<>(request, createAuthHeaders()), responseType);
         return response.getBody();
     }
 
     public <R> R get(String serviceBaseURL, String url, Class<R> responseType) {
-        log.info("RestHelper making POST request to %s/%s", serviceBaseURL, url, value(EVENT, REST_HELPER_GET));
+        log.info("RestHelper making POST request to {}/{}", serviceBaseURL, url, value(EVENT, REST_HELPER_GET));
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
         return response.getBody();
     }
 
     public <R> R get(String serviceBaseURL, String url, ParameterizedTypeReference<R> responseType) {
-        log.info("RestHelper making POST request to %s/%s", serviceBaseURL, url, value(EVENT, REST_HELPER_GET));
+        log.info("RestHelper making POST request to {}/{}", serviceBaseURL, url, value(EVENT, REST_HELPER_GET));
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
         return response.getBody();
     }
