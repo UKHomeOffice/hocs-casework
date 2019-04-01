@@ -6,6 +6,7 @@ import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.*;
@@ -15,7 +16,6 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import static java.util.Map.of;
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
@@ -222,7 +222,7 @@ public class AuditClient {
             GetAuditListResponse response = restHelper.get(serviceBaseURL, String.format("/audit/case/%s?types=%s", caseUUID, events), GetAuditListResponse.class);
             log.info("Got {} audits", response.getAudits().size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
             return response.getAudits();
-        } catch (ApplicationExceptions.ResourceException e) {
+        } catch (RestClientException e) {
             log.error("Could not get audit lines", value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
             return new HashSet<>();
         }

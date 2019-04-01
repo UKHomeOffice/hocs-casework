@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 
@@ -572,7 +573,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldReturnCaseTypeWhenNullReturnedFromInfoClientAndButCaseInCaseDataOnGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseType(caseTypeShortCode)).thenThrow(ApplicationExceptions.ResourceServerException.class);
+        when(infoClient.getCaseType(caseTypeShortCode)).thenThrow(RestClientException.class);
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData(new CaseDataType("", ""),1L, null ));
 
         caseDataService.getCaseType(caseUUID);
@@ -586,7 +587,7 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldThrowEntityNotFoundExceptionWhenNullReturnedFromInfoClientAndNoCaseInCaseDataOnGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseType(caseTypeShortCode)).thenThrow(ApplicationExceptions.ResourceServerException.class);
+        when(infoClient.getCaseType(caseTypeShortCode)).thenThrow(RestClientException.class);
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(null);
 
         caseDataService.getCaseType(caseUUID);
