@@ -1,21 +1,20 @@
-FROM quay.io/ukhomeofficedigital/openjdk11
+FROM amazoncorretto:11
 
 ENV USER user_hocs_casework
 ENV USER_ID 1000
-ENV GROUP group_hocs_casework
 ENV NAME hocs-casework
 ENV JAR_PATH build/libs
 
 RUN yum update -y glibc && \
     yum update -y nss && \
-    yum update -y bind-license
+    yum update -y bind-license && \
+    yum clean all
 
 WORKDIR /app
 
-RUN groupadd -r ${GROUP} && \
-    useradd -r -u ${USER_ID} -g ${GROUP} ${USER} -d /app && \
+CMD /usr/sbin/adduser -r -u ${USER_ID} ${USER} -d /app && \
     mkdir -p /app && \
-    chown -R ${USER}:${GROUP} /app
+    chown -R ${USER} /app
 
 COPY ${JAR_PATH}/${NAME}*.jar /app
 
