@@ -225,7 +225,7 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        FieldDto[] filterFields = new FieldDto[]{};
+        Set<FieldDto> filterFields = new HashSet<>();
 
         Map<String, LocalDate> deadlines = Map.of(
                 "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
@@ -249,7 +249,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldAuditGetCaseSummary()  {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
-        FieldDto[] filterFields = new FieldDto[]{};
+        Set<FieldDto> filterFields = new HashSet<>();
 
         Map<String, LocalDate> deadlines = Map.of(
                 "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
@@ -270,7 +270,7 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(null);
-        FieldDto[] filterFields = new FieldDto[]{};
+        Set<FieldDto> filterFields = new HashSet<>();
 
         Map<String, LocalDate> deadlines = Map.of(
                 "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
@@ -298,7 +298,7 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        FieldDto[] filterFields = new FieldDto[]{};
+        Set<FieldDto> filterFields = new HashSet<>();
 
 
         Map<String, LocalDate> deadlines = Map.of(
@@ -323,13 +323,13 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseOnlyFilteredAdditionalData() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
-        FieldDto[] filterFields = new FieldDto[2];
+        Set<FieldDto> filterFields = new HashSet<>();
 
         FieldDto field0 = new FieldDto(UUID.randomUUID(),"TEMPCReference", "what is your TEMPCReference", "Text", new String[]{}, true, true);
-        filterFields[0] = field0;
+        filterFields.add(field0);
 
         FieldDto field1 = new FieldDto(UUID.randomUUID(),"CopyNumberTen",  "what is your CopyNumberTen", "Text", new String[]{},  true, true);
-        filterFields[1] = field1;
+        filterFields.add(field1);
 
 
         Map<String, String> additionalData = Map.of(

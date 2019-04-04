@@ -165,9 +165,9 @@ public class CaseDataService {
         log.debug("Building CaseSummary for Case: {}", caseUUID);
 
         CaseData caseData = getCaseData(caseUUID);
-        FieldDto[] summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
+        Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
-        Set<AdditionalField> additionalFields = Arrays.stream(summaryFields)
+        Set<AdditionalField> additionalFields = summaryFields.stream()
                 .map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent()))
                 .collect(Collectors.toSet());
         Map<String, LocalDate> stageDeadlines = infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived());
