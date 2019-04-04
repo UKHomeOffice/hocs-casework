@@ -18,12 +18,12 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 @Slf4j
 @Component
 @Profile({"cache"})
-public class DependentDataPreLoader {
+public class CacheWarmer {
 
     private InfoClient infoClient;
 
     @Autowired
-    public DependentDataPreLoader(InfoClient infoClient) {
+    public CacheWarmer(InfoClient infoClient) {
         this.infoClient = infoClient;
     }
 
