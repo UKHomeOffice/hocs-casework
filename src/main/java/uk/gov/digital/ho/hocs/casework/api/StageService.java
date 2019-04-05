@@ -75,7 +75,7 @@ public class StageService {
         Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
         CaseData caseData = caseDataService.getCase(caseUUID);
         LocalDate dateReceived = caseData.getDateReceived();
-        LocalDate deadline = infoClient.getStageDeadline(stageType, dateReceived);
+        LocalDate deadline = infoClient.getStageDeadline(caseData.getType(), stageType, dateReceived);
         stage.setDeadline(deadline);
         stageRepository.save(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));

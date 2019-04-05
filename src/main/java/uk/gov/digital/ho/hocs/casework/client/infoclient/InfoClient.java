@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.client.infoclient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -38,6 +39,11 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetCaseTypesByShortCode", unless = "#result.size() == 0")
     public Map<String, CaseDataType> getCaseTypesByShortCode() {
+        return getCaseTypesByShortCodeRequest();
+    }
+
+    @CachePut(value = "InfoClientGetCaseTypesByShortCode", unless = "#result.size() == 0")
+    public Map<String, CaseDataType> getCaseTypesByShortCodeRequest() {
         GetCaseTypesResponse response = restHelper.get(serviceBaseURL, "/caseType", GetCaseTypesResponse.class);
         log.info("Got {} case types", response.getCaseTypes().size(), value(EVENT, INFO_CLIENT_GET_CASE_TYPES_SUCCESS));
         return response.getCaseTypes().stream().collect(Collectors.toMap(CaseDataType::getShortCode, c -> c));
@@ -61,6 +67,11 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetStandardLinesByTopicUUID", unless = "#result.size() == 0")
     public Map<UUID ,GetStandardLineResponse> getStandardLinesByTopicUUID() {
+        return getStandardLinesByTopicUUIDRequest();
+    }
+
+    @CachePut(value = "InfoClientGetStandardLinesByTopicUUID", unless = "#result.size() == 0")
+    public Map<UUID ,GetStandardLineResponse> getStandardLinesByTopicUUIDRequest() {
         Set<GetStandardLineResponse> standardLines = restHelper.get(serviceBaseURL, "/standardLine", new ParameterizedTypeReference<HashSet<GetStandardLineResponse>>() {});
         log.info("Got {} StandardLines", standardLines.size(), value(EVENT, INFO_CLIENT_GET_STANDARD_LINES_SUCCESS));
         return standardLines.stream().collect(Collectors.toMap(GetStandardLineResponse::getTopicUUID, s -> s));
@@ -77,6 +88,11 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetTemplatesByCaseType", unless = "#result.size() == 0")
     public Map<String,GetTemplateResponse> getTemplatesByCaseType() {
+        return getTemplatesByCaseTypeRequest();
+    }
+
+    @CachePut(value = "InfoClientGetTemplatesByCaseType", unless = "#result.size() == 0")
+    public Map<String,GetTemplateResponse> getTemplatesByCaseTypeRequest() {
         Set<GetTemplateResponse> response = restHelper.get(serviceBaseURL, "/template", new ParameterizedTypeReference<HashSet<GetTemplateResponse>>() {});
         log.info("Got {} Templates", response.size(), value(EVENT, INFO_CLIENT_GET_TEMPLATES_SUCCESS));
         return response.stream().collect(Collectors.toMap(GetTemplateResponse::getCaseType, t -> t));
@@ -93,37 +109,42 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetCaseSummaryFields", unless = "#result.size() == 0")
     public Set<FieldDto> getCaseSummaryFields(String caseType) {
+        return getCaseSummaryFieldsRequest(caseType);
+    }
+
+    @CachePut(value = "InfoClientGetCaseSummaryFields", unless = "#result.size() == 0")
+    public Set<FieldDto> getCaseSummaryFieldsRequest(String caseType) {
         Set<FieldDto> response = restHelper.get(serviceBaseURL, String.format("/schema/caseType/%s/summary", caseType), new ParameterizedTypeReference<HashSet<FieldDto>>() {});
         log.info("Got {} case summary fields for CaseType {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
         return response;
     }
 
     @Cacheable(value = "InfoClientGetCaseDeadline")
-    public LocalDate getCaseDeadline(String caseType, LocalDate localDate) {
-        LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s", caseType, localDate), LocalDate.class);
-        log.info("Got {} as deadline for CaseType {} and Date {}", response.toString(), caseType, localDate, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
+    public LocalDate getCaseDeadline(String caseType, LocalDate received) {
+        LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s", caseType, received), LocalDate.class);
+        log.info("Got {} as deadline for CaseType {} and Date {}", response.toString(), caseType, received, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
+        return response;
+    }
+
+    @Cacheable(value = "InfoClientGetStageDeadlines", unless = "#result.size() == 0" )
+    public Map<String, LocalDate> getStageDeadlines(String caseType, LocalDate received) {
+        Map<String, LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, received), new ParameterizedTypeReference<Map<String, LocalDate> >() {});
+        log.info("Got {} case deadlines for CaseType {} and Date {}", response.size(), caseType, received, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
         return response;
     }
 
     @Cacheable(value = "InfoClientGetStageDeadline")
-    public LocalDate getStageDeadline(String stageType, LocalDate localDate) {
-        LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadline?received=%s", stageType, localDate), LocalDate.class);
-        log.info("Got {} as deadline for StageType {} and Date {}", response.toString(), stageType, localDate, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS));
-        return response;
-    }
-
-    @Cacheable(value = "InfoClientGetDeadlines")
-    public Map<String, LocalDate> getDeadlines(String caseType, LocalDate localDate) {
-        Map<String, LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, localDate), new ParameterizedTypeReference<Map<String, LocalDate> >() {});
-        log.info("Got {} case deadlines for CaseType {} and Date {}", response.size(), caseType, localDate, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
+    public LocalDate getStageDeadline(String caseType, String stageType, LocalDate received) {
+        LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadline?received=%s", stageType, received), LocalDate.class);
+        log.info("Got {} as deadline for StageType {} and Date {}", response.toString(), stageType, received, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS));
         return response;
     }
 
     @Cacheable(value = "InfoClientGetNominatedPeople", unless = "#result.size() == 0")
     public Set<InfoNominatedPeople> getNominatedPeople(UUID teamUUID) {
-        InfoGetNominatedPeopleResponse response = restHelper.get(serviceBaseURL, String.format("/team/%s/contact", teamUUID), InfoGetNominatedPeopleResponse.class);
+        Set<InfoNominatedPeople> response = restHelper.get(serviceBaseURL, String.format("/team/%s/contact", teamUUID), new ParameterizedTypeReference<Set<InfoNominatedPeople>>() {});
         log.info("Got {} contacts for Team {}", teamUUID, value(EVENT, INFO_CLIENT_GET_CONTACTS_SUCCESS));
-        return response.getNominatedPeople();
+        return response;
     }
 
     @Cacheable(value = "InfoClientGetUser")
@@ -135,6 +156,11 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetTeams", unless = "#result.size() == 0")
     public Set<TeamDto> getTeams() {
+        return getTeamsRequest();
+    }
+
+    @CachePut(value = "InfoClientGetTeams", unless = "#result.size() == 0")
+    public Set<TeamDto> getTeamsRequest() {
         Set<TeamDto> teams = restHelper.get(serviceBaseURL, "/team", new ParameterizedTypeReference<Set<TeamDto>>() {});
         log.info("Got {} teams", teams.size(), value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
         return teams;
