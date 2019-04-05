@@ -78,6 +78,7 @@ public class StageService {
         LocalDate deadline = infoClient.getStageDeadline(caseData.getType(), stageType, dateReceived);
         stage.setDeadline(deadline);
         stageRepository.save(stage);
+        auditClient.updateStageTeam(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
         notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, stage.getCaseReference(), emailType);
         return stage;

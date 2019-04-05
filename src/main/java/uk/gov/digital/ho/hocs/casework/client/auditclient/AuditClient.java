@@ -173,9 +173,15 @@ public class AuditClient {
     }
 
     public void updateStageUser(Stage stage)  {
-
         try {
-            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageUserAllocation(stage.getUuid(), stage.getUserUUID(), stage.getStageType())), STAGE_ALLOCATED_TO_USER, stage.getUuid());
+            EventType allocationType;
+            if(stage.getUserUUID() != null) {
+                allocationType = STAGE_ALLOCATED_TO_USER;
+            }
+            else {
+                allocationType = STAGE_UNALLOCATED_FROM_USER;
+            }
+            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageUserAllocation(stage.getUuid(), stage.getUserUUID(), stage.getStageType())), allocationType, stage.getUuid());
         } catch (JsonProcessingException e) {
             log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
         }
@@ -183,7 +189,14 @@ public class AuditClient {
 
     public void updateStageTeam(Stage stage)  {
         try {
-            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stage.getUuid(), stage.getTeamUUID(),stage.getStageType())), STAGE_ALLOCATED_TO_TEAM, stage.getUuid());
+            EventType allocationType;
+            if(stage.getTeamUUID() != null) {
+                allocationType = STAGE_ALLOCATED_TO_TEAM;
+            }
+            else {
+                allocationType = STAGE_UNALLOCATED_FROM_TEAM;
+            }
+            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stage.getUuid(), stage.getTeamUUID(),stage.getStageType())), allocationType, stage.getUuid());
         } catch (JsonProcessingException e) {
             log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
         }
@@ -212,7 +225,7 @@ public class AuditClient {
     }
 
     private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType, UUID stageUUID) {
-        sendAuditMessage(caseUUID, payload, eventType, stageUUID, "");
+        sendAuditMessage(caseUUID, payload, eventType, stageUUID, "{}");
     }
 
     public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID, Set<String> requestedEvents) {

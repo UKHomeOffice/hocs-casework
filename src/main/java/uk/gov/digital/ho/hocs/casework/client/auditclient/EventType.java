@@ -3,6 +3,8 @@ package uk.gov.digital.ho.hocs.casework.client.auditclient;
 public enum EventType {
     STAGE_ALLOCATED_TO_USER,
     STAGE_ALLOCATED_TO_TEAM,
+    STAGE_UNALLOCATED_FROM_TEAM,
+    STAGE_UNALLOCATED_FROM_USER,
     CASE_CREATED,
     CASE_UPDATED,
     CASE_VIEWED,

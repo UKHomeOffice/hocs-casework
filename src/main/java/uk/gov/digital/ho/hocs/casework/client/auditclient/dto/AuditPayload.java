@@ -14,6 +14,13 @@ public interface AuditPayload {
 
     @AllArgsConstructor
     @Getter
+    class CaseUpdate {
+        private String caseReference;
+        private String stage;
+    }
+
+    @AllArgsConstructor
+    @Getter
     class Topic {
         private String topicName;
     }

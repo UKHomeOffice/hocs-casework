@@ -9,10 +9,8 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
@@ -20,17 +18,12 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoTopic;
-import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
-
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -275,7 +268,7 @@ public class AuditClientTest {
     }
 
     @Test
-    public void updateStageUser() throws IOException {
+    public void auditStageUserAllocate() throws IOException {
         Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID());
         stage.setUser(randomUUID());
         auditClient.updateStageUser(stage);
@@ -286,13 +279,34 @@ public class AuditClientTest {
     }
 
     @Test
-    public void updateStageTeam() throws IOException {
+    public void auditStageUserUnallocate() throws IOException {
+        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), null);
+        stage.setUser(null);
+        auditClient.updateStageUser(stage);
+        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.STAGE_UNALLOCATED_FROM_USER);
+        assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
+    }
+
+    @Test
+    public void auditStageTeamAllocate() throws IOException {
         Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID());
         stage.setUser(randomUUID());
         auditClient.updateStageTeam(stage);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.STAGE_ALLOCATED_TO_TEAM);
+        assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
+    }
+
+    @Test
+    public void auditStageTeamUnallocate() throws IOException {
+        Stage stage = new Stage(caseUUID,"SOME_STAGE", null, null);
+        auditClient.updateStageTeam(stage);
+        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.STAGE_UNALLOCATED_FROM_TEAM);
         assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
     }
 
