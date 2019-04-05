@@ -30,7 +30,7 @@ public class SearchClient {
 
     public Set<UUID> search(SearchRequest searchRequest) {
         Set<UUID> response = restHelper.post(serviceBaseURL, "/case", searchRequest, new ParameterizedTypeReference<Set<UUID>>() {});
-        log.info("Got {} caseUUIDs", response.size(), value(EVENT, SEARCH_CLIENT_SEARCH_SUCCESS));
+        log.info("Got {} caseUUID results", response.size(), value(EVENT, SEARCH_CLIENT_SEARCH_SUCCESS));
         return response;
     }
 }

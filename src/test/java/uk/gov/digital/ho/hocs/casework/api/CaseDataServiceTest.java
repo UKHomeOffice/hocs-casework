@@ -225,7 +225,7 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        FieldDto[] filterFields = new FieldDto[]{};
+        Set<FieldDto> filterFields = new HashSet<>();
 
         Map<String, LocalDate> deadlines = Map.of(
                 "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
@@ -233,7 +233,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
-        when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -242,21 +242,21 @@ public class CaseDataServiceTest {
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
         verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
-        verify(infoClient, times(1)).getDeadlines(caseData.getType(), caseData.getDateReceived());
+        verify(infoClient, times(1)).getStageDeadlines(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
     }
 
     @Test
     public void shouldAuditGetCaseSummary()  {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
-        FieldDto[] filterFields = new FieldDto[]{};
+        Set<FieldDto> filterFields = new HashSet<>();
 
         Map<String, LocalDate> deadlines = Map.of(
                 "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
                 "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
-        when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
 
         CaseSummary caseSummary = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -270,7 +270,7 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(null);
-        FieldDto[] filterFields = new FieldDto[]{};
+        Set<FieldDto> filterFields = new HashSet<>();
 
         Map<String, LocalDate> deadlines = Map.of(
                 "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
@@ -278,7 +278,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
-        when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -287,7 +287,7 @@ public class CaseDataServiceTest {
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
         verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
-        verify(infoClient, times(1)).getDeadlines(caseData.getType(), caseData.getDateReceived());
+        verify(infoClient, times(1)).getStageDeadlines(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
 
     }
@@ -298,7 +298,7 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        FieldDto[] filterFields = new FieldDto[]{};
+        Set<FieldDto> filterFields = new HashSet<>();
 
 
         Map<String, LocalDate> deadlines = Map.of(
@@ -307,7 +307,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
-        when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -316,20 +316,20 @@ public class CaseDataServiceTest {
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
         verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
-        verify(infoClient, times(1)).getDeadlines(caseData.getType(), caseData.getDateReceived());
+        verify(infoClient, times(1)).getStageDeadlines(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
     }
 
     @Test
     public void shouldGetCaseOnlyFilteredAdditionalData() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
-        FieldDto[] filterFields = new FieldDto[2];
+        Set<FieldDto> filterFields = new HashSet<>();
 
         FieldDto field0 = new FieldDto(UUID.randomUUID(),"TEMPCReference", "what is your TEMPCReference", "Text", new String[]{}, true, true);
-        filterFields[0] = field0;
+        filterFields.add(field0);
 
         FieldDto field1 = new FieldDto(UUID.randomUUID(),"CopyNumberTen",  "what is your CopyNumberTen", "Text", new String[]{},  true, true);
-        filterFields[1] = field1;
+        filterFields.add(field1);
 
 
         Map<String, String> additionalData = Map.of(
@@ -348,7 +348,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
-        when(infoClient.getDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 

@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.GetCaseTypesResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.TopicRepository;
@@ -72,6 +73,14 @@ public class TopicsGetIntegrationTest {
     @Before
     public void setup() throws IOException {
         mockInfoService = buildMockService(restTemplate);
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(new GetCaseTypesResponse(new HashSet<>())), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(new GetCaseTypesResponse(new HashSet<>())), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))

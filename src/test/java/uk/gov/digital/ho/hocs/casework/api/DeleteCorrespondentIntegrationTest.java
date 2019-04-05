@@ -11,11 +11,13 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.GetCaseTypesResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
@@ -41,6 +43,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:case/beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
 @Sql(scripts = "classpath:case/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
+@ActiveProfiles("development")
 public class DeleteCorrespondentIntegrationTest {
 
     private MockRestServiceServer mockInfoService;
@@ -70,6 +73,14 @@ public class DeleteCorrespondentIntegrationTest {
     @Before
     public void setup() throws IOException {
         mockInfoService = buildMockService(restTemplate);
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(new GetCaseTypesResponse(new HashSet<>())), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(new GetCaseTypesResponse(new HashSet<>())), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))

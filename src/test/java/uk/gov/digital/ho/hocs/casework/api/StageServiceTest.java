@@ -66,7 +66,7 @@ public class StageServiceTest {
         stageService.createStage(caseUUID, stageType, teamUUID, allocationType, transitionNoteUUID);
 
         verify(caseDataService, times(1)).getCase(caseUUID);
-        verify(infoClient, times(1)).getStageDeadline(stageType, caseData.getDateReceived());
+        verify(infoClient, times(1)).getStageDeadline(caseDataType.getDisplayCode(), stageType, caseData.getDateReceived());
 
         verify(stageRepository, times(1)).save(any(Stage.class));
         verify(notifyClient, times(1)).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));

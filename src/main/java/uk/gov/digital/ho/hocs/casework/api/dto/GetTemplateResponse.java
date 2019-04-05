@@ -14,4 +14,6 @@ public class GetTemplateResponse {
     @JsonProperty("uuid")
     private UUID uuid;
 
+    @JsonProperty("caseType")
+    private String caseType;
 }
