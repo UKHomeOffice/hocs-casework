@@ -76,6 +76,19 @@ public class StageServiceTest {
 
     }
 
+    @Test
+    public void shouldAuditUpdateStageTeamOnStageCreation() {
+
+        CaseData caseData = new CaseData(caseDataType, 12344567L, LocalDate.now());
+        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
+
+        stageService.createStage(caseUUID, stageType, teamUUID, allocationType, transitionNoteUUID);
+
+        verify(auditClient, times(1)).updateStageTeam(any(Stage.class));
+        verifyNoMoreInteractions(auditClient);
+
+    }
+
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateStageMissingCaseUUIDException() {
 
