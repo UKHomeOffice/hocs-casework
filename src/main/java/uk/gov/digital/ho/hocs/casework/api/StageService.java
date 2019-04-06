@@ -70,12 +70,12 @@ public class StageService {
         }
     }
 
-    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID,  String emailType, UUID transitionNoteUUID) {
+    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, String emailType, UUID transitionNoteUUID) {
         log.debug("Creating Stage of type: {}", stageType);
         Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
         CaseData caseData = caseDataService.getCase(caseUUID);
         LocalDate dateReceived = caseData.getDateReceived();
-        LocalDate deadline = infoClient.getStageDeadline(caseData.getType(), stageType, dateReceived);
+        LocalDate deadline = infoClient.getStageDeadline(stageType, dateReceived);
         stage.setDeadline(deadline);
         stageRepository.save(stage);
         auditClient.updateStageTeam(stage);

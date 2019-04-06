@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.retry.annotation.EnableRetry;
@@ -16,9 +18,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import java.text.SimpleDateFormat;
 
 @Configuration
-@EnableCaching
-@EnableScheduling
-@EnableRetry
 public class SpringConfiguration implements WebMvcConfigurer {
 
     @Bean
