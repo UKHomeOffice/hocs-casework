@@ -87,7 +87,7 @@ public class CacheWarmer {
     @Scheduled(cron = "15 0/30 6-18 * * MON-FRI")
     private void primeTeamCache(){
         try {
-            this.infoClient.getTeams();
+            this.infoClient.populateTeams();
         } catch(Exception e) {
             log.warn("Failed to prime Teams. :" + e.toString(), value(EVENT, CACHE_PRIME_FAILED));
         }
@@ -98,7 +98,7 @@ public class CacheWarmer {
         try {
            Set<CaseDataType> caseTypesSet = this.infoClient.getCaseTypesByShortCodeRequest();
             for (CaseDataType caseType : caseTypesSet) {
-                this.infoClient.getCaseSummaryFields(caseType.getDisplayCode());
+                this.infoClient.populateCaseSummaryFields(caseType.getDisplayCode());
             }
         } catch(Exception e) {
             log.warn("Failed to prime Summary Fields. :" + e.toString(), value(EVENT, CACHE_PRIME_FAILED));
@@ -133,7 +133,7 @@ public class CacheWarmer {
         try {
             Set<TeamDto> teams = this.infoClient.getTeams();
             for (TeamDto teamDto : teams) {
-                this.infoClient.getNominatedPeople(teamDto.getUuid());
+                this.infoClient.populateNominatedPeople(teamDto.getUuid());
             }
         } catch(Exception e) {
             log.warn("Failed to prime Nominated People. :" + e.toString(), value(EVENT, CACHE_PRIME_FAILED));
