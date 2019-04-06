@@ -4,13 +4,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.retry.annotation.EnableRetry;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -26,6 +21,11 @@ public class SpringConfiguration implements WebMvcConfigurer {
     }
 
     @Bean
+    public RestTemplate createRestTemplate() {
+        return new RestTemplate();
+    }
+
+    @Bean
     public ObjectMapper initialiseObjectMapper() {
         ObjectMapper m = new ObjectMapper();
         m.setDateFormat(new SimpleDateFormat("yyyy-MM-dd"));
@@ -37,14 +37,8 @@ public class SpringConfiguration implements WebMvcConfigurer {
         return m;
     }
 
-    @Bean
-    public RestTemplate createRestTemplate() {
-        return new RestTemplate();
-    }
-
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(createRequestData());
     }
-
 }
