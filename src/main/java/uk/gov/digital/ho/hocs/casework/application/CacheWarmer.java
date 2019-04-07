@@ -53,7 +53,8 @@ public class CacheWarmer {
         try {
             Set<CaseDataType> caseDataTypeSet = this.infoClient.getCaseTypesByShortCodeRequest();
             for(CaseDataType caseDataType : caseDataTypeSet) {
-                this.infoClient.populateCaseType(caseDataType.getShortCode(), caseDataType);
+                this.infoClient.populateCaseTypeByShortCode(caseDataType.getShortCode(), caseDataType);
+                this.infoClient.populateCaseType(caseDataType.getDisplayCode(), caseDataType);
             }
         } catch(Exception e) {
             log.warn("Failed to prime Teams. :" + e.toString(), value(EVENT, CACHE_PRIME_FAILED));

@@ -47,10 +47,6 @@
         <appender-ref ref="consoleAppender"/>
     </logger>
 
-    <logger name="org.camunda" additivity="false" level="WARN">
-        <appender-ref ref="consoleAppender"/>
-    </logger>
-
     <logger name="io.undertow" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
     </logger>
@@ -68,6 +64,10 @@
     </logger>
 
     <logger name="com.zaxxer" additivity="false" level="WARN">
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+
+    <logger name="org.xnio" additivity="false" level="WARN">
         <appender-ref ref="consoleAppender"/>
     </logger>
 

@@ -37,25 +37,37 @@ public class InfoClient {
     }
 
     public Set<CaseDataType> getCaseTypesByShortCodeRequest() {
-        GetCaseTypesResponse response = restHelper.get(serviceBaseURL, "/caseType", GetCaseTypesResponse.class);
-        log.info("Got {} case types", response.getCaseTypes().size(), value(EVENT, INFO_CLIENT_GET_CASE_TYPES_SUCCESS));
-        return response.getCaseTypes();
+        Set<CaseDataType> response = restHelper.get(serviceBaseURL, "/caseType", new ParameterizedTypeReference<Set<CaseDataType>>() {});
+        log.info("Got {} case types", response.size(), value(EVENT, INFO_CLIENT_GET_CASE_TYPES_SUCCESS));
+        return response;
     }
 
-    @CachePut(value = "InfoClientGetCaseType", unless = "#result == null", key = "#shortCode")
-    public CaseDataType populateCaseType(String shortCode, CaseDataType caseDataType) {
+    @CachePut(value = "InfoClientGetCaseTypeByShortCode", unless = "#result == null", key = "#shortCode")
+    public CaseDataType populateCaseTypeByShortCode(String shortCode, CaseDataType caseDataType) {
         return caseDataType;
     }
 
-    @Cacheable(value = "InfoClientGetCaseType", unless = "#result == null", key = "#shortCode")
-    public CaseDataType getCaseType(String shortCode) {
+    @Cacheable(value = "InfoClientGetCaseTypeByShortCode", unless = "#result == null", key = "#shortCode")
+    public CaseDataType getCaseTypeByShortCode(String shortCode) {
         CaseDataType caseDataType = restHelper.get(serviceBaseURL, String.format("/caseType/shortCode/%s", shortCode), CaseDataType.class);
-        log.info("Got CaseDataType {} for Short code {}", caseDataType.getDisplayCode(), shortCode, value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
+        log.info("Got CaseDataType {} for Short code {}", caseDataType.getDisplayCode(), shortCode, value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SHORT_SUCCESS));
+        return caseDataType;
+    }
+
+    @CachePut(value = "InfoClientGetCaseType", unless = "#result == null", key = "#type")
+    public CaseDataType populateCaseType(String type, CaseDataType caseDataType) {
+        return caseDataType;
+    }
+
+    @Cacheable(value = "InfoClientGetCaseType", unless = "#result == null", key = "#type")
+    public CaseDataType getCaseType(String type) {
+        CaseDataType caseDataType = restHelper.get(serviceBaseURL, String.format("/caseType/type/%s", type), CaseDataType.class);
+        log.info("Got CaseDataType {} for Type {}", caseDataType.getDisplayCode(), type, value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
         return caseDataType;
     }
 
     public Set<GetStandardLineResponse> getStandardLinesByTopicUUIDRequest() {
-        Set<GetStandardLineResponse> standardLines = restHelper.get(serviceBaseURL, "/standardLine", new ParameterizedTypeReference<HashSet<GetStandardLineResponse>>() {});
+        Set<GetStandardLineResponse> standardLines = restHelper.get(serviceBaseURL, "/standardLine", new ParameterizedTypeReference<Set<GetStandardLineResponse>>() {});
         log.info("Got {} StandardLines", standardLines.size(), value(EVENT, INFO_CLIENT_GET_STANDARD_LINES_SUCCESS));
         return standardLines;
     }
@@ -109,7 +121,7 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetCaseSummaryFieldsRequest", unless = "#result.size() == 0", key = "#caseType")
     public Set<FieldDto> getCaseSummaryFields(String caseType) {
-        Set<FieldDto> response = restHelper.get(serviceBaseURL, String.format("/schema/caseType/%s/summary", caseType), new ParameterizedTypeReference<HashSet<FieldDto>>() {});
+        Set<FieldDto> response = restHelper.get(serviceBaseURL, String.format("/schema/caseType/%s/summary", caseType), new ParameterizedTypeReference<Set<FieldDto>>() {});
         log.info("Got {} case summary fields for CaseType {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
         return response;
     }

@@ -76,7 +76,7 @@ public class AuthorisationAspect {
             caseType = caseService.getCaseType(caseUUID);
         } else if (joinPoint.getArgs()[0] instanceof CreateCaseRequest) {
             CreateCaseRequest createCaseRequest = (CreateCaseRequest) joinPoint.getArgs()[0];
-            caseType = createCaseRequest.getType().getDisplayCode();
+            caseType = createCaseRequest.getType();
         } else {
             throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName(), SECURITY_PARSE_ERROR);
         }

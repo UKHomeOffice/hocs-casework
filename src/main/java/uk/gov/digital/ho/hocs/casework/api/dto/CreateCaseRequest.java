@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -13,7 +12,7 @@ import java.util.Map;
 public class CreateCaseRequest {
 
     @JsonProperty("type")
-    private CaseDataType type;
+    private String type;
 
     @JsonProperty("data")
     private Map<String, String> data;
