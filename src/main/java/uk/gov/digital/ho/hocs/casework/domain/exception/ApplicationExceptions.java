@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.domain.exception;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 
 public interface ApplicationExceptions {
+
     class EntityCreationException extends RuntimeException {
         private final LogEvent event;
 

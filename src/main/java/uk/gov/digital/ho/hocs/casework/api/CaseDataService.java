@@ -88,7 +88,7 @@ public class CaseDataService {
         log.debug("Looking up CaseType for Case: {} Shortcode: {}", caseUUID, shortCode);
         String caseType;
         try {
-            CaseDataType caseDataType = infoClient.getCaseType(shortCode);
+            CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(shortCode);
             caseType = caseDataType.getDisplayCode();
         } catch(RestClientException e) {
             log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED) );
@@ -98,12 +98,13 @@ public class CaseDataService {
         return caseType;
     }
 
-    CaseData createCase(CaseDataType caseType, Map<String, String> data, LocalDate dateReceived) {
+    CaseData createCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
         log.debug("Creating Case of type: {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
         log.debug("Allocating Ref: {}", caseNumber);
-        CaseData caseData = new CaseData(caseType, caseNumber, data, objectMapper, dateReceived);
-        LocalDate deadline = infoClient.getCaseDeadline(caseType.getDisplayCode(), dateReceived);
+        CaseDataType caseDataType = infoClient.getCaseType(caseType);
+        CaseData caseData = new CaseData(caseDataType, caseNumber, data, objectMapper, dateReceived);
+        LocalDate deadline = infoClient.getCaseDeadline(caseType, dateReceived);
         caseData.setCaseDeadline(deadline);
         caseDataRepository.save(caseData);
         auditClient.createCaseAudit(caseData);

@@ -77,7 +77,6 @@ public class RequestData implements HandlerInterceptor {
         return !isNullOrEmpty(groups) ? groups : "/QU5PTllNT1VTCg==";
     }
 
-
     public String correlationId() {
         return MDC.get(CORRELATION_ID_HEADER);
     }

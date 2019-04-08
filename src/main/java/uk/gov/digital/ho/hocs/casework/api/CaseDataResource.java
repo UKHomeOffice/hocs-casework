@@ -50,12 +50,6 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping(value = "/case/{caseUUID}/type")
-    ResponseEntity<String> getCaseType(@PathVariable UUID caseUUID) {
-        String caseDataType = caseDataService.getCaseType(caseUUID);
-        return ResponseEntity.ok(caseDataType);
-    }
-
     @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/{caseUUID}/summary")
     ResponseEntity<GetCaseSummaryResponse> getCaseSummary(@PathVariable UUID caseUUID) {
