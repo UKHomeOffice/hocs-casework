@@ -45,7 +45,6 @@ public class CacheWarmer {
         primeSummaryFieldsCache();
         primeTeamCache();
         primeCaseDeadlineCache();
-        primeNominatedPeopleCache();
     }
 
     @Scheduled(cron = "0 0/30 6-18 * * MON-FRI")
@@ -128,17 +127,4 @@ public class CacheWarmer {
             log.warn("Failed to prime Deadlines. :" + e.toString(), value(EVENT, CACHE_PRIME_FAILED));
         }
     }
-
-    @Scheduled(cron = "0 0 5 * * MON-FRI")
-    private void primeNominatedPeopleCache(){
-        try {
-            Set<TeamDto> teams = this.infoClient.getTeams();
-            for (TeamDto teamDto : teams) {
-                this.infoClient.populateNominatedPeople(teamDto.getUuid());
-            }
-        } catch(Exception e) {
-            log.warn("Failed to prime Nominated People. :" + e.toString(), value(EVENT, CACHE_PRIME_FAILED));
-        }
-    }
-
 }

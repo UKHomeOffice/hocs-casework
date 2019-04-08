@@ -152,11 +152,6 @@ public class InfoClient {
         return response;
     }
 
-    @CachePut(value = "InfoClientGetNominatedPeople", unless = "#result.size() == 0", key = "{#teamUUID}")
-    public Set<InfoNominatedPeople> populateNominatedPeople(UUID teamUUID) {
-        return getNominatedPeople(teamUUID);
-    }
-
     @Cacheable(value = "InfoClientGetNominatedPeople", unless = "#result.size() == 0", key = "{#teamUUID}")
     public Set<InfoNominatedPeople> getNominatedPeople(UUID teamUUID) {
         Set<InfoNominatedPeople> response = restHelper.get(serviceBaseURL, String.format("/team/%s/contact", teamUUID), new ParameterizedTypeReference<Set<InfoNominatedPeople>>() {});
