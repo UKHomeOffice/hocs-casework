@@ -67,11 +67,11 @@ public class CaseDataTimelineCaseIntegrationTest {
         mockService
                 .expect(requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new GetCaseTypesResponse(new HashSet<>())), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
         mockService
                 .expect(requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new GetCaseTypesResponse(new HashSet<>())), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
         mockService
                 .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))

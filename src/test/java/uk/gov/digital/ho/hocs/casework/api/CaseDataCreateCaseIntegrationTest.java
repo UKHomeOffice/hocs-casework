@@ -19,6 +19,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
@@ -296,6 +297,10 @@ public class CaseDataCreateCaseIntegrationTest {
         teamDtos.add(teamDto);
 
         mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/type/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(new CaseDataType("TEST", "a1")), MediaType.APPLICATION_JSON));
+        mockInfoService
                 .expect(requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
@@ -314,7 +319,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
     private String createBody(String caseType) {
         return "{\n" +
-                "  \"type\":{\"type\":\"" + caseType + "\",\"shortCode\":\"a1\"},\n" +
+                "  \"type\": \"" + caseType + "\",\n" +
                 "  \"data\": {\"DateReceived\":\"2018-01-01\"},\n" +
                 "  \"received\":\"2018-01-01\"\n" +
                 "}";
@@ -322,7 +327,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
     private String createBodyData(String caseType, String data) {
         return "{\n" +
-                "  \"type\":{\"type\":\"" + caseType + "\",\"shortCode\":\"a1\"},\n" +
+                "  \"type\": \"" + caseType + "\",\n" +
                 "  \"data\": " + data + ",\n" +
                 "  \"received\":\"2018-01-01\"\n" +
                 "}";

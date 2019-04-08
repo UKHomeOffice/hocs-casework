@@ -69,8 +69,9 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived)).thenReturn(caseDeadline);
+        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>(), caseReceived);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), caseReceived);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), caseReceived);
@@ -84,8 +85,9 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived)).thenReturn(caseDeadline);
+        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType, null, caseReceived);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayName(), null, caseReceived);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), caseReceived);
@@ -99,8 +101,9 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived)).thenReturn(caseDeadline);
+        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType, new HashMap<>(), caseReceived);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), caseReceived);
 
         verify(auditClient, times(1)).createCaseAudit(caseData);
         verifyNoMoreInteractions(auditClient);

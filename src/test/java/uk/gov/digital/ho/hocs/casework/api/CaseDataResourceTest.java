@@ -46,13 +46,13 @@ public class CaseDataResourceTest {
     public void shouldCreateCase() throws JsonProcessingException {
 
         CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseReceived);
-        CreateCaseRequest request = new CreateCaseRequest(caseDataType, data,caseReceived);
+        CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data,caseReceived);
 
-        when(caseDataService.createCase(caseDataType, data, caseReceived)).thenReturn(caseData);
+        when(caseDataService.createCase(caseDataType.getDisplayCode(), data, caseReceived)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseDataType, data, caseReceived);
+        verify(caseDataService, times(1)).createCase(caseDataType.getDisplayCode(), data, caseReceived);
 
         verifyNoMoreInteractions(caseDataService);
 
@@ -85,23 +85,6 @@ public class CaseDataResourceTest {
         ResponseEntity response = caseDataResource.deleteCase(uuid);
 
         verify(caseDataService, times(1)).deleteCase(uuid);
-
-        verifyNoMoreInteractions(caseDataService);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-
-    @Test
-    public void shouldGetCaseType() {
-        CaseDataType caseDataType = new CaseDataType("MIN", "a1");
-
-        when(caseDataService.getCaseType(uuid)).thenReturn(caseDataType.getDisplayCode());
-
-        ResponseEntity response = caseDataResource.getCaseType(uuid);
-
-        verify(caseDataService, times(1)).getCaseType(uuid);
 
         verifyNoMoreInteractions(caseDataService);
 
