@@ -62,7 +62,7 @@ public class SecurityIntegrationTest {
 
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
-        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(caseDataService.getCaseAudited(caseData.getUuid())).thenReturn(caseData);
         when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("MIN");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
@@ -82,7 +82,7 @@ public class SecurityIntegrationTest {
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
 
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
-        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(caseDataService.getCaseAudited(caseData.getUuid())).thenReturn(caseData);
         when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("TRO");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
@@ -123,7 +123,7 @@ public class SecurityIntegrationTest {
     public void shouldReturnNotFoundIfCaseUUIDNotFound() {
         UUID caseUUID = UUID.randomUUID();
 
-        when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
+        when(caseDataService.getCaseAudited(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
         when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
 
         headers.add(RequestData.USER_ID_HEADER, userId);

@@ -65,11 +65,11 @@ public class CaseDataResourceTest {
 
         CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper,caseReceived);
 
-        when(caseDataService.getCase(uuid)).thenReturn(caseData);
+        when(caseDataService.getCaseAudited(uuid)).thenReturn(caseData);
 
         ResponseEntity<GetCaseResponse> response = caseDataResource.getCase(uuid);
 
-        verify(caseDataService, times(1)).getCase(uuid);
+        verify(caseDataService, times(1)).getCaseAudited(uuid);
 
         verifyNoMoreInteractions(caseDataService);
 

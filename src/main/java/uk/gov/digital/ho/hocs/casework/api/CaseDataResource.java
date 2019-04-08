@@ -39,7 +39,7 @@ class CaseDataResource {
     @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}")
     ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID) {
-        CaseData caseData = caseDataService.getCase(caseUUID);
+        CaseData caseData = caseDataService.getCaseAudited(caseUUID);
         return ResponseEntity.ok(GetCaseResponse.from(caseData));
     }
 

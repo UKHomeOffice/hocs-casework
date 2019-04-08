@@ -370,7 +370,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
-        caseDataService.getCase(caseData.getUuid());
+        caseDataService.getCaseAudited(caseData.getUuid());
 
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
 
@@ -383,7 +383,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(null);
 
-        caseDataService.getCase(caseUUID);
+        caseDataService.getCaseAudited(caseUUID);
     }
 
     @Test
@@ -392,7 +392,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(null);
 
         try {
-            caseDataService.getCase(caseUUID);
+            caseDataService.getCaseAudited(caseUUID);
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
@@ -404,14 +404,14 @@ public class CaseDataServiceTest {
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotGetCaseMissingUUIDException() throws ApplicationExceptions.EntityNotFoundException {
-        caseDataService.getCase(null);
+        caseDataService.getCaseAudited(null);
     }
 
     @Test
     public void shouldNotGetCaseMissingUUID() {
 
         try {
-            caseDataService.getCase(null);
+            caseDataService.getCaseAudited(null);
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }

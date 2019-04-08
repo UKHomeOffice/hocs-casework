@@ -65,13 +65,13 @@ public class CaseDataService {
             DOCUMENT_DELETED.toString()
     );
 
-    public CaseData getCase(UUID caseUUID) {
+    public CaseData getCaseAudited(UUID caseUUID) {
         CaseData caseData = getCaseData(caseUUID);
         auditClient.viewCaseAudit(caseData);
         return caseData;
     }
 
-    private CaseData getCaseData(UUID caseUUID) {
+    public CaseData getCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findByUuid(caseUUID);
         if (caseData != null) {
@@ -92,7 +92,7 @@ public class CaseDataService {
             caseType = caseDataType.getDisplayCode();
         } catch(RestClientException e) {
             log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED) );
-            caseType = getCase(caseUUID).getType();
+            caseType = getCaseData(caseUUID).getType();
         }
         log.debug("CaseType {} found for Case: {}", caseType, caseUUID);
         return caseType;

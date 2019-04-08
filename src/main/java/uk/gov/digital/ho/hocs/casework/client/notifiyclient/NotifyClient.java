@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.client.notifiyclient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -35,6 +36,7 @@ public class NotifyClient {
         this.requestData = requestData;
     }
 
+    @Async
     public void sendTeamEmail(UUID caseUUID, UUID stageUUID, UUID teamUUID, String caseReference, String allocationType) {
         try {
             if (teamUUID != null) {
@@ -50,6 +52,7 @@ public class NotifyClient {
         }
     }
 
+    @Async
     public void sendUserEmail(UUID caseUUID, UUID stageUUID, UUID currentUserUUID, UUID newUserUUID, String caseReference) {
         try {
             if (newUserUUID != null) {

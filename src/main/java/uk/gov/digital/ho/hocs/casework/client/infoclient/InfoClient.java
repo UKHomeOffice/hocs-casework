@@ -136,11 +136,11 @@ public class InfoClient {
     @Cacheable(value = "InfoClientGetStageDeadlines", unless = "#result.size() == 0", key = "{#caseType, #received }")
     public Map<String, LocalDate> getStageDeadlines(String caseType, LocalDate received) {
         Map<String, LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, received), new ParameterizedTypeReference<Map<String, LocalDate> >() {});
-        log.info("Got {} case deadlines for CaseType {} and Date {}", response.size(), caseType, received, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
+        log.info("Got {} stage deadlines for CaseType {} and Date {}", response.size(), caseType, received, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
         return response;
     }
 
-    @Cacheable(value = "InfoClientGetStageDeadline", unless = "#result == null", key = "{#stageType, #received }")
+    @CachePut(value = "InfoClientGetStageDeadline", unless = "#result == null", key = "{#stageType, #received }")
     public LocalDate populateStageDeadline(String stageType, LocalDate received, LocalDate deadline) {
         return deadline;
     }

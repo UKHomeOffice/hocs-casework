@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
@@ -58,6 +59,7 @@ public class AuditClient {
         this.serviceBaseURL = auditService;
     }
 
+    @Async
     public void updateCaseAudit(CaseData caseData, UUID stageUUID)  {
         String data = null;
         try {
@@ -73,6 +75,7 @@ public class AuditClient {
         }
     }
 
+    @Async
     public void viewCaseAudit(CaseData caseData)  {
         try {
             sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), EventType.CASE_VIEWED, null);
@@ -81,6 +84,7 @@ public class AuditClient {
         }
     }
 
+    @Async
     public void viewCaseSummaryAudit(CaseData caseData, CaseSummary caseSummary)  {
         try {
             sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), EventType.CASE_SUMMARY_VIEWED, null);
@@ -89,6 +93,7 @@ public class AuditClient {
         }
     }
 
+    @Async
     public void viewStandardLineAudit(CaseData caseData)  {
         try {
             sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), EventType.STANDARD_LINE_VIEWED, null);
@@ -97,6 +102,7 @@ public class AuditClient {
         }
     }
 
+    @Async
     public void viewTemplateAudit(CaseData caseData)  {
         try {
             sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), EventType.TEMPLATE_VIEWED, null);
@@ -105,6 +111,7 @@ public class AuditClient {
         }
     }
 
+    @Async
     public void deleteCaseAudit(CaseData caseData)  {
         AuditPayload.CaseReference auditPayload = new AuditPayload.CaseReference(caseData.getReference());
         String data = String.format("{\"uuid\":\"%s\"}", caseData.getUuid());
@@ -115,18 +122,22 @@ public class AuditClient {
         }
     }
 
+    @Async
     public void viewCaseNotesAudit(UUID caseUUID, Set<CaseNote> caseNotes) {
         sendAuditMessage(caseUUID, "", EventType.CASE_NOTES_VIEWED, null);
     }
 
+    @Async
     public void viewCaseNoteAudit(CaseNote caseNote) {
         sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_VIEWED,null);
     }
 
+    @Async
     public void createCaseNoteAudit(CaseNote caseNote) {
         sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_CREATED, null);
     }
 
+    @Async
     public void createCorrespondentAudit(Correspondent correspondent) {
         String data = "";
         try {
@@ -138,11 +149,13 @@ public class AuditClient {
         sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_CREATED, null, data);
     }
 
+    @Async
     public void deleteCorrespondentAudit(Correspondent correspondent) {
         String data = String.format("{\"uuid\":\"%s\"}",  correspondent.getUuid());
         sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_DELETED, null, data);
     }
 
+    @Async
     public void createTopicAudit(UUID caseUUID, InfoTopic topic)  {
         String data = String.format("{\"topicUuid\":\"%s\", \"topicName\":\"%s\"}", topic.getValue(), topic.getLabel());
         try {
@@ -152,11 +165,13 @@ public class AuditClient {
         }
     }
 
+    @Async
     public void deleteTopicAudit(UUID caseUUID, UUID topicUUID) {
         String data = String.format("{\"topicUuid\":\"%s\"}",  topicUUID);
         sendAuditMessage(caseUUID, "", CASE_TOPIC_DELETED, null, data);
     }
 
+    @Async
     public void createCaseAudit(CaseData caseData)  {
         String data = "";
         try {
@@ -172,6 +187,7 @@ public class AuditClient {
         }
     }
 
+    @Async
     public void updateStageUser(Stage stage)  {
         try {
             EventType allocationType;
@@ -187,6 +203,7 @@ public class AuditClient {
         }
     }
 
+    @Async
     public void updateStageTeam(Stage stage)  {
         try {
             EventType allocationType;
@@ -220,7 +237,7 @@ public class AuditClient {
             producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), queueHeaders);
             log.info("Create audit for Case UUID: {}, correlationID: {}, UserID: {}", caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_EVENT_CREATED));
         } catch (Exception e) {
-            log.error("Failed to create audit event for case UUID {} for reason {}", caseUUID, e, value(EVENT, AUDIT_FAILED));
+            log.error("Failed to create audit event {} for case UUID {} for reason {}", eventType, caseUUID, e, value(EVENT, AUDIT_FAILED));
         }
     }
 
