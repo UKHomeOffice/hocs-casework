@@ -18,9 +18,9 @@ public class CreateCaseRequestTest {
         Map<String, String> data = new HashMap<>();
         LocalDate caseReceived = LocalDate.now();
 
-        CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseDataType, data, caseReceived);
+        CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseDataType.getDisplayCode(), data, caseReceived);
 
-        assertThat(createCaseRequest.getType()).isEqualTo(caseDataType);
+        assertThat(createCaseRequest.getType()).isEqualTo(caseDataType.getDisplayCode());
         assertThat(createCaseRequest.getData()).isEqualTo(data);
 
     }
