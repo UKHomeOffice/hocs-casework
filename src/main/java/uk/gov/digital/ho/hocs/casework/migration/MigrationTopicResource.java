@@ -22,6 +22,7 @@ public class MigrationTopicResource {
         this.migrationTopicService = migrationTopicService;
     }
 
+    @Allocated(allocatedTo = AllocationLevel.USER)
     @PostMapping(value = "/migration/case/{caseUUID}/stage/{stageUUID}/topic")
     ResponseEntity<UUID> addTopicToCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @Valid @RequestBody CreateTopicRequest request) {
         UUID topicUUID = migrationTopicService.createTopic(caseUUID, request.getTopicUUID());

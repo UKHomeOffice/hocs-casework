@@ -13,7 +13,7 @@ import java.util.Map;
 public class MigrationCreateCaseRequest {
 
     @JsonProperty("type")
-    private CaseDataType type;
+    private String type;
 
     @JsonProperty("ref")
     private String caseReference;

@@ -23,7 +23,7 @@ public class MigrationCorrespondentResource {
         this.migrationCorrespondentService = migrationCorrespondentService;
     }
 
-//    @Allocated(allocatedTo = AllocationLevel.USER)
+    @Allocated(allocatedTo = AllocationLevel.USER)
     @PostMapping(value = "/migration/case/{caseUUID}/stage/{stageUUID}/correspondent")
     ResponseEntity<UUID> addCorrespondentToCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @Valid @RequestBody CreateCorrespondentRequest request) {
         Address address = new Address(request.getPostcode(), request.getAddress1(), request.getAddress2(), request.getAddress3(), request.getCountry());

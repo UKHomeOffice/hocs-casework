@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCaseDataRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
@@ -27,7 +26,7 @@ public class MigrationCaseDataResource {
         this.migrationCaseDataService = migrationCaseDataService;
     }
 
-//    @Authorised(accessLevel = AccessLevel.WRITE)
+    @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/migration/case")
     ResponseEntity<CreateCaseResponse> createCase(@RequestBody MigrationCreateCaseRequest request) {
         CaseData caseData = migrationCaseDataService.createCase(request.getType(), request.getCaseReference(), request.getData(), request.getCaseDeadline(), request.getDateReceived());
@@ -40,7 +39,7 @@ public class MigrationCaseDataResource {
         return ResponseEntity.ok(stageUUID);
     }
 
-//    @Allocated(allocatedTo = AllocationLevel.USER)
+    @Allocated(allocatedTo = AllocationLevel.USER)
     @PutMapping(value = "/migration/case/{caseUUID}/stage/{stageUUID}/data")
     ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {
         migrationCaseDataService.updateCaseData(caseUUID, stageUUID, request.getData());

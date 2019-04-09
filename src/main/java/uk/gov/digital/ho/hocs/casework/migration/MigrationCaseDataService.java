@@ -46,9 +46,10 @@ public class MigrationCaseDataService {
         this.stageService = stageService;
     }
 
-    CaseData createCase(CaseDataType caseType, String caseReference, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
+    CaseData createCase(String caseType, String caseReference, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
         log.debug("Creating Case of type: {}", caseType);
-        CaseData caseData = new CaseData(caseType, caseReference, data, objectMapper, caseDeadline, dateReceived);
+        CaseDataType caseDataType = infoClient.getCaseType(caseType);
+        CaseData caseData = new CaseData(caseDataType, caseReference, data, objectMapper, caseDeadline, dateReceived);
         caseDataRepository.save(caseData);
         auditClient.createCaseAudit(caseData);
         log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
