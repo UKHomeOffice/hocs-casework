@@ -36,7 +36,6 @@ public class InfoClient {
         this.serviceBaseURL = infoService;
     }
 
-    @Cacheable(value = "InfoClientGetCaseTypes", unless = "#result.size() == 0")
     public Set<CaseDataType> getCaseTypes() {
         Set<CaseDataType> response = restHelper.get(serviceBaseURL, "/caseType", new ParameterizedTypeReference<Set<CaseDataType>>() {});
         log.info("Got {} case types", response.size(), value(EVENT, INFO_CLIENT_GET_CASE_TYPES_SUCCESS));
