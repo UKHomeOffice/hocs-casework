@@ -54,7 +54,6 @@ public class CaseDataService {
 
     public static final Set<String> TIMELINE_EVENTS = Set.of(
             CASE_CREATED.toString(),
-            CASE_UPDATED.toString(),
             CASE_TOPIC_CREATED.toString(),
             CASE_TOPIC_DELETED.toString(),
             STAGE_ALLOCATED_TO_TEAM.toString(),

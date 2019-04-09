@@ -3,6 +3,8 @@ package uk.gov.digital.ho.hocs.casework.api;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
@@ -15,6 +17,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.TopicRepository;
 import java.util.HashSet;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -36,6 +39,9 @@ public class TopicServiceTest {
     public void setUp() {
         topicService = new TopicService(topicRepository, infoClient, auditClient);
     }
+
+    @Captor
+    ArgumentCaptor<Topic> topicCaptor;
 
     @Test
     public void shouldGetTopics() throws ApplicationExceptions.EntityNotFoundException {
@@ -83,7 +89,10 @@ public class TopicServiceTest {
 
         topicService.createTopic(caseUUID, topicNameUUID);
 
-        verify(auditClient, times(1)).createTopicAudit(caseUUID, topic);
+        verify(auditClient, times(1)).createTopicAudit(topicCaptor.capture());
+        assertThat(topicCaptor.getValue().getTextUUID()).isEqualTo(topic.getValue());
+        assertThat(topicCaptor.getValue().getText()).isEqualTo(topic.getLabel());
+        assertThat(topicCaptor.getValue().getCaseUUID()).isEqualTo(caseUUID);
 
         verifyNoMoreInteractions(auditClient);
 
