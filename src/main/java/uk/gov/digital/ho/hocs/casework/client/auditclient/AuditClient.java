@@ -220,6 +220,7 @@ public class AuditClient {
         sendAuditMessage(caseUUID, payload, eventType, stageUUID, "{}");
     }
 
+    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType, UUID stageUUID, String data){
         CreateAuditRequest request = new CreateAuditRequest(
                 requestData.correlationId(),
@@ -236,7 +237,7 @@ public class AuditClient {
         try {
             Map<String, Object> queueHeaders = getQueueHeaders(eventType.toString());
             producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), queueHeaders);
-            log.info("Create audit for Case UUID: {}, correlationID: {}, UserID: {}", caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_EVENT_CREATED));
+            log.info("Create audit of type {} for Case UUID: {}, correlationID: {}, UserID: {}", eventType, caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_EVENT_CREATED));
         } catch (Exception e) {
             log.error("Failed to create audit event for case UUID {} for reason {}", caseUUID, e, value(EVENT, AUDIT_FAILED));
         }
