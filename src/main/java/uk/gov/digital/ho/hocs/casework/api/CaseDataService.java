@@ -82,6 +82,13 @@ public class CaseDataService {
         }
     }
 
+    public LocalDate getCaseDateReceived(UUID caseUUID) {
+        log.debug("Looking up DateReceived for Case: {}", caseUUID);
+        LocalDate dateReceived = getCaseData(caseUUID).getDateReceived();
+        log.debug("DateReceived {} found for Case: {}", dateReceived, caseUUID);
+        return dateReceived;
+    }
+
     public String getCaseType(UUID caseUUID) {
         String shortCode = caseUUID.toString().substring(34);
         log.debug("Looking up CaseType for Case: {} Shortcode: {}", caseUUID, shortCode);
@@ -91,7 +98,7 @@ public class CaseDataService {
             caseType = caseDataType.getDisplayCode();
         } catch(RestClientException e) {
             log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED) );
-            caseType = getCase(caseUUID).getType();
+            caseType = getCaseData(caseUUID).getType();
         }
         log.debug("CaseType {} found for Case: {}", caseType, caseUUID);
         return caseType;
