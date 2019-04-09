@@ -126,26 +126,26 @@ public class InfoClient {
         return response;
     }
 
-    @Cacheable(value = "InfoClientGetCaseDeadline", unless = "#result == null", key = "{#caseType, #received }")
+    @Cacheable(value = "InfoClientGetCaseDeadline", unless = "#result == null", key = "{#caseType, #received.toString() }")
     public LocalDate getCaseDeadline(String caseType, LocalDate received) {
         LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s", caseType, received), LocalDate.class);
         log.info("Got {} as deadline for CaseType {} and Date {}", response.toString(), caseType, received, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
         return response;
     }
 
-    @Cacheable(value = "InfoClientGetStageDeadlines", unless = "#result.size() == 0", key = "{#caseType, #received }")
+    @Cacheable(value = "InfoClientGetStageDeadlines", unless = "#result.size() == 0", key = "{#caseType, #received.toString() }")
     public Map<String, LocalDate> getStageDeadlines(String caseType, LocalDate received) {
         Map<String, LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, received), new ParameterizedTypeReference<Map<String, LocalDate> >() {});
         log.info("Got {} stage deadlines for CaseType {} and Date {}", response.size(), caseType, received, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
         return response;
     }
 
-    @Cacheable(value = "InfoClientGetStageDeadline", unless = "#result == null", key = "{#stageType, #received }")
+    @CachePut(value = "InfoClientGetStageDeadline", unless = "#result == null", key = "{#stageType, #received.toString() }")
     public LocalDate populateStageDeadline(String stageType, LocalDate received, LocalDate deadline) {
         return deadline;
     }
 
-    @CachePut(value = "InfoClientGetStageDeadline", unless = "#result == null", key = "{#stageType, #received }")
+    @Cacheable(value = "InfoClientGetStageDeadline", unless = "#result == null", key = "{#stageType, #received.toString() }")
     public LocalDate getStageDeadline(String stageType, LocalDate received) {
         LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadline?received=%s", stageType, received), LocalDate.class);
         log.info("Got {} as deadline for StageType {} and Date {}", response.toString(), stageType, received, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS));

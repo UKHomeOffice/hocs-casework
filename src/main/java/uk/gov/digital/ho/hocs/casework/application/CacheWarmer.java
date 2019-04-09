@@ -117,7 +117,7 @@ public class CacheWarmer {
                 }
                 try {
                     Map<String, LocalDate> stageDeadlines = this.infoClient.getStageDeadlines(caseType.getDisplayCode(), now);
-                    stageDeadlines.forEach((ct, d) -> this.infoClient.populateStageDeadline(ct, d, now));
+                    stageDeadlines.forEach((ct, d) -> this.infoClient.populateStageDeadline(ct, now, d));
                 } catch (Exception e) {
                     log.warn("Failed to prime stage Deadline {}", caseType.getDisplayCode(), value(EVENT, CACHE_PRIME_FAILED));
                 }
