@@ -49,7 +49,7 @@ public class CacheWarmer {
     @Scheduled(cron = "0 0/30 6-18 * * MON-FRI")
     private void primeCaseTypes(){
         try {
-            Set<CaseDataType> caseDataTypeSet = this.infoClient.getCaseTypesByShortCodeRequest();
+            Set<CaseDataType> caseDataTypeSet = this.infoClient.getCaseTypes();
             for(CaseDataType caseDataType : caseDataTypeSet) {
                 this.infoClient.populateCaseTypeByShortCode(caseDataType.getShortCode(), caseDataType);
                 this.infoClient.populateCaseType(caseDataType.getDisplayCode(), caseDataType);
@@ -95,7 +95,7 @@ public class CacheWarmer {
     @Scheduled(cron = "20 0/30 6-18 * * MON-FRI")
     private void primeSummaryFieldsCache(){
         try {
-           Set<CaseDataType> caseTypesSet = this.infoClient.getCaseTypesByShortCodeRequest();
+           Set<CaseDataType> caseTypesSet = this.infoClient.getCaseTypes();
             for (CaseDataType caseType : caseTypesSet) {
                 this.infoClient.populateCaseSummaryFields(caseType.getDisplayCode());
             }
@@ -107,7 +107,7 @@ public class CacheWarmer {
     @Scheduled(cron = "0 55 5 * * MON-FRI")
     private void primeCaseDeadlineCache(){
         try {
-           Set<CaseDataType> caseTypesSet = this.infoClient.getCaseTypesByShortCodeRequest();
+           Set<CaseDataType> caseTypesSet = this.infoClient.getCaseTypes();
             LocalDate now = LocalDate.now();
             for (CaseDataType caseType : caseTypesSet) {
                 try {
