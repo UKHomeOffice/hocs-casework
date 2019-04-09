@@ -3,6 +3,9 @@ package uk.gov.digital.ho.hocs.casework.client.notifiyclient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -35,6 +38,7 @@ public class NotifyClient {
         this.requestData = requestData;
     }
 
+    @Async
     public void sendTeamEmail(UUID caseUUID, UUID stageUUID, UUID teamUUID, String caseReference, String allocationType) {
         try {
             if (teamUUID != null) {
@@ -50,6 +54,7 @@ public class NotifyClient {
         }
     }
 
+    @Async
     public void sendUserEmail(UUID caseUUID, UUID stageUUID, UUID currentUserUUID, UUID newUserUUID, String caseReference) {
         try {
             if (newUserUUID != null) {
@@ -91,11 +96,11 @@ public class NotifyClient {
         sendEmail(notifyType, emailAddress, personalisation);
     }
 
+    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     private void sendEmail(NotifyType notifyType, String emailAddress, Map<String, String> personalisation) {
         log.info("Sending email to {}, template ID {}", emailAddress, notifyType.getDisplayValue());
 
         try {
-
             notificationClient.sendEmail(notifyType.getDisplayValue(), emailAddress, personalisation, null);
         } catch (Exception e) {
             log.error(e.getLocalizedMessage());
