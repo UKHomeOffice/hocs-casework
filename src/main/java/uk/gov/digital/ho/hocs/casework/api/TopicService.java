@@ -57,7 +57,7 @@ public class TopicService {
             InfoTopic infoTopic = infoClient.getTopic(topicUUID);
             Topic topic = new Topic(caseUUID, infoTopic.getLabel(), topicUUID);
             topicRepository.save(topic);
-            auditClient.createTopicAudit(caseUUID, infoTopic);
+            auditClient.createTopicAudit(topic);
             log.info("Created Topic: {} for Case: {}", topic.getUuid(), caseUUID, value(EVENT, CASE_TOPIC_CREATE));
         } else {
             throw new ApplicationExceptions.EntityCreationException(String.format("No TopicUUID given for Case: %s", caseUUID), CASE_TOPIC_UUID_NOT_GIVEN);
@@ -69,7 +69,7 @@ public class TopicService {
         Topic topic = getTopic(caseUUID, topicUUID);
         topic.setDeleted(true);
         topicRepository.save(topic);
-        auditClient.deleteTopicAudit(caseUUID, topicUUID);
+        auditClient.deleteTopicAudit(topic);
         log.info("Deleted Topic: {}", caseUUID, value(EVENT, CASE_TOPIC_DELETED));
     }
 

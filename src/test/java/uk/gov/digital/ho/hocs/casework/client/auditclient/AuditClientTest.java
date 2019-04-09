@@ -17,7 +17,6 @@ import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -81,11 +80,11 @@ public class AuditClientTest {
     public void shouldSetDataField() throws IOException {
         UUID topicUUID = UUID.randomUUID();
         UUID caseUUID = UUID.randomUUID();
-        InfoTopic topic = new InfoTopic("topic name", topicUUID);
-        auditClient.createTopicAudit(caseUUID, topic);
+        Topic topic = new Topic(caseUUID,"topic name", topicUUID);
+        auditClient.createTopicAudit(topic);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getData()).isEqualTo(String.format("{\"topicUuid\":\"%s\", \"topicName\":\"%s\"}",  topicUUID, "topic name"));
+        assertThat(request.getData()).isNotEmpty();
     }
 
     @Test
@@ -99,8 +98,8 @@ public class AuditClientTest {
 
         UUID topicUUID = UUID.randomUUID();
         UUID caseUUID = UUID.randomUUID();
-        InfoTopic topic = new InfoTopic("topic name", topicUUID);
-        auditClient.createTopicAudit(caseUUID, topic);
+        Topic topic = new Topic(caseUUID, "topic name", topicUUID);
+        auditClient.createTopicAudit(topic);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), any(), headerCaptor.capture());
         Map headers = headerCaptor.getValue();
 
@@ -199,7 +198,6 @@ public class AuditClientTest {
         assertThat(request.getType()).isEqualTo(EventType.TEMPLATE_VIEWED);
         assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
     }
-
     @Test
     public void createCorrespondentAudit() throws IOException {
         auditClient.createCorrespondentAudit(correspondent);
@@ -220,8 +218,8 @@ public class AuditClientTest {
 
     @Test
     public void createTopicAudit() throws IOException {
-        InfoTopic topic = new InfoTopic("topic name", UUID.randomUUID());
-        auditClient.createTopicAudit(caseUUID, topic);
+        Topic topic = new Topic(caseUUID,"topic name", UUID.randomUUID());
+        auditClient.createTopicAudit(topic);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_TOPIC_CREATED);
@@ -230,7 +228,7 @@ public class AuditClientTest {
 
     @Test
     public void deleteTopicAudit() throws IOException {
-        auditClient.deleteTopicAudit(caseUUID, topic.getTextUUID());
+        auditClient.deleteTopicAudit(topic);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_TOPIC_DELETED);

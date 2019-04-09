@@ -1,7 +1,17 @@
 package uk.gov.digital.ho.hocs.casework.client.auditclient.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.api.dto.AddressDto;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 public interface AuditPayload {
@@ -14,14 +24,14 @@ public interface AuditPayload {
 
     @AllArgsConstructor
     @Getter
-    class CaseUpdate {
-        private String caseReference;
-        private String stage;
+    class Case {
+        private UUID caseUUID;
     }
 
     @AllArgsConstructor
     @Getter
     class Topic {
+        private UUID topicUuid;
         private String topicName;
     }
 
@@ -49,9 +59,133 @@ public interface AuditPayload {
 
     @AllArgsConstructor
     @Getter
-    class Document {
-        private UUID documentUUID;
-        private String documentTitle;
-        private String DocumentType;
+    class CreateCaseRequest {
+
+        @JsonProperty("uuid")
+        private UUID uuid;
+
+        @JsonProperty("created")
+        private LocalDateTime created;
+
+        @JsonProperty("type")
+        private String type;
+
+        @JsonProperty("reference")
+        private String reference;
+
+        @JsonProperty("caseDeadline")
+        private LocalDate caseDeadline;
+
+        @JsonProperty("dateReceived")
+        private LocalDate dateReceived;
+
+        public static AuditPayload.CreateCaseRequest from(CaseData caseData) {
+            return new AuditPayload.CreateCaseRequest(caseData.getUuid(),
+                    caseData.getCreated(),
+                    caseData.getType(),
+                    caseData.getReference(),
+                    caseData.getCaseDeadline(),
+                    caseData.getDateReceived());
+        }
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    class CreateCorrespondentRequest {
+
+        @JsonProperty("uuid")
+        private UUID uuid;
+
+        @JsonProperty("created")
+        private LocalDateTime created;
+
+        @JsonProperty("type")
+        private String type;
+
+        @JsonProperty("caseUUID")
+        private UUID caseUUID;
+
+        @JsonProperty("fullname")
+        private String fullname;
+
+        @JsonProperty("address")
+        private AddressDto address;
+
+        @JsonProperty("telephone")
+        private String telephone;
+
+        @JsonProperty("email")
+        private String email;
+
+        @JsonProperty("reference")
+        private String reference;
+
+        public static AuditPayload.CreateCorrespondentRequest from(Correspondent correspondent) {
+            return new AuditPayload.CreateCorrespondentRequest(
+                    correspondent.getUuid(),
+                    correspondent.getCreated(),
+                    correspondent.getCorrespondentType(),
+                    correspondent.getCaseUUID(),
+                    correspondent.getFullName(),
+                    AddressDto.from(correspondent),
+                    correspondent.getTelephone(),
+                    correspondent.getEmail(),
+                    correspondent.getReference()
+            );
+        }
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    class UpdateCaseRequest {
+
+        @JsonProperty("uuid")
+        private UUID uuid;
+
+        @JsonProperty("created")
+        private LocalDateTime created;
+
+        @JsonProperty("type")
+        private String type;
+
+        @JsonProperty("reference")
+        private String reference;
+
+        @JsonRawValue
+        private String data;
+
+        @JsonProperty("primaryTopic")
+        private UUID primaryTopic;
+
+        @JsonProperty("primaryCorrespondent")
+        private UUID primaryCorrespondent;
+
+        @JsonProperty("caseDeadline")
+        private LocalDate caseDeadline;
+
+        @JsonProperty("dateReceived")
+        private LocalDate dateReceived;
+
+        public static UpdateCaseRequest from(CaseData caseData) {
+
+            return new UpdateCaseRequest(
+                    caseData.getUuid(),
+                    caseData.getCreated(),
+                    caseData.getType(),
+                    caseData.getReference(),
+                    caseData.getData(),
+                    caseData.getPrimaryTopicUUID(),
+                    caseData.getPrimaryCorrespondentUUID(),
+                    caseData.getCaseDeadline(),
+                    caseData.getDateReceived());
+        }
+    }
+
+    @AllArgsConstructor
+    @Getter
+    class GetAuditListResponse {
+
+        private Set<GetAuditResponse> audits;
+
     }
 }
