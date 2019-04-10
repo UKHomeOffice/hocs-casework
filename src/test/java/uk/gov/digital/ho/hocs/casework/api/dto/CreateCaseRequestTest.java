@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.time.LocalDate;
 import java.util.HashMap;
