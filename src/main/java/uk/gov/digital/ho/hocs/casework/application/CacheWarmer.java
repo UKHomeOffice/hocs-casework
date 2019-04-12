@@ -17,8 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CACHE_PRIME_FAILED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Slf4j
 @Component
@@ -55,7 +54,7 @@ public class CacheWarmer {
                 this.infoClient.populateCaseType(caseDataType.getDisplayCode(), caseDataType);
             }
         } catch(Exception e) {
-            log.warn("Failed to prime Case Types. : {}", e.toString(), value(EVENT, CACHE_PRIME_FAILED));
+            log.warn("Failed to prime Case Types. : {}", e.toString(), value(EVENT, CACHE_PRIME_FAILED), value(EXCEPTION, e));
         }
     }
 
@@ -67,7 +66,7 @@ public class CacheWarmer {
                 this.infoClient.populateStandardLine(getStandardLineResponse.getTopicUUID(), getStandardLineResponse);
             }
         } catch(Exception e) {
-            log.warn("Failed to prime StandardLines. : {}", e.toString(), value(EVENT, CACHE_PRIME_FAILED));
+            log.warn("Failed to prime StandardLines. : {}", e.toString(), value(EVENT, CACHE_PRIME_FAILED), value(EXCEPTION, e));
         }
     }
 
@@ -79,7 +78,7 @@ public class CacheWarmer {
                 this.infoClient.populateTemplate(getTemplateResponse.getCaseType(), getTemplateResponse);
             }
         } catch(Exception e) {
-            log.warn("Failed to prime Templates. : {}", e.toString(), value(EVENT, CACHE_PRIME_FAILED));
+            log.warn("Failed to prime Templates. : {}", e.toString(), value(EVENT, CACHE_PRIME_FAILED), value(EXCEPTION, e));
         }
     }
 
@@ -88,7 +87,7 @@ public class CacheWarmer {
         try {
             this.infoClient.populateTeams();
         } catch(Exception e) {
-            log.warn("Failed to prime Teams. : {}", e.toString(), value(EVENT, CACHE_PRIME_FAILED));
+            log.warn("Failed to prime Teams. : {}", e.toString(), value(EVENT, CACHE_PRIME_FAILED), value(EXCEPTION, e));
         }
     }
 
@@ -100,7 +99,7 @@ public class CacheWarmer {
                 this.infoClient.populateCaseSummaryFields(caseType.getDisplayCode());
             }
         } catch(Exception e) {
-            log.warn("Failed to prime Summary Fields. : {}", e.toString(), value(EVENT, CACHE_PRIME_FAILED));
+            log.warn("Failed to prime Summary Fields. : {}", e.toString(), value(EVENT, CACHE_PRIME_FAILED), value(EXCEPTION, e));
         }
     }
 
@@ -113,17 +112,17 @@ public class CacheWarmer {
                 try {
                     this.infoClient.getCaseDeadline(caseType.getDisplayCode(), now);
                 } catch (Exception e) {
-                    log.warn("Failed to prime Deadline {}", caseType.getDisplayCode(), value(EVENT, CACHE_PRIME_FAILED));
+                    log.warn("Failed to prime Deadline {}", caseType.getDisplayCode(), value(EVENT, CACHE_PRIME_FAILED), value(EXCEPTION, e));
                 }
                 try {
                     Map<String, LocalDate> stageDeadlines = this.infoClient.getStageDeadlines(caseType.getDisplayCode(), now);
                     stageDeadlines.forEach((ct, d) -> this.infoClient.populateStageDeadline(ct, now, d));
                 } catch (Exception e) {
-                    log.warn("Failed to prime stage Deadline {}", caseType.getDisplayCode(), value(EVENT, CACHE_PRIME_FAILED));
+                    log.warn("Failed to prime stage Deadline {}", caseType.getDisplayCode(), value(EVENT, CACHE_PRIME_FAILED), value(EXCEPTION, e));
                 }
             }
         } catch(Exception e) {
-            log.warn("Failed to prime Deadlines. : {}", e.toString(), value(EVENT, CACHE_PRIME_FAILED));
+            log.warn("Failed to prime Deadlines. : {}", e.toString(), value(EVENT, CACHE_PRIME_FAILED), value(EXCEPTION, e));
         }
     }
 

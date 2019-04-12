@@ -18,6 +18,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+
 @Service
 @Slf4j
 public class NotifyClient {
@@ -49,8 +52,7 @@ public class NotifyClient {
                 }
             }
         } catch (Exception e) {
-            log.error(e.getLocalizedMessage());
-            log.warn("Email failed to send  Case:{} Stage:{} Team:{}", caseReference, stageUUID, teamUUID);
+            log.warn("Email failed to send  Case:{} Stage:{} Team:{}", caseReference, stageUUID, teamUUID, value(EVENT, NOTIFY_EMAIL_FAILED), value(EXCEPTION, e));
         }
     }
 
@@ -72,8 +74,7 @@ public class NotifyClient {
                 sendUnAllocateUserEmail(caseUUID, stageUUID, currentUserUUID, caseReference);
             }
         } catch (Exception e) {
-            log.error(e.getLocalizedMessage());
-            log.warn("Email failed to send  Case:{} Stage:{} CurrentUser:{} NewUser:()", caseReference, stageUUID, currentUserUUID, newUserUUID);
+            log.warn("Email failed to send  Case:{} Stage:{} CurrentUser:{} NewUser:()", caseReference, stageUUID, currentUserUUID, newUserUUID, value(EVENT, NOTIFY_EMAIL_FAILED), value(EXCEPTION, e));
         }
     }
 
@@ -103,8 +104,7 @@ public class NotifyClient {
         try {
             notificationClient.sendEmail(notifyType.getDisplayValue(), emailAddress, personalisation, null);
         } catch (Exception e) {
-            log.error(e.getLocalizedMessage());
-            log.warn("Didn't send email to {}", emailAddress);
+            log.warn("Didn't send email to {}", emailAddress, value(EVENT, NOTIFY_EMAIL_FAILED), value(EXCEPTION, e));
         }
     }
 }

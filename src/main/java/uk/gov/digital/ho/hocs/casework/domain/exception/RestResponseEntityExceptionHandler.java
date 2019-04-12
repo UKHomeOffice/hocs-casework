@@ -44,13 +44,13 @@ public class RestResponseEntityExceptionHandler {
 
     @ExceptionHandler(ApplicationExceptions.EntityCreationException.class)
     public ResponseEntity handle(ApplicationExceptions.EntityCreationException e) {
-        log.error("ApplicationExceptions.EntityCreationException: {}", e.getMessage(),value(EVENT, e.getEvent()));
+        log.error("ApplicationExceptions.EntityCreationException: {}", e.getMessage(),value(EVENT, e.getEvent()), value(EXCEPTION, e.getException()));
         return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ApplicationExceptions.EntityNotFoundException.class)
     public ResponseEntity handle(ApplicationExceptions.EntityNotFoundException e) {
-        log.error("ApplicationExceptions.EntityNotFoundException: {}", e.getMessage(),value(EVENT, e.getEvent()));
+        log.error("ApplicationExceptions.EntityNotFoundException: {}", e.getMessage(),value(EVENT, e.getEvent()), value(EXCEPTION, e.getException()));
         return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
     }
 
