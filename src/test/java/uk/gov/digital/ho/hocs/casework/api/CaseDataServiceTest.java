@@ -596,4 +596,18 @@ public class CaseDataServiceTest {
 
         caseDataService.getCaseType(caseUUID);
     }
+
+    @Test
+    public void shouldGetCaseDateReceived() {
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
+
+        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
+
+        caseDataService.getCaseDateReceived(caseUUID);
+
+        verify(caseDataRepository, times(1)).findByUuid(caseUUID);
+        verifyNoMoreInteractions(infoClient);
+        verifyNoMoreInteractions(caseDataRepository);
+
+    }
 }

@@ -114,6 +114,27 @@ public class CaseData implements Serializable {
         this.dateReceived = dateReceived;
     }
 
+
+    // --------  Migration Code Start --------
+    public CaseData(CaseDataType type, String caseReference, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived) {
+        this(type, caseReference, caseDeadline, dateReceived);
+        update(data, objectMapper);
+    }
+
+    public CaseData(CaseDataType type, String caseReference, LocalDate caseDeadline, LocalDate dateReceived) {
+        if (type == null || caseReference == null) {
+            throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
+        }
+
+        this.type = type.getDisplayCode();
+        this.reference = caseReference;
+        this.uuid = randomUUID(type.getShortCode());
+        this.caseDeadline = caseDeadline;
+        this.dateReceived = dateReceived;
+    }
+
+    // --------  Migration Code End --------
+
     public void update(Map<String, String> newData, ObjectMapper objectMapper) {
         if (newData != null && newData.size() > 0) {
             Map<String, String> dataMap = getDataMap(this.data, objectMapper);

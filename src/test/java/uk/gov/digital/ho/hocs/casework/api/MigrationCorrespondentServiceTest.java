@@ -18,7 +18,7 @@ import java.util.UUID;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class CorrespondentServiceTest {
+public class MigrationCorrespondentServiceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID correspondentUUID = UUID.randomUUID();
