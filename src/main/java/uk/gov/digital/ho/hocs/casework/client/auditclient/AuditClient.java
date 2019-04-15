@@ -5,6 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
@@ -57,116 +60,131 @@ public class AuditClient {
         this.serviceBaseURL = auditService;
     }
 
+    @Async
     public void updateCaseAudit(CaseData caseData, UUID stageUUID)  {
         String data = "{}";
         try {
             data = objectMapper.writeValueAsString(AuditPayload.UpdateCaseRequest.from(caseData));
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse data payload", UNCAUGHT_EXCEPTION);
+            log.error("Failed to parse data payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
         sendAuditMessage(caseData.getUuid(), data, CASE_UPDATED, stageUUID, data);
     }
 
+    @Async
     public void viewCaseAudit(CaseData caseData)  {
         try {
             sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), EventType.CASE_VIEWED, null);
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+            log.error("Failed to parse audit payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
     }
 
+    @Async
     public void viewCaseSummaryAudit(CaseData caseData, CaseSummary caseSummary)  {
         try {
             sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), EventType.CASE_SUMMARY_VIEWED, null);
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+            log.error("Failed to parse audit payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
     }
 
+    @Async
     public void viewStandardLineAudit(CaseData caseData)  {
         try {
             sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), EventType.STANDARD_LINE_VIEWED, null);
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+            log.error("Failed to parse audit payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
     }
 
+    @Async
     public void viewTemplateAudit(CaseData caseData)  {
         try {
             sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())), EventType.TEMPLATE_VIEWED, null);
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+            log.error("Failed to parse audit payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
     }
 
+    @Async
     public void deleteCaseAudit(CaseData caseData)  {
         String data = "{}";
         try {
             data = objectMapper.writeValueAsString(new AuditPayload.Case(caseData.getUuid()));
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse data payload", UNCAUGHT_EXCEPTION);
+            log.error("Failed to parse data payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
         sendAuditMessage(caseData.getUuid(), data, EventType.CASE_DELETED, null,data);
     }
 
+    @Async
     public void viewCaseNotesAudit(UUID caseUUID, Set<CaseNote> caseNotes) {
         sendAuditMessage(caseUUID, "", EventType.CASE_NOTES_VIEWED, null);
     }
 
+    @Async
     public void viewCaseNoteAudit(CaseNote caseNote) {
         sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_VIEWED,null);
     }
 
+    @Async
     public void createCaseNoteAudit(CaseNote caseNote) {
         sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_CREATED, null);
     }
 
+    @Async
     public void createCorrespondentAudit(Correspondent correspondent) {
         String data = "{}";
         try {
             data = objectMapper.writeValueAsString(AuditPayload.CreateCorrespondentRequest.from(correspondent));
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse data payload", UNCAUGHT_EXCEPTION);
+            log.error("Failed to parse data payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
         sendAuditMessage(correspondent.getCaseUUID(), data, CORRESPONDENT_CREATED, null, data);
     }
 
+    @Async
     public void deleteCorrespondentAudit(Correspondent correspondent) {
         String data = String.format("{\"uuid\":\"%s\"}",  correspondent.getUuid());
         sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_DELETED, null, data);
     }
 
+    @Async
     public void createTopicAudit(Topic topic)  {
         String data = "{}";
         try {
             data = objectMapper.writeValueAsString(new AuditPayload.Topic(topic.getTextUUID(), topic.getText()));
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+            log.error("Failed to parse audit payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
         sendAuditMessage(topic.getCaseUUID(),data, CASE_TOPIC_CREATED, null, data);
 
     }
 
+    @Async
     public void deleteTopicAudit(Topic topic) {
         String data = "{}";
         try {
             data = objectMapper.writeValueAsString(new AuditPayload.Topic(topic.getTextUUID(), topic.getText()));
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+            log.error("Failed to parse audit payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
         sendAuditMessage(topic.getCaseUUID(), data, CASE_TOPIC_DELETED, null, data);
     }
 
+    @Async
     public void createCaseAudit(CaseData caseData)  {
         String data = "{}";
         try {
             data = objectMapper.writeValueAsString(AuditPayload.CreateCaseRequest.from(caseData));
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse data payload", UNCAUGHT_EXCEPTION);
+            log.error("Failed to parse data payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
         sendAuditMessage(caseData.getUuid(), data, CASE_CREATED, null, data);
     }
 
+    @Async
     public void updateStageUser(Stage stage)  {
         try {
             EventType allocationType;
@@ -178,10 +196,11 @@ public class AuditClient {
             }
             sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageUserAllocation(stage.getUuid(), stage.getUserUUID(), stage.getStageType())), allocationType, stage.getUuid());
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+            log.error("Failed to parse audit payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
     }
 
+    @Async
     public void updateStageTeam(Stage stage)  {
         try {
             EventType allocationType;
@@ -193,10 +212,15 @@ public class AuditClient {
             }
             sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stage.getUuid(), stage.getTeamUUID(),stage.getStageType())), allocationType, stage.getUuid());
         } catch (JsonProcessingException e) {
-            log.error("Failed to parse audit payload", UNCAUGHT_EXCEPTION);
+            log.error("Failed to parse audit payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
     }
 
+    private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType, UUID stageUUID) {
+        sendAuditMessage(caseUUID, payload, eventType, stageUUID, "{}");
+    }
+
+    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType, UUID stageUUID, String data){
         CreateAuditRequest request = new CreateAuditRequest(
                 requestData.correlationId(),
@@ -213,14 +237,10 @@ public class AuditClient {
         try {
             Map<String, Object> queueHeaders = getQueueHeaders(eventType.toString());
             producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), queueHeaders);
-            log.info("Create audit for Case UUID: {}, correlationID: {}, UserID: {}", caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_EVENT_CREATED));
+            log.info("Create audit of type {} for Case UUID: {}, correlationID: {}, UserID: {}", eventType, caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_EVENT_CREATED));
         } catch (Exception e) {
-            log.error("Failed to create audit event for case UUID {} for reason {}", caseUUID, e, value(EVENT, AUDIT_FAILED));
+            log.error("Failed to create audit event for case UUID {}", caseUUID, value(EVENT, AUDIT_FAILED), value(EXCEPTION, e));
         }
-    }
-
-    private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType, UUID stageUUID) {
-        sendAuditMessage(caseUUID, payload, eventType, stageUUID, "{}");
     }
 
     public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID, Set<String> requestedEvents) {
@@ -230,7 +250,7 @@ public class AuditClient {
             log.info("Got {} audits", response.getAudits().size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
             return response.getAudits();
         } catch (RestClientException e) {
-            log.error("Could not get audit lines", value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
+            log.error("Could not get audit lines", value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
             return new HashSet<>();
         }
     }

@@ -49,14 +49,14 @@ public class CorrespondentService {
         }
     }
 
-    void createCorrespondent(UUID caseUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference) throws JsonProcessingException {
+    void createCorrespondent(UUID caseUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference){
         log.debug("Creating Correspondent of Type: {} for Case: {}", correspondentType, caseUUID);
         Correspondent correspondent = new Correspondent(caseUUID, correspondentType, fullname, address, telephone, email, reference);
         try {
             correspondentRepository.save(correspondent);
             auditClient.createCorrespondentAudit(correspondent);
         } catch (DataIntegrityViolationException e) {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Failed to create correspondent %s for Case: %s", correspondent.getUuid(), caseUUID), CORRESPONDENT_CREATE_FAILURE);
+            throw new ApplicationExceptions.EntityCreationException(String.format("Failed to create correspondent %s for Case: %s", correspondent.getUuid(), caseUUID), CORRESPONDENT_CREATE_FAILURE, e);
         }
         log.info("Created Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID, value(EVENT, CORRESPONDENT_CREATED));
     }

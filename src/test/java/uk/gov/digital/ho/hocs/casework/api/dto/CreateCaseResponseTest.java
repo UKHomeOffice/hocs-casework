@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataType;
 
 import java.time.LocalDate;
 import java.util.HashMap;

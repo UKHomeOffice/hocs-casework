@@ -76,6 +76,9 @@ public enum LogEvent {
     REST_HELPER_GET_UNAUTHORIZED,
     REST_HELPER_GET_FORBIDDEN,
     REST_HELPER_GET_NOT_FOUND,
-    REST_HELPER_GET_BAD_REQUEST;
+    REST_HELPER_GET_BAD_REQUEST,
+    NOTIFY_EMAIL_FAILED;
     public static final String EVENT = "event_id";
+    public static final String EXCEPTION = "exception";
+
 }

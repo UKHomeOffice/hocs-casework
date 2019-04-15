@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
@@ -97,7 +98,7 @@ public class CaseDataService {
             CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(shortCode);
             caseType = caseDataType.getDisplayCode();
         } catch(RestClientException e) {
-            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED) );
+            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED), value(EXCEPTION, e));
             caseType = getCaseData(caseUUID).getType();
         }
         log.debug("CaseType {} found for Case: {}", caseType, caseUUID);
@@ -214,7 +215,7 @@ public class CaseDataService {
             log.debug("Retrieved {} audit lines", audit.size());
         }
         catch(Exception e) {
-            log.error("Failed to retrieve audit lines for case {}", caseUUID, value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
+            log.error("Failed to retrieve audit lines for case {}", caseUUID, value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
         }
 
         Set<CaseNote> notes = caseData.getCaseNotes();
@@ -227,7 +228,7 @@ public class CaseDataService {
             try {
                 auditPayload = objectMapper.writeValueAsString(new AuditPayload.CaseNote(n.getText()));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse case note text for note {}", n.getUuid(), UNCAUGHT_EXCEPTION);
+                log.error("Failed to parse case note text for note {}", n.getUuid(), value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
             }
             return new TimelineItem(n.getCaseUUID(), null, n.getCreated(), n.getAuthor(), n.getCaseNoteType(), auditPayload);
         });
@@ -247,7 +248,7 @@ public class CaseDataService {
                 return objectMapper.readValue(a.getAuditPayload(), AuditPayload.StageTeamAllocation.class).getTeamUUID();
             }
             catch(IOException e) {
-                log.error("Unable to parse audit payload for reason {}", e.getMessage(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE));
+                log.error("Unable to parse audit payload for reason {}", e.getMessage(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
                 return null;
             }
         }).filter(a -> a != null).collect(Collectors.toSet());

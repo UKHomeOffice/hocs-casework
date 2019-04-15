@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
@@ -153,7 +154,7 @@ public class CaseData implements Serializable {
         try {
             dataMap = objectMapper.readValue(dataString, new TypeReference<Map<String, String>>() {});
         } catch (Exception e) {
-            throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to read data value!", CASE_DATA_JSON_PARSE_ERROR);
+            throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to read data value!", CASE_DATA_JSON_PARSE_ERROR, e);
         }
         return dataMap;
     }
@@ -163,7 +164,7 @@ public class CaseData implements Serializable {
         try {
             dataString = objectMapper.writeValueAsString(dataMap);
         } catch (Exception e) {
-            throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to write value!", CASE_DATA_JSON_PARSE_ERROR);
+            throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to write value!", CASE_DATA_JSON_PARSE_ERROR, e);
         }
         return dataString;
     }
