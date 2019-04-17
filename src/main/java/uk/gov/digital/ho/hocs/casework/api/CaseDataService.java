@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
@@ -193,16 +194,26 @@ public class CaseDataService {
         return caseSummary;
     }
 
-    GetStandardLineResponse getStandardLine(UUID caseUUID) {
+    Set<GetStandardLineResponse> getStandardLine(UUID caseUUID) {
         CaseData caseData = getCaseData(caseUUID);
         auditClient.viewStandardLineAudit(caseData);
-        return infoClient.getStandardLine(caseData.getPrimaryTopic().getTextUUID());
+        try {
+            GetStandardLineResponse getStandardLineResponse = infoClient.getStandardLine(caseData.getPrimaryTopic().getTextUUID());
+            return Set.of(getStandardLineResponse);
+        } catch(HttpClientErrorException e) {
+            return Set.of();
+        }
     }
 
-    GetTemplateResponse getTemplate(UUID caseUUID) {
+    Set<GetTemplateResponse> getTemplate(UUID caseUUID) {
         CaseData caseData = getCaseData(caseUUID);
         auditClient.viewTemplateAudit(caseData);
-        return infoClient.getTemplate(caseData.getType());
+        try{
+            GetTemplateResponse getTemplateResponse = infoClient.getTemplate(caseData.getType());
+            return Set.of(getTemplateResponse);
+        } catch(HttpClientErrorException e) {
+            return Set.of();
+        }
     }
 
     Stream<TimelineItem> getCaseTimeline(UUID caseUUID) {
