@@ -3,6 +3,8 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -32,6 +34,7 @@ public class ActiveStage implements Serializable {
     @Column(name = "type")
     private String stageType;
 
+    @Setter
     @Getter
     @Column(name = "deadline")
     private LocalDate deadline;

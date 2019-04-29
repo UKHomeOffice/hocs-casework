@@ -13,6 +13,8 @@ import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
+
+import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -66,19 +68,25 @@ class CaseDataResource {
 
     @Allocated(allocatedTo = AllocationLevel.USER)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data")
-    ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) throws JsonProcessingException {
+    ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {
         caseDataService.updateCaseData(caseUUID, stageUUID, request.getData());
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/dateReceived")
+    ResponseEntity updateCaseDateReceived(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody LocalDate dateReceived) {
+        caseDataService.updateDateReceived(caseUUID, stageUUID, dateReceived);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryCorrespondent")
-    ResponseEntity updateCasePrimaryCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryCorrespondentUUID) throws JsonProcessingException {
+    ResponseEntity updateCasePrimaryCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryCorrespondentUUID) {
         caseDataService.updatePrimaryCorrespondent(caseUUID, stageUUID, primaryCorrespondentUUID);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryTopic")
-    ResponseEntity updateCasePrimaryTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryTopicUUID) throws JsonProcessingException {
+    ResponseEntity updateCasePrimaryTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryTopicUUID) {
         caseDataService.updatePrimaryTopic(caseUUID, stageUUID, primaryTopicUUID);
         return ResponseEntity.ok().build();
     }

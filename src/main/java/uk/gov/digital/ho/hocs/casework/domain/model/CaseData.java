@@ -83,13 +83,14 @@ public class CaseData implements Serializable {
     @Column(name = "case_deadline")
     private LocalDate caseDeadline;
 
+    @Setter
     @Getter
     @Column(name = "date_received")
     private LocalDate dateReceived;
 
     @Getter
     @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
+    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false)
     private Set<ActiveStage> activeStages;
 
     @Getter

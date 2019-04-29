@@ -292,40 +292,6 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldUpdateStageDeadline() {
-
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, transitionNoteUUID);
-
-        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
-
-        stageService.updateStageDeadline(caseUUID, stageUUID, deadline);
-
-        verify(stageRepository, times(1)).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
-        verify(stageRepository, times(1)).save(stage);
-
-        verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
-
-    }
-
-    @Test
-    public void shouldUpdateStageDeadlineNull() {
-
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, transitionNoteUUID);
-
-        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
-
-        stageService.updateStageDeadline(caseUUID, stageUUID, null);
-
-        verify(stageRepository, times(1)).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
-        verify(stageRepository, times(1)).save(stage);
-
-        verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
-
-    }
-
-    @Test
     public void shouldUpdateStageTransitionNote() {
 
         Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, transitionNoteUUID);

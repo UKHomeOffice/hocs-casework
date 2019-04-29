@@ -9,7 +9,6 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
@@ -73,9 +72,16 @@ public class StageService {
     Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, String emailType, UUID transitionNoteUUID) {
         log.debug("Creating Stage of type: {}", stageType);
         Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
-        LocalDate dateReceived = caseDataService.getCaseDateReceived(caseUUID);
-        LocalDate deadline = infoClient.getStageDeadline(stageType, dateReceived);
-        stage.setDeadline(deadline);
+        // Try and overwrite the deadline with inputted values from the data map.
+        String overrideDeadline = caseDataService.getCaseDataField(caseUUID, String.format("%s_DEADLINE",stageType));
+        if(overrideDeadline == null) {
+            LocalDate dateReceived = caseDataService.getCaseDateReceived(caseUUID);
+            LocalDate deadline = infoClient.getStageDeadline(stageType, dateReceived);
+            stage.setDeadline(deadline);
+        } else {
+            LocalDate deadline = LocalDate.parse(overrideDeadline);
+            stage.setDeadline(deadline);
+        }
         stageRepository.save(stage);
         auditClient.updateStageTeam(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
@@ -89,15 +95,6 @@ public class StageService {
         stage.setTransitionNote(transitionNoteUUID);
         stageRepository.save(stage);
         log.info("Set Stage Transition Note: {} ({}) for Case {}", stageUUID, transitionNoteUUID, caseUUID, value(EVENT, STAGE_TRANSITION_NOTE_UPDATED));
-    }
-
-
-    void updateStageDeadline(UUID caseUUID, UUID stageUUID, LocalDate deadline) {
-        log.debug("Updating Deadline for Stage: {}", stageUUID);
-        Stage stage = getActiveStage(caseUUID, stageUUID);
-        stage.setDeadline(deadline);
-        stageRepository.save(stage);
-        log.info("Set Stage Deadline: {} ({}) for Case {}", stageUUID, deadline, caseUUID, value(EVENT, STAGE_DEADLINE_UPDATED));
     }
 
     void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID, String emailType) {
