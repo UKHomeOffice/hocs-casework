@@ -91,6 +91,14 @@ public class CaseDataService {
         return dateReceived;
     }
 
+    public String getCaseDataField(UUID caseUUID, String key) {
+        log.debug("Looking up key {} for Case: {}", key, caseUUID);
+        Map<String,String> dataMap = getCaseData(caseUUID).getDataMap(objectMapper);
+        String value = dataMap.getOrDefault(key,null);
+        log.debug("returning {} found value for Case: {}", value, caseUUID);
+        return value;
+    }
+
     public String getCaseType(UUID caseUUID) {
         String shortCode = caseUUID.toString().substring(34);
         log.debug("Looking up CaseType for Case: {} Shortcode: {}", caseUUID, shortCode);
@@ -131,6 +139,33 @@ public class CaseDataService {
             log.info("Updated Case Data for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_UPDATED));
         } else {
             log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
+        }
+    }
+
+    void updateDateReceived(UUID caseUUID, UUID stageUUID, LocalDate dateReceived) {
+        log.debug("Updating DateReceived for Case: {} Date: {}", caseUUID, dateReceived);
+        CaseData caseData = getCaseData(caseUUID);
+        caseData.setDateReceived(dateReceived);
+        LocalDate deadline = infoClient.getCaseDeadline(caseData.getType(), dateReceived);
+        caseData.setCaseDeadline(deadline);
+        updateStageDeadlines(caseData);
+        caseDataRepository.save(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
+    }
+
+    private void updateStageDeadlines(CaseData caseData) {
+        Map<String,String> dataMap = caseData.getDataMap(objectMapper);
+        for(ActiveStage stage : caseData.getActiveStages()) {
+            // Try and overwrite the deadlines with inputted values from the data map.
+            String overrideDeadline = dataMap.get(String.format("%s_DEADLINE", stage.getStageType()));
+            if (overrideDeadline == null) {
+                LocalDate dateReceived = caseData.getDateReceived();
+                LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), dateReceived);
+                stage.setDeadline(deadline);
+            } else {
+                LocalDate deadline = LocalDate.parse(overrideDeadline);
+                stage.setDeadline(deadline);
+            }
         }
     }
 
@@ -180,6 +215,14 @@ public class CaseDataService {
                 .map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent()))
                 .collect(Collectors.toSet());
         Map<String, LocalDate> stageDeadlines = infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived());
+        // Try and overwrite the deadlines with inputted values from the data map.
+        for(String stageType : stageDeadlines.keySet()) {
+            String stageDeadlineKey = String.format("%s_DEADLINE",stageType);
+            if(caseDataMap.containsKey(stageDeadlineKey)){
+                LocalDate deadline = LocalDate.parse(caseDataMap.get(stageDeadlineKey));
+                stageDeadlines.put(stageType,deadline);
+            }
+        }
 
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
 
