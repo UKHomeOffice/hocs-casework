@@ -10,8 +10,8 @@ services:
     networks:
       - hocs-network
     environment:
-     POSTGRES_USER: root
-     POSTGRES_PASSWORD: dev
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: dev
     tmpfs:
       - /var/lib/postgresql
 
