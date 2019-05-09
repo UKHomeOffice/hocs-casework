@@ -188,22 +188,13 @@ public class CaseDataService {
         log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));
     }
 
-    void updatePriority(UUID caseUUID, boolean priority) {
-        log.debug("Updating priority for Case: {} Priority {}", caseUUID, priority);
+    void completeCase(UUID caseUUID, boolean completed) {
+        log.debug("Updating completed status Case: {} completed {}", caseUUID, completed);
         CaseData caseData = getCaseData(caseUUID);
-        caseData.setPriority(priority);
-        caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData, null);
-        log.info("Updated priority Case: {} Priority {}", caseUUID, priority, value(EVENT, PRIORITY_UPDATED));
-    }
-
-    void completeCase(UUID caseUUID) {
-        log.debug("Completing Case: {}", caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.complete();
+        caseData.setCompleted(completed);
         caseDataRepository.save(caseData);
         auditClient.completeCaseAudit(caseData);
-        log.info("Deleted Case: {}", caseUUID, value(EVENT, CASE_COMPLETED));
+        log.info("Updated Case: {} completed {}", caseUUID, completed, value(EVENT, CASE_COMPLETED));
     }
 
     void deleteCase(UUID caseUUID) {

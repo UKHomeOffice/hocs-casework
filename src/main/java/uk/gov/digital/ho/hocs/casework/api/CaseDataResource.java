@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -92,8 +91,8 @@ class CaseDataResource {
     }
 
     @PostMapping(value = "/case/{caseUUID}/complete")
-    ResponseEntity updateCaseDateReceived(@PathVariable UUID caseUUID) {
-        caseDataService.completeCase(caseUUID);
+    ResponseEntity updateCaseDateReceived(@PathVariable UUID caseUUID, @RequestBody boolean complete) {
+        caseDataService.completeCase(caseUUID, complete);
         return ResponseEntity.ok().build();
     }
 

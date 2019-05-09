@@ -46,11 +46,6 @@ public class CaseData implements Serializable {
 
     @Setter
     @Getter
-    @Column(name = "priority")
-    private boolean priority;
-
-    @Setter
-    @Getter
     @Column(name = "deleted")
     private boolean deleted;
 
@@ -88,13 +83,10 @@ public class CaseData implements Serializable {
     @Column(name = "date_received")
     private LocalDate dateReceived;
 
+    @Setter
     @Getter
     @Column(name = "completed")
     private boolean completed;
-
-    @Getter
-    @Column(name = "completed_timestamp")
-    private LocalDateTime completedDate;
 
     @Getter
     @OneToMany(fetch = FetchType.LAZY)
@@ -131,11 +123,6 @@ public class CaseData implements Serializable {
 
             this.data = getDataString(dataMap, objectMapper);
         }
-    }
-
-    public void complete() {
-        this.completed = true;
-        this.completedDate = LocalDateTime.now();
     }
 
     public Map<String,String> getDataMap(ObjectMapper objectMapper) {

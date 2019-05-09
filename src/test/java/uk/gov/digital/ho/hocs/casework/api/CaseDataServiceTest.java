@@ -480,48 +480,13 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldUpdatePriorityCase() throws JsonProcessingException {
-
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
-
-        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
-
-        caseDataService.updatePriority(caseData.getUuid(), false);
-
-        verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
-        verify(caseDataRepository, times(1)).save(caseData);
-
-        verifyNoMoreInteractions(caseDataRepository);
-    }
-
-    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void shouldNotUpdatePriorityCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
-
-        caseDataService.updatePriority(null, false);
-    }
-
-    @Test()
-    public void shouldNotUpdatePriorityCaseMissingCaseUUID() throws JsonProcessingException {
-
-        try {
-            caseDataService.updatePriority(null, false);
-        } catch (ApplicationExceptions.EntityNotFoundException e) {
-            // Do nothing.
-        }
-
-        verify(caseDataRepository, times(1)).findByUuid(null);
-
-        verifyNoMoreInteractions(caseDataRepository);
-    }
-
-    @Test
     public void shouldCompleteCase() throws JsonProcessingException {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
-        caseDataService.completeCase(caseData.getUuid());
+        caseDataService.completeCase(caseData.getUuid(), true);
 
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
         verify(caseDataRepository, times(1)).save(caseData);
@@ -532,14 +497,14 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotCOmpleteCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
 
-        caseDataService.completeCase(null);
+        caseDataService.completeCase(null, true);
     }
 
     @Test()
     public void shouldNotCompleteCaseMissingCaseUUID() throws JsonProcessingException {
 
         try {
-            caseDataService.completeCase(null);
+            caseDataService.completeCase(null, true);
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }

@@ -12,15 +12,13 @@ CREATE TABLE IF NOT EXISTS case_data
   created                    TIMESTAMP   NOT NULL,
   type                       VARCHAR(5)  NOT NULL,
   reference                  VARCHAR(16) NOT NULL,
-  priority                   BOOLEAN     NOT NULL DEFAULT FALSE,
   data                       JSONB,
   primary_topic_uuid         UUID,
   primary_correspondent_uuid UUID,
   case_deadline              DATE        NOT NULL,
   date_received              DATE        NOT NULL,
   deleted                    BOOLEAN     NOT NULL DEFAULT FALSE,
-  completed                  BOOLEAN     NOT NULL DEFAULT TRUE,
-  completed_timestamp        TIMESTAMP,
+  completed                  BOOLEAN     NOT NULL DEFAULT FALSE,
 
   CONSTRAINT case_uuid_idempotent UNIQUE (uuid),
   CONSTRAINT case_ref_idempotent UNIQUE (reference)
