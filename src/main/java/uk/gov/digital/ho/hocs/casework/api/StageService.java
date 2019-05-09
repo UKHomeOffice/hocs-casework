@@ -15,6 +15,7 @@ import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,6 +33,9 @@ public class StageService {
     private final SearchClient searchClient;
     private final InfoClient infoClient;
     private final CaseDataService caseDataService;
+
+    private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage::getCreated);
+
 
     @Autowired
     public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient, CaseDataService caseDataService) {
@@ -177,7 +181,7 @@ public class StageService {
         log.debug("Getting Stages for Search Request");
         Set<UUID> caseUUIDs = searchClient.search(searchRequest);
         if (caseUUIDs.isEmpty()) {
-            log.warn("No cases - Returning 0 Stages", value(EVENT, SEARCH_STAGE_LIST_EMPTY));
+            log.info("No cases - Returning 0 Stages", value(EVENT, SEARCH_STAGE_LIST_EMPTY));
             return new HashSet<>(0);
         } else {
             Set<Stage> stages = stageRepository.findAllByCaseUUIDIn(caseUUIDs);
@@ -188,9 +192,6 @@ public class StageService {
 
     private static Set<Stage> groupByCaseUUID(Set<Stage> stages) {
 
-        // Set active or not on each stage
-        stages.forEach(stage -> stage.setActive(stage.getTeamUUID() != null));
-
         // Group the stages by case UUID
         Map<UUID, List<Stage>> groupedStages = stages.stream().collect(Collectors.groupingBy(Stage::getCaseUUID));
 
@@ -199,14 +200,15 @@ public class StageService {
     }
 
     private static Stream<Stage> reduceToMostActive(List<Stage> stages) {
+        Supplier<Stream<Stage>> stageSupplier = stages::stream;
 
-        if(stages.stream().noneMatch(Stage::isActive)) {
-            Comparator<Stage> comparator = Comparator.comparing(Stage::getCreated);
-            Optional<Stage> maxDatedStage = stages.stream().filter(stage -> stage.getCreated() != null).max(comparator);
-            if(maxDatedStage.isPresent()) {
-                return Stream.of(maxDatedStage.get());
-            }
+        // If any stages are active
+        if(stageSupplier.get().anyMatch(Stage::isActive)) {
+            return stageSupplier.get().filter(Stage::isActive);
+        } else {
+            // return the most recent stage.
+            Optional<Stage> maxDatedStage = stageSupplier.get().max(CREATED_COMPARATOR);
+            return maxDatedStage.stream();
         }
-        return stages.stream().filter(Stage::isActive);
     }
 }

@@ -72,11 +72,6 @@ public class Stage implements Serializable {
     @Column(name = "data", insertable = false, updatable = false)
     private String data;
 
-    @Getter
-    @Setter
-    @Transient
-    private boolean active = true;
-
     public Stage(UUID caseUUID, String stageType, UUID teamUUID, UUID transitionNoteUUID) {
         if (caseUUID == null || stageType == null) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
@@ -105,6 +100,10 @@ public class Stage implements Serializable {
 
     public void setUser(UUID userUUID) {
         this.userUUID = userUUID;
+    }
+
+    public boolean isActive() {
+        return this.teamUUID != null;
     }
 
 }

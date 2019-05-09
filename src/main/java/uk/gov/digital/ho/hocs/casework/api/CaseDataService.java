@@ -306,6 +306,6 @@ public class CaseDataService {
                 log.error("Unable to parse audit payload for reason {}", e.getMessage(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
                 return null;
             }
-        }).filter(a -> a != null).collect(Collectors.toSet());
+        }).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 }
