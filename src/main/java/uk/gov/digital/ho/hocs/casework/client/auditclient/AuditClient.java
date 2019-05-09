@@ -119,6 +119,17 @@ public class AuditClient {
     }
 
     @Async
+    public void completeCaseAudit(CaseData caseData)  {
+        String data = "{}";
+        try {
+            data = objectMapper.writeValueAsString(new AuditPayload.Case(caseData.getUuid()));
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse data payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+        }
+        sendAuditMessage(caseData.getUuid(), data, EventType.CASE_COMPLETED, null,data);
+    }
+
+    @Async
     public void viewCaseNotesAudit(UUID caseUUID, Set<CaseNote> caseNotes) {
         sendAuditMessage(caseUUID, "", EventType.CASE_NOTES_VIEWED, null);
     }

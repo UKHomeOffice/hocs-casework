@@ -89,6 +89,14 @@ public class CaseData implements Serializable {
     private LocalDate dateReceived;
 
     @Getter
+    @Column(name = "completed")
+    private boolean completed;
+
+    @Getter
+    @Column(name = "completed_timestamp")
+    private LocalDateTime completedDate;
+
+    @Getter
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false)
     private Set<ActiveStage> activeStages;
@@ -115,27 +123,6 @@ public class CaseData implements Serializable {
         this.dateReceived = dateReceived;
     }
 
-
-    // --------  Migration Code Start --------
-    public CaseData(CaseDataType type, String caseReference, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived) {
-        this(type, caseReference, caseDeadline, dateReceived);
-        update(data, objectMapper);
-    }
-
-    public CaseData(CaseDataType type, String caseReference, LocalDate caseDeadline, LocalDate dateReceived) {
-        if (type == null || caseReference == null) {
-            throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
-        }
-
-        this.type = type.getDisplayCode();
-        this.reference = caseReference;
-        this.uuid = randomUUID(type.getShortCode());
-        this.caseDeadline = caseDeadline;
-        this.dateReceived = dateReceived;
-    }
-
-    // --------  Migration Code End --------
-
     public void update(Map<String, String> newData, ObjectMapper objectMapper) {
         if (newData != null && newData.size() > 0) {
             Map<String, String> dataMap = getDataMap(this.data, objectMapper);
@@ -144,6 +131,11 @@ public class CaseData implements Serializable {
 
             this.data = getDataString(dataMap, objectMapper);
         }
+    }
+
+    public void complete() {
+        this.completed = true;
+        this.completedDate = LocalDateTime.now();
     }
 
     public Map<String,String> getDataMap(ObjectMapper objectMapper) {
@@ -182,5 +174,26 @@ public class CaseData implements Serializable {
             throw new ApplicationExceptions.EntityCreationException("shortCode is null", CASE_CREATE_FAILURE);
         }
     }
+
+
+    // --------  Migration Code Start --------
+    public CaseData(CaseDataType type, String caseReference, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived) {
+        this(type, caseReference, caseDeadline, dateReceived);
+        update(data, objectMapper);
+    }
+
+    public CaseData(CaseDataType type, String caseReference, LocalDate caseDeadline, LocalDate dateReceived) {
+        if (type == null || caseReference == null) {
+            throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
+        }
+
+        this.type = type.getDisplayCode();
+        this.reference = caseReference;
+        this.uuid = randomUUID(type.getShortCode());
+        this.caseDeadline = caseDeadline;
+        this.dateReceived = dateReceived;
+    }
+
+    // --------  Migration Code End --------
 
 }

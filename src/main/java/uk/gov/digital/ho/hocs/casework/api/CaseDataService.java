@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_COMPLETED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DELETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
@@ -194,6 +195,15 @@ public class CaseDataService {
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, null);
         log.info("Updated priority Case: {} Priority {}", caseUUID, priority, value(EVENT, PRIORITY_UPDATED));
+    }
+
+    void completeCase(UUID caseUUID) {
+        log.debug("Completing Case: {}", caseUUID);
+        CaseData caseData = getCaseData(caseUUID);
+        caseData.complete();
+        caseDataRepository.save(caseData);
+        auditClient.completeCaseAudit(caseData);
+        log.info("Deleted Case: {}", caseUUID, value(EVENT, CASE_COMPLETED));
     }
 
     void deleteCase(UUID caseUUID) {

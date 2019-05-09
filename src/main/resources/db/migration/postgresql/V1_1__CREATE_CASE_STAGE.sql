@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS case_data
   case_deadline              DATE        NOT NULL,
   date_received              DATE        NOT NULL,
   deleted                    BOOLEAN     NOT NULL DEFAULT FALSE,
+  completed                  BOOLEAN     NOT NULL DEFAULT TRUE,
+  completed_timestamp        TIMESTAMP,
 
   CONSTRAINT case_uuid_idempotent UNIQUE (uuid),
   CONSTRAINT case_ref_idempotent UNIQUE (reference)
@@ -26,7 +28,7 @@ CREATE TABLE IF NOT EXISTS case_data
 
 --  GetCase + Used as index where we check cases aren't deleted
 CREATE INDEX case_data_uuid
-  ON case_data (uuid, deleted);
+  ON case_data (uuid, deleted, completed);
 
 -- Used as index in build Primary_Topic view
 CREATE INDEX case_data_topic

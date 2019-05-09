@@ -91,6 +91,12 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping(value = "/case/{caseUUID}/complete")
+    ResponseEntity updateCaseDateReceived(@PathVariable UUID caseUUID) {
+        caseDataService.completeCase(caseUUID);
+        return ResponseEntity.ok().build();
+    }
+
     @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/standardLine")
     ResponseEntity<Set<GetStandardLineResponse>> getStandardLine(@PathVariable UUID caseUUID) {

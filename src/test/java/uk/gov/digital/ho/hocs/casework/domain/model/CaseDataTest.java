@@ -21,7 +21,6 @@ public class CaseDataTest {
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
-        LocalDate caseDeadline = LocalDate.now().plusDays(20);
         LocalDate caseReceived = LocalDate.now();
         CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseReceived);
 
@@ -31,10 +30,12 @@ public class CaseDataTest {
         assertThat(caseData.getData()).isEqualTo("{}");
         assertThat(caseData.isPriority()).isFalse();
         assertThat(caseData.isDeleted()).isFalse();
-        assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
-        assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+        assertThat(caseData.getPrimaryCorrespondentUUID()).isNull();
+        assertThat(caseData.getPrimaryTopicUUID()).isNull();
         assertThat(caseData.getCaseDeadline()).isNull();
         assertThat(caseData.getDateReceived()).isEqualTo(caseReceived);
+        assertThat(caseData.isCompleted()).isEqualTo(false);
+        assertThat(caseData.getCompletedDate()).isNull();
     }
 
     @Test
@@ -278,6 +279,44 @@ public class CaseDataTest {
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
         assertThat(caseData.getCaseDeadline()).isNull();
+    }
+
+    @Test
+    public void shouldComplete() {
+
+        CaseDataType type = new CaseDataType("MIN", "a1");
+        Long caseNumber = 1234L;
+        Map<String, String> data = new HashMap<>();
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseReceived);
+
+        assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getData()).isEqualTo("{}");
+        assertThat(caseData.isPriority()).isFalse();
+        assertThat(caseData.isDeleted()).isFalse();
+        assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
+        assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+        assertThat(caseData.getCaseDeadline()).isNull();
+        assertThat(caseData.isCompleted()).isEqualTo(false);
+        assertThat(caseData.getCompletedDate()).isNull();
+
+        caseData.complete();
+
+        assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
+        assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
+        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getData()).isEqualTo("{}");
+        assertThat(caseData.isPriority()).isFalse();
+        assertThat(caseData.isDeleted()).isFalse();
+        assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
+        assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
+        assertThat(caseData.getCaseDeadline()).isNull();
+        assertThat(caseData.isCompleted()).isEqualTo(true);
+        assertThat(caseData.getCompletedDate()).isOfAnyClassIn(LocalDateTime.now().getClass());
     }
 
     @Test

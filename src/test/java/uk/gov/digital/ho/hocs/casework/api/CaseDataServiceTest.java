@@ -515,6 +515,41 @@ public class CaseDataServiceTest {
     }
 
     @Test
+    public void shouldCompleteCase() throws JsonProcessingException {
+
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
+
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+
+        caseDataService.completeCase(caseData.getUuid());
+
+        verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
+        verify(caseDataRepository, times(1)).save(caseData);
+
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldNotCOmpleteCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
+
+        caseDataService.completeCase(null);
+    }
+
+    @Test()
+    public void shouldNotCompleteCaseMissingCaseUUID() throws JsonProcessingException {
+
+        try {
+            caseDataService.completeCase(null);
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
+            // Do nothing.
+        }
+
+        verify(caseDataRepository, times(1)).findByUuid(null);
+
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
     public void shouldDeleteCase() {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
