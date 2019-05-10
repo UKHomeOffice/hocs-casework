@@ -277,7 +277,7 @@ public class CaseDataService {
 
         log.debug("Retrieved {} case notes", notes.size());
 
-        Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp(), a.getUserID(), a.getType(), a.getAuditPayload()));
+        Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp().toLocalDateTime(), a.getUserID(), a.getType(), a.getAuditPayload()));
         Stream<TimelineItem> notesTimeline = notes.stream().map(n -> {
             String auditPayload = "";
             try {

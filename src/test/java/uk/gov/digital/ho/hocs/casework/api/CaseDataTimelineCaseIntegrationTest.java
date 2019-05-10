@@ -26,6 +26,7 @@ import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -98,7 +99,7 @@ public class CaseDataTimelineCaseIntegrationTest {
                 null,
                 "correlation Id",
                 "hocs-casework","",
-                "namespace", LocalDateTime.now(), EventType.CASE_CREATED.toString(),
+                "namespace", ZonedDateTime.now(), EventType.CASE_CREATED.toString(),
                 "user")));
 
         mockService

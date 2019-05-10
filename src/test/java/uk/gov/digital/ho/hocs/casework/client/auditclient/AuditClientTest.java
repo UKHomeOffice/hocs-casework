@@ -22,6 +22,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import static java.util.UUID.randomUUID;
@@ -318,7 +319,7 @@ public class AuditClientTest {
                 null,
                 "correlation Id",
                 "hocs-casework","",
-                "namespace", LocalDateTime.now(),EventType.CASE_CREATED.toString(),
+                "namespace", ZonedDateTime.now(),EventType.CASE_CREATED.toString(),
                 "user")));
 
         String events = CaseDataService.TIMELINE_EVENTS.stream().collect(Collectors.joining(","));
