@@ -27,6 +27,7 @@ import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_COMPLETED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DELETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
@@ -187,13 +188,13 @@ public class CaseDataService {
         log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));
     }
 
-    void updatePriority(UUID caseUUID, boolean priority) {
-        log.debug("Updating priority for Case: {} Priority {}", caseUUID, priority);
+    void completeCase(UUID caseUUID, boolean completed) {
+        log.debug("Updating completed status Case: {} completed {}", caseUUID, completed);
         CaseData caseData = getCaseData(caseUUID);
-        caseData.setPriority(priority);
+        caseData.setCompleted(completed);
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData, null);
-        log.info("Updated priority Case: {} Priority {}", caseUUID, priority, value(EVENT, PRIORITY_UPDATED));
+        auditClient.completeCaseAudit(caseData);
+        log.info("Updated Case: {} completed {}", caseUUID, completed, value(EVENT, CASE_COMPLETED));
     }
 
     void deleteCase(UUID caseUUID) {
@@ -305,6 +306,6 @@ public class CaseDataService {
                 log.error("Unable to parse audit payload for reason {}", e.getMessage(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
                 return null;
             }
-        }).filter(a -> a != null).collect(Collectors.toSet());
+        }).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 }

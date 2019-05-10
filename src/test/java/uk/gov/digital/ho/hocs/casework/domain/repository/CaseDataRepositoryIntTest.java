@@ -46,7 +46,6 @@ public class CaseDataRepositoryIntTest {
         assertThat(caseData.getType()).isEqualTo("TEST");
         assertThat(caseData.getCreated().toLocalDate()).isEqualTo(LocalDate.now());
         assertThat(caseData.getReference()).isEqualTo("TEST/0000101/" + String.format("%ty", caseData.getCreated()));
-        assertThat(caseData.isPriority()).isFalse();
         assertThat(caseData.getPrimaryTopicUUID()).isNull();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isNull();
         assertThat(caseData.getCaseDeadline()).isEqualTo(LocalDate.of(2018, 1, 29));

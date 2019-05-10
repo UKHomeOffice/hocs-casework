@@ -480,13 +480,13 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldUpdatePriorityCase() throws JsonProcessingException {
+    public void shouldCompleteCase() throws JsonProcessingException {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
-        caseDataService.updatePriority(caseData.getUuid(), false);
+        caseDataService.completeCase(caseData.getUuid(), true);
 
         verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
         verify(caseDataRepository, times(1)).save(caseData);
@@ -495,16 +495,16 @@ public class CaseDataServiceTest {
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void shouldNotUpdatePriorityCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
+    public void shouldNotCOmpleteCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
 
-        caseDataService.updatePriority(null, false);
+        caseDataService.completeCase(null, true);
     }
 
     @Test()
-    public void shouldNotUpdatePriorityCaseMissingCaseUUID() throws JsonProcessingException {
+    public void shouldNotCompleteCaseMissingCaseUUID() throws JsonProcessingException {
 
         try {
-            caseDataService.updatePriority(null, false);
+            caseDataService.completeCase(null, true);
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
