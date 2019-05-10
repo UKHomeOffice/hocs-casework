@@ -23,6 +23,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -147,7 +148,7 @@ public class CaseDataServiceTest {
                 null,
                 "correlation Id",
                 "hocs-casework","",
-                "namespace", LocalDateTime.now(), CASE_CREATED.toString(),
+                "namespace", ZonedDateTime.now(), CASE_CREATED.toString(),
                 "user"));
 
 
@@ -207,7 +208,7 @@ public class CaseDataServiceTest {
                 "correlation Id",
                 "hocs-casework",
                 payload,
-                "namespace", LocalDateTime.now(),
+                "namespace", ZonedDateTime.now(),
                 STAGE_ALLOCATED_TO_TEAM.toString(),
                 "user"));
 
