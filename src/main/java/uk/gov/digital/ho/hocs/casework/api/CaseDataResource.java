@@ -52,10 +52,10 @@ class CaseDataResource {
     }
 
     @Authorised(accessLevel = AccessLevel.SUMMARY)
-    @GetMapping(value = "/case/{caseUUID}/summary")
-    ResponseEntity<GetCaseSummaryResponse> getCaseSummary(@PathVariable UUID caseUUID) {
-        CaseSummary caseSummary = caseDataService.getCaseSummary(caseUUID);
-        return ResponseEntity.ok(GetCaseSummaryResponse.from(caseSummary));
+    @GetMapping(value = "/case/{caseUUID}/full")
+    ResponseEntity<GetFullCaseResponse> getFullCase(@PathVariable UUID caseUUID) {
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        return ResponseEntity.ok(GetFullCaseResponse.from(caseData));
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
@@ -63,6 +63,13 @@ class CaseDataResource {
     ResponseEntity<Set<TimelineItemDto>> getCaseTimeline(@PathVariable UUID caseUUID) {
         Stream<TimelineItem> timeline = caseDataService.getCaseTimeline(caseUUID);
         return ResponseEntity.ok(timeline.map(TimelineItemDto::from).collect(Collectors.toSet()));
+    }
+
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
+    @GetMapping(value = "/case/{caseUUID}/summary")
+    ResponseEntity<GetCaseSummaryResponse> getCaseSummary(@PathVariable UUID caseUUID) {
+        CaseSummary caseSummary = caseDataService.getCaseSummary(caseUUID);
+        return ResponseEntity.ok(GetCaseSummaryResponse.from(caseSummary));
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER)

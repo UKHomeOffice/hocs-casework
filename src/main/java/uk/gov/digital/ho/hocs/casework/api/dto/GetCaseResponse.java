@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AccessLevel;
@@ -9,6 +10,8 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -19,7 +22,8 @@ public class GetCaseResponse {
     private UUID uuid;
 
     @JsonProperty("created")
-    private LocalDateTime created;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss Z", timezone = "UTC")
+    private ZonedDateTime created;
 
     @JsonProperty("type")
     private String type;
@@ -46,7 +50,7 @@ public class GetCaseResponse {
 
         return new GetCaseResponse(
                 caseData.getUuid(),
-                caseData.getCreated(),
+                ZonedDateTime.of(caseData.getCreated(), ZoneOffset.UTC),
                 caseData.getType(),
                 caseData.getReference(),
                 caseData.getData(),

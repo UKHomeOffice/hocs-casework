@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -7,6 +8,9 @@ import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -17,7 +21,8 @@ public class TimelineItemDto {
 
     private UUID stageUUID;
 
-    private LocalDateTime eventTime;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss Z", timezone = "UTC")
+    private ZonedDateTime eventTime;
 
     private String userName;
 
@@ -27,6 +32,6 @@ public class TimelineItemDto {
     private String body;
 
     public static TimelineItemDto from(TimelineItem timelineItem) {
-        return new TimelineItemDto(timelineItem.getCaseUUID(), timelineItem.getStageUUID(), timelineItem.getEventTime(), timelineItem.getUserName(), timelineItem.getType(), timelineItem.getMessage());
+        return new TimelineItemDto(timelineItem.getCaseUUID(), timelineItem.getStageUUID(), ZonedDateTime.of(timelineItem.getEventTime(), ZoneOffset.UTC), timelineItem.getUserName(), timelineItem.getType(), timelineItem.getMessage());
     }
 }

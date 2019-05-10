@@ -9,15 +9,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCaseDataRequest;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -107,7 +103,33 @@ public class CaseDataResourceTest {
     }
 
     @Test
-    public void shouldUpdateCaseData() throws JsonProcessingException {
+    public void shouldGetCaseWithCorrespondentAndTopic() {
+
+        Correspondent correspondent = new Correspondent(UUID.randomUUID(), "TYPE", "name",
+                new Address("postcode","address1","address2","address3","county"),
+                "phone", "email", "");
+
+        Topic topic = new Topic(UUID.randomUUID(), "name", UUID.randomUUID());
+        CaseData caseData = mock(CaseData.class);
+
+        when(caseData.getPrimaryCorrespondent()).thenReturn(correspondent);
+        when(caseData.getPrimaryTopic()).thenReturn(topic);
+        when(caseData.getCreated()).thenReturn(LocalDateTime.of(2019,1,1,6,0));
+        when(caseDataService.getCase(uuid)).thenReturn(caseData);
+
+        ResponseEntity<GetFullCaseResponse> response = caseDataResource.getFullCase(uuid);
+
+        verify(caseDataService, times(1)).getCase(uuid);
+
+        verifyNoMoreInteractions(caseDataService);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody().getPrimaryCorrespondent()).isInstanceOf(GetCorrespondentResponse.class);
+        assertThat(response.getBody().getPrimaryTopic()).isInstanceOf(GetTopicResponse.class);
+    }
+
+    @Test
+    public void shouldUpdateCaseData() {
         UpdateCaseDataRequest updateCaseDataRequest = new UpdateCaseDataRequest(data);
 
         doNothing().when(caseDataService).updateCaseData(uuid, uuid, data);
