@@ -97,7 +97,7 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/case/{caseUUID}/complete")
+    @PutMapping(value = "/case/{caseUUID}/complete")
     ResponseEntity updateCaseDateReceived(@PathVariable UUID caseUUID, @RequestBody boolean complete) {
         caseDataService.completeCase(caseUUID, complete);
         return ResponseEntity.ok().build();
