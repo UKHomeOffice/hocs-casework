@@ -22,7 +22,7 @@ public class GetCaseNoteResponseTest {
         GetCaseNoteResponse getCaseNotResponse = GetCaseNoteResponse.from(caseNote);
 
         assertThat(getCaseNotResponse.getUuid()).isEqualTo(caseNote.getUuid());
-        assertThat(getCaseNotResponse.getCreated()).isEqualTo(caseNote.getCreated());
+        assertThat(getCaseNotResponse.getCreated().toLocalDateTime()).isEqualTo(caseNote.getCreated());
         assertThat(getCaseNotResponse.getType()).isEqualTo(caseNote.getCaseNoteType());
         assertThat(getCaseNotResponse.getCaseUUID()).isEqualTo(caseNote.getCaseUUID());
         assertThat(getCaseNotResponse.getText()).isEqualTo(caseNote.getText());
