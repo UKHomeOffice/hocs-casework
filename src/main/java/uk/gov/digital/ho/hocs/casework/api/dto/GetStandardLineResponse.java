@@ -15,6 +15,9 @@ public class GetStandardLineResponse {
     @JsonProperty("uuid")
     private UUID uuid;
 
+    @JsonProperty("documentUUID")
+    private UUID documentUUID;
+
     @JsonProperty("topicUUID")
     private UUID topicUUID;
 
