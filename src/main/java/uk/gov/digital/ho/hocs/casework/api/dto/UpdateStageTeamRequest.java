@@ -13,6 +13,4 @@ public class UpdateStageTeamRequest {
     @JsonProperty("teamUUID")
     private UUID teamUUID;
 
-    @JsonProperty("allocationType")
-    private String allocationType;
 }

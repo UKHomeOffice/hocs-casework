@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
-import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
@@ -28,7 +27,6 @@ public class StageService {
 
     private final StageRepository stageRepository;
     private final UserPermissionsService userPermissionsService;
-    private final NotifyClient notifyClient;
     private final AuditClient auditClient;
     private final SearchClient searchClient;
     private final InfoClient infoClient;
@@ -38,10 +36,9 @@ public class StageService {
 
 
     @Autowired
-    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient, CaseDataService caseDataService) {
+    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient, CaseDataService caseDataService) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
-        this.notifyClient = notifyClient;
         this.auditClient = auditClient;
         this.searchClient = searchClient;
         this.infoClient = infoClient;
@@ -73,7 +70,7 @@ public class StageService {
         }
     }
 
-    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, String emailType, UUID transitionNoteUUID) {
+    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, UUID transitionNoteUUID) {
         log.debug("Creating Stage of type: {}", stageType);
         Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
         // Try and overwrite the deadline with inputted values from the data map.
@@ -101,7 +98,7 @@ public class StageService {
         log.info("Set Stage Transition Note: {} ({}) for Case {}", stageUUID, transitionNoteUUID, caseUUID, value(EVENT, STAGE_TRANSITION_NOTE_UPDATED));
     }
 
-    void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID, String emailType) {
+    void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID) {
         log.debug("Updating Team: {} for Stage: {}", newTeamUUID, stageUUID);
         // Check all stages because when rejecting back the stage will not be active.
         Stage stage = getStage(caseUUID, stageUUID);
@@ -124,7 +121,6 @@ public class StageService {
         stageRepository.save(stage);
         auditClient.updateStageUser(stage);
         log.info("Updated User: {} for Stage {}", newUserUUID, stageUUID, value(EVENT, STAGE_ASSIGNED_USER));
-        notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, stage.getCaseReference());
     }
 
     Set<Stage> getActiveStagesByCaseUUID(UUID caseUUID) {
