@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.notifiyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
@@ -27,6 +28,7 @@ public class StageService {
 
     private final StageRepository stageRepository;
     private final UserPermissionsService userPermissionsService;
+    private final NotifyClient notifyClient;
     private final AuditClient auditClient;
     private final SearchClient searchClient;
     private final InfoClient infoClient;
@@ -36,9 +38,10 @@ public class StageService {
 
 
     @Autowired
-    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient, CaseDataService caseDataService) {
+    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient, CaseDataService caseDataService) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
+        this.notifyClient = notifyClient;
         this.auditClient = auditClient;
         this.searchClient = searchClient;
         this.infoClient = infoClient;
@@ -70,9 +73,9 @@ public class StageService {
         }
     }
 
-    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, UUID transitionNoteUUID) {
+    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID) {
         log.debug("Creating Stage of type: {}", stageType);
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID);
         // Try and overwrite the deadline with inputted values from the data map.
         String overrideDeadline = caseDataService.getCaseDataField(caseUUID, String.format("%s_DEADLINE",stageType));
         if(overrideDeadline == null) {
@@ -86,16 +89,7 @@ public class StageService {
         stageRepository.save(stage);
         auditClient.updateStageTeam(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
-        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, stage.getCaseReference(), emailType);
         return stage;
-    }
-
-    void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
-        log.debug("Updating Transition Note for Stage: {}", stageUUID);
-        Stage stage = getActiveStage(caseUUID, stageUUID);
-        stage.setTransitionNote(transitionNoteUUID);
-        stageRepository.save(stage);
-        log.info("Set Stage Transition Note: {} ({}) for Case {}", stageUUID, transitionNoteUUID, caseUUID, value(EVENT, STAGE_TRANSITION_NOTE_UPDATED));
     }
 
     void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID) {
@@ -105,11 +99,11 @@ public class StageService {
         stage.setTeam(newTeamUUID);
         stageRepository.save(stage);
         auditClient.updateStageTeam(stage);
+
         if (newTeamUUID == null) {
             log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID, value(EVENT, STAGE_COMPLETED));
         } else {
             log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, newTeamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
-            notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), newTeamUUID, stage.getCaseReference(), emailType);
         }
     }
 
@@ -121,6 +115,8 @@ public class StageService {
         stageRepository.save(stage);
         auditClient.updateStageUser(stage);
         log.info("Updated User: {} for Stage {}", newUserUUID, stageUUID, value(EVENT, STAGE_ASSIGNED_USER));
+        notifyClient.sendUserEmail(caseUUID, stageUUID, currentUserUUID, newUserUUID, stage.getCaseReference());
+
     }
 
     Set<Stage> getActiveStagesByCaseUUID(UUID caseUUID) {

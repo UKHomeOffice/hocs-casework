@@ -16,6 +16,4 @@ public class CreateStageRequest {
     @JsonProperty("teamUUID")
     private UUID teamUUID;
 
-    @JsonProperty("transitionNote")
-    private UUID transitionNoteUUID;
 }

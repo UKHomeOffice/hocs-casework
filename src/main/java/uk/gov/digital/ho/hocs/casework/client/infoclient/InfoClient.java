@@ -152,13 +152,6 @@ public class InfoClient {
         return response;
     }
 
-    @Cacheable(value = "InfoClientGetNominatedPeople", unless = "#result.size() == 0", key = "{#teamUUID}")
-    public Set<InfoNominatedPeople> getNominatedPeople(UUID teamUUID) {
-        Set<InfoNominatedPeople> response = restHelper.get(serviceBaseURL, String.format("/team/%s/contact", teamUUID), new ParameterizedTypeReference<Set<InfoNominatedPeople>>() {});
-        log.info("Got {} contacts for Team {}", response.size(), value(EVENT, INFO_CLIENT_GET_CONTACTS_SUCCESS));
-        return response;
-    }
-
     @Cacheable(value = "InfoClientGetUser", unless = "#result == null", key = "{#userUUID}")
     public UserDto getUser(UUID userUUID) {
         UserDto userDto = restHelper.get(serviceBaseURL, String.format("/user/%s", userUUID), UserDto.class);
