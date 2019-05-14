@@ -61,13 +61,6 @@ class StageResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.READ)
-    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/transitionNote")
-    ResponseEntity updateStageTransitionNote(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID teamUUID) {
-        stageService.updateStageTeam(caseUUID, stageUUID, teamUUID);
-        return ResponseEntity.ok().build();
-    }
-
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/team")
     ResponseEntity<UUID> getStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
         UUID teamUUID = stageService.getStageTeam(caseUUID, stageUUID);
