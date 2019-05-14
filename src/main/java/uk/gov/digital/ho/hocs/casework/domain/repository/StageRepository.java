@@ -35,7 +35,7 @@ public interface StageRepository extends CrudRepository<Stage, Long> {
     @Query(value = "SELECT sd.* FROM active_stage_data sd WHERE sd.user_uuid = ?1 AND sd.team_uuid = ?2", nativeQuery = true)
     Set<Stage> findStageCaseUUIDsByUserUUIDTeamUUID(UUID userUUID, UUID teamUUID);
 
-    @Query(value = "SELECT sd.* FROM active_stage_data sd join active_case ac on sd.case_uuid = ac.uuid where ac.reference = ?1", nativeQuery = true)
+    @Query(value = "SELECT sd.* FROM stage_data sd join active_case ac on sd.case_uuid = ac.uuid where ac.reference = ?1", nativeQuery = true)
     Set<Stage> findByCaseReference(String reference);
 
 }

@@ -174,7 +174,8 @@ public class StageService {
 
     Set<Stage> getActiveStagesByCaseReference(String reference) {
         log.debug("Getting Active Stages for reference: {}", reference);
-        return stageRepository.findByCaseReference(reference);
+        Set<Stage> stages = stageRepository.findByCaseReference(reference);
+        return reduceToMostActive(stages).collect(Collectors.toSet());
     }
 
     Set<Stage> search(SearchRequest searchRequest) {
@@ -197,6 +198,10 @@ public class StageService {
 
         // for each of the entry sets, filter out none-active stages, unless there are no active stages then use the latest stage
         return groupedStages.entrySet().stream().flatMap(s -> reduceToMostActive(s.getValue())).collect(Collectors.toSet());
+    }
+
+    private static Stream<Stage> reduceToMostActive(Set<Stage> stages) {
+        return reduceToMostActive(new ArrayList<>(stages));
     }
 
     private static Stream<Stage> reduceToMostActive(List<Stage> stages) {
