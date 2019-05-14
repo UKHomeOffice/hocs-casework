@@ -43,8 +43,8 @@ class StageResource {
 
     @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user")
-    ResponseEntity updateStageUser(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID userUUID) {
-        stageService.updateStageUser(caseUUID, stageUUID, userUUID);
+    ResponseEntity updateStageUser(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageUserRequest request) {
+        stageService.updateStageUser(caseUUID, stageUUID, request.getUserUUID());
         return ResponseEntity.ok().build();
     }
 
