@@ -58,7 +58,7 @@ public class CaseDataService {
         this.objectMapper = objectMapper;
     }
 
-    public static final Set<String> TIMELINE_EVENTS = Set.of(
+    public static final List<String> TIMELINE_EVENTS = List.of(
             CASE_CREATED.toString(),
             CASE_TOPIC_CREATED.toString(),
             CASE_TOPIC_DELETED.toString(),
@@ -300,7 +300,7 @@ public class CaseDataService {
     public Set<UUID> getCaseTeams(UUID caseUUID) {
         log.debug("Retrieving previous teams for : {}", caseUUID);
 
-        Set<GetAuditResponse> auditLines = auditClient.getAuditLinesForCase(caseUUID, Set.of(STAGE_ALLOCATED_TO_TEAM.toString(), STAGE_CREATED.toString()));
+        Set<GetAuditResponse> auditLines = auditClient.getAuditLinesForCase(caseUUID, List.of(STAGE_ALLOCATED_TO_TEAM.toString(), STAGE_CREATED.toString()));
         log.info("Got {} audits", auditLines.size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
 
         return auditLines.stream().map( a -> {

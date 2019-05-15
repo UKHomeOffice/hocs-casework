@@ -264,7 +264,7 @@ public class AuditClient {
         }
     }
 
-    public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID, Set<String> requestedEvents) {
+    public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID, List<String> requestedEvents) {
         try {
             String events = String.join(",", requestedEvents);
             GetAuditListResponse response = restHelper.get(serviceBaseURL, String.format("/audit/case/%s?types=%s", caseUUID, events), GetAuditListResponse.class);
