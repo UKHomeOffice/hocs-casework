@@ -73,6 +73,7 @@ CREATE TABLE IF NOT EXISTS correspondent
   telephone TEXT,
   email     TEXT,
   reference TEXT,
+  external_key TEXT,
   deleted   BOOLEAN   NOT NULL DEFAULT FALSE,
 
   CONSTRAINT correspondent_uuid_idempotent UNIQUE (uuid),

@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -49,9 +48,9 @@ public class CorrespondentService {
         }
     }
 
-    void createCorrespondent(UUID caseUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference){
+    void createCorrespondent(UUID caseUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference, String externalKey){
         log.debug("Creating Correspondent of Type: {} for Case: {}", correspondentType, caseUUID);
-        Correspondent correspondent = new Correspondent(caseUUID, correspondentType, fullname, address, telephone, email, reference);
+        Correspondent correspondent = new Correspondent(caseUUID, correspondentType, fullname, address, telephone, email, reference, externalKey);
         try {
             correspondentRepository.save(correspondent);
             auditClient.createCorrespondentAudit(correspondent);

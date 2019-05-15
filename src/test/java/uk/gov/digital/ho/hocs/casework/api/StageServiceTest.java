@@ -77,14 +77,14 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldAuditUpdateStageTeamOnStageCreation() {
+    public void shouldAuditCreateStage() {
 
         CaseData caseData = new CaseData(caseDataType, 12344567L, LocalDate.now());
         when(caseDataService.getCaseDateReceived(caseUUID)).thenReturn(caseData.getDateReceived());
 
         stageService.createStage(caseUUID, stageType, teamUUID, allocationType, transitionNoteUUID);
 
-        verify(auditClient, times(1)).updateStageTeam(any(Stage.class));
+        verify(auditClient, times(1)).createStage(any(Stage.class));
         verifyNoMoreInteractions(auditClient);
 
     }

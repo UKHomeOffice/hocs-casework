@@ -21,7 +21,6 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,7 +53,7 @@ public class AuditClientTest {
     private LocalDate caseReceived = LocalDate.now();
     private String auditQueue ="audit-queue";
     private Address address = new Address("S1 3NS","some street","some town","some count","UK");
-    private Correspondent correspondent = new Correspondent(randomUUID(), "MP", "John Smith", address, "123456789","test@test.com", "1234" );
+    private Correspondent correspondent = new Correspondent(randomUUID(), "MP", "John Smith", address, "123456789","test@test.com", "1234", "external key" );
     private Topic topic = new Topic(caseUUID, "some topic", randomUUID());
 
     @Captor
@@ -306,7 +305,17 @@ public class AuditClientTest {
         auditClient.updateStageTeam(stage);
         verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.STAGE_UNALLOCATED_FROM_TEAM);
+        assertThat(request.getType()).isEqualTo(EventType.STAGE_COMPLETED);
+        assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
+    }
+
+    @Test
+    public void auditStageCreated() throws IOException {
+        Stage stage = new Stage(caseUUID,"SOME_STAGE", null, null);
+        auditClient.createStage(stage);
+        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.STAGE_CREATED);
         assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
     }
 

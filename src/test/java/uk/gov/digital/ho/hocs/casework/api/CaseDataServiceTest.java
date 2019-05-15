@@ -7,12 +7,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
+import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
-
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -22,7 +21,6 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -50,7 +48,7 @@ public class CaseDataServiceTest {
 
     private CaseDataService caseDataService;
 
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper;
 
     private LocalDate caseDeadline = LocalDate.now().plusDays(20);
 
@@ -60,9 +58,12 @@ public class CaseDataServiceTest {
 
     private UUID stageUUID = UUID.randomUUID();
 
+    private SpringConfiguration configuration;
 
     @Before
     public void setUp() {
+        configuration = new SpringConfiguration();
+        objectMapper = configuration.initialiseObjectMapper();
         this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper, auditClient);
     }
 
@@ -199,8 +200,9 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
         UUID auditResponseUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
+        LocalDate deadline = LocalDate.of(2019,1,1);
 
-        String payload = objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stageUUID, teamUUID, "STAGE_TYPE"));
+        String payload = objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stageUUID, teamUUID, "STAGE_TYPE", deadline));
 
         Set<GetAuditResponse> auditResponse = Set.of(new GetAuditResponse(auditResponseUUID,
                 caseUUID,
@@ -439,7 +441,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldAuditUpdateCase() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
+    public void shouldAuditUpdateCase() throws ApplicationExceptions.EntityCreationException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
@@ -451,7 +453,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldUpdateCaseNullData() throws JsonProcessingException {
+    public void shouldUpdateCaseNullData() {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
 
@@ -461,7 +463,7 @@ public class CaseDataServiceTest {
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void shouldNotUpdateCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
+    public void shouldNotUpdateCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
 
         caseDataService.updateCaseData(null, stageUUID, new HashMap<>());
     }
@@ -481,7 +483,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldCompleteCase() throws JsonProcessingException {
+    public void shouldCompleteCase() {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
 
@@ -496,13 +498,13 @@ public class CaseDataServiceTest {
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void shouldNotCOmpleteCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
+    public void shouldNotCOmpleteCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
 
         caseDataService.completeCase(null, true);
     }
 
     @Test()
-    public void shouldNotCompleteCaseMissingCaseUUID() throws JsonProcessingException {
+    public void shouldNotCompleteCaseMissingCaseUUID() {
 
         try {
             caseDataService.completeCase(null, true);

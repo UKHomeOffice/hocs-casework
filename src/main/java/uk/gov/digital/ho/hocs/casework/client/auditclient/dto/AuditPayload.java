@@ -41,6 +41,7 @@ public interface AuditPayload {
         private UUID stageUUID;
         private UUID teamUUID;
         private String stage;
+        private LocalDate deadline;
     }
 
     @AllArgsConstructor
@@ -120,6 +121,9 @@ public interface AuditPayload {
         @JsonProperty("reference")
         private String reference;
 
+        @JsonProperty("externalKey")
+        private String externalKey;
+
         public static AuditPayload.CreateCorrespondentRequest from(Correspondent correspondent) {
             return new AuditPayload.CreateCorrespondentRequest(
                     correspondent.getUuid(),
@@ -130,7 +134,8 @@ public interface AuditPayload {
                     AddressDto.from(correspondent),
                     correspondent.getTelephone(),
                     correspondent.getEmail(),
-                    correspondent.getReference()
+                    correspondent.getReference(),
+                    correspondent.getExternalKey()
             );
         }
     }

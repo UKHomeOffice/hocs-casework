@@ -20,8 +20,9 @@ public class GetCorrespondentResponseTest {
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
+        String externalKey = "external key";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
 
         GetCorrespondentResponse getCorrespondentResponse = GetCorrespondentResponse.from(correspondent);
 
@@ -39,6 +40,8 @@ public class GetCorrespondentResponseTest {
         assertThat(getCorrespondentResponse.getTelephone()).isEqualTo(correspondent.getTelephone());
         assertThat(getCorrespondentResponse.getEmail()).isEqualTo(correspondent.getEmail());
         assertThat(getCorrespondentResponse.getReference()).isEqualTo(correspondent.getReference());
+        assertThat(getCorrespondentResponse.getExternalKey()).isEqualTo(correspondent.getExternalKey());
+
 
     }
 
@@ -48,7 +51,7 @@ public class GetCorrespondentResponseTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, null, null, null, null, null);
+        Correspondent correspondent = new Correspondent(caseUUID, type, null, null, null, null, null, null);
 
         GetCorrespondentResponse getCorrespondentResponse = GetCorrespondentResponse.from(correspondent);
 
@@ -65,6 +68,7 @@ public class GetCorrespondentResponseTest {
         assertThat(getCorrespondentResponse.getTelephone()).isEqualTo(correspondent.getTelephone());
         assertThat(getCorrespondentResponse.getEmail()).isEqualTo(correspondent.getEmail());
         assertThat(getCorrespondentResponse.getReference()).isEqualTo(correspondent.getReference());
+        assertThat(getCorrespondentResponse.getExternalKey()).isEqualTo(correspondent.getExternalKey());
 
     }
 

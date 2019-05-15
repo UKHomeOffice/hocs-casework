@@ -38,7 +38,7 @@ public class CaseDataResourceTest {
     }
 
     @Test
-    public void shouldCreateCase() throws JsonProcessingException {
+    public void shouldCreateCase() {
 
         CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseReceived);
         CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data,caseReceived);
@@ -107,7 +107,7 @@ public class CaseDataResourceTest {
 
         Correspondent correspondent = new Correspondent(UUID.randomUUID(), "TYPE", "name",
                 new Address("postcode","address1","address2","address3","county"),
-                "phone", "email", "");
+                "phone", "email", "", "");
 
         Topic topic = new Topic(UUID.randomUUID(), "name", UUID.randomUUID());
         CaseData caseData = mock(CaseData.class);

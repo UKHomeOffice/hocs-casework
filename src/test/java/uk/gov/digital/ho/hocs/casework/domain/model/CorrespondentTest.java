@@ -20,8 +20,9 @@ public class CorrespondentTest {
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
+        String externalKey = "external key";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
 
         assertThat(correspondent.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(correspondent.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -50,8 +51,9 @@ public class CorrespondentTest {
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
+        String externalKey = "external key";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
 
         assertThat(correspondent.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(correspondent.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -67,6 +69,7 @@ public class CorrespondentTest {
         assertThat(correspondent.getEmail()).isEqualTo(email);
         assertThat(correspondent.getReference()).isEqualTo(reference);
         assertThat(correspondent.isDeleted()).isFalse();
+        assertThat(correspondent.getExternalKey()).isEqualTo(externalKey);
 
         correspondent.setDeleted(true);
 
@@ -96,8 +99,9 @@ public class CorrespondentTest {
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
+        String externalKey = "external key";
 
-        new Correspondent(null, type, fullName, address, phone, email, reference);
+        new Correspondent(null, type, fullName, address, phone, email, reference, externalKey);
 
     }
 
@@ -110,8 +114,9 @@ public class CorrespondentTest {
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
+        String externalKey = "external key";
 
-        new Correspondent(caseUUID, null, fullName, address, phone, email, reference);
+        new Correspondent(caseUUID, null, fullName, address, phone, email, reference, externalKey);
 
     }
 

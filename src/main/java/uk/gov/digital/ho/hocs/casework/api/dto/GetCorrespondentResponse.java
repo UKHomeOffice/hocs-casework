@@ -40,6 +40,9 @@ public class GetCorrespondentResponse {
     @JsonProperty("reference")
     private String reference;
 
+    @JsonProperty("externalKey")
+    private String externalKey;
+
     public static GetCorrespondentResponse from(Correspondent correspondent) {
         return new GetCorrespondentResponse(
                 correspondent.getUuid(),
@@ -50,7 +53,8 @@ public class GetCorrespondentResponse {
                 AddressDto.from(correspondent),
                 correspondent.getTelephone(),
                 correspondent.getEmail(),
-                correspondent.getReference()
+                correspondent.getReference(),
+                correspondent.getExternalKey()
         );
     }
 }

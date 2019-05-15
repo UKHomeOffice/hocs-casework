@@ -71,6 +71,10 @@ public class Correspondent implements Serializable {
     private String email;
 
     @Getter
+    @Column(name = "external_key")
+    private String externalKey;
+
+    @Getter
     @Column(name = "reference")
     private String reference;
 
@@ -79,7 +83,7 @@ public class Correspondent implements Serializable {
     @Column(name = "deleted")
     private boolean deleted;
 
-    public Correspondent(UUID caseUUID, String correspondentType, String fullName, Address address, String telephone, String email, String reference) {
+    public Correspondent(UUID caseUUID, String correspondentType, String fullName, Address address, String telephone, String email, String reference, String externalKey) {
         if (caseUUID == null || correspondentType == null) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Correspondent(%s, %s, %s, %s, %s, %s).", caseUUID, correspondentType, fullName, "Address", telephone, email), LogEvent.CORRESPONDENT_CREATE_FAILURE);
         }
@@ -99,6 +103,7 @@ public class Correspondent implements Serializable {
         this.telephone = telephone;
         this.email = email;
         this.reference = reference;
+        this.externalKey = externalKey;
     }
 
 }

@@ -44,4 +44,7 @@ public class CreateCorrespondentRequest {
 
     @JsonProperty("reference")
     String reference;
+
+    @JsonProperty("externalKey")
+    String externalKey;
 }

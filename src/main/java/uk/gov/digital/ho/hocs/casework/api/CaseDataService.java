@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
@@ -36,6 +37,8 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_COMPLETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_CREATED;
 
 @Service
 @Slf4j
@@ -60,6 +63,8 @@ public class CaseDataService {
             CASE_TOPIC_CREATED.toString(),
             CASE_TOPIC_DELETED.toString(),
             STAGE_ALLOCATED_TO_TEAM.toString(),
+            STAGE_CREATED.toString(),
+            STAGE_COMPLETED.toString(),
             STAGE_ALLOCATED_TO_USER.toString(),
             CORRESPONDENT_DELETED.toString(),
             CORRESPONDENT_CREATED.toString(),
@@ -295,7 +300,7 @@ public class CaseDataService {
     public Set<UUID> getCaseTeams(UUID caseUUID) {
         log.debug("Retrieving previous teams for : {}", caseUUID);
 
-        Set<GetAuditResponse> auditLines = auditClient.getAuditLinesForCase(caseUUID, Set.of(STAGE_ALLOCATED_TO_TEAM.toString()));
+        Set<GetAuditResponse> auditLines = auditClient.getAuditLinesForCase(caseUUID, Set.of(STAGE_ALLOCATED_TO_TEAM.toString(), STAGE_CREATED.toString()));
         log.info("Got {} audits", auditLines.size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
 
         return auditLines.stream().map( a -> {

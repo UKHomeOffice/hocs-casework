@@ -38,7 +38,7 @@ public class MigrationCorrespondentServiceTest {
         HashSet<Correspondent> correspondentData = new HashSet<>();
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
 
         correspondentData.add(correspondent);
 
@@ -65,7 +65,7 @@ public class MigrationCorrespondentServiceTest {
     public void shouldCreateCorrespondent() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        correspondentService.createCorrespondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        correspondentService.createCorrespondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
 
         verify(correspondentRepository, times(1)).save(any(Correspondent.class));
 
@@ -76,7 +76,7 @@ public class MigrationCorrespondentServiceTest {
     public void shouldAuditCreateCorrespondent() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        correspondentService.createCorrespondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        correspondentService.createCorrespondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
 
         verify(auditClient, times(1)).createCorrespondentAudit(any(Correspondent.class));
 
@@ -86,7 +86,7 @@ public class MigrationCorrespondentServiceTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCorrespondentMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        correspondentService.createCorrespondent(null, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        correspondentService.createCorrespondent(null, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
     }
 
     @Test
@@ -94,7 +94,7 @@ public class MigrationCorrespondentServiceTest {
 
         try {
             Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-            correspondentService.createCorrespondent(null, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+            correspondentService.createCorrespondent(null, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
@@ -106,7 +106,7 @@ public class MigrationCorrespondentServiceTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCorrespondentMissingCorrespondentTypeException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        correspondentService.createCorrespondent(caseUUID, null, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        correspondentService.createCorrespondent(caseUUID, null, "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
     }
 
     @Test
@@ -114,7 +114,7 @@ public class MigrationCorrespondentServiceTest {
 
         try {
             Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-            correspondentService.createCorrespondent(caseUUID, null, "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+            correspondentService.createCorrespondent(caseUUID, null, "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
@@ -127,7 +127,7 @@ public class MigrationCorrespondentServiceTest {
     public void shouldGetCorrespondent() throws ApplicationExceptions.EntityNotFoundException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference");
+        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
 
@@ -194,7 +194,7 @@ public class MigrationCorrespondentServiceTest {
     @Test
     public void shouldDeleteCorrespondent() {
 
-        Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null);
+        Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null, null);
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
 
@@ -210,7 +210,7 @@ public class MigrationCorrespondentServiceTest {
     @Test
     public void shouldAuditDeleteCorrespondent() {
 
-        Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null);
+        Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null, null);
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
 

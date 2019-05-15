@@ -25,6 +25,8 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_COMPLETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_CREATED;
 
 @Slf4j
 @Component
@@ -211,6 +213,14 @@ public class AuditClient {
         }
     }
 
+    public void createStage(Stage stage) {
+        try {
+            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stage.getUuid(), stage.getTeamUUID(),stage.getStageType(), stage.getDeadline())), STAGE_CREATED, stage.getUuid());
+        } catch (JsonProcessingException e) {
+            log.error("Failed to parse audit payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+        }
+    }
+
     @Async
     public void updateStageTeam(Stage stage)  {
         try {
@@ -219,9 +229,9 @@ public class AuditClient {
                 allocationType = STAGE_ALLOCATED_TO_TEAM;
             }
             else {
-                allocationType = STAGE_UNALLOCATED_FROM_TEAM;
+                allocationType = STAGE_COMPLETED;
             }
-            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stage.getUuid(), stage.getTeamUUID(),stage.getStageType())), allocationType, stage.getUuid());
+            sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stage.getUuid(), stage.getTeamUUID(),stage.getStageType(), stage.getDeadline())), allocationType, stage.getUuid());
         } catch (JsonProcessingException e) {
             log.error("Failed to parse audit payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }

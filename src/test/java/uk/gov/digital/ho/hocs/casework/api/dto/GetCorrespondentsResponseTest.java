@@ -22,8 +22,9 @@ public class GetCorrespondentsResponseTest {
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
+        String externalKey = "external key";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
 
         Set<Correspondent> correspondents = new HashSet<>();
         correspondents.add(correspondent);

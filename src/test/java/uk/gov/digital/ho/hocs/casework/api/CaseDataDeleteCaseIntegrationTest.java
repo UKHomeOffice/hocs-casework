@@ -305,7 +305,7 @@ public class CaseDataDeleteCaseIntegrationTest {
         GetAuditListResponse restResponse = new GetAuditListResponse(new HashSet<>());
 
         mockInfoService
-                .expect(requestTo("http://localhost:8087/audit/case/" + caseUUID + "?types=STAGE_ALLOCATED_TO_TEAM"))
+                .expect(requestTo("http://localhost:8087/audit/case/" + caseUUID + "?types=STAGE_ALLOCATED_TO_TEAM,STAGE_CREATED"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(restResponse), MediaType.APPLICATION_JSON));
     }
