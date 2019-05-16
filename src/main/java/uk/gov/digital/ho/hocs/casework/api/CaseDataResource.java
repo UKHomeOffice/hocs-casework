@@ -62,9 +62,7 @@ class CaseDataResource {
     @GetMapping(value = "/case/{caseUUID}/timeline")
     ResponseEntity<Set<TimelineItemDto>> getCaseTimeline(@PathVariable UUID caseUUID) {
         Stream<TimelineItem> timeline = caseDataService.getCaseTimeline(caseUUID);
-        Set<TimelineItem> tset = timeline.collect(Collectors.toSet());
-        Set<TimelineItemDto> tdsto = tset.stream().map(TimelineItemDto::from).collect(Collectors.toSet());
-        return ResponseEntity.ok(tdsto);
+        return ResponseEntity.ok(timeline.map(TimelineItemDto::from).collect(Collectors.toSet()));
     }
 
     @Authorised(accessLevel = AccessLevel.SUMMARY)
