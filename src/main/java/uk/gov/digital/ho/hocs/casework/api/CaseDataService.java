@@ -305,7 +305,7 @@ public class CaseDataService {
 
         return auditLines.stream().map( a -> {
             try {
-                return objectMapper.readValue(a.getAuditPayload(), AuditPayload.StageTeamAllocation.class).getTeamUUID();
+                return objectMapper.readValue(a.getAuditPayload(), AuditPayload.StageAllocation.class).getAllocatedToUUID();
             }
             catch(IOException e) {
                 log.error("Unable to parse audit payload for reason {}", e.getMessage(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));

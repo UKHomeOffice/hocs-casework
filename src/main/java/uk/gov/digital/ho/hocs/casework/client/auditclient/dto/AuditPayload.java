@@ -37,19 +37,11 @@ public interface AuditPayload {
 
     @AllArgsConstructor
     @Getter
-    class StageTeamAllocation {
+    class StageAllocation {
         private UUID stageUUID;
-        private UUID teamUUID;
+        private UUID allocatedToUUID;
         private String stage;
         private LocalDate deadline;
-    }
-
-    @AllArgsConstructor
-    @Getter
-    class StageUserAllocation {
-        private UUID stageUUID;
-        private UUID userUUID;
-        private String stage;
     }
 
     @AllArgsConstructor

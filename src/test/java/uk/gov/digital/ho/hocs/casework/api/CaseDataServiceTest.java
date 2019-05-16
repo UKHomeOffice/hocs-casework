@@ -202,7 +202,7 @@ public class CaseDataServiceTest {
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.of(2019,1,1);
 
-        String payload = objectMapper.writeValueAsString(new AuditPayload.StageTeamAllocation(stageUUID, teamUUID, "STAGE_TYPE", deadline));
+        String payload = objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stageUUID, teamUUID, "STAGE_TYPE", deadline));
 
         Set<GetAuditResponse> auditResponse = Set.of(new GetAuditResponse(auditResponseUUID,
                 caseUUID,
