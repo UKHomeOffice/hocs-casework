@@ -264,6 +264,11 @@ spec:
                 secretKeyRef:
                   name: cs-notify
                   key: api_key
+            - name: HOCS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: cs-notify
+                  key: url
           resources:
             limits:
               cpu: 850m
