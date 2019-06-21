@@ -45,7 +45,7 @@ public class AuditClient {
 
     @Autowired
     public AuditClient(ProducerTemplate producerTemplate,
-                       @Value("${audit.queue}") String auditQueue,
+                       @Value("${audit.sns}") String auditQueue,
                        @Value("${auditing.deployment.name}") String raisingService,
                        @Value("${auditing.deployment.namespace}") String namespace,
                        ObjectMapper objectMapper,

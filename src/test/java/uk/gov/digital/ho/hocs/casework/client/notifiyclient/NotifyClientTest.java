@@ -1,16 +1,27 @@
 package uk.gov.digital.ho.hocs.casework.client.notifiyclient;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.camel.ProducerTemplate;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
+import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
+import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
+import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.TeamAssignChangeCommand;
+import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.UserAssignChangeCommand;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import static java.util.UUID.randomUUID;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -20,109 +31,84 @@ public class NotifyClientTest {
     private RequestData requestData;
 
     @Mock
-    private InfoClient infoClient;
+    ProducerTemplate producerTemplate;
 
-    private NotifyClient notifyClient;
-
-    @Before
-    public void setup() {
-        notifyClient = new NotifyClient(infoClient, "12345", "", requestData);
-    }
-
+    private SpringConfiguration configuration = new SpringConfiguration();
+    private ObjectMapper mapper;
+    private String notifyQueue ="notify-queue";
     private UUID caseUUID = UUID.randomUUID();
     private UUID stageUUID = UUID.randomUUID();
 
     private String caseRef = "";
 
-    @Test
-    public void ShouldNotSendSelfEmailUnAllocated() {
+    @Captor
+    ArgumentCaptor jsonCaptor;
 
-        UUID currentUserUUID = null;
-        UUID newUserUUID = UUID.fromString("11111111-0000-0000-0000-000000000000");
+    @Captor
+    ArgumentCaptor<HashMap<String,Object>> headerCaptor;
 
-        when(requestData.userIdUUID()).thenReturn(UUID.fromString("11111111-0000-0000-0000-000000000000"));
+    private NotifyClient notifyClient;
 
-        notifyClient.sendUserEmail(caseUUID, stageUUID, currentUserUUID, newUserUUID, caseRef);
+    @Before
+    public void setup() {
+        when(requestData.correlationId()).thenReturn(randomUUID().toString());
+        when(requestData.userId()).thenReturn("some user id");
+        when(requestData.groups()).thenReturn("some groups");
+        when(requestData.username()).thenReturn("some username");
 
-        verify(requestData, times(1)).userIdUUID();
-
-        // No email means we don't look the user up to get their email address.
-        verifyZeroInteractions(infoClient);
-        verifyNoMoreInteractions(requestData);
+        mapper = configuration.initialiseObjectMapper();
+        notifyClient = new NotifyClient(producerTemplate, notifyQueue, mapper, requestData);
     }
 
     @Test
-    public void ShouldSendOtherEmailUnAllocated() {
+    public void shouldSetUserDataFields() throws IOException {
+        UUID currentUser = UUID.randomUUID();
+        UUID newUser = UUID.randomUUID();
 
-        UUID currentUserUUID = null;
-        UUID newUserUUID = UUID.fromString("11111111-0000-0000-0000-000000000000");
+        notifyClient.sendUserEmail(caseUUID, stageUUID, currentUser, newUser, caseRef);
 
-        when(infoClient.getUser(newUserUUID)).thenReturn(new UserDto("any", "any", "any", "any"));
-        when(requestData.userIdUUID()).thenReturn(UUID.fromString("22222222-0000-0000-0000-000000000000"));
+        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(notifyQueue), jsonCaptor.capture(), any());
+        UserAssignChangeCommand request = mapper.readValue((String)jsonCaptor.getValue(), UserAssignChangeCommand.class);
+        assertThat(request.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(request.getStageUUID()).isEqualTo(stageUUID);
+        assertThat(request.getCurrentUserUUID()).isEqualTo(currentUser);
+        assertThat(request.getNewUserUUID()).isEqualTo(newUser);
+        assertThat(request.getCaseReference()).isEqualTo(caseRef);
 
-        notifyClient.sendUserEmail(caseUUID, stageUUID, currentUserUUID, newUserUUID, caseRef);
-
-        verify(requestData, times(1)).userIdUUID();
-        verify(infoClient, times(1)).getUser(newUserUUID);
-
-        verifyNoMoreInteractions(infoClient);
-        verifyNoMoreInteractions(requestData);
     }
 
     @Test
-    public void ShouldNotSendSelfEmailAllocated() {
+    public void shouldSetTeamDataFields() throws IOException {
+        UUID teamUUID = UUID.randomUUID();
 
-        UUID currentUserUUID = UUID.fromString("33333333-0000-0000-0000-000000000000");
-        UUID newUserUUID = UUID.fromString("11111111-0000-0000-0000-000000000000");
+        notifyClient.sendTeamEmail(caseUUID, stageUUID, teamUUID, caseRef, "something");
 
-        when(infoClient.getUser(currentUserUUID)).thenReturn(new UserDto("any", "any", "any", "any"));
-        when(requestData.userIdUUID()).thenReturn(UUID.fromString("11111111-0000-0000-0000-000000000000"));
+        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(notifyQueue), jsonCaptor.capture(), any());
+        TeamAssignChangeCommand request = mapper.readValue((String)jsonCaptor.getValue(), TeamAssignChangeCommand.class);
+        assertThat(request.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(request.getStageUUID()).isEqualTo(stageUUID);
+        assertThat(request.getTeamUUID()).isEqualTo(teamUUID);
+        assertThat(request.getAllocationType()).isEqualTo("something");
+        assertThat(request.getCaseReference()).isEqualTo(caseRef);
 
-        notifyClient.sendUserEmail(caseUUID, stageUUID, currentUserUUID, newUserUUID, caseRef);
-
-        verify(requestData, times(1)).userIdUUID();
-        verify(infoClient, times(1)).getUser(currentUserUUID);
-
-        verifyNoMoreInteractions(infoClient);
-        verifyNoMoreInteractions(requestData);
     }
 
     @Test
-    public void ShouldSendOtherEmailAllocated() {
+    public void shouldSetHeaders()  {
+        Map<String, Object> expectedHeaders = Map.of(
+                RequestData.CORRELATION_ID_HEADER, requestData.correlationId(),
+                RequestData.USER_ID_HEADER, requestData.userId(),
+                RequestData.USERNAME_HEADER, requestData.username(),
+                RequestData.GROUP_HEADER, requestData.groups());
 
-        UUID currentUserUUID = UUID.fromString("33333333-0000-0000-0000-000000000000");
-        UUID newUserUUID = UUID.fromString("11111111-0000-0000-0000-000000000000");
+        UUID currentUser = UUID.randomUUID();
+        UUID newUser = UUID.randomUUID();
 
-        when(infoClient.getUser(currentUserUUID)).thenReturn(new UserDto("any", "any", "any", "any"));
-        when(infoClient.getUser(newUserUUID)).thenReturn(new UserDto("any", "any", "any", "any"));
-        when(requestData.userIdUUID()).thenReturn(UUID.fromString("22222222-0000-0000-0000-000000000000"));
+        notifyClient.sendUserEmail(caseUUID, stageUUID, currentUser, newUser, caseRef);
+        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(notifyQueue), any(), headerCaptor.capture());
+        Map headers = headerCaptor.getValue();
 
-        notifyClient.sendUserEmail(caseUUID, stageUUID, currentUserUUID, newUserUUID, caseRef);
-
-        verify(requestData, times(1)).userIdUUID();
-        verify(infoClient, times(1)).getUser(newUserUUID);
-        verify(infoClient, times(1)).getUser(currentUserUUID);
-
-
-        verifyNoMoreInteractions(infoClient);
-        verifyNoMoreInteractions(requestData);
-    }
-
-
-    @Test
-    public void ShouldAlwaysSendEmailUnAllocate() {
-
-        UUID currentUserUUID = UUID.fromString("33333333-0000-0000-0000-000000000000");
-        UUID newUserUUID = null;
-
-        when(infoClient.getUser(currentUserUUID)).thenReturn(new UserDto("any", "any", "any", "any"));
-
-        notifyClient.sendUserEmail(caseUUID, stageUUID, currentUserUUID, newUserUUID, caseRef);
-
-        verify(infoClient, times(1)).getUser(currentUserUUID);
-
-        verifyNoMoreInteractions(infoClient);
-        verifyZeroInteractions(requestData);
+        assertThat(headers).containsAllEntriesOf(expectedHeaders);
     }
 
 }
