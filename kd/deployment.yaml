@@ -197,7 +197,7 @@ spec:
             - name: ENDPOINTS_INFO_ENABLED
               value: 'false'
             - name: SPRING_PROFILES_ACTIVE
-              value: 'sns,cache'
+              value: 'sns,sqs,cache'
             - name: HOCS_AUDIT_SERVICE
               value: 'https://hocs-audit.{{.KUBE_NAMESPACE}}.svc.cluster.local'
             - name: HOCS_INFO_SERVICE
