@@ -49,23 +49,11 @@ public class InfoClient {
         return caseDataType;
     }
 
-    public Set<GetStandardLineResponse> getStandardLinesByTopicUUIDRequest() {
-        Set<GetStandardLineResponse> standardLines = restHelper.get(serviceBaseURL, "/standardLine", new ParameterizedTypeReference<Set<GetStandardLineResponse>>() {});
-        log.info("Got {} StandardLines", standardLines.size(), value(EVENT, INFO_CLIENT_GET_STANDARD_LINES_SUCCESS));
-        return standardLines;
-    }
-
     @Cacheable(value = "InfoClientGetStandardLine", unless = "#result == null", key = "#topicUUID")
     public GetStandardLineResponse getStandardLine(UUID topicUUID) {
         GetStandardLineResponse standardLine = restHelper.get(serviceBaseURL, String.format("/topic/%s/standardLine", topicUUID), GetStandardLineResponse.class);
         log.info("Got StandardLine {} for Topic {}", standardLine.getDisplayName(), topicUUID, value(EVENT, INFO_CLIENT_GET_STANDARD_LINE_SUCCESS));
         return standardLine;
-    }
-
-    public Set<GetTemplateResponse> getTemplatesByCaseTypeRequest() {
-        Set<GetTemplateResponse> response = restHelper.get(serviceBaseURL, "/template", new ParameterizedTypeReference<HashSet<GetTemplateResponse>>() {});
-        log.info("Got {} Templates", response.size(), value(EVENT, INFO_CLIENT_GET_TEMPLATES_SUCCESS));
-        return response;
     }
 
     @Cacheable(value = "InfoClientGetTemplate", unless = "#result == null", key = "#caseType")
