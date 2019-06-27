@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,11 +38,11 @@ class CaseDataResource {
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
-    @Authorised(accessLevel = AccessLevel.READ)
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/{caseUUID}")
-    ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID) {
+    ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID, @RequestParam("full") Optional<Boolean> full) {
         CaseData caseData = caseDataService.getCase(caseUUID);
-        return ResponseEntity.ok(GetCaseResponse.from(caseData));
+        return ResponseEntity.ok(GetCaseResponse.from(caseData, full.orElse(false)));
     }
 
     @Authorised(accessLevel = AccessLevel.OWNER)
@@ -49,13 +50,6 @@ class CaseDataResource {
     ResponseEntity deleteCase(@PathVariable UUID caseUUID) {
         caseDataService.deleteCase(caseUUID);
         return ResponseEntity.ok().build();
-    }
-
-    @Authorised(accessLevel = AccessLevel.SUMMARY)
-    @GetMapping(value = "/case/{caseUUID}/full")
-    ResponseEntity<GetFullCaseResponse> getFullCase(@PathVariable UUID caseUUID) {
-        CaseData caseData = caseDataService.getCase(caseUUID);
-        return ResponseEntity.ok(GetFullCaseResponse.from(caseData));
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
@@ -98,7 +92,7 @@ class CaseDataResource {
     }
 
     @PutMapping(value = "/case/{caseUUID}/complete")
-    ResponseEntity updateCaseDateReceived(@PathVariable UUID caseUUID, @RequestBody boolean complete) {
+    ResponseEntity updateCompleteCase(@PathVariable UUID caseUUID, @RequestBody boolean complete) {
         caseDataService.completeCase(caseUUID, complete);
         return ResponseEntity.ok().build();
     }

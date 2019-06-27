@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
 
 public class GetFullCaseResponseTest {
 
@@ -25,7 +24,7 @@ public class GetFullCaseResponseTest {
         CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseReceived);
         caseData.setCaseDeadline(caseDeadline);
 
-        GetFullCaseResponse getCaseResponse = GetFullCaseResponse.from(caseData);
+        GetCaseResponse getCaseResponse = GetCaseResponse.from(caseData, true);
 
         assertThat(getCaseResponse.getUuid()).isEqualTo(caseData.getUuid());
         assertThat(getCaseResponse.getCreated().toLocalDateTime()).isEqualTo(caseData.getCreated());

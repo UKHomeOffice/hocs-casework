@@ -114,15 +114,6 @@ public class CaseDataGetCaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetValidCaseWithPermissionLevelSummary() throws JsonProcessingException {
-        setupMockTeams("TEST", 1);
-        ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID, GET, new HttpEntity(createValidAuthHeaders()), String.class);
-
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-    }
-
-    @Test
     public void shouldReturnUnauthorisedWhenGetValidCaseWithPermission() throws JsonProcessingException {
         setupEmptyMockAudit(CASE_UUID);
         setupMockTeams("TEST1", 5);
@@ -157,15 +148,6 @@ public class CaseDataGetCaseIntegrationTest {
                 getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders()), Void.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-    }
-
-    @Test
-    public void shouldReturnUnauthorisedForInValidCaseWithPermissionLevelSummary() throws JsonProcessingException {
-        setupMockTeams("TEST", 1);
-        ResponseEntity<Void> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders()), Void.class);
-
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test

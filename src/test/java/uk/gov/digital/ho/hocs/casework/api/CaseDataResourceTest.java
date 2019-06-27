@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -62,7 +62,24 @@ public class CaseDataResourceTest {
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
-        ResponseEntity<GetCaseResponse> response = caseDataResource.getCase(uuid);
+        ResponseEntity<GetCaseResponse> response = caseDataResource.getCase(uuid, Optional.of(Boolean.FALSE));
+
+        verify(caseDataService, times(1)).getCase(uuid);
+
+        verifyNoMoreInteractions(caseDataService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetCaseNull() {
+
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper,caseReceived);
+
+        when(caseDataService.getCase(uuid)).thenReturn(caseData);
+
+        ResponseEntity<GetCaseResponse> response = caseDataResource.getCase(uuid, Optional.empty());
 
         verify(caseDataService, times(1)).getCase(uuid);
 
@@ -117,7 +134,7 @@ public class CaseDataResourceTest {
         when(caseData.getCreated()).thenReturn(LocalDateTime.of(2019,1,1,6,0));
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
-        ResponseEntity<GetFullCaseResponse> response = caseDataResource.getFullCase(uuid);
+        ResponseEntity<GetCaseResponse> response = caseDataResource.getCase(uuid, Optional.of(Boolean.TRUE));
 
         verify(caseDataService, times(1)).getCase(uuid);
 
