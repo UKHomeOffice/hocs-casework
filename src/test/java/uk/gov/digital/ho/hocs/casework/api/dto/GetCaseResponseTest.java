@@ -24,7 +24,7 @@ public class GetCaseResponseTest {
         CaseData caseData = new CaseData(type, caseNumber, data, objectMapper,caseReceived);
         caseData.setCaseDeadline(caseDeadline);
 
-        GetCaseResponse getCaseResponse = GetCaseResponse.from(caseData);
+        GetCaseResponse getCaseResponse = GetCaseResponse.from(caseData, false);
 
         assertThat(getCaseResponse.getUuid()).isEqualTo(caseData.getUuid());
         assertThat(getCaseResponse.getCreated().toLocalDateTime()).isEqualTo(caseData.getCreated());
@@ -49,7 +49,7 @@ public class GetCaseResponseTest {
         CaseData caseData = new CaseData(type, caseNumber, null, objectMapper, caseReceived);
         caseData.setCaseDeadline(caseDeadline);
 
-        GetCaseResponse getCaseResponse = GetCaseResponse.from(caseData);
+        GetCaseResponse getCaseResponse = GetCaseResponse.from(caseData, false);
 
         assertThat(getCaseResponse.getUuid()).isEqualTo(caseData.getUuid());
         assertThat(getCaseResponse.getCreated().toLocalDateTime()).isEqualTo(caseData.getCreated());
