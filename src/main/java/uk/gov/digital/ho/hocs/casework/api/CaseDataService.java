@@ -15,7 +15,6 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
@@ -42,8 +41,6 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 @Service
 @Slf4j
 public class CaseDataService {
-
-    private static final String OFFLINE_QA_USER = "OfflineQaUser";
 
     private final CaseDataRepository caseDataRepository;
     private final AuditClient auditClient;
@@ -83,7 +80,6 @@ public class CaseDataService {
         log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findByUuid(caseUUID);
         if (caseData != null) {
-            appendOfflineQAUserInfo(caseData);
             log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
             return caseData;
         } else {
@@ -91,21 +87,6 @@ public class CaseDataService {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
         }
     }
-
-    private void appendOfflineQAUserInfo(CaseData caseData) {
-        final Map<String, String> data = caseData.getDataMap(objectMapper);
-        if (data != null && data.containsKey(OFFLINE_QA_USER)) {
-            final String offlineQaUserUUID = data.get(OFFLINE_QA_USER);
-            if (offlineQaUserUUID != null) {
-                final UserDto user = infoClient.getUser(UUID.fromString(offlineQaUserUUID));
-                if (user != null) {
-                    data.put(offlineQaUserUUID, user.getFirstName() + " " + user.getLastName() + " (" + user.getEmail() + ")");
-                    caseData.update(data, objectMapper);
-                }
-            }
-        }
-    }
-
 
     public LocalDate getCaseDateReceived(UUID caseUUID) {
         log.debug("Looking up DateReceived for Case: {}", caseUUID);

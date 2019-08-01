@@ -15,9 +15,11 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.io.IOException;
@@ -171,24 +173,6 @@ public class CaseDataServiceTest {
 
         verify(auditClient, times(1)).getAuditLinesForCase(eq(caseData.getUuid()), any());
         verifyNoMoreInteractions(auditClient);
-    }
-
-
-    @Test
-    public void shouldGetCaseOfflineQaUser()  {
-
-        final UUID qaUserUUID = UUID.randomUUID();
-        final HashMap<String, String> data = new HashMap<>();
-        data.put(OFFLINE_QA_USER, qaUserUUID.toString());;
-
-        CaseData caseData = new CaseData(caseType, caseID, data, objectMapper, caseReceived);
-        UserDto user = new UserDto("UserName", "Name", "Surname", "email@homeoffice.gov.uk");
-
-        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
-        when(infoClient.getUser(qaUserUUID)).thenReturn(user);
-
-        final CaseData serviceCase = caseDataService.getCase(caseData.getUuid());
-        assertThat(serviceCase.getData()).contains("Name Surname (email@homeoffice.gov.uk)");
     }
 
 
