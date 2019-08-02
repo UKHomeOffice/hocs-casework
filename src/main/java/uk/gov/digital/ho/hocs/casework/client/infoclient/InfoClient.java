@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -103,5 +102,11 @@ public class InfoClient {
         InfoTopic infoTopic = restHelper.get(serviceBaseURL, String.format("/topic/%s", topicUUID), InfoTopic.class);
         log.info("Got Topic {} for Topic {}", infoTopic.getLabel(), topicUUID, value(EVENT, INFO_CLIENT_GET_TOPIC_SUCCESS));
         return infoTopic;
+    }
+    @Cacheable(value = "InfoClientGetUser", unless = "#result == null", key = "{ #userUUID}")
+    public UserDto getUser(UUID userUUID) {
+        UserDto userDto = restHelper.get(serviceBaseURL, String.format("/user/%s", userUUID), UserDto.class);
+        log.info("Got User UserUUID {}", userUUID, value(EVENT, INFO_CLIENT_GET_USER));
+        return userDto;
     }
 }

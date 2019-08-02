@@ -8,10 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
@@ -27,18 +26,17 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_COMPLETED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DELETED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_DELETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_COMPLETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 
 @Service
 @Slf4j

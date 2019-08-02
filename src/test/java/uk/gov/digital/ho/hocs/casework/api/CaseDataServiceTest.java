@@ -16,7 +16,10 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.io.IOException;
@@ -34,6 +37,8 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE
 public class CaseDataServiceTest {
 
     private static final long caseID = 12345L;
+    private static final String OFFLINE_QA_USER = "OfflineQaUser";
+    
     private final CaseDataType caseType = new CaseDataType("MIN", "a1");
     private final UUID caseUUID = UUID.randomUUID();
 

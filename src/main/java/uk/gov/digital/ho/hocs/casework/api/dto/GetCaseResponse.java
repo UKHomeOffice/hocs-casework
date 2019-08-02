@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,9 +15,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -99,7 +98,15 @@ public class GetCaseResponse {
                 keys.add(caseData.getPrimaryCorrespondent().getUuid().toString());
                 values.add(caseData.getPrimaryCorrespondent().getFullName());
             }
-
+            // substitute the UUID key values into the value UUIDs
+            final Map<String, String> dataMap = caseData.getDataMap(new ObjectMapper());
+            final Set<String> dataKeys = new LinkedHashSet<>(dataMap.keySet());
+            final Collection<String> dataValues = new LinkedList<>(dataMap.values());
+            dataKeys.retainAll(dataValues);
+            for (String uuid : dataKeys) {
+                keys.add(uuid);
+                values.add(dataMap.get(uuid));
+            }
             return StringUtils.replaceEach(caseData.getData(),
                     keys.toArray(new String[0]),
                     values.toArray(new String[0]));
