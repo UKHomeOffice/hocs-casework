@@ -52,6 +52,11 @@ public class RestHelperTest {
         verify(restTemplate).exchange(eq(fullUrl), eq(HttpMethod.GET), any(), eq(ByteArrayResource.class));
         verifyNoMoreInteractions(response, restTemplate);
         assertThat(document).isNotNull();
+        assertThat(document.getFilename()).isEqualTo("dock1.doc");
+        assertThat(document.getOriginalFilename()).isEqualTo("dock1.doc");
+        assertThat(document.getFileType()).isEqualTo("doc");
+        assertThat(document.getMimeType()).isEqualTo("application/octet-stream");
+        assertThat(document.getData().length).isEqualTo(10);
 
 
     }
