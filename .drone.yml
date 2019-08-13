@@ -6,6 +6,7 @@ pipeline:
       - export SPRING_PROFILES_ACTIVE='development, local'
       - export DB_HOST='postgres'
       - export AWS_LOCAL_HOST='localstack'
+      - export HOCS_DOCUMENT_SERVICE='http://documents:8080'
       - ./gradlew build --no-daemon
     when:
       event: [push, pull_request, tag]
