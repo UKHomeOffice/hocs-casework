@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.client.documentclient;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,9 +7,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,6 +26,18 @@ public class DocumentClientTest {
     private DocumentClient documentClient;
     private final String caseType = "MIN";
     private final UUID caseUUID = randomUUID();
+    private final UUID documentUUID = UUID.randomUUID();
+    private final String docType = "DRAFT";
+    private final String docDisplayName = "document.doc";
+    private final String docOriginalName = "documentOriginal.doc";
+    private final String docStatus = "UPLOADED";
+    private final String fileType = "doc";
+    private final String mimeType = "application/octet-stream";
+    private final LocalDateTime docCreated = LocalDateTime.now();
+    private final LocalDateTime docUpdated = LocalDateTime.now();
+    private final Boolean docDeleted = false;
+    private DocumentDto documentDto;
+    private S3Document s3Document;
 
     private String documentService = "http://document-service";
     ;
@@ -30,43 +45,49 @@ public class DocumentClientTest {
     @Before
     public void setUp() {
         documentClient = new DocumentClient(restHelper, documentService);
+        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, docDeleted);
+        s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);
     }
 
     @Test
     public void getDocuments() {
-        GetDocumentsResponse mockedResult = mock(GetDocumentsResponse.class);
+        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)));
         String url = "/document/reference/" + caseUUID.toString();
-        when(restHelper.get(anyString(), anyString(), any(Class.class))).thenReturn(mockedResult);
+        when(restHelper.get(anyString(), anyString(), any(Class.class))).thenReturn(documentsResponse);
 
         GetDocumentsResponse actualResult = documentClient.getDocuments(caseUUID, null);
 
-        Assert.assertEquals("Should return mocked Object", mockedResult, actualResult);
+        assertThat(actualResult).isNotNull();
+        assertThat(actualResult.getDocumentDtos()).isNotNull();
+        assertThat(actualResult.getDocumentDtos().size()).isOne();
+        checkDocumentDto(actualResult.getDocumentDtos().iterator().next());
         verify(restHelper).get(documentService, url, GetDocumentsResponse.class);
         verifyNoMoreInteractions(restHelper);
     }
 
     @Test
     public void getDocuments_shouldPopulateType() {
-        GetDocumentsResponse mockedResult = mock(GetDocumentsResponse.class);
+        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)));
         String url = "/document/reference/" + caseUUID.toString() + "/?type=" + caseType;
-        when(restHelper.get(anyString(), anyString(), any(Class.class))).thenReturn(mockedResult);
+        when(restHelper.get(anyString(), anyString(), any(Class.class))).thenReturn(documentsResponse);
 
         GetDocumentsResponse actualResult = documentClient.getDocuments(caseUUID, caseType);
 
-        Assert.assertEquals("Should return mocked Object", mockedResult, actualResult);
+        assertThat(actualResult).isNotNull();
+        assertThat(actualResult.getDocumentDtos()).isNotNull();
+        assertThat(actualResult.getDocumentDtos().size()).isOne();
         verify(restHelper).get(documentService, url, GetDocumentsResponse.class);
         verifyNoMoreInteractions(restHelper);
     }
 
     @Test
     public void getDocument() {
-        DocumentDto mockedResult = mock(DocumentDto.class);
         String url = "/document/" + caseUUID.toString();
-        when(restHelper.get(anyString(), anyString(), any(Class.class))).thenReturn(mockedResult);
+        when(restHelper.get(anyString(), anyString(), any(Class.class))).thenReturn(documentDto);
 
         DocumentDto actualResult = documentClient.getDocument(caseUUID);
 
-        Assert.assertEquals("Should return mocked Object", mockedResult, actualResult);
+        checkDocumentDto(actualResult);
         verify(restHelper).get(documentService, url, DocumentDto.class);
         verifyNoMoreInteractions(restHelper);
     }
@@ -83,30 +104,47 @@ public class DocumentClientTest {
 
     @Test
     public void getDocumentFile() {
-        S3Document mockedResult = mock(S3Document.class);
         String url = "/document/" + caseUUID.toString() + "/file";
-        when(restHelper.getFile(anyString(), anyString())).thenReturn(mockedResult);
-        when(mockedResult.getData()).thenReturn(new byte[10]);
+        when(restHelper.getFile(anyString(), anyString())).thenReturn(s3Document);
 
         S3Document actualResult = documentClient.getDocumentFile(caseUUID);
 
-        Assert.assertEquals("Should return mocked Object", mockedResult, actualResult);
+        checkS3Document(actualResult);
         verify(restHelper).getFile(documentService, url);
         verifyNoMoreInteractions(restHelper);
     }
 
     @Test
     public void getDocumentPdf() {
-        S3Document mockedResult = mock(S3Document.class);
         String url = "/document/" + caseUUID.toString() + "/pdf";
-        when(restHelper.getFile(anyString(), anyString())).thenReturn(mockedResult);
-        when(mockedResult.getData()).thenReturn(new byte[10]);
+        when(restHelper.getFile(anyString(), anyString())).thenReturn(s3Document);
 
         S3Document actualResult = documentClient.getDocumentPdf(caseUUID);
 
-        Assert.assertEquals("Should return mocked Object", mockedResult, actualResult);
+        checkS3Document(actualResult);
         verify(restHelper).getFile(documentService, url);
         verifyNoMoreInteractions(restHelper);
+    }
+
+    private void checkDocumentDto(DocumentDto result){
+        assertThat(result).isNotNull();
+        assertThat(result.getUuid()).isEqualTo(documentUUID);
+        assertThat(result.getExternalReferenceUUID()).isEqualTo(caseUUID);
+        assertThat(result.getType()).isEqualTo(docType);
+        assertThat(result.getDisplayName()).isEqualTo(docDisplayName);
+        assertThat(result.getStatus()).isEqualTo(docStatus);
+        assertThat(result.getCreated()).isEqualTo(docCreated);
+        assertThat(result.getUpdated()).isEqualTo(docUpdated);
+        assertThat(result.getDeleted()).isEqualTo(docDeleted);
+    }
+
+    private void checkS3Document(S3Document result){
+        assertThat(result).isNotNull();
+        assertThat(result.getFilename()).isEqualTo(docDisplayName);
+        assertThat(result.getOriginalFilename()).isEqualTo(docOriginalName);
+        assertThat(result.getData().length).isEqualTo(10);
+        assertThat(result.getFileType()).isEqualTo(fileType);
+        assertThat(result.getMimeType()).isEqualTo(mimeType);
     }
 
 }
