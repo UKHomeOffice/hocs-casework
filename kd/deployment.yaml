@@ -204,6 +204,8 @@ spec:
               value: 'https://hocs-info-service.{{.KUBE_NAMESPACE}}.svc.cluster.local'
             - name: HOCS_SEARCH_SERVICE
               value: 'https://hocs-search.{{.KUBE_NAMESPACE}}.svc.cluster.local'
+            - name: HOCS_DOCUMENT_SERVICE
+              value: 'https://hocs-docs.{{.KUBE_NAMESPACE}}.svc.cluster.local'
             - name: HOCS_BASICAUTH
               valueFrom:
                 secretKeyRef:
