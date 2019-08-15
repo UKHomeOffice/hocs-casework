@@ -560,19 +560,32 @@ public class StageServiceTest {
 
     @Test
     public void shouldCheckSendOfflineQAEmail() {
-        Stage stage = new Stage(caseUUID, Stage.DCU_DTEN_INITIAL_DRAFT, teamUUID, transitionNoteUUID);
-
+        UUID offlineQaUserUUID = UUID.randomUUID();
+        Stage stage = createStageOfflineQaData(offlineQaUserUUID);
         List<String> auditType = new ArrayList<>();
         auditType.add(STAGE_ALLOCATED_TO_USER.name());
-        UUID offlineQaUserUUID = UUID.randomUUID();
-        Map dataMap = new HashMap();
-        dataMap.put(Stage.OFFLINE_QA_USER, offlineQaUserUUID.toString());
-        stage.setData(Jackson.toJsonString(dataMap));
-        stage.setData(Jackson.toJsonString(dataMap));
-        when(auditClient.getAuditLinesForCase(caseUUID, auditType)).thenReturn(getAuditLines(stage));
+        final Set<GetAuditResponse> auditLines = getAuditLines(stage);
+        when(auditClient.getAuditLinesForCase(caseUUID, auditType)).thenReturn(auditLines);
         stageService.checkSendOfflineQAEmail(stage);
         verify(auditClient, times(1)).getAuditLinesForCase(caseUUID, auditType);
         verify(notifyClient, times(1)).sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), UUID.fromString(userID), offlineQaUserUUID, stage.getCaseReference());
+    }
+
+    /**
+     * The stage cannot be an instance as it does not have a function to set data (in the Stage Class).
+     * I did not want to create a setData on the Stage class for testing only.
+     * @return Mocked Stage for setting and exposing the DATA with offline QA user.
+     */
+    private Stage createStageOfflineQaData(UUID offlineQaUserUUID) {
+        Map dataMap = new HashMap();
+        dataMap.put(Stage.OFFLINE_QA_USER, offlineQaUserUUID.toString());
+        Stage mockStage = mock(Stage.class);
+        when(mockStage.getUuid()).thenReturn(stageUUID);
+        when(mockStage.getCaseUUID()).thenReturn(caseUUID);
+        when(mockStage.getStageType()).thenReturn(Stage.DCU_DTEN_INITIAL_DRAFT);
+        when(mockStage.getCaseReference()).thenReturn("MIN/1234567/19");
+        when(mockStage.getData()).thenReturn(Jackson.toJsonString(dataMap));
+        return mockStage;
     }
 
     private Set<GetAuditResponse> getAuditLines(Stage stage) {
@@ -581,4 +594,5 @@ public class StageServiceTest {
                                               "{}", "", ZonedDateTime.now(), STAGE_ALLOCATED_TO_USER.name(), userID));
         return linesForCase;
     }
+
 }
