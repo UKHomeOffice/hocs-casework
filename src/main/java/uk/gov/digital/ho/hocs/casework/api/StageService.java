@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
@@ -22,15 +23,11 @@ import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @Slf4j
 @Service
 public class StageService {
-
-    private final static String DCU_MIN_INITIAL_DRAFT = "DCU_MIN_INITIAL_DRAFT";
-    private final static String DCU_TRO_INITIAL_DRAFT = "DCU_TRO_INITIAL_DRAFT";
-    private final static String DCU_DTEN_INITIAL_DRAFT = "DCU_DTEN_INITIAL_DRAFT";
-    private final static String OFFLINE_QA_USER = "OfflineQaUser";
 
     private final StageRepository stageRepository;
     private final UserPermissionsService userPermissionsService;
@@ -112,6 +109,7 @@ public class StageService {
         // Check all stages because when rejecting back the stage will not be active.
         Stage stage = getStage(caseUUID, stageUUID);
         stage.setTeam(newTeamUUID);
+        checkSendOfflineQAEmail(stage);
         stageRepository.save(stage);
         auditClient.updateStageTeam(stage);
         if (newTeamUUID == null) {
@@ -120,25 +118,43 @@ public class StageService {
             log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, newTeamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
             notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), newTeamUUID, stage.getCaseReference(), emailType);
         }
-        checkSendOfflineQAEmail(caseUUID, stageUUID, stage.getStageType(), stage.getData(), stage.getCaseReference());
     }
 
-    void checkSendOfflineQAEmail(UUID caseUUID, UUID stageUUID, String stageType, String stageData, String caseReference) {
-        if (stageType.equals(DCU_DTEN_INITIAL_DRAFT) || stageType.equals(DCU_TRO_INITIAL_DRAFT) || stageType.equals(DCU_MIN_INITIAL_DRAFT)) {
-            final String offlineQaUser = getOfflineQaUser(stageData);
-            final UUID stageUser = getStageUser(caseUUID, stageUUID);
-            if (offlineQaUser != null && stageUser != null) {
+    void checkSendOfflineQAEmail(Stage stage) {
+        if (stage.getStageType().equals(Stage.DCU_DTEN_INITIAL_DRAFT) || stage.getStageType().equals(Stage.DCU_TRO_INITIAL_DRAFT) || stage.getStageType().equals(Stage.DCU_MIN_INITIAL_DRAFT)) {
+            final String offlineQaUser = getOfflineQaUser(stage.getData());
+            final UUID stageUserUUID = getLastCaseUserUUID(stage.getCaseUUID());
+            if (offlineQaUser != null && stageUserUUID != null) {
                 UUID offlineQaUserUUID = UUID.fromString(offlineQaUser);
-                notifyClient.sendOfflineQaEmail(stageUUID, stageUUID, stageUser, offlineQaUserUUID, caseReference);
+                notifyClient.sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), stageUserUUID, offlineQaUserUUID, stage.getCaseReference());
             }
         }
     }
 
+    UUID getLastCaseUserUUID(UUID caseUUID) {
+        List<String> auditType = new ArrayList<>();
+        auditType.add(STAGE_ALLOCATED_TO_USER.name());
+        final Set<GetAuditResponse> linesForCase = auditClient.getAuditLinesForCase(caseUUID, auditType);
+        GetAuditResponse lastAudit = null;
+        for (GetAuditResponse line : linesForCase) {
+            if (line.getUserID() != null) {
+                if (lastAudit == null || lastAudit.getAuditTimestamp() == null) {
+                    lastAudit = line;
+                } else {
+                    if (lastAudit != null && line.getAuditTimestamp().isAfter(lastAudit.getAuditTimestamp())) {
+                        lastAudit = line;
+                    }
+                }
+            }
+        }
+        return lastAudit == null ? null : UUID.fromString(lastAudit.getUserID());
+    }
+
     String getOfflineQaUser(String stageData) {
-        if (stageData != null && stageData.contains(OFFLINE_QA_USER)) {
+        if (stageData != null && stageData.contains(Stage.OFFLINE_QA_USER)) {
             final Map dataMap = Jackson.fromJsonString(stageData, Map.class);
             if (dataMap != null) {
-                return (String)dataMap.get(OFFLINE_QA_USER);
+                return (String)dataMap.get(Stage.OFFLINE_QA_USER);
             }
         }
         return null;

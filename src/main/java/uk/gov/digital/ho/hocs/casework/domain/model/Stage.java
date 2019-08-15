@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
@@ -18,6 +17,11 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_
 @Table(name = "stage")
 public class Stage implements Serializable {
 
+    public final static String DCU_MIN_INITIAL_DRAFT = "DCU_MIN_INITIAL_DRAFT";
+    public final static String DCU_TRO_INITIAL_DRAFT = "DCU_TRO_INITIAL_DRAFT";
+    public final static String DCU_DTEN_INITIAL_DRAFT = "DCU_DTEN_INITIAL_DRAFT";
+    public final static String OFFLINE_QA_USER = "OfflineQaUser";
+    
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
