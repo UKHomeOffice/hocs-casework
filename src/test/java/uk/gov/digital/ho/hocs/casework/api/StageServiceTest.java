@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.amazonaws.util.json.Jackson;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
@@ -18,10 +20,12 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StageServiceTest {
@@ -35,6 +39,7 @@ public class StageServiceTest {
     private final String allocationType = "anyAllocate";
     private final UUID transitionNoteUUID = UUID.randomUUID();
     private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN");
+    private final String userID = UUID.randomUUID().toString();
 
     @Mock
     private StageRepository stageRepository;
@@ -542,5 +547,38 @@ public class StageServiceTest {
         verifyNoMoreInteractions(searchClient);
         verifyZeroInteractions(stageRepository);
 
+    }
+
+    @Test
+    public void shouldGetOfflineQaUser() {
+        UUID offlineQaUserUUID = UUID.randomUUID();
+        Map dataMap = new HashMap();
+        dataMap.put(Stage.OFFLINE_QA_USER, offlineQaUserUUID.toString());
+        final String offlineQaUser = stageService.getOfflineQaUser(Jackson.toJsonString(dataMap));
+        assertThat(offlineQaUser).isEqualTo(offlineQaUserUUID.toString());
+    }
+
+    @Test
+    public void shouldCheckSendOfflineQAEmail() {
+        Stage stage = new Stage(caseUUID, Stage.DCU_DTEN_INITIAL_DRAFT, teamUUID, transitionNoteUUID);
+
+        List<String> auditType = new ArrayList<>();
+        auditType.add(STAGE_ALLOCATED_TO_USER.name());
+        UUID offlineQaUserUUID = UUID.randomUUID();
+        Map dataMap = new HashMap();
+        dataMap.put(Stage.OFFLINE_QA_USER, offlineQaUserUUID.toString());
+        stage.setData(Jackson.toJsonString(dataMap));
+        stage.setData(Jackson.toJsonString(dataMap));
+        when(auditClient.getAuditLinesForCase(caseUUID, auditType)).thenReturn(getAuditLines(stage));
+        stageService.checkSendOfflineQAEmail(stage);
+        verify(auditClient, times(1)).getAuditLinesForCase(caseUUID, auditType);
+        verify(notifyClient, times(1)).sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), UUID.fromString(userID), offlineQaUserUUID, stage.getCaseReference());
+    }
+
+    private Set<GetAuditResponse> getAuditLines(Stage stage) {
+        Set<GetAuditResponse> linesForCase = new HashSet<>();
+        linesForCase.add(new GetAuditResponse(UUID.randomUUID(), caseUUID, stage.getUuid(), UUID.randomUUID().toString(), "",
+                                              "{}", "", ZonedDateTime.now(), STAGE_ALLOCATED_TO_USER.name(), userID));
+        return linesForCase;
     }
 }

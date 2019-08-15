@@ -106,7 +106,6 @@ public class StageService {
 
     void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID, String emailType) {
         log.debug("Updating Team: {} for Stage: {}", newTeamUUID, stageUUID);
-        // Check all stages because when rejecting back the stage will not be active.
         Stage stage = getStage(caseUUID, stageUUID);
         stage.setTeam(newTeamUUID);
         checkSendOfflineQAEmail(stage);
@@ -131,6 +130,16 @@ public class StageService {
         }
     }
 
+    String getOfflineQaUser(String stageData) {
+        if (stageData != null && stageData.contains(Stage.OFFLINE_QA_USER)) {
+            final Map dataMap = Jackson.fromJsonString(stageData, Map.class);
+            if (dataMap != null) {
+                return (String)dataMap.get(Stage.OFFLINE_QA_USER);
+            }
+        }
+        return null;
+    }
+
     UUID getLastCaseUserUUID(UUID caseUUID) {
         List<String> auditType = new ArrayList<>();
         auditType.add(STAGE_ALLOCATED_TO_USER.name());
@@ -148,16 +157,6 @@ public class StageService {
             }
         }
         return lastAudit == null ? null : UUID.fromString(lastAudit.getUserID());
-    }
-
-    String getOfflineQaUser(String stageData) {
-        if (stageData != null && stageData.contains(Stage.OFFLINE_QA_USER)) {
-            final Map dataMap = Jackson.fromJsonString(stageData, Map.class);
-            if (dataMap != null) {
-                return (String)dataMap.get(Stage.OFFLINE_QA_USER);
-            }
-        }
-        return null;
     }
 
     void updateStageUser(UUID caseUUID, UUID stageUUID, UUID newUserUUID) {

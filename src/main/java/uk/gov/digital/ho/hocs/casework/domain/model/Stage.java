@@ -110,4 +110,8 @@ public class Stage implements Serializable {
         return this.teamUUID != null;
     }
 
+    public void setData(String data) {
+        this.data = data;
+    }
+
 }
