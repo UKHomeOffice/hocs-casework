@@ -62,7 +62,7 @@ public class NotifyClient {
             producerTemplate.sendBodyAndHeaders(notifyQueue, objectMapper.writeValueAsString(command), queueHeaders);
             log.info("Sent Team Email of type {} for Case UUID: {}, correlationID: {}, UserID: {}", command.getCommand(), command.getCaseUUID(), requestData.correlationId(), requestData.userId(), value(EVENT, TEAM_EMAIL_SENT));
         } catch (Exception e) {
-            log.error("Failed to send Email for case UUID {}", command.getCaseUUID(), value(EVENT, AUDIT_FAILED), value(EXCEPTION, e));
+            log.error("Failed to send Email for case UUID {}", command.getCaseUUID(), value(EVENT, NOTIFY_EMAIL_FAILED), value(EXCEPTION, e));
         }
     }
 
@@ -73,7 +73,7 @@ public class NotifyClient {
             producerTemplate.sendBodyAndHeaders(notifyQueue, objectMapper.writeValueAsString(command), queueHeaders);
             log.info("Sent User Email of type {} for Case UUID: {}, correlationID: {}, UserID: {}", command.getCommand(), command.getCaseUUID(), requestData.correlationId(), requestData.userId(), value(EVENT, TEAM_EMAIL_SENT));
         } catch (Exception e) {
-            log.error("Failed to send Email for case UUID {}", command.getCaseUUID(), value(EVENT, AUDIT_FAILED), value(EXCEPTION, e));
+            log.error("Failed to send Email for case UUID {}", command.getCaseUUID(), value(EVENT, NOTIFY_EMAIL_FAILED), value(EXCEPTION, e));
         }
     }
 
@@ -84,7 +84,7 @@ public class NotifyClient {
             producerTemplate.sendBodyAndHeaders(notifyQueue, objectMapper.writeValueAsString(command), queueHeaders);
             log.info("Sent Offline QA Email of type {} for Case UUID: {}, correlationID: {}, UserID: {}", command.getCommand(), command.getCaseUUID(), requestData.correlationId(), requestData.userId(), value(EVENT, OFFLINE_QA_EMAIL_SENT));
         } catch (Exception e) {
-            log.error("Failed to send Email for case UUID {}", command.getCaseUUID(), value(EVENT, AUDIT_FAILED), value(EXCEPTION, e));
+            log.error("Failed to send Email for case UUID {}", command.getCaseUUID(), value(EVENT, NOTIFY_EMAIL_FAILED), value(EXCEPTION, e));
         }
     }
 
