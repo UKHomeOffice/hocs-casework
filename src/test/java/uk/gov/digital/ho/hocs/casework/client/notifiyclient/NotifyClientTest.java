@@ -12,6 +12,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
+import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.OfflineQaUserCommand;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.TeamAssignChangeCommand;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.UserAssignChangeCommand;
 
@@ -73,6 +74,23 @@ public class NotifyClientTest {
         assertThat(request.getStageUUID()).isEqualTo(stageUUID);
         assertThat(request.getCurrentUserUUID()).isEqualTo(currentUser);
         assertThat(request.getNewUserUUID()).isEqualTo(newUser);
+        assertThat(request.getCaseReference()).isEqualTo(caseRef);
+
+    }
+
+    @Test
+    public void shouldSetOfflineQaDataFields() throws IOException {
+        UUID currentUser = UUID.randomUUID();
+        UUID offlineQaUser = UUID.randomUUID();
+
+        notifyClient.sendOfflineQaEmail(caseUUID, stageUUID, currentUser, offlineQaUser, caseRef);
+
+        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(notifyQueue), jsonCaptor.capture(), any());
+        OfflineQaUserCommand request = mapper.readValue((String)jsonCaptor.getValue(), OfflineQaUserCommand.class);
+        assertThat(request.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(request.getStageUUID()).isEqualTo(stageUUID);
+        assertThat(request.getCurrentUserUUID()).isEqualTo(currentUser);
+        assertThat(request.getOfflineQaUserUUID()).isEqualTo(offlineQaUser);
         assertThat(request.getCaseReference()).isEqualTo(caseRef);
 
     }

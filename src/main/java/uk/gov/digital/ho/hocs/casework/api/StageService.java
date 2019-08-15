@@ -1,10 +1,12 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.amazonaws.util.json.Jackson;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
@@ -21,6 +23,7 @@ import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @Slf4j
 @Service
@@ -34,7 +37,7 @@ public class StageService {
     private final InfoClient infoClient;
     private final CaseDataService caseDataService;
 
-    private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage::getCreated);
+    private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage :: getCreated);
 
 
     @Autowired
@@ -77,8 +80,8 @@ public class StageService {
         log.debug("Creating Stage of type: {}", stageType);
         Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
         // Try and overwrite the deadline with inputted values from the data map.
-        String overrideDeadline = caseDataService.getCaseDataField(caseUUID, String.format("%s_DEADLINE",stageType));
-        if(overrideDeadline == null) {
+        String overrideDeadline = caseDataService.getCaseDataField(caseUUID, String.format("%s_DEADLINE", stageType));
+        if (overrideDeadline == null) {
             LocalDate dateReceived = caseDataService.getCaseDateReceived(caseUUID);
             LocalDate deadline = infoClient.getStageDeadline(stageType, dateReceived);
             stage.setDeadline(deadline);
@@ -103,9 +106,9 @@ public class StageService {
 
     void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID, String emailType) {
         log.debug("Updating Team: {} for Stage: {}", newTeamUUID, stageUUID);
-        // Check all stages because when rejecting back the stage will not be active.
         Stage stage = getStage(caseUUID, stageUUID);
         stage.setTeam(newTeamUUID);
+        checkSendOfflineQAEmail(stage);
         stageRepository.save(stage);
         auditClient.updateStageTeam(stage);
         if (newTeamUUID == null) {
@@ -114,6 +117,46 @@ public class StageService {
             log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, newTeamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
             notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), newTeamUUID, stage.getCaseReference(), emailType);
         }
+    }
+
+    void checkSendOfflineQAEmail(Stage stage) {
+        if (stage.getStageType().equals(Stage.DCU_DTEN_INITIAL_DRAFT) || stage.getStageType().equals(Stage.DCU_TRO_INITIAL_DRAFT) || stage.getStageType().equals(Stage.DCU_MIN_INITIAL_DRAFT)) {
+            final String offlineQaUser = getOfflineQaUser(stage.getData());
+            final UUID stageUserUUID = getLastCaseUserUUID(stage.getCaseUUID());
+            if (offlineQaUser != null && stageUserUUID != null) {
+                UUID offlineQaUserUUID = UUID.fromString(offlineQaUser);
+                notifyClient.sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), stageUserUUID, offlineQaUserUUID, stage.getCaseReference());
+            }
+        }
+    }
+
+    String getOfflineQaUser(String stageData) {
+        if (stageData != null && stageData.contains(Stage.OFFLINE_QA_USER)) {
+            final Map dataMap = Jackson.fromJsonString(stageData, Map.class);
+            if (dataMap != null) {
+                return (String)dataMap.get(Stage.OFFLINE_QA_USER);
+            }
+        }
+        return null;
+    }
+
+    UUID getLastCaseUserUUID(UUID caseUUID) {
+        List<String> auditType = new ArrayList<>();
+        auditType.add(STAGE_ALLOCATED_TO_USER.name());
+        final Set<GetAuditResponse> linesForCase = auditClient.getAuditLinesForCase(caseUUID, auditType);
+        GetAuditResponse lastAudit = null;
+        for (GetAuditResponse line : linesForCase) {
+            if (line.getUserID() != null) {
+                if (lastAudit == null || lastAudit.getAuditTimestamp() == null) {
+                    lastAudit = line;
+                } else {
+                    if (lastAudit != null && line.getAuditTimestamp().isAfter(lastAudit.getAuditTimestamp())) {
+                        lastAudit = line;
+                    }
+                }
+            }
+        }
+        return lastAudit == null ? null : UUID.fromString(lastAudit.getUserID());
     }
 
     void updateStageUser(UUID caseUUID, UUID stageUUID, UUID newUserUUID) {
@@ -131,7 +174,7 @@ public class StageService {
         log.debug("Getting Active Stages for Case: {}", caseUUID);
         return stageRepository.findAllActiveByCaseUUID(caseUUID);
     }
-  
+
     Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
         return stageRepository.findAllActiveByTeamUUID(teamUUID);
@@ -166,7 +209,7 @@ public class StageService {
         Set<Stage> stages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(userUUID, teamUUID);
         log.info("Returning CaseUUIDs for Active Stages for User {} in team {}", userUUID, teamUUID, value(EVENT, USERS_TEAMS_STAGE_LIST_RETRIEVED));
         Set<UUID> caseUUIDs = new HashSet<>();
-        for (Stage stage: stages ){
+        for (Stage stage : stages) {
             caseUUIDs.add(stage.getCaseUUID());
         }
         return caseUUIDs;
@@ -194,7 +237,7 @@ public class StageService {
     private static Set<Stage> groupByCaseUUID(Set<Stage> stages) {
 
         // Group the stages by case UUID
-        Map<UUID, List<Stage>> groupedStages = stages.stream().collect(Collectors.groupingBy(Stage::getCaseUUID));
+        Map<UUID, List<Stage>> groupedStages = stages.stream().collect(Collectors.groupingBy(Stage :: getCaseUUID));
 
         // for each of the entry sets, filter out none-active stages, unless there are no active stages then use the latest stage
         return groupedStages.entrySet().stream().flatMap(s -> reduceToMostActive(s.getValue())).collect(Collectors.toSet());
@@ -205,11 +248,11 @@ public class StageService {
     }
 
     private static Stream<Stage> reduceToMostActive(List<Stage> stages) {
-        Supplier<Stream<Stage>> stageSupplier = stages::stream;
+        Supplier<Stream<Stage>> stageSupplier = stages :: stream;
 
         // If any stages are active
-        if(stageSupplier.get().anyMatch(Stage::isActive)) {
-            return stageSupplier.get().filter(Stage::isActive);
+        if (stageSupplier.get().anyMatch(Stage :: isActive)) {
+            return stageSupplier.get().filter(Stage :: isActive);
         } else {
             // return the most recent stage.
             Optional<Stage> maxDatedStage = stageSupplier.get().max(CREATED_COMPARATOR);

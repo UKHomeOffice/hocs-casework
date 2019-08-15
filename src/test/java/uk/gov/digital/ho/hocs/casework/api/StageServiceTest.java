@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.amazonaws.util.json.Jackson;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
@@ -18,10 +20,12 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StageServiceTest {
@@ -35,6 +39,7 @@ public class StageServiceTest {
     private final String allocationType = "anyAllocate";
     private final UUID transitionNoteUUID = UUID.randomUUID();
     private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN");
+    private final String userID = UUID.randomUUID().toString();
 
     @Mock
     private StageRepository stageRepository;
@@ -543,4 +548,51 @@ public class StageServiceTest {
         verifyZeroInteractions(stageRepository);
 
     }
+
+    @Test
+    public void shouldGetOfflineQaUser() {
+        UUID offlineQaUserUUID = UUID.randomUUID();
+        Map dataMap = new HashMap();
+        dataMap.put(Stage.OFFLINE_QA_USER, offlineQaUserUUID.toString());
+        final String offlineQaUser = stageService.getOfflineQaUser(Jackson.toJsonString(dataMap));
+        assertThat(offlineQaUser).isEqualTo(offlineQaUserUUID.toString());
+    }
+
+    @Test
+    public void shouldCheckSendOfflineQAEmail() {
+        UUID offlineQaUserUUID = UUID.randomUUID();
+        Stage stage = createStageOfflineQaData(offlineQaUserUUID);
+        List<String> auditType = new ArrayList<>();
+        auditType.add(STAGE_ALLOCATED_TO_USER.name());
+        final Set<GetAuditResponse> auditLines = getAuditLines(stage);
+        when(auditClient.getAuditLinesForCase(caseUUID, auditType)).thenReturn(auditLines);
+        stageService.checkSendOfflineQAEmail(stage);
+        verify(auditClient, times(1)).getAuditLinesForCase(caseUUID, auditType);
+        verify(notifyClient, times(1)).sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), UUID.fromString(userID), offlineQaUserUUID, stage.getCaseReference());
+    }
+
+    /**
+     * The stage cannot be an instance as it does not have a function to set data (in the Stage Class).
+     * I did not want to create a setData on the Stage class for testing only.
+     * @return Mocked Stage for setting and exposing the DATA with offline QA user.
+     */
+    private Stage createStageOfflineQaData(UUID offlineQaUserUUID) {
+        Map dataMap = new HashMap();
+        dataMap.put(Stage.OFFLINE_QA_USER, offlineQaUserUUID.toString());
+        Stage mockStage = mock(Stage.class);
+        when(mockStage.getUuid()).thenReturn(stageUUID);
+        when(mockStage.getCaseUUID()).thenReturn(caseUUID);
+        when(mockStage.getStageType()).thenReturn(Stage.DCU_DTEN_INITIAL_DRAFT);
+        when(mockStage.getCaseReference()).thenReturn("MIN/1234567/19");
+        when(mockStage.getData()).thenReturn(Jackson.toJsonString(dataMap));
+        return mockStage;
+    }
+
+    private Set<GetAuditResponse> getAuditLines(Stage stage) {
+        Set<GetAuditResponse> linesForCase = new HashSet<>();
+        linesForCase.add(new GetAuditResponse(UUID.randomUUID(), caseUUID, stage.getUuid(), UUID.randomUUID().toString(), "",
+                                              "{}", "", ZonedDateTime.now(), STAGE_ALLOCATED_TO_USER.name(), userID));
+        return linesForCase;
+    }
+
 }
