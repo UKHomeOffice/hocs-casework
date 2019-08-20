@@ -220,7 +220,6 @@ public class StageService {
         Set<Stage> stages = stageRepository.findByCaseReference(reference);
         final Set<Stage> collect = reduceToMostActive(stages).collect(Collectors.toSet());
         if (collect.size() > 1) {
-            stages = stageRepository.findByCaseReference(reference);
             return reduceToLatest(stages).collect(Collectors.toSet());
         }
         return collect;
