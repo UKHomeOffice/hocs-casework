@@ -23,9 +23,6 @@ public interface StageRepository extends CrudRepository<Stage, Long> {
     @Query(value = "SELECT sd.* FROM stage_data sd WHERE sd.case_uuid = ?1", nativeQuery = true)
     Set<Stage> findAllByCaseUUID(UUID caseUUID);
 
-    @Query(value = "SELECT sd.* FROM stage_data sd WHERE sd.case_uuid IN ?1", nativeQuery = true)
-    Set<Stage> findAllByCaseUUIDIn(Set<UUID> caseUUID);
-
     @Query(value = "SELECT sd.* FROM active_stage_data sd WHERE sd.team_uuid = ?1", nativeQuery = true)
     Set<Stage> findAllActiveByTeamUUID(UUID teamUUID);
 
@@ -37,5 +34,8 @@ public interface StageRepository extends CrudRepository<Stage, Long> {
 
     @Query(value = "SELECT sd.* FROM stage_data sd join active_case ac on sd.case_uuid = ac.uuid where ac.reference = ?1", nativeQuery = true)
     Set<Stage> findByCaseReference(String reference);
+
+    @Query(value = "SELECT s.* from stage_data s WHERE s.case_uuid IN ?1 AND s.created = (SELECT MAX(ss.created) FROM stage_data ss WHERE ss.case_uuid = s.case_uuid)", nativeQuery = true)
+    Set<Stage> findDistinctLatest(Set<UUID> caseUUID);
 
 }

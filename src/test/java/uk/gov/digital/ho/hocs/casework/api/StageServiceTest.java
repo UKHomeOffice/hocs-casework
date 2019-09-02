@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
@@ -14,7 +15,6 @@ import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
@@ -35,7 +35,6 @@ public class StageServiceTest {
     private final UUID userUUID = UUID.randomUUID();
     private final UUID stageUUID = UUID.randomUUID();
     private final String stageType = "DCU_MIN_MARKUP";
-    private final LocalDate deadline = LocalDate.now();
     private final String allocationType = "anyAllocate";
     private final UUID transitionNoteUUID = UUID.randomUUID();
     private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN");
@@ -461,12 +460,12 @@ public class StageServiceTest {
         SearchRequest searchRequest = new SearchRequest();
 
         when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
-        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
+        when(stageRepository.findDistinctLatest(caseUUIDS)).thenReturn(stages);
 
         Set<Stage> stageResults = stageService.search(searchRequest);
 
         verify(searchClient, times(1)).search(searchRequest);
-        verify(stageRepository, times(1)).findAllByCaseUUIDIn(caseUUIDS);
+        verify(stageRepository, times(1)).findDistinctLatest(caseUUIDS);
         verifyNoMoreInteractions(searchClient);
         verifyNoMoreInteractions(stageRepository);
 
@@ -490,12 +489,12 @@ public class StageServiceTest {
         SearchRequest searchRequest = new SearchRequest();
 
         when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
-        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
+        when(stageRepository.findDistinctLatest(caseUUIDS)).thenReturn(stages);
 
         Set<Stage> stageResults = stageService.search(searchRequest);
 
         verify(searchClient, times(1)).search(searchRequest);
-        verify(stageRepository, times(1)).findAllByCaseUUIDIn(caseUUIDS);
+        verify(stageRepository, times(1)).findDistinctLatest(caseUUIDS);
         verifyNoMoreInteractions(searchClient);
         verifyNoMoreInteractions(stageRepository);
 
@@ -519,12 +518,12 @@ public class StageServiceTest {
         SearchRequest searchRequest = new SearchRequest();
 
         when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
-        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
+        when(stageRepository.findDistinctLatest(caseUUIDS)).thenReturn(stages);
 
         Set<Stage> stageResults = stageService.search(searchRequest);
 
         verify(searchClient, times(1)).search(searchRequest);
-        verify(stageRepository, times(1)).findAllByCaseUUIDIn(caseUUIDS);
+        verify(stageRepository, times(1)).findDistinctLatest(caseUUIDS);
         verifyNoMoreInteractions(searchClient);
         verifyNoMoreInteractions(stageRepository);
 
