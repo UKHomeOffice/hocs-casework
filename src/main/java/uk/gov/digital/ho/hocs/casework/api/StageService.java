@@ -232,7 +232,7 @@ public class StageService {
             log.info("No cases - Returning 0 Stages", value(EVENT, SEARCH_STAGE_LIST_EMPTY));
             return new HashSet<>(0);
         } else {
-            Set<Stage> stages = stageRepository.findDistinctLatest(caseUUIDs);
+            Set<Stage> stages = stageRepository.findAllByCaseUUIDIn(caseUUIDs);
             log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));
             return groupByCaseUUID(stages);
         }
