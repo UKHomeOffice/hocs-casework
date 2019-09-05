@@ -218,11 +218,7 @@ public class StageService {
     Set<Stage> getActiveStagesByCaseReference(String reference) {
         log.debug("Getting Active Stages for reference: {}", reference);
         Set<Stage> stages = stageRepository.findByCaseReference(reference);
-        final Set<Stage> collect = reduceToMostActive(stages).collect(Collectors.toSet());
-        if (collect.size() > 1) {
-            return reduceToLatest(stages).collect(Collectors.toSet());
-        }
-        return collect;
+        return reduceToMostActive(stages).collect(Collectors.toSet());
     }
 
     Set<Stage> search(SearchRequest searchRequest) {
@@ -232,7 +228,7 @@ public class StageService {
             log.info("No cases - Returning 0 Stages", value(EVENT, SEARCH_STAGE_LIST_EMPTY));
             return new HashSet<>(0);
         } else {
-            Set<Stage> stages = stageRepository.findDistinctLatest(caseUUIDs);
+            Set<Stage> stages = stageRepository.findAllByCaseUUIDIn(caseUUIDs);
             log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));
             return groupByCaseUUID(stages);
         }
@@ -251,10 +247,6 @@ public class StageService {
         return reduceToMostActive(new ArrayList<>(stages));
     }
 
-    private static Stream<Stage> reduceToLatest(Set<Stage> stages) {
-        return reduceToLatest(new ArrayList<>(stages));
-    }
-
     private static Stream<Stage> reduceToMostActive(List<Stage> stages) {
         Supplier<Stream<Stage>> stageSupplier = stages :: stream;
 
@@ -266,11 +258,5 @@ public class StageService {
             Optional<Stage> maxDatedStage = stageSupplier.get().max(CREATED_COMPARATOR);
             return maxDatedStage.stream();
         }
-    }
-
-    private static Stream<Stage> reduceToLatest(List<Stage> stages) {
-        Supplier<Stream<Stage>> stageSupplier = stages :: stream;
-        Optional<Stage> maxDatedStage = stageSupplier.get().max(CREATED_COMPARATOR);
-        return maxDatedStage.stream();
     }
 }

@@ -98,10 +98,8 @@ public class Stage implements Serializable {
     }
 
     public void setTeam(UUID teamUUID) {
-        if (teamUUID != null) {
-            this.teamUUID = teamUUID;
-            this.userUUID = null;
-        }
+        this.teamUUID = teamUUID;
+        this.userUUID = null;
     }
 
     public void setUser(UUID userUUID) {

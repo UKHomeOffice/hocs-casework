@@ -106,7 +106,7 @@ public class StageTest {
         assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
         assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(stage.getStageType()).isEqualTo(stageType);
-        assertThat(stage.getTeamUUID()).isNotEqualTo(null);
+        assertThat(stage.getTeamUUID()).isEqualTo(null);
         assertThat(stage.getUserUUID()).isEqualTo(null);
         assertThat(stage.getDeadline()).isEqualTo(deadline);
 
