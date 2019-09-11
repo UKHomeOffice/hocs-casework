@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
 import java.time.LocalDate;
@@ -46,6 +43,13 @@ public class InfoClient {
         CaseDataType caseDataType = restHelper.get(serviceBaseURL, String.format("/caseType/type/%s", type), CaseDataType.class);
         log.info("Got CaseDataType {} for Type {}", caseDataType.getDisplayCode(), type, value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
         return caseDataType;
+    }
+
+    @Cacheable(value = "InfoClientGetConstituencyByMemberExternalKey", unless = "#result == null", key = "#topicUUID")
+    public ConstituencyDto getConstituencyByMemberExternalKey(String externalReference) {
+        ConstituencyDto constituencyDto = restHelper.get(serviceBaseURL, String.format("/constituency/member/%s", externalReference), ConstituencyDto.class);
+        log.info("Got Constituency {} for Member externalKey {}", constituencyDto.getConstituencyName(), externalReference, value(EVENT, INFO_CLIENT_GET_CONSTITUENCY_SUCCESS));
+        return constituencyDto;
     }
 
     @Cacheable(value = "InfoClientGetStandardLine", unless = "#result == null", key = "#topicUUID")

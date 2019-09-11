@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.dto.ConstituencyDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
@@ -16,10 +17,7 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
-import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.io.IOException;
@@ -370,6 +368,26 @@ public class CaseDataServiceTest {
         assertThat(result.getAdditionalFields().stream().filter(f -> f.getLabel().equals("what is your TEMPCReference")).findFirst().get().getValue()).isEqualTo("test ref");
         assertThat(result.getAdditionalFields().stream().filter(f -> f.getLabel().equals("what is your CopyNumberTen")).findFirst().get().getValue()).isEqualTo("true");
         assertThat(result.getAdditionalFields().stream().noneMatch(f -> f.getLabel().equals("UnfilteredField")));
+    }
+
+    @Test
+    public void shouldGetRegionUUIDForCase() {
+
+        Correspondent correspondent = new Correspondent(UUID.randomUUID(), "TYPE", "name",
+                new Address("postcode","address1","address2","address3","county"),
+                "phone", "email", "", "extKey");
+        //CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = mock(CaseData.class);
+        when(caseData.getPrimaryCorrespondent()).thenReturn(correspondent);
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        ConstituencyDto constituencyDto = mock(ConstituencyDto.class);
+        when(constituencyDto.getRegionUUID()).thenReturn(UUID.fromString("85462836-4de7-4297-b60f-2bd260b3a686"));
+        when(infoClient.getConstituencyByMemberExternalKey("extKey")).thenReturn(constituencyDto);
+        UUID regionUUID = caseDataService.getRegionUUIDForCase(caseData.getUuid());
+
+        verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
+        verifyNoMoreInteractions(caseDataRepository);
+        assertThat(regionUUID).isEqualTo(UUID.fromString("85462836-4de7-4297-b60f-2bd260b3a686"));
     }
 
     @Test

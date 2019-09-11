@@ -66,6 +66,13 @@ class CaseDataResource {
         return ResponseEntity.ok(GetCaseSummaryResponse.from(caseSummary));
     }
 
+    @Authorised(accessLevel = AccessLevel.READ)
+    @GetMapping(value = "/case/{caseUUID}/region")
+    ResponseEntity<UUID> getRegionUUIDForCase(@PathVariable UUID caseUUID) {
+        UUID regionUUID = caseDataService.getRegionUUIDForCase(caseUUID);
+        return ResponseEntity.ok(regionUUID);
+    }
+
     @Allocated(allocatedTo = AllocationLevel.USER)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data")
     ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {

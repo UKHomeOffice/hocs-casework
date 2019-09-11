@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
@@ -239,6 +236,13 @@ public class CaseDataService {
                 caseData.getActiveStages());
         auditClient.viewCaseSummaryAudit(caseData, caseSummary);
         return caseSummary;
+    }
+
+    UUID getRegionUUIDForCase(UUID caseUUID) {
+        log.debug("Getting Region for Case: {}", caseUUID);
+        CaseData caseData = getCaseData(caseUUID);
+        ConstituencyDto constituencyDto = infoClient.getConstituencyByMemberExternalKey(caseData.getPrimaryCorrespondent().getExternalKey());
+        return constituencyDto.getRegionUUID();
     }
 
     Set<GetStandardLineResponse> getStandardLine(UUID caseUUID) {

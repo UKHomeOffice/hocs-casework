@@ -146,6 +146,22 @@ public class CaseDataResourceTest {
     }
 
     @Test
+    public void shouldGetRegionUUIDForCase() {
+
+        UUID regionUUID = UUID.randomUUID();
+
+        when(caseDataService.getRegionUUIDForCase(uuid)).thenReturn(regionUUID);
+
+        ResponseEntity<UUID> response = caseDataResource.getRegionUUIDForCase(uuid);
+
+        verify(caseDataService, times(1)).getRegionUUIDForCase(uuid);
+        verifyNoMoreInteractions(caseDataService);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(regionUUID);
+    }
+
+    @Test
     public void shouldUpdateCaseData() {
         UpdateCaseDataRequest updateCaseDataRequest = new UpdateCaseDataRequest(data);
 
