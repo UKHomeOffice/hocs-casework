@@ -241,7 +241,9 @@ public class CaseDataService {
     UUID getRegionUUIDForCase(UUID caseUUID) {
         log.debug("Getting Region for Case: {}", caseUUID);
         CaseData caseData = getCaseData(caseUUID);
-        ConstituencyDto constituencyDto = infoClient.getConstituencyByMemberExternalKey(caseData.getPrimaryCorrespondent().getExternalKey());
+        Correspondent primaryCorrespondent = caseData.getPrimaryCorrespondent();
+        String externalKey = primaryCorrespondent.getExternalKey();
+        ConstituencyDto constituencyDto = infoClient.getConstituencyByMemberExternalKey(externalKey);
         return constituencyDto.getRegionUUID();
     }
 

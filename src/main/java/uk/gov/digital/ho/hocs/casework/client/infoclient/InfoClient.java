@@ -45,7 +45,6 @@ public class InfoClient {
         return caseDataType;
     }
 
-    @Cacheable(value = "InfoClientGetConstituencyByMemberExternalKey", unless = "#result == null", key = "#topicUUID")
     public ConstituencyDto getConstituencyByMemberExternalKey(String externalReference) {
         ConstituencyDto constituencyDto = restHelper.get(serviceBaseURL, String.format("/constituency/member/%s", externalReference), ConstituencyDto.class);
         log.info("Got Constituency {} for Member externalKey {}", constituencyDto.getConstituencyName(), externalReference, value(EVENT, INFO_CLIENT_GET_CONSTITUENCY_SUCCESS));
