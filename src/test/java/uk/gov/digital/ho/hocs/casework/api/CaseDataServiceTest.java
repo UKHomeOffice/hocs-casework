@@ -382,9 +382,10 @@ public class CaseDataServiceTest {
         ConstituencyDto constituencyDto = mock(ConstituencyDto.class);
         when(constituencyDto.getRegionUUID()).thenReturn(UUID.fromString("85462836-4de7-4297-b60f-2bd260b3a686"));
         when(infoClient.getConstituencyByMemberExternalKey("extKey")).thenReturn(constituencyDto);
+
         UUID regionUUID = caseDataService.getRegionUUIDForCase(caseData.getUuid());
 
-        verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
+        verify(caseDataRepository).findByUuid(caseData.getUuid());
         verifyNoMoreInteractions(caseDataRepository);
         assertThat(regionUUID).isEqualTo(UUID.fromString("85462836-4de7-4297-b60f-2bd260b3a686"));
     }
