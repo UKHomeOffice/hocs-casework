@@ -376,7 +376,6 @@ public class CaseDataServiceTest {
         Correspondent correspondent = new Correspondent(UUID.randomUUID(), "TYPE", "name",
                 new Address("postcode","address1","address2","address3","county"),
                 "phone", "email", "", "extKey");
-        //CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
         CaseData caseData = mock(CaseData.class);
         when(caseData.getPrimaryCorrespondent()).thenReturn(correspondent);
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
