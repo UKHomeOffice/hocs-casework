@@ -53,14 +53,14 @@ public class StageService {
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting User for Stage: {}", stageUUID);
-        Stage stage = getActiveStage(caseUUID, stageUUID);
+        Stage stage = getStage(caseUUID, stageUUID);
         log.debug("Got User: {} for Stage: {}", stage.getUserUUID(), stageUUID);
         return stage.getUserUUID();
     }
 
     public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting Team for Stage: {}", stageUUID);
-        Stage stage = getActiveStage(caseUUID, stageUUID);
+        Stage stage = getStage(caseUUID, stageUUID);
         log.debug("Got Team: {} for Stage: {}", stage.getTeamUUID(), stageUUID);
         return stage.getTeamUUID();
     }
