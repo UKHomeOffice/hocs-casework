@@ -94,4 +94,13 @@ public class TopicResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
+    @Test
+    public void shouldEvictFromTheCache() {
+        var topicUUID =  UUID.randomUUID();
+        ResponseEntity responseEntity = topicResource.clearCachedStandardLineForTopic(topicUUID);
+
+        assertThat(responseEntity.getBody()).isEqualTo("Cache Cleared");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 }

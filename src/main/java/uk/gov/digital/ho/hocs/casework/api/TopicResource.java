@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateTopicRequest;
@@ -16,6 +17,9 @@ import uk.gov.digital.ho.hocs.casework.security.Authorised;
 import javax.validation.Valid;
 import java.util.Set;
 import java.util.UUID;
+
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Slf4j
 @RestController
@@ -54,5 +58,12 @@ public class TopicResource {
     ResponseEntity deleteTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @PathVariable UUID topicUUID) {
         topicService.deleteTopic(caseUUID, topicUUID);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/topic/{topicUUID}/clearCachedStandardLine")
+    @CacheEvict(value = "InfoClientGetStandardLine", key = "#topicUUID")
+    ResponseEntity clearCachedStandardLineForTopic(@PathVariable UUID topicUUID) {
+        log.info("Cache invalidated for Topic: {}", topicUUID, value(EVENT, TOPIC_STANDARD_LINE_UPDATED));
+        return ResponseEntity.ok("Cache Cleared");
     }
 }
