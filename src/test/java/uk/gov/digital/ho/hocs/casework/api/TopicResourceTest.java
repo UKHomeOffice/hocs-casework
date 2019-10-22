@@ -97,7 +97,6 @@ public class TopicResourceTest {
 
     @Test
     public void shouldEvictFromTheCache() {
-        var topicUUID =  UUID.randomUUID();
         ResponseEntity responseEntity = topicResource.clearCachedStandardLineForTopic(topicUUID);
 
         assertThat(responseEntity.getBody()).isEqualTo("Cache Cleared");
