@@ -55,4 +55,10 @@ public class TopicResource {
         topicService.deleteTopic(caseUUID, topicUUID);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping(value = "/topic/{topicUUID}/clearCachedStandardLine")
+    ResponseEntity clearCachedStandardLineForTopic(@PathVariable UUID topicUUID) {
+        topicService.clearCachedStandardLineForTopic(topicUUID);
+        return ResponseEntity.ok("Cache Cleared");
+    }
 }
