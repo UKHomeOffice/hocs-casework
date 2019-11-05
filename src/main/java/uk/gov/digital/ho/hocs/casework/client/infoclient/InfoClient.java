@@ -113,6 +113,11 @@ public class InfoClient {
 
     @CacheEvict(value = "InfoClientGetStandardLine", key = "#topicUUID")
     public void clearCachedStandardLineForTopic(UUID topicUUID) {
-        log.info("Cache invalidated for Topic: {}, {}", topicUUID, value(EVENT, TOPIC_STANDARD_LINE_UPDATED));
+        log.info("Cache invalidated for Topic: {}, {}", topicUUID, value(EVENT, TOPIC_STANDARD_LINE_CACHE_INVALIDATED));
+    }
+
+    @CacheEvict(value = "InfoClientGetTemplate", key = "#caseType")
+    public void clearCachedTemplateForCaseType(String caseType) {
+        log.info("Cache invalidated for Case Type: {}, {}", caseType, value(EVENT, CASE_TYPE_TEMPLATE_CACHE_INVALIDATED));
     }
 }

@@ -90,7 +90,8 @@ public enum LogEvent {
     TEAM_EMAIL_SENT,
     OFFLINE_QA_EMAIL_SENT,
     NOTIFY_EMAIL_FAILED,
-    TOPIC_STANDARD_LINE_UPDATED;
+    TOPIC_STANDARD_LINE_CACHE_INVALIDATED,
+    CASE_TYPE_TEMPLATE_CACHE_INVALIDATED;
     public static final String EVENT = "event_id";
     public static final String EXCEPTION = "exception";
 

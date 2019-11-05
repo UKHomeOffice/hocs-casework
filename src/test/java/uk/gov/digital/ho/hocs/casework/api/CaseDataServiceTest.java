@@ -618,4 +618,13 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
 
     }
+
+    @Test
+    public void shouldEvictFromTheCache() {
+
+        caseDataService.clearCachedTemplateForCaseType(caseType.getDisplayName());
+
+        verify(infoClient, times(1)).clearCachedTemplateForCaseType(caseType.getDisplayName());
+        verifyNoMoreInteractions(infoClient);
+    }
 }
