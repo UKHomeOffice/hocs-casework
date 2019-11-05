@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.client.infoclient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -108,5 +109,10 @@ public class InfoClient {
         UserDto userDto = restHelper.get(serviceBaseURL, String.format("/user/%s", userUUID), UserDto.class);
         log.info("Got User UserUUID {}", userUUID, value(EVENT, INFO_CLIENT_GET_USER));
         return userDto;
+    }
+
+    @CacheEvict(value = "InfoClientGetStandardLine", key = "#topicUUID")
+    public void clearCachedStandardLineForTopic(UUID topicUUID) {
+        log.info("Cache invalidated for Topic: {}, {}", topicUUID, value(EVENT, TOPIC_STANDARD_LINE_UPDATED));
     }
 }

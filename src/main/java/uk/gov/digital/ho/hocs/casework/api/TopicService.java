@@ -73,4 +73,8 @@ public class TopicService {
         log.info("Deleted Topic: {}", caseUUID, value(EVENT, CASE_TOPIC_DELETED));
     }
 
+    void clearCachedStandardLineForTopic(UUID topicUUID) {
+        infoClient.clearCachedStandardLineForTopic(topicUUID);
+    }
+
 }
