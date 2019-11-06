@@ -257,5 +257,14 @@ public class TopicServiceTest {
 
         verifyNoMoreInteractions(topicRepository);
     }
+
+    @Test
+    public void shouldEvictFromTheCache() {
+
+        topicService.clearCachedStandardLineForTopic(topicUUID);
+
+        verify(infoClient, times(1)).clearCachedStandardLineForTopic(topicUUID);
+        verifyNoMoreInteractions(infoClient);
+    }
 }
 
