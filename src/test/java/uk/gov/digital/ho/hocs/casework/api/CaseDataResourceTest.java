@@ -160,4 +160,12 @@ public class CaseDataResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
+    @Test
+    public void shouldEvictFromTheCache() {
+        ResponseEntity responseEntity = caseDataResource.clearCachedTemplateForCaseType(caseDataType.getDisplayName());
+
+        assertThat(responseEntity.getBody()).isEqualTo("Cache Cleared");
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 }

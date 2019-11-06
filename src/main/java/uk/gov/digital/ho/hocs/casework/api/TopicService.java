@@ -76,5 +76,4 @@ public class TopicService {
     void clearCachedStandardLineForTopic(UUID topicUUID) {
         infoClient.clearCachedStandardLineForTopic(topicUUID);
     }
-
 }
