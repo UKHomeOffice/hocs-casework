@@ -257,9 +257,12 @@ public class AuditClient {
             LocalDateTime.now(),
             eventType,
             requestData.userId());
+            log.info("---------------------------- CREATING AUDIT 1 ------------------------------------------");
 
             Map<String, Object> queueHeaders = getQueueHeaders(eventType.toString());
+            log.info("---------------------------- CREATING AUDIT 2 ------------------------------------------");
             producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), queueHeaders);
+
             log.info("Create audit of type {} for Case UUID: {}, correlationID: {}, UserID: {}", eventType, caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_EVENT_CREATED));
         } catch (Exception e) {
             log.error("Failed to create audit event for case UUID {}", caseUUID, value(EVENT, AUDIT_FAILED), value(EXCEPTION, e));
