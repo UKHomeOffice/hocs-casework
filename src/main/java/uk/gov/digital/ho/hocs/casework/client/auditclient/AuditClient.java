@@ -67,10 +67,10 @@ public class AuditClient {
         String data = "{}";
         try {
             data = objectMapper.writeValueAsString(AuditPayload.UpdateCaseRequest.from(caseData));
-        } catch (JsonProcessingException e) {
+            sendAuditMessage(caseData.getUuid(), data, CASE_UPDATED, stageUUID, data);
+        } catch (Exception e) {
             log.error("Failed to parse data payload", value(EVENT,UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
         }
-        sendAuditMessage(caseData.getUuid(), data, CASE_UPDATED, stageUUID, data);
     }
 
     @Async
@@ -243,19 +243,21 @@ public class AuditClient {
 
     @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType, UUID stageUUID, String data){
-        CreateAuditRequest request = new CreateAuditRequest(
-                requestData.correlationId(),
-                caseUUID,
-                stageUUID,
-                raisingService,
-                payload,
-                data,
-                namespace,
-                LocalDateTime.now(),
-                eventType,
-                requestData.userId());
 
+        log.info("---------------------------- CREATING AUDIT ------------------------------------------");
         try {
+            CreateAuditRequest request = new CreateAuditRequest(
+            requestData.correlationId(),
+            caseUUID,
+            stageUUID,
+            raisingService,
+            payload,
+            data,
+            namespace,
+            LocalDateTime.now(),
+            eventType,
+            requestData.userId());
+
             Map<String, Object> queueHeaders = getQueueHeaders(eventType.toString());
             producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), queueHeaders);
             log.info("Create audit of type {} for Case UUID: {}, correlationID: {}, UserID: {}", eventType, caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_EVENT_CREATED));
