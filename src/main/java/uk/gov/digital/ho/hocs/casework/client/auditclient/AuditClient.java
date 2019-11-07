@@ -60,6 +60,9 @@ public class AuditClient {
         this.requestData = requestData;
         this.restHelper = restHelper;
         this.serviceBaseURL = auditService;
+        log.info("Audit SNS: " + auditQueue);
+        log.info("Audit Name: " + raisingService);
+        log.info("Audit Namespace: " + namespace);
     }
 
     @Async
@@ -257,11 +260,14 @@ public class AuditClient {
             LocalDateTime.now(),
             eventType,
             requestData.userId());
-            log.info("---------------------------- CREATING AUDIT 1 ------------------------------------------");
 
             Map<String, Object> queueHeaders = getQueueHeaders(eventType.toString());
-            log.info("---------------------------- CREATING AUDIT 2 ------------------------------------------");
-            producerTemplate.sendBodyAndHeaders(auditQueue, objectMapper.writeValueAsString(request), queueHeaders);
+            final String body = objectMapper.writeValueAsString(request);
+            for  (Map.Entry entry : queueHeaders.entrySet()) {
+                log.info("MAP ENTRY: " + entry.getKey() + " : " + entry.getValue());
+            }
+            log.info("Audit Body: " + body);
+            producerTemplate.sendBodyAndHeaders(auditQueue, body, queueHeaders);
 
             log.info("Create audit of type {} for Case UUID: {}, correlationID: {}, UserID: {}", eventType, caseUUID, requestData.correlationId(), requestData.userId(), value(EVENT, AUDIT_EVENT_CREATED));
         } catch (Exception e) {
