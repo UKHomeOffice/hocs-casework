@@ -10,7 +10,7 @@ import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
@@ -252,14 +252,13 @@ public class CaseDataService {
         }
     }
 
-    Set<GetTemplateResponse> getTemplate(UUID caseUUID) {
+    List<TemplateDto> getTemplates(UUID caseUUID) {
         CaseData caseData = getCaseData(caseUUID);
         auditClient.viewTemplateAudit(caseData);
         try{
-            GetTemplateResponse getTemplateResponse = infoClient.getTemplate(caseData.getType());
-            return Set.of(getTemplateResponse);
+            return infoClient.getTemplates(caseData.getType());
         } catch(HttpClientErrorException e) {
-            return Set.of();
+            return List.of();
         }
     }
 
