@@ -110,4 +110,10 @@ class CaseDataResource {
         Set<GetTemplateResponse> template =  caseDataService.getTemplate(caseUUID);
         return ResponseEntity.ok(template);
     }
+
+    @PostMapping(value = "/caseType/{caseType}/clearCachedTemplate")
+    ResponseEntity clearCachedTemplateForCaseType(@PathVariable String caseType) {
+        caseDataService.clearCachedTemplateForCaseType(caseType);
+        return ResponseEntity.ok("Cache Cleared");
+    }
 }
