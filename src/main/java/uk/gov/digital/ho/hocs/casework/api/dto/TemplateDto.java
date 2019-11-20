@@ -6,7 +6,7 @@ import lombok.Getter;
 import java.util.UUID;
 
 @Getter
-public class GetTemplateResponse {
+public class TemplateDto {
 
     @JsonProperty("displayName")
     private String displayName;

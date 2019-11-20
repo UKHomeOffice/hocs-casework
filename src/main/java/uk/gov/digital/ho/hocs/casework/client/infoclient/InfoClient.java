@@ -10,10 +10,11 @@ import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetTemplateResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -56,11 +57,11 @@ public class InfoClient {
         return standardLine;
     }
 
-    @Cacheable(value = "InfoClientGetTemplate", unless = "#result == null", key = "#caseType")
-    public GetTemplateResponse getTemplate(String caseType) {
-        GetTemplateResponse template = restHelper.get(serviceBaseURL, String.format("/caseType/%s/template", caseType), GetTemplateResponse.class);
-        log.info("Got Template {} for CaseType {}", template.getDisplayName(), caseType, value(EVENT, INFO_CLIENT_GET_TEMPLATE_SUCCESS));
-        return template;
+    @Cacheable(value = "InfoClientGetTemplatesByCaseType", unless = "#result == null", key = "#caseType")
+    public List<TemplateDto> getTemplates(String caseType) {
+        List<TemplateDto> templates = restHelper.get(serviceBaseURL, String.format("/caseType/%s/templates", caseType), new ParameterizedTypeReference<List<TemplateDto>>() {});
+        log.info("Got Templates {} for CaseType {}, event {}", templates.size(), caseType, value(EVENT, INFO_CLIENT_GET_TEMPLATE_SUCCESS));
+        return templates;
     }
 
     @Cacheable(value = "InfoClientGetTeams", unless = "#result.size() == 0")
@@ -116,7 +117,7 @@ public class InfoClient {
         log.info("Cache invalidated for Topic: {}, {}", topicUUID, value(EVENT, TOPIC_STANDARD_LINE_CACHE_INVALIDATED));
     }
 
-    @CacheEvict(value = "InfoClientGetTemplate", key = "#caseType")
+    @CacheEvict(value = "InfoClientGetTemplatesByCaseType", key = "#caseType")
     public void clearCachedTemplateForCaseType(String caseType) {
         log.info("Cache invalidated for Case Type: {}, {}", caseType, value(EVENT, CASE_TYPE_TEMPLATE_CACHE_INVALIDATED));
     }
