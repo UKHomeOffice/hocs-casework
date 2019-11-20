@@ -566,6 +566,7 @@ public class StageServiceTest {
         auditType.add(STAGE_ALLOCATED_TO_USER.name());
         final Set<GetAuditResponse> auditLines = getAuditLines(stage);
         when(auditClient.getAuditLinesForCase(caseUUID, auditType)).thenReturn(auditLines);
+        when(caseDataService.getCaseRef(caseUUID)).thenReturn("MIN/1234567/19");
         stageService.checkSendOfflineQAEmail(stage);
         verify(auditClient, times(1)).getAuditLinesForCase(caseUUID, auditType);
         verify(notifyClient, times(1)).sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), UUID.fromString(userID), offlineQaUserUUID, stage.getCaseReference());
