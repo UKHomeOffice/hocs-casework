@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
 
@@ -41,6 +42,7 @@ public class CaseDataServiceTest {
     
     private final CaseDataType caseType = new CaseDataType("MIN", "a1");
     private final UUID caseUUID = UUID.randomUUID();
+    private final String caseRef = "TestRef";
 
     @Mock
     private CaseDataRepository caseDataRepository;
@@ -626,5 +628,18 @@ public class CaseDataServiceTest {
 
         verify(infoClient, times(1)).clearCachedTemplateForCaseType(caseType.getDisplayName());
         verifyNoMoreInteractions(infoClient);
+    }
+
+    @Test
+    public void getCaseRef(){
+
+        when(caseDataRepository.getCaseRef(caseUUID)).thenReturn(caseRef);
+
+        String result = caseDataService.getCaseRef(caseUUID);
+
+        assertThat(result).isEqualTo(caseRef);
+        verify(caseDataRepository).getCaseRef(caseUUID);
+        verifyNoMoreInteractions(infoClient, caseDataRepository, auditClient);
+
     }
 }
