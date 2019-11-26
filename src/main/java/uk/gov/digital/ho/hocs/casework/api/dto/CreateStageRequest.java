@@ -21,4 +21,7 @@ public class CreateStageRequest {
 
     @JsonProperty("transitionNote")
     private UUID transitionNoteUUID;
+
+    @JsonProperty("userUUID")
+    private UUID userUUID;
 }

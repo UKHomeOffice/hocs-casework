@@ -12,7 +12,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
-import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
@@ -54,7 +53,7 @@ public class AllocatedAspectTest {
     @Test
     public void shouldCallCollaboratorsForUser() throws Throwable {
 
-        Stage stage = new Stage(UUID.randomUUID(), "DCU_DTEN_DATA_INPUT", teamId, transitionNoteUUID);
+        Stage stage = new Stage(UUID.randomUUID(), "DCU_DTEN_DATA_INPUT", teamId, null, transitionNoteUUID);
         stage.setUser(userId);
 
         Object[] args = new Object[2];
@@ -68,8 +67,8 @@ public class AllocatedAspectTest {
         aspect = new AllocatedAspect(stageService,userService);
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
-        verify(stageService, times(1)).getStageUser(caseUUID, stageUUID);
-        verify(userService, times(1)).getUserId();
+        verify(stageService).getStageUser(caseUUID, stageUUID);
+        verify(userService).getUserId();
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
 
@@ -87,8 +86,8 @@ public class AllocatedAspectTest {
         aspect = new AllocatedAspect(stageService,userService);
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
-        verify(userService, times(1)).getUserTeams();
-        verify(stageService, times(1)).getStageTeam(caseUUID, stageUUID);
+        verify(userService).getUserTeams();
+        verify(stageService).getStageTeam(caseUUID, stageUUID);
         verify(userService, never()).getUserId();
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
@@ -96,7 +95,7 @@ public class AllocatedAspectTest {
     @Test
     public void shouldProceedIfUserIsAllocatedToCase() throws Throwable {
 
-        Stage stage = new Stage(UUID.randomUUID(), "DCU_DTEN_DATA_INPUT", teamId, transitionNoteUUID);
+        Stage stage = new Stage(UUID.randomUUID(), "DCU_DTEN_DATA_INPUT", teamId, null, transitionNoteUUID);
         stage.setUser(userId);
 
         Object[] args = new Object[2];
@@ -108,7 +107,7 @@ public class AllocatedAspectTest {
         when(annotation.allocatedTo()).thenReturn(AllocationLevel.USER);
         aspect = new AllocatedAspect(stageService,userService);
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
-        verify(proceedingJoinPoint, times(1)).proceed();
+        verify(proceedingJoinPoint).proceed();
 
     }
 
@@ -125,7 +124,7 @@ public class AllocatedAspectTest {
         when(userService.getUserTeams()).thenReturn(new HashSet<>(Arrays.asList(teamId)));
         aspect = new AllocatedAspect(stageService,userService);
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
-        verify(proceedingJoinPoint, times(1)).proceed();
+        verify(proceedingJoinPoint).proceed();
 
     }
 

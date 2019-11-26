@@ -83,7 +83,7 @@ public class AuditClientTest {
         UUID caseUUID = UUID.randomUUID();
         Topic topic = new Topic(caseUUID,"topic name", topicUUID);
         auditClient.createTopicAudit(topic);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getData()).isNotEmpty();
     }
@@ -101,7 +101,7 @@ public class AuditClientTest {
         UUID caseUUID = UUID.randomUUID();
         Topic topic = new Topic(caseUUID, "topic name", topicUUID);
         auditClient.createTopicAudit(topic);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), any(), headerCaptor.capture());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), any(), headerCaptor.capture());
         Map headers = headerCaptor.getValue();
 
         assertThat(headers).containsAllEntriesOf(expectedHeaders);
@@ -111,7 +111,7 @@ public class AuditClientTest {
     public void shouldSetAuditFields() throws IOException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.updateCaseAudit(caseData, stageUUID);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_UPDATED);
         assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
@@ -126,14 +126,14 @@ public class AuditClientTest {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         doThrow(new RuntimeException("An error occurred")).when(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         assertThatCode(() -> { auditClient.updateCaseAudit(caseData, stageUUID);}).doesNotThrowAnyException();
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
     }
 
     @Test
     public void createCaseAudit() throws IOException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.createCaseAudit(caseData);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_CREATED);
         assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
@@ -143,7 +143,7 @@ public class AuditClientTest {
     public void updateCaseAudit() throws IOException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.updateCaseAudit(caseData, stageUUID);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_UPDATED);
         assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
@@ -153,7 +153,7 @@ public class AuditClientTest {
     public void viewCaseAudit() throws IOException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.viewCaseAudit(caseData);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_VIEWED);
         assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
@@ -163,7 +163,7 @@ public class AuditClientTest {
     public void deleteCaseAudit() throws IOException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.deleteCaseAudit(caseData);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_DELETED);
         assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
@@ -174,7 +174,7 @@ public class AuditClientTest {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         CaseSummary caseSummary = new CaseSummary(LocalDate.now(), new HashMap<>(), new HashSet<>(), correspondent, topic, new HashSet<>());
         auditClient.viewCaseSummaryAudit(caseData, caseSummary);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_SUMMARY_VIEWED);
         assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
@@ -184,7 +184,7 @@ public class AuditClientTest {
     public void viewStandardLineAudit() throws IOException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.viewStandardLineAudit(caseData);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.STANDARD_LINE_VIEWED);
         assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
@@ -194,7 +194,7 @@ public class AuditClientTest {
     public void viewTemplate() throws IOException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
         auditClient.viewTemplateAudit(caseData);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.TEMPLATE_VIEWED);
         assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
@@ -202,7 +202,7 @@ public class AuditClientTest {
     @Test
     public void createCorrespondentAudit() throws IOException {
         auditClient.createCorrespondentAudit(correspondent);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CORRESPONDENT_CREATED);
         assertThat(request.getCaseUUID()).isEqualTo(correspondent.getCaseUUID());
@@ -211,7 +211,7 @@ public class AuditClientTest {
     @Test
     public void deleteCorrespondentAudit() throws IOException {
         auditClient.deleteCorrespondentAudit(correspondent);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CORRESPONDENT_DELETED);
         assertThat(request.getCaseUUID()).isEqualTo(correspondent.getCaseUUID());
@@ -221,7 +221,7 @@ public class AuditClientTest {
     public void createTopicAudit() throws IOException {
         Topic topic = new Topic(caseUUID,"topic name", UUID.randomUUID());
         auditClient.createTopicAudit(topic);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_TOPIC_CREATED);
         assertThat(request.getCaseUUID()).isEqualTo(caseUUID);
@@ -230,7 +230,7 @@ public class AuditClientTest {
     @Test
     public void deleteTopicAudit() throws IOException {
         auditClient.deleteTopicAudit(topic);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_TOPIC_DELETED);
         assertThat(request.getCaseUUID()).isEqualTo(caseUUID);
@@ -240,7 +240,7 @@ public class AuditClientTest {
     public void viewCaseNotesAudit() throws IOException {
         CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note", userId);
         auditClient.viewCaseNotesAudit(caseUUID, new HashSet<CaseNote>(){{ add(caseNote); }});
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_NOTES_VIEWED);
         assertThat(request.getCaseUUID()).isEqualTo(caseUUID);
@@ -250,7 +250,7 @@ public class AuditClientTest {
     public void viewCaseNoteAudit() throws IOException {
         CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note", userId);
         auditClient.viewCaseNoteAudit(caseNote);
-              verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+              verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_NOTE_VIEWED);
         assertThat(request.getCaseUUID()).isEqualTo(caseNote.getCaseUUID());
@@ -260,7 +260,7 @@ public class AuditClientTest {
     public void createCaseNoteAudit() throws IOException {
         CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note",userId);
         auditClient.createCaseNoteAudit(caseNote);
-              verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+              verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_NOTE_CREATED);
         assertThat(request.getCaseUUID()).isEqualTo(caseNote.getCaseUUID());
@@ -268,10 +268,10 @@ public class AuditClientTest {
 
     @Test
     public void auditStageUserAllocate() throws IOException {
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID());
+        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID(), randomUUID());
         stage.setUser(randomUUID());
         auditClient.updateStageUser(stage);
-              verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+              verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.STAGE_ALLOCATED_TO_USER);
         assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
@@ -279,10 +279,10 @@ public class AuditClientTest {
 
     @Test
     public void auditStageUserUnallocate() throws IOException {
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), null);
+        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), null, null);
         stage.setUser(null);
         auditClient.updateStageUser(stage);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.STAGE_UNALLOCATED_FROM_USER);
         assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
@@ -290,10 +290,10 @@ public class AuditClientTest {
 
     @Test
     public void auditStageTeamAllocate() throws IOException {
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID());
+        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID(), randomUUID());
         stage.setUser(randomUUID());
         auditClient.updateStageTeam(stage);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.STAGE_ALLOCATED_TO_TEAM);
         assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
@@ -301,9 +301,9 @@ public class AuditClientTest {
 
     @Test
     public void auditStageTeamUnallocate() throws IOException {
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", null, null);
+        Stage stage = new Stage(caseUUID,"SOME_STAGE", null, null, null);
         auditClient.updateStageTeam(stage);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.STAGE_COMPLETED);
         assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
@@ -311,9 +311,9 @@ public class AuditClientTest {
 
     @Test
     public void auditStageCreated() throws IOException {
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", null, null);
+        Stage stage = new Stage(caseUUID,"SOME_STAGE", null, null, null);
         auditClient.createStage(stage);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.STAGE_CREATED);
         assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
@@ -336,7 +336,7 @@ public class AuditClientTest {
                 GetAuditListResponse.class)).thenReturn(restResponse);
 
         Set<GetAuditResponse> response = auditClient.getAuditLinesForCase(caseUUID, CaseDataService.TIMELINE_EVENTS);
-        verify(restHelper, times(1)).get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
+        verify(restHelper).get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
                 GetAuditListResponse.class);
         assertThat(response.size()).isEqualTo(1);
     }
@@ -350,7 +350,7 @@ public class AuditClientTest {
                 GetAuditListResponse.class)).thenThrow(RestClientException.class);
 
         Set<GetAuditResponse> response = auditClient.getAuditLinesForCase(caseUUID, CaseDataService.TIMELINE_EVENTS);
-        verify(restHelper, times(1)).get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
+        verify(restHelper).get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
                 GetAuditListResponse.class);
         assertThat(response.size()).isEqualTo(0);
     }
