@@ -354,4 +354,18 @@ public class AuditClientTest {
                 GetAuditListResponse.class);
         assertThat(response.size()).isEqualTo(0);
     }
+
+    @Test
+    public void shouldRecreateStage() throws IOException {
+
+        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID(), randomUUID());
+        auditClient.recreateStage(stage);
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.STAGE_RECREATED);
+        assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
+        assertThat(request.getStageUUID()).isEqualTo(stage.getUuid());
+
+
+    }
 }

@@ -134,6 +134,22 @@ public class StageServiceTest {
     }
 
     @Test
+    public void shouldRecreateStage(){
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+
+        when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+
+        stageService.recreateStage(caseUUID, stageUUID);
+
+        verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
+        verify(auditClient).recreateStage(stage);
+
+        verifyNoMoreInteractions(auditClient, stageRepository, notifyClient);
+
+
+    }
+
+    @Test
     public void shouldGetStageByCaseReferenceWithValidParams() {
         String ref = "MIN/0123456/19";
 

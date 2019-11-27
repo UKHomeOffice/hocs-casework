@@ -74,6 +74,18 @@ public class StageResourceTest {
     }
 
     @Test
+    public void shouldRecreateStage(){
+        RecreateStageRequest request = new RecreateStageRequest(stageUUID);
+
+        ResponseEntity response = stageResource.recreateStageTeam(caseUUID, stageUUID, request);
+
+        verify(stageService).recreateStage(caseUUID, stageUUID);
+        verifyNoMoreInteractions(stageService);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     public void shouldGetStage() {
 
         Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);

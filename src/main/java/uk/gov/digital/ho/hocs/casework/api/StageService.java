@@ -92,9 +92,16 @@ public class StageService {
         stage.setUser(userUUID);
         stageRepository.save(stage);
         auditClient.createStage(stage);
-        log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
+        log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
         notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, stage.getCaseReference(), emailType);
         return stage;
+    }
+
+    public void recreateStage(UUID caseUUID, UUID stageUUID) {
+        Stage stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
+        auditClient.recreateStage(stage);
+        log.debug("Recreated Stage {} for Case: {}, event: {}", stageUUID, caseUUID, value(EVENT, STAGE_RECREATED));
+
     }
 
     void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
