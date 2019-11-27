@@ -231,6 +231,7 @@ public class CaseDataService {
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
 
         CaseSummary caseSummary = new CaseSummary(
+                caseData.getCreated().toLocalDate(),
                 caseData.getCaseDeadline(),
                 stageDeadlines,
                 additionalFields,

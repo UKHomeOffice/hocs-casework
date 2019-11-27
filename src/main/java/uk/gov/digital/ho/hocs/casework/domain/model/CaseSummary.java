@@ -11,6 +11,8 @@ import java.util.Set;
 @Getter
 public class CaseSummary {
 
+    LocalDate createdDate;
+
     LocalDate caseDeadline;
 
     Map<String, LocalDate> stageDeadlines;
