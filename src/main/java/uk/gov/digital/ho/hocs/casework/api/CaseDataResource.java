@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -105,9 +106,9 @@ class CaseDataResource {
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
-    @GetMapping(value = "/case/{caseUUID}/template")
-    public ResponseEntity<Set<GetTemplateResponse>> getTemplate(@PathVariable UUID caseUUID) {
-        Set<GetTemplateResponse> template =  caseDataService.getTemplate(caseUUID);
+    @GetMapping(value = "/case/{caseUUID}/templates")
+    public ResponseEntity<List<TemplateDto>> getTemplate(@PathVariable UUID caseUUID) {
+        List<TemplateDto> template =  caseDataService.getTemplates(caseUUID);
         return ResponseEntity.ok(template);
     }
 
