@@ -14,6 +14,9 @@ import java.util.stream.Collectors;
 @Getter
 public class GetCaseSummaryResponse {
 
+    @JsonProperty("caseCreated")
+    LocalDate caseCreated;
+
     @JsonProperty("caseDeadline")
     LocalDate caseDeadline;
 
@@ -55,6 +58,6 @@ public class GetCaseSummaryResponse {
             additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream().filter(field -> !field.getValue().equals("")).map(AdditionalFieldDto::from).collect(Collectors.toList()));
         }
         additionalFieldDtos.sort(Comparator.comparing(AdditionalFieldDto::getLabel));
-        return new GetCaseSummaryResponse(caseSummary.getCaseDeadline(), caseSummary.getStageDeadlines(), additionalFieldDtos, getCorrespondentResponse, getTopicsResponse, activeStageDtos);
+        return new GetCaseSummaryResponse(caseSummary.getCreatedDate(), caseSummary.getCaseDeadline(), caseSummary.getStageDeadlines(), additionalFieldDtos, getCorrespondentResponse, getTopicsResponse, activeStageDtos);
     }
 }

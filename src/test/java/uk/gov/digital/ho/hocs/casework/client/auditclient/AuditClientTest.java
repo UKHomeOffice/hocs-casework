@@ -172,7 +172,7 @@ public class AuditClientTest {
     @Test
     public void viewCaseSummaryAudit() throws IOException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
-        CaseSummary caseSummary = new CaseSummary(LocalDate.now(), new HashMap<>(), new HashSet<>(), correspondent, topic, new HashSet<>());
+        CaseSummary caseSummary = new CaseSummary(LocalDate.now(), LocalDate.now(), new HashMap<>(), new HashSet<>(), correspondent, topic, new HashSet<>());
         auditClient.viewCaseSummaryAudit(caseData, caseSummary);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
