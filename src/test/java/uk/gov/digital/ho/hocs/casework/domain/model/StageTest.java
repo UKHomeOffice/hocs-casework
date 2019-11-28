@@ -18,9 +18,10 @@ public class StageTest {
         UUID caseUUID = UUID.randomUUID();
         String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
+        UUID userUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
         UUID transitionNoteUUID = UUID.randomUUID();
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         stage.setDeadline(deadline);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
@@ -28,7 +29,7 @@ public class StageTest {
         assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(stage.getStageType()).isEqualTo(stageType);
         assertThat(stage.getTeamUUID()).isEqualTo(teamUUID);
-        assertThat(stage.getUserUUID()).isEqualTo(null);
+        assertThat(stage.getUserUUID()).isEqualTo(userUUID);
         assertThat(stage.getDeadline()).isEqualTo(deadline);
         assertThat(stage.getTransitionNoteUUID()).isEqualTo(transitionNoteUUID);
         assertThat(stage.getCaseReference()).isEqualTo(null);
@@ -37,16 +38,17 @@ public class StageTest {
     }
 
     @Test
-    public void SetStageTeam() {
+    public void setStageTeam() {
 
         UUID caseUUID = UUID.randomUUID();
         String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
+        UUID userUUID = UUID.randomUUID();
         UUID newTeamUUID = UUID.randomUUID();
         UUID transitionNoteUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         stage.setDeadline(deadline);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
@@ -54,7 +56,7 @@ public class StageTest {
         assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(stage.getStageType()).isEqualTo(stageType);
         assertThat(stage.getTeamUUID()).isEqualTo(teamUUID);
-        assertThat(stage.getUserUUID()).isEqualTo(null);
+        assertThat(stage.getUserUUID()).isEqualTo(userUUID);
         assertThat(stage.getDeadline()).isEqualTo(deadline);
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
@@ -77,15 +79,16 @@ public class StageTest {
     }
 
     @Test
-    public void SetStageTeamNull() {
+    public void setStageTeamNull() {
 
         UUID caseUUID = UUID.randomUUID();
         String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
+        UUID userUUID = UUID.randomUUID();
         UUID transitionNoteUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         stage.setDeadline(deadline);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
@@ -93,7 +96,7 @@ public class StageTest {
         assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(stage.getStageType()).isEqualTo(stageType);
         assertThat(stage.getTeamUUID()).isEqualTo(teamUUID);
-        assertThat(stage.getUserUUID()).isEqualTo(null);
+        assertThat(stage.getUserUUID()).isEqualTo(userUUID);
         assertThat(stage.getDeadline()).isEqualTo(deadline);
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
@@ -116,16 +119,17 @@ public class StageTest {
     }
 
     @Test
-    public void SetStageUser() {
+    public void setStageUser() {
 
         UUID caseUUID = UUID.randomUUID();
         String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
+        UUID userUUID = null;
         UUID newuserUUID = UUID.randomUUID();
         UUID transitionNoteUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         stage.setDeadline(deadline);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
@@ -156,15 +160,16 @@ public class StageTest {
     }
 
     @Test
-    public void SetStageUserNull() {
+    public void setStageUserNull() {
 
         UUID caseUUID = UUID.randomUUID();
         String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
+        UUID userUUID = UUID.randomUUID();
         UUID transitionNoteUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         stage.setDeadline(deadline);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
@@ -172,7 +177,7 @@ public class StageTest {
         assertThat(stage.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(stage.getStageType()).isEqualTo(stageType);
         assertThat(stage.getTeamUUID()).isEqualTo(teamUUID);
-        assertThat(stage.getUserUUID()).isEqualTo(null);
+        assertThat(stage.getUserUUID()).isEqualTo(userUUID);
         assertThat(stage.getDeadline()).isEqualTo(deadline);
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
@@ -199,9 +204,10 @@ public class StageTest {
 
         String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
+        UUID userUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
         UUID transitionNoteUUID = UUID.randomUUID();
-        new Stage(null, stageType, teamUUID, transitionNoteUUID);
+        new Stage(null, stageType, teamUUID, userUUID, transitionNoteUUID);
 
     }
 
@@ -210,8 +216,9 @@ public class StageTest {
 
         UUID caseUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
+        UUID userUUID = UUID.randomUUID();
         UUID transitionNoteUUID = UUID.randomUUID();
-        new Stage(caseUUID, null, teamUUID, transitionNoteUUID);
+        new Stage(caseUUID, null, teamUUID, userUUID, transitionNoteUUID);
 
     }
 

@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -17,8 +16,9 @@ public class GetStagesResponseTest {
 
         UUID caseUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
+        UUID userUUID = UUID.randomUUID();
         UUID transitionNoteUUID = UUID.randomUUID();
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         Set<Stage> stages = new HashSet<>();
         stages.add(stage);

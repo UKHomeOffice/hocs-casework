@@ -11,7 +11,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.io.UnsupportedEncodingException;
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -27,7 +26,6 @@ public class StageResourceTest {
     private final UUID userUUID = UUID.randomUUID();
     private final UUID stageUUID = UUID.randomUUID();
     private final UUID transitionNoteUUID = UUID.randomUUID();
-    private final LocalDate deadline = LocalDate.now();
     private final String stageType = "DCU_MIN_MARKUP";
     private final String allocationType = "anyAllocation";
     @Mock
@@ -42,14 +40,14 @@ public class StageResourceTest {
     @Test
     public void shouldCreateStage() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
-        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, transitionNoteUUID, userUUID);
 
-        when(stageService.createStage(caseUUID, stageType, teamUUID, allocationType, transitionNoteUUID)).thenReturn(stage);
+        when(stageService.createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, transitionNoteUUID)).thenReturn(stage);
 
         ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
 
-        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, allocationType, transitionNoteUUID);
+        verify(stageService).createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
 
         verifyNoMoreInteractions(stageService);
 
@@ -60,14 +58,14 @@ public class StageResourceTest {
     @Test
     public void shouldCreateStageNoTransitionNote() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, null);
-        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, null);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, null);
+        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, null, userUUID);
 
-        when(stageService.createStage(caseUUID, stageType, teamUUID, allocationType, null)).thenReturn(stage);
+        when(stageService.createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, null)).thenReturn(stage);
 
         ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
 
-        verify(stageService, times(1)).createStage(caseUUID, stageType, teamUUID, allocationType, null);
+        verify(stageService).createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, null);
 
         verifyNoMoreInteractions(stageService);
 
@@ -76,15 +74,27 @@ public class StageResourceTest {
     }
 
     @Test
+    public void shouldRecreateStage(){
+        RecreateStageRequest request = new RecreateStageRequest(stageUUID);
+
+        ResponseEntity response = stageResource.recreateStageTeam(caseUUID, stageUUID, request);
+
+        verify(stageService).recreateStage(caseUUID, stageUUID);
+        verifyNoMoreInteractions(stageService);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     public void shouldGetStage() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
 
         when(stageService.getActiveStage(caseUUID, stageUUID)).thenReturn(stage);
 
         ResponseEntity<GetStageResponse> response = stageResource.getStage(caseUUID, stageUUID);
 
-        verify(stageService, times(1)).getActiveStage(caseUUID, stageUUID);
+        verify(stageService).getActiveStage(caseUUID, stageUUID);
 
         verifyNoMoreInteractions(stageService);
 
@@ -101,7 +111,7 @@ public class StageResourceTest {
 
         ResponseEntity response = stageResource.updateStageUser(caseUUID, stageUUID, updateStageUserRequest);
 
-        verify(stageService, times(1)).updateStageUser(caseUUID, stageUUID, userUUID);
+        verify(stageService).updateStageUser(caseUUID, stageUUID, userUUID);
 
         verifyNoMoreInteractions(stageService);
 
@@ -118,7 +128,7 @@ public class StageResourceTest {
 
         ResponseEntity response = stageResource.updateStageUser(caseUUID, stageUUID, updateStageUserRequest);
 
-        verify(stageService, times(1)).updateStageUser(caseUUID, stageUUID, null);
+        verify(stageService).updateStageUser(caseUUID, stageUUID, null);
 
         verifyNoMoreInteractions(stageService);
 
@@ -135,7 +145,7 @@ public class StageResourceTest {
 
         ResponseEntity<GetStagesResponse> response = stageResource.getActiveStages();
 
-        verify(stageService, times(1)).getActiveStagesForUser();
+        verify(stageService).getActiveStagesForUser();
 
         verifyNoMoreInteractions(stageService);
 
@@ -153,7 +163,7 @@ public class StageResourceTest {
 
         ResponseEntity<GetStagesResponse> response = stageResource.getActiveStagesForCase(ref);
 
-        verify(stageService, times(1)).getActiveStagesByCaseReference(ref);
+        verify(stageService).getActiveStagesByCaseReference(ref);
 
         verifyNoMoreInteractions(stageService);
 
@@ -169,7 +179,7 @@ public class StageResourceTest {
 
         ResponseEntity<Set<UUID>> response = stageResource.getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
 
-        verify(stageService, times(1)).getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
+        verify(stageService).getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
         verifyNoMoreInteractions(stageService);
 
         assertThat(response).isNotNull();
@@ -187,7 +197,7 @@ public class StageResourceTest {
 
         ResponseEntity<GetStagesResponse> response = stageResource.search(searchRequest);
 
-        verify(stageService, times(1)).search(searchRequest);
+        verify(stageService).search(searchRequest);
         verifyNoMoreInteractions(stageService);
 
         assertThat(response).isNotNull();

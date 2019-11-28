@@ -76,9 +76,9 @@ public class StageService {
         }
     }
 
-    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, String emailType, UUID transitionNoteUUID) {
+    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, String emailType, UUID transitionNoteUUID) {
         log.debug("Creating Stage of type: {}", stageType);
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         // Try and overwrite the deadline with inputted values from the data map.
         String overrideDeadline = caseDataService.getCaseDataField(caseUUID, String.format("%s_DEADLINE", stageType));
         if (overrideDeadline == null) {
@@ -89,11 +89,19 @@ public class StageService {
             LocalDate deadline = LocalDate.parse(overrideDeadline);
             stage.setDeadline(deadline);
         }
+        stage.setUser(userUUID);
         stageRepository.save(stage);
         auditClient.createStage(stage);
-        log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
+        log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
         notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, stage.getCaseReference(), emailType);
         return stage;
+    }
+
+    public void recreateStage(UUID caseUUID, UUID stageUUID) {
+        Stage stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
+        auditClient.recreateStage(stage);
+        log.debug("Recreated Stage {} for Case: {}, event: {}", stageUUID, caseUUID, value(EVENT, STAGE_RECREATED));
+
     }
 
     void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
