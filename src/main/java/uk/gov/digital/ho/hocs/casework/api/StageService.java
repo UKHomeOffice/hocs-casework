@@ -92,14 +92,16 @@ public class StageService {
         stage.setUser(userUUID);
         stageRepository.save(stage);
         auditClient.createStage(stage);
+        updateCurrentStageForCase(caseUUID, stage.getUuid(), stageType);
         log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
         notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, getCaseRef(caseUUID), emailType);
         return stage;
     }
 
-    public void recreateStage(UUID caseUUID, UUID stageUUID) {
+    public void recreateStage(UUID caseUUID, UUID stageUUID, String stageType) {
         Stage stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
         auditClient.recreateStage(stage);
+        updateCurrentStageForCase(caseUUID, stageUUID, stageType);
         log.debug("Recreated Stage {} for Case: {}, event: {}", stageUUID, caseUUID, value(EVENT, STAGE_RECREATED));
 
     }
@@ -270,5 +272,9 @@ public class StageService {
 
     private String getCaseRef(UUID caseUUID){
         return caseDataService.getCaseRef(caseUUID);
+    }
+
+    private void updateCurrentStageForCase(UUID caseUUID, UUID stageUUID, String stageType){
+        caseDataService.updateCaseData(caseUUID, stageUUID, Map.of("CurrentStage", stageType));
     }
 }

@@ -75,11 +75,11 @@ public class StageResourceTest {
 
     @Test
     public void shouldRecreateStage(){
-        RecreateStageRequest request = new RecreateStageRequest(stageUUID);
+        RecreateStageRequest request = new RecreateStageRequest(stageUUID, stageType);
 
         ResponseEntity response = stageResource.recreateStageTeam(caseUUID, stageUUID, request);
 
-        verify(stageService).recreateStage(caseUUID, stageUUID);
+        verify(stageService).recreateStage(caseUUID, stageUUID, stageType);
         verifyNoMoreInteractions(stageService);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
