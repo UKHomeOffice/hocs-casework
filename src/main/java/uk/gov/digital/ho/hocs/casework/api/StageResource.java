@@ -37,7 +37,7 @@ class StageResource {
     @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/recreate")
     ResponseEntity recreateStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody RecreateStageRequest request) {
-        stageService.recreateStage(caseUUID, request.getStageUUID());
+        stageService.recreateStage(caseUUID, request.getStageUUID(), request.getStageType());
         return ResponseEntity.ok().build();
     }
 

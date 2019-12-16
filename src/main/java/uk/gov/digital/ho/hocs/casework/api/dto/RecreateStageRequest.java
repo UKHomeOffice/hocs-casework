@@ -15,4 +15,7 @@ public class RecreateStageRequest {
     @JsonProperty("stageUUID")
     private UUID stageUUID;
 
+    @JsonProperty("stageType")
+    private String stageType;
+
 }

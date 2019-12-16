@@ -139,13 +139,12 @@ public class StageServiceTest {
 
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.recreateStage(caseUUID, stageUUID);
+        stageService.recreateStage(caseUUID, stageUUID, stageType);
 
         verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(auditClient).recreateStage(stage);
 
         verifyNoMoreInteractions(auditClient, stageRepository, notifyClient);
-
 
     }
 
