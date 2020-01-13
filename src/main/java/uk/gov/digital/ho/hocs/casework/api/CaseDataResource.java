@@ -67,6 +67,12 @@ class CaseDataResource {
         return ResponseEntity.ok(GetCaseSummaryResponse.from(caseSummary));
     }
 
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/calculateTotalsWcs")
+    ResponseEntity calculateTotalsWcs(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
+        caseDataService.calculateTotalsWcs(caseUUID, stageUUID);
+        return ResponseEntity.ok().build();
+    }
+
     @Allocated(allocatedTo = AllocationLevel.USER)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data")
     ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {

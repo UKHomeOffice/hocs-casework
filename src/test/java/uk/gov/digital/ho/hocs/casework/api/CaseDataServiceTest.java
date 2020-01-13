@@ -433,6 +433,18 @@ public class CaseDataServiceTest {
     }
 
     @Test
+    public void shouldCalculateTotalsWcs() throws JsonProcessingException {
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+
+        caseDataService.calculateTotalsWcs(caseData.getUuid(), stageUUID);
+
+        verify(caseDataRepository, times(2)).findByUuid(caseData.getUuid());
+        verify(caseDataRepository, times(1)).save(caseData);
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
     public void shouldUpdateCase() throws JsonProcessingException {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);

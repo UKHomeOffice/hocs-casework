@@ -146,6 +146,18 @@ public class CaseDataResourceTest {
     }
 
     @Test
+    public void shouldCalculateTotalsWcs() {
+        doNothing().when(caseDataService).calculateTotalsWcs(uuid, uuid);
+
+        ResponseEntity response = caseDataResource.calculateTotalsWcs(uuid, uuid);
+
+        verify(caseDataService, times(1)).calculateTotalsWcs(uuid, uuid);
+        verifyNoMoreInteractions(caseDataService);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     public void shouldUpdateCaseData() {
         UpdateCaseDataRequest updateCaseDataRequest = new UpdateCaseDataRequest(data);
 
