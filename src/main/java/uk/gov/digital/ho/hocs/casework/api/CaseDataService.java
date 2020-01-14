@@ -142,7 +142,7 @@ public class CaseDataService {
         return caseData;
     }
 
-    void calculateTotalsWcs(UUID caseUUID, UUID stageUUID) {
+    Map<String, String> calculateTotalsWcs(UUID caseUUID, UUID stageUUID) {
         log.debug("Calculating totals WCS for Case: {} Stage: {}", caseUUID, stageUUID);
         CaseData caseData = getCaseData(caseUUID);
         Map<String,String> dataMap = caseData.getDataMap(objectMapper);
@@ -152,6 +152,7 @@ public class CaseDataService {
         newDataMap.put("TotalPaid", totalPaymentWcs.calculatePaid(dataMap).toString());
         updateCaseData(caseUUID, stageUUID, newDataMap);
         log.info("Calculating totals WCS for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CALCULATED_TOTALS));
+        return newDataMap;
     }
 
     void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {

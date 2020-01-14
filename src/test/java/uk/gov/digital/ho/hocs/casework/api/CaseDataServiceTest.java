@@ -437,8 +437,9 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
-        caseDataService.calculateTotalsWcs(caseData.getUuid(), stageUUID);
+        Map<String, String> totals = caseDataService.calculateTotalsWcs(caseData.getUuid(), stageUUID);
 
+        assertThat(totals).isNotNull();
         verify(caseDataRepository, times(2)).findByUuid(caseData.getUuid());
         verify(caseDataRepository, times(1)).save(caseData);
         verifyNoMoreInteractions(caseDataRepository);

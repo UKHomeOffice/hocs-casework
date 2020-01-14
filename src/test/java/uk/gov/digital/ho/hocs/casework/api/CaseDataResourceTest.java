@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -147,7 +148,8 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldCalculateTotalsWcs() {
-        doNothing().when(caseDataService).calculateTotalsWcs(uuid, uuid);
+        Map<String, String> totals = new HashMap();
+        when(caseDataService.calculateTotalsWcs(uuid, uuid)).thenReturn(totals);
 
         ResponseEntity response = caseDataResource.calculateTotalsWcs(uuid, uuid);
 
@@ -155,6 +157,8 @@ public class CaseDataResourceTest {
         verifyNoMoreInteractions(caseDataService);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).isInstanceOf(Map.class);
     }
 
     @Test

@@ -14,10 +14,7 @@ import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -68,9 +65,9 @@ class CaseDataResource {
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/calculateTotalsWcs")
-    ResponseEntity calculateTotalsWcs(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
-        caseDataService.calculateTotalsWcs(caseUUID, stageUUID);
-        return ResponseEntity.ok().build();
+    ResponseEntity<Map<String, String>> calculateTotalsWcs(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
+        Map<String, String> totals = caseDataService.calculateTotalsWcs(caseUUID, stageUUID);
+        return ResponseEntity.ok(totals);
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER)
