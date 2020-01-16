@@ -64,9 +64,9 @@ class CaseDataResource {
         return ResponseEntity.ok(GetCaseSummaryResponse.from(caseSummary));
     }
 
-    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/calculateTotalsWcs")
-    ResponseEntity<Map<String, String>> calculateTotalsWcs(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
-        Map<String, String> totals = caseDataService.calculateTotalsWcs(caseUUID, stageUUID);
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/calculateTotals")
+    ResponseEntity<Map<String, String>> calculateTotals(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody String listName) {
+        Map<String, String> totals = caseDataService.calculateTotals(caseUUID, stageUUID, listName);
         return ResponseEntity.ok(totals);
     }
 

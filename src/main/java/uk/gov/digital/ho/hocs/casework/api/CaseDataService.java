@@ -14,6 +14,8 @@ import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -142,16 +144,23 @@ public class CaseDataService {
         return caseData;
     }
 
-    Map<String, String> calculateTotalsWcs(UUID caseUUID, UUID stageUUID) {
-        log.debug("Calculating totals WCS for Case: {} Stage: {}", caseUUID, stageUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        Map<String,String> dataMap = caseData.getDataMap(objectMapper);
-        TotalPaymentWcs totalPaymentWcs = new TotalPaymentWcs();
+    Map<String, String> calculateTotals(UUID caseUUID, UUID stageUUID, String listName) {
+        log.debug("Calculating totals for Case: {} Stage: {}", caseUUID, stageUUID);
         Map<String, String> newDataMap = new HashMap<>();
-        newDataMap.put("TotalAward", totalPaymentWcs.calculateAward(dataMap).toString());
-        newDataMap.put("TotalPaid", totalPaymentWcs.calculatePaid(dataMap).toString());
-        updateCaseData(caseUUID, stageUUID, newDataMap);
-        log.info("Calculating totals WCS for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CALCULATED_TOTALS));
+        try {
+            CaseData caseData = getCaseData(caseUUID);
+            Map<String, String> dataMap = caseData.getDataMap(objectMapper);
+            List<EntityDto<EntityTotalDto>> entityList = infoClient.getEntityListTotals(listName);
+            for (EntityDto<EntityTotalDto> entityDto : entityList) {
+                EntityTotalDto total = entityDto.getData();
+                DataTotal dataTotal = new DataTotal();
+                newDataMap.put(entityDto.getSimpleName(), dataTotal.calculate(dataMap, total.getCheckSuffix(), total.getValueSuffix(), total.getFields()).toString());
+            }
+            updateCaseData(caseUUID, stageUUID, newDataMap);
+            log.info("Calculated totals for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CALCULATED_TOTALS));
+        } catch (Exception e) {
+            log.error("Failed to calculate totals for Case: {}", caseUUID, value(EVENT, CALCULATED_TOTALS), value(EXCEPTION, e));
+        }
         return newDataMap;
     }
 

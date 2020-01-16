@@ -147,13 +147,13 @@ public class CaseDataResourceTest {
     }
 
     @Test
-    public void shouldCalculateTotalsWcs() {
+    public void shouldCalculateTotals() {
         Map<String, String> totals = new HashMap();
-        when(caseDataService.calculateTotalsWcs(uuid, uuid)).thenReturn(totals);
+        when(caseDataService.calculateTotals(uuid, uuid, "list")).thenReturn(totals);
 
-        ResponseEntity response = caseDataResource.calculateTotalsWcs(uuid, uuid);
+        ResponseEntity response = caseDataResource.calculateTotals(uuid, uuid, "list");
 
-        verify(caseDataService, times(1)).calculateTotalsWcs(uuid, uuid);
+        verify(caseDataService, times(1)).calculateTotals(uuid, uuid, "list");
         verifyNoMoreInteractions(caseDataService);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
