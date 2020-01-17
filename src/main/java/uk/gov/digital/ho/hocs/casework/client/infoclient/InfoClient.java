@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.client.infoclient;
 
+import com.fasterxml.jackson.databind.type.CollectionType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -110,6 +111,13 @@ public class InfoClient {
         UserDto userDto = restHelper.get(serviceBaseURL, String.format("/user/%s", userUUID), UserDto.class);
         log.info("Got User UserUUID {}", userUUID, value(EVENT, INFO_CLIENT_GET_USER));
         return userDto;
+    }
+
+    @Cacheable(value = "InfoClientGetEntityListDtos", unless = "#result == null", key = "#listName")
+    public List<EntityDto<EntityTotalDto>> getEntityListTotals(String listName) {
+        List<EntityDto<EntityTotalDto>> entityListDtos = restHelper.get(serviceBaseURL, String.format("/entity/list/%s", listName), new ParameterizedTypeReference<List<EntityDto<EntityTotalDto>>>() {});
+        log.info("Got Entity List By List Name {} ", value(EVENT, INFO_CLIENT_GET_ENTITY_LIST));
+        return entityListDtos;
     }
 
     @CacheEvict(value = "InfoClientGetStandardLine", key = "#topicUUID")

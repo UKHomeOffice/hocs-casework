@@ -14,6 +14,8 @@ import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
@@ -429,6 +431,24 @@ public class CaseDataServiceTest {
 
         verify(caseDataRepository, times(1)).findByUuid(null);
 
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
+    public void shouldCalculateTotals() throws JsonProcessingException {
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        EntityTotalDto entityTotalDto = new EntityTotalDto("check", "value", "field");
+        EntityDto<EntityTotalDto> entityDto = new EntityDto<EntityTotalDto>("simpleName", entityTotalDto);
+        List<EntityDto<EntityTotalDto>> entityListTotals = new ArrayList();
+        entityListTotals.add(entityDto);
+        when(infoClient.getEntityListTotals("list")).thenReturn(entityListTotals);
+
+        Map<String, String> totals = caseDataService.calculateTotals(caseData.getUuid(), stageUUID, "list");
+
+        assertThat(totals).isNotNull();
+        verify(caseDataRepository, times(2)).findByUuid(caseData.getUuid());
+        verify(caseDataRepository, times(1)).save(caseData);
         verifyNoMoreInteractions(caseDataRepository);
     }
 
