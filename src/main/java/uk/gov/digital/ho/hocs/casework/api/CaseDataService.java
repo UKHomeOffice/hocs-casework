@@ -36,6 +36,7 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRE
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_COMPLETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_RECREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 
 @Service
@@ -62,6 +63,7 @@ public class CaseDataService {
             CASE_TOPIC_DELETED.toString(),
             STAGE_ALLOCATED_TO_TEAM.toString(),
             STAGE_CREATED.toString(),
+            STAGE_RECREATED.toString(),
             STAGE_COMPLETED.toString(),
             STAGE_ALLOCATED_TO_USER.toString(),
             CORRESPONDENT_DELETED.toString(),
@@ -239,6 +241,7 @@ public class CaseDataService {
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
 
         CaseSummary caseSummary = new CaseSummary(
+                caseData.getCreated().toLocalDate(),
                 caseData.getCaseDeadline(),
                 stageDeadlines,
                 additionalFields,

@@ -15,6 +15,7 @@ public class GetCaseSummaryResponseTest {
 
     @Test
     public void getCaseSummaryResponse_shouldOrderAdditionalFields() {
+        LocalDate caseCreated = LocalDate.now().minusDays(10);
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
 
         Map<String, LocalDate> stageDeadlines = new HashMap<>();
@@ -35,17 +36,17 @@ public class GetCaseSummaryResponseTest {
         additionalFields.add(field2);
         additionalFields.add(field4);
 
-        CaseSummary caseSummary = new CaseSummary(caseDeadline, stageDeadlines, additionalFields, null, null,null);
+        CaseSummary caseSummary = new CaseSummary(caseCreated, caseDeadline, stageDeadlines, additionalFields, null, null,null);
 
         GetCaseSummaryResponse getCaseSummaryResponse = GetCaseSummaryResponse.from(caseSummary);
 
+        assertThat(getCaseSummaryResponse.getCaseCreated()).isEqualTo(caseCreated);
+        assertThat(getCaseSummaryResponse.getCaseDeadline()).isEqualTo(caseDeadline);
         assertThat(getCaseSummaryResponse.getAdditionalFields().size()).isEqualTo(5);
         assertThat(getCaseSummaryResponse.getAdditionalFields().get(0).getLabel()).isEqualTo(field1.getLabel());
         assertThat(getCaseSummaryResponse.getAdditionalFields().get(1).getLabel()).isEqualTo(field2.getLabel());
         assertThat(getCaseSummaryResponse.getAdditionalFields().get(2).getLabel()).isEqualTo(field3.getLabel());
         assertThat(getCaseSummaryResponse.getAdditionalFields().get(3).getLabel()).isEqualTo(field4.getLabel());
         assertThat(getCaseSummaryResponse.getAdditionalFields().get(4).getLabel()).isEqualTo(field5.getLabel());
-
-
     }
 }

@@ -32,7 +32,7 @@ class CaseDataResource {
         this.caseDataService = caseDataService;
     }
 
-    @Authorised(accessLevel = AccessLevel.WRITE)
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @PostMapping(value = "/case")
     ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getDateRecieved());
