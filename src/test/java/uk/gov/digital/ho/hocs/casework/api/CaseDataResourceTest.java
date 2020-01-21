@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -143,6 +144,21 @@ public class CaseDataResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody().getPrimaryCorrespondent()).isInstanceOf(GetCorrespondentResponse.class);
         assertThat(response.getBody().getPrimaryTopic()).isInstanceOf(GetTopicResponse.class);
+    }
+
+    @Test
+    public void shouldCalculateTotals() {
+        Map<String, String> totals = new HashMap();
+        when(caseDataService.calculateTotals(uuid, uuid, "list")).thenReturn(totals);
+
+        ResponseEntity response = caseDataResource.calculateTotals(uuid, uuid, "list");
+
+        verify(caseDataService, times(1)).calculateTotals(uuid, uuid, "list");
+        verifyNoMoreInteractions(caseDataService);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).isInstanceOf(Map.class);
     }
 
     @Test

@@ -14,6 +14,8 @@ import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -140,6 +142,26 @@ public class CaseDataService {
         auditClient.createCaseAudit(caseData);
         log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
         return caseData;
+    }
+
+    Map<String, String> calculateTotals(UUID caseUUID, UUID stageUUID, String listName) {
+        log.debug("Calculating totals for Case: {} Stage: {}", caseUUID, stageUUID);
+        Map<String, String> newDataMap = new HashMap<>();
+        try {
+            CaseData caseData = getCaseData(caseUUID);
+            Map<String, String> dataMap = caseData.getDataMap(objectMapper);
+            List<EntityDto<EntityTotalDto>> entityList = infoClient.getEntityListTotals(listName);
+            for (EntityDto<EntityTotalDto> entityDto : entityList) {
+                EntityTotalDto total = entityDto.getData();
+                DataTotal dataTotal = new DataTotal();
+                newDataMap.put(entityDto.getSimpleName(), dataTotal.calculate(dataMap, total.getCheckSuffix(), total.getValueSuffix(), total.getFields()).toString());
+            }
+            updateCaseData(caseUUID, stageUUID, newDataMap);
+            log.info("Calculated totals for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CALCULATED_TOTALS));
+        } catch (Exception e) {
+            log.error("Failed to calculate totals for Case: {}", caseUUID, value(EVENT, CALCULATED_TOTALS), value(EXCEPTION, e));
+        }
+        return newDataMap;
     }
 
     void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
