@@ -76,6 +76,10 @@ public class Stage implements Serializable {
     @Column(name = "data", insertable = false, updatable = false)
     private String data;
 
+    @Getter
+    @Column(name = "case_created", insertable = false, updatable = false)
+    private LocalDateTime caseCreated;
+
     public Stage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, UUID transitionNoteUUID) {
         if (caseUUID == null || stageType == null) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
