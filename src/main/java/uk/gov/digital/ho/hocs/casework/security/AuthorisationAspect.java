@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
 import uk.gov.digital.ho.hocs.casework.application.NonMigrationEnvCondition;
 
 import java.util.Set;
@@ -74,8 +74,8 @@ public class AuthorisationAspect {
         if (joinPoint.getArgs()[0] instanceof UUID) {
             caseUUID = (UUID) joinPoint.getArgs()[0];
             caseType = caseService.getCaseType(caseUUID);
-        } else if (joinPoint.getArgs()[0] instanceof CreateCaseRequest) {
-            CreateCaseRequest createCaseRequest = (CreateCaseRequest) joinPoint.getArgs()[0];
+        } else if (joinPoint.getArgs()[0] instanceof CreateCaseRequestInterface) {
+            CreateCaseRequestInterface createCaseRequest = (CreateCaseRequestInterface) joinPoint.getArgs()[0];
             caseType = createCaseRequest.getType();
         } else {
             throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName(), SECURITY_PARSE_ERROR);

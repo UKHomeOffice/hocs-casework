@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.migration;
 
+import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,11 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseReferenceGenerator;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -49,7 +52,13 @@ public class MigrationCaseDataService {
     CaseData createCase(String caseType, String caseReference, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
         log.debug("Creating Case of type: {}", caseType);
         CaseDataType caseDataType = infoClient.getCaseType(caseType);
-        CaseData caseData = new CaseData(caseDataType, caseReference, data, objectMapper, caseDeadline, dateReceived);
+
+        String newCaseReference = caseReference;
+        if(StringUtils.isNullOrEmpty(newCaseReference)){
+            newCaseReference = CaseReferenceGenerator.generateCaseReference(caseType, caseDataRepository.getNextSeriesId(), LocalDateTime.now());
+        }
+
+        CaseData caseData = new CaseData(caseDataType, newCaseReference, data, objectMapper, caseDeadline, dateReceived);
         caseDataRepository.save(caseData);
         auditClient.createCaseAudit(caseData);
         log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
