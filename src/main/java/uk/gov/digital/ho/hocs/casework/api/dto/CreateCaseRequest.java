@@ -9,7 +9,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 @Getter
-public class CreateCaseRequest {
+public class CreateCaseRequest implements CreateCaseRequestInterface {
 
     @JsonProperty("type")
     private String type;

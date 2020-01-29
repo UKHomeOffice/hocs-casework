@@ -110,7 +110,7 @@ public class CaseData implements Serializable {
         }
 
         this.type = type.getDisplayCode();
-        this.reference = generateCaseReference(caseNumber);
+        this.reference = CaseReferenceGenerator.generateCaseReference(this.type, caseNumber, this.created);
         this.uuid = randomUUID(type.getShortCode());
         this.dateReceived = dateReceived;
     }
@@ -149,10 +149,6 @@ public class CaseData implements Serializable {
         return dataString;
     }
 
-    private String generateCaseReference(Long caseNumber) {
-        return String.format("%S/%07d/%ty", this.type, caseNumber, this.created);
-    }
-
     private static UUID randomUUID(String shortCode) {
         if (shortCode != null) {
             String uuid = UUID.randomUUID().toString().substring(0, 33);
@@ -180,6 +176,7 @@ public class CaseData implements Serializable {
         this.caseDeadline = caseDeadline;
         this.dateReceived = dateReceived;
     }
+
 
     // --------  Migration Code End --------
 

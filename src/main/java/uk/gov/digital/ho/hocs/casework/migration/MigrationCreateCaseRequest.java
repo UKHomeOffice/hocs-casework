@@ -3,13 +3,14 @@ package uk.gov.digital.ho.hocs.casework.migration;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
 
 import java.time.LocalDate;
 import java.util.Map;
 
 @AllArgsConstructor
 @Getter
-public class MigrationCreateCaseRequest {
+public class MigrationCreateCaseRequest implements CreateCaseRequestInterface {
 
     @JsonProperty("type")
     private String type;
