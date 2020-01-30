@@ -231,7 +231,6 @@ public class AuditClient {
         }
     }
 
-    @Async
     public void updateStageTeam(Stage stage)  {
         try {
             EventType allocationType;

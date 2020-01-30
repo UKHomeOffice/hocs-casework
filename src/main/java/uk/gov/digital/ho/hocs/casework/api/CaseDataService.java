@@ -61,6 +61,7 @@ public class CaseDataService {
 
     public static final List<String> TIMELINE_EVENTS = List.of(
             CASE_CREATED.toString(),
+            CASE_COMPLETED.toString(),
             CASE_TOPIC_CREATED.toString(),
             CASE_TOPIC_DELETED.toString(),
             STAGE_ALLOCATED_TO_TEAM.toString(),
