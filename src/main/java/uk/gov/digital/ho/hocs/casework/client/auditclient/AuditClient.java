@@ -187,7 +187,6 @@ public class AuditClient {
         sendAuditMessage(topic.getCaseUUID(), data, CASE_TOPIC_DELETED, null, data);
     }
 
-    @Async
     public void createCaseAudit(CaseData caseData)  {
         String data = "{}";
         try {
