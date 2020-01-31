@@ -75,6 +75,7 @@ public class AuditClient {
 
     public void updateCaseAudit(CaseData caseData, UUID stageUUID) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             String data = "{}";
             try {
@@ -82,16 +83,17 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
             }
-            sendAuditMessage(caseData.getUuid(), data, CASE_UPDATED, stageUUID, data, requestDataDto.getCorrelationId(),
+            sendAuditMessage(localDateTime, caseData.getUuid(), data, CASE_UPDATED, stageUUID, data, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
 
     public void viewCaseAudit(CaseData caseData) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             try {
-                sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())),
+                sendAuditMessage(localDateTime, caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())),
                         EventType.CASE_VIEWED, null, requestDataDto.getCorrelationId(), requestDataDto.getUserId(),
                         requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
@@ -102,9 +104,10 @@ public class AuditClient {
 
     public void viewCaseSummaryAudit(CaseData caseData, CaseSummary caseSummary) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             try {
-                sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())),
+                sendAuditMessage(localDateTime, caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())),
                         EventType.CASE_SUMMARY_VIEWED, null, requestDataDto.getCorrelationId(), requestDataDto.getUserId(),
                         requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
@@ -115,9 +118,10 @@ public class AuditClient {
 
     public void viewStandardLineAudit(CaseData caseData) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             try {
-                sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())),
+                sendAuditMessage(localDateTime, caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())),
                         EventType.STANDARD_LINE_VIEWED, null, requestDataDto.getCorrelationId(), requestDataDto.getUserId(),
                         requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
@@ -128,9 +132,10 @@ public class AuditClient {
 
     public void viewTemplateAudit(CaseData caseData) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             try {
-                sendAuditMessage(caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())),
+                sendAuditMessage(localDateTime, caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())),
                         EventType.TEMPLATE_VIEWED, null, requestDataDto.getCorrelationId(), requestDataDto.getUserId(),
                         requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
@@ -141,6 +146,7 @@ public class AuditClient {
 
     public void deleteCaseAudit(CaseData caseData) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             String data = "{}";
             try {
@@ -148,13 +154,14 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
             }
-            sendAuditMessage(caseData.getUuid(), data, EventType.CASE_DELETED, null, data, requestDataDto.getCorrelationId(),
+            sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_DELETED, null, data, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
 
     public void completeCaseAudit(CaseData caseData) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             String data = "{}";
             try {
@@ -162,37 +169,41 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
             }
-            sendAuditMessage(caseData.getUuid(), data, EventType.CASE_COMPLETED, null, data, requestDataDto.getCorrelationId(),
+            sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_COMPLETED, null, data, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
 
     public void viewCaseNotesAudit(UUID caseUUID, Set<CaseNote> caseNotes) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
-            sendAuditMessage(caseUUID, "", EventType.CASE_NOTES_VIEWED, null, requestDataDto.getCorrelationId(),
+            sendAuditMessage(localDateTime, caseUUID, "", EventType.CASE_NOTES_VIEWED, null, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
 
     public void viewCaseNoteAudit(CaseNote caseNote) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
-            sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_VIEWED, null, requestDataDto.getCorrelationId(),
+            sendAuditMessage(localDateTime, caseNote.getCaseUUID(), "", EventType.CASE_NOTE_VIEWED, null, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
 
     public void createCaseNoteAudit(CaseNote caseNote) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
-            sendAuditMessage(caseNote.getCaseUUID(), "", EventType.CASE_NOTE_CREATED, null,
+            sendAuditMessage(localDateTime, caseNote.getCaseUUID(), "", EventType.CASE_NOTE_CREATED, null,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
 
     public void createCorrespondentAudit(Correspondent correspondent) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             String data = "{}";
             try {
@@ -200,22 +211,24 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
             }
-            sendAuditMessage(correspondent.getCaseUUID(), data, CORRESPONDENT_CREATED, null, data,
+            sendAuditMessage(localDateTime, correspondent.getCaseUUID(), data, CORRESPONDENT_CREATED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
 
     public void deleteCorrespondentAudit(Correspondent correspondent) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             String data = String.format("{\"uuid\":\"%s\"}", correspondent.getUuid());
-            sendAuditMessage(correspondent.getCaseUUID(), "", CORRESPONDENT_DELETED, null, data,
+            sendAuditMessage(localDateTime, correspondent.getCaseUUID(), "", CORRESPONDENT_DELETED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
 
     public void createTopicAudit(Topic topic) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             String data = "{}";
             try {
@@ -223,7 +236,7 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
             }
-            sendAuditMessage(topic.getCaseUUID(), data, CASE_TOPIC_CREATED, null, data, requestDataDto.getCorrelationId(),
+            sendAuditMessage(localDateTime, topic.getCaseUUID(), data, CASE_TOPIC_CREATED, null, data, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
 
@@ -231,6 +244,7 @@ public class AuditClient {
 
     public void deleteTopicAudit(Topic topic) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             String data = "{}";
             try {
@@ -238,13 +252,14 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
             }
-            sendAuditMessage(topic.getCaseUUID(), data, CASE_TOPIC_DELETED, null, data, requestDataDto.getCorrelationId(),
+            sendAuditMessage(localDateTime, topic.getCaseUUID(), data, CASE_TOPIC_DELETED, null, data, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
 
     public void createCaseAudit(CaseData caseData) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             String data = "{}";
             try {
@@ -252,13 +267,14 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
             }
-            sendAuditMessage(caseData.getUuid(), data, CASE_CREATED, null, data, requestDataDto.getCorrelationId(),
+            sendAuditMessage(localDateTime, caseData.getUuid(), data, CASE_CREATED, null, data, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
 
     public void updateStageUser(Stage stage) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             try {
                 EventType allocationType;
@@ -267,7 +283,7 @@ public class AuditClient {
                 } else {
                     allocationType = STAGE_UNALLOCATED_FROM_USER;
                 }
-                sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(),
+                sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(),
                         stage.getUserUUID(), stage.getStageType(), null)), allocationType, stage.getUuid(),
                         requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
@@ -278,9 +294,10 @@ public class AuditClient {
 
     public void createStage(Stage stage) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             try {
-                sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(),
+                sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(),
                                 stage.getTeamUUID(), stage.getStageType(), stage.getDeadline())), STAGE_CREATED, stage.getUuid(),
                                 requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
@@ -291,9 +308,10 @@ public class AuditClient {
 
     public void recreateStage(Stage stage) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             try {
-                sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(),
+                sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(),
                                 stage.getTeamUUID(), stage.getStageType(), null)), STAGE_RECREATED, stage.getUuid(), requestDataDto.getCorrelationId(),
                                 requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
@@ -304,6 +322,7 @@ public class AuditClient {
 
     public void updateStageTeam(Stage stage) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
 
         executorService.execute(() -> {
             try {
@@ -313,7 +332,7 @@ public class AuditClient {
                 } else {
                     allocationType = STAGE_COMPLETED;
                 }
-                sendAuditMessage(stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(), stage.getTeamUUID(), stage.getStageType(), stage.getDeadline())), allocationType,
+                sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(), stage.getTeamUUID(), stage.getStageType(), stage.getDeadline())), allocationType,
                                  stage.getUuid(), requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
                 log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
@@ -321,12 +340,12 @@ public class AuditClient {
         });
     }
 
-    private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType, UUID stageUUID, String correlationId, String userId, String username, String groups) {
-        sendAuditMessage(caseUUID, payload, eventType, stageUUID, "{}", correlationId, userId, username, groups);
+    private void sendAuditMessage(LocalDateTime localDateTime, UUID caseUUID, String payload, EventType eventType, UUID stageUUID, String correlationId, String userId, String username, String groups) {
+        sendAuditMessage(localDateTime, caseUUID, payload, eventType, stageUUID, "{}", correlationId, userId, username, groups);
     }
 
     @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
-    private void sendAuditMessage(UUID caseUUID, String payload, EventType eventType, UUID stageUUID, String data, String correlationId, String userId, String username, String groups) {
+    private void sendAuditMessage(LocalDateTime localDateTime, UUID caseUUID, String payload, EventType eventType, UUID stageUUID, String data, String correlationId, String userId, String username, String groups) {
         CreateAuditRequest request = new CreateAuditRequest(
                 correlationId,
                 caseUUID,
@@ -335,7 +354,7 @@ public class AuditClient {
                 payload,
                 data,
                 namespace,
-                LocalDateTime.now(),
+                localDateTime,
                 eventType,
                 userId);
 
