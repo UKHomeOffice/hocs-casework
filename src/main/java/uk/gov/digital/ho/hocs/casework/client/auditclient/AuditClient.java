@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.client.auditclient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,7 @@ public class AuditClient {
     private final String serviceBaseURL;
     private final String EVENT_TYPE_HEADER = "event_type";
 
+    @Setter
     private ExecutorService executorService;
 
 

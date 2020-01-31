@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.client.auditclient;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.util.concurrent.MoreExecutors;
 import org.apache.camel.ProducerTemplate;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,11 +20,13 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
@@ -75,6 +78,7 @@ public class AuditClientTest {
         auditService = "http://audit-service";
         auditClient = new AuditClient(producerTemplate, auditQueue,"hocs-casework","namespace", mapper, requestData, restHelper,
                 auditService);
+        auditClient.setExecutorService(MoreExecutors.newDirectExecutorService());
     }
 
     @Test

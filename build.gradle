@@ -79,4 +79,6 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation("org.apache.camel:camel-test-spring:${camelVersion}")
     testImplementation('org.assertj:assertj-core')
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    testImplementation group: 'com.google.guava', name: 'guava', version: '28.2-jre'
 }
