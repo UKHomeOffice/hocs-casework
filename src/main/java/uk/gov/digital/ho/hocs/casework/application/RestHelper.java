@@ -9,6 +9,7 @@ import org.springframework.http.*;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.S3Document;
 
@@ -50,7 +51,7 @@ public class RestHelper {
         return response.getBody();
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
+    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"), exclude = HttpClientErrorException.NotFound.class)
     public <R> R get(String serviceBaseURL, String url, Class<R> responseType) {
         log.info("RestHelper making Get request to {}{}", serviceBaseURL, url, value(EVENT, REST_HELPER_GET));
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
@@ -76,7 +77,7 @@ public class RestHelper {
         return document;
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
+    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"), exclude = HttpClientErrorException.NotFound.class)
     public <R> R get(String serviceBaseURL, String url, ParameterizedTypeReference<R> responseType) {
         log.info("RestHelper making Get request to {}{}", serviceBaseURL, url, value(EVENT, REST_HELPER_GET));
         ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
