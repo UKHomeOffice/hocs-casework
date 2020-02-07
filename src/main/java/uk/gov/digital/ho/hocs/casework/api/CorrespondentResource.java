@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
@@ -55,6 +56,13 @@ public class CorrespondentResource {
     @DeleteMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent/{correspondentUUID}")
     ResponseEntity<GetCorrespondentResponse> deleteCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID ,@PathVariable UUID correspondentUUID) {
         correspondentService.deleteCorrespondent(caseUUID, correspondentUUID);
+        return ResponseEntity.ok().build();
+    }
+
+    @Allocated(allocatedTo = AllocationLevel.USER)
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent/{correspondentUUID}")
+    ResponseEntity updateCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @PathVariable UUID correspondentUUID, @Valid @RequestBody UpdateCorrespondentRequest request) {
+        correspondentService.updateCorrespondent(caseUUID, correspondentUUID, request);
         return ResponseEntity.ok().build();
     }
 

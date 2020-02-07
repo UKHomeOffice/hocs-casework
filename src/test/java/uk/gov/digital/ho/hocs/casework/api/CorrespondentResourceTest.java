@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
@@ -95,6 +96,24 @@ public class CorrespondentResourceTest {
         ResponseEntity response = correspondentResource.deleteCorrespondent(caseUUID, stageUUID, correspondentUUID);
 
         verify(correspondentService, times(1)).deleteCorrespondent(caseUUID, correspondentUUID);
+
+        verifyNoMoreInteractions(correspondentService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldUpdateCorrespondentOnCase() {
+
+        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+
+        UpdateCorrespondentRequest updateCorrespondentRequest = new UpdateCorrespondentRequest("anyFullName","anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
+        doNothing().when(correspondentService).updateCorrespondent(eq(caseUUID), eq(correspondentUUID), eq(updateCorrespondentRequest));
+
+        ResponseEntity response = correspondentResource.updateCorrespondent(caseUUID, stageUUID, correspondentUUID, updateCorrespondentRequest);
+
+        verify(correspondentService, times(1)).updateCorrespondent(eq(caseUUID), eq(correspondentUUID), eq(updateCorrespondentRequest));
 
         verifyNoMoreInteractions(correspondentService);
 
