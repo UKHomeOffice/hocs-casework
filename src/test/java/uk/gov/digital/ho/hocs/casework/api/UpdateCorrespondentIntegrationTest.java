@@ -177,55 +177,39 @@ public class UpdateCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenCreateACorrespondentForACaseThatIsAllocatedToYouWithNullCorrespondentType() {
+    public void shouldReturnBadRequestWhenUpdateACorrespondentForACaseThatIsAllocatedToYouWithNullFullName() {
 
-        long before = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
+        Correspondent before = correspondentRepository.findByUUID(CASE_UUID1, CASE1_EXISTING_CORRESPONDENT_UUID);
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent",
-                POST, new HttpEntity(createBodyNullCorrespondentType(), createValidAuthHeaders()), Void.class);
+                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CASE1_EXISTING_CORRESPONDENT_UUID,
+                PUT, new HttpEntity(createBodyNullFullName(), createValidAuthHeaders()), Void.class);
 
-        long after = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
+        Correspondent after = correspondentRepository.findByUUID(CASE_UUID1, CASE1_EXISTING_CORRESPONDENT_UUID);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
-        assertThat(after).isEqualTo(before);
+        assertThat(after).isEqualToComparingFieldByField(before);
     }
 
     @Test
-    public void shouldReturnBadRequestWhenCreateACorrespondentForACaseThatIsAllocatedToYouWithNullFullName() {
+    public void shouldReturnBadRequestWhenUpdateACorrespondentForACaseThatIsAllocatedToYouWithEmptyFullName() {
 
-        long before = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
+        Correspondent before = correspondentRepository.findByUUID(CASE_UUID1, CASE1_EXISTING_CORRESPONDENT_UUID);
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent",
-                POST, new HttpEntity(createBodyNullFullName(), createValidAuthHeaders()), Void.class);
+                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CASE1_EXISTING_CORRESPONDENT_UUID,
+                PUT, new HttpEntity(createBodyEmptyFullName(), createValidAuthHeaders()), Void.class);
 
-        long after = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
+        Correspondent after = correspondentRepository.findByUUID(CASE_UUID1, CASE1_EXISTING_CORRESPONDENT_UUID);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
 
-        assertThat(after).isEqualTo(before);
+        assertThat(after).isEqualToComparingFieldByField(before);
     }
 
     @Test
-    public void shouldReturnBadRequestWhenCreateACorrespondentForACaseThatIsAllocatedToYouWithEmptyFullName() {
-
-        long before = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
-
-        ResponseEntity<Void> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent",
-                POST, new HttpEntity(createBodyEmptyFullName(), createValidAuthHeaders()), Void.class);
-
-        long after = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
-
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
-
-        assertThat(after).isEqualTo(before);
-    }
-
-    @Test
-    public void shouldReturnOkWhenCreateACorrespondentForACaseThatIsAllocatedToYouThenReturnForbiddenWhenTheCaseIsAllocatedToAnotherTeam() throws JsonProcessingException {
+    public void shouldReturnOkWhenUpdateACorrespondentForACaseThatIsAllocatedToYouThenReturnForbiddenWhenTheCaseIsAllocatedToAnotherTeam() throws JsonProcessingException {
 
         setupMockTeams("TEST", 5);
 
@@ -234,27 +218,22 @@ public class UpdateCorrespondentIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess("{\"emailAddress\":\"bob\"}", MediaType.APPLICATION_JSON));
 
-        long before = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
-
         ResponseEntity<Void> result1 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent",
-                POST, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
+                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CASE1_EXISTING_CORRESPONDENT_UUID,
+                PUT, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
 
         ResponseEntity<Void> result2 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/team",
                 PUT, new HttpEntity(createBodyUpdateTeam(), createValidAuthHeaders()), Void.class);
 
         ResponseEntity<Void> result3 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent",
-                POST, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
-
-        long after = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
+                getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CASE1_EXISTING_CORRESPONDENT_UUID,
+                PUT, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
 
         assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result2.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result3.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 
-        assertThat(after).isEqualTo(before + 1l);
     }
 
     @Test
@@ -267,26 +246,21 @@ public class UpdateCorrespondentIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess("{\"emailAddress\":\"bob\"}", MediaType.APPLICATION_JSON));
 
-        long before = correspondentRepository.findAllByCaseUUID(CASE_UUID2).size();
         ResponseEntity<Void> result1 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/correspondent",
-                POST, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
+                getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/correspondent/" + CASE2_EXISTING_CORRESPONDENT_UUID,
+                PUT, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
 
         ResponseEntity<Void> result2 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/user",
                 PUT, new HttpEntity(createBodyUpdateUser(), createValidAuthHeaders()), Void.class);
 
         ResponseEntity<Void> result3 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/correspondent",
-                POST, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
-
-        long after = correspondentRepository.findAllByCaseUUID(CASE_UUID2).size();
+                getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/correspondent/" + CASE2_EXISTING_CORRESPONDENT_UUID,
+                PUT, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
 
         assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
         assertThat(result2.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result3.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        assertThat(after).isEqualTo(before + 1l);
     }
 
     private String getBasePath() {
