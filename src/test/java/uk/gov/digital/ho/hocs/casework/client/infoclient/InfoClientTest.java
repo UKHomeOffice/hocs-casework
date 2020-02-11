@@ -9,6 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,7 +30,7 @@ public class InfoClientTest {
 
     @Test
     public void getEntityListTotalsReturnsEntityList(){
-        EntityTotalDto entityTotalDto = new EntityTotalDto("check", "value", "field");
+        EntityTotalDto entityTotalDto = new EntityTotalDto(new HashMap(), new HashMap());
         EntityDto<EntityTotalDto> entityDto = new EntityDto<EntityTotalDto>("simpleName", entityTotalDto);
         List<EntityDto<EntityTotalDto>> entityListTotals = new ArrayList();
         entityListTotals.add(entityDto);

@@ -4,16 +4,15 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Map;
+
 @Getter
 @AllArgsConstructor
 public class EntityTotalDto {
 
-    @JsonProperty("checkSuffix")
-    private String checkSuffix;
+    @JsonProperty("addFields")
+    private Map<String, String> addFields;
 
-    @JsonProperty("valueSuffix")
-    private String valueSuffix;
-
-    @JsonProperty("fields")
-    private String fields;
+    @JsonProperty("subFields")
+    private Map<String, String> subFields;
 }
