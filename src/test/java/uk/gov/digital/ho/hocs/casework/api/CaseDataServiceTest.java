@@ -438,7 +438,7 @@ public class CaseDataServiceTest {
     public void shouldCalculateTotals() throws JsonProcessingException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
-        EntityTotalDto entityTotalDto = new EntityTotalDto("check", "value", "field");
+        EntityTotalDto entityTotalDto = new EntityTotalDto(new HashMap(), new HashMap());
         EntityDto<EntityTotalDto> entityDto = new EntityDto<EntityTotalDto>("simpleName", entityTotalDto);
         List<EntityDto<EntityTotalDto>> entityListTotals = new ArrayList();
         entityListTotals.add(entityDto);

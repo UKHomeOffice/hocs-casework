@@ -155,7 +155,7 @@ public class CaseDataService {
             for (EntityDto<EntityTotalDto> entityDto : entityList) {
                 EntityTotalDto total = entityDto.getData();
                 DataTotal dataTotal = new DataTotal();
-                newDataMap.put(entityDto.getSimpleName(), dataTotal.calculate(dataMap, total.getCheckSuffix(), total.getValueSuffix(), total.getFields()).toString());
+                newDataMap.put(entityDto.getSimpleName(), dataTotal.calculate(dataMap, total.getAddFields(), total.getSubFields()).toString());
             }
             updateCaseData(caseUUID, stageUUID, newDataMap);
             log.info("Calculated totals for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CALCULATED_TOTALS));
