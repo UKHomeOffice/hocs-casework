@@ -29,7 +29,7 @@ public class MigrationCaseNoteService {
         this.requestData = requestData;
     }
 
-    public UUID migrationCaseNote(UUID caseUUID, LocalDateTime timestamp, String user, String text) {
+    public UUID migrationCaseNote(UUID caseUUID, LocalDateTime timestamp, String text) {
         log.debug("Migrating CaseNote for Case: {}", caseUUID);
         CaseNote caseNote = new CaseNote(caseUUID, "MANUAL", timestamp, text, requestData.userId());
         caseNoteRepository.save(caseNote);
