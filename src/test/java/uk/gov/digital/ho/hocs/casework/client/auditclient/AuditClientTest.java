@@ -222,6 +222,15 @@ public class AuditClientTest {
     }
 
     @Test
+    public void updateCorrespondentAudit() throws IOException {
+        auditClient.updateCorrespondentAudit(correspondent);
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.CORRESPONDENT_UPDATED);
+        assertThat(request.getCaseUUID()).isEqualTo(correspondent.getCaseUUID());
+    }
+
+    @Test
     public void createTopicAudit() throws IOException {
         Topic topic = new Topic(caseUUID,"topic name", UUID.randomUUID());
         auditClient.createTopicAudit(topic);

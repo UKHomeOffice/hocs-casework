@@ -75,7 +75,7 @@ public class CorrespondentService {
 
         try {
             correspondentRepository.save(correspondent);
-            auditClient.createCorrespondentAudit(correspondent);
+            auditClient.updateCorrespondentAudit(correspondent);
         } catch (DataIntegrityViolationException e) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Failed to update correspondent %s for Case: %s", correspondent.getUuid(), caseUUID), CORRESPONDENT_UPDATE_FAILURE, e);
         }
