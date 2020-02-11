@@ -1,5 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -18,7 +20,7 @@ public class DataTotal {
 
     private BigDecimal parseCurrency(Map<String,String> dataMap, String claimedKey, String valueKey){
         try {
-            if (claimedKey == null || claimedKey.isBlank() || dataMap.getOrDefault(claimedKey, "").toUpperCase().equals("YES")) {
+            if (StringUtils.isBlank(claimedKey) || dataMap.getOrDefault(claimedKey, "").toUpperCase().equals("YES")) {
                 return new BigDecimal(dataMap.getOrDefault(valueKey, "0"));
             }
             return BigDecimal.ZERO;
