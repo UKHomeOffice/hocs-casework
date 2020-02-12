@@ -24,7 +24,7 @@ public class MigrationCaseNoteResource {
     @Authorised(accessLevel = AccessLevel.READ)
     @PostMapping(value = "/migration/case/{caseUUID}/note")
     public ResponseEntity<UUID> migrateCaseNote(@PathVariable UUID caseUUID,@Valid @RequestBody MigrationCreateCaseNoteRequest request) {
-        UUID uuid = migrationCaseNoteService.migrationCaseNote(caseUUID, request.getDate(), request.getUser(), request.getText());
+        UUID uuid = migrationCaseNoteService.migrationCaseNote(caseUUID, request.getDate(), request.getText());
         return ResponseEntity.ok(uuid);
     }
 }
