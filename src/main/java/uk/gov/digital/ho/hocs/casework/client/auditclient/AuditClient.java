@@ -32,6 +32,7 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_COMPLETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_RECREATED;
@@ -214,6 +215,21 @@ public class AuditClient {
                 log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
             }
             sendAuditMessage(localDateTime, correspondent.getCaseUUID(), data, CORRESPONDENT_CREATED, null, data,
+                    requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
+    }
+
+    public void updateCorrespondentAudit(Correspondent correspondent) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(AuditPayload.CreateCorrespondentRequest.from(correspondent));
+            } catch (JsonProcessingException e) {
+                log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+            }
+            sendAuditMessage(localDateTime, correspondent.getCaseUUID(), data, CORRESPONDENT_UPDATED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }

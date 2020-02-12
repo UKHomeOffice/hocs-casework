@@ -26,6 +26,7 @@ public class Correspondent implements Serializable {
     @Column(name = "uuid")
     private UUID uuid;
 
+    @Setter
     @Getter
     @Column(name = "created")
     private LocalDateTime created;
@@ -38,42 +39,52 @@ public class Correspondent implements Serializable {
     @Column(name = "case_uuid")
     private UUID caseUUID;
 
+    @Setter
     @Getter
     @Column(name = "fullname")
     private String fullName;
 
+    @Setter
     @Getter
     @Column(name = "postcode")
     private String postcode;
 
+    @Setter
     @Getter
     @Column(name = "address1")
     private String address1;
 
+    @Setter
     @Getter
     @Column(name = "address2")
     private String address2;
 
+    @Setter
     @Getter
     @Column(name = "address3")
     private String address3;
 
+    @Setter
     @Getter
     @Column(name = "country")
     private String country;
 
+    @Setter
     @Getter
     @Column(name = "telephone")
     private String telephone;
 
+    @Setter
     @Getter
     @Column(name = "email")
     private String email;
 
+    // todo: does it make sense to retain the external key when an entity is updated?
     @Getter
     @Column(name = "external_key")
     private String externalKey;
 
+    @Setter
     @Getter
     @Column(name = "reference")
     private String reference;

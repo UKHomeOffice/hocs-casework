@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
@@ -58,6 +59,27 @@ public class CorrespondentService {
             throw new ApplicationExceptions.EntityCreationException(String.format("Failed to create correspondent %s for Case: %s", correspondent.getUuid(), caseUUID), CORRESPONDENT_CREATE_FAILURE, e);
         }
         log.info("Created Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID, value(EVENT, CORRESPONDENT_CREATED));
+    }
+
+    void updateCorrespondent(UUID caseUUID, UUID correspondentUUID, UpdateCorrespondentRequest updateCorrespondentRequest){
+        log.debug("Updating Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
+        Correspondent correspondent = getCorrespondent(caseUUID, correspondentUUID);
+        correspondent.setFullName(updateCorrespondentRequest.getFullname());
+        correspondent.setAddress1(updateCorrespondentRequest.getAddress1());
+        correspondent.setAddress2(updateCorrespondentRequest.getAddress2());
+        correspondent.setAddress3(updateCorrespondentRequest.getAddress3());
+        correspondent.setPostcode(updateCorrespondentRequest.getPostcode());
+        correspondent.setTelephone(updateCorrespondentRequest.getTelephone());
+        correspondent.setEmail(updateCorrespondentRequest.getEmail());
+        correspondent.setReference(updateCorrespondentRequest.getReference());
+
+        try {
+            correspondentRepository.save(correspondent);
+            auditClient.updateCorrespondentAudit(correspondent);
+        } catch (DataIntegrityViolationException e) {
+            throw new ApplicationExceptions.EntityCreationException(String.format("Failed to update correspondent %s for Case: %s", correspondent.getUuid(), caseUUID), CORRESPONDENT_UPDATE_FAILURE, e);
+        }
+        log.info("Updated Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID, value(EVENT, CORRESPONDENT_UPDATED));
     }
 
     void deleteCorrespondent(UUID caseUUID, UUID correspondentUUID) {
