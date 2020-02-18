@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
@@ -25,7 +26,7 @@ class CaseDataResource {
     private final CaseDataService caseDataService;
 
     @Autowired
-    public CaseDataResource(CaseDataService caseDataService) {
+    public CaseDataResource(@Qualifier("CaseDataService") CaseDataService caseDataService) {
         this.caseDataService = caseDataService;
     }
 

@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -27,7 +28,7 @@ public class AuthorisationAspect {
     private CaseDataService caseService;
     private UserPermissionsService userService;
 
-    public AuthorisationAspect(CaseDataService caseService, UserPermissionsService userService) {
+    public AuthorisationAspect(@Qualifier("CaseDataService") CaseDataService caseService, UserPermissionsService userService) {
         this.caseService = caseService;
         this.userService = userService;
     }

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -43,12 +44,13 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 
 @Service
 @Slf4j
+@Qualifier("CaseDataService")
 public class CaseDataService {
 
-    private final CaseDataRepository caseDataRepository;
-    private final AuditClient auditClient;
-    private final ObjectMapper objectMapper;
-    private final InfoClient infoClient;
+    protected final CaseDataRepository caseDataRepository;
+    protected final AuditClient auditClient;
+    protected final ObjectMapper objectMapper;
+    protected final InfoClient infoClient;
 
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository, InfoClient infoClient,
@@ -145,7 +147,7 @@ public class CaseDataService {
         return caseData;
     }
 
-    Map<String, String> calculateTotals(UUID caseUUID, UUID stageUUID, String listName) {
+    protected Map<String, String> calculateTotals(UUID caseUUID, UUID stageUUID, String listName) {
         log.debug("Calculating totals for Case: {} Stage: {}", caseUUID, stageUUID);
         Map<String, String> newDataMap = new HashMap<>();
         try {
@@ -165,7 +167,7 @@ public class CaseDataService {
         return newDataMap;
     }
 
-    void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
+    protected void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseUUID);
         if (data != null) {
             log.debug("Data size {}", data.size());
