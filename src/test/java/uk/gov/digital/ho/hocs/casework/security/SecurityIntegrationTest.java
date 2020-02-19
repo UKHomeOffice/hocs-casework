@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -20,9 +22,10 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+
 import java.time.LocalDate;
 import java.util.*;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
@@ -37,7 +40,8 @@ public class SecurityIntegrationTest {
     @LocalServerPort
     int port;
 
-    @MockBean
+    @MockBean()
+    @Qualifier("CaseDataService")
     CaseDataService caseDataService;
 
     @MockBean
@@ -58,7 +62,7 @@ public class SecurityIntegrationTest {
 
     @Test
     public void shouldGetCaseDataWhenInCaseTypeGroup() {
-        Map<String,String> caseSubData = Map.of("key", "value");
+        Map<String, String> caseSubData = Map.of("key", "value");
 
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
@@ -68,14 +72,14 @@ public class SecurityIntegrationTest {
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
         HttpEntity httpEntity = new HttpEntity(headers);
-        ResponseEntity<String> result = restTemplate.exchange( getBasePath()  + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
+        ResponseEntity<String> result = restTemplate.exchange(getBasePath() + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
     public void shouldGetCaseDataWhenNoAccessToCaseTypeInTeamPreviouslyAssignedToCase() {
 
-        Map<String,String> caseSubData = new HashMap<>() {{
+        Map<String, String> caseSubData = new HashMap<>() {{
             put("key", "value");
         }};
 
@@ -88,7 +92,7 @@ public class SecurityIntegrationTest {
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
         HttpEntity httpEntity = new HttpEntity(headers);
-        ResponseEntity<String> result = restTemplate.exchange( getBasePath()  + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
+        ResponseEntity<String> result = restTemplate.exchange(getBasePath() + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -102,7 +106,7 @@ public class SecurityIntegrationTest {
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
         HttpEntity httpEntity = new HttpEntity(headers);
-        ResponseEntity<String> result = restTemplate.exchange( getBasePath()  + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
+        ResponseEntity<String> result = restTemplate.exchange(getBasePath() + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -115,7 +119,7 @@ public class SecurityIntegrationTest {
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/MzMzMzMzMzMzMzMzMzMzMw");
         HttpEntity httpEntity = new HttpEntity(headers);
-        ResponseEntity result = restTemplate.exchange( getBasePath()  + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
+        ResponseEntity result = restTemplate.exchange(getBasePath() + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -129,11 +133,11 @@ public class SecurityIntegrationTest {
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
         HttpEntity httpEntity = new HttpEntity(headers);
-        ResponseEntity result = restTemplate.exchange( getBasePath()  + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
+        ResponseEntity result = restTemplate.exchange(getBasePath() + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    private Set<TeamDto>  setupMockTeams(String caseType, int permission) {
+    private Set<TeamDto> setupMockTeams(String caseType, int permission) {
         Set<TeamDto> teamDtos = new HashSet<>();
         Set<PermissionDto> permissionDtos = new HashSet<>();
         permissionDtos.add(new PermissionDto(caseType, AccessLevel.from(permission)));
@@ -143,7 +147,7 @@ public class SecurityIntegrationTest {
     }
 
     private String getBasePath() {
-        return "http://localhost:"+ port;
+        return "http://localhost:" + port;
     }
 
 }
