@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.util.StringUtils;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 
 import java.time.LocalDate;
@@ -55,7 +56,7 @@ public class GetCaseSummaryResponse {
 
         List<AdditionalFieldDto> additionalFieldDtos = new ArrayList<>();
         if (caseSummary.getAdditionalFields() != null) {
-            additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream().filter(field -> !field.getValue().equals("")).map(AdditionalFieldDto::from).collect(Collectors.toList()));
+            additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream().filter(field -> !StringUtils.isEmpty(field.getValue())).map(AdditionalFieldDto::from).collect(Collectors.toList()));
         }
         additionalFieldDtos.sort(Comparator.comparing(AdditionalFieldDto::getLabel));
         return new GetCaseSummaryResponse(caseSummary.getCreatedDate(), caseSummary.getCaseDeadline(), caseSummary.getStageDeadlines(), additionalFieldDtos, getCorrespondentResponse, getTopicsResponse, activeStageDtos);

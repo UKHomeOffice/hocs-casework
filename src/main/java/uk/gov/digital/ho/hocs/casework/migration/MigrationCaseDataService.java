@@ -4,7 +4,9 @@ import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
@@ -22,17 +24,14 @@ import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_UPDATED_NULL_DATA;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
 
 @Service
 @Slf4j
-public class MigrationCaseDataService {
+@Qualifier("MigrationCaseDataService")
+public class MigrationCaseDataService extends CaseDataService {
 
-    private final CaseDataRepository caseDataRepository;
     private final MigrationStageRepository migrationStageRepository;
-    private final AuditClient auditClient;
-    private final ObjectMapper objectMapper;
-    private final InfoClient infoClient;
     private final CorrespondentService correspondentService;
     private final StageService stageService;
 
@@ -40,26 +39,29 @@ public class MigrationCaseDataService {
     public MigrationCaseDataService(CaseDataRepository caseDataRepository, MigrationStageRepository migrationStageRepository, InfoClient infoClient,
                                     ObjectMapper objectMapper, CorrespondentService correspondentService,
                                     StageService stageService, AuditClient auditClient) {
-        this.caseDataRepository = caseDataRepository;
+        super(caseDataRepository, infoClient, objectMapper, auditClient);
         this.migrationStageRepository = migrationStageRepository;
-        this.infoClient = infoClient;
-        this.auditClient = auditClient;
-        this.objectMapper = objectMapper;
         this.correspondentService = correspondentService;
         this.stageService = stageService;
     }
 
-    CaseData createCase(String caseType, String caseReference, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived) {
+    CaseData createCase(String caseType, String caseReference, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived, String totalsListName) {
         log.debug("Creating Case of type: {}", caseType);
         CaseDataType caseDataType = infoClient.getCaseType(caseType);
 
         String newCaseReference = caseReference;
-        if(StringUtils.isNullOrEmpty(newCaseReference)){
+        if (StringUtils.isNullOrEmpty(newCaseReference)) {
             newCaseReference = CaseReferenceGenerator.generateCaseReference(caseType, caseDataRepository.getNextSeriesId(), LocalDateTime.now());
         }
 
         CaseData caseData = new CaseData(caseDataType, newCaseReference, data, objectMapper, caseDeadline, dateReceived);
         caseDataRepository.save(caseData);
+
+        if(!StringUtils.isNullOrEmpty(totalsListName)){
+            calculateTotals(caseData.getUuid(), null,  totalsListName);
+            caseData = caseDataRepository.findByUuid(caseData.getUuid());
+        }
+
         auditClient.createCaseAudit(caseData);
         log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
         return caseData;
@@ -70,7 +72,8 @@ public class MigrationCaseDataService {
         return stageUUID;
     }
 
-    void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
+    @Override
+    protected void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseUUID);
         if (data != null) {
             log.debug("Data size {}", data.size());
@@ -83,6 +86,7 @@ public class MigrationCaseDataService {
         }
     }
 
+    @Override
     public CaseData getCase(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findByUuid(caseUUID);
