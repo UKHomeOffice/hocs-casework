@@ -16,6 +16,8 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -85,6 +87,8 @@ public class GetCaseResponse {
         return null;
     }
 
+    private static Pattern uuidPattern = Pattern.compile("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b", Pattern.CASE_INSENSITIVE);
+
     private static String populateFields(CaseData caseData, boolean full) {
         if(full) {
             List<String> keys = new ArrayList<>(2);
@@ -104,8 +108,11 @@ public class GetCaseResponse {
             final Collection<String> dataValues = new LinkedList<>(dataMap.values());
             dataKeys.retainAll(dataValues);
             for (String uuid : dataKeys) {
-                keys.add(uuid);
-                values.add(dataMap.get(uuid));
+                Matcher uuidMatcher = uuidPattern.matcher(uuid);
+                if (uuidMatcher.matches()) {
+                    keys.add(uuid);
+                    values.add(dataMap.get(uuid));
+                }
             }
             return StringUtils.replaceEach(caseData.getData(),
                     keys.toArray(new String[0]),
