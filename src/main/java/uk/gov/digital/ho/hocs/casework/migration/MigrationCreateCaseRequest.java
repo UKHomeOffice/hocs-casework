@@ -6,6 +6,7 @@ import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,9 @@ public class MigrationCreateCaseRequest implements CreateCaseRequestInterface {
 
     @JsonProperty("deadline")
     private LocalDate caseDeadline;
+
+    @JsonProperty("caseCreated")
+    private LocalDateTime caseCreated;
 
     @JsonProperty("received")
     private LocalDate dateReceived;

@@ -17,7 +17,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseReferenceGenerator;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
@@ -45,25 +44,29 @@ public class MigrationCaseDataService extends CaseDataService {
         this.stageService = stageService;
     }
 
-    CaseData createCase(String caseType, String caseReference, Map<String, String> data, LocalDate caseDeadline, LocalDate dateReceived, String totalsListName) {
+    CaseData createCase(MigrationCreateCaseRequest request) {
+        String caseType = request.getType();
+        String totalsListName = request.getTotalsListName();
+
         log.debug("Creating Case of type: {}", caseType);
         CaseDataType caseDataType = infoClient.getCaseType(caseType);
 
-        String newCaseReference = caseReference;
+        String newCaseReference = request.getCaseReference();
+        LocalDateTime caseCreated = request.getCaseCreated() != null ? request.getCaseCreated() : LocalDateTime.now();
         if (StringUtils.isNullOrEmpty(newCaseReference)) {
-            newCaseReference = CaseReferenceGenerator.generateCaseReference(caseType, caseDataRepository.getNextSeriesId(), LocalDateTime.now());
+            newCaseReference = CaseReferenceGenerator.generateCaseReference(caseType, caseDataRepository.getNextSeriesId(), caseCreated);
         }
 
-        CaseData caseData = new CaseData(caseDataType, newCaseReference, data, objectMapper, caseDeadline, dateReceived);
+        CaseData caseData = new CaseData(caseDataType, newCaseReference, request.getData(), objectMapper, request.getCaseDeadline(), request.getDateReceived(), caseCreated);
         caseDataRepository.save(caseData);
 
-        if(!StringUtils.isNullOrEmpty(totalsListName)){
-            calculateTotals(caseData.getUuid(), null,  totalsListName);
+        if (!StringUtils.isNullOrEmpty(totalsListName)) {
+            calculateTotals(caseData.getUuid(), null, totalsListName);
             caseData = caseDataRepository.findByUuid(caseData.getUuid());
         }
 
         auditClient.createCaseAudit(caseData);
-        log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
+        log.info("Created Case: {} Ref: {} UUID: {}, Event: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
         return caseData;
     }
 

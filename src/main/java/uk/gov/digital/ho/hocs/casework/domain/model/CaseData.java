@@ -13,7 +13,9 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DATA_JSON_PARSE_ERROR;
@@ -125,14 +127,15 @@ public class CaseData implements Serializable {
         }
     }
 
-    public Map<String,String> getDataMap(ObjectMapper objectMapper) {
+    public Map<String, String> getDataMap(ObjectMapper objectMapper) {
         return getDataMap(this.getData(), objectMapper);
     }
 
     private static Map<String, String> getDataMap(String dataString, ObjectMapper objectMapper) {
         Map<String, String> dataMap;
         try {
-            dataMap = objectMapper.readValue(dataString, new TypeReference<Map<String, String>>() {});
+            dataMap = objectMapper.readValue(dataString, new TypeReference<Map<String, String>>() {
+            });
         } catch (Exception e) {
             throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to read data value!", CASE_DATA_JSON_PARSE_ERROR, e);
         }
@@ -160,16 +163,16 @@ public class CaseData implements Serializable {
 
 
     // --------  Migration Code Start --------
-    public CaseData(CaseDataType type, String caseReference, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived) {
-        this(type, caseReference, caseDeadline, dateReceived);
+    public CaseData(CaseDataType type, String caseReference, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived, LocalDateTime caseCreated) {
+        this(type, caseReference, caseDeadline, dateReceived, caseCreated);
         update(data, objectMapper);
     }
 
-    public CaseData(CaseDataType type, String caseReference, LocalDate caseDeadline, LocalDate dateReceived) {
+    public CaseData(CaseDataType type, String caseReference, LocalDate caseDeadline, LocalDate dateReceived, LocalDateTime caseCreated) {
         if (type == null || caseReference == null) {
             throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
         }
-
+        this.created = caseCreated;
         this.type = type.getDisplayCode();
         this.reference = caseReference;
         this.uuid = randomUUID(type.getShortCode());

@@ -33,7 +33,7 @@ public class MigrationCaseDataResource {
     @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/migration/case")
     ResponseEntity<CreateCaseResponse> createCase(@RequestBody MigrationCreateCaseRequest request) {
-        CaseData caseData = migrationCaseDataService.createCase(request.getType(), request.getCaseReference(), request.getData(), request.getCaseDeadline(), request.getDateReceived(), request.getTotalsListName());
+        CaseData caseData = migrationCaseDataService.createCase(request);
 
         if (!CollectionUtils.isEmpty(request.getNotes())) {
             for (String note : request.getNotes()) {
