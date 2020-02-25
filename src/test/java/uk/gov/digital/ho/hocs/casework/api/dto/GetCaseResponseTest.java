@@ -48,8 +48,9 @@ public class GetCaseResponseTest {
 
         Map<String, String> data = new HashMap<>();
         data.put("Key1","Description 1");
-        data.put("Key2","UUID-1-2-3");
-        data.put("UUID-1-2-3","Description 2");
+        data.put("Key2","2d0904b2-123a-456b-789c-d6dbac804e72");
+        data.put("2d0904b2-123a-456b-789c-d6dbac804e72","Description 2");
+        data.put("Key3","3abcdef3-123a-456b-789c-d6dbac804e73");
 
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
@@ -61,14 +62,17 @@ public class GetCaseResponseTest {
         String responseData = caseResponse.getData();
         Map<String, String> dataMap = getDataMap(responseData, objectMapper);
 
+        assertThat("Description 1").isEqualTo(dataMap.get("Key1"));
         assertThat("Description 2").isEqualTo(dataMap.get("Key2"));
+        assertThat("3abcdef3-123a-456b-789c-d6dbac804e73").isEqualTo(dataMap.get("Key3"));
 
         caseResponse = GetCaseResponse.from(caseData, false);
         responseData = caseResponse.getData();
         dataMap = getDataMap(responseData, objectMapper);
 
-        assertThat("UUID-1-2-3").isEqualTo(dataMap.get("Key2"));
-
+        assertThat("Description 1").isEqualTo(dataMap.get("Key1"));
+        assertThat("2d0904b2-123a-456b-789c-d6dbac804e72").isEqualTo(dataMap.get("Key2"));
+        assertThat("3abcdef3-123a-456b-789c-d6dbac804e73").isEqualTo(dataMap.get("Key3"));
     }
 
     private static Map<String, String> getDataMap(String dataString, ObjectMapper objectMapper) throws IOException {
