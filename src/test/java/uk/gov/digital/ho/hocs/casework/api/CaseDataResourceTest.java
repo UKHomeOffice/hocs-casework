@@ -93,11 +93,11 @@ public class CaseDataResourceTest {
     @Test
     public void shouldDeleteCase() {
 
-        doNothing().when(caseDataService).deleteCase(uuid);
+        doNothing().when(caseDataService).deleteCase(uuid, true);
 
-        ResponseEntity response = caseDataResource.deleteCase(uuid);
+        ResponseEntity response = caseDataResource.deleteCase(uuid, true);
 
-        verify(caseDataService, times(1)).deleteCase(uuid);
+        verify(caseDataService, times(1)).deleteCase(uuid, true);
 
         verifyNoMoreInteractions(caseDataService);
 

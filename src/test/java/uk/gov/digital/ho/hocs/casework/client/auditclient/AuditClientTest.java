@@ -16,9 +16,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 
 import java.io.IOException;
@@ -378,7 +376,23 @@ public class AuditClientTest {
         assertThat(request.getType()).isEqualTo(EventType.STAGE_RECREATED);
         assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
         assertThat(request.getStageUUID()).isEqualTo(stage.getUuid());
-
-
     }
+
+    @Test
+    public void shouldDeleteAuditLinesForCase() {
+        UUID caseUUID = UUID.randomUUID();
+        UUID auditResponseUUID = UUID.randomUUID();
+        DeleteCaseAuditResponse restResponse = new DeleteCaseAuditResponse("C", caseUUID, false, 1);
+        when(restHelper.post(eq(auditService), eq(String.format("/audit/case/%s/delete", caseUUID)),
+                any(),
+                eq(DeleteCaseAuditResponse.class))).thenReturn(restResponse);
+
+        DeleteCaseAuditResponse response = auditClient.deleteAuditLinesForCase(caseUUID, "C", false);
+
+        verify(restHelper).post(eq(auditService), eq(String.format("/audit/case/%s/delete", caseUUID)),
+                any(),
+                eq(DeleteCaseAuditResponse.class));
+        assertThat(response.getAuditCount()).isEqualTo(1);
+    }
+
 }

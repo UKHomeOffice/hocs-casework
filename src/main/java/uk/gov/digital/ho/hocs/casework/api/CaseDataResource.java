@@ -45,9 +45,9 @@ class CaseDataResource {
     }
 
     @Authorised(accessLevel = AccessLevel.OWNER)
-    @DeleteMapping(value = "/case/{caseUUID}")
-    ResponseEntity deleteCase(@PathVariable UUID caseUUID) {
-        caseDataService.deleteCase(caseUUID);
+    @DeleteMapping(value = "/case/{caseUUID}/{deleted}")
+    ResponseEntity deleteCase(@PathVariable UUID caseUUID, @PathVariable Boolean deleted) {
+        caseDataService.deleteCase(caseUUID, deleted);
         return ResponseEntity.ok().build();
     }
 
