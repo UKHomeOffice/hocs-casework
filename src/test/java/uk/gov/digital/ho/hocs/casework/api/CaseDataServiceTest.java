@@ -567,7 +567,7 @@ public class CaseDataServiceTest {
 
         caseDataService.deleteCase(caseData.getUuid(), true);
 
-        verify(auditClient, times(1)).deleteCaseAudit(caseData);
+        verify(auditClient, times(1)).deleteCaseAudit(caseData, true);
         verify(auditClient).deleteAuditLinesForCase(eq(caseData.getUuid()), any(), eq(true));
         verifyNoMoreInteractions(auditClient);
     }

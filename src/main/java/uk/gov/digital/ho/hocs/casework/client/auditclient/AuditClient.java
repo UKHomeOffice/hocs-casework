@@ -144,13 +144,13 @@ public class AuditClient {
         });
     }
 
-    public void deleteCaseAudit(CaseData caseData) {
+    public void deleteCaseAudit(CaseData caseData, Boolean deleted) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(new AuditPayload.Case(caseData.getUuid()));
+                data = objectMapper.writeValueAsString(new AuditPayload.CaseDeleted(caseData.getUuid(), deleted));
             } catch (JsonProcessingException e) {
                 log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
             }

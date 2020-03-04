@@ -252,7 +252,7 @@ public class CaseDataService {
         CaseData caseData = getAnyCaseData(caseUUID);
         caseData.setDeleted(deleted);
         caseDataRepository.save(caseData);
-        auditClient.deleteCaseAudit(caseData);
+        auditClient.deleteCaseAudit(caseData, deleted);
         auditClient.deleteAuditLinesForCase(caseUUID, UUID.randomUUID().toString(), deleted);
         log.info("Deleted Case: {} flag: {}", caseUUID, deleted, value(EVENT, CASE_DELETED));
     }

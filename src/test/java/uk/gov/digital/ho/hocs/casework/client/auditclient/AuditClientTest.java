@@ -164,7 +164,7 @@ public class AuditClientTest {
     @Test
     public void deleteCaseAudit() throws IOException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
-        auditClient.deleteCaseAudit(caseData);
+        auditClient.deleteCaseAudit(caseData, true);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_DELETED);

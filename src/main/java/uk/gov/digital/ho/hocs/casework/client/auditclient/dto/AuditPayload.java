@@ -30,6 +30,13 @@ public interface AuditPayload {
 
     @AllArgsConstructor
     @Getter
+    class CaseDeleted {
+        private UUID caseUUID;
+        private Boolean deleted;
+    }
+
+    @AllArgsConstructor
+    @Getter
     class Topic {
         private UUID topicUuid;
         private String topicName;
