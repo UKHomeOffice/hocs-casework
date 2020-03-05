@@ -66,6 +66,9 @@ public interface AuditPayload {
         @JsonProperty("reference")
         private String reference;
 
+        @JsonRawValue
+        private String data;
+
         @JsonProperty("caseDeadline")
         private LocalDate caseDeadline;
 
@@ -77,6 +80,7 @@ public interface AuditPayload {
                     caseData.getCreated(),
                     caseData.getType(),
                     caseData.getReference(),
+                    caseData.getData(),
                     caseData.getCaseDeadline(),
                     caseData.getDateReceived());
         }
