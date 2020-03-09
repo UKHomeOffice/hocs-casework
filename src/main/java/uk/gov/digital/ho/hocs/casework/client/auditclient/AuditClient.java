@@ -14,10 +14,7 @@ import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RequestDataDto;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 
 import java.time.LocalDateTime;
@@ -147,13 +144,13 @@ public class AuditClient {
         });
     }
 
-    public void deleteCaseAudit(CaseData caseData) {
+    public void deleteCaseAudit(CaseData caseData, Boolean deleted) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(new AuditPayload.Case(caseData.getUuid()));
+                data = objectMapper.writeValueAsString(new AuditPayload.CaseDeleted(caseData.getUuid(), deleted));
             } catch (JsonProcessingException e) {
                 log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
             }
@@ -394,6 +391,19 @@ public class AuditClient {
         } catch (RestClientException e) {
             log.error("Could not get audit lines, event {}, exception: {}", value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
             return new HashSet<>();
+        }
+    }
+
+    public DeleteCaseAuditResponse deleteAuditLinesForCase(UUID caseUUID, String correlationId, Boolean deleted) {
+        try {
+            DeleteCaseAuditDto deleteCaseAuditDto = new DeleteCaseAuditDto(correlationId, deleted);
+            String testing = String.format("%s/audit/case/%s/delete", serviceBaseURL, caseUUID);
+            DeleteCaseAuditResponse response = restHelper.post(serviceBaseURL, String.format("/audit/case/%s/delete", caseUUID), deleteCaseAuditDto, DeleteCaseAuditResponse.class);
+            log.info("Deleted {} audits for Case {}", response.getAuditCount(), caseUUID, value(EVENT, AUDIT_CLIENT_DELETE_AUDITS_FOR_CASE_SUCCESS));
+            return response;
+        } catch (RestClientException e) {
+            log.error("Could not delete audit lines, event {}, exception: {}", value(EVENT, AUDIT_CLIENT_DELETE_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
+            return new DeleteCaseAuditResponse(correlationId, caseUUID, deleted, 0);
         }
     }
 

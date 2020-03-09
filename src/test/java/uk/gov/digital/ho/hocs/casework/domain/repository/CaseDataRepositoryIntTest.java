@@ -66,8 +66,26 @@ public class CaseDataRepositoryIntTest {
         Long secondCall = repository.getNextSeriesId();
 
         assertThat(secondCall).isEqualTo(firstCall + 1L);
+    }
 
+    @Test()
+    public void shouldOnlyAnyReturnsDeletedCases() {
+        CaseData caseData = repository.findByUuid(caseUUID);
+        caseData.setDeleted(true);
+        repository.save(caseData);
 
+        CaseData caseDataFind = repository.findByUuid(caseUUID);
+        assertThat(caseDataFind).isNull();
+        CaseData caseDataFindAny = repository.findAnyByUuid(caseUUID);
+        assertThat(caseDataFindAny).isNotNull();
+
+        caseData.setDeleted(false);
+        repository.save(caseData);
+
+        caseDataFind = repository.findByUuid(caseUUID);
+        assertThat(caseDataFind).isNotNull();
+        caseDataFindAny = repository.findAnyByUuid(caseUUID);
+        assertThat(caseDataFindAny).isNotNull();
     }
 }
 

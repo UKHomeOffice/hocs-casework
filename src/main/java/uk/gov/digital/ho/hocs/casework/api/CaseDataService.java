@@ -95,6 +95,18 @@ public class CaseDataService {
         }
     }
 
+    private CaseData getAnyCaseData(UUID caseUUID) {
+        log.debug("Getting any Case: {}", caseUUID);
+        CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
+        if (caseData != null) {
+            log.info("Got any Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+            return caseData;
+        } else {
+            log.error("Any Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Any Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
+        }
+    }
+
     public LocalDate getCaseDateReceived(UUID caseUUID) {
         log.debug("Looking up DateReceived for Case: {}", caseUUID);
         LocalDate dateReceived = getCaseData(caseUUID).getDateReceived();
@@ -235,13 +247,14 @@ public class CaseDataService {
         log.info("Updated Case: {} completed {}", caseUUID, completed, value(EVENT, CASE_COMPLETED));
     }
 
-    void deleteCase(UUID caseUUID) {
-        log.debug("Deleting Case: {}", caseUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.setDeleted(true);
+    void deleteCase(UUID caseUUID, Boolean deleted) {
+        log.debug("Deleting Case: {} flag: {}", caseUUID, deleted);
+        CaseData caseData = getAnyCaseData(caseUUID);
+        caseData.setDeleted(deleted);
         caseDataRepository.save(caseData);
-        auditClient.deleteCaseAudit(caseData);
-        log.info("Deleted Case: {}", caseUUID, value(EVENT, CASE_DELETED));
+        auditClient.deleteCaseAudit(caseData, deleted);
+        auditClient.deleteAuditLinesForCase(caseUUID, UUID.randomUUID().toString(), deleted);
+        log.info("Deleted Case: {} flag: {}", caseUUID, deleted, value(EVENT, CASE_DELETED));
     }
 
     CaseSummary getCaseSummary(UUID caseUUID) {

@@ -549,13 +549,13 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
 
-        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        when(caseDataRepository.findAnyByUuid(caseData.getUuid())).thenReturn(caseData);
 
-        caseDataService.deleteCase(caseData.getUuid());
+        caseDataService.deleteCase(caseData.getUuid(), true);
 
-        verify(caseDataRepository, times(1)).findByUuid(caseData.getUuid());
+        verify(caseDataRepository, times(1)).findAnyByUuid(caseData.getUuid());
         verify(caseDataRepository, times(1)).save(caseData);
-
+        verify(auditClient).deleteAuditLinesForCase(eq(caseData.getUuid()), any(), eq(true));
         verifyNoMoreInteractions(caseDataRepository);
     }
 
@@ -563,30 +563,31 @@ public class CaseDataServiceTest {
     public void shouldAuditDeleteCase() {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
 
-        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        when(caseDataRepository.findAnyByUuid(caseData.getUuid())).thenReturn(caseData);
 
-        caseDataService.deleteCase(caseData.getUuid());
+        caseDataService.deleteCase(caseData.getUuid(), true);
 
-        verify(auditClient, times(1)).deleteCaseAudit(caseData);
+        verify(auditClient, times(1)).deleteCaseAudit(caseData, true);
+        verify(auditClient).deleteAuditLinesForCase(eq(caseData.getUuid()), any(), eq(true));
         verifyNoMoreInteractions(auditClient);
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotDeleteCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
 
-        caseDataService.deleteCase(null);
+        caseDataService.deleteCase(null, true);
     }
 
     @Test()
     public void shouldNotDeleteCaseMissingCaseUUID() {
 
         try {
-            caseDataService.deleteCase(null);
+            caseDataService.deleteCase(null, true);
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
 
-        verify(caseDataRepository, times(1)).findByUuid(null);
+        verify(caseDataRepository, times(1)).findAnyByUuid(null);
 
         verifyNoMoreInteractions(caseDataRepository);
     }

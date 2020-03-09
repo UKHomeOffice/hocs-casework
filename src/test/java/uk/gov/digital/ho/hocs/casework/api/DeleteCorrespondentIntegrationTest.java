@@ -17,6 +17,7 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
@@ -66,6 +67,8 @@ public class DeleteCorrespondentIntegrationTest {
     private final UUID INVALID_CASE_UUID = UUID.fromString("89334528-7769-2db4-b432-456091f132a1");
     private final UUID CORRESPONDENT_UUID = UUID.fromString("2c9e1eb9-ee78-4f57-a626-b8b75cf3b937");
     private final UUID CORRESPONDENT_UUID2 = UUID.fromString("2c9e1eb9-ee78-4f57-a626-b8b75cf3b932");
+    private final DeleteCaseAuditResponse DELETE_CASE_AUDIT_RESPONSE = new DeleteCaseAuditResponse(
+            "1", CASE_UUID1, true, 1);
 
     private static final CaseDataType CASE_DATA_TYPE = new CaseDataType("TEST", "a1");
 
@@ -88,6 +91,12 @@ public class DeleteCorrespondentIntegrationTest {
                 .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+
+        // mocking audit service
+        mockInfoService
+                .expect(requestTo("http://localhost:8087/audit/case/14915b78-6977-42db-b343-0915a7f412a1/delete"))
+                .andExpect(method(POST))
+                .andRespond(withSuccess(mapper.writeValueAsString(DELETE_CASE_AUDIT_RESPONSE), MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
@@ -251,7 +260,7 @@ public class DeleteCorrespondentIntegrationTest {
         Correspondent correspondentBefore = correspondentRepository.findByUUID(CASE_UUID1, CORRESPONDENT_UUID);
         setupMockTeams("TEST", 5);
         ResponseEntity<String> result1 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID1, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
+                getBasePath() + "/case/" + CASE_UUID1 + "/true", DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
         ResponseEntity<String> result2 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CORRESPONDENT_UUID,
