@@ -102,4 +102,19 @@ public class TopicResourceTest {
         assertThat(responseEntity.getBody()).isEqualTo("Cache Cleared");
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
+    @Test
+    public void shouldGetAllTopics() {
+
+        when(topicService.getAllTopics()).thenReturn(new HashSet<>());
+
+        ResponseEntity<GetTopicsResponse> response = topicResource.getAllCaseTopics();
+
+        verify(topicService, times(1)).getAllTopics();
+
+        verifyNoMoreInteractions(topicService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 }
