@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoTopic;
@@ -79,7 +78,7 @@ public class TopicService {
 
     Set<Topic> getAllTopics() {
         log.debug("Getting all Topics allocated to cases");
-        Set<Topic> topics = (Set<Topic>) topicRepository.findAll();
+        Set<Topic> topics = topicRepository.findAll();
         log.info("Got {} Topics", topics.size(), value(EVENT, ALL_CASE_TOPICS_RETRIEVED));
         return topics;
     }

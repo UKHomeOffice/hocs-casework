@@ -62,7 +62,6 @@ public class TopicResource {
         return ResponseEntity.ok("Cache Cleared");
     }
 
-    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/topics")
     ResponseEntity<GetTopicsResponse> getAllCaseTopics() {
         Set<Topic> topics = topicService.getAllTopics();
