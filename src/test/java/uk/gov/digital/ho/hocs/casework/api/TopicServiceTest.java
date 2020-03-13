@@ -266,5 +266,19 @@ public class TopicServiceTest {
         verify(infoClient, times(1)).clearCachedStandardLineForTopic(topicUUID);
         verifyNoMoreInteractions(infoClient);
     }
+
+    @Test
+    public void shouldGetAllTopics() {
+        HashSet<Topic> topicData = new HashSet<>();
+        topicData.add(new Topic(caseUUID, topicName, topicNameUUID));
+
+        when(topicRepository.findAll()).thenReturn(topicData);
+
+        topicService.getAllTopics();
+
+        verify(topicRepository, times(1)).findAll();
+
+        verifyNoMoreInteractions(topicRepository);
+    }
 }
 

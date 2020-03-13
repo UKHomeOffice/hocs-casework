@@ -61,4 +61,11 @@ public class TopicResource {
         topicService.clearCachedStandardLineForTopic(topicUUID);
         return ResponseEntity.ok("Cache Cleared");
     }
+
+    @Authorised(accessLevel = AccessLevel.READ)
+    @GetMapping(value = "/topics")
+    ResponseEntity<GetTopicsResponse> getAllCaseTopics() {
+        Set<Topic> topics = topicService.getAllTopics();
+        return ResponseEntity.ok(GetTopicsResponse.from(topics));
+    }
 }

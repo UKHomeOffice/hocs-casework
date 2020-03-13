@@ -76,4 +76,11 @@ public class TopicService {
     void clearCachedStandardLineForTopic(UUID topicUUID) {
         infoClient.clearCachedStandardLineForTopic(topicUUID);
     }
+
+    Set<Topic> getAllTopics() {
+        log.debug("Getting all Topics allocated to cases");
+        Set<Topic> topics = (Set<Topic>) topicRepository.findAll();
+        log.info("Got {} Topics", topics.size(), value(EVENT, ALL_CASE_TOPICS_RETRIEVED));
+        return topics;
+    }
 }
