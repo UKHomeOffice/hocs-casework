@@ -278,6 +278,30 @@ public class AuditClientTest {
     }
 
     @Test
+    public void updateCaseNoteAudit() throws IOException {
+        CaseNote caseNote = new CaseNote(caseUUID, "DRAFT", "post-text",userId);
+        auditClient.updateCaseNoteAudit(caseNote, "ORIGINAL", "pre-text");
+              verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.CASE_NOTE_UPDATED);
+        assertThat(request.getCaseUUID()).isEqualTo(caseNote.getCaseUUID());
+        assertThat(request.getAuditPayload()).contains("\"prevCaseNoteType\" : \"ORIGINAL\"");
+        assertThat(request.getAuditPayload()).contains("\"prevText\" : \"pre-text\"");
+        assertThat(request.getAuditPayload()).contains("\"caseNoteType\" : \"DRAFT\"");
+        assertThat(request.getAuditPayload()).contains("\"text\" : \"post-text\"");
+    }
+
+    @Test
+    public void deleteCaseNoteAudit() throws IOException {
+        CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note",userId);
+        auditClient.deleteCaseNoteAudit(caseNote);
+              verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.CASE_NOTE_DELETED);
+        assertThat(request.getCaseUUID()).isEqualTo(caseNote.getCaseUUID());
+    }
+
+    @Test
     public void auditStageUserAllocate() throws IOException {
         Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID(), randomUUID());
         stage.setUser(randomUUID());

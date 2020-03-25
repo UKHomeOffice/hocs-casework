@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
@@ -32,6 +33,7 @@ public class CaseNote implements Serializable {
     private LocalDateTime created;
 
     @Getter
+    @Setter
     @Column(name = "type")
     private String caseNoteType;
 
@@ -40,6 +42,7 @@ public class CaseNote implements Serializable {
     private UUID caseUUID;
 
     @Getter
+    @Setter
     @Column(name = "text")
     private String text;
 

@@ -190,4 +190,32 @@ public class CaseNoteServiceTest {
 
     }
 
+    @Test
+    public void shouldUpdateCaseNote() throws ApplicationExceptions.EntityCreationException {
+
+        CaseNote caseNote = new CaseNote(caseUUID, "MANUAL", text, userId);
+        when(caseNoteRepository.findByUuid(caseNote.getUuid())).thenReturn(caseNote);
+
+        CaseNote caseNoteUpdated = caseNoteService.updateCaseNote(caseNote.getUuid(), caseNoteType, text);
+
+        assertThat(caseNoteUpdated.getUuid()).isEqualTo(caseNote.getUuid());
+        verify(caseNoteRepository).findByUuid(caseNote.getUuid());
+        verify(caseNoteRepository).save(any(CaseNote.class));
+        verifyNoMoreInteractions(caseNoteRepository);
+    }
+
+    @Test
+    public void shouldDeleteCaseNote() throws ApplicationExceptions.EntityCreationException {
+
+        CaseNote caseNote = new CaseNote(caseUUID, "MANUAL", text, userId);
+        when(caseNoteRepository.findByUuid(caseNote.getUuid())).thenReturn(caseNote);
+
+        CaseNote caseNoteUpdated = caseNoteService.deleteCaseNote(caseNote.getUuid());
+
+        assertThat(caseNoteUpdated.getUuid()).isEqualTo(caseNote.getUuid());
+        verify(caseNoteRepository).findByUuid(caseNote.getUuid());
+        verify(caseNoteRepository).delete(any(CaseNote.class));
+        verifyNoMoreInteractions(caseNoteRepository);
+    }
+
 }
