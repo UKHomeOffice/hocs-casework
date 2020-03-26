@@ -21,4 +21,6 @@ public class TimelineItem {
     private String type;
 
     private String message;
+
+    private UUID timelineItemUUID;
 }
