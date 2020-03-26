@@ -199,9 +199,12 @@ public class CaseNoteServiceTest {
         CaseNote caseNoteUpdated = caseNoteService.updateCaseNote(caseNote.getUuid(), caseNoteType, text);
 
         assertThat(caseNoteUpdated.getUuid()).isEqualTo(caseNote.getUuid());
+        assertThat(caseNoteUpdated.getEdited()).isNotNull();
+        assertThat(caseNoteUpdated.getEditor()).isEqualTo("any user");
         verify(caseNoteRepository).findByUuid(caseNote.getUuid());
         verify(caseNoteRepository).save(any(CaseNote.class));
         verifyNoMoreInteractions(caseNoteRepository);
+        verify(requestData).userId();
     }
 
     @Test
@@ -210,11 +213,12 @@ public class CaseNoteServiceTest {
         CaseNote caseNote = new CaseNote(caseUUID, "MANUAL", text, userId);
         when(caseNoteRepository.findByUuid(caseNote.getUuid())).thenReturn(caseNote);
 
-        CaseNote caseNoteUpdated = caseNoteService.deleteCaseNote(caseNote.getUuid());
+        CaseNote caseNoteDeleted = caseNoteService.deleteCaseNote(caseNote.getUuid());
 
-        assertThat(caseNoteUpdated.getUuid()).isEqualTo(caseNote.getUuid());
+        assertThat(caseNoteDeleted.getUuid()).isEqualTo(caseNote.getUuid());
+        assertThat(caseNoteDeleted.getDeleted()).isTrue();
         verify(caseNoteRepository).findByUuid(caseNote.getUuid());
-        verify(caseNoteRepository).delete(any(CaseNote.class));
+        verify(caseNoteRepository).save(any(CaseNote.class));
         verifyNoMoreInteractions(caseNoteRepository);
     }
 

@@ -50,6 +50,21 @@ public class CaseNote implements Serializable {
     @Column(name = "author")
     private String author;
 
+    @Getter
+    @Setter
+    @Column(name = "deleted")
+    private Boolean deleted;
+
+    @Getter
+    @Setter
+    @Column(name = "edited")
+    private LocalDateTime edited;
+
+    @Getter
+    @Setter
+    @Column(name = "editor")
+    private String editor;
+
     public CaseNote(UUID caseUUID, String caseNoteType, String text, String author) {
         if (caseUUID == null || caseNoteType == null || text == null) {
             throw new ApplicationExceptions.EntityCreationException(
@@ -62,6 +77,7 @@ public class CaseNote implements Serializable {
         this.caseUUID = caseUUID;
         this.text = text;
         this.author = author;
+        this.deleted = false;
     }
 
 
@@ -78,6 +94,7 @@ public class CaseNote implements Serializable {
         this.caseUUID = caseUUID;
         this.text = text;
         this.author = author;
+        this.deleted = false;
     }
 
 }

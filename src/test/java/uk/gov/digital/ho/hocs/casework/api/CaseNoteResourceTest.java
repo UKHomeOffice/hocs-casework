@@ -51,7 +51,7 @@ public class CaseNoteResourceTest {
     public void shouldGetCaseNote() {
         UUID noteUUID = UUID.randomUUID();
 
-        when(caseNoteService.getCaseNote(noteUUID)).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "",caseUUID,"", "a user"));
+        when(caseNoteService.getCaseNote(noteUUID)).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "",caseUUID,"", "a user", false, null, null));
 
         ResponseEntity<GetCaseNoteResponse> response = caseNoteResource.getCaseNote(caseUUID, noteUUID);
 
@@ -66,7 +66,7 @@ public class CaseNoteResourceTest {
     public void shouldCreateCaseNote() {
         UUID noteUUID = UUID.randomUUID();
 
-        when(caseNoteService.createCaseNote(caseUUID, "TYPE", "case note")).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "TYPE",caseUUID,"case note", "a user"));
+        when(caseNoteService.createCaseNote(caseUUID, "TYPE", "case note")).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "TYPE",caseUUID,"case note", "a user", false, null, null));
 
         ResponseEntity<UUID> response = caseNoteResource.createCaseNote(caseUUID, new CreateCaseNoteRequest("TYPE","case note"));
 
@@ -81,7 +81,7 @@ public class CaseNoteResourceTest {
     @Test
     public void shouldUpdateCaseNote() {
         UUID noteUUID = UUID.randomUUID();
-        when(caseNoteService.updateCaseNote(noteUUID, "TYPE", "case note")).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "TYPE",caseUUID,"case note", "a user"));
+        when(caseNoteService.updateCaseNote(noteUUID, "TYPE", "case note")).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "TYPE",caseUUID,"case note", "a user", false, null, null));
 
         ResponseEntity<UUID> response = caseNoteResource.updateCaseNote(caseUUID, noteUUID, new CreateCaseNoteRequest("TYPE","case note"));
 
@@ -95,7 +95,7 @@ public class CaseNoteResourceTest {
     @Test
     public void shouldDeleteCaseNote() {
         UUID noteUUID = UUID.randomUUID();
-        when(caseNoteService.deleteCaseNote(noteUUID)).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "TYPE",caseUUID,"case note", "a user"));
+        when(caseNoteService.deleteCaseNote(noteUUID)).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "TYPE",caseUUID,"case note", "a user", false, null, null));
 
         ResponseEntity<UUID> response = caseNoteResource.deleteCaseNote(caseUUID, noteUUID);
 
