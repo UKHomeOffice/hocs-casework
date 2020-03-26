@@ -328,7 +328,7 @@ public class CaseDataService {
 
         log.debug("Retrieved {} case notes", notes.size());
 
-        Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp().toLocalDateTime(), a.getUserID(), a.getType(), a.getAuditPayload()));
+        Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp().toLocalDateTime(), a.getUserID(), a.getType(), a.getAuditPayload(), a.getUuid()));
         Stream<TimelineItem> notesTimeline = notes.stream().map(n -> {
             String auditPayload = "";
             try {
@@ -336,7 +336,7 @@ public class CaseDataService {
             } catch (JsonProcessingException e) {
                 log.error("Failed to parse case note text for note {}", n.getUuid(), value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
             }
-            return new TimelineItem(n.getCaseUUID(), null, n.getCreated(), n.getAuthor(), n.getCaseNoteType(), auditPayload);
+            return new TimelineItem(n.getCaseUUID(), null, n.getCreated(), n.getAuthor(), n.getCaseNoteType(), auditPayload, n.getUuid());
         });
 
         return Stream.concat(auditTimeline, notesTimeline);
