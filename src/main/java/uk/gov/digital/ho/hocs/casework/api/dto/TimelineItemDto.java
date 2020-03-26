@@ -29,7 +29,9 @@ public class TimelineItemDto {
     @JsonRawValue
     private String body;
 
+    private UUID timelineItemUUID;
+
     public static TimelineItemDto from(TimelineItem timelineItem) {
-        return new TimelineItemDto(timelineItem.getCaseUUID(), timelineItem.getStageUUID(), ZonedDateTime.of(timelineItem.getEventTime(), ZoneOffset.UTC), timelineItem.getUserName(), timelineItem.getType(), timelineItem.getMessage());
+        return new TimelineItemDto(timelineItem.getCaseUUID(), timelineItem.getStageUUID(), ZonedDateTime.of(timelineItem.getEventTime(), ZoneOffset.UTC), timelineItem.getUserName(), timelineItem.getType(), timelineItem.getMessage(), timelineItem.getTimelineItemUUID());
     }
 }

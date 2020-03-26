@@ -265,8 +265,13 @@ public class AuditClient {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
-            String data = String.format("{\"uuid\":\"%s\"}", correspondent.getUuid());
-            sendAuditMessage(localDateTime, correspondent.getCaseUUID(), "", CORRESPONDENT_DELETED, null, data,
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(AuditPayload.CreateCorrespondentRequest.from(correspondent));
+            } catch (JsonProcessingException e) {
+                log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+            }
+            sendAuditMessage(localDateTime, correspondent.getCaseUUID(), data, CORRESPONDENT_DELETED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
