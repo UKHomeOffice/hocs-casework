@@ -18,8 +18,9 @@ public class TimelineItemDtoTest {
         String userName = "user";
         String type = "CASE_NOTE";
         String body = "{some: data}";
+        UUID timelineItemUUID = UUID.randomUUID();
 
-        TimelineItem timeline = new TimelineItem(caseUUID,stageUUID,eventTime,userName,type, body);
+        TimelineItem timeline = new TimelineItem(caseUUID,stageUUID,eventTime,userName,type, body, timelineItemUUID);
 
         TimelineItemDto timelineDto = TimelineItemDto.from(timeline);
 
@@ -29,7 +30,7 @@ public class TimelineItemDtoTest {
         assertThat(timelineDto.getEventTime().getOffset()).isEqualTo(ZoneOffset.UTC);
         assertThat(timelineDto.getUserName()).isEqualTo(timeline.getUserName());
         assertThat(timelineDto.getBody()).isEqualTo(timeline.getMessage());
-
+        assertThat(timelineDto.getTimelineItemUUID()).isEqualTo(timeline.getTimelineItemUUID());
     }
 
 }
