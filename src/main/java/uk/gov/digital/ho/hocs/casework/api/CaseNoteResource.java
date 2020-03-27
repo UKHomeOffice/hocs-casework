@@ -47,14 +47,14 @@ public class CaseNoteResource {
         return ResponseEntity.ok(caseNote.getUuid());
     }
 
-    @Authorised(accessLevel = AccessLevel.OWNER)
+    @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/note/{noteUUID}")
     ResponseEntity<UUID> updateCaseNote(@PathVariable UUID caseUUID, @PathVariable UUID noteUUID, @Valid @RequestBody CreateCaseNoteRequest createCaseNoteRequest) {
         CaseNote caseNote = caseNoteService.updateCaseNote(noteUUID, createCaseNoteRequest.getType(), createCaseNoteRequest.getText());
         return ResponseEntity.ok(caseNote.getUuid());
     }
 
-    @Authorised(accessLevel = AccessLevel.OWNER)
+    @Authorised(accessLevel = AccessLevel.READ)
     @DeleteMapping(value = "/case/{caseUUID}/note/{noteUUID}")
     ResponseEntity<UUID> deleteCaseNote(@PathVariable UUID caseUUID, @PathVariable UUID noteUUID) {
         CaseNote caseNote = caseNoteService.deleteCaseNote(noteUUID);
