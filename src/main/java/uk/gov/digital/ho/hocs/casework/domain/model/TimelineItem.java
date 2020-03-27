@@ -23,4 +23,8 @@ public class TimelineItem {
     private String message;
 
     private UUID timelineItemUUID;
+
+    private LocalDateTime editedTime;
+
+    private String editorName;
 }

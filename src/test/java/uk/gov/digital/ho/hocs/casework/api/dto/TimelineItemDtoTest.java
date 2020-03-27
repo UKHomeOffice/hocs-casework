@@ -19,8 +19,10 @@ public class TimelineItemDtoTest {
         String type = "CASE_NOTE";
         String body = "{some: data}";
         UUID timelineItemUUID = UUID.randomUUID();
+        LocalDateTime editedTime = LocalDateTime.of(2020, 2, 1, 14, 15, 16, 777);
+        String editorName = "Jackie Kennedy";
 
-        TimelineItem timeline = new TimelineItem(caseUUID,stageUUID,eventTime,userName,type, body, timelineItemUUID);
+        TimelineItem timeline = new TimelineItem(caseUUID,stageUUID,eventTime,userName,type, body, timelineItemUUID, editedTime, editorName);
 
         TimelineItemDto timelineDto = TimelineItemDto.from(timeline);
 
@@ -31,6 +33,9 @@ public class TimelineItemDtoTest {
         assertThat(timelineDto.getUserName()).isEqualTo(timeline.getUserName());
         assertThat(timelineDto.getBody()).isEqualTo(timeline.getMessage());
         assertThat(timelineDto.getTimelineItemUUID()).isEqualTo(timeline.getTimelineItemUUID());
+        assertThat(timelineDto.getEditedTime().toLocalDateTime()).isEqualTo(timeline.getEditedTime());
+        assertThat(timelineDto.getEditedTime().getOffset()).isEqualTo(ZoneOffset.UTC);
+        assertThat(timelineDto.getEditorName()).isEqualTo((timeline.getEditorName()));
     }
 
 }

@@ -31,7 +31,21 @@ public class TimelineItemDto {
 
     private UUID timelineItemUUID;
 
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss.SSS Z", timezone = "UTC")
+    private ZonedDateTime editedTime;
+
+    private String editorName;
+
     public static TimelineItemDto from(TimelineItem timelineItem) {
-        return new TimelineItemDto(timelineItem.getCaseUUID(), timelineItem.getStageUUID(), ZonedDateTime.of(timelineItem.getEventTime(), ZoneOffset.UTC), timelineItem.getUserName(), timelineItem.getType(), timelineItem.getMessage(), timelineItem.getTimelineItemUUID());
+        return new TimelineItemDto(
+                timelineItem.getCaseUUID(),
+                timelineItem.getStageUUID(),
+                ZonedDateTime.of(timelineItem.getEventTime(), ZoneOffset.UTC),
+                timelineItem.getUserName(),
+                timelineItem.getType(),
+                timelineItem.getMessage(),
+                timelineItem.getTimelineItemUUID(),
+                ZonedDateTime.of(timelineItem.getEditedTime(), ZoneOffset.UTC),
+                timelineItem.getEditorName());
     }
 }
