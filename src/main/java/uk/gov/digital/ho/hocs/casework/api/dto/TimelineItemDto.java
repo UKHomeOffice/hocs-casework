@@ -45,7 +45,7 @@ public class TimelineItemDto {
                 timelineItem.getType(),
                 timelineItem.getMessage(),
                 timelineItem.getTimelineItemUUID(),
-                ZonedDateTime.of(timelineItem.getEditedTime(), ZoneOffset.UTC),
+                timelineItem.getEditedTime() != null ? ZonedDateTime.of(timelineItem.getEditedTime(), ZoneOffset.UTC) : null,
                 timelineItem.getEditorName());
     }
 }
