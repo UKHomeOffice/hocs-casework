@@ -190,4 +190,36 @@ public class CaseNoteServiceTest {
 
     }
 
+    @Test
+    public void shouldUpdateCaseNote() throws ApplicationExceptions.EntityCreationException {
+
+        CaseNote caseNote = new CaseNote(caseUUID, "MANUAL", text, userId);
+        when(caseNoteRepository.findByUuid(caseNote.getUuid())).thenReturn(caseNote);
+
+        CaseNote caseNoteUpdated = caseNoteService.updateCaseNote(caseNote.getUuid(), caseNoteType, text);
+
+        assertThat(caseNoteUpdated.getUuid()).isEqualTo(caseNote.getUuid());
+        assertThat(caseNoteUpdated.getEdited()).isNotNull();
+        assertThat(caseNoteUpdated.getEditor()).isEqualTo("any user");
+        verify(caseNoteRepository).findByUuid(caseNote.getUuid());
+        verify(caseNoteRepository).save(any(CaseNote.class));
+        verifyNoMoreInteractions(caseNoteRepository);
+        verify(requestData).userId();
+    }
+
+    @Test
+    public void shouldDeleteCaseNote() throws ApplicationExceptions.EntityCreationException {
+
+        CaseNote caseNote = new CaseNote(caseUUID, "MANUAL", text, userId);
+        when(caseNoteRepository.findByUuid(caseNote.getUuid())).thenReturn(caseNote);
+
+        CaseNote caseNoteDeleted = caseNoteService.deleteCaseNote(caseNote.getUuid());
+
+        assertThat(caseNoteDeleted.getUuid()).isEqualTo(caseNote.getUuid());
+        assertThat(caseNoteDeleted.getDeleted()).isTrue();
+        verify(caseNoteRepository).findByUuid(caseNote.getUuid());
+        verify(caseNoteRepository).save(any(CaseNote.class));
+        verifyNoMoreInteractions(caseNoteRepository);
+    }
+
 }

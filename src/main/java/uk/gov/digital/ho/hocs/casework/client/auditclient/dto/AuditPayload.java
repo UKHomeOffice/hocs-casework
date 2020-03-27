@@ -59,6 +59,15 @@ public interface AuditPayload {
 
     @AllArgsConstructor
     @Getter
+    class CaseNoteUpdate {
+        private String prevCaseNoteType;
+        private String prevText;
+        private String caseNoteType;
+        private String text;
+    }
+
+    @AllArgsConstructor
+    @Getter
     class CreateCaseRequest {
 
         @JsonProperty("uuid")
