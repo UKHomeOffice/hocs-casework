@@ -34,6 +34,13 @@ public class GetCaseNoteResponse {
 
     @JsonProperty("author")
     private String author;
+    @Getter
+
+    @JsonProperty("edited")
+    private LocalDateTime edited;
+
+    @JsonProperty("editor")
+    private String editor;
 
     public static GetCaseNoteResponse from(CaseNote caseNote) {
         return new GetCaseNoteResponse(
@@ -42,6 +49,8 @@ public class GetCaseNoteResponse {
                 caseNote.getCaseNoteType(),
                 caseNote.getCaseUUID(),
                 caseNote.getText(),
-                caseNote.getAuthor());
+                caseNote.getAuthor(),
+                caseNote.getEdited(),
+                caseNote.getEditor());
     }
 }
