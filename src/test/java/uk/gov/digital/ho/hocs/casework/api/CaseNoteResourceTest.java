@@ -83,12 +83,15 @@ public class CaseNoteResourceTest {
         UUID noteUUID = UUID.randomUUID();
         when(caseNoteService.updateCaseNote(noteUUID, "TYPE", "case note")).thenReturn(new CaseNote(1L,noteUUID,LocalDateTime.now(), "TYPE",caseUUID,"case note", "a user", false, null, null));
 
-        ResponseEntity<UUID> response = caseNoteResource.updateCaseNote(caseUUID, noteUUID, new CreateCaseNoteRequest("TYPE","case note"));
+        ResponseEntity<GetCaseNoteResponse> response = caseNoteResource.updateCaseNote(caseUUID, noteUUID, new CreateCaseNoteRequest("TYPE","case note"));
 
         verify(caseNoteService, times(1)).updateCaseNote(noteUUID, "TYPE", "case note");
         verifyNoMoreInteractions(caseNoteService);
         assertThat(response).isNotNull();
-        assertThat(response.getBody()).isEqualTo(noteUUID);
+        assertThat(response.getBody().getUuid()).isEqualTo(noteUUID);
+        assertThat(response.getBody().getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(response.getBody().getType()).isEqualTo("TYPE");
+        assertThat(response.getBody().getText()).isEqualTo("case note");
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
