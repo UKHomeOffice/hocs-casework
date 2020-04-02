@@ -107,13 +107,6 @@ public class CaseDataService {
         }
     }
 
-    public LocalDate getCaseDateReceived(UUID caseUUID) {
-        log.debug("Looking up DateReceived for Case: {}", caseUUID);
-        LocalDate dateReceived = getCaseData(caseUUID).getDateReceived();
-        log.debug("DateReceived {} found for Case: {}", dateReceived, caseUUID);
-        return dateReceived;
-    }
-
     public String getCaseRef(UUID caseUUID){
         log.debug("Looking up CaseRef for Case: {}", caseUUID);
         String caseRef = caseDataRepository.getCaseRef(caseUUID);
@@ -151,7 +144,7 @@ public class CaseDataService {
         log.debug("Allocating Ref: {}", caseNumber);
         CaseDataType caseDataType = infoClient.getCaseType(caseType);
         CaseData caseData = new CaseData(caseDataType, caseNumber, data, objectMapper, dateReceived);
-        LocalDate deadline = infoClient.getCaseDeadline(caseType, dateReceived);
+        LocalDate deadline = infoClient.getCaseDeadline(caseType, dateReceived, 0);
         caseData.setCaseDeadline(deadline);
         caseDataRepository.save(caseData);
         auditClient.createCaseAudit(caseData);
@@ -193,11 +186,13 @@ public class CaseDataService {
         }
     }
 
-    void updateDateReceived(UUID caseUUID, UUID stageUUID, LocalDate dateReceived) {
+    void updateDateReceived(UUID caseUUID, UUID stageUUID, LocalDate dateReceived, int days) {
         log.debug("Updating DateReceived for Case: {} Date: {}", caseUUID, dateReceived);
         CaseData caseData = getCaseData(caseUUID);
-        caseData.setDateReceived(dateReceived);
-        LocalDate deadline = infoClient.getCaseDeadline(caseData.getType(), dateReceived);
+        if (dateReceived != null) {
+            caseData.setDateReceived(dateReceived);
+        }
+        LocalDate deadline = infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), days);
         caseData.setCaseDeadline(deadline);
         updateStageDeadlines(caseData);
         caseDataRepository.save(caseData);
@@ -211,7 +206,8 @@ public class CaseDataService {
             String overrideDeadline = dataMap.get(String.format("%s_DEADLINE", stage.getStageType()));
             if (overrideDeadline == null) {
                 LocalDate dateReceived = caseData.getDateReceived();
-                LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), dateReceived);
+                LocalDate caseDeadline = caseData.getCaseDeadline();
+                LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), dateReceived, caseDeadline);
                 stage.setDeadline(deadline);
             } else {
                 LocalDate deadline = LocalDate.parse(overrideDeadline);

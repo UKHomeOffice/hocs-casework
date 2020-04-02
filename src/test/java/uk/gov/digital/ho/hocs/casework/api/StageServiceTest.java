@@ -65,12 +65,12 @@ public class StageServiceTest {
     public void shouldCreateStage() {
 
         CaseData caseData = new CaseData(caseDataType, 12344567L, LocalDate.now());
-        when(caseDataService.getCaseDateReceived(caseUUID)).thenReturn(caseData.getDateReceived());
+        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
 
         stageService.createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
 
-        verify(caseDataService).getCaseDateReceived(caseUUID);
-        verify(infoClient).getStageDeadline(stageType, caseData.getDateReceived());
+        verify(caseDataService).getCase(caseUUID);
+        verify(infoClient).getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
 
         verify(stageRepository).save(any(Stage.class));
         verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
@@ -84,7 +84,7 @@ public class StageServiceTest {
     public void shouldAuditCreateStage() {
 
         CaseData caseData = new CaseData(caseDataType, 12344567L, LocalDate.now());
-        when(caseDataService.getCaseDateReceived(caseUUID)).thenReturn(caseData.getDateReceived());
+        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
 
         stageService.createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
 

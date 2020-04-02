@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
@@ -83,8 +84,8 @@ public class StageService {
         // Try and overwrite the deadline with inputted values from the data map.
         String overrideDeadline = caseDataService.getCaseDataField(caseUUID, String.format("%s_DEADLINE", stageType));
         if (overrideDeadline == null) {
-            LocalDate dateReceived = caseDataService.getCaseDateReceived(caseUUID);
-            LocalDate deadline = infoClient.getStageDeadline(stageType, dateReceived);
+            CaseData caseData = caseDataService.getCase(caseUUID);
+            LocalDate deadline = infoClient.getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
             stage.setDeadline(deadline);
         } else {
             LocalDate deadline = LocalDate.parse(overrideDeadline);

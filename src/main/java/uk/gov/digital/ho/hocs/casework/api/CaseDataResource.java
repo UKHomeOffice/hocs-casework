@@ -80,7 +80,13 @@ class CaseDataResource {
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/dateReceived")
     ResponseEntity updateCaseDateReceived(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody LocalDate dateReceived) {
-        caseDataService.updateDateReceived(caseUUID, stageUUID, dateReceived);
+        caseDataService.updateDateReceived(caseUUID, stageUUID, dateReceived, 0);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/deadline")
+    ResponseEntity updateCaseDeadlineDays(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody int days) {
+        caseDataService.updateDateReceived(caseUUID, stageUUID, null, days);
         return ResponseEntity.ok().build();
     }
 
