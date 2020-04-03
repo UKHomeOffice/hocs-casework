@@ -80,13 +80,13 @@ public class CaseDataServiceTest {
     public void shouldCreateCase() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 20)).thenReturn(caseDeadline);
+        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
         CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), caseReceived);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
-        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 20);
+        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0);
         verify(caseDataRepository, times(1)).save(caseData);
 
         verifyNoMoreInteractions(caseDataRepository);
@@ -96,13 +96,13 @@ public class CaseDataServiceTest {
     public void shouldCreateCaseWithValidParamsNullData() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 20)).thenReturn(caseDeadline);
+        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
         CaseData caseData = caseDataService.createCase(caseType.getDisplayName(), null, caseReceived);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
-        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 20);
+        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0);
         verify(caseDataRepository, times(1)).save(caseData);
 
         verifyNoMoreInteractions(caseDataRepository);
@@ -112,7 +112,7 @@ public class CaseDataServiceTest {
     public void shouldAuditCreateCase() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 20)).thenReturn(caseDeadline);
+        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
         CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), caseReceived);
