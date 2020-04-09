@@ -8,15 +8,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
-import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
-import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -32,8 +29,6 @@ public class CorrespondentServiceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
     private final CaseDataType caseDataType = new CaseDataType("TEST", "1a", "TEST");
-    private static final String text = "CASE_NOTE";
-    String userId = "any user";
     @Mock
     private CorrespondentRepository correspondentRepository;
     @Mock
@@ -43,8 +38,6 @@ public class CorrespondentServiceTest {
     AuditClient auditClient;
     @Mock
     InfoClient infoClient;
-    @Mock
-    RequestData requestData;
 
     @Before
     public void setUp() {
@@ -52,7 +45,7 @@ public class CorrespondentServiceTest {
     }
 
     @Test
-    public void shouldGetCaseNotes() throws ApplicationExceptions.EntityNotFoundException {
+    public void shouldGetCorrespondentTypes() {
 
         CaseData caseData = new CaseData(caseDataType, 1234567L, LocalDate.now());
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
