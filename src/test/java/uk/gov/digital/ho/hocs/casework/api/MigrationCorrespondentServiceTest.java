@@ -7,9 +7,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
 import java.util.HashSet;
@@ -24,13 +26,17 @@ public class MigrationCorrespondentServiceTest {
     private final UUID correspondentUUID = UUID.randomUUID();
     @Mock
     private CorrespondentRepository correspondentRepository;
+    @Mock
+    private CaseDataRepository caseDataRepository;
     private CorrespondentService correspondentService;
     @Mock
     private AuditClient auditClient;
+    @Mock
+    private InfoClient infoClient;
 
     @Before
     public void setUp() {
-        correspondentService = new CorrespondentService(correspondentRepository, auditClient);
+        correspondentService = new CorrespondentService(correspondentRepository, caseDataRepository, auditClient, infoClient);
     }
 
     @Test
