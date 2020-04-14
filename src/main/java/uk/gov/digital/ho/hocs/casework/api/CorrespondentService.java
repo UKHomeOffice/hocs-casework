@@ -66,8 +66,8 @@ public class CorrespondentService {
 
     Set<CorrespondentTypeDto> getCorrespondentTypes(UUID caseUUID){
         log.debug("Getting all Correspondent Types for Case: {}", caseUUID);
-        CaseData caseData = caseDataRepository.findByUuid(caseUUID);
-        GetCorrespondentTypeResponse correspondentType = infoClient.getCorrespondentType(caseData.getType());
+        String caseDataType = caseDataRepository.getCaseType(caseUUID);
+        GetCorrespondentTypeResponse correspondentType = infoClient.getCorrespondentType(caseDataType);
         Set<CorrespondentTypeDto> correspondentTypes = correspondentType.getCorrespondentTypes();
         log.info("Got {} Correspondent Types for Case: {}", correspondentType.getCorrespondentTypes().size(), caseUUID, value(EVENT, CORRESPONDENTS_RETRIEVED));
         return correspondentTypes;

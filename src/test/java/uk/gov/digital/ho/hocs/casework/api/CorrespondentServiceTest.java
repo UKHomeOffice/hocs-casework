@@ -47,16 +47,17 @@ public class CorrespondentServiceTest {
     @Test
     public void shouldGetCorrespondentTypes() {
 
-        CaseData caseData = new CaseData(caseDataType, 1234567L, LocalDate.now());
-        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
+        when(caseDataRepository.getCaseType(caseUUID)).thenReturn("TEST");
         CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();
         GetCorrespondentTypeResponse getCorrespondentTypeResponse = new GetCorrespondentTypeResponse(new HashSet(Arrays.asList(correspondentTypeDto)));
         when(infoClient.getCorrespondentType("TEST")).thenReturn(getCorrespondentTypeResponse);
 
         Set<CorrespondentTypeDto> CorrespondentTypeDtos = correspondentService.getCorrespondentTypes(caseUUID);
 
-        verify(caseDataRepository).findByUuid(caseUUID);
+        verify(caseDataRepository).getCaseType(caseUUID);
         verifyNoMoreInteractions(caseDataRepository);
+        verify(infoClient).getCorrespondentType("TEST");
+        verifyNoMoreInteractions(infoClient);
         assertThat(CorrespondentTypeDtos.size()).isEqualTo(1);
     }
 }
