@@ -8,10 +8,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
 import java.time.LocalDate;
@@ -49,6 +46,14 @@ public class InfoClient {
         CaseDataType caseDataType = restHelper.get(serviceBaseURL, String.format("/caseType/type/%s", type), CaseDataType.class);
         log.info("Got CaseDataType {} for Type {}", caseDataType.getDisplayCode(), type, value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
         return caseDataType;
+    }
+
+    @Cacheable(value = "InfoClientGetCorrespondentType", unless = "#result == null", key = "#caseType")
+    public GetCorrespondentTypeResponse getCorrespondentType(String caseType) {
+        String s = String.format("/correspondentType/%s", caseType);
+        GetCorrespondentTypeResponse correspondentType = restHelper.get(serviceBaseURL, String.format("/correspondentType/%s", caseType), GetCorrespondentTypeResponse.class);
+        log.info("Got CorrespondentTypes {}", correspondentType.getCorrespondentTypes().size(), value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
+        return correspondentType;
     }
 
     @Cacheable(value = "InfoClientGetStandardLine", unless = "#result == null", key = "#topicUUID")

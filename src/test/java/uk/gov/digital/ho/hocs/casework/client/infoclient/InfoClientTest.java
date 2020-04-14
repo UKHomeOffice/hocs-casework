@@ -6,11 +6,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ParameterizedTypeReference;
+import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -26,6 +26,20 @@ public class InfoClientTest {
     @Before
     public void setup() {
         infoClient = new InfoClient(restHelper, "infoService");
+    }
+
+    @Test
+    public void getCorrespondentType(){
+
+        CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();
+        GetCorrespondentTypeResponse getCorrespondentType = new GetCorrespondentTypeResponse(new HashSet<>(Arrays.asList(correspondentTypeDto)));
+        when(restHelper.get("infoService", "/correspondentType/CASE_TYPE", GetCorrespondentTypeResponse.class)).thenReturn(getCorrespondentType);
+
+        GetCorrespondentTypeResponse getCorrespondentTypeResponse = infoClient.getCorrespondentType("CASE_TYPE");
+
+        assertThat(getCorrespondentTypeResponse).isNotNull();
+        assertThat(getCorrespondentTypeResponse.getCorrespondentTypes()).isNotNull();
+        assertThat(getCorrespondentTypeResponse.getCorrespondentTypes().size()).isEqualTo(1);
     }
 
     @Test

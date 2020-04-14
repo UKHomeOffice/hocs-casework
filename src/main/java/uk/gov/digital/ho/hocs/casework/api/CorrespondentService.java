@@ -4,15 +4,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -22,12 +29,20 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 public class CorrespondentService {
 
     private final CorrespondentRepository correspondentRepository;
+    private final CaseDataRepository caseDataRepository;
     private final AuditClient auditClient;
+    private final InfoClient infoClient;
 
     @Autowired
-    public CorrespondentService(CorrespondentRepository correspondentRepository, AuditClient auditClient) {
+    public CorrespondentService(
+            CorrespondentRepository correspondentRepository,
+            CaseDataRepository caseDataRepository,
+            AuditClient auditClient,
+            InfoClient infoClient) {
         this.correspondentRepository = correspondentRepository;
+        this.caseDataRepository = caseDataRepository;
         this.auditClient = auditClient;
+        this.infoClient = infoClient;
     }
 
     Set<Correspondent> getCorrespondents(UUID caseUUID) {
@@ -47,6 +62,15 @@ public class CorrespondentService {
             log.error("Correspondent: {} for Case UUID: {} not found!", correspondentUUID, caseUUID, value(EVENT, CORRESPONDENT_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Correspondent %s not found for Case: %s", correspondentUUID, caseUUID), CORRESPONDENT_NOT_FOUND);
         }
+    }
+
+    Set<CorrespondentTypeDto> getCorrespondentTypes(UUID caseUUID){
+        log.debug("Getting all Correspondent Types for Case: {}", caseUUID);
+        String caseDataType = caseDataRepository.getCaseType(caseUUID);
+        GetCorrespondentTypeResponse correspondentType = infoClient.getCorrespondentType(caseDataType);
+        Set<CorrespondentTypeDto> correspondentTypes = correspondentType.getCorrespondentTypes();
+        log.info("Got {} Correspondent Types for Case: {}", correspondentType.getCorrespondentTypes().size(), caseUUID, value(EVENT, CORRESPONDENTS_RETRIEVED));
+        return correspondentTypes;
     }
 
     void createCorrespondent(UUID caseUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference, String externalKey){

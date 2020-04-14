@@ -4,10 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCorrespondentRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
@@ -50,6 +47,13 @@ public class CorrespondentResource {
     ResponseEntity<GetCorrespondentResponse> getCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID correspondentUUID) {
         Correspondent correspondent = correspondentService.getCorrespondent(caseUUID, correspondentUUID);
         return ResponseEntity.ok(GetCorrespondentResponse.from(correspondent));
+    }
+
+    @Authorised(accessLevel = AccessLevel.READ)
+    @GetMapping(value = "/case/{caseUUID}/correspondentType")
+    ResponseEntity<GetCorrespondentTypeResponse> getCorrespondentType(@PathVariable UUID caseUUID) {
+        Set<CorrespondentTypeDto> correspondentTypes = correspondentService.getCorrespondentTypes(caseUUID);
+        return ResponseEntity.ok(GetCorrespondentTypeResponse.from(correspondentTypes));
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER)
