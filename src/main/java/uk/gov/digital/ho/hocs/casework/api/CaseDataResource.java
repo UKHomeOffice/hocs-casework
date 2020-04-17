@@ -102,6 +102,13 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
+    @Authorised(accessLevel = AccessLevel.OWNER)
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/teamTexts")
+    ResponseEntity<UpdateTeamByStageAndTextsResponse> updateTeamByStageAndTexts(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateTeamByStageAndTextsRequest request) {
+        Map<String, String> teamMap = caseDataService.updateTeamByStageAndTexts(caseUUID, stageUUID, request.getStageType(), request.getTeamUUIDKey(), request.getTeamNameKey(), request.getTexts());
+        return ResponseEntity.ok(UpdateTeamByStageAndTextsResponse.from(teamMap));
+    }
+
     @PutMapping(value = "/case/{caseUUID}/complete")
     ResponseEntity updateCompleteCase(@PathVariable UUID caseUUID, @RequestBody boolean complete) {
         caseDataService.completeCase(caseUUID, complete);

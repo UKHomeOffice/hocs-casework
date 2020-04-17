@@ -12,12 +12,14 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
@@ -339,7 +341,31 @@ public class CaseDataService {
         });
 
         return Stream.concat(auditTimeline, notesTimeline);
+    }
 
+    public Map<String, String> updateTeamByStageAndTexts(UUID caseUUID, UUID stageUUID, String stageType, String teamUUIDKey, String teamNameKey, String[] texts) {
+        log.debug("Updating Team by Stage: {} {}", stageUUID, stageType);
+        Map<String, String> dataMap = getCaseData(caseUUID).getDataMap(objectMapper);
+        // build the linkValue text string used to search the team link table by converting "text" key to the case's data value
+        String linkValue = null;
+        for (String text : texts){
+            String value = dataMap.getOrDefault(text, "");
+            if (!value.isEmpty()) {
+                if (linkValue != null) {
+                    linkValue += "_";
+                    linkValue += value;
+                } else {
+                    linkValue = value;
+                }
+            }
+        }
+
+        TeamDto teamDto = infoClient.getTeamByStageAndText(stageType, linkValue);
+        Map<String, String> teamMap = new HashMap<>();
+        teamMap.put(teamUUIDKey, teamDto.getUuid().toString());
+        teamMap.put(teamNameKey, teamDto.getDisplayName());
+
+        return teamMap;
     }
 
     public Set<UUID> getCaseTeams(UUID caseUUID) {

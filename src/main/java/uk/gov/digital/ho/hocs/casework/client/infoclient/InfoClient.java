@@ -77,6 +77,13 @@ public class InfoClient {
         return teams;
     }
 
+    @Cacheable(value = "InfoClientGetTeamForStageAndText", unless = "#result == null", key = "{ #stageType, #text }")
+    public TeamDto getTeamByStageAndText(String stageType, String text) {
+        TeamDto response = restHelper.get(serviceBaseURL, String.format("/team/stage/%s/text/%s", stageType, text),  TeamDto.class);
+        log.info("Got Team teamUUID {} for Stage {} and Text {}", response.getUuid(), stageType, text, value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
+        return response;
+    }
+
     @Cacheable(value = "InfoClientGetCaseSummaryFieldsRequest", unless = "#result.size() == 0", key = "#caseType")
     public Set<FieldDto> getCaseSummaryFields(String caseType) {
         Set<FieldDto> response = restHelper.get(serviceBaseURL, String.format("/schema/caseType/%s/summary", caseType), new ParameterizedTypeReference<Set<FieldDto>>() {});

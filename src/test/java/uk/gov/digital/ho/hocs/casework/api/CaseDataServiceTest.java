@@ -14,15 +14,14 @@ import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.*;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -202,6 +201,27 @@ public class CaseDataServiceTest {
 
         verify(auditClient, times(1)).getAuditLinesForCase(eq(caseData.getUuid()), any());
         verifyNoMoreInteractions(auditClient);
+    }
+
+    @Test
+    public void shouldUpdateTeamByStageAndTexts(){
+        Map<String, String> data = new HashMap<>();
+        data.put("Key1", "Value1");
+        data.put("Key2", "Value2");
+        data.put("Key3", "Value3");
+        CaseData caseData = new CaseData(caseType, caseID, data, objectMapper, caseReceived);
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        TeamDto teamDto = new TeamDto("Team", UUID.randomUUID(), true, null);
+        when(infoClient.getTeamByStageAndText("stageType", "Value1_Value2_Value3")).thenReturn(teamDto);
+        String[] texts = { "Key1", "Key2", "Key3" };
+
+        Map<String, String> teamMap = caseDataService.updateTeamByStageAndTexts(
+                caseData.getUuid(), stageUUID, "stageType", "teamUUIDKey", "teamNameKey", texts);
+
+        assertThat(teamMap).isNotNull();
+        assertThat(teamMap.size()).isEqualTo(2);
+        assertThat(teamMap.get("teamUUIDKey")).isEqualTo(teamDto.getUuid().toString());
+        assertThat(teamMap.get("teamNameKey")).isEqualTo("Team");
     }
 
     @Test
