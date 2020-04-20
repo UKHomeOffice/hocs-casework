@@ -43,6 +43,17 @@ public class InfoClientTest {
     }
 
     @Test
+    public void getTeamByStageAndText(){
+
+        TeamDto teamDto = new TeamDto();
+        when(restHelper.get("infoService", "/team/stage/stageType/text/text", TeamDto.class)).thenReturn(teamDto);
+
+        TeamDto result = infoClient.getTeamByStageAndText("stageType", "text");
+
+        assertThat(result).isEqualTo(teamDto);
+    }
+
+    @Test
     public void getEntityListTotalsReturnsEntityList(){
         EntityTotalDto entityTotalDto = new EntityTotalDto(new HashMap(), new HashMap());
         EntityDto<EntityTotalDto> entityDto = new EntityDto<EntityTotalDto>("simpleName", entityTotalDto);
