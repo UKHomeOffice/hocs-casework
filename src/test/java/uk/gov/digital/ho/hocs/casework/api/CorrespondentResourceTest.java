@@ -8,13 +8,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCorrespondentRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -84,6 +82,20 @@ public class CorrespondentResourceTest {
 
         verifyNoMoreInteractions(correspondentService);
 
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetCorrespondentType() {
+
+        CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();
+        when(correspondentService.getCorrespondentTypes(caseUUID)).thenReturn(new HashSet(Arrays.asList(correspondentTypeDto)));
+
+        ResponseEntity<GetCorrespondentTypeResponse> response = correspondentResource.getCorrespondentType(caseUUID);
+
+        verify(correspondentService).getCorrespondentTypes(caseUUID);
+        verifyNoMoreInteractions(correspondentService);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }

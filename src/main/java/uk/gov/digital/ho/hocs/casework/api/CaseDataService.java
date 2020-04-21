@@ -12,12 +12,14 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
@@ -107,13 +109,6 @@ public class CaseDataService {
         }
     }
 
-    public LocalDate getCaseDateReceived(UUID caseUUID) {
-        log.debug("Looking up DateReceived for Case: {}", caseUUID);
-        LocalDate dateReceived = getCaseData(caseUUID).getDateReceived();
-        log.debug("DateReceived {} found for Case: {}", dateReceived, caseUUID);
-        return dateReceived;
-    }
-
     public String getCaseRef(UUID caseUUID){
         log.debug("Looking up CaseRef for Case: {}", caseUUID);
         String caseRef = caseDataRepository.getCaseRef(caseUUID);
@@ -151,7 +146,7 @@ public class CaseDataService {
         log.debug("Allocating Ref: {}", caseNumber);
         CaseDataType caseDataType = infoClient.getCaseType(caseType);
         CaseData caseData = new CaseData(caseDataType, caseNumber, data, objectMapper, dateReceived);
-        LocalDate deadline = infoClient.getCaseDeadline(caseType, dateReceived);
+        LocalDate deadline = infoClient.getCaseDeadline(caseType, dateReceived, 0);
         caseData.setCaseDeadline(deadline);
         caseDataRepository.save(caseData);
         auditClient.createCaseAudit(caseData);
@@ -193,11 +188,13 @@ public class CaseDataService {
         }
     }
 
-    void updateDateReceived(UUID caseUUID, UUID stageUUID, LocalDate dateReceived) {
+    void updateDateReceived(UUID caseUUID, UUID stageUUID, LocalDate dateReceived, int days) {
         log.debug("Updating DateReceived for Case: {} Date: {}", caseUUID, dateReceived);
         CaseData caseData = getCaseData(caseUUID);
-        caseData.setDateReceived(dateReceived);
-        LocalDate deadline = infoClient.getCaseDeadline(caseData.getType(), dateReceived);
+        if (dateReceived != null) {
+            caseData.setDateReceived(dateReceived);
+        }
+        LocalDate deadline = infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), days);
         caseData.setCaseDeadline(deadline);
         updateStageDeadlines(caseData);
         caseDataRepository.save(caseData);
@@ -211,7 +208,8 @@ public class CaseDataService {
             String overrideDeadline = dataMap.get(String.format("%s_DEADLINE", stage.getStageType()));
             if (overrideDeadline == null) {
                 LocalDate dateReceived = caseData.getDateReceived();
-                LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), dateReceived);
+                LocalDate caseDeadline = caseData.getCaseDeadline();
+                LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), dateReceived, caseDeadline);
                 stage.setDeadline(deadline);
             } else {
                 LocalDate deadline = LocalDate.parse(overrideDeadline);
@@ -343,7 +341,31 @@ public class CaseDataService {
         });
 
         return Stream.concat(auditTimeline, notesTimeline);
+    }
 
+    public Map<String, String> updateTeamByStageAndTexts(UUID caseUUID, UUID stageUUID, String stageType, String teamUUIDKey, String teamNameKey, String[] texts) {
+        log.debug("Updating Team by Stage: {} {}", stageUUID, stageType);
+        Map<String, String> dataMap = getCaseData(caseUUID).getDataMap(objectMapper);
+        // build the linkValue text string used to search the team link table by converting "text" key to the case's data value
+        String linkValue = null;
+        for (String text : texts){
+            String value = dataMap.getOrDefault(text, "");
+            if (!value.isEmpty()) {
+                if (linkValue != null) {
+                    linkValue += "_";
+                    linkValue += value;
+                } else {
+                    linkValue = value;
+                }
+            }
+        }
+
+        TeamDto teamDto = infoClient.getTeamByStageAndText(stageType, linkValue);
+        Map<String, String> teamMap = new HashMap<>();
+        teamMap.put(teamUUIDKey, teamDto.getUuid().toString());
+        teamMap.put(teamNameKey, teamDto.getDisplayName());
+
+        return teamMap;
     }
 
     public Set<UUID> getCaseTeams(UUID caseUUID) {

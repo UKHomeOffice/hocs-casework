@@ -87,5 +87,12 @@ public class CaseDataRepositoryIntTest {
         caseDataFindAny = repository.findAnyByUuid(caseUUID);
         assertThat(caseDataFindAny).isNotNull();
     }
+
+    @Test
+    public void shouldGetCaseType() {
+        String caseDataType = repository.getCaseType(caseUUID);
+
+        assertThat(caseDataType).isEqualTo("TEST");
+    }
 }
 

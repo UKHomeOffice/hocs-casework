@@ -178,6 +178,25 @@ public class CaseDataResourceTest {
     }
 
     @Test
+    public void shouldUpdateTeamByStageAndTexts(){
+        String[] texts = { "Text1" };
+        UpdateTeamByStageAndTextsRequest request = new UpdateTeamByStageAndTextsRequest(
+                uuid, uuid, "stageType", "teamUUIDKey", "teamNameKey", texts);
+        Map<String, String> teamMap = new HashMap();
+        when(caseDataService.updateTeamByStageAndTexts(uuid, uuid, "stageType", "teamUUIDKey", "teamNameKey", texts)).thenReturn(teamMap);
+
+        ResponseEntity response = caseDataResource.updateTeamByStageAndTexts(uuid, uuid, request);
+
+        verify(caseDataService).updateTeamByStageAndTexts(uuid, uuid, "stageType", "teamUUIDKey", "teamNameKey", texts);
+        verifyNoMoreInteractions(caseDataService);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).isInstanceOf(UpdateTeamByStageAndTextsResponse.class);
+        assertThat(((UpdateTeamByStageAndTextsResponse)response.getBody()).getTeamMap()).isEqualTo(teamMap);
+    }
+
+    @Test
     public void shouldEvictFromTheCache() {
         ResponseEntity responseEntity = caseDataResource.clearCachedTemplateForCaseType(caseDataType.getDisplayName());
 

@@ -80,7 +80,13 @@ class CaseDataResource {
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/dateReceived")
     ResponseEntity updateCaseDateReceived(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody LocalDate dateReceived) {
-        caseDataService.updateDateReceived(caseUUID, stageUUID, dateReceived);
+        caseDataService.updateDateReceived(caseUUID, stageUUID, dateReceived, 0);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/deadline")
+    ResponseEntity updateCaseDeadlineDays(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody int days) {
+        caseDataService.updateDateReceived(caseUUID, stageUUID, null, days);
         return ResponseEntity.ok().build();
     }
 
@@ -94,6 +100,13 @@ class CaseDataResource {
     ResponseEntity updateCasePrimaryTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryTopicUUID) {
         caseDataService.updatePrimaryTopic(caseUUID, stageUUID, primaryTopicUUID);
         return ResponseEntity.ok().build();
+    }
+
+    @Authorised(accessLevel = AccessLevel.OWNER)
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/teamTexts")
+    ResponseEntity<UpdateTeamByStageAndTextsResponse> updateTeamByStageAndTexts(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateTeamByStageAndTextsRequest request) {
+        Map<String, String> teamMap = caseDataService.updateTeamByStageAndTexts(caseUUID, stageUUID, request.getStageType(), request.getTeamUUIDKey(), request.getTeamNameKey(), request.getTexts());
+        return ResponseEntity.ok(UpdateTeamByStageAndTextsResponse.from(teamMap));
     }
 
     @PutMapping(value = "/case/{caseUUID}/complete")
