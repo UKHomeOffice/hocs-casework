@@ -5,21 +5,17 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+@java.lang.SuppressWarnings("squid:S1068")
 @Getter
 @NoArgsConstructor
-public class UserAssignChangeCommand {
+public class UserAssignChangeCommand extends NotifyCommand {
 
     private String command = "user_assign_change";
-    private UUID caseUUID;
-    private UUID stageUUID;
-    private String caseReference;
     private UUID currentUserUUID;
     private UUID newUserUUID;
 
     public UserAssignChangeCommand(UUID caseUUID, UUID stageUUID, String caseReference, UUID currentUserUUID, UUID newUserUUID){
-        this.caseUUID = caseUUID;
-        this.stageUUID = stageUUID;
-        this.caseReference = caseReference;
+        super(caseUUID, stageUUID, caseReference);
         this.currentUserUUID = currentUserUUID;
         this.newUserUUID = newUserUUID;
     }

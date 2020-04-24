@@ -296,7 +296,7 @@ public class CaseDataServiceTest {
 
         CaseSummary caseSummary = caseDataService.getCaseSummary(caseData.getUuid());
 
-        verify(auditClient, times(1)).viewCaseSummaryAudit(caseData, caseSummary);
+        verify(auditClient, times(1)).viewCaseSummaryAudit(caseData);
         verifyNoMoreInteractions(auditClient);
     }
 

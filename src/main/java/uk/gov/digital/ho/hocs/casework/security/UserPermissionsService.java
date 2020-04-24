@@ -11,7 +11,6 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import java.nio.BufferUnderflowException;
 import java.util.*;
 import java.util.stream.Collectors;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Service
 @Slf4j
@@ -34,7 +33,7 @@ public class UserPermissionsService {
         Set<PermissionDto> permissionDtos = getUserPermission();
         Optional<PermissionDto> maxPermission = permissionDtos.stream()
                 .filter(e-> e.getCaseTypeCode().equals(caseType))
-                .max(Comparator.comparing(e -> e.getAccessLevel()));
+                .max(Comparator.comparing(PermissionDto::getAccessLevel));
         return maxPermission.orElse(
                new PermissionDto("", AccessLevel.UNSET)
         ).getAccessLevel();
@@ -44,14 +43,14 @@ public class UserPermissionsService {
     public Set<UUID> getUserTeams() {
         String[] groups = requestData.groupsArray();
         return Arrays.stream(groups)
-                .map(group -> getUUIDFromBase64(group))
+                .map(this::getUUIDFromBase64)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
 
     public Set<String> getUserCaseTypes() {
         return getUserPermission().stream()
-                .map(p -> p.getCaseTypeCode())
+                .map(PermissionDto::getCaseTypeCode)
                 .collect(Collectors.toSet());
 
 
@@ -60,11 +59,10 @@ public class UserPermissionsService {
     Set<PermissionDto> getUserPermission() {
         Set<TeamDto> teamDtos = infoClient.getTeams();
         Set<UUID> userTeams = getUserTeams();
-        Set<PermissionDto> set = teamDtos.stream()
+        return teamDtos.stream()
                 .filter(t -> userTeams.contains(t.getUuid()))
                 .flatMap(t -> t.getPermissionDtos().stream())
                 .collect(Collectors.toSet());
-        return set;
     }
 
 
@@ -73,7 +71,7 @@ public class UserPermissionsService {
             uuid = uuid.substring(1);
         }
         try {
-            return Base64UUID.Base64StringToUUID(uuid);
+            return Base64UUID.base64StringToUUID(uuid);
         }
         catch (BufferUnderflowException e) {
             return null;

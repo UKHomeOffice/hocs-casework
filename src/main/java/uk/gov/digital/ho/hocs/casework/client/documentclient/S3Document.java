@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.client.documentclient;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@java.lang.SuppressWarnings("squid:S1068")
 @AllArgsConstructor
 @Getter
 public class S3Document {

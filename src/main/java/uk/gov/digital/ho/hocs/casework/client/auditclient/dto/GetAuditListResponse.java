@@ -5,6 +5,7 @@ import lombok.Getter;
 
 import java.util.Set;
 
+@java.lang.SuppressWarnings("squid:S1068")
 @AllArgsConstructor
 @Getter
 public class GetAuditListResponse {

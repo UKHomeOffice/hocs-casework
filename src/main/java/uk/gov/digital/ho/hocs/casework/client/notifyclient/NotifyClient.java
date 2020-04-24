@@ -10,6 +10,7 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
+import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.NotifyCommand;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.OfflineQaUserCommand;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.TeamAssignChangeCommand;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.UserAssignChangeCommand;
@@ -62,7 +63,7 @@ public class NotifyClient {
             producerTemplate.sendBodyAndHeaders(notifyQueue, objectMapper.writeValueAsString(command), queueHeaders);
             log.info("Sent Team Email of type {} for Case UUID: {}, correlationID: {}, UserID: {}", command.getCommand(), command.getCaseUUID(), requestData.correlationId(), requestData.userId(), value(EVENT, TEAM_EMAIL_SENT));
         } catch (Exception e) {
-            log.error("Failed to send Email for case UUID {}", command.getCaseUUID(), value(EVENT, NOTIFY_EMAIL_FAILED), value(EXCEPTION, e));
+            logFailedToSendEmail(command, e);
         }
     }
 
@@ -73,7 +74,7 @@ public class NotifyClient {
             producerTemplate.sendBodyAndHeaders(notifyQueue, objectMapper.writeValueAsString(command), queueHeaders);
             log.info("Sent User Email of type {} for Case UUID: {}, correlationID: {}, UserID: {}", command.getCommand(), command.getCaseUUID(), requestData.correlationId(), requestData.userId(), value(EVENT, TEAM_EMAIL_SENT));
         } catch (Exception e) {
-            log.error("Failed to send Email for case UUID {}", command.getCaseUUID(), value(EVENT, NOTIFY_EMAIL_FAILED), value(EXCEPTION, e));
+            logFailedToSendEmail(command, e);
         }
     }
 
@@ -84,8 +85,12 @@ public class NotifyClient {
             producerTemplate.sendBodyAndHeaders(notifyQueue, objectMapper.writeValueAsString(command), queueHeaders);
             log.info("Sent Offline QA Email of type {} for Case UUID: {}, correlationID: {}, UserID: {}", command.getCommand(), command.getCaseUUID(), requestData.correlationId(), requestData.userId(), value(EVENT, OFFLINE_QA_EMAIL_SENT));
         } catch (Exception e) {
-            log.error("Failed to send Email for case UUID {}", command.getCaseUUID(), value(EVENT, NOTIFY_EMAIL_FAILED), value(EXCEPTION, e));
+            logFailedToSendEmail(command, e);
         }
+    }
+
+    private void logFailedToSendEmail(NotifyCommand command, Exception e){
+        log.error("Failed to send Email for case UUID {}", command.getCaseUUID(), value(EVENT, NOTIFY_EMAIL_FAILED), value(EXCEPTION, e));
     }
 
     private Map<String, Object> getQueueHeaders() {

@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
+@java.lang.SuppressWarnings("squid:S1068")
 public interface AuditPayload {
 
     @AllArgsConstructor

@@ -17,10 +17,10 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_
 @Table(name = "stage")
 public class Stage implements Serializable {
 
-    public final static String DCU_MIN_INITIAL_DRAFT = "DCU_MIN_INITIAL_DRAFT";
-    public final static String DCU_TRO_INITIAL_DRAFT = "DCU_TRO_INITIAL_DRAFT";
-    public final static String DCU_DTEN_INITIAL_DRAFT = "DCU_DTEN_INITIAL_DRAFT";
-    public final static String OFFLINE_QA_USER = "OfflineQaUser";
+    public static final String DCU_MIN_INITIAL_DRAFT = "DCU_MIN_INITIAL_DRAFT";
+    public static final String DCU_TRO_INITIAL_DRAFT = "DCU_TRO_INITIAL_DRAFT";
+    public static final String DCU_DTEN_INITIAL_DRAFT = "DCU_DTEN_INITIAL_DRAFT";
+    public static final String OFFLINE_QA_USER = "OfflineQaUser";
     
     @Id
     @Column(name = "id")

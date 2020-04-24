@@ -20,25 +20,26 @@ public class RestResponseEntityExceptionHandler {
 
     @ExceptionHandler(HttpClientErrorException.class)
     public ResponseEntity handle(HttpClientErrorException e) {
+        String message = "HttpClientErrorException: {}";
         switch(e.getStatusCode()) {
             case UNAUTHORIZED:
-                log.error("HttpClientErrorException: {}", e.getMessage(), value(EVENT, REST_HELPER_GET_UNAUTHORIZED));
+                log.error(message, e.getMessage(), value(EVENT, REST_HELPER_GET_UNAUTHORIZED));
                 return new ResponseEntity<>(e.getMessage(), UNAUTHORIZED);
             case FORBIDDEN:
-                log.error("HttpClientErrorException: {}", e.getMessage(), value(EVENT, REST_HELPER_GET_FORBIDDEN));
+                log.error(message, e.getMessage(), value(EVENT, REST_HELPER_GET_FORBIDDEN));
                 return new ResponseEntity<>(e.getMessage(), FORBIDDEN);
             case NOT_FOUND:
-                log.error("HttpClientErrorException: {}", e.getMessage(), value(EVENT, REST_HELPER_GET_NOT_FOUND));
+                log.error(message, e.getMessage(), value(EVENT, REST_HELPER_GET_NOT_FOUND));
                 return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
             default:
-                log.error("HttpClientErrorException: {}", e.getMessage(), value(EVENT, REST_HELPER_GET_BAD_REQUEST));
+                log.error(message, e.getMessage(), value(EVENT, REST_HELPER_GET_BAD_REQUEST));
                 return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
         }
     }
 
     @ExceptionHandler(HttpServerErrorException.class)
     public ResponseEntity handle(HttpServerErrorException e) {
-        log.error("HttpClientErrorException: {}", e.getMessage(),value(EVENT, REST_HELPER_POST_FAILURE));
+        log.error("HttpServerErrorException: {}", e.getMessage(),value(EVENT, REST_HELPER_POST_FAILURE));
         return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
     }
 

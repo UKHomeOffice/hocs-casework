@@ -11,6 +11,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.UUID;
 
+@java.lang.SuppressWarnings("squid:S1068")
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class TimelineItemDto {

@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.client.searchClient;
+package uk.gov.digital.ho.hocs.casework.client.searchclient;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

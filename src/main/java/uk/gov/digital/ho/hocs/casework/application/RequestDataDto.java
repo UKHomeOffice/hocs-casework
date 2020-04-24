@@ -4,6 +4,7 @@ package uk.gov.digital.ho.hocs.casework.application;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+@java.lang.SuppressWarnings("squid:S1068")
 @AllArgsConstructor
 @Getter
 public class RequestDataDto {

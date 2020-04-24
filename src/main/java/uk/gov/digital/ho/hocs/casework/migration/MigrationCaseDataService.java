@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
-import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
-import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -31,17 +29,12 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_
 public class MigrationCaseDataService extends CaseDataService {
 
     private final MigrationStageRepository migrationStageRepository;
-    private final CorrespondentService correspondentService;
-    private final StageService stageService;
 
     @Autowired
     public MigrationCaseDataService(CaseDataRepository caseDataRepository, MigrationStageRepository migrationStageRepository, InfoClient infoClient,
-                                    ObjectMapper objectMapper, CorrespondentService correspondentService,
-                                    StageService stageService, AuditClient auditClient) {
+                                    ObjectMapper objectMapper, AuditClient auditClient) {
         super(caseDataRepository, infoClient, objectMapper, auditClient);
         this.migrationStageRepository = migrationStageRepository;
-        this.correspondentService = correspondentService;
-        this.stageService = stageService;
     }
 
     CaseData createCase(MigrationCreateCaseRequest request) {
@@ -71,8 +64,7 @@ public class MigrationCaseDataService extends CaseDataService {
     }
 
     UUID getStageUUID(UUID caseUUID) {
-        UUID stageUUID = migrationStageRepository.findByCaseUUID(caseUUID).getUuid();
-        return stageUUID;
+        return migrationStageRepository.findByCaseUUID(caseUUID).getUuid();
     }
 
     @Override

@@ -47,7 +47,7 @@ public class AuditClient {
     private final RequestData requestData;
     private final RestHelper restHelper;
     private final String serviceBaseURL;
-    private final String EVENT_TYPE_HEADER = "event_type";
+    private static final String EVENT_TYPE_HEADER = "event_type";
 
     @Setter
     private ExecutorService executorService;
@@ -81,7 +81,7 @@ public class AuditClient {
             try {
                 data = objectMapper.writeValueAsString(AuditPayload.UpdateCaseRequest.from(caseData));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseDataPayload(e);
             }
             sendAuditMessage(localDateTime, caseData.getUuid(), data, CASE_UPDATED, stageUUID, data, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
@@ -97,12 +97,12 @@ public class AuditClient {
                         EventType.CASE_VIEWED, null, requestDataDto.getCorrelationId(), requestDataDto.getUserId(),
                         requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseAuditPayload(e);
             }
         });
     }
 
-    public void viewCaseSummaryAudit(CaseData caseData, CaseSummary caseSummary) {
+    public void viewCaseSummaryAudit(CaseData caseData) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
@@ -111,7 +111,7 @@ public class AuditClient {
                         EventType.CASE_SUMMARY_VIEWED, null, requestDataDto.getCorrelationId(), requestDataDto.getUserId(),
                         requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseAuditPayload(e);
             }
         });
     }
@@ -125,7 +125,7 @@ public class AuditClient {
                         EventType.STANDARD_LINE_VIEWED, null, requestDataDto.getCorrelationId(), requestDataDto.getUserId(),
                         requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseAuditPayload(e);
             }
         });
     }
@@ -139,7 +139,7 @@ public class AuditClient {
                         EventType.TEMPLATE_VIEWED, null, requestDataDto.getCorrelationId(), requestDataDto.getUserId(),
                         requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseAuditPayload(e);
             }
         });
     }
@@ -152,7 +152,7 @@ public class AuditClient {
             try {
                 data = objectMapper.writeValueAsString(new AuditPayload.CaseDeleted(caseData.getUuid(), deleted));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseDataPayload(e);
             }
             sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_DELETED, null, data, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
@@ -167,38 +167,32 @@ public class AuditClient {
             try {
                 data = objectMapper.writeValueAsString(new AuditPayload.Case(caseData.getUuid()));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseDataPayload(e);
             }
             sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_COMPLETED, null, data, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
 
-    public void viewCaseNotesAudit(UUID caseUUID, Set<CaseNote> caseNotes) {
+    public void viewCaseNotesAudit(UUID caseUUID) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
-        executorService.execute(() -> {
-            sendAuditMessage(localDateTime, caseUUID, "", EventType.CASE_NOTES_VIEWED, null, requestDataDto.getCorrelationId(),
-                    requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
-        });
+        executorService.execute(() -> sendAuditMessage(localDateTime, caseUUID, "", EventType.CASE_NOTES_VIEWED, null, requestDataDto.getCorrelationId(),
+                requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups()));
     }
 
     public void viewCaseNoteAudit(CaseNote caseNote) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
-        executorService.execute(() -> {
-            sendAuditMessage(localDateTime, caseNote.getCaseUUID(), "", EventType.CASE_NOTE_VIEWED, null, requestDataDto.getCorrelationId(),
-                    requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
-        });
+        executorService.execute(() -> sendAuditMessage(localDateTime, caseNote.getCaseUUID(), "", EventType.CASE_NOTE_VIEWED, null, requestDataDto.getCorrelationId(),
+                requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups()));
     }
 
     public void createCaseNoteAudit(CaseNote caseNote) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
-        executorService.execute(() -> {
-            sendAuditMessage(localDateTime, caseNote.getCaseUUID(), "", EventType.CASE_NOTE_CREATED, null,
-                    requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
-        });
+        executorService.execute(() -> sendAuditMessage(localDateTime, caseNote.getCaseUUID(), "", EventType.CASE_NOTE_CREATED, null,
+                requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups()));
     }
 
     public void updateCaseNoteAudit(CaseNote caseNote, String prevCaseNoteType, String prevText) {
@@ -209,7 +203,7 @@ public class AuditClient {
             try {
                 data = objectMapper.writeValueAsString(new AuditPayload.CaseNoteUpdate(prevCaseNoteType, prevText, caseNote.getCaseNoteType(), caseNote.getText()));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseDataPayload(e);
             }
             sendAuditMessage(localDateTime, caseNote.getCaseUUID(), data, EventType.CASE_NOTE_UPDATED, null,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
@@ -224,7 +218,7 @@ public class AuditClient {
             try {
                 data = objectMapper.writeValueAsString(caseNote);
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseDataPayload(e);
             }
             sendAuditMessage(localDateTime, caseNote.getCaseUUID(), data, EventType.CASE_NOTE_DELETED, null,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
@@ -239,7 +233,7 @@ public class AuditClient {
             try {
                 data = objectMapper.writeValueAsString(AuditPayload.CreateCorrespondentRequest.from(correspondent));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseDataPayload(e);
             }
             sendAuditMessage(localDateTime, correspondent.getCaseUUID(), data, CORRESPONDENT_CREATED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
@@ -254,7 +248,7 @@ public class AuditClient {
             try {
                 data = objectMapper.writeValueAsString(AuditPayload.CreateCorrespondentRequest.from(correspondent));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseDataPayload(e);
             }
             sendAuditMessage(localDateTime, correspondent.getCaseUUID(), data, CORRESPONDENT_UPDATED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
@@ -269,7 +263,7 @@ public class AuditClient {
             try {
                 data = objectMapper.writeValueAsString(AuditPayload.CreateCorrespondentRequest.from(correspondent));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseDataPayload(e);
             }
             sendAuditMessage(localDateTime, correspondent.getCaseUUID(), data, CORRESPONDENT_DELETED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
@@ -284,7 +278,7 @@ public class AuditClient {
             try {
                 data = objectMapper.writeValueAsString(new AuditPayload.Topic(topic.getTextUUID(), topic.getText()));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseAuditPayload(e);
             }
             sendAuditMessage(localDateTime, topic.getCaseUUID(), data, CASE_TOPIC_CREATED, null, data, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
@@ -300,7 +294,7 @@ public class AuditClient {
             try {
                 data = objectMapper.writeValueAsString(new AuditPayload.Topic(topic.getTextUUID(), topic.getText()));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseAuditPayload(e);
             }
             sendAuditMessage(localDateTime, topic.getCaseUUID(), data, CASE_TOPIC_DELETED, null, data, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
@@ -315,7 +309,7 @@ public class AuditClient {
             try {
                 data = objectMapper.writeValueAsString(AuditPayload.CreateCaseRequest.from(caseData));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseDataPayload(e);
             }
             sendAuditMessage(localDateTime, caseData.getUuid(), data, CASE_CREATED, null, data, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
@@ -337,7 +331,7 @@ public class AuditClient {
                         stage.getUserUUID(), stage.getStageType(), null)), allocationType, stage.getUuid(),
                         requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseAuditPayload(e);
             }
         });
     }
@@ -351,7 +345,7 @@ public class AuditClient {
                                 stage.getTeamUUID(), stage.getStageType(), stage.getDeadline())), STAGE_CREATED, stage.getUuid(),
                                 requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseAuditPayload(e);
             }
         });
     }
@@ -365,7 +359,7 @@ public class AuditClient {
                                 stage.getTeamUUID(), stage.getStageType(), null)), STAGE_RECREATED, stage.getUuid(), requestDataDto.getCorrelationId(),
                                 requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseAuditPayload(e);
             }
         });
     }
@@ -385,7 +379,7 @@ public class AuditClient {
                 sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(), stage.getTeamUUID(), stage.getStageType(), stage.getDeadline())), allocationType,
                                  stage.getUuid(), requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                logFailedToParseAuditPayload(e);
             }
         });
     }
@@ -432,7 +426,6 @@ public class AuditClient {
     public DeleteCaseAuditResponse deleteAuditLinesForCase(UUID caseUUID, String correlationId, Boolean deleted) {
         try {
             DeleteCaseAuditDto deleteCaseAuditDto = new DeleteCaseAuditDto(correlationId, deleted);
-            String testing = String.format("%s/audit/case/%s/delete", serviceBaseURL, caseUUID);
             DeleteCaseAuditResponse response = restHelper.post(serviceBaseURL, String.format("/audit/case/%s/delete", caseUUID), deleteCaseAuditDto, DeleteCaseAuditResponse.class);
             log.info("Deleted {} audits for Case {}", response.getAuditCount(), caseUUID, value(EVENT, AUDIT_CLIENT_DELETE_AUDITS_FOR_CASE_SUCCESS));
             return response;
@@ -450,6 +443,15 @@ public class AuditClient {
                 RequestData.USERNAME_HEADER, username,
                 RequestData.GROUP_HEADER, groups);
     }
+
+    private void logFailedToParseAuditPayload(JsonProcessingException e) {
+        log.error("Failed to parse audit payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+    }
+
+    private void logFailedToParseDataPayload(JsonProcessingException e) {
+        log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+    }
+
 
 
 }

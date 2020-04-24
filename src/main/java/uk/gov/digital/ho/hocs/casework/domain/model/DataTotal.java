@@ -20,7 +20,7 @@ public class DataTotal {
 
     private BigDecimal parseCurrency(Map<String,String> dataMap, String claimedKey, String valueKey){
         try {
-            if (StringUtils.isBlank(claimedKey) || dataMap.getOrDefault(claimedKey, "").toUpperCase().equals("YES")) {
+            if (StringUtils.isBlank(claimedKey) || dataMap.getOrDefault(claimedKey, "").equalsIgnoreCase("YES")) {
                 return new BigDecimal(dataMap.getOrDefault(valueKey, "0"));
             }
             return BigDecimal.ZERO;
