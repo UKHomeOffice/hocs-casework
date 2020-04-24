@@ -12,7 +12,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
@@ -109,7 +108,7 @@ public class CaseDataService {
         }
     }
 
-    public String getCaseRef(UUID caseUUID){
+    public String getCaseRef(UUID caseUUID) {
         log.debug("Looking up CaseRef for Case: {}", caseUUID);
         String caseRef = caseDataRepository.getCaseRef(caseUUID);
         log.debug("CaseRef {} found for Case: {}", caseRef, caseUUID);
@@ -119,8 +118,8 @@ public class CaseDataService {
 
     public String getCaseDataField(UUID caseUUID, String key) {
         log.debug("Looking up key {} for Case: {}", key, caseUUID);
-        Map<String,String> dataMap = getCaseData(caseUUID).getDataMap(objectMapper);
-        String value = dataMap.getOrDefault(key,null);
+        Map<String, String> dataMap = getCaseData(caseUUID).getDataMap(objectMapper);
+        String value = dataMap.getOrDefault(key, null);
         log.debug("returning {} found value for Case: {}", value, caseUUID);
         return value;
     }
@@ -132,7 +131,7 @@ public class CaseDataService {
         try {
             CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(shortCode);
             caseType = caseDataType.getDisplayCode();
-        } catch(RestClientException e) {
+        } catch (RestClientException e) {
             log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED), value(EXCEPTION, e));
             caseType = getCaseData(caseUUID).getType();
         }
@@ -202,8 +201,8 @@ public class CaseDataService {
     }
 
     private void updateStageDeadlines(CaseData caseData) {
-        Map<String,String> dataMap = caseData.getDataMap(objectMapper);
-        for(ActiveStage stage : caseData.getActiveStages()) {
+        Map<String, String> dataMap = caseData.getDataMap(objectMapper);
+        for (ActiveStage stage : caseData.getActiveStages()) {
             // Try and overwrite the deadlines with inputted values from the data map.
             String overrideDeadline = dataMap.get(String.format("%s_DEADLINE", stage.getStageType()));
             if (overrideDeadline == null) {
@@ -266,11 +265,11 @@ public class CaseDataService {
                 .collect(Collectors.toSet());
         Map<String, LocalDate> stageDeadlines = infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived());
         // Try and overwrite the deadlines with inputted values from the data map.
-        for(String stageType : stageDeadlines.keySet()) {
-            String stageDeadlineKey = String.format("%s_DEADLINE",stageType);
-            if(caseDataMap.containsKey(stageDeadlineKey)){
+        for (String stageType : stageDeadlines.keySet()) {
+            String stageDeadlineKey = String.format("%s_DEADLINE", stageType);
+            if (caseDataMap.containsKey(stageDeadlineKey)) {
                 LocalDate deadline = LocalDate.parse(caseDataMap.get(stageDeadlineKey));
-                stageDeadlines.put(stageType,deadline);
+                stageDeadlines.put(stageType, deadline);
             }
         }
 
@@ -284,7 +283,7 @@ public class CaseDataService {
                 caseData.getPrimaryCorrespondent(),
                 caseData.getPrimaryTopic(),
                 caseData.getActiveStages());
-        auditClient.viewCaseSummaryAudit(caseData, caseSummary);
+        auditClient.viewCaseSummaryAudit(caseData);
         return caseSummary;
     }
 
@@ -294,7 +293,7 @@ public class CaseDataService {
         try {
             GetStandardLineResponse getStandardLineResponse = infoClient.getStandardLine(caseData.getPrimaryTopic().getTextUUID());
             return Set.of(getStandardLineResponse);
-        } catch(HttpClientErrorException e) {
+        } catch (HttpClientErrorException e) {
             return Set.of();
         }
     }
@@ -302,9 +301,9 @@ public class CaseDataService {
     List<TemplateDto> getTemplates(UUID caseUUID) {
         CaseData caseData = getCaseData(caseUUID);
         auditClient.viewTemplateAudit(caseData);
-        try{
+        try {
             return infoClient.getTemplates(caseData.getType());
-        } catch(HttpClientErrorException e) {
+        } catch (HttpClientErrorException e) {
             return List.of();
         }
     }
@@ -317,8 +316,7 @@ public class CaseDataService {
         try {
             audit.addAll(auditClient.getAuditLinesForCase(caseUUID, TIMELINE_EVENTS));
             log.debug("Retrieved {} audit lines", audit.size());
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             log.error("Failed to retrieve audit lines for case {}", caseUUID, value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
         }
 
@@ -348,7 +346,7 @@ public class CaseDataService {
         Map<String, String> dataMap = getCaseData(caseUUID).getDataMap(objectMapper);
         // build the linkValue text string used to search the team link table by converting "text" key to the case's data value
         String linkValue = null;
-        for (String text : texts){
+        for (String text : texts) {
             String value = dataMap.getOrDefault(text, "");
             if (!value.isEmpty()) {
                 if (linkValue != null) {
@@ -374,11 +372,10 @@ public class CaseDataService {
         Set<GetAuditResponse> auditLines = auditClient.getAuditLinesForCase(caseUUID, List.of(STAGE_ALLOCATED_TO_TEAM.toString(), STAGE_CREATED.toString()));
         log.info("Got {} audits", auditLines.size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
 
-        return auditLines.stream().map( a -> {
+        return auditLines.stream().map(a -> {
             try {
                 return objectMapper.readValue(a.getAuditPayload(), AuditPayload.StageAllocation.class).getAllocatedToUUID();
-            }
-            catch(IOException e) {
+            } catch (IOException e) {
                 log.error("Unable to parse audit payload for reason {}", e.getMessage(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
                 return null;
             }

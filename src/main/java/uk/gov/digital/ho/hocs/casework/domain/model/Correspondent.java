@@ -79,7 +79,6 @@ public class Correspondent implements Serializable {
     @Column(name = "email")
     private String email;
 
-    // todo: does it make sense to retain the external key when an entity is updated?
     @Getter
     @Column(name = "external_key")
     private String externalKey;

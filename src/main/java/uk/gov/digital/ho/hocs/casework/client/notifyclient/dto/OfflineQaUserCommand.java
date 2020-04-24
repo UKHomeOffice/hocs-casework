@@ -5,22 +5,17 @@ import lombok.NoArgsConstructor;
 
 import java.util.UUID;
 
+@java.lang.SuppressWarnings("squid:S1068")
 @Getter
 @NoArgsConstructor
-public class OfflineQaUserCommand {
-
+public class OfflineQaUserCommand extends NotifyCommand {
 
     private String command = "offline_qa_user";
-    private UUID caseUUID;
-    private UUID stageUUID;
-    private String caseReference;
     private UUID offlineQaUserUUID;
     private UUID currentUserUUID;
 
     public OfflineQaUserCommand(UUID caseUUID, UUID stageUUID, String caseReference, UUID offlineQaUserUUID, UUID currentUserUUID){
-        this.caseUUID = caseUUID;
-        this.stageUUID = stageUUID;
-        this.caseReference = caseReference;
+        super(caseUUID, stageUUID, caseReference);
         this.offlineQaUserUUID = offlineQaUserUUID;
         this.currentUserUUID = currentUserUUID;
     }

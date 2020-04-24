@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.client.infoclient;
 
-import com.fasterxml.jackson.databind.type.CollectionType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,7 +49,6 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetCorrespondentType", unless = "#result == null", key = "#caseType")
     public GetCorrespondentTypeResponse getCorrespondentType(String caseType) {
-        String s = String.format("/correspondentType/%s", caseType);
         GetCorrespondentTypeResponse correspondentType = restHelper.get(serviceBaseURL, String.format("/correspondentType/%s", caseType), GetCorrespondentTypeResponse.class);
         log.info("Got CorrespondentTypes {}", correspondentType.getCorrespondentTypes().size(), value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
         return correspondentType;
@@ -118,6 +116,7 @@ public class InfoClient {
         log.info("Got Topic {} for Topic {}", infoTopic.getLabel(), topicUUID, value(EVENT, INFO_CLIENT_GET_TOPIC_SUCCESS));
         return infoTopic;
     }
+
     @Cacheable(value = "InfoClientGetUser", unless = "#result == null", key = "{ #userUUID}")
     public UserDto getUser(UUID userUUID) {
         UserDto userDto = restHelper.get(serviceBaseURL, String.format("/user/%s", userUUID), UserDto.class);

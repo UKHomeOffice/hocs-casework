@@ -174,8 +174,7 @@ public class AuditClientTest {
     @Test
     public void viewCaseSummaryAudit() throws IOException {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
-        CaseSummary caseSummary = new CaseSummary(LocalDate.now(), LocalDate.now(), new HashMap<>(), new HashSet<>(), correspondent, topic, new HashSet<>());
-        auditClient.viewCaseSummaryAudit(caseData, caseSummary);
+        auditClient.viewCaseSummaryAudit(caseData);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_SUMMARY_VIEWED);
@@ -249,8 +248,7 @@ public class AuditClientTest {
 
     @Test
     public void viewCaseNotesAudit() throws IOException {
-        CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note", userId);
-        auditClient.viewCaseNotesAudit(caseUUID, new HashSet<CaseNote>(){{ add(caseNote); }});
+        auditClient.viewCaseNotesAudit(caseUUID);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_NOTES_VIEWED);

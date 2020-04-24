@@ -10,7 +10,7 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
-import uk.gov.digital.ho.hocs.casework.client.searchClient.SearchClient;
+import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
@@ -162,7 +162,7 @@ public class StageService {
                 if (lastAudit == null || lastAudit.getAuditTimestamp() == null) {
                     lastAudit = line;
                 } else {
-                    if (lastAudit != null && line.getAuditTimestamp().isAfter(lastAudit.getAuditTimestamp())) {
+                    if (line.getAuditTimestamp().isAfter(lastAudit.getAuditTimestamp())) {
                         lastAudit = line;
                     }
                 }

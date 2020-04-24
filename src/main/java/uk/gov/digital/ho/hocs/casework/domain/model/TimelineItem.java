@@ -6,6 +6,7 @@ import lombok.Getter;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@java.lang.SuppressWarnings("squid:S1068")
 @AllArgsConstructor
 @Getter
 public class TimelineItem {

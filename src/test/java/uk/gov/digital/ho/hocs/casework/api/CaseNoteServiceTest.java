@@ -11,7 +11,6 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseNoteRepository;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -61,7 +60,7 @@ public class CaseNoteServiceTest {
 
         caseNoteService.getCaseNotes(caseUUID);
 
-        verify(auditClient, times(1)).viewCaseNotesAudit(caseUUID, caseNoteData);
+        verify(auditClient, times(1)).viewCaseNotesAudit(caseUUID);
 
         verifyNoMoreInteractions(auditClient);
     }

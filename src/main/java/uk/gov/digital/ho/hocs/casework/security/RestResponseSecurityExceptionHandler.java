@@ -5,6 +5,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
@@ -18,20 +19,24 @@ public class RestResponseSecurityExceptionHandler {
 
     @ExceptionHandler(SecurityExceptions.PermissionCheckException.class)
     public ResponseEntity handle(SecurityExceptions.PermissionCheckException e) {
-        log.error("SecurityException: {}", e.getMessage(), value(EVENT,e.getEvent()));
+        logError(e);
         return new ResponseEntity<>(e.getMessage(), UNAUTHORIZED);
     }
 
     @ExceptionHandler(SecurityExceptions.StageNotAssignedToLoggedInUserException.class)
     public ResponseEntity handle(SecurityExceptions.StageNotAssignedToLoggedInUserException e) {
-        log.error("SecurityException: {}", e.getMessage(), value(EVENT, e.getEvent()));
+        logError(e);
         return new ResponseEntity<>(e.getMessage(), FORBIDDEN);
     }
 
     @ExceptionHandler(SecurityExceptions.StageNotAssignedToUserTeamException.class)
     public ResponseEntity handle(SecurityExceptions.StageNotAssignedToUserTeamException e) {
-        log.error("SecurityException: {}", e.getMessage(), value(EVENT, e.getEvent()));
+        logError(e);
         return new ResponseEntity<>(e.getMessage(), FORBIDDEN);
+    }
+
+    private void logError(SecurityExceptions.EventRuntimeException e) {
+        log.error("SecurityException: {}", e.getMessage(), value(EVENT, e.getEvent()));
     }
 
 }

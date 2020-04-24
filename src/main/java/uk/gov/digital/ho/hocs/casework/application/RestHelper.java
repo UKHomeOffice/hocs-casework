@@ -73,8 +73,7 @@ public class RestHelper {
         String originalFilename = filename;
         String fileType = getFileExtension(filename);
         String mimeType = response.getHeaders().getContentType().toString();
-        S3Document document = new S3Document(filename, originalFilename, body.getByteArray(), fileType, mimeType);
-        return document;
+        return new S3Document(filename, originalFilename, body.getByteArray(), fileType, mimeType);
     }
 
     @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"), exclude = HttpClientErrorException.NotFound.class)
@@ -107,7 +106,7 @@ public class RestHelper {
             ContentDisposition contentDisposition = ContentDisposition.parse(response.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0));
             return contentDisposition.getFilename();
         }
-        return null;
+        return "";
     }
 
 }

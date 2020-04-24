@@ -8,8 +8,6 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoTopic;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.domain.repository.TopicRepository;
-
-import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
