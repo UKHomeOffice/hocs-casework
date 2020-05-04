@@ -304,10 +304,10 @@ spec:
                   key: secret_access_key
           resources:
             limits:
-              cpu: 1500m
+              cpu: 900m
               memory: 1536Mi
             requests:
-              cpu: 400m
+              cpu: 50m
               memory: 896Mi
           ports:
             - name: http
