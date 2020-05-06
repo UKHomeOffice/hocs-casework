@@ -33,6 +33,7 @@ public class CaseDataResourceTest {
     private CaseDataResource caseDataResource;
     private ObjectMapper objectMapper = new ObjectMapper();
     private LocalDate caseReceived = LocalDate.now();
+
     @Before
     public void setUp() {
         caseDataResource = new CaseDataResource(caseDataService);
@@ -42,7 +43,7 @@ public class CaseDataResourceTest {
     public void shouldCreateCase() {
 
         CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseReceived);
-        CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data,caseReceived);
+        CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data, caseReceived);
 
         when(caseDataService.createCase(caseDataType.getDisplayCode(), data, caseReceived)).thenReturn(caseData);
 
@@ -59,7 +60,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCase() {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper,caseReceived);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseReceived);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
@@ -76,7 +77,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCaseNull() {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper,caseReceived);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseReceived);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
@@ -124,7 +125,7 @@ public class CaseDataResourceTest {
     public void shouldGetCaseWithCorrespondentAndTopic() {
 
         Correspondent correspondent = new Correspondent(UUID.randomUUID(), "TYPE", "name",
-                new Address("postcode","address1","address2","address3","county"),
+                new Address("postcode", "address1", "address2", "address3", "county"),
                 "phone", "email", "", "");
 
         Topic topic = new Topic(UUID.randomUUID(), "name", UUID.randomUUID());
@@ -132,7 +133,7 @@ public class CaseDataResourceTest {
 
         when(caseData.getPrimaryCorrespondent()).thenReturn(correspondent);
         when(caseData.getPrimaryTopic()).thenReturn(topic);
-        when(caseData.getCreated()).thenReturn(LocalDateTime.of(2019,1,1,6,0));
+        when(caseData.getCreated()).thenReturn(LocalDateTime.of(2019, 1, 1, 6, 0));
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
         ResponseEntity<GetCaseResponse> response = caseDataResource.getCase(uuid, Optional.of(Boolean.TRUE));
@@ -178,8 +179,8 @@ public class CaseDataResourceTest {
     }
 
     @Test
-    public void shouldUpdateTeamByStageAndTexts(){
-        String[] texts = { "Text1" };
+    public void shouldUpdateTeamByStageAndTexts() {
+        String[] texts = {"Text1"};
         UpdateTeamByStageAndTextsRequest request = new UpdateTeamByStageAndTextsRequest(
                 uuid, uuid, "stageType", "teamUUIDKey", "teamNameKey", texts);
         Map<String, String> teamMap = new HashMap();
@@ -193,7 +194,7 @@ public class CaseDataResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody()).isInstanceOf(UpdateTeamByStageAndTextsResponse.class);
-        assertThat(((UpdateTeamByStageAndTextsResponse)response.getBody()).getTeamMap()).isEqualTo(teamMap);
+        assertThat(((UpdateTeamByStageAndTextsResponse) response.getBody()).getTeamMap()).isEqualTo(teamMap);
     }
 
     @Test
@@ -202,5 +203,38 @@ public class CaseDataResourceTest {
 
         assertThat(responseEntity.getBody()).isEqualTo("Cache Cleared");
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void getCaseDataValue() {
+        String variableName = "TestVariableName";
+        String expectedValue = "TestValue";
+
+        when(caseDataService.getCaseDataField(uuid, variableName)).thenReturn(expectedValue);
+
+        ResponseEntity<String> results = caseDataResource.getCaseDataValue(uuid, variableName);
+
+        assertThat(results).isNotNull();
+        assertThat(results.getBody()).isEqualTo(expectedValue);
+        assertThat(results.getStatusCodeValue()).isEqualTo(200);
+        verify(caseDataService).getCaseDataField(uuid, variableName);
+        verifyNoMoreInteractions(caseDataService);
+
+
+    }
+
+    @Test
+    public void updateCaseDataValue() {
+        String variableName = "TestVariableName";
+        String testValue = "TestValue";
+
+        ResponseEntity<String> results = caseDataResource.updateCaseDataValue(uuid, variableName, testValue);
+
+        assertThat(results).isNotNull();
+        assertThat(results.getStatusCodeValue()).isEqualTo(200);
+        verify(caseDataService).updateCaseData(uuid, null, Map.of(variableName, testValue));
+        verifyNoMoreInteractions(caseDataService);
+
+
     }
 }
