@@ -125,7 +125,7 @@ class CaseDataResource {
     @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/templates")
     public ResponseEntity<List<TemplateDto>> getTemplate(@PathVariable UUID caseUUID) {
-        List<TemplateDto> template =  caseDataService.getTemplates(caseUUID);
+        List<TemplateDto> template = caseDataService.getTemplates(caseUUID);
         return ResponseEntity.ok(template);
     }
 
@@ -133,5 +133,16 @@ class CaseDataResource {
     ResponseEntity clearCachedTemplateForCaseType(@PathVariable String caseType) {
         caseDataService.clearCachedTemplateForCaseType(caseType);
         return ResponseEntity.ok("Cache Cleared");
+    }
+
+    @GetMapping(value = "/case/{caseUUID}/data/{variableName}")
+    ResponseEntity<String> getCaseDataValue(@PathVariable UUID caseUUID, @PathVariable String variableName) {
+        return ResponseEntity.ok(caseDataService.getCaseDataField(caseUUID, variableName));
+    }
+
+    @PutMapping(value = "/case/{caseUUID}/data/{variableName}")
+    ResponseEntity updateCaseDataValue(@PathVariable UUID caseUUID, @PathVariable String variableName, @RequestBody String value) {
+        caseDataService.updateCaseData(caseUUID, null, Map.of(variableName, value));
+        return ResponseEntity.ok().build();
     }
 }
