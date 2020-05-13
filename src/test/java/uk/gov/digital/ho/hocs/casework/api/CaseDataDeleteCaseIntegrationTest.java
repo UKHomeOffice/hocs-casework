@@ -15,7 +15,6 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;

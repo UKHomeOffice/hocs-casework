@@ -63,28 +63,31 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetTemplatesByCaseType", unless = "#result == null", key = "#caseType")
     public List<TemplateDto> getTemplates(String caseType) {
-        List<TemplateDto> templates = restHelper.get(serviceBaseURL, String.format("/caseType/%s/templates", caseType), new ParameterizedTypeReference<List<TemplateDto>>() {});
+        List<TemplateDto> templates = restHelper.get(serviceBaseURL, String.format("/caseType/%s/templates", caseType), new ParameterizedTypeReference<List<TemplateDto>>() {
+        });
         log.info("Got Templates {} for CaseType {}, event {}", templates.size(), caseType, value(EVENT, INFO_CLIENT_GET_TEMPLATE_SUCCESS));
         return templates;
     }
 
     @Cacheable(value = "InfoClientGetTeams", unless = "#result.size() == 0")
     public Set<TeamDto> getTeams() {
-        Set<TeamDto> teams = restHelper.get(serviceBaseURL, "/team", new ParameterizedTypeReference<Set<TeamDto>>() {});
+        Set<TeamDto> teams = restHelper.get(serviceBaseURL, "/team", new ParameterizedTypeReference<Set<TeamDto>>() {
+        });
         log.info("Got {} teams", teams.size(), value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
         return teams;
     }
 
     @Cacheable(value = "InfoClientGetTeamForStageAndText", unless = "#result == null", key = "{ #stageType, #text }")
     public TeamDto getTeamByStageAndText(String stageType, String text) {
-        TeamDto response = restHelper.get(serviceBaseURL, String.format("/team/stage/%s/text/%s", stageType, text),  TeamDto.class);
+        TeamDto response = restHelper.get(serviceBaseURL, String.format("/team/stage/%s/text/%s", stageType, text), TeamDto.class);
         log.info("Got Team teamUUID {} for Stage {} and Text {}", response.getUuid(), stageType, text, value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
         return response;
     }
 
     @Cacheable(value = "InfoClientGetCaseSummaryFieldsRequest", unless = "#result.size() == 0", key = "#caseType")
     public Set<FieldDto> getCaseSummaryFields(String caseType) {
-        Set<FieldDto> response = restHelper.get(serviceBaseURL, String.format("/schema/caseType/%s/summary", caseType), new ParameterizedTypeReference<Set<FieldDto>>() {});
+        Set<FieldDto> response = restHelper.get(serviceBaseURL, String.format("/schema/caseType/%s/summary", caseType), new ParameterizedTypeReference<Set<FieldDto>>() {
+        });
         log.info("Got {} case summary fields for CaseType {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
         return response;
     }
@@ -98,7 +101,8 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetStageDeadlines", unless = "#result.size() == 0", key = "{#caseType, #received.toString() }")
     public Map<String, LocalDate> getStageDeadlines(String caseType, LocalDate received) {
-        Map<String, LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, received), new ParameterizedTypeReference<Map<String, LocalDate> >() {});
+        Map<String, LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, received), new ParameterizedTypeReference<Map<String, LocalDate>>() {
+        });
         log.info("Got {} stage deadlines for CaseType {} and Date {}", response.size(), caseType, received, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
         return response;
     }
@@ -126,7 +130,8 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetEntityListDtos", unless = "#result == null", key = "#listName")
     public List<EntityDto<EntityTotalDto>> getEntityListTotals(String listName) {
-        List<EntityDto<EntityTotalDto>> entityListDtos = restHelper.get(serviceBaseURL, String.format("/entity/list/%s", listName), new ParameterizedTypeReference<List<EntityDto<EntityTotalDto>>>() {});
+        List<EntityDto<EntityTotalDto>> entityListDtos = restHelper.get(serviceBaseURL, String.format("/entity/list/%s", listName), new ParameterizedTypeReference<List<EntityDto<EntityTotalDto>>>() {
+        });
         log.info("Got Entity List By List Name {} ", value(EVENT, INFO_CLIENT_GET_ENTITY_LIST));
         return entityListDtos;
     }
@@ -139,5 +144,13 @@ public class InfoClient {
     @CacheEvict(value = "InfoClientGetTemplatesByCaseType", key = "#caseType")
     public void clearCachedTemplateForCaseType(String caseType) {
         log.info("Cache invalidated for Case Type: {}, {}", caseType, value(EVENT, CASE_TYPE_TEMPLATE_CACHE_INVALIDATED));
+    }
+
+    @Cacheable(value = "getPriorityPoliciesForCaseType")
+    public List<PriorityPolicyDto> getPriorityPoliciesForCaseType(String caseType) {
+        List<PriorityPolicyDto> policies = restHelper.get(serviceBaseURL, String.format("/priority/policy/%s", caseType), new ParameterizedTypeReference<List<PriorityPolicyDto>>() {
+        });
+        log.info("Got {} policies", policies.size(), value(EVENT, INFO_CLIENT_GET_PRIORITY_POLICIES_SUCCESS));
+        return policies;
     }
 }

@@ -1,7 +1,9 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.*;
@@ -15,13 +17,13 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_
 @NoArgsConstructor
 @Entity
 @Table(name = "stage")
-public class Stage implements Serializable {
+public class Stage extends AbstractJsonDataMap implements Serializable {
 
     public static final String DCU_MIN_INITIAL_DRAFT = "DCU_MIN_INITIAL_DRAFT";
     public static final String DCU_TRO_INITIAL_DRAFT = "DCU_TRO_INITIAL_DRAFT";
     public static final String DCU_DTEN_INITIAL_DRAFT = "DCU_DTEN_INITIAL_DRAFT";
     public static final String OFFLINE_QA_USER = "OfflineQaUser";
-    
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,6 +75,7 @@ public class Stage implements Serializable {
     private String caseDataType;
 
     @Getter
+    @Setter(AccessLevel.PROTECTED)
     @Column(name = "data", insertable = false, updatable = false)
     private String data;
 

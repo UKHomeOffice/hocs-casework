@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -19,12 +18,11 @@ import java.util.Set;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DATA_JSON_PARSE_ERROR;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "case_data")
-public class CaseData implements Serializable {
+public class CaseData extends AbstractJsonDataMap implements Serializable {
 
     @Id
     @Column(name = "id")
@@ -53,6 +51,7 @@ public class CaseData implements Serializable {
     private boolean deleted;
 
     @Getter
+    @Setter(AccessLevel.PROTECTED)
     @Column(name = "data")
     private String data = "{}";
 
@@ -117,41 +116,6 @@ public class CaseData implements Serializable {
         this.reference = CaseReferenceGenerator.generateCaseReference(this.type, caseNumber, this.created);
         this.uuid = randomUUID(type.getShortCode());
         this.dateReceived = dateReceived;
-    }
-
-    public void update(Map<String, String> newData, ObjectMapper objectMapper) {
-        if (newData != null && newData.size() > 0) {
-            Map<String, String> dataMap = getDataMap(this.data, objectMapper);
-
-            dataMap.putAll(newData);
-
-            this.data = getDataString(dataMap, objectMapper);
-        }
-    }
-
-    public Map<String, String> getDataMap(ObjectMapper objectMapper) {
-        return getDataMap(this.getData(), objectMapper);
-    }
-
-    private static Map<String, String> getDataMap(String dataString, ObjectMapper objectMapper) {
-        Map<String, String> dataMap;
-        try {
-            dataMap = objectMapper.readValue(dataString, new TypeReference<Map<String, String>>() {
-            });
-        } catch (Exception e) {
-            throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to read data value!", CASE_DATA_JSON_PARSE_ERROR, e);
-        }
-        return dataMap;
-    }
-
-    private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {
-        String dataString;
-        try {
-            dataString = objectMapper.writeValueAsString(dataMap);
-        } catch (Exception e) {
-            throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to write value!", CASE_DATA_JSON_PARSE_ERROR, e);
-        }
-        return dataString;
     }
 
     private static UUID randomUUID(String shortCode) {

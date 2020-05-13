@@ -15,6 +15,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
+import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
@@ -38,12 +39,14 @@ public class StageService {
     private final SearchClient searchClient;
     private final InfoClient infoClient;
     private final CaseDataService caseDataService;
+    private final StagePriorityCalculator stagePriorityCalculator;
 
     private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage :: getCreated);
 
 
     @Autowired
-    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient, @Qualifier("CaseDataService") CaseDataService caseDataService) {
+    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient,
+                        @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -51,6 +54,7 @@ public class StageService {
         this.searchClient = searchClient;
         this.infoClient = infoClient;
         this.caseDataService = caseDataService;
+        this.stagePriorityCalculator = stagePriorityCalculator;
     }
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
@@ -189,7 +193,9 @@ public class StageService {
 
     Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
-        return stageRepository.findAllActiveByTeamUUID(teamUUID);
+        Set<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
+        updatePriority(stages);
+        return stages;
     }
 
     Set<Stage> getActiveStagesForUser() {
@@ -200,6 +206,7 @@ public class StageService {
             return new HashSet<>(0);
         } else {
             Set<Stage> stages = stageRepository.findAllActiveByTeamUUIDIn(teams);
+            updatePriority(stages);
             log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
             return stages;
         }
@@ -278,5 +285,10 @@ public class StageService {
 
     private void updateCurrentStageForCase(UUID caseUUID, UUID stageUUID, String stageType){
         caseDataService.updateCaseData(caseUUID, stageUUID, Map.of("CurrentStage", stageType));
+    }
+
+    private void updatePriority(Collection<Stage> stages){
+        log.info("Updating priority for {} Stages", stages.size());
+        stages.forEach(stagePriorityCalculator::updatePriority);
     }
 }
