@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
@@ -14,9 +15,9 @@ import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
+import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
@@ -40,9 +41,10 @@ public class StageServiceTest {
     private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN");
     private final String userID = UUID.randomUUID().toString();
 
+    private StageService stageService;
+
     @Mock
     private StageRepository stageRepository;
-    private StageService stageService;
     @Mock
     private UserPermissionsService userPermissionsService;
     @Mock
@@ -55,10 +57,12 @@ public class StageServiceTest {
     private InfoClient infoClient;
     @Mock
     private CaseDataService caseDataService;
+    @Mock
+    private StagePriorityCalculator stagePriorityCalculator;
 
     @Before
     public void setUp() {
-        this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient, searchClient, infoClient, caseDataService);
+        this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient, searchClient, infoClient, caseDataService, stagePriorityCalculator);
     }
 
     @Test
@@ -280,7 +284,7 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldGetActiveStages() {
+    public void shouldGetActiveStages_blankResult() {
         Set<UUID> teams = new HashSet<>();
         teams.add(UUID.randomUUID());
 
@@ -295,6 +299,25 @@ public class StageServiceTest {
 
     }
 
+
+    @Test
+    public void shouldGetActiveStages() {
+        Set<UUID> teams = new HashSet<>();
+        teams.add(UUID.randomUUID());
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+
+        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+        when(stageRepository.findAllActiveByTeamUUIDIn(teams)).thenReturn(Set.of(stage));
+
+        stageService.getActiveStagesForUser();
+
+        verify(userPermissionsService).getUserTeams();
+        verify(stageRepository).findAllActiveByTeamUUIDIn(teams);
+        verify(stagePriorityCalculator).updatePriority(stage);
+
+        checkNoMoreInteraction();
+    }
+
     @Test
     public void shouldGetActiveStagesEmpty() {
         Set<UUID> teams = new HashSet<>();
@@ -304,9 +327,8 @@ public class StageServiceTest {
         stageService.getActiveStagesForUser();
 
         // We don't try and get active stages with no teams (empty set) because we're going to get 0 results.
-
-        verifyZeroInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+        verify(userPermissionsService).getUserTeams();
+        checkNoMoreInteraction();
 
     }
 
@@ -322,8 +344,7 @@ public class StageServiceTest {
         verify(stageRepository).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
 
-        verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+        checkNoMoreInteraction();
 
     }
 
@@ -339,8 +360,7 @@ public class StageServiceTest {
         verify(stageRepository).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
 
-        verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+        checkNoMoreInteraction();
 
     }
 
@@ -355,10 +375,11 @@ public class StageServiceTest {
 
         verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
+        verify(auditClient).updateStageTeam(stage);
+        verify(caseDataService).getCaseRef(caseUUID);
         verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
 
-        verifyNoMoreInteractions(stageRepository);
-        verifyNoMoreInteractions(notifyClient);
+        checkNoMoreInteraction();
 
     }
 
@@ -373,7 +394,12 @@ public class StageServiceTest {
         stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, null);
 
         verify(auditClient).updateStageTeam(stage);
-        verifyNoMoreInteractions(auditClient);
+        verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
+        verify(stageRepository).save(stage);
+        verify(notifyClient).sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, null, null);
+        verify(caseDataService).getCaseRef(caseUUID);
+
+        checkNoMoreInteraction();
 
     }
 
@@ -609,6 +635,10 @@ public class StageServiceTest {
         linesForCase.add(new GetAuditResponse(UUID.randomUUID(), caseUUID, stage.getUuid(), UUID.randomUUID().toString(), "",
                                               "{}", "", ZonedDateTime.now(), STAGE_ALLOCATED_TO_USER.name(), userID));
         return linesForCase;
+    }
+
+    private void checkNoMoreInteraction(){
+        verifyNoMoreInteractions(stageRepository, userPermissionsService, notifyClient, auditClient, searchClient, infoClient, caseDataService, stagePriorityCalculator);
     }
 
 }

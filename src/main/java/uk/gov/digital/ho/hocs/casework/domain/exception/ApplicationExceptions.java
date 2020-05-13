@@ -49,4 +49,11 @@ public interface ApplicationExceptions {
 
         public LogEvent getException() { return  exception; }
     }
+
+    class InvalidPriorityTypeException extends RuntimeException {
+
+        public InvalidPriorityTypeException(String msg, Object... args) {
+            super(String.format(msg, args));
+        }
+    }
 }

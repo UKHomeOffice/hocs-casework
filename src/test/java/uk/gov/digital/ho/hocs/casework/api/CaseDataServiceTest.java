@@ -21,7 +21,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
-import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.io.IOException;
 import java.time.LocalDate;
