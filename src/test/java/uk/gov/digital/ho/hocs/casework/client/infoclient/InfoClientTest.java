@@ -60,6 +60,17 @@ public class InfoClientTest {
     }
 
     @Test
+    public void getDocumentTags(){
+        List<String> tags = new ArrayList(Arrays.asList("tag"));
+        when(restHelper.get("infoService", "/caseType/TEST/documentTags", new ParameterizedTypeReference<List<String>>() {})).thenReturn(tags);
+
+        List<String> response = infoClient.getDocumentTags("TEST");
+
+        assertThat(response).isNotNull();
+        assertThat(response.size()).isEqualTo(1);
+    }
+
+    @Test
     public void getEntityListTotalsReturnsEntityList(){
         EntityTotalDto entityTotalDto = new EntityTotalDto(new HashMap(), new HashMap());
         EntityDto<EntityTotalDto> entityDto = new EntityDto<EntityTotalDto>("simpleName", entityTotalDto);

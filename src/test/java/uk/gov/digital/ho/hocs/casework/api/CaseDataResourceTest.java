@@ -13,10 +13,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -195,6 +192,19 @@ public class CaseDataResourceTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody()).isInstanceOf(UpdateTeamByStageAndTextsResponse.class);
         assertThat(((UpdateTeamByStageAndTextsResponse) response.getBody()).getTeamMap()).isEqualTo(teamMap);
+    }
+
+    @Test
+    public void shouldGetDocumentTags(){
+        UUID caseUUID = UUID.randomUUID();
+        List<String> documentTags = new ArrayList<String>(Arrays.asList("Tag"));
+        when(caseDataService.getDocumentTags(caseUUID)).thenReturn(documentTags);
+
+        ResponseEntity<List<String>> response = caseDataResource.getDocumentTags(caseUUID);
+
+        assertThat(response.getBody()).isSameAs(documentTags);
+        verify(caseDataService).getDocumentTags(caseUUID);
+        verifyNoMoreInteractions(caseDataService);
     }
 
     @Test
