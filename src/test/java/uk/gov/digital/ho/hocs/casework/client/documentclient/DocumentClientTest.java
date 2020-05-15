@@ -8,6 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
@@ -51,7 +52,7 @@ public class DocumentClientTest {
 
     @Test
     public void getDocuments() {
-        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)));
+        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)), new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
         String url = "/document/reference/" + caseUUID.toString();
         when(restHelper.get(anyString(), anyString(), any(Class.class))).thenReturn(documentsResponse);
 
@@ -60,6 +61,10 @@ public class DocumentClientTest {
         assertThat(actualResult).isNotNull();
         assertThat(actualResult.getDocumentDtos()).isNotNull();
         assertThat(actualResult.getDocumentDtos().size()).isOne();
+        assertThat(actualResult.getDocumentTags()).isNotNull();
+        assertThat(actualResult.getDocumentTags().size()).isEqualTo(2);
+        assertThat(actualResult.getDocumentTags().get(0)).isEqualTo("ORIGINAL");
+        assertThat(actualResult.getDocumentTags().get(1)).isEqualTo("DRAFT");
         checkDocumentDto(actualResult.getDocumentDtos().iterator().next());
         verify(restHelper).get(documentService, url, GetDocumentsResponse.class);
         verifyNoMoreInteractions(restHelper);
@@ -67,7 +72,7 @@ public class DocumentClientTest {
 
     @Test
     public void getDocuments_shouldPopulateType() {
-        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)));
+        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)), new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
         String url = "/document/reference/" + caseUUID.toString() + "/?type=" + caseType;
         when(restHelper.get(anyString(), anyString(), any(Class.class))).thenReturn(documentsResponse);
 
@@ -76,6 +81,10 @@ public class DocumentClientTest {
         assertThat(actualResult).isNotNull();
         assertThat(actualResult.getDocumentDtos()).isNotNull();
         assertThat(actualResult.getDocumentDtos().size()).isOne();
+        assertThat(actualResult.getDocumentTags()).isNotNull();
+        assertThat(actualResult.getDocumentTags().size()).isEqualTo(2);
+        assertThat(actualResult.getDocumentTags().get(0)).isEqualTo("ORIGINAL");
+        assertThat(actualResult.getDocumentTags().get(1)).isEqualTo("DRAFT");
         verify(restHelper).get(documentService, url, GetDocumentsResponse.class);
         verifyNoMoreInteractions(restHelper);
     }
