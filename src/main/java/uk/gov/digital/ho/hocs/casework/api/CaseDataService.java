@@ -287,6 +287,12 @@ public class CaseDataService {
         return caseSummary;
     }
 
+    List<String> getDocumentTags(UUID caseUUID){
+        String caseType = caseDataRepository.getCaseType(caseUUID);
+        List<String> documentTags = infoClient.getDocumentTags(caseType);
+        return documentTags;
+    }
+
     Set<GetStandardLineResponse> getStandardLine(UUID caseUUID) {
         CaseData caseData = getCaseData(caseUUID);
         auditClient.viewStandardLineAudit(caseData);

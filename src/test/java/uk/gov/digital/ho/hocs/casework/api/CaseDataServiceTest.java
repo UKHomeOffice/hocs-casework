@@ -141,6 +141,21 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
     }
 
+    @Test
+    public void shouldGetDocumentTags(){
+        UUID caseUUID = UUID.randomUUID();
+        when(caseDataRepository.getCaseType(caseUUID)).thenReturn("TEST");
+        List<String> documentTags = new ArrayList<String>(Arrays.asList("Tag"));
+        when(infoClient.getDocumentTags("TEST")).thenReturn(documentTags);
+
+        List<String> tags = caseDataService.getDocumentTags(caseUUID);
+
+        assertThat(tags).isSameAs(documentTags);
+        verify(caseDataRepository).getCaseType(caseUUID);
+        verifyNoMoreInteractions(caseDataRepository);
+        verify(infoClient).getDocumentTags("TEST");
+        verifyNoMoreInteractions(infoClient);
+    }
 
     @Test
     public void shouldGetCaseTimeline()  {
