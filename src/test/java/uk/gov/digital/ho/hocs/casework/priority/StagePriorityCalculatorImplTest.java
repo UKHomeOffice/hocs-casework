@@ -52,7 +52,7 @@ public class StagePriorityCalculatorImplTest {
 
     @Test
     public void updatePriority_withPolicies(){
-        Map<String, String> dataMap = Map.of("PropertyA", "ValueA");
+        Map<String, String> dataMap = Map.of("PropertyA", "ValueA", StagePriorityPolicy.CASE_TYPE, caseType);
         when(stage.getDataMap(objectMapper)).thenReturn(dataMap);
 
         StagePriorityPolicy policyA = mock(StagePriorityPolicy.class);

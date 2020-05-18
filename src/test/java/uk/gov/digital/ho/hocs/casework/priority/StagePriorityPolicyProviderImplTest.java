@@ -8,11 +8,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PriorityPolicyDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.priority.policy.DaysElapsedPolicy;
-import uk.gov.digital.ho.hocs.casework.priority.policy.JoinedStringPropertyPolicy;
-import uk.gov.digital.ho.hocs.casework.priority.policy.SimpleStringPropertyPolicy;
-import uk.gov.digital.ho.hocs.casework.priority.policy.StagePriorityPolicy;
+import uk.gov.digital.ho.hocs.casework.priority.policy.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -66,17 +64,22 @@ public class StagePriorityPolicyProviderImplTest {
                 Map.of("propertyName", PROPERTY_NAME_1, "propertyValue", PROPERTY_VALUE_1,
                         "dateFieldName", PROPERTY_NAME_DATE, "dateFormat", DATE_FIELD_FORMAT, "pointsToAwardPerDay", "3",
                         "capNumberOfDays", "40", "capPointsToAward", "25"));
+        PriorityPolicyDto policy5 = new PriorityPolicyDto("WorkingDaysElapsedPolicy", CASE_TYPE,
+                Map.of("propertyName", PROPERTY_NAME_1, "propertyValue", PROPERTY_VALUE_1,
+                        "dateFieldName", PROPERTY_NAME_DATE, "dateFormat", DATE_FIELD_FORMAT, "pointsToAwardPerDay", "2",
+                        "capNumberOfDays", "7", "capPointsToAward", "12"));
 
 
-        when(infoClient.getPriorityPoliciesForCaseType(CASE_TYPE)).thenReturn(List.of(policy1, policy2, policy3, policy4));
+        when(infoClient.getPriorityPoliciesForCaseType(CASE_TYPE)).thenReturn(List.of(policy1, policy2, policy3, policy4, policy5));
         List<StagePriorityPolicy> results = stagePriorityPolicyProvider.getPolicies(CASE_TYPE);
 
         assertThat(results).isNotNull();
-        assertThat(results.size()).isEqualTo(4);
+        assertThat(results.size()).isEqualTo(5);
         assertThat(results.get(0)).isInstanceOf(SimpleStringPropertyPolicy.class);
         assertThat(results.get(1)).isInstanceOf(SimpleStringPropertyPolicy.class);
         assertThat(results.get(2)).isInstanceOf(JoinedStringPropertyPolicy.class);
         assertThat(results.get(3)).isInstanceOf(DaysElapsedPolicy.class);
+        assertThat(results.get(4)).isInstanceOf(WorkingDaysElapsedPolicy.class);
 
         SimpleStringPropertyPolicy resultPolicy1 = (SimpleStringPropertyPolicy) results.get(0);
         assertThat(resultPolicy1.getPropertyName()).isEqualTo(PROPERTY_NAME_1);
@@ -104,6 +107,15 @@ public class StagePriorityPolicyProviderImplTest {
         assertThat(resultPolicy4.getPointsToAwardPerDay()).isEqualTo(3d);
         assertThat(resultPolicy4.getCapPointsToAward()).isEqualTo(25d);
 
+        WorkingDaysElapsedPolicy resultPolicy5 = (WorkingDaysElapsedPolicy) results.get(4);
+        assertThat(resultPolicy5.getPropertyName()).isEqualTo(PROPERTY_NAME_1);
+        assertThat(resultPolicy5.getPropertyValue()).isEqualTo(PROPERTY_VALUE_1);
+        assertThat(resultPolicy5.getDateFieldName()).isEqualTo(PROPERTY_NAME_DATE);
+        assertThat(resultPolicy5.getDateFormat()).isEqualTo(DATE_FIELD_FORMAT);
+        assertThat(resultPolicy5.getCapNumberOfDays()).isEqualTo(7);
+        assertThat(resultPolicy5.getPointsToAwardPerDay()).isEqualTo(2d);
+        assertThat(resultPolicy5.getCapPointsToAward()).isEqualTo(12d);
+
         verify(infoClient).getPriorityPoliciesForCaseType(CASE_TYPE);
         verifyNoMoreInteractions(infoClient);
 
@@ -116,5 +128,18 @@ public class StagePriorityPolicyProviderImplTest {
 
         when(infoClient.getPriorityPoliciesForCaseType(CASE_TYPE)).thenReturn(List.of(unsupportedPolicy));
         stagePriorityPolicyProvider.getPolicies(CASE_TYPE);
+        verifyNoMoreInteractions(infoClient);
+    }
+
+    @Test
+    public void getWorkingDaysSince(){
+        LocalDate fromDate = LocalDate.parse("2020-05-11");
+        when(infoClient.getWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate)).thenReturn(25);
+
+        Integer results = stagePriorityPolicyProvider.getWorkingDaysSince(CASE_TYPE, fromDate);
+        assertThat(results).isEqualTo(25);
+
+        verify(infoClient).getWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate);
+        verifyNoMoreInteractions(infoClient);
     }
 }

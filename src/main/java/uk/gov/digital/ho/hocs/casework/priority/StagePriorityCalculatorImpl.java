@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.priority.policy.StagePriorityPolicy;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
@@ -23,9 +24,11 @@ public class StagePriorityCalculatorImpl implements StagePriorityCalculator {
     @Override
     public void updatePriority(Stage stage) {
 
-        Map<String, String> data = stage.getDataMap(objectMapper);
+        String caseType = stage.getCaseDataType();
+        Map<String, String> data = new HashMap<>(stage.getDataMap(objectMapper));
+        data.put(StagePriorityPolicy.CASE_TYPE, caseType);
         double priority = 0;
-        for (StagePriorityPolicy policy : stagePriorityPolicyProvider.getPolicies(stage.getCaseDataType())) {
+        for (StagePriorityPolicy policy : stagePriorityPolicyProvider.getPolicies(caseType)) {
             priority += policy.apply(data);
         }
         stage.update(Map.of(SYSTEM_PRIORITY_FIELD_NAME, String.valueOf(priority)), objectMapper);
