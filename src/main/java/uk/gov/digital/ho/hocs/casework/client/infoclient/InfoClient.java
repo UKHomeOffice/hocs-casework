@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -160,4 +161,14 @@ public class InfoClient {
         log.info("Got {} policies", policies.size(), value(EVENT, INFO_CLIENT_GET_PRIORITY_POLICIES_SUCCESS));
         return policies;
     }
+
+    @Cacheable(value = "getWorkingDaysElapsedForCaseType")
+    public Integer getWorkingDaysElapsedForCaseType(String caseType, LocalDate fromDate) {
+        String dateString = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(fromDate);
+        Integer elapsedWorkingDays = restHelper.get(serviceBaseURL, String.format("/caseType/%s/workingDays/%s", caseType, dateString), new ParameterizedTypeReference<Integer>() {
+        });
+        log.info("Got working days elapsed for case type: {} fromDate: {}, event {}", caseType, dateString, value(EVENT, INFO_CLIENT_GET_WORKING_DAYS_FOR_CASE_TYPE_SUCCESS));
+        return elapsedWorkingDays;
+    }
+
 }

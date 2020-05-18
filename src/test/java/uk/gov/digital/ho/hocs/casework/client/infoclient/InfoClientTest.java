@@ -10,6 +10,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -107,5 +108,19 @@ public class InfoClientTest {
         verify(restHelper).get("infoService", "/priority/policy/" + caseType, new ParameterizedTypeReference<List<PriorityPolicyDto>>() {});
         verifyNoMoreInteractions(restHelper);
 
+    }
+
+    @Test
+    public void getWorkingDaysElapsedForCaseType(){
+        String caseType = "CASE_TYPE_A";
+        LocalDate fromDate = LocalDate.parse("2020-05-11");
+        when(restHelper.get("infoService", "/caseType/CASE_TYPE_A/workingDays/2020-05-11", new ParameterizedTypeReference<Integer>() {})).thenReturn(12);
+
+        Integer result = infoClient.getWorkingDaysElapsedForCaseType(caseType, fromDate);
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(12);
+
+        verify(restHelper).get("infoService", "/caseType/CASE_TYPE_A/workingDays/2020-05-11", new ParameterizedTypeReference<Integer>() {});
+        verifyNoMoreInteractions(restHelper);
     }
 }
