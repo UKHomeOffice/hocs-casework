@@ -9,8 +9,11 @@ import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentDto;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsResponse;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.S3Document;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
@@ -37,20 +40,27 @@ public class CaseDocumentServiceTest {
     private S3Document s3Document;
 
     @Mock
+    private CaseDataRepository caseDataRepository;
+    @Mock
     private DocumentClient documentClient;
+    @Mock
+    private InfoClient infoClient;
+
     private CaseDocumentService caseDocumentService;
 
     @Before
     public void setUp() {
-        caseDocumentService = new CaseDocumentService(documentClient);
+        caseDocumentService = new CaseDocumentService(caseDataRepository, documentClient, infoClient);
         documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, docDeleted);
         s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);
     }
 
     @Test
     public void getDocuments() {
-        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)));
+        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)), new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
+        when(caseDataRepository.getCaseType(caseUUID)).thenReturn("CaseType");
         when(documentClient.getDocuments(caseUUID, caseType)).thenReturn(documentsResponse);
+        when(infoClient.getDocumentTags("CaseType")).thenReturn(new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
 
         GetDocumentsResponse result = caseDocumentService.getDocuments(caseUUID, caseType);
 
@@ -59,8 +69,11 @@ public class CaseDocumentServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getDocumentDtos()).isNotNull();
         assertThat(result.getDocumentDtos().size()).isOne();
+        assertThat(result.getDocumentTags()).isNotNull();
+        assertThat(result.getDocumentTags().size()).isEqualTo(2);
+        assertThat(result.getDocumentTags().get(0)).isEqualTo("ORIGINAL");
+        assertThat(result.getDocumentTags().get(1)).isEqualTo("DRAFT");
         checkDocumentDto(result.getDocumentDtos().iterator().next());
-
     }
 
     @Test
