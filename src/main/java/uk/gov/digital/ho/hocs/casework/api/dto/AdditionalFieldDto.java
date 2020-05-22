@@ -19,7 +19,10 @@ public class AdditionalFieldDto {
     @JsonProperty("type")
     private String type;
 
+    @JsonProperty("choices")
+    private Object choices;
+
     public static AdditionalFieldDto from(AdditionalField additionalField) {
-        return new AdditionalFieldDto(additionalField.getLabel(), additionalField.getValue(), additionalField.getType());
+        return new AdditionalFieldDto(additionalField.getLabel(), additionalField.getValue(), additionalField.getType(), additionalField.getChoices());
     }
 }
