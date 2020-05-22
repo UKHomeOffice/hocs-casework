@@ -141,6 +141,21 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
     }
 
+    @Test
+    public void shouldGetDocumentTags(){
+        UUID caseUUID = UUID.randomUUID();
+        when(caseDataRepository.getCaseType(caseUUID)).thenReturn("TEST");
+        List<String> documentTags = new ArrayList<String>(Arrays.asList("Tag"));
+        when(infoClient.getDocumentTags("TEST")).thenReturn(documentTags);
+
+        List<String> tags = caseDataService.getDocumentTags(caseUUID);
+
+        assertThat(tags).isSameAs(documentTags);
+        verify(caseDataRepository).getCaseType(caseUUID);
+        verifyNoMoreInteractions(caseDataRepository);
+        verify(infoClient).getDocumentTags("TEST");
+        verifyNoMoreInteractions(infoClient);
+    }
 
     @Test
     public void shouldGetCaseTimeline()  {
@@ -360,10 +375,10 @@ public class CaseDataServiceTest {
 
         Set<FieldDto> filterFields = new HashSet<>();
 
-        FieldDto field0 = new FieldDto(UUID.randomUUID(),"TEMPCReference", "what is your TEMPCReference", "Text", new String[]{}, true, true);
+        FieldDto field0 = new FieldDto(UUID.randomUUID(),"TEMPCReference", "what is your TEMPCReference", "Text", new String[]{}, true, true, null);
         filterFields.add(field0);
 
-        FieldDto field1 = new FieldDto(UUID.randomUUID(),"CopyNumberTen",  "what is your CopyNumberTen", "Text", new String[]{},  true, true);
+        FieldDto field1 = new FieldDto(UUID.randomUUID(),"CopyNumberTen",  "what is your CopyNumberTen", "Text", new String[]{},  true, true, null);
         filterFields.add(field1);
 
 

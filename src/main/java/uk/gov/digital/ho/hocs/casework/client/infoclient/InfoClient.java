@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -92,6 +93,13 @@ public class InfoClient {
         return response;
     }
 
+    @Cacheable(value = "InfoClientGetDocumentTagsRequest", unless = "#result == null or #result.size() == 0", key = "#caseType")
+    public List<String> getDocumentTags(String caseType) {
+        List<String> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/documentTags", caseType), new ParameterizedTypeReference<List<String>>() {});
+        log.info("Got {} document tags for CaseType {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
+        return response;
+    }
+
     @Cacheable(value = "InfoClientGetCaseDeadline", unless = "#result == null", key = "{#caseType, #received.toString(), #days.toString() }")
     public LocalDate getCaseDeadline(String caseType, LocalDate received, int days) {
         LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s&days=%s", caseType, received, days), LocalDate.class);
@@ -153,4 +161,14 @@ public class InfoClient {
         log.info("Got {} policies", policies.size(), value(EVENT, INFO_CLIENT_GET_PRIORITY_POLICIES_SUCCESS));
         return policies;
     }
+
+    @Cacheable(value = "getWorkingDaysElapsedForCaseType")
+    public Integer getWorkingDaysElapsedForCaseType(String caseType, LocalDate fromDate) {
+        String dateString = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(fromDate);
+        Integer elapsedWorkingDays = restHelper.get(serviceBaseURL, String.format("/caseType/%s/workingDays/%s", caseType, dateString), new ParameterizedTypeReference<Integer>() {
+        });
+        log.info("Got working days elapsed for case type: {} fromDate: {}, event {}", caseType, dateString, value(EVENT, INFO_CLIENT_GET_WORKING_DAYS_FOR_CASE_TYPE_SUCCESS));
+        return elapsedWorkingDays;
+    }
+
 }

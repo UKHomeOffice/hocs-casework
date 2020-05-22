@@ -261,7 +261,7 @@ public class CaseDataService {
         Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
         Set<AdditionalField> additionalFields = summaryFields.stream()
-                .map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent()))
+                .map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent(), extractChoices(field)))
                 .collect(Collectors.toSet());
         Map<String, LocalDate> stageDeadlines = infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived());
         // Try and overwrite the deadlines with inputted values from the data map.
@@ -285,6 +285,21 @@ public class CaseDataService {
                 caseData.getActiveStages());
         auditClient.viewCaseSummaryAudit(caseData);
         return caseSummary;
+    }
+
+    private Object extractChoices(FieldDto fieldDto){
+        if(fieldDto != null && fieldDto.getProps() != null && fieldDto.getProps() instanceof Map){
+            Map propMap = (Map) fieldDto.getProps();
+            return propMap.get("choices");
+        }
+
+        return null;
+    }
+
+    List<String> getDocumentTags(UUID caseUUID){
+        String caseType = caseDataRepository.getCaseType(caseUUID);
+        List<String> documentTags = infoClient.getDocumentTags(caseType);
+        return documentTags;
     }
 
     Set<GetStandardLineResponse> getStandardLine(UUID caseUUID) {

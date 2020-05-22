@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsRespons
 import uk.gov.digital.ho.hocs.casework.client.documentclient.S3Document;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
@@ -52,7 +53,7 @@ public class CaseDocumentResourceTest {
 
     @Test
     public void getDocumentsForCase() {
-        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)));
+        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)), new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
 
         when(caseDocumentService.getDocuments(caseUUID, caseType)).thenReturn(documentsResponse);
 

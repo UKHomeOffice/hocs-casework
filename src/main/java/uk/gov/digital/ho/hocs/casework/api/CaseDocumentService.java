@@ -7,7 +7,10 @@ import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentDto;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsResponse;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.S3Document;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -17,17 +20,26 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 @Slf4j
 public class CaseDocumentService {
 
+    private final CaseDataRepository caseDataRepository;
     private final DocumentClient documentClient;
+    protected final InfoClient infoClient;
 
     @Autowired
-    public CaseDocumentService(DocumentClient documentClient) {
+    public CaseDocumentService(
+            CaseDataRepository caseDataRepository,
+            DocumentClient documentClient,
+            InfoClient infoClient) {
+        this.caseDataRepository = caseDataRepository;
         this.documentClient = documentClient;
+        this.infoClient = infoClient;
     }
 
     public GetDocumentsResponse getDocuments(UUID caseUUID, String type) {
         log.debug("Getting documents for Case: {} with type: {}", caseUUID, type);
         GetDocumentsResponse getDocumentsResponse = documentClient.getDocuments(caseUUID, type);
-        log.info("Got {} documents for Case: {} with type: {}", getDocumentsResponse.getDocumentDtos().size(), caseUUID, value(EVENT, CASE_DOCUMENTS_RETRIEVED));
+        String caseType = caseDataRepository.getCaseType(caseUUID);
+        getDocumentsResponse.setDocumentTags(infoClient.getDocumentTags(caseType));
+        log.info("Got {} documents and {} document tags for Case: {} with type: {}", getDocumentsResponse.getDocumentDtos().size(), getDocumentsResponse.getDocumentTags().size(), caseUUID, value(EVENT, CASE_DOCUMENTS_RETRIEVED));
         return getDocumentsResponse;
     }
 

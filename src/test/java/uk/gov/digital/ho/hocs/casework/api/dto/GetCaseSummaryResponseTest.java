@@ -23,11 +23,11 @@ public class GetCaseSummaryResponseTest {
         stageDeadlines.put("Stage2", LocalDate.now().plusDays(5));
         stageDeadlines.put("Stage3", LocalDate.now().plusDays(12));
 
-        AdditionalField field1 = new AdditionalField("label1", "Value", "Type" );
-        AdditionalField field2 = new AdditionalField("label2", "Value", "Type" );
-        AdditionalField field3 = new AdditionalField("label3", "Value", "Type" );
-        AdditionalField field4 = new AdditionalField("label4", "Value", "Type" );
-        AdditionalField field5 = new AdditionalField("label5", "Value", "Type" );
+        AdditionalField field1 = new AdditionalField("label1", "Value", "Type", null);
+        AdditionalField field2 = new AdditionalField("label2", "Value", "Type", null );
+        AdditionalField field3 = new AdditionalField("label3", "Value", "Type", null );
+        AdditionalField field4 = new AdditionalField("label4", "Value", "Type", null );
+        AdditionalField field5 = new AdditionalField("label5", "Value", "Type", null );
 
         Set<AdditionalField> additionalFields = new HashSet<>();
         additionalFields.add(field5);

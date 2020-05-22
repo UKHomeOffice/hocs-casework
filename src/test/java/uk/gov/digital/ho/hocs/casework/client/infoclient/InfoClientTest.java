@@ -10,6 +10,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
+import java.time.LocalDate;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -60,6 +61,17 @@ public class InfoClientTest {
     }
 
     @Test
+    public void getDocumentTags(){
+        List<String> tags = new ArrayList(Arrays.asList("tag"));
+        when(restHelper.get("infoService", "/caseType/TEST/documentTags", new ParameterizedTypeReference<List<String>>() {})).thenReturn(tags);
+
+        List<String> response = infoClient.getDocumentTags("TEST");
+
+        assertThat(response).isNotNull();
+        assertThat(response.size()).isEqualTo(1);
+    }
+
+    @Test
     public void getEntityListTotalsReturnsEntityList(){
         EntityTotalDto entityTotalDto = new EntityTotalDto(new HashMap(), new HashMap());
         EntityDto<EntityTotalDto> entityDto = new EntityDto<EntityTotalDto>("simpleName", entityTotalDto);
@@ -96,5 +108,19 @@ public class InfoClientTest {
         verify(restHelper).get("infoService", "/priority/policy/" + caseType, new ParameterizedTypeReference<List<PriorityPolicyDto>>() {});
         verifyNoMoreInteractions(restHelper);
 
+    }
+
+    @Test
+    public void getWorkingDaysElapsedForCaseType(){
+        String caseType = "CASE_TYPE_A";
+        LocalDate fromDate = LocalDate.parse("2020-05-11");
+        when(restHelper.get("infoService", "/caseType/CASE_TYPE_A/workingDays/2020-05-11", new ParameterizedTypeReference<Integer>() {})).thenReturn(12);
+
+        Integer result = infoClient.getWorkingDaysElapsedForCaseType(caseType, fromDate);
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(12);
+
+        verify(restHelper).get("infoService", "/caseType/CASE_TYPE_A/workingDays/2020-05-11", new ParameterizedTypeReference<Integer>() {});
+        verifyNoMoreInteractions(restHelper);
     }
 }
