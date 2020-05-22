@@ -41,7 +41,7 @@ public class StageService {
     private final CaseDataService caseDataService;
     private final StagePriorityCalculator stagePriorityCalculator;
 
-    private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage :: getCreated);
+    private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage::getCreated);
 
 
     @Autowired
@@ -150,7 +150,7 @@ public class StageService {
         if (stageData != null && stageData.contains(Stage.OFFLINE_QA_USER)) {
             final Map dataMap = Jackson.fromJsonString(stageData, Map.class);
             if (dataMap != null) {
-                return (String)dataMap.get(Stage.OFFLINE_QA_USER);
+                return (String) dataMap.get(Stage.OFFLINE_QA_USER);
             }
         }
         return null;
@@ -253,10 +253,22 @@ public class StageService {
         }
     }
 
+    Set<Stage> getAllStagesForCaseByCaseUUID(UUID caseUUID) {
+        log.debug("Getting all stages for case: {}", caseUUID);
+        Set<Stage> caseStages = stageRepository.findAllByCaseUUID(caseUUID);
+        if (!caseStages.isEmpty()) {
+            return caseStages;
+        } else {
+            throw new ApplicationExceptions.EntityNotFoundException(
+                    String.format("No stages found for caseUUID: %s", caseUUID), STAGES_NOT_FOUND
+            );
+        }
+    }
+
     private static Set<Stage> groupByCaseUUID(Set<Stage> stages) {
 
         // Group the stages by case UUID
-        Map<UUID, List<Stage>> groupedStages = stages.stream().collect(Collectors.groupingBy(Stage :: getCaseUUID));
+        Map<UUID, List<Stage>> groupedStages = stages.stream().collect(Collectors.groupingBy(Stage::getCaseUUID));
 
         // for each of the entry sets, filter out none-active stages, unless there are no active stages then use the latest stage
         return groupedStages.entrySet().stream().flatMap(s -> reduceToMostActive(s.getValue())).collect(Collectors.toSet());
@@ -267,11 +279,11 @@ public class StageService {
     }
 
     private static Stream<Stage> reduceToMostActive(List<Stage> stages) {
-        Supplier<Stream<Stage>> stageSupplier = stages :: stream;
+        Supplier<Stream<Stage>> stageSupplier = stages::stream;
 
         // If any stages are active
-        if (stageSupplier.get().anyMatch(Stage :: isActive)) {
-            return stageSupplier.get().filter(Stage :: isActive);
+        if (stageSupplier.get().anyMatch(Stage::isActive)) {
+            return stageSupplier.get().filter(Stage::isActive);
         } else {
             // return the most recent stage.
             Optional<Stage> maxDatedStage = stageSupplier.get().max(CREATED_COMPARATOR);
@@ -279,15 +291,15 @@ public class StageService {
         }
     }
 
-    private String getCaseRef(UUID caseUUID){
+    private String getCaseRef(UUID caseUUID) {
         return caseDataService.getCaseRef(caseUUID);
     }
 
-    private void updateCurrentStageForCase(UUID caseUUID, UUID stageUUID, String stageType){
+    private void updateCurrentStageForCase(UUID caseUUID, UUID stageUUID, String stageType) {
         caseDataService.updateCaseData(caseUUID, stageUUID, Map.of("CurrentStage", stageType));
     }
 
-    private void updatePriority(Collection<Stage> stages){
+    private void updatePriority(Collection<Stage> stages) {
         log.info("Updating priority for {} Stages", stages.size());
         stages.forEach(stagePriorityCalculator::updatePriority);
     }
