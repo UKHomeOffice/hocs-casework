@@ -31,4 +31,6 @@ public class FieldDto {
 
     @JsonProperty("active")
     private boolean active;
+
+    private Object props;
 }
