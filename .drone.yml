@@ -72,7 +72,7 @@ pipeline:
       - VERSION=build-${DRONE_BUILD_NUMBER}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_casework_dev
+      - hocs_casework_dev_cs
     commands:
       - cd kube-hocs-casework
       - ./deploy.sh
@@ -88,7 +88,7 @@ pipeline:
       - VERSION=build-${DRONE_BUILD_NUMBER}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_casework_dev
+      - hocs_casework_dev_wcs
     commands:
       - cd kube-hocs-casework
       - ./deploy.sh
@@ -102,8 +102,10 @@ pipeline:
       - ENVIRONMENT=${DRONE_DEPLOY_TO}
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_casework_dev
-      - hocs_casework_demo
+      - hocs_casework_dev_cs
+      - hocs_casework_demo_cs
+      - hocs_casework_dev_wcs
+      - hocs_casework_demo_wcs
     commands:
       - cd kube-hocs-casework
       - ./deploy.sh
@@ -111,13 +113,14 @@ pipeline:
       event: deployment
       environment: [dev, demo]
 
-  deploy-to-qa:
+  deploy-to-qa-cs:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
+      - KUBE_NAMESPACE=cs-qa
       - ENVIRONMENT=qa
       - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_casework_qa
+      - hocs_casework_qa_cs
     commands:
       - source version.txt
       - echo $VERSION
@@ -127,13 +130,46 @@ pipeline:
       event: deployment
       environment: qa
 
-  deploy-to-prod:
+  deploy-to-qa-wcs:
     image: quay.io/ukhomeofficedigital/kd:v1.16.0
     environment:
+      - KUBE_NAMESPACE=wcs-qa
+      - ENVIRONMENT=qa
+      - KUBE_SERVER=https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+    secrets:
+      - hocs_casework_qa_wcs
+    commands:
+      - source version.txt
+      - echo $VERSION
+      - cd kube-hocs-casework
+      - ./deploy.sh
+    when:
+      event: deployment
+      environment: qa
+
+  deploy-to-prod-cs:
+    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    environment:
+      - KUBE_NAMESPACE=cs-prod
       - ENVIRONMENT=prod
       - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
     secrets:
-      - hocs_casework_prod
+      - hocs_casework_prod_cs
+    commands:
+      - cd kube-hocs-casework
+      - ./deploy.sh
+    when:
+      event: deployment
+      environment: prod
+
+  deploy-to-prod-wcs:
+    image: quay.io/ukhomeofficedigital/kd:v1.16.0
+    environment:
+      - KUBE_NAMESPACE=wcs-prod
+      - ENVIRONMENT=prod
+      - KUBE_SERVER=https://kube-api-prod.prod.acp.homeoffice.gov.uk
+    secrets:
+      - hocs_casework_prod_wcs
     commands:
       - cd kube-hocs-casework
       - ./deploy.sh
