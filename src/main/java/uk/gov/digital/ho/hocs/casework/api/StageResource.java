@@ -111,4 +111,10 @@ class StageResource {
         Set<Stage> stages = stageService.search(request);
         return ResponseEntity.ok(GetStagesResponse.from(stages));
     }
+
+    @GetMapping(value = "/stage/case/{caseUUID}")
+    ResponseEntity<GetStagesResponse> getAllStagesByCase(@PathVariable UUID caseUUID){
+        Set<Stage> stages = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
+        return ResponseEntity.ok(GetStagesResponse.from(stages));
+    }
 }
