@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 import com.amazonaws.util.json.Jackson;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -611,6 +612,28 @@ public class StageServiceTest {
         stageService.checkSendOfflineQAEmail(stage);
         verify(auditClient).getAuditLinesForCase(caseUUID, auditType);
         verify(notifyClient).sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), UUID.fromString(userID), offlineQaUserUUID, stage.getCaseReference());
+    }
+
+    @Test
+    public void getAllStagesForCaseByUUID() {
+
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        Set<Stage> stages = Set.of(stage);
+
+        when(stageRepository.findAllByCaseUUID(caseUUID)).thenReturn(stages);
+
+        Set<Stage> result = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
+        Assert.assertEquals(stages, result);
+    }
+
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void getAllStagesForCaseByUuidThrowsExceptionIfEmpty(){
+        Set<Stage> stages = Set.of();
+
+        when(stageRepository.findAllByCaseUUID(caseUUID)).thenReturn(stages);
+
+        stageService.getAllStagesForCaseByCaseUUID(caseUUID);
+        verify(stageRepository).findAllByCaseUUID(caseUUID);
     }
 
     /**
