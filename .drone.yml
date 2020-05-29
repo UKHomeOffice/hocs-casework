@@ -55,7 +55,7 @@ pipeline:
       - /app/hocs-deploy --version=$${SEMVER} --service=hocs-casework --serviceGitToken=$${GIT_PASSWORD} --gitToken=$${GITHUB_PASSWORD} --gitRepo="https://gitlab.digital.homeoffice.gov.uk/hocs/hocs-versions.git" --environment=qa --dockerRepository=quay.io/ukhomeofficedigital --sourceBuild=$${IMAGE_VERSION} --registryUser=ukhomeofficedigital+hocs --registryPassword=$${DOCKER_PASSWORD}
     when:
       event: deployment
-      environment: qa
+      environment: [cs-qa, wcs-qa]
 
   clone-kube-project:
     image: plugins/git
