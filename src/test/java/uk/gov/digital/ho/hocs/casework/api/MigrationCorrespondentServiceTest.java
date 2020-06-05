@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
@@ -41,10 +42,20 @@ public class MigrationCorrespondentServiceTest {
 
     @Test
     public void shouldGetCorrespondents() throws ApplicationExceptions.EntityNotFoundException {
-        HashSet<Correspondent> correspondentData = new HashSet<>();
+        HashSet<CorrespondentWithPrimaryFlag> correspondentData = new HashSet<>();
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
+        CorrespondentWithPrimaryFlag correspondent = new CorrespondentWithPrimaryFlag(
+                caseUUID,
+                "CORRESPONDENT",
+                "anyFullName",
+                address,
+                "anyPhone",
+                "anyEmail",
+                "anyReference",
+                "external key",
+                true
+        );
 
         correspondentData.add(correspondent);
 

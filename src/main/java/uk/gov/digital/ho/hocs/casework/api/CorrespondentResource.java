@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
@@ -38,7 +39,7 @@ public class CorrespondentResource {
     @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/correspondent")
     ResponseEntity<GetCorrespondentsResponse> getCorrespondents(@PathVariable UUID caseUUID) {
-        Set<Correspondent> correspondents = correspondentService.getCorrespondents(caseUUID);
+        Set<CorrespondentWithPrimaryFlag> correspondents = correspondentService.getCorrespondents(caseUUID);
         return ResponseEntity.ok(GetCorrespondentsResponse.from(correspondents));
     }
 

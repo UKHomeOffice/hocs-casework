@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,10 +24,21 @@ public class GetCorrespondentsResponseTest {
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
+        Boolean isPrimary = true;
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
+        CorrespondentWithPrimaryFlag correspondent = new CorrespondentWithPrimaryFlag(
+                caseUUID,
+                type,
+                fullName,
+                address,
+                phone,
+                email,
+                reference,
+                externalKey,
+                isPrimary
+        );
 
-        Set<Correspondent> correspondents = new HashSet<>();
+        Set<CorrespondentWithPrimaryFlag> correspondents = new HashSet<>();
         correspondents.add(correspondent);
 
         GetCorrespondentsResponse getCorrespondentsResponse = GetCorrespondentsResponse.from(correspondents);
@@ -38,7 +50,7 @@ public class GetCorrespondentsResponseTest {
     @Test
     public void getGetCorrespondentsResponseEmpty() {
 
-        Set<Correspondent> correspondents = new HashSet<>();
+        Set<CorrespondentWithPrimaryFlag> correspondents = new HashSet<>();
 
         GetCorrespondentsResponse getCorrespondentsResponse = GetCorrespondentsResponse.from(correspondents);
 
