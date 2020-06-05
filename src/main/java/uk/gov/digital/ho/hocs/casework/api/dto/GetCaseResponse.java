@@ -54,6 +54,9 @@ public class GetCaseResponse {
     @JsonProperty("caseDeadline")
     private LocalDate caseDeadline;
 
+    @JsonProperty("caseDeadlineWarning")
+    private LocalDate caseDeadlineWarning;
+
     @JsonProperty("dateReceived")
     private LocalDate dateReceived;
 
@@ -70,6 +73,7 @@ public class GetCaseResponse {
                 caseData.getPrimaryCorrespondentUUID(),
                 populateCorrespondent(caseData.getPrimaryCorrespondent(), full),
                 caseData.getCaseDeadline(),
+                caseData.getCaseDeadlineWarning(),
                 caseData.getDateReceived());
     }
 

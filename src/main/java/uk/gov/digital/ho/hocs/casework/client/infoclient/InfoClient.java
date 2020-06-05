@@ -107,6 +107,13 @@ public class InfoClient {
         return response;
     }
 
+    @Cacheable(value = "InfoClientGetCaseDeadlineWarning", unless = "#result == null", key = "{#caseType, #received.toString(), #days.toString() }")
+    public LocalDate getCaseDeadlineWarning(String caseType, LocalDate received, int days) {
+        LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadlineWarning?received=%s&days=%s", caseType, received, days), LocalDate.class);
+        log.info("Got {} as deadline warning for CaseType {} and Date {} and Days {}", response.toString(), caseType, received, days, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
+        return response;
+    }
+
     @Cacheable(value = "InfoClientGetStageDeadlines", unless = "#result.size() == 0", key = "{#caseType, #received.toString() }")
     public Map<String, LocalDate> getStageDeadlines(String caseType, LocalDate received) {
         Map<String, LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, received), new ParameterizedTypeReference<Map<String, LocalDate>>() {
@@ -119,6 +126,13 @@ public class InfoClient {
     public LocalDate getStageDeadline(String stageType, LocalDate received, LocalDate caseDeadline) {
         LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadline?received=%s&caseDeadline=%s", stageType, received, caseDeadline), LocalDate.class);
         log.info("Got {} as deadline for StageType {} and Date {} and Case Deadline {}", response.toString(), stageType, received, caseDeadline, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS));
+        return response;
+    }
+
+    @Cacheable(value = "InfoClientGetStageDeadlineWarning", unless = "#result == null", key = "{#stageType, #received.toString(), #caseDeadlineWarning.toString() }")
+    public LocalDate getStageDeadlineWarning(String stageType, LocalDate received, LocalDate caseDeadlineWarning) {
+        LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadlineWarning?received=%s&caseDeadlineWarning=%s", stageType, received, caseDeadlineWarning), LocalDate.class);
+        log.info("Got {} as deadline warning for StageType {} and Date {} and Case Deadline Warning {}", response.toString(), stageType, received, caseDeadlineWarning, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_WARNING_SUCCESS));
         return response;
     }
 

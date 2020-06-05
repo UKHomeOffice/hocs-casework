@@ -82,6 +82,11 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
 
     @Setter
     @Getter
+    @Column(name = "case_deadline_warning")
+    private LocalDate caseDeadlineWarning;
+
+    @Setter
+    @Getter
     @Column(name = "date_received")
     private LocalDate dateReceived;
 

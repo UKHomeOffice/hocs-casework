@@ -39,6 +39,11 @@ public class ActiveStage implements Serializable {
     @Column(name = "deadline")
     private LocalDate deadline;
 
+    @Setter
+    @Getter
+    @Column(name = "deadlineWarning")
+    private LocalDate deadlineWarning;
+
     @Getter
     @Column(name = "transition_note_uuid", columnDefinition = "uuid")
     private UUID transitionNoteUUID;

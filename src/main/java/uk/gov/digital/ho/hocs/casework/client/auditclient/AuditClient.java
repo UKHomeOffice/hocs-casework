@@ -328,7 +328,7 @@ public class AuditClient {
                     allocationType = STAGE_UNALLOCATED_FROM_USER;
                 }
                 sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(),
-                        stage.getUserUUID(), stage.getStageType(), null)), allocationType, stage.getUuid(),
+                        stage.getUserUUID(), stage.getStageType(), null, null)), allocationType, stage.getUuid(),
                         requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
                 logFailedToParseAuditPayload(e);
@@ -342,7 +342,7 @@ public class AuditClient {
         executorService.execute(() -> {
             try {
                 sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(),
-                                stage.getTeamUUID(), stage.getStageType(), stage.getDeadline())), STAGE_CREATED, stage.getUuid(),
+                                stage.getTeamUUID(), stage.getStageType(), stage.getDeadline(), stage.getDeadlineWarning())), STAGE_CREATED, stage.getUuid(),
                                 requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
                 logFailedToParseAuditPayload(e);
@@ -356,7 +356,7 @@ public class AuditClient {
         executorService.execute(() -> {
             try {
                 sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(),
-                                stage.getTeamUUID(), stage.getStageType(), null)), STAGE_RECREATED, stage.getUuid(), requestDataDto.getCorrelationId(),
+                                stage.getTeamUUID(), stage.getStageType(), null, null)), STAGE_RECREATED, stage.getUuid(), requestDataDto.getCorrelationId(),
                                 requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
                 logFailedToParseAuditPayload(e);
@@ -376,7 +376,8 @@ public class AuditClient {
                 } else {
                     allocationType = STAGE_COMPLETED;
                 }
-                sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stage.getUuid(), stage.getTeamUUID(), stage.getStageType(), stage.getDeadline())), allocationType,
+                sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(
+                                 new AuditPayload.StageAllocation(stage.getUuid(), stage.getTeamUUID(), stage.getStageType(), stage.getDeadline(), stage.getDeadlineWarning())), allocationType,
                                  stage.getUuid(), requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
             } catch (JsonProcessingException e) {
                 logFailedToParseAuditPayload(e);

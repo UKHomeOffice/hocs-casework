@@ -170,6 +170,7 @@ public class AuthorisationAspectTest {
                 LocalDateTime.now(),
                 "MIN",
                 LocalDate.now(),
+                LocalDate.now(),
                 UUID.randomUUID(),
                 caseUUID,
                 teamUUID,

@@ -20,6 +20,7 @@ public class GetStageResponseTest {
         UUID transitionNoteUUID = UUID.randomUUID();
         Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
         stage.setDeadline(deadline);
+        stage.setDeadlineWarning(LocalDate.now());
 
         GetStageResponse getStageResponse = GetStageResponse.from(stage);
 
@@ -27,6 +28,7 @@ public class GetStageResponseTest {
         assertThat(getStageResponse.getCreated()).isEqualTo(stage.getCreated());
         assertThat(getStageResponse.getStageType()).isEqualTo(stage.getStageType());
         assertThat(getStageResponse.getDeadline()).isEqualTo(stage.getDeadline());
+        assertThat(getStageResponse.getDeadlineWarning()).isEqualTo(stage.getDeadlineWarning());
         assertThat(getStageResponse.getCaseUUID()).isEqualTo(stage.getCaseUUID());
         assertThat(getStageResponse.getTeamUUID()).isEqualTo(stage.getTeamUUID());
         assertThat(getStageResponse.getUserUUID()).isEqualTo(stage.getUserUUID());
@@ -50,6 +52,7 @@ public class GetStageResponseTest {
         assertThat(getStageResponse.getCreated()).isEqualTo(stage.getCreated());
         assertThat(getStageResponse.getStageType()).isEqualTo(stage.getStageType());
         assertThat(getStageResponse.getDeadline()).isEqualTo(stage.getDeadline());
+        assertThat(getStageResponse.getDeadlineWarning()).isEqualTo(stage.getDeadlineWarning());
         assertThat(getStageResponse.getCaseUUID()).isEqualTo(stage.getCaseUUID());
         assertThat(getStageResponse.getTeamUUID()).isEqualTo(stage.getTeamUUID());
         assertThat(getStageResponse.getUserUUID()).isEqualTo(stage.getUserUUID());

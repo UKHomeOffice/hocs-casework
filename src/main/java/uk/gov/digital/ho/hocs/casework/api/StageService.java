@@ -91,9 +91,14 @@ public class StageService {
             CaseData caseData = caseDataService.getCase(caseUUID);
             LocalDate deadline = infoClient.getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
             stage.setDeadline(deadline);
+            if (caseData.getCaseDeadlineWarning() != null) {
+                LocalDate deadlineWarning = infoClient.getStageDeadlineWarning(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
+                stage.setDeadlineWarning(deadlineWarning);
+            }
         } else {
             LocalDate deadline = LocalDate.parse(overrideDeadline);
             stage.setDeadline(deadline);
+            stage.setDeadlineWarning(null);
         }
         stage.setUser(userUUID);
         stageRepository.save(stage);

@@ -50,6 +50,7 @@ public interface AuditPayload {
         private UUID allocatedToUUID;
         private String stage;
         private LocalDate deadline;
+        private LocalDate deadlineWarning;
     }
 
     @AllArgsConstructor

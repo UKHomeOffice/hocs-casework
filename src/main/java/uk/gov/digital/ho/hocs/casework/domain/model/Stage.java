@@ -46,6 +46,10 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
     private LocalDate deadline;
 
     @Getter
+    @Column(name = "deadline_warning")
+    private LocalDate deadlineWarning;
+
+    @Getter
     @Column(name = "transition_note_uuid", columnDefinition = "uuid")
     private UUID transitionNoteUUID;
 
@@ -99,6 +103,10 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
 
     public void setDeadline(LocalDate deadline) {
         this.deadline = deadline;
+    }
+
+    public void setDeadlineWarning(LocalDate deadlineWarning){
+        this.deadlineWarning = deadlineWarning;
     }
 
     public void setTransitionNote(UUID transitionNoteUUID) {

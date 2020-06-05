@@ -304,6 +304,10 @@ public class CaseDataCreateCaseIntegrationTest {
                 .expect(requestTo("http://localhost:8085/caseType/TEST/deadline?received=2018-01-01&days=0"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON_UTF8));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/TEST/deadlineWarning?received=2018-01-01&days=0"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON_UTF8));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
