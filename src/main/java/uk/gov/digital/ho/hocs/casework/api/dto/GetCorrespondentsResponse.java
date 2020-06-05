@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -14,14 +14,15 @@ import java.util.stream.Collectors;
 public class GetCorrespondentsResponse {
 
     @JsonProperty("correspondents")
-    Set<GetCorrespondentResponse> correspondents;
+    Set<GetCorrespondentWithPrimaryFlagResponse> correspondents;
 
-    public static GetCorrespondentsResponse from(Set<Correspondent> correspondentData) {
-        Set<GetCorrespondentResponse> correspondents = correspondentData
+    public static GetCorrespondentsResponse from(Set<CorrespondentWithPrimaryFlag> correspondentData) {
+        Set<GetCorrespondentWithPrimaryFlagResponse> correspondents = correspondentData
                 .stream()
-                .map(GetCorrespondentResponse::from)
+                .map(GetCorrespondentWithPrimaryFlagResponse::from)
                 .collect(Collectors.toSet());
 
         return new GetCorrespondentsResponse(correspondents);
     }
+
 }
