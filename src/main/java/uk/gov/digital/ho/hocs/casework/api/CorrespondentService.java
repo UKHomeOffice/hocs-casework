@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
@@ -42,9 +43,9 @@ public class CorrespondentService {
         this.infoClient = infoClient;
     }
 
-    Set<Correspondent> getCorrespondents(UUID caseUUID) {
+    Set<CorrespondentWithPrimaryFlag> getCorrespondents(UUID caseUUID) {
         log.debug("Getting all Correspondents for Case: {}", caseUUID);
-        Set<Correspondent> correspondents = correspondentRepository.findAllByCaseUUID(caseUUID);
+        Set<CorrespondentWithPrimaryFlag> correspondents = correspondentRepository.findAllByCaseUUID(caseUUID);
         log.info("Got {} Correspondents for Case: {}", correspondents.size(), caseUUID, value(EVENT, CORRESPONDENTS_RETRIEVED));
         return correspondents;
     }
