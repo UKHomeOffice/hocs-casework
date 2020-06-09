@@ -147,6 +147,8 @@ public class CaseDataService {
         CaseData caseData = new CaseData(caseDataType, caseNumber, data, objectMapper, dateReceived);
         LocalDate deadline = infoClient.getCaseDeadline(caseType, dateReceived, 0);
         caseData.setCaseDeadline(deadline);
+        LocalDate deadlineWarning = infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0);
+        caseData.setCaseDeadlineWarning(deadlineWarning);
         caseDataRepository.save(caseData);
         auditClient.createCaseAudit(caseData);
         log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
@@ -195,6 +197,10 @@ public class CaseDataService {
         }
         LocalDate deadline = infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), days);
         caseData.setCaseDeadline(deadline);
+        LocalDate deadlineWarning = infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), days);
+        if (deadlineWarning.isAfter(LocalDate.now())) {
+            caseData.setCaseDeadlineWarning(deadlineWarning);
+        }
         updateStageDeadlines(caseData);
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);
@@ -208,8 +214,13 @@ public class CaseDataService {
             if (overrideDeadline == null) {
                 LocalDate dateReceived = caseData.getDateReceived();
                 LocalDate caseDeadline = caseData.getCaseDeadline();
+                LocalDate caseDeadlineWarning = caseData.getCaseDeadlineWarning();
                 LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), dateReceived, caseDeadline);
                 stage.setDeadline(deadline);
+                if (caseDeadlineWarning != null) {
+                    LocalDate deadlineWarning = infoClient.getStageDeadlineWarning(stage.getStageType(), dateReceived, caseDeadlineWarning);
+                    stage.setDeadlineWarning(deadlineWarning);
+                }
             } else {
                 LocalDate deadline = LocalDate.parse(overrideDeadline);
                 stage.setDeadline(deadline);

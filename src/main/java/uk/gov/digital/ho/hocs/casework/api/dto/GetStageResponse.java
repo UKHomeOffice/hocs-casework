@@ -27,6 +27,9 @@ public class GetStageResponse {
     @JsonProperty("deadline")
     private LocalDate deadline;
 
+    @JsonProperty("deadlineWarning")
+    private LocalDate deadlineWarning;
+
     @JsonProperty("caseUUID")
     private UUID caseUUID;
 
@@ -61,6 +64,7 @@ public class GetStageResponse {
                 stage.getCreated(),
                 stage.getStageType(),
                 stage.getDeadline(),
+                stage.getDeadlineWarning(),
                 stage.getCaseUUID(),
                 stage.getTeamUUID(),
                 stage.getUserUUID(),
