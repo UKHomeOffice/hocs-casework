@@ -5,7 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.priority.WorkingDaysElapsedProvider;
+import uk.gov.digital.ho.hocs.casework.api.WorkingDaysElapsedProvider;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

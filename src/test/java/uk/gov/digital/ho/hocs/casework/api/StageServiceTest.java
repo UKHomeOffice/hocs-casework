@@ -60,10 +60,13 @@ public class StageServiceTest {
     private CaseDataService caseDataService;
     @Mock
     private StagePriorityCalculator stagePriorityCalculator;
+    @Mock
+    private DaysElapsedCalculator daysElapsedCalculator;
 
     @Before
     public void setUp() {
-        this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient, searchClient, infoClient, caseDataService, stagePriorityCalculator);
+        this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient,
+                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator);
     }
 
     @Test
@@ -316,6 +319,7 @@ public class StageServiceTest {
         verify(userPermissionsService).getUserTeams();
         verify(stageRepository).findAllActiveByTeamUUIDIn(teams);
         verify(stagePriorityCalculator).updatePriority(stage);
+        verify(daysElapsedCalculator).updateDaysElapsed(stage);
 
         checkNoMoreInteraction();
     }
@@ -662,7 +666,7 @@ public class StageServiceTest {
     }
 
     private void checkNoMoreInteraction(){
-        verifyNoMoreInteractions(stageRepository, userPermissionsService, notifyClient, auditClient, searchClient, infoClient, caseDataService, stagePriorityCalculator);
+        verifyNoMoreInteractions(stageRepository, userPermissionsService, notifyClient, auditClient, searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator);
     }
 
 }

@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.priority.policy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
-import uk.gov.digital.ho.hocs.casework.priority.WorkingDaysElapsedProvider;
+import uk.gov.digital.ho.hocs.casework.api.WorkingDaysElapsedProvider;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
