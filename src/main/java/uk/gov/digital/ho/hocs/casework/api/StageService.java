@@ -40,13 +40,14 @@ public class StageService {
     private final InfoClient infoClient;
     private final CaseDataService caseDataService;
     private final StagePriorityCalculator stagePriorityCalculator;
+    private final DaysElapsedCalculator daysElapsedCalculator;
 
     private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage::getCreated);
 
 
     @Autowired
     public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient,
-                        @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator) {
+                        @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator, DaysElapsedCalculator daysElapsedCalculator) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -55,6 +56,7 @@ public class StageService {
         this.infoClient = infoClient;
         this.caseDataService = caseDataService;
         this.stagePriorityCalculator = stagePriorityCalculator;
+        this.daysElapsedCalculator = daysElapsedCalculator;
     }
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
@@ -200,6 +202,7 @@ public class StageService {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
         Set<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
         updatePriority(stages);
+        updateDaysElapsed(stages);
         return stages;
     }
 
@@ -212,6 +215,7 @@ public class StageService {
         } else {
             Set<Stage> stages = stageRepository.findAllActiveByTeamUUIDIn(teams);
             updatePriority(stages);
+            updateDaysElapsed(stages);
             log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
             return stages;
         }
@@ -307,5 +311,10 @@ public class StageService {
     private void updatePriority(Collection<Stage> stages) {
         log.info("Updating priority for {} Stages", stages.size());
         stages.forEach(stagePriorityCalculator::updatePriority);
+    }
+
+    private void updateDaysElapsed(Collection<Stage> stages) {
+        log.info("Updating days elapsed for {} Stages", stages.size());
+        stages.forEach(daysElapsedCalculator::updateDaysElapsed);
     }
 }

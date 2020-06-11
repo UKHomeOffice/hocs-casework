@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.priority;
+package uk.gov.digital.ho.hocs.casework.api;
 
 import java.time.LocalDate;
 

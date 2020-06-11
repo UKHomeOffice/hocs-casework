@@ -5,12 +5,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.WorkingDaysElapsedProvider;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PriorityPolicyDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.priority.policy.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Service
-public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvider, WorkingDaysElapsedProvider {
+public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvider {
     private static final String POLICY_TYPE_SIMPLE_STRING = "SimpleStringPropertyPolicy";
     private static final String POLICY_TYPE_JOINED_STRING = "JoinedStringPropertyPolicy";
     private static final String POLICY_TYPE_DAYS_ELAPSED = "DaysElapsedPolicy";
@@ -37,6 +37,9 @@ public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvi
 
     @Autowired
     private InfoClient infoClient;
+
+    @Autowired
+    private WorkingDaysElapsedProvider workingDaysElapsedProvider;
 
     @Cacheable(value = "StagePriorityPolicyProviderImpl_getPolicies")
     @Override
@@ -63,7 +66,7 @@ public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvi
                         Double.parseDouble(data.get(PROPERTY_CAP_POINTS_TO_AWARD)),
                         Double.parseDouble(data.get(PROPERTY_POINTS_TO_AWARD_PER_DAY)));
             case POLICY_TYPE_WORKING_DAYS_ELAPSED:
-                return new WorkingDaysElapsedPolicy(this, data.get(PROPERTY_NAME), data.get(PROPERTY_VALUE),
+                return new WorkingDaysElapsedPolicy(workingDaysElapsedProvider, data.get(PROPERTY_NAME), data.get(PROPERTY_VALUE),
                         data.get(PROPERTY_DATE_FIELD_NAME), data.get(PROPERTY_DATE_FIELD_FORMAT),
                         Integer.parseInt(data.get(PROPERTY_CAP_NUMBER_OF_DAYS)),
                         Double.parseDouble(data.get(PROPERTY_CAP_POINTS_TO_AWARD)),
@@ -71,10 +74,5 @@ public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvi
             default:
                 throw new ApplicationExceptions.InvalidPriorityTypeException("Cannot map %s priority policy type", policyDto.getPolicyType());
         }
-    }
-
-    @Override
-    public Integer getWorkingDaysSince(String caseType, LocalDate fromDate) {
-        return infoClient.getWorkingDaysElapsedForCaseType(caseType, fromDate);
     }
 }

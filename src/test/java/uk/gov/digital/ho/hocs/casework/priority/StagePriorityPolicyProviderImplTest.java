@@ -5,12 +5,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.api.WorkingDaysElapsedProvider;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PriorityPolicyDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.priority.policy.*;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +25,9 @@ public class StagePriorityPolicyProviderImplTest {
     @Mock
     InfoClient infoClient;
 
+    @Mock
+    WorkingDaysElapsedProvider workingDaysElapsedProvider;
+
     private static final String CASE_TYPE = "TestCaseType";
     private static final String PROPERTY_NAME_1 = "property1";
     private static final String PROPERTY_VALUE_1 = "propertyValue1";
@@ -35,7 +38,7 @@ public class StagePriorityPolicyProviderImplTest {
 
     @Before
     public void before(){
-        stagePriorityPolicyProvider = new StagePriorityPolicyProviderImpl(infoClient);
+        stagePriorityPolicyProvider = new StagePriorityPolicyProviderImpl(infoClient, workingDaysElapsedProvider);
     }
 
     @Test
@@ -131,15 +134,4 @@ public class StagePriorityPolicyProviderImplTest {
         verifyNoMoreInteractions(infoClient);
     }
 
-    @Test
-    public void getWorkingDaysSince(){
-        LocalDate fromDate = LocalDate.parse("2020-05-11");
-        when(infoClient.getWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate)).thenReturn(25);
-
-        Integer results = stagePriorityPolicyProvider.getWorkingDaysSince(CASE_TYPE, fromDate);
-        assertThat(results).isEqualTo(25);
-
-        verify(infoClient).getWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate);
-        verifyNoMoreInteractions(infoClient);
-    }
 }
