@@ -145,4 +145,20 @@ public class InfoClientTest {
         verify(restHelper).get("infoService", "/caseType/CASE_TYPE_A/workingDays/2020-05-11", new ParameterizedTypeReference<Integer>() {});
         verifyNoMoreInteractions(restHelper);
     }
+
+
+    @Test
+    public void getProfileByCaseType(){
+
+        ProfileDto profileDto = new ProfileDto("prof1", true, List.of());
+        when(restHelper.get("infoService", "/profile/forcasetype/caseTypeA", ProfileDto.class)).thenReturn(profileDto);
+
+        ProfileDto result = infoClient.getProfileByCaseType("caseTypeA");
+
+        assertThat(result).isEqualTo(profileDto);
+
+        verify(restHelper).get("infoService", "/profile/forcasetype/caseTypeA", ProfileDto.class);
+        verifyNoMoreInteractions(restHelper);
+    }
+
 }
