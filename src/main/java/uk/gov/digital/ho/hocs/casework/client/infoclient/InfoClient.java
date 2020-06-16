@@ -168,7 +168,7 @@ public class InfoClient {
         log.info("Cache invalidated for Case Type: {}, {}", caseType, value(EVENT, CASE_TYPE_TEMPLATE_CACHE_INVALIDATED));
     }
 
-    @Cacheable(value = "getPriorityPoliciesForCaseType")
+    @Cacheable(value = "InfoClientGetPriorityPoliciesForCaseType")
     public List<PriorityPolicyDto> getPriorityPoliciesForCaseType(String caseType) {
         List<PriorityPolicyDto> policies = restHelper.get(serviceBaseURL, String.format("/priority/policy/%s", caseType), new ParameterizedTypeReference<List<PriorityPolicyDto>>() {
         });
@@ -176,13 +176,20 @@ public class InfoClient {
         return policies;
     }
 
-    @Cacheable(value = "getWorkingDaysElapsedForCaseType")
+    @Cacheable(value = "InfoClientGetWorkingDaysElapsedForCaseType")
     public Integer getWorkingDaysElapsedForCaseType(String caseType, LocalDate fromDate) {
         String dateString = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(fromDate);
         Integer elapsedWorkingDays = restHelper.get(serviceBaseURL, String.format("/caseType/%s/workingDays/%s", caseType, dateString), new ParameterizedTypeReference<Integer>() {
         });
         log.info("Got working days elapsed for case type: {} fromDate: {}, event {}", caseType, dateString, value(EVENT, INFO_CLIENT_GET_WORKING_DAYS_FOR_CASE_TYPE_SUCCESS));
         return elapsedWorkingDays;
+    }
+
+    @Cacheable(value = "InfoGetProfileByCaseType", unless = "#result == null")
+    public ProfileDto getProfileByCaseType(String caseType) {
+        ProfileDto response = restHelper.get(serviceBaseURL, String.format("/profile/forcasetype/%s", caseType), ProfileDto.class);
+        log.info("Got profile {} for case type {}, event {}", response.getProfileName(), caseType, value(EVENT, INFO_CLIENT_GET_PROFILE_BY_CASE_TYPE_SUCCESS));
+        return response;
     }
 
 }
