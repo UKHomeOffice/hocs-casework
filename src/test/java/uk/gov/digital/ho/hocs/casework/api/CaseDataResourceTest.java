@@ -247,4 +247,23 @@ public class CaseDataResourceTest {
 
 
     }
+
+    @Test
+    public void updatePrimaryCorrespondent() {
+        UUID caseUUID = UUID.randomUUID();
+        UUID stageUUID = UUID.randomUUID();
+        UUID primaryCorrespondentRequestUUID = UUID.randomUUID();
+        UpdatePrimaryCorrespondentRequest primaryCorrespondentUUID =
+                new UpdatePrimaryCorrespondentRequest(primaryCorrespondentRequestUUID);
+
+        ResponseEntity results = caseDataResource.updatePrimaryCorrespondent(
+                caseUUID,
+                stageUUID,
+                primaryCorrespondentUUID
+        );
+
+        assertThat(results.getStatusCodeValue()).isEqualTo(200);
+        verify(caseDataService).updatePrimaryCorrespondent(caseUUID, stageUUID, primaryCorrespondentRequestUUID);
+        verifyNoMoreInteractions(caseDataService);
+    }
 }

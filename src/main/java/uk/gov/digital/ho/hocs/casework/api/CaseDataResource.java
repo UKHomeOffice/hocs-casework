@@ -96,6 +96,16 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/updatePrimaryCorrespondent")
+    ResponseEntity updatePrimaryCorrespondent(
+            @PathVariable UUID caseUUID,
+            @PathVariable UUID stageUUID,
+            @RequestBody UpdatePrimaryCorrespondentRequest primaryCorrespondentUUID) {
+        UUID correspondentUUID = primaryCorrespondentUUID.getPrimaryCorrespondentUUID();
+        caseDataService.updatePrimaryCorrespondent(caseUUID, stageUUID, correspondentUUID);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryTopic")
     ResponseEntity updateCasePrimaryTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryTopicUUID) {
         caseDataService.updatePrimaryTopic(caseUUID, stageUUID, primaryTopicUUID);
