@@ -228,6 +228,25 @@ public class CaseDataService {
         }
     }
 
+    void updateStageDeadline(UUID caseUUID, UUID stageUUID, String stageType, int days){
+        log.debug("Updating deadline for Case: {} Stage: {} Days: {}", caseUUID, stageType, days);
+        CaseData caseData = getCaseData(caseUUID);
+        LocalDate deadline = infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), days);
+        Map<String, String> data = Map.of(String.format("%s_DEADLINE", stageType), deadline.toString());
+        caseData.update(data, objectMapper);
+
+        if (caseData.getActiveStages() != null) {
+            ActiveStage activeStage = caseData.getActiveStages().stream().filter(stage -> stage.getStageType().equals(stageType)).findFirst().orElse(null);
+            if (activeStage != null) {
+                activeStage.setDeadline(deadline);
+            }
+        }
+
+        caseDataRepository.save(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
+        log.info("Updated Stage Deadline for Case: {} Stage: {} Days: {}", caseUUID, stageType, days, value(EVENT, STAGE_DEADLINE_UPDATED));
+    }
+
     void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) {
         log.debug("Updating Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID);
         CaseData caseData = getCaseData(caseUUID);
@@ -269,12 +288,18 @@ public class CaseDataService {
         log.debug("Building CaseSummary for Case: {}", caseUUID);
 
         CaseData caseData = getCaseData(caseUUID);
+        caseData.getActiveStages();
         Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
         Set<AdditionalField> additionalFields = summaryFields.stream()
                 .map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent(), extractChoices(field)))
                 .collect(Collectors.toSet());
-        Map<String, LocalDate> stageDeadlines = infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived());
+        Map<String, LocalDate> stageDeadlinesOrig = infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived());
+        // Make a deep copy of the cached map so it isn't modified below
+        Map<String, LocalDate> stageDeadlines = new HashMap<String, LocalDate>();
+        for (Map.Entry<String, LocalDate> stageDeadline : stageDeadlinesOrig.entrySet()){
+            stageDeadlines.put(stageDeadline.getKey(), stageDeadline.getValue());
+        }
         // Try and overwrite the deadlines with inputted values from the data map.
         for (String stageType : stageDeadlines.keySet()) {
             String stageDeadlineKey = String.format("%s_DEADLINE", stageType);

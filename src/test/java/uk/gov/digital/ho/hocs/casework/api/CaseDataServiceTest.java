@@ -545,6 +545,23 @@ public class CaseDataServiceTest {
     }
 
     @Test
+    public void shouldUpdateStageDeadline() {
+
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        LocalDate caseDeadline = LocalDate.now();
+        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 7)).thenReturn(caseDeadline);
+
+        caseDataService.updateStageDeadline(caseData.getUuid(), stageUUID, "TEST", 7);
+
+        verify(caseDataRepository).findByUuid(caseData.getUuid());
+        verify(caseDataRepository).save(caseData);
+        verifyNoMoreInteractions(caseDataRepository);
+        verify(auditClient).updateCaseAudit(caseData, stageUUID);
+        verifyNoMoreInteractions(auditClient);
+    }
+
+    @Test
     public void shouldCompleteCase() {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);

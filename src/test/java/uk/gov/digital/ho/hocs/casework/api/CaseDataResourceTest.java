@@ -176,6 +176,19 @@ public class CaseDataResourceTest {
     }
 
     @Test
+    public void shouldUpdateStageDeadline() {
+        UpdateStageDeadlineRequest updateStageDeadlineRequest = new UpdateStageDeadlineRequest("TEST", 7);
+        doNothing().when(caseDataService).updateStageDeadline(uuid, uuid, "TEST", 7);
+
+        ResponseEntity response = caseDataResource.updateStageDeadline(uuid, uuid, updateStageDeadlineRequest);
+
+        verify(caseDataService).updateStageDeadline(uuid, uuid, "TEST", 7);
+        verifyNoMoreInteractions(caseDataService);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     public void shouldUpdateTeamByStageAndTexts() {
         String[] texts = {"Text1"};
         UpdateTeamByStageAndTextsRequest request = new UpdateTeamByStageAndTextsRequest(

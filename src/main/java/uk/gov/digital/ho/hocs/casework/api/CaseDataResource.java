@@ -90,6 +90,12 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/stageDeadline")
+    ResponseEntity updateStageDeadline(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageDeadlineRequest request) {
+        caseDataService.updateStageDeadline(caseUUID, stageUUID, request.getStageType(), request.getDays());
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryCorrespondent")
     ResponseEntity updateCasePrimaryCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryCorrespondentUUID) {
         caseDataService.updatePrimaryCorrespondent(caseUUID, stageUUID, primaryCorrespondentUUID);
