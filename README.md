@@ -47,6 +47,9 @@ docker-compose down
 If you are using an IDE, such as IntelliJ, this service can be started by running the ```HocsCaseServiceApplication``` main class. 
 The service can then be accessed at ```http://localhost:8082```.
 
+You need to specify appropriate Spring profiles.
+Paste `development,postgres,local` into the "Active profiles" box of your run configuration.
+
 ### Building and running without an IDE
 
 This service is built using Gradle. In order to build the project from the command line, run
