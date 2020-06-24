@@ -298,6 +298,38 @@ public class CaseDataServiceTest {
     }
 
     @Test
+    public void shouldGetCaseSummaryWithOverride() throws ApplicationExceptions.EntityNotFoundException, IOException {
+
+        LocalDate overrideDeadline = LocalDate.now().plusDays(7);
+        Map<String, String> data = new HashMap<>();
+        data.put("DCU_DTEN_COPY_NUMBER_TEN_DEADLINE", overrideDeadline.toString());
+
+        CaseData caseData = new CaseData(caseType, caseID, data, objectMapper, caseReceived);
+        caseData.setCaseDeadline(caseDeadline);
+        caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
+        Set<FieldDto> filterFields = new HashSet<>();
+
+        Map<String, LocalDate> deadlines = Map.of(
+                "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
+                "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
+
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
+        when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+
+        CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
+
+        assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
+        assertThat(result.getStageDeadlines()).isNotEqualTo(deadlines);
+        assertThat(result.getStageDeadlines().get("DCU_DTEN_COPY_NUMBER_TEN")).isEqualTo(overrideDeadline.toString());
+        assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
+
+        verify(infoClient).getCaseSummaryFields(caseData.getType());
+        verify(infoClient).getStageDeadlines(caseData.getType(), caseData.getDateReceived());
+        verify(caseDataRepository).findByUuid(caseData.getUuid());
+    }
+
+    @Test
     public void shouldAuditGetCaseSummary()  {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
         Set<FieldDto> filterFields = new HashSet<>();
@@ -542,6 +574,23 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).findByUuid(null);
 
         verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
+    public void shouldUpdateStageDeadline() {
+
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        LocalDate caseDeadline = LocalDate.now();
+        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 7)).thenReturn(caseDeadline);
+
+        caseDataService.updateStageDeadline(caseData.getUuid(), stageUUID, "TEST", 7);
+
+        verify(caseDataRepository).findByUuid(caseData.getUuid());
+        verify(caseDataRepository).save(caseData);
+        verifyNoMoreInteractions(caseDataRepository);
+        verify(auditClient).updateCaseAudit(caseData, stageUUID);
+        verifyNoMoreInteractions(auditClient);
     }
 
     @Test
