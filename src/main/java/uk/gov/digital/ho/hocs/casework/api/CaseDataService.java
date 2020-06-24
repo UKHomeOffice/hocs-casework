@@ -288,7 +288,6 @@ public class CaseDataService {
         log.debug("Building CaseSummary for Case: {}", caseUUID);
 
         CaseData caseData = getCaseData(caseUUID);
-        caseData.getActiveStages();
         Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
         Set<AdditionalField> additionalFields = summaryFields.stream()
