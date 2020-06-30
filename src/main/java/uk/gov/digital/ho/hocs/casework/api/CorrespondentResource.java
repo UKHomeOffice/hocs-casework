@@ -28,7 +28,7 @@ public class CorrespondentResource {
         this.correspondentService = correspondentService;
     }
 
-    @Allocated(allocatedTo = AllocationLevel.USER)
+    @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent")
     ResponseEntity addCorrespondentToCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @Valid @RequestBody CreateCorrespondentRequest request) {
         Address address = new Address(request.getPostcode(), request.getAddress1(), request.getAddress2(), request.getAddress3(), request.getCountry());
@@ -57,14 +57,14 @@ public class CorrespondentResource {
         return ResponseEntity.ok(GetCorrespondentTypeResponse.from(correspondentTypes));
     }
 
-    @Allocated(allocatedTo = AllocationLevel.USER)
+    @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @DeleteMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent/{correspondentUUID}")
     ResponseEntity<GetCorrespondentResponse> deleteCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID ,@PathVariable UUID correspondentUUID) {
         correspondentService.deleteCorrespondent(caseUUID, correspondentUUID);
         return ResponseEntity.ok().build();
     }
 
-    @Allocated(allocatedTo = AllocationLevel.USER)
+    @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent/{correspondentUUID}")
     ResponseEntity updateCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @PathVariable UUID correspondentUUID, @Valid @RequestBody UpdateCorrespondentRequest request) {
         correspondentService.updateCorrespondent(caseUUID, correspondentUUID, request);
