@@ -102,6 +102,7 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
+    @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/updatePrimaryCorrespondent")
     ResponseEntity updatePrimaryCorrespondent(
             @PathVariable UUID caseUUID,
