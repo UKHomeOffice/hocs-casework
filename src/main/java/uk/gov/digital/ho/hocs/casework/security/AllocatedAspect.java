@@ -42,17 +42,16 @@ public class AllocatedAspect {
 
         switch (allocated.allocatedTo()) {
             case USER:
-                UUID userId = userService.getUserId();
-                UUID assignedUser = stageService.getStageUser(caseUUID, stageUUID);
-                if (!userId.equals(assignedUser)) {
-                throw new SecurityExceptions.StageNotAssignedToLoggedInUserException(String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedUser), SECURITY_CASE_NOT_ALLOCATED_TO_USER);
-                }
+                checkIfStageIsAssignedToLoggedInUser(caseUUID, stageUUID);
                 break;
             case TEAM:
-                Set<UUID> teams = userService.getUserTeams();
-                UUID assignedTeam = stageService.getStageTeam(caseUUID, stageUUID);
-                if (!teams.contains(assignedTeam)) {
-                throw new SecurityExceptions.StageNotAssignedToUserTeamException(String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedTeam), SECURITY_CASE_NOT_ALLOCATED_TO_TEAM);
+                checkIfStageIsAssignedToUserTeam(caseUUID, stageUUID);
+                break;
+            case USER_OR_TEAM:
+                try {
+                    checkIfStageIsAssignedToLoggedInUser(caseUUID, stageUUID);
+                } catch (SecurityExceptions.StageNotAssignedToLoggedInUserException e) {
+                    checkIfStageIsAssignedToUserTeam(caseUUID, stageUUID);
                 }
                 break;
             default:
@@ -62,5 +61,23 @@ public class AllocatedAspect {
         return joinPoint.proceed();
 
     }
+
+    private void checkIfStageIsAssignedToLoggedInUser(UUID caseUUID, UUID stageUUID) {
+        UUID userId = userService.getUserId();
+        UUID assignedUser = stageService.getStageUser(caseUUID, stageUUID);
+        if (!userId.equals(assignedUser)) {
+        throw new SecurityExceptions.StageNotAssignedToLoggedInUserException(String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedUser), SECURITY_CASE_NOT_ALLOCATED_TO_USER);
+        }
+    }
+
+    private void checkIfStageIsAssignedToUserTeam(UUID caseUUID, UUID stageUUID) {
+        Set<UUID> teams = userService.getUserTeams();
+        UUID assignedTeam = stageService.getStageTeam(caseUUID, stageUUID);
+        if (!teams.contains(assignedTeam)) {
+        throw new SecurityExceptions.StageNotAssignedToUserTeamException(String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedTeam), SECURITY_CASE_NOT_ALLOCATED_TO_TEAM);
+        }
+    }
+
+
 }
 
