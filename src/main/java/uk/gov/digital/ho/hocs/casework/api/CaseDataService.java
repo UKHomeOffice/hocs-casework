@@ -295,7 +295,7 @@ public class CaseDataService {
                 .collect(Collectors.toSet());
         Map<String, LocalDate> stageDeadlinesOrig = infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived());
         // Make a deep copy of the cached map so it isn't modified below
-        Map<String, LocalDate> stageDeadlines = new HashMap<String, LocalDate>();
+        Map<String, LocalDate> stageDeadlines = new LinkedHashMap<String, LocalDate>();
         for (Map.Entry<String, LocalDate> stageDeadline : stageDeadlinesOrig.entrySet()){
             stageDeadlines.put(stageDeadline.getKey(), stageDeadline.getValue());
         }
