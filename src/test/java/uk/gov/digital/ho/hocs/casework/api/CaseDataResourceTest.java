@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -279,4 +280,23 @@ public class CaseDataResourceTest {
         verify(caseDataService).updatePrimaryCorrespondent(caseUUID, stageUUID, primaryCorrespondentRequestUUID);
         verifyNoMoreInteractions(caseDataService);
     }
+
+    @Test
+    public void updateDeadlineForStages() {
+
+        Map<String, Integer> stageTypeAndDaysMap = Map.of("some_stage_type", 7);
+
+        UpdateDeadlineForStagesRequest updateDeadlineForStagesRequest =
+                new UpdateDeadlineForStagesRequest(stageTypeAndDaysMap);
+
+
+        ResponseEntity response = caseDataResource.updateDeadlineForStages(uuid, uuid, updateDeadlineForStagesRequest);
+
+        verify(caseDataService).updateDeadlineForStages(uuid, uuid, stageTypeAndDaysMap);
+        verifyNoMoreInteractions(caseDataService);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
 }
+
