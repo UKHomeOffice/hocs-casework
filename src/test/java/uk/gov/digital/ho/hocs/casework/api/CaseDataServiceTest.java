@@ -16,10 +16,7 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.*;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
-import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.io.IOException;
@@ -28,9 +25,12 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verify;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
 
@@ -732,5 +732,28 @@ public class CaseDataServiceTest {
         verify(caseDataRepository).getCaseRef(caseUUID);
         verifyNoMoreInteractions(infoClient, caseDataRepository, auditClient);
 
+    }
+
+    @Test
+    public void updateDeadlineForStages() {
+
+        Map<String, Integer> stageTypeAndDaysMap = Map.ofEntries(Map.entry("type1", 5),
+                Map.entry("type2", 10), Map.entry("type3", 9));
+
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
+        LocalDate caseDeadline = LocalDate.now();
+
+        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 5)).thenReturn(caseDeadline);
+        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 10)).thenReturn(caseDeadline);
+        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 9)).thenReturn(caseDeadline);
+
+        caseDataService.updateDeadlineForStages(caseData.getUuid(), stageUUID, stageTypeAndDaysMap);
+
+        verify(caseDataRepository).findByUuid(caseData.getUuid());
+        verify(caseDataRepository).save(caseData);
+        verifyNoMoreInteractions(caseDataRepository);
+        verify(auditClient).updateCaseAudit(caseData, stageUUID);
+        verifyNoMoreInteractions(auditClient);
     }
 }
