@@ -16,6 +16,9 @@ public interface CaseDataRepository extends CrudRepository<CaseData, Long> {
     @Query(value = "SELECT ac.* FROM active_case ac where ac.uuid = ?1", nativeQuery = true)
     CaseData findByUuid(UUID uuid);
 
+    @Query(value = "SELECT ac.* FROM active_case ac where ac.reference = ?1", nativeQuery = true)
+    CaseData findByReference(String reference);
+
     @Query(value = "SELECT ac.reference FROM active_case ac where ac.uuid = ?1", nativeQuery = true)
     String getCaseRef(UUID uuid);
 

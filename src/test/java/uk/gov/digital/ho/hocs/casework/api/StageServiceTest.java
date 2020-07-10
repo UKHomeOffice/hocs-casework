@@ -1,9 +1,9 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
 import com.amazonaws.util.json.Jackson;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.Assert;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -62,11 +62,13 @@ public class StageServiceTest {
     private StagePriorityCalculator stagePriorityCalculator;
     @Mock
     private DaysElapsedCalculator daysElapsedCalculator;
+    @Mock
+    private CaseNoteService caseNoteService;
 
     @Before
     public void setUp() {
         this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient,
-                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator);
+                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, caseNoteService);
     }
 
     @Test
@@ -143,7 +145,7 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldRecreateStage(){
+    public void shouldRecreateStage() {
         Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
@@ -632,7 +634,7 @@ public class StageServiceTest {
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void getAllStagesForCaseByUuidThrowsExceptionIfEmpty(){
+    public void getAllStagesForCaseByUuidThrowsExceptionIfEmpty() {
         Set<Stage> stages = Set.of();
 
         when(stageRepository.findAllByCaseUUID(caseUUID)).thenReturn(stages);
@@ -640,10 +642,11 @@ public class StageServiceTest {
         stageService.getAllStagesForCaseByCaseUUID(caseUUID);
         verify(stageRepository).findAllByCaseUUID(caseUUID);
     }
-
+    
     /**
      * The stage cannot be an instance as it does not have a function to set data (in the Stage Class).
      * I did not want to create a setData on the Stage class for testing only.
+     *
      * @return Mocked Stage for setting and exposing the DATA with offline QA user.
      */
     private Stage createStageOfflineQaData(UUID offlineQaUserUUID) {
@@ -661,12 +664,13 @@ public class StageServiceTest {
     private Set<GetAuditResponse> getAuditLines(Stage stage) {
         Set<GetAuditResponse> linesForCase = new HashSet<>();
         linesForCase.add(new GetAuditResponse(UUID.randomUUID(), caseUUID, stage.getUuid(), UUID.randomUUID().toString(), "",
-                                              "{}", "", ZonedDateTime.now(), STAGE_ALLOCATED_TO_USER.name(), userID));
+                "{}", "", ZonedDateTime.now(), STAGE_ALLOCATED_TO_USER.name(), userID));
         return linesForCase;
     }
 
-    private void checkNoMoreInteraction(){
-        verifyNoMoreInteractions(stageRepository, userPermissionsService, notifyClient, auditClient, searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator);
+    private void checkNoMoreInteraction() {
+        verifyNoMoreInteractions(stageRepository, userPermissionsService, notifyClient, auditClient, searchClient,
+                infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, caseNoteService);
     }
 
 }

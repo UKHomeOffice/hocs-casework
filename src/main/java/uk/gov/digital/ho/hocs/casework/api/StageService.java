@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
@@ -41,13 +43,15 @@ public class StageService {
     private final CaseDataService caseDataService;
     private final StagePriorityCalculator stagePriorityCalculator;
     private final DaysElapsedCalculator daysElapsedCalculator;
+    private final CaseNoteService caseNoteService;
 
     private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage::getCreated);
 
 
     @Autowired
     public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient,
-                        @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator, DaysElapsedCalculator daysElapsedCalculator) {
+                        @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator,
+                        DaysElapsedCalculator daysElapsedCalculator, CaseNoteService caseNoteService) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -57,6 +61,7 @@ public class StageService {
         this.caseDataService = caseDataService;
         this.stagePriorityCalculator = stagePriorityCalculator;
         this.daysElapsedCalculator = daysElapsedCalculator;
+        this.caseNoteService = caseNoteService;
     }
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
@@ -316,5 +321,25 @@ public class StageService {
     private void updateDaysElapsed(Collection<Stage> stages) {
         log.info("Updating days elapsed for {} Stages", stages.size());
         stages.forEach(daysElapsedCalculator::updateDaysElapsed);
+    }
+
+    public void withdrawCase(UUID caseUUID, UUID stageUUID, WithdrawCaseRequest request) {
+        log.info("About to withdraw case : {}", caseUUID);
+        CaseData caseData = caseDataService.getCase(caseUUID);
+
+        for(ActiveStage activeStage : caseData.getActiveStages()){
+            updateStageTeam(caseUUID, activeStage.getUuid(), null, null );
+        }
+
+        Map<String, String> data = new HashMap<>();
+        data.put("Withdrawn", "True");
+        data.put("WithdrawalDate", request.getWithdrawalDate());
+
+        caseDataService.updateCaseData(caseUUID, stageUUID, data);
+        caseDataService.completeCase(caseUUID, true);
+
+        caseNoteService.createCaseNote(caseUUID,"WITHDRAW", request.getNotes());
+
+        log.info("Case withdraw completed : {}", caseUUID, value(EVENT, CASE_WITHDRAWN));
     }
 }

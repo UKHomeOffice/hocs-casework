@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.Allocated;
+import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import javax.validation.Valid;
@@ -116,5 +118,12 @@ class StageResource {
     ResponseEntity<GetStagesResponse> getAllStagesByCase(@PathVariable UUID caseUUID){
         Set<Stage> stages = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
         return ResponseEntity.ok(GetStagesResponse.from(stages));
+    }
+
+    @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
+    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/withdraw")
+    ResponseEntity withdrawCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody WithdrawCaseRequest request) {
+        stageService.withdrawCase(caseUUID, stageUUID, request);
+        return ResponseEntity.ok("Case withdrawn successfully");
     }
 }
