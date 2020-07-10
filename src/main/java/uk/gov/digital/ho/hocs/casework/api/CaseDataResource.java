@@ -14,6 +14,9 @@ import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -174,5 +177,12 @@ class CaseDataResource {
     ResponseEntity updateCaseDataValue(@PathVariable UUID caseUUID, @PathVariable String variableName, @RequestBody String value) {
         caseDataService.updateCaseData(caseUUID, null, Map.of(variableName, value));
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(value = "/case/data/{reference}")
+    ResponseEntity<GetCaseResponse> getCaseDataByReference(@PathVariable String reference) throws UnsupportedEncodingException {
+        String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8.name());
+        CaseData caseData = caseDataService.getCaseDataByReference(decodedRef);
+        return ResponseEntity.ok(GetCaseResponse.from(caseData, true));
     }
 }

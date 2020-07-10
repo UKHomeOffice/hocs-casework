@@ -8,10 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
@@ -93,6 +90,18 @@ public class CaseDataService {
         } else {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
+        }
+    }
+
+    public CaseData getCaseDataByReference(String reference) {
+        log.debug("Getting Case by reference: {}", reference);
+        CaseData caseData = caseDataRepository.findByReference(reference);
+        if (caseData != null) {
+            log.info("Got Case by reference: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+            return caseData;
+        } else {
+            log.error("Case: {}, not found!", reference, value(EVENT, CASE_NOT_FOUND));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", reference), CASE_NOT_FOUND);
         }
     }
 

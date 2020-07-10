@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
@@ -60,7 +62,17 @@ public class GetCaseResponse {
     @JsonProperty("dateReceived")
     private LocalDate dateReceived;
 
+    @JsonProperty("stages")
+    private List<SimpleStageDto> stages;
+
     public static GetCaseResponse from(CaseData caseData, boolean full) {
+
+        List<SimpleStageDto> stages = new ArrayList<>();
+        if (full && !CollectionUtils.isEmpty(caseData.getActiveStages())) {
+            for (ActiveStage activeStage : caseData.getActiveStages()) {
+                stages.add(SimpleStageDto.from(activeStage));
+            }
+        }
 
         return new GetCaseResponse(
                 caseData.getUuid(),
@@ -74,17 +86,18 @@ public class GetCaseResponse {
                 populateCorrespondent(caseData.getPrimaryCorrespondent(), full),
                 caseData.getCaseDeadline(),
                 caseData.getCaseDeadlineWarning(),
-                caseData.getDateReceived());
+                caseData.getDateReceived(),
+                stages);
     }
 
     private static GetTopicResponse populateTopic(Topic topic, boolean full) {
-        if(topic != null && full) {
+        if (topic != null && full) {
             return GetTopicResponse.from(topic);
         }
         return null;
     }
 
-    private static GetCorrespondentResponse populateCorrespondent(Correspondent correspondent, boolean full){
+    private static GetCorrespondentResponse populateCorrespondent(Correspondent correspondent, boolean full) {
         if (correspondent != null && full) {
             return GetCorrespondentResponse.from(correspondent);
         }
@@ -94,7 +107,7 @@ public class GetCaseResponse {
     private static Pattern uuidPattern = Pattern.compile("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b", Pattern.CASE_INSENSITIVE);
 
     private static String populateFields(CaseData caseData, boolean full) {
-        if(full) {
+        if (full) {
             List<String> keys = new ArrayList<>(2);
             List<String> values = new ArrayList<>(2);
 
