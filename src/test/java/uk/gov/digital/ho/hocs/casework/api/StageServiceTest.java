@@ -64,6 +64,8 @@ public class StageServiceTest {
     private DaysElapsedCalculator daysElapsedCalculator;
     @Mock
     private CaseNoteService caseNoteService;
+    @Mock
+    private Stage stage;
 
     @Before
     public void setUp() {
@@ -631,6 +633,17 @@ public class StageServiceTest {
 
         Set<Stage> result = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
         Assert.assertEquals(stages, result);
+    }
+
+    @Test
+    public void shouldGetStageTypeFromStageData() {
+        String stageType = "a-stage-type";
+
+        when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+        when(stage.getStageType()).thenReturn(stageType);
+
+        String result = stageService.getStageTypeFromStageData(caseUUID, stageUUID);
+        Assert.assertEquals(stageType, result);
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
