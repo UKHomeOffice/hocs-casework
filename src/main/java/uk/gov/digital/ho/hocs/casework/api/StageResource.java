@@ -83,6 +83,12 @@ class StageResource {
         return ResponseEntity.ok(teamUUID);
     }
 
+    @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/type")
+    ResponseEntity<String> getStageTypeFromStageData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
+        String stageType = stageService.getStageTypeFromStageData(caseUUID, stageUUID);
+        return ResponseEntity.ok(stageType);
+    }
+
     @GetMapping(value = "/stage/team/{teamUUID}")
     ResponseEntity<GetStagesResponse> getActiveStagesByTeamUUID(@PathVariable UUID teamUUID) {
         Set<Stage> activeStages = stageService.getActiveStagesByTeamUUID(teamUUID);

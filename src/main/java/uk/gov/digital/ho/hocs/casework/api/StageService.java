@@ -78,6 +78,13 @@ public class StageService {
         return stage.getTeamUUID();
     }
 
+    public String getStageTypeFromStageData(UUID caseUUID, UUID stageUUID) {
+        log.debug("Getting Type for Stage: {}", stageUUID);
+        String stageType = getStage(caseUUID, stageUUID).getStageType();
+        log.debug("Got Type: {} for Stage: {}", stageType, stageUUID);
+        return stageType;
+    }
+
     Stage getActiveStage(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting Active Stage: {} for Case: {}", stageUUID, caseUUID);
         Stage stage = stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID);

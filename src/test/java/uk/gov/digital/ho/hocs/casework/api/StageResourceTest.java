@@ -203,4 +203,20 @@ public class StageResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
+    @Test
+    public void shouldGetStageTypeFromStageData(){
+
+        UUID userUUID = UUID.randomUUID();
+        UUID teamUUID = UUID.randomUUID();
+
+        ResponseEntity<String> response = stageResource.getStageTypeFromStageData(userUUID, teamUUID);
+
+        verify(stageService).getStageTypeFromStageData(userUUID, teamUUID);
+        verifyNoMoreInteractions(stageService);
+
+        assertThat(response).isInstanceOf(ResponseEntity.class);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
 }
