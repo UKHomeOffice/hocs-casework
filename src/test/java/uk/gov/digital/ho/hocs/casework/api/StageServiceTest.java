@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
 import com.amazonaws.util.json.Jackson;
+import org.assertj.core.util.Sets;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -9,12 +10,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
@@ -22,6 +25,7 @@ import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.*;
 
@@ -654,6 +658,44 @@ public class StageServiceTest {
 
         stageService.getAllStagesForCaseByCaseUUID(caseUUID);
         verify(stageRepository).findAllByCaseUUID(caseUUID);
+    }
+
+    @Test
+    public void withdrawCase(){
+
+        WithdrawCaseRequest withdrawCaseRequest = new WithdrawCaseRequest("Note 1", "2010-11-23");
+        CaseData mockedCaseData = mock(CaseData.class);
+        ActiveStage activeStage1 = new ActiveStage(1L,
+                UUID.randomUUID(), LocalDateTime.now(),"MPAM", LocalDate.now(), LocalDate.now(),
+                UUID.randomUUID(), caseUUID, teamUUID, UUID.randomUUID());
+        ActiveStage activeStage2 = new ActiveStage(2L,
+                UUID.randomUUID(), LocalDateTime.now(),"MPAM", LocalDate.now(), LocalDate.now(),
+                UUID.randomUUID(), caseUUID, teamUUID, UUID.randomUUID());
+        Stage stage1 = new Stage(caseUUID, "stageType1", teamUUID, userUUID, transitionNoteUUID);
+        Stage stage2 = new Stage(caseUUID, "stageType2", teamUUID, userUUID, transitionNoteUUID);
+
+        when(mockedCaseData.getActiveStages()).thenReturn(Sets.newLinkedHashSet(activeStage1, activeStage2));
+        when(stageRepository.findByCaseUuidStageUUID(caseUUID, activeStage1.getUuid())).thenReturn(stage1);
+        when(stageRepository.findByCaseUuidStageUUID(caseUUID, activeStage2.getUuid())).thenReturn(stage2);
+        when(caseDataService.getCase(caseUUID)).thenReturn(mockedCaseData);
+
+        stageService.withdrawCase(caseUUID, stageUUID, withdrawCaseRequest);
+
+        Map<String, String> expectedData = new HashMap<>();
+        expectedData.put("Withdrawn", "True");
+        expectedData.put("WithdrawalDate", "2010-11-23");
+
+        verify(caseDataService).getCase(caseUUID);
+        verify(caseDataService).updateCaseData(caseUUID, stageUUID, expectedData);
+        verify(caseDataService).completeCase(caseUUID, true);
+        verify(stageRepository).findByCaseUuidStageUUID(caseUUID, activeStage1.getUuid());
+        verify(stageRepository).findByCaseUuidStageUUID(caseUUID, activeStage2.getUuid());
+        verify(stageRepository).save(stage1);
+        verify(stageRepository).save(stage2);
+        verify(auditClient).updateStageTeam(stage1);
+        verify(auditClient).updateStageTeam(stage2);
+        verify(caseNoteService).createCaseNote(caseUUID, "WITHDRAW", "Note 1");
+        checkNoMoreInteraction();
     }
     
     /**

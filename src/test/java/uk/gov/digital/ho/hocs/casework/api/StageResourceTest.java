@@ -219,4 +219,14 @@ public class StageResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
+    @Test
+    public void withdrawCase(){
+        WithdrawCaseRequest withdrawCaseRequest = new WithdrawCaseRequest("Note 1", "2019-02-23");
+
+        stageResource.withdrawCase(caseUUID, stageUUID, withdrawCaseRequest);
+
+        verify(stageService).withdrawCase(caseUUID, stageUUID, withdrawCaseRequest);
+        verifyNoMoreInteractions(stageService);
+    }
+
 }
