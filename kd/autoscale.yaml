@@ -5,10 +5,10 @@ metadata:
     app: hocs-casework
   name: hocs-casework
 spec:
-  maxReplicas: 10
+  maxReplicas: 2
   minReplicas: 1
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
     name: hocs-casework
-  targetCPUUtilizationPercentage: 8
+  targetCPUUtilizationPercentage: 24
