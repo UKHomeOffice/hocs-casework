@@ -14,9 +14,15 @@ import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.*;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.io.IOException;
@@ -25,12 +31,8 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.verify;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
 
@@ -755,5 +757,33 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
         verify(auditClient).updateCaseAudit(caseData, stageUUID);
         verifyNoMoreInteractions(auditClient);
+    }
+
+    @Test
+    public void getCaseDataByReference(){
+        String testCaseRef = "TestReference";
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        when(caseDataRepository.findByReference(testCaseRef)).thenReturn(caseData);
+
+        CaseData result = caseDataService.getCaseDataByReference(testCaseRef);
+
+        assertThat(result).isEqualTo(caseData);
+        verify(caseDataRepository).findByReference(testCaseRef);
+        checkNoMoreInteractions();
+
+    }
+
+
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void getCaseDataByReference_forNullResult(){
+        String testCaseRef = "TestReference";
+        when(caseDataRepository.findByReference(testCaseRef)).thenReturn(null);
+
+        caseDataService.getCaseDataByReference(testCaseRef);
+
+    }
+
+    private void checkNoMoreInteractions(){
+        verifyNoMoreInteractions(auditClient, caseDataRepository, infoClient);
     }
 }
