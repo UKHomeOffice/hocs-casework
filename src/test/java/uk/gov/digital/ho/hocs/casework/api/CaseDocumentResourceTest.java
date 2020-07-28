@@ -14,10 +14,7 @@ import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsRespons
 import uk.gov.digital.ho.hocs.casework.client.documentclient.S3Document;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -34,6 +31,7 @@ public class CaseDocumentResourceTest {
     private final String docStatus = "UPLOADED";
     private final String fileType = "doc";
     private final String mimeType = "application/octet-stream";
+    private final Set<String> docLabels = Set.of("Label1", "Label2");
     private final LocalDateTime docCreated = LocalDateTime.now();
     private final LocalDateTime docUpdated = LocalDateTime.now();
     private final Boolean docDeleted = false;
@@ -47,7 +45,7 @@ public class CaseDocumentResourceTest {
     @Before
     public void setUp() {
         caseDocumentResource = new CaseDocumentResource(caseDocumentService);
-        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, docDeleted);
+        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, docDeleted, docLabels);
         s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);
     }
 

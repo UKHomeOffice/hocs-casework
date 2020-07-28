@@ -8,10 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,6 +31,7 @@ public class DocumentClientTest {
     private final String docStatus = "UPLOADED";
     private final String fileType = "doc";
     private final String mimeType = "application/octet-stream";
+    private final Set<String> docLabels = Set.of("Label1", "Label2");
     private final LocalDateTime docCreated = LocalDateTime.now();
     private final LocalDateTime docUpdated = LocalDateTime.now();
     private final Boolean docDeleted = false;
@@ -46,7 +44,7 @@ public class DocumentClientTest {
     @Before
     public void setUp() {
         documentClient = new DocumentClient(restHelper, documentService);
-        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, docDeleted);
+        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, docDeleted, docLabels);
         s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);
     }
 
