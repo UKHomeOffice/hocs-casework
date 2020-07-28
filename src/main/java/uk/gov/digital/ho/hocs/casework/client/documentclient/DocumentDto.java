@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @AllArgsConstructor()
@@ -37,4 +39,14 @@ public class DocumentDto {
     @JsonProperty("deleted")
     private Boolean deleted;
 
+    @JsonProperty("labels")
+    private Set<String> labels;
+
+    public void addLabel(String label) {
+        if(labels == null){
+            this.labels = new LinkedHashSet<>();
+        }
+
+        labels.add(label);
+    }
 }

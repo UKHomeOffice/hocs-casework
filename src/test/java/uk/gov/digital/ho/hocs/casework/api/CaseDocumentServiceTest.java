@@ -1,22 +1,23 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentDto;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsResponse;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.S3Document;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -33,6 +34,7 @@ public class CaseDocumentServiceTest {
     private final String docStatus = "UPLOADED";
     private final String fileType = "doc";
     private final String mimeType = "application/octet-stream";
+    private final Set<String> docLabels = new HashSet<>(Set.of("Label1", "Label2"));
     private final LocalDateTime docCreated = LocalDateTime.now();
     private final LocalDateTime docUpdated = LocalDateTime.now();
     private final Boolean docDeleted = false;
@@ -46,29 +48,40 @@ public class CaseDocumentServiceTest {
     @Mock
     private InfoClient infoClient;
 
+    private ObjectMapper objectMapper;
+
     private CaseDocumentService caseDocumentService;
 
     @Before
     public void setUp() {
-        caseDocumentService = new CaseDocumentService(caseDataRepository, documentClient, infoClient);
-        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, docDeleted);
+        objectMapper = new ObjectMapper();
+        caseDocumentService = new CaseDocumentService(caseDataRepository, documentClient, infoClient, objectMapper);
+        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, docDeleted, docLabels);
         s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);
     }
 
     @Test
     public void getDocuments() {
-        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)), new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
-        when(caseDataRepository.getCaseType(caseUUID)).thenReturn("CaseType");
+        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Collections.singletonList(documentDto)), new ArrayList<>(Arrays.asList("ORIGINAL", "DRAFT")));
+        CaseDataType type = new CaseDataType("CaseType", "a1");
+        Long caseNumber = 1234L;
+        Map<String, String> data = new HashMap<>();
+        data.put("DraftDocuments", documentUUID.toString());
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseReceived);
+        when(caseDataRepository.findAnyByUuid(caseUUID)).thenReturn(caseData);
         when(documentClient.getDocuments(caseUUID, caseType)).thenReturn(documentsResponse);
-        when(infoClient.getDocumentTags("CaseType")).thenReturn(new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
+        when(infoClient.getDocumentTags("CaseType")).thenReturn(new ArrayList<>(Arrays.asList("ORIGINAL", "DRAFT")));
 
         GetDocumentsResponse result = caseDocumentService.getDocuments(caseUUID, caseType);
 
         verify(documentClient).getDocuments(caseUUID, caseType);
-        verifyNoMoreInteractions(documentClient);
+        verify(caseDataRepository).findAnyByUuid(caseUUID);
+        verifyNoMoreInteractions(documentClient, caseDataRepository);
         assertThat(result).isNotNull();
         assertThat(result.getDocumentDtos()).isNotNull();
         assertThat(result.getDocumentDtos().size()).isOne();
+        assertThat(result.getDocumentDtos().iterator().next().getLabels()).contains("Primary Draft");
         assertThat(result.getDocumentTags()).isNotNull();
         assertThat(result.getDocumentTags().size()).isEqualTo(2);
         assertThat(result.getDocumentTags().get(0)).isEqualTo("ORIGINAL");
@@ -118,7 +131,7 @@ public class CaseDocumentServiceTest {
         checkS3Document(result);
     }
 
-    private void checkDocumentDto(DocumentDto result){
+    private void checkDocumentDto(DocumentDto result) {
         assertThat(result).isNotNull();
         assertThat(result.getUuid()).isEqualTo(documentUUID);
         assertThat(result.getExternalReferenceUUID()).isEqualTo(caseUUID);
@@ -130,7 +143,7 @@ public class CaseDocumentServiceTest {
         assertThat(result.getDeleted()).isEqualTo(docDeleted);
     }
 
-    private void checkS3Document(S3Document result){
+    private void checkS3Document(S3Document result) {
         assertThat(result).isNotNull();
         assertThat(result.getFilename()).isEqualTo(docDisplayName);
         assertThat(result.getOriginalFilename()).isEqualTo(docOriginalName);
