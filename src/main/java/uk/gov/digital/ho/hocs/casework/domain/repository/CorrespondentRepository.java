@@ -27,4 +27,7 @@ public interface CorrespondentRepository extends CrudRepository<BaseCorresponden
                     "WHERE aco.case_uuid = ?1", nativeQuery = true
     )
     Set<CorrespondentWithPrimaryFlag> findAllByCaseUUID(UUID caseUUID);
+
+    @Query(value = "SELECT aco.* FROM active_correspondent aco", nativeQuery = true)
+    Set<Correspondent> findAllActive();
 }

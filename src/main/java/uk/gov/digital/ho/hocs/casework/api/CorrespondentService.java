@@ -10,9 +10,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.Address;
-import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
@@ -41,6 +39,13 @@ public class CorrespondentService {
         this.caseDataRepository = caseDataRepository;
         this.auditClient = auditClient;
         this.infoClient = infoClient;
+    }
+
+    Set<Correspondent> getAllActiveCorrespondents() {
+        log.debug("Getting all active Correspondents");
+        Set<Correspondent> correspondents = correspondentRepository.findAllActive();
+        log.info("Got {} all active Correspondents", correspondents.size(), value(EVENT, CORRESPONDENTS_RETRIEVED));
+        return correspondents;
     }
 
     Set<CorrespondentWithPrimaryFlag> getCorrespondents(UUID caseUUID) {
