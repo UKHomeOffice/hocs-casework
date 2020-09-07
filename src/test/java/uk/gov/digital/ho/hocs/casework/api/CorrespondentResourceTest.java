@@ -34,6 +34,17 @@ public class CorrespondentResourceTest {
         correspondentResource = new CorrespondentResource(correspondentService);
     }
 
+    @Test
+    public void getAllActiveCorrespondents(){
+        when(correspondentService.getAllActiveCorrespondents()).thenReturn(new HashSet<>());
+
+        ResponseEntity<GetCorrespondentOutlinesResponse> response = correspondentResource.getAllActiveCorrespondents();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        verify(correspondentService).getAllActiveCorrespondents();
+        verifyNoMoreInteractions(correspondentService);
+    }
 
     @Test
     public void shouldAddCorrespondentToCase() throws JsonProcessingException {

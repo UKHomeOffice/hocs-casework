@@ -10,10 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.domain.model.Address;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -90,6 +87,13 @@ public class CorrespondentRepositoryTest {
         assertThat(correspondents.stream().findFirst().get().getReference()).isEqualTo("ref");
         assertThat(correspondents.stream().findFirst().get().getCorrespondentType()).isEqualTo("some_type");
         assertThat(correspondents.stream().findFirst().get().getPostcode()).isEqualTo("some_postcode");
+    }
+
+    @Test()
+    public void shouldFindAllActive() {
+
+        Set<Correspondent> correspondents = repository.findAllActive();
+        assertThat(correspondents.size()).isGreaterThan(0);
     }
 
 }

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
+import uk.gov.digital.ho.hocs.casework.domain.model.BaseCorrespondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
@@ -26,6 +27,12 @@ public class CorrespondentResource {
     @Autowired
     public CorrespondentResource(CorrespondentService correspondentService) {
         this.correspondentService = correspondentService;
+    }
+
+    @GetMapping(value = "/correspondents")
+    ResponseEntity<GetCorrespondentOutlinesResponse> getAllActiveCorrespondents() {
+        Set<Correspondent> correspondents = correspondentService.getAllActiveCorrespondents();
+        return ResponseEntity.ok(GetCorrespondentOutlinesResponse.from(correspondents));
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)

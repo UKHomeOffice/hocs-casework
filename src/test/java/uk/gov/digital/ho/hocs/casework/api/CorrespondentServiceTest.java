@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
@@ -43,6 +44,28 @@ public class CorrespondentServiceTest {
     @Before
     public void setUp() {
         correspondentService = new CorrespondentService(correspondentRepository, caseDataRepository, auditClient, infoClient);
+    }
+
+    @Test
+    public void getAllActiveCorrespondentsThenFindAllActive() {
+        UUID caseUUID = UUID.randomUUID();
+        String type = "CORRESPONDENT";
+        String fullName = "anyFullName";
+        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+        String phone = "anyPhone";
+        String email = "anyEmail";
+        String reference = "anyReference";
+        String externalKey = "external key";
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
+        Set<Correspondent> correspondentsExpected = Set.of(correspondent);
+        when(correspondentRepository.findAllActive()).thenReturn(correspondentsExpected);
+
+        Set<Correspondent> correspondents = correspondentService.getAllActiveCorrespondents();
+
+        assertThat(correspondents).isNotNull();
+        assertThat(correspondents).isSameAs(correspondentsExpected);
+        verify(correspondentRepository).findAllActive();
+        verifyNoMoreInteractions(correspondentRepository);
     }
 
     @Test
