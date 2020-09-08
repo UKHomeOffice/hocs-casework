@@ -8,6 +8,9 @@ import lombok.Getter;
 @Getter
 public class UserDto {
 
+    @JsonProperty("id")
+    private String id;
+
     @JsonProperty("username")
     private String username;
 

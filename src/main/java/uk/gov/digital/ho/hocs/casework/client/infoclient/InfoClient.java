@@ -192,4 +192,17 @@ public class InfoClient {
         return response;
     }
 
+    public List<UserDto> getUsersForTeam(UUID teamUUID) {
+        List<UserDto> response = restHelper.get(serviceBaseURL, String.format("/teams/%s/members", teamUUID), new ParameterizedTypeReference<List<UserDto>>() {
+        });
+        log.info("Got {} users for team {}", response.size(), teamUUID, value(EVENT, INFO_CLIENT_GET_USERS_FOR_TEAM_SUCCESS));
+        return response;
+    }
+
+    public List<UserDto> getUsersForTeamByStage(UUID caseUUID, UUID stageUUID) {
+        List<UserDto> response = restHelper.get(serviceBaseURL, String.format("/case/%s/stage/%s/team/members", caseUUID, stageUUID), new ParameterizedTypeReference<List<UserDto>>() {
+        });
+        log.info("Got {} default users by stage {}", response.size(), stageUUID, value(EVENT, INFO_CLIENT_GET_DEFAULT_USERS_FOR_STAGE_SUCCESS));
+        return response;
+    }
 }

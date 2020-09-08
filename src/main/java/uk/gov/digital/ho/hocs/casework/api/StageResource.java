@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Allocated;
@@ -15,6 +17,7 @@ import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -23,10 +26,12 @@ import java.util.UUID;
 class StageResource {
 
     private final StageService stageService;
+    private final InfoClient infoClient;
 
     @Autowired
-    public StageResource(StageService stageService) {
+    public StageResource(StageService stageService, InfoClient infoClient) {
         this.stageService = stageService;
+        this.infoClient = infoClient;
     }
 
     @Authorised(accessLevel = AccessLevel.WRITE)
@@ -83,6 +88,18 @@ class StageResource {
         return ResponseEntity.ok(teamUUID);
     }
 
+    @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/team/members")
+    public ResponseEntity<List<UserDto>> getUsersForTeamByStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
+        UUID teamUUID = stageService.getStageTeam(caseUUID, stageUUID);
+        List<UserDto> users;
+        if (teamUUID != null) {
+            users = infoClient.getUsersForTeam(teamUUID);
+        } else {
+            users = infoClient.getUsersForTeamByStage(caseUUID, stageUUID);
+        }
+        return ResponseEntity.ok(users);
+    }
+
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/type")
     ResponseEntity<String> getStageTypeFromStageData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
         String stageType = stageService.getStageTypeFromStageData(caseUUID, stageUUID);
@@ -109,7 +126,7 @@ class StageResource {
     }
 
     @GetMapping(value = "/stage/team/{teamUUID}/user/{userUUID}")
-    ResponseEntity<Set<UUID>> getActiveStageCaseUUIDsForUserAndTeam(@PathVariable UUID userUUID, @PathVariable UUID teamUUID){
+    ResponseEntity<Set<UUID>> getActiveStageCaseUUIDsForUserAndTeam(@PathVariable UUID userUUID, @PathVariable UUID teamUUID) {
         Set<UUID> caseUUIDs = stageService.getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
         return ResponseEntity.ok(caseUUIDs);
     }
@@ -121,7 +138,7 @@ class StageResource {
     }
 
     @GetMapping(value = "/stage/case/{caseUUID}")
-    ResponseEntity<GetStagesResponse> getAllStagesByCase(@PathVariable UUID caseUUID){
+    ResponseEntity<GetStagesResponse> getAllStagesByCase(@PathVariable UUID caseUUID) {
         Set<Stage> stages = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
         return ResponseEntity.ok(GetStagesResponse.from(stages));
     }

@@ -8,10 +8,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,11 +33,13 @@ public class StageResourceTest {
     private final String allocationType = "anyAllocation";
     @Mock
     private StageService stageService;
+    @Mock
+    private InfoClient infoClient;
     private StageResource stageResource;
 
     @Before
     public void setUp() {
-        stageResource = new StageResource(stageService);
+        stageResource = new StageResource(stageService, infoClient);
     }
 
     @Test
@@ -49,7 +54,7 @@ public class StageResourceTest {
 
         verify(stageService).createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
 
-        verifyNoMoreInteractions(stageService);
+        checkNoMoreInteractions();
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -67,20 +72,20 @@ public class StageResourceTest {
 
         verify(stageService).createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, null);
 
-        verifyNoMoreInteractions(stageService);
+        checkNoMoreInteractions();
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void shouldRecreateStage(){
+    public void shouldRecreateStage() {
         RecreateStageRequest request = new RecreateStageRequest(stageUUID, stageType);
 
         ResponseEntity response = stageResource.recreateStageTeam(caseUUID, stageUUID, request);
 
         verify(stageService).recreateStage(caseUUID, stageUUID, stageType);
-        verifyNoMoreInteractions(stageService);
+        checkNoMoreInteractions();
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -96,7 +101,7 @@ public class StageResourceTest {
 
         verify(stageService).getActiveStage(caseUUID, stageUUID);
 
-        verifyNoMoreInteractions(stageService);
+        checkNoMoreInteractions();
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -113,7 +118,7 @@ public class StageResourceTest {
 
         verify(stageService).updateStageUser(caseUUID, stageUUID, userUUID);
 
-        verifyNoMoreInteractions(stageService);
+        checkNoMoreInteractions();
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -130,7 +135,7 @@ public class StageResourceTest {
 
         verify(stageService).updateStageUser(caseUUID, stageUUID, null);
 
-        verifyNoMoreInteractions(stageService);
+        checkNoMoreInteractions();
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -147,7 +152,7 @@ public class StageResourceTest {
 
         verify(stageService).getActiveStagesForUser();
 
-        verifyNoMoreInteractions(stageService);
+        checkNoMoreInteractions();
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -165,14 +170,14 @@ public class StageResourceTest {
 
         verify(stageService).getActiveStagesByCaseReference(ref);
 
-        verifyNoMoreInteractions(stageService);
+        checkNoMoreInteractions();
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void shouldGetActiveStageCaseUUIDsForUserAndTeam(){
+    public void shouldGetActiveStageCaseUUIDsForUserAndTeam() {
 
         UUID userUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
@@ -180,7 +185,7 @@ public class StageResourceTest {
         ResponseEntity<Set<UUID>> response = stageResource.getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
 
         verify(stageService).getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
-        verifyNoMoreInteractions(stageService);
+        checkNoMoreInteractions();
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -198,14 +203,14 @@ public class StageResourceTest {
         ResponseEntity<GetStagesResponse> response = stageResource.search(searchRequest);
 
         verify(stageService).search(searchRequest);
-        verifyNoMoreInteractions(stageService);
+        checkNoMoreInteractions();
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void shouldGetStageTypeFromStageData(){
+    public void shouldGetStageTypeFromStageData() {
 
         UUID userUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
@@ -213,20 +218,62 @@ public class StageResourceTest {
         ResponseEntity<String> response = stageResource.getStageTypeFromStageData(userUUID, teamUUID);
 
         verify(stageService).getStageTypeFromStageData(userUUID, teamUUID);
-        verifyNoMoreInteractions(stageService);
+        checkNoMoreInteractions();
 
         assertThat(response).isInstanceOf(ResponseEntity.class);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void withdrawCase(){
+    public void withdrawCase() {
         WithdrawCaseRequest withdrawCaseRequest = new WithdrawCaseRequest("Note 1", "2019-02-23");
 
         stageResource.withdrawCase(caseUUID, stageUUID, withdrawCaseRequest);
 
         verify(stageService).withdrawCase(caseUUID, stageUUID, withdrawCaseRequest);
-        verifyNoMoreInteractions(stageService);
+        checkNoMoreInteractions();
+    }
+
+    @Test
+    public void getUsersForTeamByStage_stageTeamFound() {
+
+        List<UserDto> users = List.of(new UserDto(UUID.randomUUID().toString(), "username", "firstName", "lastName", "email@test.com"));
+        UUID teamUUID = UUID.randomUUID();
+        when(stageService.getStageTeam(caseUUID, stageUUID)).thenReturn(teamUUID);
+        when(infoClient.getUsersForTeam(teamUUID)).thenReturn(users);
+
+        ResponseEntity<List<UserDto>> response = stageResource.getUsersForTeamByStage(caseUUID, stageUUID);
+
+        verify(stageService).getStageTeam(caseUUID, stageUUID);
+        verify(infoClient).getUsersForTeam(teamUUID);
+        checkNoMoreInteractions();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(users);
+
+    }
+
+    @Test
+    public void getUsersForTeamByStage_stageTeamNotFound() {
+
+        List<UserDto> users = List.of(new UserDto(UUID.randomUUID().toString(), "username", "firstName", "lastName", "email@test.com"));
+        when(stageService.getStageTeam(caseUUID, stageUUID)).thenReturn(null);
+        when(infoClient.getUsersForTeamByStage(caseUUID, stageUUID)).thenReturn(users);
+
+        ResponseEntity<List<UserDto>> response = stageResource.getUsersForTeamByStage(caseUUID, stageUUID);
+
+        verify(stageService).getStageTeam(caseUUID, stageUUID);
+        verify(infoClient).getUsersForTeamByStage(caseUUID, stageUUID);
+        checkNoMoreInteractions();
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isEqualTo(users);
+
+    }
+
+    private void checkNoMoreInteractions() {
+
+        verifyNoMoreInteractions(stageService, infoClient);
     }
 
 }
