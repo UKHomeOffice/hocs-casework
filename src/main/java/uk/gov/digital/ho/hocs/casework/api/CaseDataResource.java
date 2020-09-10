@@ -185,4 +185,12 @@ class CaseDataResource {
         CaseData caseData = caseDataService.getCaseDataByReference(decodedRef);
         return ResponseEntity.ok(GetCaseResponse.from(caseData, true));
     }
+
+    @Authorised(accessLevel = AccessLevel.READ)
+    @GetMapping(value = "/case/reference/{caseUUID}")
+    ResponseEntity<GetCaseReferenceResponse> getCaseReference(@PathVariable UUID caseUUID) {
+        final String caseRef = caseDataService.getCaseRef(caseUUID);
+        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseRef));
+    }
+
 }

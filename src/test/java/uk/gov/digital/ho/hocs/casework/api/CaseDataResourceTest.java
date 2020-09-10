@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -296,6 +295,22 @@ public class CaseDataResourceTest {
         verifyNoMoreInteractions(caseDataService);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void getCaseReferenceValue() {
+        String reference = "CASE/123456/789";
+
+        when(caseDataService.getCaseRef(uuid)).thenReturn(reference);
+
+        final ResponseEntity<GetCaseReferenceResponse> caseReferenceResponse = caseDataResource.getCaseReference(uuid);
+
+        assertThat(caseReferenceResponse).isNotNull();
+        assertThat(caseReferenceResponse.getBody()).isNotNull();
+        assertThat(caseReferenceResponse.getBody().getReference()).isEqualTo(reference);
+        verify(caseDataService).getCaseRef(uuid);
+        verifyNoMoreInteractions(caseDataService);
+
     }
 
 }
