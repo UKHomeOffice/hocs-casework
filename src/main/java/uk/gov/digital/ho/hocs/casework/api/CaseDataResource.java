@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
@@ -186,11 +187,11 @@ class CaseDataResource {
         return ResponseEntity.ok(GetCaseResponse.from(caseData, true));
     }
 
+    @Cacheable (value = "UUIDToCaseReference")
     @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/reference/{caseUUID}")
-    ResponseEntity<GetCaseReferenceResponse> getCaseReference(@PathVariable UUID caseUUID) {
+    public ResponseEntity<GetCaseReferenceResponse> getCaseReference(@PathVariable UUID caseUUID) {
         final String caseRef = caseDataService.getCaseRef(caseUUID);
         return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseRef));
     }
-
 }
