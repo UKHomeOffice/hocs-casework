@@ -301,14 +301,14 @@ public class CaseDataResourceTest {
     public void getCaseReferenceValue() {
         String reference = "CASE/123456/789";
 
-        when(caseDataService.getCaseRef(uuid)).thenReturn(reference);
+        when(caseDataService.getCaseDataCaseRef(uuid)).thenReturn(reference);
 
         final ResponseEntity<GetCaseReferenceResponse> caseReferenceResponse = caseDataResource.getCaseReference(uuid);
 
         assertThat(caseReferenceResponse).isNotNull();
         assertThat(caseReferenceResponse.getBody()).isNotNull();
         assertThat(caseReferenceResponse.getBody().getReference()).isEqualTo(reference);
-        verify(caseDataService).getCaseRef(uuid);
+        verify(caseDataService).getCaseDataCaseRef(uuid);
         verifyNoMoreInteractions(caseDataService);
 
     }

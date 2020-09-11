@@ -125,6 +125,14 @@ public class CaseDataService {
         return caseRef;
     }
 
+    public String getCaseDataCaseRef(UUID caseUUID) {
+        log.debug("Looking up CaseRef on all cases for Case: {}", caseUUID);
+        String caseRef = caseDataRepository.getCaseDataCaseRef(caseUUID);
+        log.debug("CaseRef {} found for Case: {}", caseRef, caseUUID);
+
+        return caseRef;
+    }
+
     public String getCaseDataField(UUID caseUUID, String key) {
         log.debug("Looking up key {} for Case: {}", key, caseUUID);
         Map<String, String> dataMap = getCaseData(caseUUID).getDataMap(objectMapper);
