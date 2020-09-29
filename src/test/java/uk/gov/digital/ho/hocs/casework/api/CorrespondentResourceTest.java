@@ -51,12 +51,12 @@ public class CorrespondentResourceTest {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
 
-        doNothing().when(correspondentService).createCorrespondent(eq(caseUUID), eq("any"), eq("anyFullName"), any(Address.class), eq("anyPhone"), eq("anyEmail"), eq("anyReference"), eq("external key"));
+        doNothing().when(correspondentService).createCorrespondent(eq(caseUUID), eq(stageUUID), eq("any"), eq("anyFullName"), any(Address.class), eq("anyPhone"), eq("anyEmail"), eq("anyReference"), eq("external key"));
 
         CreateCorrespondentRequest createCorrespondentRequest = new CreateCorrespondentRequest("any", "anyFullName","anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference", "external key");
         ResponseEntity response = correspondentResource.addCorrespondentToCase(caseUUID, stageUUID, createCorrespondentRequest);
 
-        verify(correspondentService, times(1)).createCorrespondent(eq(caseUUID), eq("any"), eq("anyFullName"), any(Address.class), eq("anyPhone"), eq("anyEmail"), eq("anyReference"), eq("external key"));
+        verify(correspondentService, times(1)).createCorrespondent(eq(caseUUID), eq(stageUUID), eq("any"), eq("anyFullName"), any(Address.class), eq("anyPhone"), eq("anyEmail"), eq("anyReference"), eq("external key"));
 
         verifyNoMoreInteractions(correspondentService);
 

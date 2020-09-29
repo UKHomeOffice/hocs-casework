@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
@@ -26,6 +27,7 @@ public class CorrespondentService {
 
     private final CorrespondentRepository correspondentRepository;
     private final CaseDataRepository caseDataRepository;
+    private final CaseDataService caseDataService;
     private final AuditClient auditClient;
     private final InfoClient infoClient;
 
@@ -34,11 +36,13 @@ public class CorrespondentService {
             CorrespondentRepository correspondentRepository,
             CaseDataRepository caseDataRepository,
             AuditClient auditClient,
-            InfoClient infoClient) {
+            InfoClient infoClient,
+            CaseDataService caseDataService) {
         this.correspondentRepository = correspondentRepository;
         this.caseDataRepository = caseDataRepository;
         this.auditClient = auditClient;
         this.infoClient = infoClient;
+        this.caseDataService = caseDataService;
     }
 
     Set<Correspondent> getAllActiveCorrespondents() {
@@ -76,12 +80,18 @@ public class CorrespondentService {
         return correspondentTypes;
     }
 
-    void createCorrespondent(UUID caseUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference, String externalKey){
+    void createCorrespondent(UUID caseUUID, UUID stageUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference, String externalKey){
         log.debug("Creating Correspondent of Type: {} for Case: {}", correspondentType, caseUUID);
         Correspondent correspondent = new Correspondent(caseUUID, correspondentType, fullname, address, telephone, email, reference, externalKey);
         try {
             correspondentRepository.save(correspondent);
             auditClient.createCorrespondentAudit(correspondent);
+
+            Set<CorrespondentWithPrimaryFlag> caseCorrespondents = correspondentRepository.findAllByCaseUUID(caseUUID);
+            if(!CollectionUtils.isEmpty(caseCorrespondents) && caseCorrespondents.size() == 1){
+                caseDataService.updatePrimaryCorrespondent(caseUUID, stageUUID, caseCorrespondents.iterator().next().getUuid());
+            }
+
         } catch (DataIntegrityViolationException e) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Failed to create correspondent %s for Case: %s", correspondent.getUuid(), caseUUID), CORRESPONDENT_CREATE_FAILURE, e);
         }

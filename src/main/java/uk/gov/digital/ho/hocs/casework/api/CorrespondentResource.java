@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
-import uk.gov.digital.ho.hocs.casework.domain.model.BaseCorrespondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
@@ -39,7 +38,7 @@ public class CorrespondentResource {
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent")
     ResponseEntity addCorrespondentToCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @Valid @RequestBody CreateCorrespondentRequest request) {
         Address address = new Address(request.getPostcode(), request.getAddress1(), request.getAddress2(), request.getAddress3(), request.getCountry());
-        correspondentService.createCorrespondent(caseUUID, request.getType(), request.getFullname(), address, request.getTelephone(), request.getEmail(), request.getReference(), request.getExternalKey());
+        correspondentService.createCorrespondent(caseUUID, stageUUID, request.getType(), request.getFullname(), address, request.getTelephone(), request.getEmail(), request.getReference(), request.getExternalKey());
         return ResponseEntity.ok().build();
     }
 
