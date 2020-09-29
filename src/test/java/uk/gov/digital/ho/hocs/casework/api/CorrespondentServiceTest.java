@@ -37,13 +37,15 @@ public class CorrespondentServiceTest {
     private CaseDataRepository caseDataRepository;
     private CorrespondentService correspondentService;
     @Mock
-    AuditClient auditClient;
+    private AuditClient auditClient;
     @Mock
-    InfoClient infoClient;
+    private InfoClient infoClient;
+    @Mock
+    private CaseDataService caseDataService;
 
     @Before
     public void setUp() {
-        correspondentService = new CorrespondentService(correspondentRepository, caseDataRepository, auditClient, infoClient);
+        correspondentService = new CorrespondentService(correspondentRepository, caseDataRepository, auditClient, infoClient, caseDataService);
     }
 
     @Test
