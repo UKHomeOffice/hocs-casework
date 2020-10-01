@@ -114,11 +114,11 @@ public class CorrespondentResourceTest {
     @Test
     public void shouldDeleteCorrespondentFromCase() {
 
-        doNothing().when(correspondentService).deleteCorrespondent(caseUUID, correspondentUUID);
+        doNothing().when(correspondentService).deleteCorrespondent(caseUUID, stageUUID, correspondentUUID);
 
         ResponseEntity response = correspondentResource.deleteCorrespondent(caseUUID, stageUUID, correspondentUUID);
 
-        verify(correspondentService, times(1)).deleteCorrespondent(caseUUID, correspondentUUID);
+        verify(correspondentService, times(1)).deleteCorrespondent(caseUUID, stageUUID, correspondentUUID);
 
         verifyNoMoreInteractions(correspondentService);
 
