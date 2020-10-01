@@ -271,7 +271,7 @@ public class MigrationCorrespondentServiceTest {
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
 
-        correspondentService.deleteCorrespondent(correspondent.getCaseUUID(), correspondent.getUuid());
+        correspondentService.deleteCorrespondent(correspondent.getCaseUUID(), stageUUID, correspondent.getUuid());
 
         verify(correspondentRepository, times(1)).findByUUID(correspondent.getCaseUUID(), correspondent.getUuid());
         verify(correspondentRepository, times(1)).save(correspondent);
@@ -287,7 +287,7 @@ public class MigrationCorrespondentServiceTest {
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
 
-        correspondentService.deleteCorrespondent(correspondent.getCaseUUID(), correspondent.getUuid());
+        correspondentService.deleteCorrespondent(correspondent.getCaseUUID(), stageUUID, correspondent.getUuid());
 
         verify(auditClient, times(1)).deleteCorrespondentAudit(correspondent);
 
@@ -298,7 +298,7 @@ public class MigrationCorrespondentServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotDeleteCorrespondentMissingCaseUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
-        correspondentService.deleteCorrespondent(null, correspondentUUID);
+        correspondentService.deleteCorrespondent(null, stageUUID, correspondentUUID);
 
     }
 
@@ -306,7 +306,7 @@ public class MigrationCorrespondentServiceTest {
     public void shouldNotDeleteCorrespondentMissingCaseUUID() {
 
         try {
-            correspondentService.deleteCorrespondent(null, correspondentUUID);
+            correspondentService.deleteCorrespondent(null, stageUUID, correspondentUUID);
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
@@ -319,7 +319,7 @@ public class MigrationCorrespondentServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotDeleteCorrespondentMissingCorrespondentUUIDException() throws ApplicationExceptions.EntityNotFoundException {
 
-        correspondentService.deleteCorrespondent(caseUUID, null);
+        correspondentService.deleteCorrespondent(caseUUID, stageUUID, null);
 
     }
 
@@ -327,7 +327,7 @@ public class MigrationCorrespondentServiceTest {
     public void shouldNotDeleteCorrespondentMissingCorrespondentUUID() {
 
         try {
-            correspondentService.deleteCorrespondent(caseUUID, null);
+            correspondentService.deleteCorrespondent(caseUUID, stageUUID, null);
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }

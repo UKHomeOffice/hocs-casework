@@ -119,12 +119,18 @@ public class CorrespondentService {
         log.info("Updated Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID, value(EVENT, CORRESPONDENT_UPDATED));
     }
 
-    void deleteCorrespondent(UUID caseUUID, UUID correspondentUUID) {
+    void deleteCorrespondent(UUID caseUUID, UUID stageUUID, UUID correspondentUUID) {
         log.debug("Deleting Correspondent: {}", correspondentUUID);
         Correspondent correspondent = getCorrespondent(caseUUID, correspondentUUID);
         correspondent.setDeleted(true);
         correspondentRepository.save(correspondent);
         auditClient.deleteCorrespondentAudit(correspondent);
-        log.info("Deleted Topic: {}", caseUUID, value(EVENT, CORRESPONDENT_DELETED));
+        CaseData caseData = caseDataRepository.findByUuid(caseUUID);
+        if (caseData != null && correspondentUUID.equals(caseData.getPrimaryCorrespondentUUID())) {
+            caseData.setPrimaryCorrespondentUUID(null);
+            caseDataRepository.save(caseData);
+            auditClient.updateCaseAudit(caseData, stageUUID);
+        }
+        log.info("Deleted Correspondent: {}", caseUUID, value(EVENT, CORRESPONDENT_DELETED));
     }
 }

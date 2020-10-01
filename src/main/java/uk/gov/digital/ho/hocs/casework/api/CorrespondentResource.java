@@ -66,7 +66,7 @@ public class CorrespondentResource {
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @DeleteMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent/{correspondentUUID}")
     ResponseEntity<GetCorrespondentResponse> deleteCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID ,@PathVariable UUID correspondentUUID) {
-        correspondentService.deleteCorrespondent(caseUUID, correspondentUUID);
+        correspondentService.deleteCorrespondent(caseUUID, stageUUID, correspondentUUID);
         return ResponseEntity.ok().build();
     }
 
