@@ -127,6 +127,32 @@ public class CorrespondentServiceTest {
                 "ref",
                 "key");
         CaseData caseData = new CaseData(caseDataType, 1L, null);
+        when(correspondentRepository.findByUUID(caseUUID, correspondent.getUuid())).thenReturn(correspondent);
+        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
+
+        correspondentService.deleteCorrespondent(caseUUID, stageUUID, correspondent.getUuid());
+
+        verify(correspondentRepository).findByUUID(caseUUID, correspondent.getUuid());
+        verify(correspondentRepository).save(correspondent);
+        verify(caseDataRepository).findByUuid(caseUUID);
+        verifyNoMoreInteractions(correspondentRepository);
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
+    public void shouldDeleteCorrespondentAndRemovePrimaryCorrespondent() {
+
+        Address address = new Address("postcode", "line1", "line2", "line3", "country");
+        Correspondent correspondent = new Correspondent(
+                caseUUID,
+                "Type",
+                "full name",
+                address,
+                "01923478393",
+                "email@test.com",
+                "ref",
+                "key");
+        CaseData caseData = new CaseData(caseDataType, 1L, null);
         caseData.setPrimaryCorrespondentUUID(correspondent.getUuid());
         when(correspondentRepository.findByUUID(caseUUID, correspondent.getUuid())).thenReturn(correspondent);
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
