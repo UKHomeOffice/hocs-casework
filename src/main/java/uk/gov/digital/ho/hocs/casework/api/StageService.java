@@ -317,7 +317,7 @@ public class StageService {
     }
 
     private void updateCurrentStageForCase(UUID caseUUID, UUID stageUUID, String stageType) {
-        caseDataService.updateCaseData(caseUUID, stageUUID, Map.of("CurrentStage", stageType));
+        caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
     }
 
     private void updatePriority(Collection<Stage> stages) {
@@ -341,6 +341,7 @@ public class StageService {
         Map<String, String> data = new HashMap<>();
         data.put("Withdrawn", "True");
         data.put("WithdrawalDate", request.getWithdrawalDate());
+        data.put(CaseworkConstants.CURRENT_STAGE, "");
 
         caseDataService.updateCaseData(caseUUID, stageUUID, data);
         caseDataService.completeCase(caseUUID, true);

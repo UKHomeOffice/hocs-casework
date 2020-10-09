@@ -317,7 +317,11 @@ public class CaseDataService {
         log.debug("Updating completed status Case: {} completed {}", caseUUID, completed);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setCompleted(completed);
+        if(completed){
+            caseData.update(Map.of(CaseworkConstants.CURRENT_STAGE, ""), objectMapper );
+        }
         caseDataRepository.save(caseData);
+        auditClient.updateCaseAudit(caseData, null);
         auditClient.completeCaseAudit(caseData);
         log.info("Updated Case: {} completed {}", caseUUID, completed, value(EVENT, CASE_COMPLETED));
     }
