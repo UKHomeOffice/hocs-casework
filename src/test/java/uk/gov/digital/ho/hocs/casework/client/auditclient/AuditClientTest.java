@@ -269,10 +269,12 @@ public class AuditClientTest {
     public void createCaseNoteAudit() throws IOException {
         CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note",userId);
         auditClient.createCaseNoteAudit(caseNote);
-              verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CASE_NOTE_CREATED);
         assertThat(request.getCaseUUID()).isEqualTo(caseNote.getCaseUUID());
+        assertThat(request.getAuditPayload()).contains("\"caseNoteType\" : \"ORIGINAL\"");
+        assertThat(request.getAuditPayload()).contains("\"text\" : \"some note\"");
     }
 
     @Test
