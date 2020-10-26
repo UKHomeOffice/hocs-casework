@@ -191,8 +191,16 @@ public class AuditClient {
     public void createCaseNoteAudit(CaseNote caseNote) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
-        executorService.execute(() -> sendAuditMessage(localDateTime, caseNote.getCaseUUID(), "", EventType.CASE_NOTE_CREATED, null,
-                requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups()));
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(caseNote);
+            } catch (JsonProcessingException e) {
+                logFailedToParseDataPayload(e);
+            }
+            sendAuditMessage(localDateTime, caseNote.getCaseUUID(), data, EventType.CASE_NOTE_CREATED, null,
+                    requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
     }
 
     public void updateCaseNoteAudit(CaseNote caseNote, String prevCaseNoteType, String prevText) {
