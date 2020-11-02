@@ -5,8 +5,8 @@ metadata:
     app: hocs-casework
   name: hocs-casework
 spec:
-  maxReplicas: 2
-  minReplicas: {{.REPLICAS}}
+  maxReplicas: {{.MAX_REPLICAS}}
+  minReplicas: {{.MIN_REPLICAS}}
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
