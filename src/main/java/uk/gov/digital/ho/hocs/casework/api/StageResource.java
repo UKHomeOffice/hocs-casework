@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
@@ -20,6 +21,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @Slf4j
 @RestController
@@ -60,6 +63,15 @@ class StageResource {
     ResponseEntity updateStageUser(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageUserRequest request) {
         stageService.updateStageUser(caseUUID, stageUUID, request.getUserUUID());
         return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/case/team/{teamUUID}/allocate/user/next")
+    ResponseEntity allocateStageUser(@PathVariable UUID teamUUID, @RequestHeader(RequestData.USER_ID_HEADER) UUID userUUID) {
+        Stage stage = stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID);
+        if (stage == null) {
+            return ResponseEntity.ok(stage);
+        }
+        return ResponseEntity.ok(GetStageResponse.from(stage));
     }
 
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user")
