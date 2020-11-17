@@ -220,7 +220,7 @@ public class StageService {
     }
 
     Stage getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {
-        log.debug("Getting unassigned stage for user: {} in team {}", userUUID, teamUUID);
+        log.debug("Getting unassigned cases for user: {} in team {}", userUUID, teamUUID);
         Set<Stage> unassignedStages = stageRepository.findAllUnassignedAndActiveByTeamUUID(teamUUID);
         if (unassignedStages.isEmpty()) {
             log.debug("No unassigned case found for user: {} in team {}", userUUID, teamUUID);
