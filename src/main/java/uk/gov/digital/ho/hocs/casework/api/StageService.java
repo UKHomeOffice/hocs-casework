@@ -223,7 +223,7 @@ public class StageService {
         log.debug("Getting unassigned stage for user: {} in team {}", userUUID, teamUUID);
         Set<Stage> unassignedStages = stageRepository.findAllUnassignedAndActiveByTeamUUID(teamUUID);
         if (unassignedStages.isEmpty()) {
-            log.debug("No unassigned stage found for user: {} in team {}", userUUID, teamUUID);
+            log.debug("No unassigned case found for user: {} in team {}", userUUID, teamUUID);
             return null;
         }
         updatePriority(unassignedStages);
