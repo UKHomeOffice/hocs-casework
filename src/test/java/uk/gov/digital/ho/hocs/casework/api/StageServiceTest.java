@@ -698,6 +698,16 @@ public class StageServiceTest {
         verify(caseNoteService).createCaseNote(caseUUID, "WITHDRAW", "Note 1");
         checkNoMoreInteraction();
     }
+
+    @Test
+    public void shouldGetUnassignedAndActiveStageByTeamUUID() {
+        stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID);
+
+        verify(stageRepository).findAllUnassignedAndActiveByTeamUUID(teamUUID);
+
+        verifyNoMoreInteractions(stageRepository);
+        verifyZeroInteractions(notifyClient);
+    }
     
     /**
      * The stage cannot be an instance as it does not have a function to set data (in the Stage Class).

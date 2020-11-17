@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import com.amazonaws.util.json.Jackson;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -216,6 +217,35 @@ public class StageService {
         updatePriority(stages);
         updateDaysElapsed(stages);
         return stages;
+    }
+
+    Stage getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {
+        log.debug("Getting unassigned cases for user: {} in team {}", userUUID, teamUUID);
+        Set<Stage> unassignedStages = stageRepository.findAllUnassignedAndActiveByTeamUUID(teamUUID);
+        if (unassignedStages.isEmpty()) {
+            log.debug("No unassigned case found for user: {} in team {}", userUUID, teamUUID);
+            return null;
+        }
+        updatePriority(unassignedStages);
+        updateDaysElapsed(unassignedStages);
+
+        double prevSystemCalculatedPriority = 0;
+        Stage nextAvailableStage = unassignedStages.stream().findFirst().get();
+        for (Stage stage : unassignedStages) {
+            JSONObject caseData = new JSONObject(stage.getData());
+            double systemCalculatedPriority = caseData.getDouble("systemCalculatedPriority");
+
+            if (systemCalculatedPriority > prevSystemCalculatedPriority) {
+                prevSystemCalculatedPriority = systemCalculatedPriority;
+                nextAvailableStage = stage;
+            }
+        }
+
+        UUID caseUUID = nextAvailableStage.getCaseUUID();
+        UUID stageUUID = nextAvailableStage.getUuid();
+        updateStageUser(caseUUID, stageUUID, userUUID);
+
+        return nextAvailableStage;
     }
 
     Set<Stage> getActiveStagesForUser() {

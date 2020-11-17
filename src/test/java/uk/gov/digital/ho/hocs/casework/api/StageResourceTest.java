@@ -271,6 +271,28 @@ public class StageResourceTest {
 
     }
 
+    @Test
+    public void allocateStageUser() {
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        when(stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID)).thenReturn(stage);
+
+        ResponseEntity<GetStageResponse> response = stageResource.allocateStageUser(teamUUID, userUUID);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void allocateStageUser_withNoStage() {
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        when(stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID)).thenReturn(null);
+
+        ResponseEntity<GetStageResponse> response = stageResource.allocateStageUser(teamUUID, userUUID);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
     private void checkNoMoreInteractions() {
 
         verifyNoMoreInteractions(stageService, infoClient);
