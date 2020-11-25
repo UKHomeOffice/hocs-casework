@@ -70,6 +70,15 @@ public interface AuditPayload {
 
     @AllArgsConstructor
     @Getter
+    class SomuItemUpdate {
+        private UUID uuid;
+        private UUID caseUuid;
+        private UUID somuUuid;
+        private String data;
+    }
+
+    @AllArgsConstructor
+    @Getter
     class CreateCaseRequest {
 
         @JsonProperty("uuid")
