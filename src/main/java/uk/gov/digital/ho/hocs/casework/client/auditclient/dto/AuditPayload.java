@@ -70,7 +70,7 @@ public interface AuditPayload {
 
     @AllArgsConstructor
     @Getter
-    class SomuItemUpdate {
+    class SomuItem {
         private UUID uuid;
         private UUID caseUuid;
         private UUID somuUuid;
