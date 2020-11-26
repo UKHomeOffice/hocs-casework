@@ -23,7 +23,7 @@ public class GetSomuItemResponseTest {
         assertThat(getSomuItemResponse.getCaseUuid()).isEqualTo(somuItem.getCaseUuid());
         assertThat(getSomuItemResponse.getSomuUuid()).isEqualTo(somuItem.getSomuUuid());
         assertThat(getSomuItemResponse.getData()).isEqualTo(somuItem.getData());
-        assertThat(getSomuItemResponse.isDeleted()).isEqualTo(somuItem.isDeleted());
+        assertThat(getSomuItemResponse.isDeleted()).isFalse();
     }
 
     @Test
@@ -36,7 +36,7 @@ public class GetSomuItemResponseTest {
         assertThat(getSomuItemResponse.getCaseUuid()).isEqualTo(somuItem.getCaseUuid());
         assertThat(getSomuItemResponse.getSomuUuid()).isEqualTo(SOMU_ITEM_TYPE_UUID);
         assertThat(getSomuItemResponse.getData()).isEqualTo(somuItem.getData());
-        assertThat(getSomuItemResponse.isDeleted()).isEqualTo(somuItem.isDeleted());
+        assertThat(getSomuItemResponse.isDeleted()).isTrue();
     }
     
 }

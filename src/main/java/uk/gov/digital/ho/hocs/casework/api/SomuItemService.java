@@ -77,7 +77,7 @@ public class SomuItemService {
         if (somuItem != null){
             somuItem.setData(null);
             somuItemRepository.save(somuItem);
-            log.info("Deleted Somu Item: {} for Case: {}, Event {}", somuItem.getUuid(), somuItem.getCaseUuid(), value(EVENT, SOMU_ITEM_UPDATED));
+            log.info("Deleted Somu Item: {} for Case: {}, Event {}", somuItem.getUuid(), somuItem.getCaseUuid(), value(EVENT, SOMU_ITEM_DELETED));
             auditClient.deleteSomuItemAudit(somuItem);
         } else {
             throw new ApplicationExceptions.EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, somuItemUuid), SOMU_ITEM_NOT_FOUND);

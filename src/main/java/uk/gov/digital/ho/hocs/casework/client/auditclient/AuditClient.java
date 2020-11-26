@@ -257,7 +257,7 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
-            sendAuditMessage(localDateTime, somuItem.getCaseUuid(), data, EventType.SOMU_ITEM_CREATED, null,
+            sendAuditMessage(localDateTime, somuItem.getCaseUuid(), data, EventType.SOMU_ITEM_CREATED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
@@ -272,7 +272,7 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
-            sendAuditMessage(localDateTime, somuItem.getCaseUuid(), data, EventType.SOMU_ITEM_UPDATED, null,
+            sendAuditMessage(localDateTime, somuItem.getCaseUuid(), data, EventType.SOMU_ITEM_UPDATED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
@@ -287,7 +287,7 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
-            sendAuditMessage(localDateTime, somuItem.getCaseUuid(), data, EventType.SOMU_ITEM_DELETED, null,
+            sendAuditMessage(localDateTime, somuItem.getCaseUuid(), data, EventType.SOMU_ITEM_DELETED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
