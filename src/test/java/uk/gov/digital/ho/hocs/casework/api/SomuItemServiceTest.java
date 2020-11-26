@@ -69,8 +69,11 @@ public class SomuItemServiceTest {
 
     @Test
     public void shouldCreateSomuItem() {
-        SomuItem somuItem = somuItemService.createSomuItem(caseUUID, somuTypeUuid, "{}");
+        when(somuItemRepository.findByCaseUuidAndSomuUuid(caseUUID, somuTypeUuid)).thenReturn(null);
 
+        SomuItem somuItem = somuItemService.upsertSomuItem(caseUUID, somuTypeUuid, "{}");
+
+        verify(somuItemRepository, times(1)).findByCaseUuidAndSomuUuid(caseUUID, somuTypeUuid);
         verify(somuItemRepository, times(1)).save(somuItem);
         verify(auditClient, times(1)).createSomuItemAudit(somuItem);
 
@@ -85,24 +88,39 @@ public class SomuItemServiceTest {
     public void shouldUpdateSomuItem() {
         SomuItem somuItem = new SomuItem(uuid, caseUUID, somuTypeUuid, "{}");
 
-        when(somuItemRepository.findByUuid(uuid)).thenReturn(somuItem);
+        when(somuItemRepository.findByCaseUuidAndSomuUuid(caseUUID, somuTypeUuid)).thenReturn(somuItem);
 
-        somuItemService.updateSomuItem(uuid, "{\"Test\": 1}");
+        SomuItem somuItem1 = somuItemService.upsertSomuItem(caseUUID, somuTypeUuid, "{\"Test\": 1}");
 
-        verify(somuItemRepository, times(1)).findByUuid(uuid);
+        verify(somuItemRepository, times(1)).findByCaseUuidAndSomuUuid(caseUUID, somuTypeUuid);
         verify(somuItemRepository, times(1)).save(somuItem);
         verify(auditClient, times(1)).updateSomuItemAudit(somuItem);
 
-        assertThat(somuItem.getCaseUuid()).isEqualTo(caseUUID);
-        assertThat(somuItem.getSomuUuid()).isEqualTo(somuTypeUuid);
-        assertThat(somuItem.getData()).isEqualTo("{\"Test\": 1}");
+        assertThat(somuItem1.getCaseUuid()).isEqualTo(caseUUID);
+        assertThat(somuItem1.getSomuUuid()).isEqualTo(somuTypeUuid);
+        assertThat(somuItem1.getData()).isEqualTo("{\"Test\": 1}");
 
         verifyNoMoreInteractions(somuItemRepository, auditClient);
     }
 
+    @Test
+    public void shouldDeleteSomuItem() {
+        SomuItem somuItem = new SomuItem(uuid, caseUUID, somuTypeUuid, "{}");
+
+        when(somuItemRepository.findByUuid(uuid)).thenReturn(somuItem);
+        
+        somuItemService.deleteSomuItem(uuid);
+
+        verify(somuItemRepository, times(1)).findByUuid(uuid);
+        verify(somuItemRepository, times(1)).save(somuItem);
+        verify(auditClient, times(1)).deleteSomuItemAudit(somuItem);
+    
+        verifyNoMoreInteractions(somuItemRepository, auditClient);
+    }
+    
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void shouldUpdateSomuItem_ThrowsWhenNotFound() {
-        somuItemService.updateSomuItem(uuid, "{Test}");
+    public void shouldDeleteSomuItem_ThrowsWhenNotFound() {
+        somuItemService.deleteSomuItem(uuid);
     }
 
 }
