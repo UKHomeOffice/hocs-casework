@@ -40,6 +40,7 @@ pipeline:
       - export BRANCH_NAME_TAGFRIENDLY=`echo "$${DRONE_COMMIT_BRANCH}" | sed 's$/$_$g'` # sed can use any character as delimiter
       - docker tag hocs-casework quay.io/ukhomeofficedigital/hocs-casework:branch-${BRANCH_NAME_TAGFRIENDLY}
       - docker push quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
+      - docker push quay.io/ukhomeofficedigital/hocs-casework:branch-$${BRANCH_NAME_TAGFRIENDLY}
     when:
       branch: [master, epic/*] # this should be any branch you might reasonably want deployed somewhere
       event: push
