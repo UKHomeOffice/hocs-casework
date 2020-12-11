@@ -45,29 +45,35 @@ public class SomuItemService {
             return somuItem;
         }
         else {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format(NOT_FOUND_MESSAGE, somuTypeUuid), SOMU_ITEM_NOT_FOUND);
+            log.info("Could not find somu item for case {} for somu type {}, creating one. Event {}", caseUuid, somuTypeUuid, value(EVENT, SOMU_ITEM_RETRIEVED));
+            return addSomuItem(caseUuid, somuTypeUuid, null);
         }
     }
 
-    public SomuItem upsertSomuItem(UUID caseUUID, UUID somuTypeuuid, String data) {
-        log.debug("Upserting Somu Item of Type: {} for Case: {}", somuTypeuuid, caseUUID);
+    public SomuItem upsertSomuItem(UUID caseUuid, UUID somuTypeUuid, String data) {
+        log.debug("Upserting Somu Item of Type: {} for Case: {}", somuTypeUuid, caseUuid);
         
-        SomuItem somuItem = somuItemRepository.findByCaseUuidAndSomuUuid(caseUUID, somuTypeuuid);
+        SomuItem somuItem = somuItemRepository.findByCaseUuidAndSomuUuid(caseUuid, somuTypeUuid);
         
         if (somuItem != null) {
             somuItem.setData(data);
             somuItemRepository.save(somuItem);
-            log.info("Updated Somu Item: {} for Case: {}, Event {}", somuItem.getUuid(), caseUUID, value(EVENT, SOMU_ITEM_UPDATED));
+            log.info("Updated Somu Item: {} for Case: {}, Event {}", somuItem.getUuid(), caseUuid, value(EVENT, SOMU_ITEM_UPDATED));
 
             auditClient.updateSomuItemAudit(somuItem);
         } else {
-            somuItem = new SomuItem(UUID.randomUUID(), caseUUID, somuTypeuuid, data);
-            somuItemRepository.save(somuItem);
-            log.info("Created Somu Item: {} for Case: {}, Event {}", somuItem.getUuid(), caseUUID, value(EVENT, SOMU_ITEM_CREATED));
-
-            auditClient.createSomuItemAudit(somuItem);
+            somuItem = addSomuItem(caseUuid,somuTypeUuid, data);
         }
         
+        return somuItem;
+    }
+    
+    private SomuItem addSomuItem(UUID caseUUID, UUID somuTypeuuid, String data) {
+        SomuItem somuItem = new SomuItem(UUID.randomUUID(), caseUUID, somuTypeuuid, data);
+        somuItemRepository.save(somuItem);
+        log.info("Created Somu Item: {} for Case: {}, Event {}", somuItem.getUuid(), caseUUID, value(EVENT, SOMU_ITEM_CREATED));
+
+        auditClient.createSomuItemAudit(somuItem);
         return somuItem;
     }
 
