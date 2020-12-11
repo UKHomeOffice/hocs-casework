@@ -35,9 +35,10 @@ pipeline:
     commands:
       - docker login -u="ukhomeofficedigital+hocs" -p=$${DOCKER_PASSWORD} quay.io
       - docker tag hocs-casework quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
-        # the slashes after the env variable below is Bash string manipulation
         # you aren't allowed slashes in Docker tags, so this replaces them with underscores
-      - docker tag hocs-casework quay.io/ukhomeofficedigital/hocs-casework:branch-$${DRONE_COMMIT_BRANCH/\//_}
+        # there is a nicer way to do this in Drone 1.0, but for 0.8 we need to hack with sed:
+      - export BRANCH_NAME_TAGFRIENDLY=`echo "$${DRONE_COMMIT_BRANCH}" | sed 's$/$_$g'` # sed can use any character as delimiter
+      - docker tag hocs-casework quay.io/ukhomeofficedigital/hocs-casework:branch-${BRANCH_NAME_TAGFRIENDLY}
       - docker push quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
     when:
       branch: [master, epic/*] # this should be any branch you might reasonably want deployed somewhere
