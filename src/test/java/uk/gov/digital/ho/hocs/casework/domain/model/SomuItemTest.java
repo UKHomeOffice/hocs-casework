@@ -14,12 +14,12 @@ public class SomuItemTest {
 
     @Test
     public void getSomuItem() {
-        SomuItem somuItem = new SomuItem(SOMU_ITEM_UUID, SOMU_ITEM_CASE_UUID, SOMU_ITEM_TYPE_UUID, "");
+        SomuItem somuItem = new SomuItem(SOMU_ITEM_UUID, SOMU_ITEM_CASE_UUID, SOMU_ITEM_TYPE_UUID, "Test");
 
         assertThat(somuItem.getUuid()).isEqualTo(SOMU_ITEM_UUID);
         assertThat(somuItem.getCaseUuid()).isEqualTo(SOMU_ITEM_CASE_UUID);
         assertThat(somuItem.getSomuUuid()).isEqualTo(SOMU_ITEM_TYPE_UUID);
-        assertThat(somuItem.getData()).isEqualTo("");
+        assertThat(somuItem.getData()).isEqualTo("Test");
         assertThat(somuItem.isDeleted()).isFalse();
     }
     

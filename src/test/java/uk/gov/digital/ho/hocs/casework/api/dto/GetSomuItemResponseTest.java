@@ -15,7 +15,7 @@ public class GetSomuItemResponseTest {
     
     @Test
     public void getSomuItemResponseTest() {
-        SomuItem somuItem = new SomuItem(SOMU_ITEM_UUID, SOMU_ITEM_CASE_UUID, SOMU_ITEM_TYPE_UUID, "");
+        SomuItem somuItem = new SomuItem(SOMU_ITEM_UUID, SOMU_ITEM_CASE_UUID, SOMU_ITEM_TYPE_UUID, "TEST");
         
         GetSomuItemResponse getSomuItemResponse = GetSomuItemResponse.from(somuItem);
 
@@ -27,7 +27,7 @@ public class GetSomuItemResponseTest {
     }
 
     @Test
-    public void getSomuItemResponseTest_NullDataIsDeleted() {
+    public void getSomuItemResponseTest_NullIsDeleted() {
         SomuItem somuItem = new SomuItem(SOMU_ITEM_UUID, SOMU_ITEM_CASE_UUID, SOMU_ITEM_TYPE_UUID, null);
 
         GetSomuItemResponse getSomuItemResponse = GetSomuItemResponse.from(somuItem);
