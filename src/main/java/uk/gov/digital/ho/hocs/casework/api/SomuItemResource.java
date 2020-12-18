@@ -50,8 +50,8 @@ public class SomuItemResource {
 
     @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/case/{caseUuid}/item/{somuTypeUuid}", produces = APPLICATION_JSON_UTF8_VALUE)
-    ResponseEntity<GetSomuItemResponse> upsertSomuItem(@PathVariable UUID caseUuid, @PathVariable UUID somuTypeUuid, @RequestBody String data) {
-        SomuItem somuItem = somuItemService.upsertSomuItem(caseUuid, somuTypeUuid, data);
+    ResponseEntity<GetSomuItemResponse> upsertSomuItem(@PathVariable UUID caseUuid, @PathVariable UUID somuTypeUuid, @RequestBody CreateSomuItemRequest data) {
+        SomuItem somuItem = somuItemService.upsertSomuItem(caseUuid, somuTypeUuid, data.getData());
         return ResponseEntity.ok(GetSomuItemResponse.from(somuItem));
     }
 }

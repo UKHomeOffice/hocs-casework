@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateSomuItemRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetSomuItemResponse;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
@@ -42,7 +43,7 @@ public class SomuItemResourceTest {
         
         when(somuItemService.upsertSomuItem(caseUUID, somuUUID, "{}")).thenReturn(somuItem);
 
-        ResponseEntity<GetSomuItemResponse> response = somuItemResource.upsertSomuItem(caseUUID, somuUUID, "{}");
+        ResponseEntity<GetSomuItemResponse> response = somuItemResource.upsertSomuItem(caseUUID, somuUUID, new CreateSomuItemRequest("{}"));
 
         verify(somuItemService, times(1)).upsertSomuItem(caseUUID, somuUUID, "{}");
 
