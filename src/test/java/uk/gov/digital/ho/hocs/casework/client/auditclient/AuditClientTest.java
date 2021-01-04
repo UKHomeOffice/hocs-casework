@@ -421,7 +421,7 @@ public class AuditClientTest {
 
     @Test
     public void viewSomuItemsAudit() throws IOException {
-        auditClient.viewSomuItemsAudit(this.caseUUID);
+        auditClient.viewAllSomuItemsAudit(this.caseUUID);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -435,7 +435,7 @@ public class AuditClientTest {
         UUID somuUuid = UUID.randomUUID();
         SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
 
-        auditClient.viewSomuItemAudit(somuItem);
+        auditClient.viewCaseSomuItemsBySomuTypeAudit(caseUUID, uuid);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
 
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -451,7 +451,7 @@ public class AuditClientTest {
 
         String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItem(somuItem.getUuid(), somuItem.getCaseUuid(), somuItem.getSomuUuid(), somuItem.getData()));
         
-        auditClient.createSomuItemAudit(somuItem);
+        auditClient.createCaseSomuItemAudit(somuItem);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
 
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);

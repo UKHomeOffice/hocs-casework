@@ -5,11 +5,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateSomuItemRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.repository.SomuItemRepository;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
@@ -42,10 +44,10 @@ public class SomuItemServiceTest {
         
         when(somuItemRepository.findAllByCaseUuid(any())).thenReturn(Set.of(somuItem));
         
-        somuItemService.getSomuItems(caseUuid);
+        somuItemService.getCaseSomuItemsBySomuType(caseUuid);
 
         verify(somuItemRepository, times(1)).findAllByCaseUuid(caseUuid);
-        verify(auditClient, times(1)).viewSomuItemsAudit(caseUuid);
+        verify(auditClient, times(1)).viewAllSomuItemsAudit(caseUuid);
         verifyNoMoreInteractions(somuItemRepository, auditClient);
     }
 
@@ -53,41 +55,35 @@ public class SomuItemServiceTest {
     public void shouldGetSomuItem() {
         SomuItem somuItem = new SomuItem(uuid, caseUuid, somuTypeUuid, "{}");
 
-        when(somuItemRepository.findByCaseUuidAndSomuUuid(any(), any())).thenReturn(somuItem);
+        when(somuItemRepository.findByCaseUuidAndSomuUuid(any(), any())).thenReturn(Set.of(somuItem));
 
-        somuItemService.getSomuItem(caseUuid, somuTypeUuid);
+        somuItemService.getCaseSomuItemsBySomuType(caseUuid, somuTypeUuid);
 
         verify(somuItemRepository, times(1)).findByCaseUuidAndSomuUuid(caseUuid, somuTypeUuid);
-        verify(auditClient, times(1)).viewSomuItemAudit(somuItem);
+        verify(auditClient, times(1)).viewCaseSomuItemsBySomuTypeAudit(caseUuid, somuTypeUuid);
         verifyNoMoreInteractions(somuItemRepository, auditClient);
     }
-
+   
     @Test()
-    public void shouldGetSomuItem_CreatesNewItemWhenNotFound() throws ApplicationExceptions.EntityNotFoundException {
-        when(somuItemRepository.findByCaseUuidAndSomuUuid(any(), any())).thenReturn(null);
+    public void shouldGetSomuItem_EmptySetReturnedWhenNoneExist() throws ApplicationExceptions.EntityNotFoundException {
+        when(somuItemRepository.findByCaseUuidAndSomuUuid(any(), any())).thenReturn(Collections.emptySet());
 
-        SomuItem somuItem = somuItemService.getSomuItem(caseUuid, somuTypeUuid);
+        Set<SomuItem> somuItem = somuItemService.getCaseSomuItemsBySomuType(caseUuid, somuTypeUuid);
 
         verify(somuItemRepository, times(1)).findByCaseUuidAndSomuUuid(caseUuid, somuTypeUuid);
-        verify(somuItemRepository, times(1)).save(any());
-        verify(auditClient, times(1)).createSomuItemAudit(somuItem);
+        verify(auditClient, times(1)).viewCaseSomuItemsBySomuTypeAudit(caseUuid, somuTypeUuid);
+
         verifyNoMoreInteractions(somuItemRepository, auditClient);
 
-        assertThat(somuItem.getCaseUuid()).isEqualTo(caseUuid);
-        assertThat(somuItem.getSomuUuid()).isEqualTo(somuTypeUuid);
-        assertThat(somuItem.getData()).isEqualTo(null);
-        assertThat(somuItem.isDeleted()).isTrue();
+        assertThat(somuItem.size()).isEqualTo(0);
     }
 
     @Test
     public void shouldCreateSomuItem() {
-        when(somuItemRepository.findByCaseUuidAndSomuUuid(caseUuid, somuTypeUuid)).thenReturn(null);
+        SomuItem somuItem = somuItemService.upsertCaseSomuItemBySomuType(caseUuid, somuTypeUuid, new CreateSomuItemRequest(null, "{}"));
 
-        SomuItem somuItem = somuItemService.upsertSomuItem(caseUuid, somuTypeUuid, "{}");
-
-        verify(somuItemRepository, times(1)).findByCaseUuidAndSomuUuid(caseUuid, somuTypeUuid);
         verify(somuItemRepository, times(1)).save(somuItem);
-        verify(auditClient, times(1)).createSomuItemAudit(somuItem);
+        verify(auditClient, times(1)).createCaseSomuItemAudit(somuItem);
         verifyNoMoreInteractions(somuItemRepository, auditClient);
 
         assertThat(somuItem.getCaseUuid()).isEqualTo(caseUuid);
@@ -99,13 +95,29 @@ public class SomuItemServiceTest {
     public void shouldUpdateSomuItem() {
         SomuItem somuItem = new SomuItem(uuid, caseUuid, somuTypeUuid, "{}");
 
-        when(somuItemRepository.findByCaseUuidAndSomuUuid(caseUuid, somuTypeUuid)).thenReturn(somuItem);
+        when(somuItemRepository.findByUuid(uuid)).thenReturn(somuItem);
 
-        SomuItem somuItem1 = somuItemService.upsertSomuItem(caseUuid, somuTypeUuid, "{\"Test\": 1}");
+        SomuItem somuItem1 = somuItemService.upsertCaseSomuItemBySomuType(caseUuid, somuTypeUuid, new CreateSomuItemRequest(uuid, "{\"Test\": 1}"));
 
-        verify(somuItemRepository, times(1)).findByCaseUuidAndSomuUuid(caseUuid, somuTypeUuid);
+        verify(somuItemRepository, times(1)).findByUuid(uuid);
         verify(somuItemRepository, times(1)).save(somuItem);
         verify(auditClient, times(1)).updateSomuItemAudit(somuItem);
+        verifyNoMoreInteractions(somuItemRepository, auditClient);
+
+        assertThat(somuItem1.getCaseUuid()).isEqualTo(caseUuid);
+        assertThat(somuItem1.getSomuUuid()).isEqualTo(somuTypeUuid);
+        assertThat(somuItem1.getData()).isEqualTo("{\"Test\": 1}");
+    }
+
+    @Test
+    public void shouldCreateItem_IfItemCannotBeFound() {
+        when(somuItemRepository.findByUuid(uuid)).thenReturn(null);
+
+        SomuItem somuItem1 = somuItemService.upsertCaseSomuItemBySomuType(caseUuid, somuTypeUuid, new CreateSomuItemRequest(uuid, "{\"Test\": 1}"));
+
+        verify(somuItemRepository, times(1)).findByUuid(uuid);
+        verify(somuItemRepository, times(1)).save(somuItem1);
+        verify(auditClient, times(1)).createCaseSomuItemAudit(somuItem1);
         verifyNoMoreInteractions(somuItemRepository, auditClient);
 
         assertThat(somuItem1.getCaseUuid()).isEqualTo(caseUuid);
