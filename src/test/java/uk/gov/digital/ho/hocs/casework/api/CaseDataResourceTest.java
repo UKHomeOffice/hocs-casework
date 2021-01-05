@@ -240,25 +240,23 @@ public class CaseDataResourceTest {
         assertThat(results).isNotNull();
         assertThat(results.getBody()).isEqualTo(expectedValue);
         assertThat(results.getStatusCodeValue()).isEqualTo(200);
+
         verify(caseDataService).getCaseDataField(uuid, variableName);
         verifyNoMoreInteractions(caseDataService);
-
-
     }
 
     @Test
     public void updateCaseDataValue() {
         String variableName = "TestVariableName";
-        String testValue = "TestValue";
+        UpdateCaseDataValue testValue = new UpdateCaseDataValue("TestValue");
 
         ResponseEntity<String> results = caseDataResource.updateCaseDataValue(uuid, variableName, testValue);
 
         assertThat(results).isNotNull();
         assertThat(results.getStatusCodeValue()).isEqualTo(200);
-        verify(caseDataService).updateCaseData(uuid, null, Map.of(variableName, testValue));
+        
+        verify(caseDataService).updateCaseData(uuid, null, Map.of(variableName, testValue.getData()));
         verifyNoMoreInteractions(caseDataService);
-
-
     }
 
     @Test
