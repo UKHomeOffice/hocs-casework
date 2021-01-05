@@ -3,19 +3,24 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 public class DataTotal {
 
-    public BigDecimal calculate(Map<String,String> dataMap, Map<String,String> addFields, Map<String,String> subFields){
-        BigDecimal total = BigDecimal.ZERO;
-        for(Map.Entry<String, String> field : addFields.entrySet()) {
-            total = total.add(parseCurrency(dataMap, field.getKey(), field.getValue()));
-        }
-        for(Map.Entry<String, String> field: subFields.entrySet()) {
-            total = total.subtract(parseCurrency(dataMap, field.getKey(), field.getValue()));
-        }
-        return total;
+    // This iterates over the fields provided, extracts their values from 'dataMap', then flattens them, before summing them
+    BiFunction<Map<String,String>, Map<String, List<String>>, BigDecimal> sumFields = (dataMap, fields) -> {
+        return fields.entrySet().stream().flatMap(field -> {
+            return field.getValue().stream().map(valueField -> parseCurrency(dataMap, field.getKey(), valueField));
+        }).reduce(BigDecimal.ZERO, BigDecimal::add);
+    };
+
+    public BigDecimal calculate(Map<String,String> dataMap, Map<String, List<String>> addFields, Map<String, List<String>> subFields){
+        BigDecimal toAdd = sumFields.apply(dataMap, addFields);
+        BigDecimal toSubtract = sumFields.apply(dataMap, subFields);
+
+        return toAdd.subtract(toSubtract);
     }
 
     private BigDecimal parseCurrency(Map<String,String> dataMap, String claimedKey, String valueKey){
