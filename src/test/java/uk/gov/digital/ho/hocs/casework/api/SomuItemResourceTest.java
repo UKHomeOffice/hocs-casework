@@ -7,8 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateSomuItemRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetSomuItemResponse;
-import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 
 import java.util.Objects;
@@ -17,7 +17,6 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SOMU_ITEM_NOT_FOUND;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SomuItemResourceTest {
@@ -39,12 +38,13 @@ public class SomuItemResourceTest {
     @Test
     public void shouldUpsertSomuItem() {
         SomuItem somuItem = new SomuItem(uuid, caseUUID, somuUUID, "{}");
+        CreateSomuItemRequest somuItemRequest = new CreateSomuItemRequest(null, "{}");
         
-        when(somuItemService.upsertSomuItem(caseUUID, somuUUID, "{}")).thenReturn(somuItem);
+        when(somuItemService.upsertCaseSomuItemBySomuType(caseUUID, somuUUID, somuItemRequest)).thenReturn(somuItem);
 
-        ResponseEntity<GetSomuItemResponse> response = somuItemResource.upsertSomuItem(caseUUID, somuUUID, "{}");
+        ResponseEntity<GetSomuItemResponse> response = somuItemResource.upsertCaseSomuItemBySomuType(caseUUID, somuUUID, somuItemRequest);
 
-        verify(somuItemService, times(1)).upsertSomuItem(caseUUID, somuUUID, "{}");
+        verify(somuItemService, times(1)).upsertCaseSomuItemBySomuType(caseUUID, somuUUID, somuItemRequest);
 
         checkNoMoreInteractions();
 
@@ -71,11 +71,11 @@ public class SomuItemResourceTest {
     public void shouldGetSomuItems() {
         SomuItem somuItem = new SomuItem(uuid, caseUUID, somuUUID, "{}");
 
-        when(somuItemService.getSomuItems(caseUUID)).thenReturn(Set.of(somuItem));
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID)).thenReturn(Set.of(somuItem));
 
-        ResponseEntity<Set<GetSomuItemResponse>> response = somuItemResource.getSomuItems(caseUUID);
+        ResponseEntity<Set<GetSomuItemResponse>> response = somuItemResource.getAllCaseSomuItems(caseUUID);
 
-        verify(somuItemService, times(1)).getSomuItems(caseUUID);
+        verify(somuItemService, times(1)).getCaseSomuItemsBySomuType(caseUUID);
 
         checkNoMoreInteractions();
 
@@ -89,18 +89,16 @@ public class SomuItemResourceTest {
     public void shouldGetSomuItem() {
         SomuItem somuItem = new SomuItem(uuid, caseUUID, somuUUID, "{}");
 
-        when(somuItemService.getSomuItem(caseUUID, somuUUID)).thenReturn(somuItem);
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID, somuUUID)).thenReturn(Set.of(somuItem));
 
-        ResponseEntity<GetSomuItemResponse> response = somuItemResource.getSomuItem(caseUUID, somuUUID);
+        ResponseEntity<Set<GetSomuItemResponse>> response = somuItemResource.getCaseSomuItemsBySomuType(caseUUID, somuUUID);
 
-        verify(somuItemService, times(1)).getSomuItem(caseUUID, somuUUID);
+        verify(somuItemService, times(1)).getCaseSomuItemsBySomuType(caseUUID, somuUUID);
 
         checkNoMoreInteractions();
 
         assertThat(response).isNotNull();
-        assertThat(Objects.requireNonNull(response.getBody()).getSomuUuid()).isEqualTo(somuUUID);
-        assertThat(response.getBody().getCaseUuid()).isEqualTo(caseUUID);
-        assertThat(response.getBody().getData()).isEqualTo("{}");
+        assertThat(response.getBody().size()).isEqualTo(1);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 

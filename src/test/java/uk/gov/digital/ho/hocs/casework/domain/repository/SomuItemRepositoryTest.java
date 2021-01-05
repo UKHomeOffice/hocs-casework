@@ -71,10 +71,10 @@ public class SomuItemRepositoryTest {
 
     @Test()
     public void shouldFindSomuItemsByCaseUuidAndSomuUuid() {
-        SomuItem somuItem = repository.findByCaseUuidAndSomuUuid(caseUuid, SOMU_ITEM_TYPE_UUID);
+        Set<SomuItem> somuItem = repository.findByCaseUuidAndSomuUuid(caseUuid, SOMU_ITEM_TYPE_UUID);
 
         assertThat(somuItem).isNotNull();
-        assertThat(somuItem).isEqualTo(this.somuItem);
+        assertThat(somuItem.size()).isEqualTo(1);
     }
     
 }
