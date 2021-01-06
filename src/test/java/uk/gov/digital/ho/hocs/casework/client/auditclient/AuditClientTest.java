@@ -435,12 +435,15 @@ public class AuditClientTest {
         UUID somuUuid = UUID.randomUUID();
         SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
 
+        String itemView = mapper.writeValueAsString(new AuditPayload.SomuItem(somuItem.getUuid()));
+
         auditClient.viewCaseSomuItemsBySomuTypeAudit(caseUUID, uuid);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
 
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.SOMU_ITEM_VIEWED);
         assertThat(request.getCaseUUID()).isEqualTo(somuItem.getCaseUuid());
+        assertThat(request.getAuditPayload()).isEqualTo(itemView);
     }
 
     @Test
@@ -449,7 +452,7 @@ public class AuditClientTest {
         UUID somuUuid = UUID.randomUUID();
         SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
 
-        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItem(somuItem.getUuid(), somuItem.getCaseUuid(), somuItem.getSomuUuid(), somuItem.getData()));
+        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getUuid(), somuItem.getSomuUuid(), somuItem.getData()));
         
         auditClient.createCaseSomuItemAudit(somuItem);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
@@ -466,7 +469,7 @@ public class AuditClientTest {
         UUID somuUuid = UUID.randomUUID();
         SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
         
-        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItem(somuItem.getUuid(), somuItem.getCaseUuid(), somuItem.getSomuUuid(), somuItem.getData()));
+        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getUuid(), somuItem.getSomuUuid(), somuItem.getData()));
 
         auditClient.updateSomuItemAudit(somuItem);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
@@ -483,7 +486,7 @@ public class AuditClientTest {
         UUID somuUuid = UUID.randomUUID();
         SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
 
-        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItem(somuItem.getUuid(), somuItem.getCaseUuid(), somuItem.getSomuUuid(), somuItem.getData()));
+        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getUuid(), somuItem.getSomuUuid(), somuItem.getData()));
 
         auditClient.deleteSomuItemAudit(somuItem);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());

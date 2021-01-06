@@ -247,7 +247,7 @@ public class AuditClient {
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(somuTypeUUID);
+                data = objectMapper.writeValueAsString(new AuditPayload.SomuItem(somuTypeUUID));
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
@@ -263,7 +263,7 @@ public class AuditClient {
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(new AuditPayload.SomuItem(somuItem.getUuid(), somuItem.getCaseUuid(), somuItem.getSomuUuid(), somuItem.getData()));
+                data = objectMapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getUuid(), somuItem.getSomuUuid(), somuItem.getData()));
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
@@ -278,7 +278,7 @@ public class AuditClient {
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(new AuditPayload.SomuItem(somuItem.getUuid(), somuItem.getCaseUuid(), somuItem.getSomuUuid(), somuItem.getData()));
+                data = objectMapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getUuid(), somuItem.getSomuUuid(), somuItem.getData()));
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
@@ -293,7 +293,7 @@ public class AuditClient {
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(new AuditPayload.SomuItem(somuItem.getUuid(), somuItem.getCaseUuid(), somuItem.getSomuUuid(), somuItem.getData()));
+                data = objectMapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getUuid(), somuItem.getSomuUuid(), somuItem.getData()));
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
