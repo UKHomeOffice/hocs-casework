@@ -71,17 +71,23 @@ public interface AuditPayload {
     @AllArgsConstructor
     @Getter
     class SomuItem {
-        @JsonProperty("uuid")
-        private UUID uuid;
-
-        @JsonProperty("caseUuid")
-        private UUID caseUuid;
-
         @JsonProperty("somuUuid")
         private UUID somuUuid;
+    }
+
+    @Getter
+    class SomuItemWithData extends SomuItem {
+        @JsonProperty("uuid")
+        private UUID uuid;
         
         @JsonRawValue
         private String data;
+
+        public SomuItemWithData(UUID somuUuid, UUID uuid, String data) {
+            super(somuUuid);
+            this.uuid = uuid;
+            this.data = data;
+        }
     }
 
     @AllArgsConstructor
