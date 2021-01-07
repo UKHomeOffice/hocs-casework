@@ -71,7 +71,7 @@ public interface AuditPayload {
     @AllArgsConstructor
     @Getter
     class SomuItem {
-        @JsonProperty("somuUuid")
+        @JsonProperty("somuTypeUuid")
         private UUID somuUuid;
     }
 
