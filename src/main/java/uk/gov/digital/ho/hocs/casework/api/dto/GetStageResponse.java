@@ -51,6 +51,9 @@ public class GetStageResponse {
     @JsonRawValue
     private String data;
 
+    @JsonRawValue
+    private String correspondents;
+
     @JsonProperty("caseCreated")
     private LocalDateTime caseCreated;
 
@@ -72,6 +75,7 @@ public class GetStageResponse {
                 stage.getCaseDataType(),
                 stage.getTransitionNoteUUID(),
                 stage.getData(),
+                stage.getCorrespondents(),
                 stage.getCaseCreated(),
                 stage.isActive());
     }
