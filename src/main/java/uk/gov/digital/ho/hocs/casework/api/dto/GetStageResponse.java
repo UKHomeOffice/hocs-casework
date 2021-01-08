@@ -60,6 +60,9 @@ public class GetStageResponse {
     @JsonProperty("active")
     private boolean active;
 
+    @JsonProperty("assignedTopic")
+    private String assignedTopic;
+
     public static GetStageResponse from(Stage stage) {
 
         return new GetStageResponse(
@@ -77,6 +80,7 @@ public class GetStageResponse {
                 stage.getData(),
                 stage.getCorrespondents(),
                 stage.getCaseCreated(),
-                stage.isActive());
+                stage.isActive(),
+                stage.getAssignedTopic());
     }
 }
