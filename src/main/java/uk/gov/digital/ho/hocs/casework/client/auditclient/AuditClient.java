@@ -233,6 +233,75 @@ public class AuditClient {
         });
     }
 
+    public void viewAllSomuItemsAudit(UUID caseUUID) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        executorService.execute(() -> sendAuditMessage(localDateTime, caseUUID, "", EventType.SOMU_ITEMS_VIEWED, null, requestDataDto.getCorrelationId(),
+                requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups()));
+    }
+
+    public void viewCaseSomuItemsBySomuTypeAudit(UUID caseUUID, UUID somuTypeUUID) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(new AuditPayload.SomuItem(somuTypeUUID));
+            } catch (JsonProcessingException e) {
+                logFailedToParseDataPayload(e);
+            }
+            
+            sendAuditMessage(localDateTime, caseUUID, data, EventType.SOMU_ITEM_VIEWED, null, requestDataDto.getCorrelationId(),
+                    requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
+    }
+
+    public void createCaseSomuItemAudit(SomuItem somuItem) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
+            } catch (JsonProcessingException e) {
+                logFailedToParseDataPayload(e);
+            }
+            sendAuditMessage(localDateTime, somuItem.getCaseUuid(), data, EventType.SOMU_ITEM_CREATED, null, data,
+                    requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
+    }
+
+    public void updateSomuItemAudit(SomuItem somuItem) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
+            } catch (JsonProcessingException e) {
+                logFailedToParseDataPayload(e);
+            }
+            sendAuditMessage(localDateTime, somuItem.getCaseUuid(), data, EventType.SOMU_ITEM_UPDATED, null, data,
+                    requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
+    }
+
+    public void deleteSomuItemAudit(SomuItem somuItem) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
+            } catch (JsonProcessingException e) {
+                logFailedToParseDataPayload(e);
+            }
+            sendAuditMessage(localDateTime, somuItem.getCaseUuid(), data, EventType.SOMU_ITEM_DELETED, null, data,
+                    requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
+    }
+
     public void createCorrespondentAudit(Correspondent correspondent) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();

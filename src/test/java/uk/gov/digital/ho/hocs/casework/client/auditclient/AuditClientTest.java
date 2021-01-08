@@ -419,4 +419,82 @@ public class AuditClientTest {
         assertThat(response.getAuditCount()).isEqualTo(1);
     }
 
+    @Test
+    public void viewSomuItemsAudit() throws IOException {
+        auditClient.viewAllSomuItemsAudit(this.caseUUID);
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.SOMU_ITEMS_VIEWED);
+        assertThat(request.getCaseUUID()).isEqualTo(this.caseUUID);
+    }
+
+    @Test
+    public void viewSomuItemAudit() throws IOException {
+        UUID uuid = UUID.randomUUID();
+        UUID somuUuid = UUID.randomUUID();
+        SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
+
+        String itemView = mapper.writeValueAsString(new AuditPayload.SomuItem(somuItem.getUuid()));
+
+        auditClient.viewCaseSomuItemsBySomuTypeAudit(caseUUID, uuid);
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.SOMU_ITEM_VIEWED);
+        assertThat(request.getCaseUUID()).isEqualTo(somuItem.getCaseUuid());
+        assertThat(request.getAuditPayload()).isEqualTo(itemView);
+    }
+
+    @Test
+    public void createSomuItemAudit() throws IOException {
+        UUID uuid = UUID.randomUUID();
+        UUID somuUuid = UUID.randomUUID();
+        SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
+
+        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
+        
+        auditClient.createCaseSomuItemAudit(somuItem);
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.SOMU_ITEM_CREATED);
+        assertThat(request.getCaseUUID()).isEqualTo(somuItem.getCaseUuid());
+        assertThat(request.getAuditPayload()).isEqualTo(itemUpdate);
+    }
+
+    @Test
+    public void updateSomuItemAudit() throws IOException {
+        UUID uuid = UUID.randomUUID();
+        UUID somuUuid = UUID.randomUUID();
+        SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
+        
+        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
+
+        auditClient.updateSomuItemAudit(somuItem);
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.SOMU_ITEM_UPDATED);
+        assertThat(request.getCaseUUID()).isEqualTo(somuItem.getCaseUuid());
+        assertThat(request.getAuditPayload()).isEqualTo(itemUpdate);
+    }
+    
+    @Test
+    public void deleteSomuItemAudit() throws IOException {
+        UUID uuid = UUID.randomUUID();
+        UUID somuUuid = UUID.randomUUID();
+        SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
+
+        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
+
+        auditClient.deleteSomuItemAudit(somuItem);
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.SOMU_ITEM_DELETED);
+        assertThat(request.getCaseUUID()).isEqualTo(somuItem.getCaseUuid());
+        assertThat(request.getAuditPayload()).isEqualTo(itemUpdate);
+    }
+
 }
