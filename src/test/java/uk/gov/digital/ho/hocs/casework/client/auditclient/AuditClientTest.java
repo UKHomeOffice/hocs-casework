@@ -452,7 +452,7 @@ public class AuditClientTest {
         UUID somuUuid = UUID.randomUUID();
         SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
 
-        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getUuid(), somuItem.getSomuUuid(), somuItem.getData()));
+        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
         
         auditClient.createCaseSomuItemAudit(somuItem);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
@@ -469,7 +469,7 @@ public class AuditClientTest {
         UUID somuUuid = UUID.randomUUID();
         SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
         
-        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getUuid(), somuItem.getSomuUuid(), somuItem.getData()));
+        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
 
         auditClient.updateSomuItemAudit(somuItem);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
@@ -486,7 +486,7 @@ public class AuditClientTest {
         UUID somuUuid = UUID.randomUUID();
         SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
 
-        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getUuid(), somuItem.getSomuUuid(), somuItem.getData()));
+        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
 
         auditClient.deleteSomuItemAudit(somuItem);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());

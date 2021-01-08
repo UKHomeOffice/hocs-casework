@@ -263,7 +263,7 @@ public class AuditClient {
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getUuid(), somuItem.getSomuUuid(), somuItem.getData()));
+                data = objectMapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
@@ -278,7 +278,7 @@ public class AuditClient {
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getUuid(), somuItem.getSomuUuid(), somuItem.getData()));
+                data = objectMapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
@@ -293,7 +293,7 @@ public class AuditClient {
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getUuid(), somuItem.getSomuUuid(), somuItem.getData()));
+                data = objectMapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }

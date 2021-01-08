@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,10 +47,10 @@ public class DataTotalTest {
         dataMap.put("CcCheck", "");
         dataMap.put("CcValue", "3.03");
         DataTotal dataTotal = new DataTotal();
-        Map<String, String> addFields = new HashMap();
-        addFields.put(null, "AaValue");
-        addFields.put("", "BbValue");
-        addFields.put(" ", "CcValue");
+        Map<String, List<String>> addFields = new HashMap();
+        addFields.put(null, List.of("AaValue"));
+        addFields.put("", List.of("BbValue"));
+        addFields.put(" ", List.of("CcValue"));
 
         BigDecimal result = dataTotal.calculate(dataMap, addFields, makeSubFields());
 
@@ -64,14 +65,15 @@ public class DataTotalTest {
         dataMap.put("BbCheck", "Yes");
         dataMap.put("BbValue", "2.02");
         dataMap.put("CcCheck", "Yes");
-        dataMap.put("CcValue", "3.03");
+        dataMap.put("CcValue1", "3.03");
+        dataMap.put("CcValue2", "1.00");
         dataMap.put("DdCheck", "");
         dataMap.put("DdMinus", "4.04");
         DataTotal dataTotal = new DataTotal();
 
         BigDecimal result = dataTotal.calculate(dataMap, makeAddFields(), makeSubFields());
 
-        assertThat(result).isEqualTo(new BigDecimal("6.06"));
+        assertThat(result).isEqualTo(new BigDecimal("7.06"));
     }
 
     @Test
@@ -82,28 +84,32 @@ public class DataTotalTest {
         dataMap.put("BbCheck", "Yes");
         dataMap.put("BbValue", "2.02");
         dataMap.put("CcCheck", "Yes");
-        dataMap.put("CcValue", "3.03");
+        dataMap.put("CcValue1", "3.03");
+        dataMap.put("CcValue2", "1.00");
         dataMap.put("DdCheck", "Yes");
         dataMap.put("DdMinus", "4.04");
+        dataMap.put("EeCheck", "Yes");
+        dataMap.put("EeMinus1", "1.00");
+        dataMap.put("EeMinus2", "0.01");
         DataTotal dataTotal = new DataTotal();
 
         BigDecimal result = dataTotal.calculate(dataMap, makeAddFields(), makeSubFields());
 
-        assertThat(result).isEqualTo(new BigDecimal("2.02"));
+        assertThat(result).isEqualTo(new BigDecimal("2.01"));
     }
 
-    private Map<String, String> makeAddFields(){
-        Map<String, String> addFields = new HashMap();
-        addFields.put("AaCheck", "AaValue");
-        addFields.put("BbCheck", "BbValue");
-        addFields.put("CcCheck", "CcValue");
+    private Map<String, List<String>> makeAddFields(){
+        Map<String, List<String>> addFields = new HashMap();
+        addFields.put("AaCheck", List.of("AaValue"));
+        addFields.put("BbCheck", List.of("BbValue"));
+        addFields.put("CcCheck", List.of("CcValue1", "CcValue2"));
         return addFields;
     }
 
-    private Map<String, String> makeSubFields(){
-        Map<String, String> subFields = new HashMap();
-        subFields.put("DdCheck", "DdMinus");
-        subFields.put("EeCheck", "EeMinus");
+    private Map<String, List<String>> makeSubFields(){
+        Map<String, List<String>> subFields = new HashMap();
+        subFields.put("DdCheck", List.of("DdMinus"));
+        subFields.put("EeCheck", List.of("EeMinus1", "EeMinus2"));
         return subFields;
     }
 }
