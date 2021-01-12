@@ -75,7 +75,7 @@ public class RestResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity handle(Exception e) {
-        log.error("Exception: {}", e.getMessage(), value(EVENT, UNCAUGHT_EXCEPTION));
+        log.error("An error occurred", e, value(EVENT, UNCAUGHT_EXCEPTION));
         return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
     }
 
