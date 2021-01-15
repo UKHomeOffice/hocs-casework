@@ -175,8 +175,8 @@ class CaseDataResource {
     }
 
     @PutMapping(value = "/case/{caseUUID}/data/{variableName}")
-    ResponseEntity updateCaseDataValue(@PathVariable UUID caseUUID, @PathVariable String variableName, @RequestBody UpdateCaseDataValue value) {
-        caseDataService.updateCaseData(caseUUID, null, Map.of(variableName, value.getData()));
+    ResponseEntity updateCaseDataValue(@PathVariable UUID caseUUID, @PathVariable String variableName, @RequestBody String value) {
+        caseDataService.updateCaseData(caseUUID, null, Map.of(variableName, value));
         return ResponseEntity.ok().build();
     }
 

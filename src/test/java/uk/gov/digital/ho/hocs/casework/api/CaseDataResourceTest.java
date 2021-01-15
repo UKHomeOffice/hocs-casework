@@ -248,14 +248,13 @@ public class CaseDataResourceTest {
     @Test
     public void updateCaseDataValue() {
         String variableName = "TestVariableName";
-        UpdateCaseDataValue testValue = new UpdateCaseDataValue("TestValue");
 
-        ResponseEntity<String> results = caseDataResource.updateCaseDataValue(uuid, variableName, testValue);
+        ResponseEntity<String> results = caseDataResource.updateCaseDataValue(uuid, variableName, "TestValue");
 
         assertThat(results).isNotNull();
         assertThat(results.getStatusCodeValue()).isEqualTo(200);
         
-        verify(caseDataService).updateCaseData(uuid, null, Map.of(variableName, testValue.getData()));
+        verify(caseDataService).updateCaseData(uuid, null, Map.of(variableName, "TestValue"));
         verifyNoMoreInteractions(caseDataService);
     }
 
