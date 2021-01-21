@@ -10,6 +10,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.Writer;
+
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static org.springframework.http.HttpStatus.*;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -75,7 +79,10 @@ public class RestResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity handle(Exception e) {
-        log.error("An error occurred", e, value(EVENT, UNCAUGHT_EXCEPTION));
+        Writer stackTraceWriter = new StringWriter();
+        e.printStackTrace(new PrintWriter(stackTraceWriter));
+        log.error("Exception: {}, Event: {}, Stack: {}", e.getMessage(), value(EVENT, UNCAUGHT_EXCEPTION),
+                value(STACKTRACE, stackTraceWriter.toString()));
         return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
     }
 
