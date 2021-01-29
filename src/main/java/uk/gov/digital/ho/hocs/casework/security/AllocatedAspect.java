@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.application.NonMigrationEnvCondition;
 
@@ -22,8 +23,9 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 @Conditional(value = {NonMigrationEnvCondition.class})
 public class AllocatedAspect {
 
-    private StageService stageService;
-    private UserPermissionsService userService;
+    private final StageService stageService;
+    private final UserPermissionsService userService;
+    private final CaseDataService caseDataService;
 
     @Around("@annotation(allocated)")
     public Object validateUserAccess(ProceedingJoinPoint joinPoint, Allocated allocated) throws Throwable {
@@ -38,6 +40,10 @@ public class AllocatedAspect {
             }
         } else {
             throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without stage UUID parameter", SECURITY_PARSE_ERROR);
+        }
+
+        if (proceedIfUserTeamIsAdminForCaseType(caseUUID)) {
+            return joinPoint.proceed();
         }
 
         switch (allocated.allocatedTo()) {
@@ -78,6 +84,9 @@ public class AllocatedAspect {
         }
     }
 
-
+    private boolean proceedIfUserTeamIsAdminForCaseType(UUID caseUUID) {
+        String stageType = caseDataService.getCaseType(caseUUID);
+        Set<String> caseTypesForCaseTypeAdmin = userService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
+        return caseTypesForCaseTypeAdmin.contains(stageType);
+    }
 }
-
