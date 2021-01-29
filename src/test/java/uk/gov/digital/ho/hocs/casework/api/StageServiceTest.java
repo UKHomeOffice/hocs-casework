@@ -300,32 +300,35 @@ public class StageServiceTest {
     public void shouldGetActiveStages_blankResult() {
         Set<UUID> teams = new HashSet<>();
         teams.add(UUID.randomUUID());
+        Set<String> caseTypes = new HashSet<>();
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
 
         stageService.getActiveStagesForUser();
 
-        verify(stageRepository).findAllActiveByTeamUUIDIn(teams);
+        verify(stageRepository).findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
 
         verifyZeroInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
-
     }
 
 
     @Test
     public void shouldGetActiveStages() {
         Set<UUID> teams = new HashSet<>();
+        Set<String> caseTypes = Set.of("CASE_TYPE1", "CASE_TYPE2");
         teams.add(UUID.randomUUID());
         Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
-        when(stageRepository.findAllActiveByTeamUUIDIn(teams)).thenReturn(Set.of(stage));
+        when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
+        when(stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes)).thenReturn(Set.of(stage));
 
         stageService.getActiveStagesForUser();
 
         verify(userPermissionsService).getUserTeams();
-        verify(stageRepository).findAllActiveByTeamUUIDIn(teams);
+        verify(userPermissionsService).getCaseTypesIfUserTeamIsCaseTypeAdmin();
+        verify(stageRepository).findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
         verify(stagePriorityCalculator).updatePriority(stage);
         verify(daysElapsedCalculator).updateDaysElapsed(stage);
 
