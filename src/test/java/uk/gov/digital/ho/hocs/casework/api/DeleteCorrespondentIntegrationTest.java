@@ -15,6 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditResponse;
@@ -26,9 +27,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.*;
@@ -84,14 +83,9 @@ public class DeleteCorrespondentIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
+                .expect(ExpectedCount.times(3), requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
-
         // mocking audit service
         mockInfoService
                 .expect(requestTo("http://localhost:8087/audit/case/14915b78-6977-42db-b343-0915a7f412a1/delete"))
@@ -106,8 +100,8 @@ public class DeleteCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnOKWhenDeleteCorrespondentsForValidCaseWithCaseAllocatedToYou() {
-
+    public void shouldReturnOKWhenDeleteCorrespondentsForValidCaseWithCaseAllocatedToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         Correspondent correspondentBefore = correspondentRepository.findByUUID(CASE_UUID1, CORRESPONDENT_UUID);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
@@ -120,8 +114,8 @@ public class DeleteCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnForbiddenWhenDeleteCorrespondentsForValidCaseWithCaseNotAllocatedToYou() {
-
+    public void shouldReturnForbiddenWhenDeleteCorrespondentsForValidCaseWithCaseNotAllocatedToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         long before = correspondentRepository.findAllByCaseUUID(CASE_UUID2).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -136,7 +130,8 @@ public class DeleteCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteCorrespondentForAnInvalidCorrespondentUUIDCaseAllocateToYou() {
+    public void shouldReturnNotFoundWhenDeleteCorrespondentForAnInvalidCorrespondentUUIDCaseAllocateToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + UUID.randomUUID(),
                 DELETE, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -145,7 +140,8 @@ public class DeleteCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteCorrespondentForAnInvalidCorrespondentUUIDCaseNoAllocateToYou() {
+    public void shouldReturnNotFoundWhenDeleteCorrespondentForAnInvalidCorrespondentUUIDCaseNoAllocateToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/correspondent/" + UUID.randomUUID(),
                 DELETE, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -154,7 +150,8 @@ public class DeleteCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteCorrespondentForAnInvalidCaseUUID() {
+    public void shouldReturnNotFoundWhenDeleteCorrespondentForAnInvalidCaseUUID() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CORRESPONDENT_UUID,
                 DELETE, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -163,7 +160,8 @@ public class DeleteCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteCorrespondentForAnInvalidStageUUID() {
+    public void shouldReturnNotFoundWhenDeleteCorrespondentForAnInvalidStageUUID() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + UUID.randomUUID() + "/correspondent/" + CORRESPONDENT_UUID,
                 DELETE, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -173,9 +171,7 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnOkWhenDeleteACorrespondentForACaseThatIsAllocatedToYouThenReturnForbiddenWhenTheCaseIsAllocatedToAnotherTeam() throws JsonProcessingException {
-
-        setupMockTeams("TEST", 5);
-
+        setupMockTeams("TEST", 5, 5);
         mockInfoService
                 .expect(requestTo("http://localhost:8085/team/44444444-2222-2222-2222-222222222221/contact"))
                 .andExpect(method(GET))
@@ -206,9 +202,7 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenDeleteACorrespondentForACaseThatIsNotAllocatedToYouThenReturnOkWhenTheCaseIsAllocatedToYou() throws JsonProcessingException {
-
-        setupMockTeams("TEST", 5);
-
+        setupMockTeams("TEST", 5, 5);
         mockInfoService
                 .expect(requestTo("http://localhost:8085/user/4035d37f-9c1d-436e-99de-1607866634d4"))
                 .andExpect(method(GET))
@@ -237,8 +231,8 @@ public class DeleteCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnOKWhenDeleteCorrespondentsAndNotFoundWhenDeleteDameCorrespondentForValidCaseWithCaseAllocatedToYou() {
-
+    public void shouldReturnOKWhenDeleteCorrespondentsAndNotFoundWhenDeleteDameCorrespondentForValidCaseWithCaseAllocatedToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 4);
         Correspondent correspondentBefore = correspondentRepository.findByUUID(CASE_UUID1, CORRESPONDENT_UUID);
 
         ResponseEntity<String> result1 = testRestTemplate.exchange(
@@ -257,8 +251,8 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnOkWhenCaseIsDeletedAndThenNotFoundDeleteCorrespondent() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 4);
         Correspondent correspondentBefore = correspondentRepository.findByUUID(CASE_UUID1, CORRESPONDENT_UUID);
-        setupMockTeams("TEST", 5);
         ResponseEntity<String> result1 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/true", DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
@@ -284,7 +278,7 @@ public class DeleteCorrespondentIntegrationTest {
         return headers;
     }
 
-    private void setupMockTeams(String caseType, int permission) throws JsonProcessingException {
+    private void setupMockTeams(String caseType, int permission, int noOfTimesCalled) throws JsonProcessingException {
         Set<TeamDto> teamDtos = new HashSet<>();
         Set<PermissionDto> permissionDtos = new HashSet<>();
         permissionDtos.add(new PermissionDto(caseType, AccessLevel.from(permission)));
@@ -292,11 +286,10 @@ public class DeleteCorrespondentIntegrationTest {
         teamDtos.add(teamDto);
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/team"))
+                .expect(ExpectedCount.times(noOfTimesCalled), requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
     }
-
 
     private String createBodyUpdateTeam() {
         return "{\n" +

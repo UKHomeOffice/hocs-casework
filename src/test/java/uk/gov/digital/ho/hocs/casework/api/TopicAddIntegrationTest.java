@@ -13,6 +13,7 @@ import org.springframework.http.*;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoTopic;
@@ -73,7 +74,7 @@ public class TopicAddIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
+                .expect(ExpectedCount.times(3), requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
         mockInfoService
@@ -89,8 +90,8 @@ public class TopicAddIntegrationTest {
     }
 
     @Test
-    public void shouldReturnOKWhenAddATopicForACaseThatIsAllocatedToYou() {
-
+    public void shouldReturnOKWhenAddATopicForACaseThatIsAllocatedToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID1).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -105,8 +106,8 @@ public class TopicAddIntegrationTest {
     }
 
     @Test
-    public void shouldReturnForbiddenWhenAddATopicForACaseThatIsNotAllocatedToYou() {
-
+    public void shouldReturnForbiddenWhenAddATopicForACaseThatIsNotAllocatedToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID2).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -121,8 +122,24 @@ public class TopicAddIntegrationTest {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenAddATopicForACaseYouAreAssignedTorWithNullBody() {
+    public void shouldAddATopicForACaseThatIsNotAllocatedToYouButUserCaseAdmin() throws JsonProcessingException {
+        setupMockTeams("TEST", 6, 2);
+        long before = topicRepository.findAllByCaseUUID(CASE_UUID2).size();
 
+        ResponseEntity<Void> result = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/topic",
+                POST, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
+
+        long after = topicRepository.findAllByCaseUUID(CASE_UUID2).size();
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        assertThat(after).isEqualTo(before + 1);
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenAddATopicForACaseYouAreAssignedTorWithNullBody() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID1).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -137,8 +154,8 @@ public class TopicAddIntegrationTest {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenAddATopicForACaseThatIsNotAssignedToYouButNoRequestBody() {
-
+    public void shouldReturnBadRequestWhenAddATopicForACaseThatIsNotAssignedToYouButNoRequestBody() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID2).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -153,7 +170,8 @@ public class TopicAddIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenAddATopicForAnInvalidCaseUUID() {
+    public void shouldReturnNotFoundWhenAddATopicForAnInvalidCaseUUID() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/topic",
                 POST, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
@@ -162,7 +180,8 @@ public class TopicAddIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenAddATopicForAnInvalidStageUUID() {
+    public void shouldReturnNotFoundWhenAddATopicForAnInvalidStageUUID() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + UUID.randomUUID() + "/topic", POST,
                 new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
@@ -171,7 +190,8 @@ public class TopicAddIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenAddATopicForAnInvalidCaseUUIDAndAnInvalidStageUUID() {
+    public void shouldReturnNotFoundWhenAddATopicForAnInvalidCaseUUIDAndAnInvalidStageUUID() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/stage/" + UUID.randomUUID() + "/topic",
                 POST, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
@@ -180,8 +200,8 @@ public class TopicAddIntegrationTest {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenAddATopicForACaseThatIsAllocatedToYouWithNullTopicUUID() {
-
+    public void shouldReturnBadRequestWhenAddATopicForACaseThatIsAllocatedToYouWithNullTopicUUID() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID1).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -197,8 +217,8 @@ public class TopicAddIntegrationTest {
 
 
     @Test
-    public void shouldReturnBadRequestWhenAddATopicForACaseThatIsAllocatedToYouWithEmptyTopicUUID() {
-
+    public void shouldReturnBadRequestWhenAddATopicForACaseThatIsAllocatedToYouWithEmptyTopicUUID() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID1).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -215,7 +235,7 @@ public class TopicAddIntegrationTest {
     @Test
     public void shouldReturnOkWhenAddATopicForACaseThatIsAllocatedToYouThenReturnForbiddenWhenTheCaseIsAllocatedToAnotherTeam() throws JsonProcessingException {
 
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", 5, 5);
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/team/44444444-2222-2222-2222-222222222221/contact"))
@@ -247,7 +267,7 @@ public class TopicAddIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenAddATopicForACaseThatIsNotAllocatedToYouThenReturnOkWhenTheCaseIsAllocatedToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", 5, 5);
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/user/4035d37f-9c1d-436e-99de-1607866634d4"))
@@ -289,7 +309,7 @@ public class TopicAddIntegrationTest {
         return headers;
     }
 
-    private void setupMockTeams(String caseType, int permission) throws JsonProcessingException {
+    private void setupMockTeams(String caseType, int permission, int noOfCalls) throws JsonProcessingException {
         Set<TeamDto> teamDtos = new HashSet<>();
         Set<PermissionDto> permissionDtos = new HashSet<>();
         permissionDtos.add(new PermissionDto(caseType, AccessLevel.from(permission)));
@@ -297,7 +317,7 @@ public class TopicAddIntegrationTest {
         teamDtos.add(teamDto);
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/team"))
+                .expect(ExpectedCount.times(noOfCalls), requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
     }
