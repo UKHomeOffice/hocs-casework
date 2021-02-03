@@ -54,14 +54,26 @@ public class SecurityIntegrationTest {
     @Autowired
     ObjectMapper mapper;
 
-    @Before
-    public void setup() {
-        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
-    }
-
-
     @Test
     public void shouldGetCaseDataWhenInCaseTypeGroup() {
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
+        Map<String, String> caseSubData = Map.of("key", "value");
+
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
+        when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
+        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("MIN");
+
+        headers.add(RequestData.USER_ID_HEADER, userId);
+        headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
+        HttpEntity httpEntity = new HttpEntity(headers);
+        ResponseEntity<String> result = restTemplate.exchange(getBasePath() + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetCaseDataWhenInCaseTypeGroupIfCaseAdmin() {
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 6));
         Map<String, String> caseSubData = Map.of("key", "value");
 
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
@@ -78,7 +90,7 @@ public class SecurityIntegrationTest {
 
     @Test
     public void shouldGetCaseDataWhenNoAccessToCaseTypeInTeamPreviouslyAssignedToCase() {
-
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
         Map<String, String> caseSubData = new HashMap<>() {{
             put("key", "value");
         }};
@@ -98,6 +110,7 @@ public class SecurityIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenNotInCaseTypeAndNotInTeamPreviouslyAssignedToCase() {
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
         UUID caseUUID = UUID.randomUUID();
 
         when(caseDataService.getCaseTeams(caseUUID)).thenReturn(Set.of(UUID.randomUUID()));
@@ -112,6 +125,7 @@ public class SecurityIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenNotInCaseTypeGroup() {
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
         UUID caseUUID = UUID.randomUUID();
 
         when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
@@ -124,9 +138,49 @@ public class SecurityIntegrationTest {
     }
 
     @Test
+    public void shouldReturnForbiddenWhenNotInCaseTypeGroupEvenIfCaseAdmin() {
+
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("SOME_CASE_TYPE", 6));
+        Map<String, String> caseSubData = new HashMap<>() {{
+            put("key", "value");
+        }};
+
+        CaseData caseData = new CaseData(
+                new CaseDataType("SOME_OTHER_CASE_TYPE", "a1"),
+                123456L, caseSubData, mapper, LocalDate.now()
+        );
+
+        when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(UUID.randomUUID()));
+        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("SOME_OTHER_CASE_TYPE");
+
+        headers.add(RequestData.USER_ID_HEADER, userId);
+        headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
+        HttpEntity httpEntity = new HttpEntity(headers);
+        ResponseEntity result = restTemplate.exchange(getBasePath() + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
     public void shouldReturnNotFoundIfCaseUUIDNotFound() {
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
         UUID caseUUID = UUID.randomUUID();
 
+        when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
+
+        headers.add(RequestData.USER_ID_HEADER, userId);
+        headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
+        HttpEntity httpEntity = new HttpEntity(headers);
+        ResponseEntity result = restTemplate.exchange(getBasePath() + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void shouldReturnNotFoundIfCaseUUIDNotFoundWithAdminTeam() {
+        UUID caseUUID = UUID.randomUUID();
+
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 6));
         when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
         when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
 
