@@ -13,6 +13,7 @@ import org.springframework.http.*;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
@@ -76,7 +77,7 @@ public class UpdateCorrespondentIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
+                .expect(ExpectedCount.times(3), requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
     }
@@ -88,8 +89,8 @@ public class UpdateCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnOKWhenUpdateACorrespondentForACaseThatIsAllocatedToYou() {
-
+    public void shouldReturnOKWhenUpdateACorrespondentForACaseThatIsAllocatedToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CASE1_EXISTING_CORRESPONDENT_UUID,
                 PUT, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
@@ -103,7 +104,7 @@ public class UpdateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenUpdateACorrespondentForACaseThatIsNotAllocatedToYou() throws JsonProcessingException {
-
+        setupMockTeams("TEST", 5, 2);
         Correspondent before = correspondentRepository.findByUUID(CASE_UUID2, CASE2_EXISTING_CORRESPONDENT_UUID);
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -117,9 +118,24 @@ public class UpdateCorrespondentIntegrationTest {
         assertThat(after).isEqualToComparingFieldByField(before);
     }
 
-    @Test
-    public void shouldReturnBadRequestWhenUpdateACorrespondentForACaseYouAreAssignedTorWithNullBody() {
+    public void shouldUpdateACorrespondentForACaseThatIsNotAllocatedToYouButUserCaseAdmin() throws JsonProcessingException {
+        setupMockTeams("TEST", 6, 2);
+        Correspondent before = correspondentRepository.findByUUID(CASE_UUID2, CASE2_EXISTING_CORRESPONDENT_UUID);
 
+        ResponseEntity<Void> result = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_UUID2 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/correspondent/" + CASE2_EXISTING_CORRESPONDENT_UUID,
+                PUT, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
+
+        Correspondent after = correspondentRepository.findByUUID(CASE_UUID2, CASE2_EXISTING_CORRESPONDENT_UUID);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        assertThat(after).isNotSameAs(before);
+    }
+
+    @Test
+    public void shouldReturnBadRequestWhenUpdateACorrespondentForACaseYouAreAssignedTorWithNullBody() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 1);
         Correspondent before = correspondentRepository.findByUUID(CASE_UUID1, CASE1_EXISTING_CORRESPONDENT_UUID);
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -134,8 +150,8 @@ public class UpdateCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenUpdateACorrespondentForACaseThatIsNotAssignedToYouButNoRequestBody() {
-
+    public void shouldReturnBadRequestWhenUpdateACorrespondentForACaseThatIsNotAssignedToYouButNoRequestBody() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 1);
         Correspondent before = correspondentRepository.findByUUID(CASE_UUID2, CASE2_EXISTING_CORRESPONDENT_UUID);
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -150,7 +166,8 @@ public class UpdateCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenUpdateACorrespondentForAnInvalidCaseUUID() {
+    public void shouldReturnNotFoundWhenUpdateACorrespondentForAnInvalidCaseUUID() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CASE2_EXISTING_CORRESPONDENT_UUID,
                 PUT, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
@@ -159,7 +176,8 @@ public class UpdateCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenUpdateACorrespondentForAnInvalidStageUUID() {
+    public void shouldReturnNotFoundWhenUpdateACorrespondentForAnInvalidStageUUID() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + UUID.randomUUID() + "/correspondent/" + CASE2_EXISTING_CORRESPONDENT_UUID,
                 PUT, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
@@ -168,7 +186,8 @@ public class UpdateCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenUpdateACorrespondentForAnInvalidCaseUUIDAndAnInvalidStageUUID() {
+    public void shouldReturnNotFoundWhenUpdateACorrespondentForAnInvalidCaseUUIDAndAnInvalidStageUUID() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/stage/" + UUID.randomUUID() + "/correspondent/" + CASE2_EXISTING_CORRESPONDENT_UUID,
                 PUT, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
@@ -177,8 +196,8 @@ public class UpdateCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenUpdateACorrespondentForACaseThatIsAllocatedToYouWithNullFullName() {
-
+    public void shouldReturnBadRequestWhenUpdateACorrespondentForACaseThatIsAllocatedToYouWithNullFullName() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 1);
         Correspondent before = correspondentRepository.findByUUID(CASE_UUID1, CASE1_EXISTING_CORRESPONDENT_UUID);
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -193,8 +212,8 @@ public class UpdateCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnBadRequestWhenUpdateACorrespondentForACaseThatIsAllocatedToYouWithEmptyFullName() {
-
+    public void shouldReturnBadRequestWhenUpdateACorrespondentForACaseThatIsAllocatedToYouWithEmptyFullName() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 1);
         Correspondent before = correspondentRepository.findByUUID(CASE_UUID1, CASE1_EXISTING_CORRESPONDENT_UUID);
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -211,7 +230,7 @@ public class UpdateCorrespondentIntegrationTest {
     @Test
     public void shouldReturnOkWhenUpdateACorrespondentForACaseThatIsAllocatedToYouThenReturnForbiddenWhenTheCaseIsAllocatedToAnotherTeam() throws JsonProcessingException {
 
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", 5, 5);
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/team/44444444-2222-2222-2222-222222222221/contact"))
@@ -239,7 +258,7 @@ public class UpdateCorrespondentIntegrationTest {
     @Test
     public void shouldReturnForbiddenWhenCreateACorrespondentForACaseThatIsNotAllocatedToYouThenReturnOkWhenTheCaseIsAllocatedToYou() throws JsonProcessingException {
 
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", 5, 5);
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/user/4035d37f-9c1d-436e-99de-1607866634d4"))
@@ -276,7 +295,7 @@ public class UpdateCorrespondentIntegrationTest {
         return headers;
     }
 
-    private void setupMockTeams(String caseType, int permission) throws JsonProcessingException {
+    private void setupMockTeams(String caseType, int permission, int noOfCalls) throws JsonProcessingException {
         Set<TeamDto> teamDtos = new HashSet<>();
         Set<PermissionDto> permissionDtos = new HashSet<>();
         permissionDtos.add(new PermissionDto(caseType, AccessLevel.from(permission)));
@@ -284,7 +303,7 @@ public class UpdateCorrespondentIntegrationTest {
         teamDtos.add(teamDto);
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/team"))
+                .expect(ExpectedCount.times(noOfCalls), requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
     }

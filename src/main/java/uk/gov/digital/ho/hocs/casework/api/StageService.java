@@ -255,7 +255,8 @@ public class StageService {
             log.warn("No teams - Returning 0 Stages", value(EVENT, TEAMS_STAGE_LIST_EMPTY));
             return new HashSet<>(0);
         } else {
-            Set<Stage> stages = stageRepository.findAllActiveByTeamUUIDIn(teams);
+            Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
+            Set<Stage> stages = stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
             updatePriority(stages);
             updateDaysElapsed(stages);
             log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));

@@ -14,6 +14,7 @@ import org.springframework.http.*;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditResponse;
@@ -74,19 +75,11 @@ public class TopicDeleteIntegrationTest {
     public void setup() throws IOException {
         mockInfoService = buildMockService(restTemplate);
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType"))
+                .expect(ExpectedCount.times(2), requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
+                .expect(ExpectedCount.times(3), requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
 
@@ -104,8 +97,8 @@ public class TopicDeleteIntegrationTest {
     }
 
     @Test
-    public void shouldReturnOKWhenDeleteTopicForValidCaseWithCaseAllocatedToYou() {
-
+    public void shouldReturnOKWhenDeleteTopicForValidCaseWithCaseAllocatedToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         Topic topicBefore = topicRepository.findByUUID(CASE_UUID1, TOPIC_UUID);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
@@ -118,8 +111,8 @@ public class TopicDeleteIntegrationTest {
     }
 
     @Test
-    public void shouldReturnForbiddenWhenDeleteTopicsForValidCaseWithCaseNotAllocatedToYou() {
-
+    public void shouldReturnForbiddenWhenDeleteTopicsForValidCaseWithCaseNotAllocatedToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID2).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -134,7 +127,8 @@ public class TopicDeleteIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteTopicForAnInvalidTopicUUIDCaseAllocateToYou() {
+    public void shouldReturnNotFoundWhenDeleteTopicForAnInvalidTopicUUIDCaseAllocateToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/topic/" + UUID.randomUUID(),
                 DELETE, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -143,7 +137,8 @@ public class TopicDeleteIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteTopicForAnInvalidTopicUUIDCaseNoAllocateToYou() {
+    public void shouldReturnNotFoundWhenDeleteTopicForAnInvalidTopicUUIDCaseNoAllocateToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/topic/" + UUID.randomUUID(),
                 DELETE, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -152,7 +147,8 @@ public class TopicDeleteIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteTopicForAnInvalidCaseUUID() {
+    public void shouldReturnNotFoundWhenDeleteTopicForAnInvalidCaseUUID() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/topic/" + TOPIC_UUID,
                 DELETE, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -161,7 +157,8 @@ public class TopicDeleteIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteTopicForAnInvalidStageUUID() {
+    public void shouldReturnNotFoundWhenDeleteTopicForAnInvalidStageUUID() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + UUID.randomUUID() + "/topic/" + TOPIC_UUID,
                 DELETE, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -172,7 +169,7 @@ public class TopicDeleteIntegrationTest {
     @Test
     public void shouldReturnOkWhenDeleteATopicForACaseThatIsAllocatedToYouThenReturnForbiddenWhenTheCaseIsAllocatedToAnotherTeam() throws JsonProcessingException {
 
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", 5, 5);
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/team/44444444-2222-2222-2222-222222222221/contact"))
@@ -205,7 +202,7 @@ public class TopicDeleteIntegrationTest {
     @Test
     public void shouldReturnForbiddenWhenDeleteATopicForACaseThatIsNotAllocatedToYouThenReturnOkWhenTheCaseIsAllocatedToYou() throws JsonProcessingException {
 
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", 5, 5);
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/user/4035d37f-9c1d-436e-99de-1607866634d4"))
@@ -235,8 +232,8 @@ public class TopicDeleteIntegrationTest {
     }
 
     @Test
-    public void shouldReturnOKWhenDeleteTopicsAndNotFoundWhenDeleteSameTopicForValidCaseWithCaseAllocatedToYou() {
-
+    public void shouldReturnOKWhenDeleteTopicsAndNotFoundWhenDeleteSameTopicForValidCaseWithCaseAllocatedToYou() throws JsonProcessingException {
+        setupMockTeams("TEST", 5, 4);
         Topic topicBefore = topicRepository.findByUUID(CASE_UUID1, TOPIC_UUID);
 
         ResponseEntity<String> result1 = testRestTemplate.exchange(
@@ -256,7 +253,7 @@ public class TopicDeleteIntegrationTest {
     @Test
     public void shouldReturnOkWhenCaseIsDeletedAndThenNotFoundDeleteTopic() throws JsonProcessingException {
 
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", 5, 3);
 
         Topic topicBefore = topicRepository.findByUUID(CASE_UUID1, TOPIC_UUID);
 
@@ -285,7 +282,7 @@ public class TopicDeleteIntegrationTest {
         return headers;
     }
 
-    private void setupMockTeams(String caseType, int permission) throws JsonProcessingException {
+    private void setupMockTeams(String caseType, int permission, int noOfCalls) throws JsonProcessingException {
         Set<TeamDto> teamDtos = new HashSet<>();
         Set<PermissionDto> permissionDtos = new HashSet<>();
         permissionDtos.add(new PermissionDto(caseType, AccessLevel.from(permission)));
@@ -293,7 +290,7 @@ public class TopicDeleteIntegrationTest {
         teamDtos.add(teamDto);
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/team"))
+                .expect(ExpectedCount.times(noOfCalls), requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
     }
