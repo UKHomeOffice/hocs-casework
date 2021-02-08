@@ -256,6 +256,9 @@ public class StageService {
             return new HashSet<>(0);
         } else {
             Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
+            if (caseTypes.isEmpty()) {
+                caseTypes.add("");
+            }
             Set<Stage> stages = stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
             updatePriority(stages);
             updateDaysElapsed(stages);
