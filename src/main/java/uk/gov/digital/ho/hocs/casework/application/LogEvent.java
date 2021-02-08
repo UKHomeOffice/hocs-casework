@@ -117,5 +117,6 @@ public enum LogEvent {
     ALL_CASE_TOPICS_RETRIEVED;
     public static final String EVENT = "event_id";
     public static final String EXCEPTION = "exception";
+    public static final String STACKTRACE = "stacktrace";
 
 }

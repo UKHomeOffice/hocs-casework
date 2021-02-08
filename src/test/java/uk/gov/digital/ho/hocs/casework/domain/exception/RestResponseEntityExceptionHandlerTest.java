@@ -171,11 +171,16 @@ public class RestResponseEntityExceptionHandlerTest {
     public void handleHttpMessageUncaughtExceptionLogMessage(){
         String message = "Test Error message";
 
-        Exception exception = new Exception(message);
+        Exception exception =
+                new Exception(message);
 
         restResponseEntityExceptionHandler.handle(exception);
 
-        assertEquals(logMessages.list.get(0).getMessage(), "An error occurred");
+        // message format is correct
+        assertEquals(logMessages.list.get(0).getMessage(), "Exception: {}, Event: {}, Stack: {}");
+
+        // beginning of stack trace is present
+        assertThat(logMessages.list.get(0).getFormattedMessage(), containsString("Stack: java.lang.Exception: Test Error message"));
     }
 }
 
