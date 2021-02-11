@@ -42,7 +42,7 @@ pipeline:
       - docker push quay.io/ukhomeofficedigital/hocs-casework:build-$${DRONE_BUILD_NUMBER}
       - docker push quay.io/ukhomeofficedigital/hocs-casework:branch-$${BRANCH_NAME_TAGFRIENDLY}
     when:
-      branch: [master, epic/*] # this should be any branch you might reasonably want deployed somewhere
+      branch: [master, epic/*, hotfix/*] # this should be any branch you might reasonably want deployed somewhere
       event: push
 
   install-docker-image-latest:
