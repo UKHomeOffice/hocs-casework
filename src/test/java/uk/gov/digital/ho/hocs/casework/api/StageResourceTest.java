@@ -148,7 +148,7 @@ public class StageResourceTest {
 
         when(stageService.getActiveStagesByCaseUUID(caseUUID)).thenReturn(stages);
 
-        ResponseEntity<GetStagesResponse> response =  stageResource.getActiveStagesByCase(caseUUID);
+        ResponseEntity<GetStagesResponse> response = stageResource.getActiveStagesByCase(caseUUID);
 
         verify(stageService).getActiveStagesByCaseUUID(caseUUID);
 
