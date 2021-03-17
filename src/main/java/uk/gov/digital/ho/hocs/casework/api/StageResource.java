@@ -155,6 +155,12 @@ class StageResource {
         return ResponseEntity.ok(GetStagesResponse.from(stages));
     }
 
+    @GetMapping(value = "/active-stage/case/{caseUUID}")
+    ResponseEntity<GetStagesResponse> getActiveStagesByCase(@PathVariable UUID caseUUID) {
+        Set<Stage> stages = stageService.getActiveStagesByCaseUUID(caseUUID);
+        return ResponseEntity.ok(GetStagesResponse.from(stages));
+    }
+
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/withdraw")
     ResponseEntity withdrawCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody WithdrawCaseRequest request) {

@@ -142,6 +142,23 @@ public class StageResourceTest {
     }
 
     @Test
+    public void shouldGetActiveStagesCaseUUID() {
+        Set<Stage> stages = new HashSet<>();
+        UUID caseUUID = UUID.randomUUID();
+
+        when(stageService.getActiveStagesByCaseUUID(caseUUID)).thenReturn(stages);
+
+        ResponseEntity<GetStagesResponse> response = stageResource.getActiveStagesByCase(caseUUID);
+
+        verify(stageService).getActiveStagesByCaseUUID(caseUUID);
+
+        checkNoMoreInteractions();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     public void shouldGetActiveStages() {
 
         Set<Stage> stages = new HashSet<>();
