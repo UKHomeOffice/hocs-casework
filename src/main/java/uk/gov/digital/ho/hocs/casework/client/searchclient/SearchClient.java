@@ -23,9 +23,9 @@ public class SearchClient {
 
     @Autowired
     public SearchClient(RestHelper restHelper,
-                        @Value("${hocs.search-service}") String infoService) {
+                        @Value("${hocs.search-service}") String searchService) {
         this.restHelper = restHelper;
-        this.serviceBaseURL = infoService;
+        this.serviceBaseURL = searchService;
     }
 
     public Set<UUID> search(SearchRequest searchRequest) {

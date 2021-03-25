@@ -48,6 +48,9 @@ public class SearchRequest {
     @JsonProperty("topic")
     private String topic;
 
+    @JsonProperty("poTeamUuid")
+    private String poTeamUuid;
+
     @JsonProperty("data")
     private Map<String, String> data;
 
