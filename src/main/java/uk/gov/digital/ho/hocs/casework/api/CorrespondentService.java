@@ -80,6 +80,15 @@ public class CorrespondentService {
         return correspondentTypes;
     }
 
+    Set<CorrespondentTypeDto> getSelectableCorrespondentTypes(UUID caseUUID){
+        log.debug("Getting all Selectable Correspondent Types for Case: {}", caseUUID);
+        String caseDataType = caseDataRepository.getCaseType(caseUUID);
+        GetCorrespondentTypeResponse correspondentType = infoClient.getSelectableCorrespondentType(caseDataType);
+        Set<CorrespondentTypeDto> correspondentTypes = correspondentType.getCorrespondentTypes();
+        log.info("Got {} Selectable Correspondent Types for Case: {}", correspondentType.getCorrespondentTypes().size(), caseUUID, value(EVENT, CORRESPONDENTS_RETRIEVED));
+        return correspondentTypes;
+    }
+
     void createCorrespondent(UUID caseUUID, UUID stageUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference, String externalKey){
         log.debug("Creating Correspondent of Type: {} for Case: {}", correspondentType, caseUUID);
         Correspondent correspondent = new Correspondent(caseUUID, correspondentType, fullname, address, telephone, email, reference, externalKey);

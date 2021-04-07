@@ -63,6 +63,13 @@ public class CorrespondentResource {
         return ResponseEntity.ok(GetCorrespondentTypeResponse.from(correspondentTypes));
     }
 
+    @Authorised(accessLevel = AccessLevel.READ)
+    @GetMapping(value = "/case/{caseUUID}/correspondentType/selectable")
+    ResponseEntity<GetCorrespondentTypeResponse> getSelectableCorrespondentTypes(@PathVariable UUID caseUUID) {
+        Set<CorrespondentTypeDto> correspondentTypes = correspondentService.getSelectableCorrespondentTypes(caseUUID);
+        return ResponseEntity.ok(GetCorrespondentTypeResponse.from(correspondentTypes));
+    }
+
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @DeleteMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent/{correspondentUUID}")
     ResponseEntity<GetCorrespondentResponse> deleteCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID ,@PathVariable UUID correspondentUUID) {
