@@ -55,6 +55,13 @@ public class InfoClient {
         return correspondentType;
     }
 
+    @Cacheable(value = "InfoClientGetCorrespondentType", unless = "#result == null", key = "#caseType")
+    public GetCorrespondentTypeResponse getSelectableCorrespondentType(String caseType) {
+        GetCorrespondentTypeResponse correspondentType = restHelper.get(serviceBaseURL, String.format("/correspondentType/%s/selectable", caseType), GetCorrespondentTypeResponse.class);
+        log.info("Got CorrespondentTypes {}", correspondentType.getCorrespondentTypes().size(), value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
+        return correspondentType;
+    }
+
     @Cacheable(value = "InfoClientGetStandardLine", unless = "#result == null", key = "#topicUUID")
     public GetStandardLineResponse getStandardLine(UUID topicUUID) {
         GetStandardLineResponse standardLine = restHelper.get(serviceBaseURL, String.format("/topic/%s/standardLine", topicUUID), GetStandardLineResponse.class);
