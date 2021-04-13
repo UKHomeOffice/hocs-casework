@@ -72,6 +72,9 @@ dependencies {
     implementation('net.logstash.logback:logstash-logback-encoder:5.3')
     implementation('uk.gov.service.notify:notifications-java-client:3.12.0-RELEASE')
 
+    implementation('io.springfox:springfox-swagger2:2.9.2')
+    implementation('io.springfox:springfox-swagger-ui:2.9.2')
+
     runtimeOnly('org.postgresql:postgresql')
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.6'
