@@ -48,6 +48,13 @@ class CaseDataResource {
         return ResponseEntity.ok(GetCaseResponse.from(caseData, full.orElse(false)));
     }
 
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
+    @GetMapping(value = "/case/{caseUUID}/type")
+    ResponseEntity<GetCaseTypeResponse> getCaseType(@PathVariable UUID caseUUID) {
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        return ResponseEntity.ok(GetCaseTypeResponse.from(caseData));
+    }
+
     @Authorised(accessLevel = AccessLevel.OWNER)
     @DeleteMapping(value = "/case/{caseUUID}/{deleted}")
     ResponseEntity deleteCase(@PathVariable UUID caseUUID, @PathVariable Boolean deleted) {
