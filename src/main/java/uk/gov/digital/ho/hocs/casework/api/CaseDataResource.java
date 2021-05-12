@@ -75,7 +75,7 @@ class CaseDataResource {
         return ResponseEntity.ok(totals);
     }
 
-    @Allocated(allocatedTo = AllocationLevel.USER)
+    @Authorised(accessLevel = AccessLevel.WRITE)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data")
     ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {
         caseDataService.updateCaseData(caseUUID, stageUUID, request.getData());
