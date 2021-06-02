@@ -114,7 +114,9 @@ public enum LogEvent {
     NOTIFY_EMAIL_FAILED,
     TOPIC_STANDARD_LINE_CACHE_INVALIDATED,
     CASE_TYPE_TEMPLATE_CACHE_INVALIDATED,
-    ALL_CASE_TOPICS_RETRIEVED;
+    ALL_CASE_TOPICS_RETRIEVED,
+    EXTENSION_APPLIED,
+    EXTENSION_APPLY_FAILED;
     public static final String EVENT = "event_id";
     public static final String EXCEPTION = "exception";
     public static final String STACKTRACE = "stacktrace";

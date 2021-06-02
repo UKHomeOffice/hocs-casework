@@ -102,6 +102,15 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
 
     @Getter
     @Setter
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JoinTable(name = "case_deadline_extension",
+            joinColumns = @JoinColumn(name = "case_uuid", referencedColumnName = "uuid"),
+            inverseJoinColumns = @JoinColumn(name = "type",
+                    referencedColumnName = "type"))
+    private Set<CaseDeadlineExtensionType> deadlineExtensions;
+
+    @Getter
+    @Setter
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
     @Where(clause = "deleted = false")
