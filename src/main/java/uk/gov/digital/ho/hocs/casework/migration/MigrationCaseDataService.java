@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseReferenceGenerator;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDeadlineExtensionTypeRepository;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -32,8 +33,8 @@ public class MigrationCaseDataService extends CaseDataService {
 
     @Autowired
     public MigrationCaseDataService(CaseDataRepository caseDataRepository, MigrationStageRepository migrationStageRepository, InfoClient infoClient,
-                                    ObjectMapper objectMapper, AuditClient auditClient) {
-        super(caseDataRepository, infoClient, objectMapper, auditClient);
+                                    ObjectMapper objectMapper, AuditClient auditClient, CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository) {
+        super(caseDataRepository, infoClient, objectMapper, auditClient, caseDeadlineExtensionTypeRepository);
         this.migrationStageRepository = migrationStageRepository;
     }
 

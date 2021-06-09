@@ -27,13 +27,15 @@ public class CaseDataResourceTest {
     private final UUID uuid = UUID.randomUUID();
     @Mock
     private CaseDataService caseDataService;
+    @Mock
+    private CaseNoteService caseNoteService;
     private CaseDataResource caseDataResource;
     private ObjectMapper objectMapper = new ObjectMapper();
     private LocalDate caseReceived = LocalDate.now();
 
     @Before
     public void setUp() {
-        caseDataResource = new CaseDataResource(caseDataService);
+        caseDataResource = new CaseDataResource(caseDataService, caseNoteService);
     }
 
     @Test
@@ -106,7 +108,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCaseSummary() {
 
-        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary(null, null, null, null, null, null, null));
+        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary("type", null, null, null, null, null, null, null, Collections.emptyMap()));
 
         ResponseEntity response = caseDataResource.getCaseSummary(uuid);
 
@@ -310,5 +312,27 @@ public class CaseDataResourceTest {
 
     }
 
+    @Test
+    public void shouldApplyExtension() {
+        UUID caseUUID = UUID.randomUUID();
+        UUID stageUUID = UUID.randomUUID();
+
+        String testType = "TEST_TYPE";
+        String reference = "CASE/123456/789";;
+        String reason = "extension reason";
+
+        when(caseDataService.getCaseRef(caseUUID)).thenReturn(reference);
+
+        ApplyExtensionRequest applyExtensionRequest = new ApplyExtensionRequest(testType, reason);
+        ResponseEntity<GetCaseReferenceResponse> response = caseDataResource.applyExtension(caseUUID, stageUUID, applyExtensionRequest);
+
+        assertThat(response.getBody().getReference()).isEqualTo(reference);
+
+        verify(caseNoteService).createCaseNote(caseUUID, "EXTENSION", reason);
+        verify(caseDataService).applyExtension(caseUUID, stageUUID, applyExtensionRequest.getType());
+        verify(caseDataService).getCaseRef(caseUUID);
+
+        verifyNoMoreInteractions(caseDataService, caseNoteService);
+    }
 }
 

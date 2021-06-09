@@ -11,6 +11,8 @@ import java.util.Set;
 @Getter
 public class CaseSummary {
 
+    String type;
+
     LocalDate createdDate;
 
     LocalDate caseDeadline;
@@ -24,4 +26,6 @@ public class CaseSummary {
     Topic primaryTopic;
 
     Set<ActiveStage> activeStages;
+
+    Map<String, Integer> deadLineExtensions;
 }
