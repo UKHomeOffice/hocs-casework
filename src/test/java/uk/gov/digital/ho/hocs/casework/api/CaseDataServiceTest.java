@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.RestClientException;
@@ -19,11 +21,9 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
-import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDeadlineExtensionTypeRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -40,7 +40,6 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE
 public class CaseDataServiceTest {
 
     private static final long caseID = 12345L;
-    private static final String OFFLINE_QA_USER = "OfflineQaUser";
     
     private final CaseDataType caseType = new CaseDataType("MIN", "a1");
     private final UUID caseUUID = UUID.randomUUID();
@@ -64,11 +63,20 @@ public class CaseDataServiceTest {
     @Mock
     private AuditClient auditClient;
 
+    @Mock
+    private CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository;
+
+    private LocalDate caseDeadlineExtended = LocalDate.now().plusDays(45);
+    private LocalDate caseReceived = LocalDate.now();
+
+    @Captor
+    ArgumentCaptor<CaseData> caseDataCaptor;
+
     @Before
     public void setUp() {
         configuration = new SpringConfiguration();
         objectMapper = configuration.initialiseObjectMapper();
-        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper, auditClient);
+        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper, auditClient, caseDeadlineExtensionTypeRepository);
     }
 
     @Test
@@ -826,6 +834,45 @@ public class CaseDataServiceTest {
 
         caseDataService.getCaseDataByReference(testCaseRef);
 
+    }
+
+    @Test
+    public void shouldApplyExtension() {
+        final String existingExtensionType = "EXISTING_EXTENSION";
+        final String additionalExtensionType = "ADDITIONAL_EXTENSION";
+
+        final CaseDeadlineExtensionType existingExtension =
+                new CaseDeadlineExtensionType(existingExtensionType, 10);
+
+        final CaseDeadlineExtensionType additionalExtension =
+                new CaseDeadlineExtensionType(additionalExtensionType, 15);
+
+        final CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        final Set<CaseDeadlineExtensionType> initialDeadlineExtensions = new HashSet<>();
+        initialDeadlineExtensions.add(existingExtension);
+
+        caseData.setDeadlineExtensions(initialDeadlineExtensions);
+
+        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
+        when(caseDeadlineExtensionTypeRepository.findById(additionalExtensionType))
+                .thenReturn(Optional.of(additionalExtension));
+
+        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25))
+                .thenReturn(caseDeadlineExtended);
+
+        caseDataService.applyExtension(caseUUID, stageUUID, "ADDITIONAL_EXTENSION");
+
+        verify(caseDataRepository).findByUuid(caseUUID);
+        verify(infoClient).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25);
+        verify(caseDataRepository).save(caseDataCaptor.capture());
+        verify(auditClient).updateCaseAudit(caseData, stageUUID);
+
+        Set<CaseDeadlineExtensionType> deadlineExtensions = caseDataCaptor.getValue().getDeadlineExtensions();
+
+        assertThat(deadlineExtensions.size()).isEqualTo(2);
+        assertThat(deadlineExtensions.containsAll(List.of(existingExtension, additionalExtension))).isTrue();
+
+        checkNoMoreInteractions();
     }
 
     private void checkNoMoreInteractions(){

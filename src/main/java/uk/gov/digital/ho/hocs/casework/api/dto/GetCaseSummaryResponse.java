@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class GetCaseSummaryResponse {
+    @JsonProperty("type")
+    String type;
 
     @JsonProperty("caseCreated")
     LocalDate caseCreated;
@@ -36,7 +38,8 @@ public class GetCaseSummaryResponse {
     @JsonProperty("activeStages")
     Set<ActiveStageDto> activeStages;
 
-
+    @JsonProperty("deadLineExtensions")
+    Map<String, Integer> deadLineExtensions;
 
     public static GetCaseSummaryResponse from(CaseSummary caseSummary) {
         GetCorrespondentResponse getCorrespondentResponse = null;
@@ -59,6 +62,15 @@ public class GetCaseSummaryResponse {
             additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream().filter(field -> !StringUtils.isEmpty(field.getValue())).map(AdditionalFieldDto::from).collect(Collectors.toList()));
         }
         additionalFieldDtos.sort(Comparator.comparing(AdditionalFieldDto::getLabel));
-        return new GetCaseSummaryResponse(caseSummary.getCreatedDate(), caseSummary.getCaseDeadline(), caseSummary.getStageDeadlines(), additionalFieldDtos, getCorrespondentResponse, getTopicsResponse, activeStageDtos);
+        return new GetCaseSummaryResponse(
+                caseSummary.getType(),
+                caseSummary.getCreatedDate(),
+                caseSummary.getCaseDeadline(),
+                caseSummary.getStageDeadlines(),
+                additionalFieldDtos,
+                getCorrespondentResponse,
+                getTopicsResponse,
+                activeStageDtos,
+                caseSummary.getDeadLineExtensions());
     }
 }

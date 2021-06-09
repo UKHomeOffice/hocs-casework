@@ -20,6 +20,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDeadlineExtensionTypeRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -50,14 +51,17 @@ public class CaseDataService {
     protected final AuditClient auditClient;
     protected final ObjectMapper objectMapper;
     protected final InfoClient infoClient;
+    protected final CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository;
 
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository, InfoClient infoClient,
-                           ObjectMapper objectMapper, AuditClient auditClient) {
+                           ObjectMapper objectMapper, AuditClient auditClient, CaseDeadlineExtensionTypeRepository
+                           caseDeadlineExtensionTypeRepository) {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
         this.objectMapper = objectMapper;
+        this.caseDeadlineExtensionTypeRepository = caseDeadlineExtensionTypeRepository;
     }
 
     public static final List<String> TIMELINE_EVENTS = List.of(
@@ -191,6 +195,34 @@ public class CaseDataService {
             log.error("Failed to calculate totals for Case: {}", caseUUID, value(EVENT, CALCULATED_TOTALS), value(EXCEPTION, e));
         }
         return newDataMap;
+    }
+
+    public void applyExtension(UUID caseUUID, UUID stageUUID, String type) {
+        log.debug("Applying extension for Case: {} Extension: {}", caseUUID, type);
+        CaseData caseData = getCaseData(caseUUID);
+
+        CaseDeadlineExtensionType caseDeadlineExtensionType =
+                caseDeadlineExtensionTypeRepository.findById(type).orElseThrow();
+
+        log.debug("Got extension type: {}", caseDeadlineExtensionType.getType());
+
+        caseData.getDeadlineExtensions().add(caseDeadlineExtensionType);
+
+        int extensionDays = calculateExtensionDays(caseData.getDeadlineExtensions());
+
+        LocalDate deadline = infoClient.getCaseDeadline(
+                caseData.getType(),
+                caseData.getDateReceived(),
+                0,
+                extensionDays);
+
+        caseData.setCaseDeadline(deadline);
+        caseDataRepository.save(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
+    }
+
+    private static int calculateExtensionDays(Set<CaseDeadlineExtensionType> caseDeadlineExtensionTypes) {
+        return caseDeadlineExtensionTypes.stream().map(e -> e.getWorkingDays()).reduce(0, Integer::sum);
     }
 
     protected void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
@@ -395,14 +427,20 @@ public class CaseDataService {
 
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
 
+
+        Map<String, Integer> caseDeadlineExtensions = Objects.isNull(caseData.getDeadlineExtensions()) ? Collections.emptyMap() :
+                caseData.getDeadlineExtensions().stream().collect(Collectors.toMap(e -> e.getType(), e -> e.getWorkingDays()));
+
         CaseSummary caseSummary = new CaseSummary(
+                caseData.getType(),
                 caseData.getCreated().toLocalDate(),
                 caseData.getCaseDeadline(),
                 stageDeadlines,
                 additionalFields,
                 caseData.getPrimaryCorrespondent(),
                 caseData.getPrimaryTopic(),
-                caseData.getActiveStages());
+                caseData.getActiveStages(),
+                caseDeadlineExtensions);
         auditClient.viewCaseSummaryAudit(caseData);
         return caseSummary;
     }

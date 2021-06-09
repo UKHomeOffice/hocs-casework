@@ -36,7 +36,7 @@ public class GetCaseSummaryResponseTest {
         additionalFields.add(field2);
         additionalFields.add(field4);
 
-        CaseSummary caseSummary = new CaseSummary(caseCreated, caseDeadline, stageDeadlines, additionalFields, null, null,null);
+        CaseSummary caseSummary = new CaseSummary("type", caseCreated, caseDeadline, stageDeadlines, additionalFields, null, null,null, null);
 
         GetCaseSummaryResponse getCaseSummaryResponse = GetCaseSummaryResponse.from(caseSummary);
 

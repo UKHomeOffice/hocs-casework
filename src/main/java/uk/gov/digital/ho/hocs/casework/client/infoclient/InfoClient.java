@@ -107,9 +107,14 @@ public class InfoClient {
         return response;
     }
 
-    @Cacheable(value = "InfoClientGetCaseDeadline", unless = "#result == null", key = "{#caseType, #received.toString(), #days.toString() }")
     public LocalDate getCaseDeadline(String caseType, LocalDate received, int days) {
         LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s&days=%s", caseType, received, days), LocalDate.class);
+        log.info("Got {} as deadline for CaseType {} and Date {} and Days {}", response.toString(), caseType, received, days, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
+        return response;
+    }
+
+    public LocalDate getCaseDeadline(String caseType, LocalDate received, int days, int extensionDays) {
+        LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s&days=%s&extensionDays=%s", caseType, received, days, extensionDays), LocalDate.class);
         log.info("Got {} as deadline for CaseType {} and Date {} and Days {}", response.toString(), caseType, received, days, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
         return response;
     }
