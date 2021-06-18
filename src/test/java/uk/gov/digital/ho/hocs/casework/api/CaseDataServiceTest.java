@@ -606,7 +606,6 @@ public class CaseDataServiceTest {
         // given
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
-        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0)).thenReturn(caseDeadlineWarning);
 
         // when
