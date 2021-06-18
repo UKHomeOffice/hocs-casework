@@ -251,6 +251,12 @@ public class CaseDataService {
     }
 
     private void updateStageDeadlines(CaseData caseData) {
+
+        if (caseData.getActiveStages() == null ) {
+            log.warn("Case uuid:{} supplied with null active stages", caseData.getUuid());
+            return;
+        }
+
         Map<String, String> dataMap = caseData.getDataMap(objectMapper);
         for (ActiveStage stage : caseData.getActiveStages()) {
             // Try and overwrite the deadlines with inputted values from the data map.

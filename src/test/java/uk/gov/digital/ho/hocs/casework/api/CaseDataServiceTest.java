@@ -44,7 +44,16 @@ public class CaseDataServiceTest {
     
     private final CaseDataType caseType = new CaseDataType("MIN", "a1");
     private final UUID caseUUID = UUID.randomUUID();
+    private final UUID stageUUID = UUID.randomUUID();
+    private final UUID primaryCorrespondentUUID = UUID.randomUUID();
     private final String caseRef = "TestRef";
+    private final LocalDate caseDeadline = LocalDate.now().plusDays(20);
+    private final LocalDate caseDeadlineWarning = LocalDate.now().plusDays(15);
+    private final LocalDate deadlineDate = LocalDate.now();
+
+    private CaseDataService caseDataService;
+    private ObjectMapper objectMapper;
+    private SpringConfiguration configuration;
 
     @Mock
     private CaseDataRepository caseDataRepository;
@@ -54,20 +63,6 @@ public class CaseDataServiceTest {
 
     @Mock
     private AuditClient auditClient;
-
-    private CaseDataService caseDataService;
-
-    private ObjectMapper objectMapper;
-
-    private LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
-    private LocalDate caseReceived = LocalDate.now();
-
-    private UUID primaryCorrespondentUUID = UUID.randomUUID();
-
-    private UUID stageUUID = UUID.randomUUID();
-
-    private SpringConfiguration configuration;
 
     @Before
     public void setUp() {
@@ -80,13 +75,13 @@ public class CaseDataServiceTest {
     public void shouldCreateCase() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0)).thenReturn(caseDeadline);
+        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), caseReceived);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
-        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0);
+        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
         verify(caseDataRepository, times(1)).save(caseData);
 
         verifyNoMoreInteractions(caseDataRepository);
@@ -96,13 +91,13 @@ public class CaseDataServiceTest {
     public void shouldCreateCaseWithValidParamsNullData() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0)).thenReturn(caseDeadline);
+        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayName(), null, caseReceived);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayName(), null, deadlineDate);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
-        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0);
+        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
         verify(caseDataRepository, times(1)).save(caseData);
 
         verifyNoMoreInteractions(caseDataRepository);
@@ -112,10 +107,10 @@ public class CaseDataServiceTest {
     public void shouldAuditCreateCase() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0)).thenReturn(caseDeadline);
+        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), caseReceived);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate);
 
         verify(auditClient, times(1)).createCaseAudit(caseData);
         verifyNoMoreInteractions(auditClient);
@@ -124,7 +119,7 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
 
-        caseDataService.createCase(null, new HashMap<>(), caseReceived);
+        caseDataService.createCase(null, new HashMap<>(), deadlineDate);
     }
 
     @Test()
@@ -133,7 +128,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         try {
-            caseDataService.createCase(null, new HashMap<>(), caseReceived);
+            caseDataService.createCase(null, new HashMap<>(), deadlineDate);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
@@ -161,7 +156,7 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldGetCaseTimeline()  {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         Set<CaseNote> caseNoteData = Set.of(
                 new CaseNote(caseUUID, "MANUAL", "case note 1", "a user"),
                 new CaseNote(caseUUID, "MANUAL", "case note 2", "a user"));
@@ -197,7 +192,7 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldGetCaseNotesOnlyTimelineOnAuditFailure()  {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         Set<CaseNote> caseNoteData = Set.of(
                 new CaseNote(caseUUID, "MANUAL", "case note 1", "a user"),
                 new CaseNote(caseUUID, "MANUAL", "case note 2", "a user"));
@@ -225,7 +220,7 @@ public class CaseDataServiceTest {
         data.put("Key1", "Value1");
         data.put("Key2", "Value2");
         data.put("Key3", "Value3");
-        CaseData caseData = new CaseData(caseType, caseID, data, objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, data, objectMapper, deadlineDate);
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         TeamDto teamDto = new TeamDto("Team", UUID.randomUUID(), true, null);
         when(infoClient.getTeamByStageAndText("stageType", "Value1_Value2_Value3")).thenReturn(teamDto);
@@ -242,7 +237,7 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldGetCaseTeams() throws JsonProcessingException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         UUID auditResponseUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.of(2019,1,1);
@@ -275,7 +270,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseSummaryWithValidParams() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
         Set<FieldDto> filterFields = new HashSet<>();
@@ -306,7 +301,7 @@ public class CaseDataServiceTest {
         Map<String, String> data = new HashMap<>();
         data.put("DCU_DTEN_COPY_NUMBER_TEN_DEADLINE", overrideDeadline.toString());
 
-        CaseData caseData = new CaseData(caseType, caseID, data, objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, data, objectMapper, deadlineDate);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
         Set<FieldDto> filterFields = new HashSet<>();
@@ -333,7 +328,7 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldAuditGetCaseSummary()  {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         Set<FieldDto> filterFields = new HashSet<>();
 
         Map<String, LocalDate> deadlines = Map.of(
@@ -352,7 +347,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseSummaryWithValidParamsPrimaryCorrespondentNull() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(null);
         Set<FieldDto> filterFields = new HashSet<>();
@@ -380,7 +375,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseSummaryWithValidParamsPrimaryCorrespondentException() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
         Set<FieldDto> filterFields = new HashSet<>();
@@ -423,7 +418,7 @@ public class CaseDataServiceTest {
             "UnfilteredField", "some value"
         );
 
-        CaseData caseData = new CaseData(caseType, caseID, additionalData, objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, additionalData, objectMapper, deadlineDate);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
 
@@ -448,7 +443,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseWithValidParams() throws ApplicationExceptions.EntityNotFoundException {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -505,7 +500,7 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldCalculateTotals() throws JsonProcessingException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         EntityTotalDto entityTotalDto = new EntityTotalDto(new HashMap(), new HashMap());
         EntityDto<EntityTotalDto> entityDto = new EntityDto<EntityTotalDto>("simpleName", entityTotalDto);
@@ -524,7 +519,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldUpdateCase() throws JsonProcessingException {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -538,7 +533,7 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldAuditUpdateCase() throws ApplicationExceptions.EntityCreationException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -551,7 +546,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldUpdateCaseNullData() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
 
         caseDataService.updateCaseData(caseData.getUuid(), stageUUID, null);
 
@@ -578,10 +573,61 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
     }
 
+
+    @Test
+    public void shouldUpdateDateReceived() {
+
+        // given
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
+        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
+        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 0)).thenReturn(caseDeadline);
+        when(infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0)).thenReturn(caseDeadlineWarning);
+
+        // when
+        caseDataService.updateDateReceived(caseUUID, stageUUID, deadlineDate, 0);
+
+        // then
+        assertThat(caseData.getDateReceived()).isEqualTo(deadlineDate);
+        verify(caseDataRepository, times(1)).findByUuid(caseUUID);
+        verify(caseDataRepository, times(1)).save(caseData);
+        verifyNoMoreInteractions(caseDataRepository);
+
+        verify(infoClient, times(1)).getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 0);
+        verify(infoClient, times(1)).getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0);
+
+        verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
+
+    }
+
+
+    @Test
+    public void shouldUpdateDispatchDeadlineDate() {
+
+        // given
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
+        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
+        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 0)).thenReturn(caseDeadline);
+        when(infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0)).thenReturn(caseDeadlineWarning);
+
+        // when
+        caseDataService.updateDispatchDeadlineDate(caseUUID, stageUUID, deadlineDate);
+
+        // then
+        assertThat(caseData.getCaseDeadline()).isEqualTo(deadlineDate);
+        verify(caseDataRepository, times(1)).findByUuid(caseUUID);
+        verify(caseDataRepository, times(1)).save(caseData);
+        verifyNoMoreInteractions(caseDataRepository);
+
+        verify(infoClient, times(1)).getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0);
+        verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
+
+    }
+
+
     @Test
     public void shouldUpdateStageDeadline() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         LocalDate caseDeadline = LocalDate.now();
         when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 7)).thenReturn(caseDeadline);
@@ -598,7 +644,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldCompleteCase() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -633,7 +679,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldDeleteCase() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
 
         when(caseDataRepository.findAnyByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -647,7 +693,7 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldAuditDeleteCase() {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
 
         when(caseDataRepository.findAnyByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -742,7 +788,7 @@ public class CaseDataServiceTest {
         Map<String, Integer> stageTypeAndDaysMap = Map.ofEntries(Map.entry("type1", 5),
                 Map.entry("type2", 10), Map.entry("type3", 9));
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         LocalDate caseDeadline = LocalDate.now();
 
@@ -762,7 +808,7 @@ public class CaseDataServiceTest {
     @Test
     public void getCaseDataByReference(){
         String testCaseRef = "TestReference";
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         when(caseDataRepository.findByReference(testCaseRef)).thenReturn(caseData);
 
         CaseData result = caseDataService.getCaseDataByReference(testCaseRef);
