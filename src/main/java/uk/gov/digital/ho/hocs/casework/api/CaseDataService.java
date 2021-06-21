@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
@@ -207,6 +208,10 @@ public class CaseDataService {
     }
 
     void updateDateReceived(UUID caseUUID, UUID stageUUID, LocalDate dateReceived, int days) {
+
+        Assert.notNull(caseUUID, "Case UUID is null");
+        Assert.notNull(stageUUID, "Stage UUID is null");
+
         log.debug("Updating DateReceived for Case: {} Date: {}", caseUUID, dateReceived);
         CaseData caseData = getCaseData(caseUUID);
         if (dateReceived != null) {
@@ -214,6 +219,28 @@ public class CaseDataService {
         }
         LocalDate deadline = infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), days);
         caseData.setCaseDeadline(deadline);
+
+        updateCaseDeadlines(caseData, stageUUID, dateReceived, days);
+    }
+
+    void updateDispatchDeadlineDate(UUID caseUUID, UUID stageUUID, LocalDate dispatchDeadlineDate) {
+
+        Assert.notNull(caseUUID, "Case UUID is null");
+        Assert.notNull(stageUUID, "Stage UUID is null");
+
+        log.debug("Updating dispatch deadline date for Case: {} Stage: {} Date: {}", caseUUID, stageUUID, dispatchDeadlineDate);
+        CaseData caseData = getCaseData(caseUUID);
+        if (dispatchDeadlineDate != null) {
+            caseData.setCaseDeadline(dispatchDeadlineDate);
+        }
+
+        updateCaseDeadlines(caseData, stageUUID, dispatchDeadlineDate, 0);
+    }
+
+
+    private void updateCaseDeadlines(CaseData caseData, UUID stageUUID, LocalDate dateReceived, int days) {
+        log.debug("Updating case deadlines for Case: {} Date: {}", caseData.getUuid(), dateReceived);
+
         LocalDate deadlineWarning = infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), days);
         if (deadlineWarning.isAfter(LocalDate.now())) {
             caseData.setCaseDeadlineWarning(deadlineWarning);
@@ -224,6 +251,12 @@ public class CaseDataService {
     }
 
     private void updateStageDeadlines(CaseData caseData) {
+
+        if (caseData.getActiveStages() == null ) {
+            log.warn("Case uuid:{} supplied with null active stages", caseData.getUuid());
+            return;
+        }
+
         Map<String, String> dataMap = caseData.getDataMap(objectMapper);
         for (ActiveStage stage : caseData.getActiveStages()) {
             // Try and overwrite the deadlines with inputted values from the data map.

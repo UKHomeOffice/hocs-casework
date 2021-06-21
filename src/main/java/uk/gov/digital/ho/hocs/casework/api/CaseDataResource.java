@@ -88,6 +88,12 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/dispatchDeadlineDate")
+    ResponseEntity updateCaseDispatchDeadlineDate(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody LocalDate dispatchDate) {
+        caseDataService.updateDispatchDeadlineDate(caseUUID, stageUUID, dispatchDate);
+        return ResponseEntity.ok().build();
+    }
+
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/deadline")
     ResponseEntity updateCaseDeadlineDays(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody int days) {
         caseDataService.updateDateReceived(caseUUID, stageUUID, null, days);
