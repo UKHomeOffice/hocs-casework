@@ -181,6 +181,7 @@ public class StageResourceTest {
 
         Set<Stage> stages = new HashSet<>();
 
+
         when(stageService.getActiveStagesByCaseReference(ref)).thenReturn(stages);
 
         ResponseEntity<GetStagesResponse> response = stageResource.getActiveStagesForCase(ref);
@@ -191,6 +192,40 @@ public class StageResourceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetActiveStageCaseUuid() throws UnsupportedEncodingException {
+        UUID caseUuid = UUID.randomUUID();
+
+        Stage stage = new Stage();
+
+        when(stageService.getActiveStageByCaseUUID(caseUuid)).thenReturn(stage);
+
+        ResponseEntity<Stage> response = stageResource.getActiveStageForCaseByCaseUuid(caseUuid.toString());
+
+        verify(stageService).getActiveStageByCaseUUID(caseUuid);
+
+        checkNoMoreInteractions();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetActiveStageCaseUuid_NotFound() throws UnsupportedEncodingException {
+        UUID caseUuid = UUID.randomUUID();
+
+        when(stageService.getActiveStageByCaseUUID(caseUuid)).thenReturn(null);
+
+        ResponseEntity<Stage> response = stageResource.getActiveStageForCaseByCaseUuid(caseUuid.toString());
+
+        verify(stageService).getActiveStageByCaseUUID(caseUuid);
+
+        checkNoMoreInteractions();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test

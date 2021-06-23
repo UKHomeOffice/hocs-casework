@@ -211,6 +211,20 @@ public class StageService {
         return stageRepository.findAllActiveByCaseUUID(caseUUID);
     }
 
+    Optional<Stage> getActiveStageByCaseUUID(UUID caseUUID){
+        log.debug("Getting Active Stage for Case: {}", caseUUID);
+        Set<Stage> stages = stageRepository.findAllActiveByCaseUUID(caseUUID);
+        switch (stages.size()){
+            case 0:
+                return Optional.empty();
+            case 1:
+                return Optional.of(stages.iterator().next());
+            default:
+                throw new IllegalStateException(String.format("Multiple Active Stages returned for case: %s",
+                    caseUUID.toString()));
+        }
+    }
+
     Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
         Set<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);

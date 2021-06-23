@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StageServiceTest {
+public class  StageServiceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID teamUUID = UUID.randomUUID();
@@ -288,6 +288,17 @@ public class StageServiceTest {
     public void shouldGetActiveStagesCaseUUID() {
 
         stageService.getActiveStagesByCaseUUID(caseUUID);
+
+        verify(stageRepository).findAllActiveByCaseUUID(caseUUID);
+
+        verifyNoMoreInteractions(stageRepository);
+        verifyZeroInteractions(notifyClient);
+
+    }
+
+    @Test
+    public void shouldGetActiveStageCaseUUID() {
+        stageService.getActiveStageByCaseUUID(caseUUID);
 
         verify(stageRepository).findAllActiveByCaseUUID(caseUUID);
 
@@ -711,7 +722,7 @@ public class StageServiceTest {
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
     }
-    
+
     /**
      * The stage cannot be an instance as it does not have a function to set data (in the Stage Class).
      * I did not want to create a setData on the Stage class for testing only.
