@@ -1,6 +1,6 @@
 buildscript {
 	ext {
-		springBootVersion = '2.5.1'
+		springBootVersion = '2.3.0.RELEASE'
 		camelVersion = '2.25.4'
 	}
 	repositories {
