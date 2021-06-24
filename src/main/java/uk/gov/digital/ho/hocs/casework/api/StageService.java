@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import com.amazonaws.util.json.Jackson;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,6 +17,7 @@ import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
@@ -45,6 +47,7 @@ public class StageService {
     private final StagePriorityCalculator stagePriorityCalculator;
     private final DaysElapsedCalculator daysElapsedCalculator;
     private final CaseNoteService caseNoteService;
+    private final SomuItemService somuItemService;
 
     private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage::getCreated);
 
@@ -52,7 +55,7 @@ public class StageService {
     @Autowired
     public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient,
                         @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator,
-                        DaysElapsedCalculator daysElapsedCalculator, CaseNoteService caseNoteService) {
+                        DaysElapsedCalculator daysElapsedCalculator, CaseNoteService caseNoteService, SomuItemService somuItemService) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -63,6 +66,7 @@ public class StageService {
         this.stagePriorityCalculator = stagePriorityCalculator;
         this.daysElapsedCalculator = daysElapsedCalculator;
         this.caseNoteService = caseNoteService;
+        this.somuItemService = somuItemService;
     }
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
@@ -214,9 +218,24 @@ public class StageService {
     Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
         Set<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
+        addSomuData(stages);
         updatePriority(stages);
         updateDaysElapsed(stages);
         return stages;
+    }
+
+    private void addSomuData(Collection<Stage> stages) {
+        log.info("Adding somu data for {} Stages", stages.size());
+        stages.forEach(stage -> {
+            Set<SomuItem> somuItems = somuItemService.getCaseSomuItemsBySomuType(stage.getCaseUUID());
+            JSONObject object = new JSONObject();
+            JSONArray jsonArray = new JSONArray();
+            for(SomuItem si : somuItems){
+                jsonArray.put(si.getData());
+            }
+            object.put("caseContributions", jsonArray);
+            stage.setSomu(object.toString());
+        });
     }
 
     Stage getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {

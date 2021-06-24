@@ -69,12 +69,14 @@ public class StageServiceTest {
     @Mock
     private CaseNoteService caseNoteService;
     @Mock
+    private SomuItemService somuItemService;
+    @Mock
     private Stage stage;
 
     @Before
     public void setUp() {
         this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient,
-                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, caseNoteService);
+                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, caseNoteService, somuItemService);
     }
 
     @Test
