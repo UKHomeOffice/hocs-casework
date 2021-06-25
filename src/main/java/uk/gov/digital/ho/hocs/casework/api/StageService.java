@@ -218,7 +218,7 @@ public class StageService {
     Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
         Set<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
-        addSomuData(stages);
+        addSomuData(stages); //List of case contributions from somu table required to show contributions status on teams dashboards
         updatePriority(stages);
         updateDaysElapsed(stages);
         return stages;

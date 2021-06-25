@@ -1,6 +1,3 @@
---ALTER TABLE case_data
---    ADD COLUMN somu JSONB;
-
 ALTER TABLE stage
     ADD COLUMN somu JSONB;
 
