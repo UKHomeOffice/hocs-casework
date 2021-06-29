@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.client.infoclient;
 
+import java.util.HashMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static net.logstash.logback.argument.StructuredArguments.r;
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
@@ -177,6 +179,13 @@ public class InfoClient {
         return caseTypeDtos;
     }
 
+    @Cacheable(value = "caseTypesForUser", unless = "#result == null")
+    public Set<CaseTypeDto> getCaseTypesForUser() {
+        Set<CaseTypeDto> caseTypeDtos = restHelper.get(serviceBaseURL, "/caseType?bulkOnly=false", new ParameterizedTypeReference<>() { });
+        log.info("Got Case Types {}", value(EVENT, "INFO_CLIENT_GET_CASE_TYPES_SUCCESS"));
+        return caseTypeDtos;
+    }
+
     @Cacheable(value = "stageTypes", unless = "#result == null")
     public Set<StageTypeDto> getStageTypes() {
         Set<StageTypeDto> stageTypeDtos = restHelper.get(serviceBaseURL, "/stageType", new ParameterizedTypeReference<>() { });
@@ -240,4 +249,31 @@ public class InfoClient {
         return response;
     }
 
+    @Cacheable(value = "getUserMap")
+    public Map<String, UserDto> getUserMap() {
+        Map<String, UserDto> userMap = new HashMap<>();
+        getUsers().forEach(u -> userMap.put(u.getId(), u));
+        return userMap;
+    }
+
+    @Cacheable(value = "getTeamMap")
+    public Map<String, TeamDto> getTeamMap() {
+        Map<String, TeamDto> teamMap = new HashMap<>();
+        getTeams().stream().forEach(t -> teamMap.put(t.getUuid().toString(), t));
+        return teamMap;
+    }
+
+    @Cacheable(value = "getCaseTypeMap")
+    public Map<String, CaseTypeDto> getCaseTypeMap() {
+          HashMap<String, CaseTypeDto> caseTypeMap =new HashMap<>();
+          getCaseTypes().forEach(ct -> caseTypeMap.put(ct.getType(), ct));
+          return caseTypeMap;
+    }
+
+    @Cacheable(value = "getStageTypeMap")
+    public Map<String, StageTypeDto> getStageTypeMap() {
+        HashMap<String, StageTypeDto> stageTypeMap = new HashMap<>();
+        getStageTypes().forEach(st -> stageTypeMap.put(st.getType(), st));
+        return stageTypeMap;
+    }
 }

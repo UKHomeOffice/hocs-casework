@@ -7,7 +7,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Entity
 @Table(name = "case_overview")
 public class CaseOverviewRaw implements Serializable {
@@ -65,11 +67,10 @@ public class CaseOverviewRaw implements Serializable {
   private LocalDate deadline;
 
   @Getter
+  @Column(name = "days_age")
+  private long age;
+
+  @Getter
   @Column(name = "days_until_deadline")
   private long daysUntilDeadline;
-
-  public CaseOverviewRaw() {
-
-  }
-
 }

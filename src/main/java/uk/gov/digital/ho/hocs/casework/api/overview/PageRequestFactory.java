@@ -3,10 +3,12 @@ package uk.gov.digital.ho.hocs.casework.api.overview;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.overview.ColumnFilter.FilterType;
 import uk.gov.digital.ho.hocs.casework.api.overview.ColumnSort.SortOrder;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
@@ -23,11 +25,12 @@ public class PageRequestFactory {
     this.infoClient = infoClient;
   }
 
-  public PageRequest build(int pageNumber, int resultsPerPage, String filterCriteriaString, String sortCriteriaString) {
+  public PageRequest build(int pageNumber, int resultsPerPage, String filterCriteriaString, String sortCriteriaString, Set<CaseTypeDto> permittedCaseTypeDtos) {
 
     List<ColumnSort> columnSortCriteria = getColumnSorts(sortCriteriaString);
     List<ColumnFilter> columnFilterCriteria = getColumnFilters(filterCriteriaString);
-    return new PageRequest(pageNumber, resultsPerPage, columnSortCriteria, columnFilterCriteria);
+    Set<String> permittedCaseTypes = permittedCaseTypeDtos.stream().map(ct -> ct.getType()).collect(Collectors.toSet());
+    return new PageRequest(pageNumber, resultsPerPage, columnSortCriteria, columnFilterCriteria, permittedCaseTypes);
   }
 
   private List<ColumnSort> getColumnSorts(String sortCriteriaString) {

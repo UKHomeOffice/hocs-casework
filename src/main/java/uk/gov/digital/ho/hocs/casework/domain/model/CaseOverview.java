@@ -57,5 +57,8 @@ public class CaseOverview {
   private LocalDate deadline;
 
   @Getter
+  private long age;
+
+  @Getter
   private long daysUntilDeadline;
 }

@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.api.overview;
 
 import java.util.List;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import java.io.Serializable;
@@ -22,8 +23,9 @@ public class PageRequest implements Serializable {
 
     protected List<ColumnFilter>  columnFilters;
 
+    private Set<String> permittedCaseTypes;
+
     public int getOffset() {
         return pageNumber * resultsPerPage;
     }
-
 }

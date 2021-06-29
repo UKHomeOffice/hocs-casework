@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.domain.repository;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -55,7 +56,7 @@ public class OverviewRepository {
         Root<CaseOverviewRaw> caseRoot = countCriteriaQuery.from(CaseOverviewRaw.class);
 
         countCriteriaQuery.select(criteriaBuilder.count(caseRoot))
-                          .where(getPredicates(pageRequest.getColumnFilters(), caseRoot));
+                          .where(getPredicates(pageRequest, caseRoot));
 
         return entityManager.createQuery(countCriteriaQuery)
                             .getSingleResult();
@@ -67,7 +68,7 @@ public class OverviewRepository {
         Root<CaseOverviewRaw> caseRoot = resultsCriteriaQuery.from(CaseOverviewRaw.class);
 
         resultsCriteriaQuery.select(caseRoot)
-                            .where(getPredicates(pageRequest.getColumnFilters(), caseRoot))
+                            .where(getPredicates(pageRequest, caseRoot))
                             .orderBy(getOrders(calculateSort(pageRequest), caseRoot));
 
         return entityManager.createQuery(resultsCriteriaQuery)
@@ -76,10 +77,25 @@ public class OverviewRepository {
                             .getResultList();
     }
 
-    private Predicate[] getPredicates(List<ColumnFilter> columnFilterCriteria, Root<CaseOverviewRaw> root) {
-        return columnFilterCriteria.stream()
+    private Predicate[] getPredicates(PageRequest pageRequest, Root<CaseOverviewRaw> root) {
+
+        List<ColumnFilter> columnFilterCriteria = pageRequest.getColumnFilters();
+        List<Predicate> predicateList = columnFilterCriteria.stream()
                              .map((entry) -> getPredicateForFilter(entry, root))
-                             .toArray(Predicate[]::new);
+                             .collect(Collectors.toList());
+
+        // Limit the case types we expose
+        Optional<ColumnFilter> maybeCaseTypeColumnFilter  = pageRequest.getColumnFilters().stream().filter(cf -> cf.getName().equals("caseType")).findFirst();
+        if (maybeCaseTypeColumnFilter.isEmpty()) {
+            predicateList.add(root.get("caseType").in(pageRequest.getPermittedCaseTypes()));
+        } else {
+            ColumnFilter caseTypeColumnFilter = maybeCaseTypeColumnFilter.get();
+            if (!pageRequest.getPermittedCaseTypes().contains(caseTypeColumnFilter.getValue())) {
+                throw new IllegalArgumentException("No permission to see cases of type:" + caseTypeColumnFilter.getValue());
+            }
+        }
+
+        return predicateList.toArray(new Predicate[predicateList.size()]);
     }
 
     private Predicate getPredicateForFilter(ColumnFilter columnFilter, Root<CaseOverviewRaw> caseRoot) {
