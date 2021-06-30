@@ -13,10 +13,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -198,7 +195,7 @@ public class StageResourceTest {
     public void shouldGetActiveStageCaseUuid() throws UnsupportedEncodingException {
         UUID caseUuid = UUID.randomUUID();
 
-        Stage stage = new Stage();
+        Optional<Stage> stage = Optional.of(new Stage());
 
         when(stageService.getActiveStageByCaseUUID(caseUuid)).thenReturn(stage);
 
@@ -216,7 +213,7 @@ public class StageResourceTest {
     public void shouldGetActiveStageCaseUuid_NotFound() throws UnsupportedEncodingException {
         UUID caseUuid = UUID.randomUUID();
 
-        when(stageService.getActiveStageByCaseUUID(caseUuid)).thenReturn(null);
+        when(stageService.getActiveStageByCaseUUID(caseUuid)).thenReturn(Optional.empty());
 
         ResponseEntity<Stage> response = stageResource.getActiveStageForCaseByCaseUuid(caseUuid.toString());
 
