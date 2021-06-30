@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import javassist.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -130,11 +132,24 @@ class StageResource {
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
+    //Method requires case reference rather than uuid. Could this be removed in favour of the uuid look up?
     @GetMapping(value = "/case/{reference:[a-zA-Z]{2,}%2F[0-9]{7}%2F[0-9]{2}}/stage")
     ResponseEntity<GetStagesResponse> getActiveStagesForCase(@PathVariable String reference) throws UnsupportedEncodingException {
         String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8.name());
         Set<Stage> activeStages = stageService.getActiveStagesByCaseReference(decodedRef);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
+    }
+
+    //Ideally the URI should be /case/{caseUUID}/stage but this URI is taken already by getActiveStagesForCase
+    @GetMapping(value = "/case/{caseUUID}/activeStage")
+    ResponseEntity<Stage> getActiveStageForCaseByCaseUuid(@PathVariable String caseUUID) {
+        Optional<Stage> maybeActiveStage = stageService.getActiveStageByCaseUUID(UUID.fromString(caseUUID));
+        if (maybeActiveStage.isPresent()){
+            Stage activeStage = maybeActiveStage.get();
+            return ResponseEntity.ok(activeStage);
+        } else{
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping(value = "/stage/team/{teamUUID}/user/{userUUID}")
