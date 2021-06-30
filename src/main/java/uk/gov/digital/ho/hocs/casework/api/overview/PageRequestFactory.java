@@ -82,8 +82,8 @@ public class PageRequestFactory {
           continue;
         }
 
-        if (fieldName.equals("allocatedUserEmail")) {
-          List<UserDto> matchedUsers = infoClient.getUsers().stream().filter(t -> t.getEmail().toLowerCase(Locale.ROOT).contains(filterValue.toLowerCase())).collect(Collectors.toList());
+        if (fieldName.equals("allocatedUsername")) {
+          List<UserDto> matchedUsers = infoClient.getUsers().stream().filter(t -> t.getUsername().toLowerCase(Locale.ROOT).contains(filterValue.toLowerCase())).collect(Collectors.toList());
           if (matchedUsers.size() < MAX_ID_MATCHES) {
             List<String> matchedUuids = matchedUsers.stream().map(UserDto::getId).collect(Collectors.toList());
             String csvJoined = String.join(",", matchedUuids);

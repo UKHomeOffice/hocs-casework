@@ -36,7 +36,7 @@ public class CaseOverview {
   private String allocatedUserUuid;
 
   @Getter
-  private String allocatedUserEmail;
+  private String allocatedUsername;
 
   @Getter
   private String ownerUuid;

@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api.overview;
 
-import java.util.Set;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;

@@ -29,7 +29,7 @@ public class OverviewHydrationService {
   private CaseOverview hydrate(CaseOverviewRaw coRaw) {
     String teamName = null;
     String ownerTeamName = null;
-    String allocatedUserEmail = null;
+    String allocatedUsername = null;
     String ownerUserEmail = null;
     String caseType = null;
     String stageType = null;
@@ -42,7 +42,7 @@ public class OverviewHydrationService {
     if (coRaw.getAllocatedUserUuid() != null) {
       UserDto allocatedUser = userMap.get(coRaw.getAllocatedUserUuid());
       if (allocatedUser != null) {
-        allocatedUserEmail = allocatedUser.getUsername();
+        allocatedUsername = allocatedUser.getUsername();
       }
     }
     if (coRaw.getOwnerUuid() != null) {
@@ -77,6 +77,6 @@ public class OverviewHydrationService {
     }
 
     return new CaseOverview(coRaw.getId(), coRaw.getCaseUuid(), coRaw.getReference(), caseType, coRaw.getStageUuid(), stageType, coRaw.getTeamUuid(),
-        teamName, coRaw.getAllocatedUserUuid(), allocatedUserEmail, coRaw.getOwnerUuid(), ownerUserEmail, ownerTeamName, coRaw.getCreated(), coRaw.getReceived(), coRaw.getDeadline(), coRaw.getAge(), coRaw.getDaysUntilDeadline());
+        teamName, coRaw.getAllocatedUserUuid(), allocatedUsername, coRaw.getOwnerUuid(), ownerUserEmail, ownerTeamName, coRaw.getCreated(), coRaw.getReceived(), coRaw.getDeadline(), coRaw.getAge(), coRaw.getDaysUntilDeadline());
   }
 }
