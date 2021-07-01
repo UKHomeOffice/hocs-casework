@@ -95,6 +95,14 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
     @Column(name = "case_assigned_topic", insertable = false, updatable = false)
     private String assignedTopic;
 
+    @Getter
+    @Setter
+    @Basic(optional = true)
+    @Column(name = "somu", insertable = false, updatable = false)
+    private String somu;
+
+
+
     public Stage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, UUID transitionNoteUUID) {
         if (caseUUID == null || stageType == null) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
