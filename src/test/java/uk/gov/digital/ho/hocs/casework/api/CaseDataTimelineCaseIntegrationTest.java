@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JSR310Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.hamcrest.core.StringStartsWith;
 import org.junit.Before;
