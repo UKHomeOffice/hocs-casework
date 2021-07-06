@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.hamcrest.core.StringStartsWith;
 import org.junit.Before;
 import org.junit.Test;
@@ -81,7 +82,7 @@ public class CaseDataTimelineCaseIntegrationTest {
                 .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
-
+        mapper.registerModule(new JavaTimeModule());
 
     }
 
