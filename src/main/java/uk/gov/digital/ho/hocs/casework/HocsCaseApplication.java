@@ -24,7 +24,7 @@ public class HocsCaseApplication {
 
     @PreDestroy
     public void stop() {
-        log.info("hocs-casework stopping gracefully");
+        log.info("Stopping gracefully");
     }
 
 }
