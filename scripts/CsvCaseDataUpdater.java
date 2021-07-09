@@ -41,6 +41,9 @@ public class CsvCaseDataUpdater {
     private static String csvFilePath = "";
 
     public static void main(String[] args) throws IOException {
+        System.setProperty("java.util.logging.SimpleFormatter.format",
+                "[%1$tF %1$tT] [%4$-7s] %5$s %n");
+
         parseArgs(args);
 
         List<CaseData> csvData = parseCsvFile(csvFilePath);
