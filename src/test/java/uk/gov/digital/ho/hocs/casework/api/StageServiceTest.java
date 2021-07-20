@@ -67,6 +67,8 @@ public class StageServiceTest {
     @Mock
     private DaysElapsedCalculator daysElapsedCalculator;
     @Mock
+    private StageTagsDecorator stageTagsDecorator;
+    @Mock
     private CaseNoteService caseNoteService;
     @Mock
     private SomuItemService somuItemService;
@@ -76,7 +78,7 @@ public class StageServiceTest {
     @Before
     public void setUp() {
         this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient,
-                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, caseNoteService, somuItemService);
+                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, stageTagsDecorator, caseNoteService, somuItemService);
     }
 
     @Test
@@ -713,7 +715,7 @@ public class StageServiceTest {
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
     }
-    
+
     /**
      * The stage cannot be an instance as it does not have a function to set data (in the Stage Class).
      * I did not want to create a setData on the Stage class for testing only.

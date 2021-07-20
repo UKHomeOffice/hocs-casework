@@ -46,6 +46,7 @@ public class StageService {
     private final CaseDataService caseDataService;
     private final StagePriorityCalculator stagePriorityCalculator;
     private final DaysElapsedCalculator daysElapsedCalculator;
+    private final StageTagsDecorator stageTagsDecorator;
     private final CaseNoteService caseNoteService;
     private final SomuItemService somuItemService;
 
@@ -55,7 +56,7 @@ public class StageService {
     @Autowired
     public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient,
                         @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator,
-                        DaysElapsedCalculator daysElapsedCalculator, CaseNoteService caseNoteService, SomuItemService somuItemService) {
+                        DaysElapsedCalculator daysElapsedCalculator, StageTagsDecorator stageTagsDecorator, CaseNoteService caseNoteService, SomuItemService somuItemService) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -65,6 +66,7 @@ public class StageService {
         this.caseDataService = caseDataService;
         this.stagePriorityCalculator = stagePriorityCalculator;
         this.daysElapsedCalculator = daysElapsedCalculator;
+        this.stageTagsDecorator = stageTagsDecorator;
         this.caseNoteService = caseNoteService;
         this.somuItemService = somuItemService;
     }
@@ -218,12 +220,15 @@ public class StageService {
     Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
         Set<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
+
         for (Stage stage : stages) {
             // Don't add somu, for now. This could cause performance issues.
             // addSomuData(stage); //List of case contributions from somu table required to show contributions status on teams dashboards
             updatePriority(stage);
             updateDaysElapsed(stage);
+            decorateTags(stage);
         }
+
         return stages;
     }
 
@@ -287,6 +292,7 @@ public class StageService {
             for (Stage stage : stages) {
                 updatePriority(stage);
                 updateDaysElapsed(stage);
+                decorateTags(stage);
             }
 
             log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
@@ -389,6 +395,11 @@ public class StageService {
     private void updateDaysElapsed(Stage stage) {
         log.info("Updating days elapsed for stage : {}", stage.getCaseUUID());
         daysElapsedCalculator.updateDaysElapsed(stage);
+    }
+
+    private void decorateTags(Stage stage) {
+        log.info("Updating tags for stage: {}", stage.getCaseUUID());
+        stageTagsDecorator.decorateTags(stage);
     }
 
     public void withdrawCase(UUID caseUUID, UUID stageUUID, WithdrawCaseRequest request) {
