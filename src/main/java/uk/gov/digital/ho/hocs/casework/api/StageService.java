@@ -218,24 +218,24 @@ public class StageService {
     Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
         Set<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
-        addSomuData(stages); //List of case contributions from somu table required to show contributions status on teams dashboards
-        updatePriority(stages);
-        updateDaysElapsed(stages);
+        for (Stage stage : stages) {
+            addSomuData(stage); //List of case contributions from somu table required to show contributions status on teams dashboards
+            updatePriority(stage);
+            updateDaysElapsed(stage);
+        }
         return stages;
     }
 
-    private void addSomuData(Collection<Stage> stages) {
-        log.info("Adding somu data for {} Stages", stages.size());
-        stages.forEach(stage -> {
-            Set<SomuItem> somuItems = somuItemService.getCaseSomuItemsBySomuType(stage.getCaseUUID());
-            JSONObject object = new JSONObject();
-            JSONArray jsonArray = new JSONArray();
-            for(SomuItem si : somuItems){
-                jsonArray.put(si.getData());
-            }
-            object.put("caseContributions", jsonArray);
-            stage.setSomu(object.toString());
-        });
+    private void addSomuData(Stage stage) {
+        log.info("Adding somu data for stage : {}", stage.getCaseUUID());
+        Set<SomuItem> somuItems = somuItemService.getCaseSomuItemsBySomuType(stage.getCaseUUID());
+        JSONObject object = new JSONObject();
+        JSONArray jsonArray = new JSONArray();
+        for(SomuItem si : somuItems){
+            jsonArray.put(si.getData());
+        }
+        object.put("caseContributions", jsonArray);
+        stage.setSomu(object.toString());
     }
 
     Stage getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {
@@ -245,8 +245,11 @@ public class StageService {
             log.debug("No unassigned case found for user: {} in team {}", userUUID, teamUUID);
             return null;
         }
-        updatePriority(unassignedStages);
-        updateDaysElapsed(unassignedStages);
+
+        for (Stage stage : unassignedStages) {
+            updatePriority(stage);
+            updateDaysElapsed(stage);
+        }
 
         double prevSystemCalculatedPriority = 0;
         Stage nextAvailableStage = unassignedStages.stream().findFirst().get();
@@ -279,8 +282,12 @@ public class StageService {
                 caseTypes.add("");
             }
             Set<Stage> stages = stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
-            updatePriority(stages);
-            updateDaysElapsed(stages);
+
+            for (Stage stage : stages) {
+                updatePriority(stage);
+                updateDaysElapsed(stage);
+            }
+
             log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
             return stages;
         }
@@ -373,14 +380,14 @@ public class StageService {
         caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
     }
 
-    private void updatePriority(Collection<Stage> stages) {
-        log.info("Updating priority for {} Stages", stages.size());
-        stages.forEach(stagePriorityCalculator::updatePriority);
+    private void updatePriority(Stage stage) {
+        log.info("Updating priority for stage : {}", stage.getCaseUUID());
+        stagePriorityCalculator.updatePriority(stage);
     }
 
-    private void updateDaysElapsed(Collection<Stage> stages) {
-        log.info("Updating days elapsed for {} Stages", stages.size());
-        stages.forEach(daysElapsedCalculator::updateDaysElapsed);
+    private void updateDaysElapsed(Stage stage) {
+        log.info("Updating days elapsed for stage : {}", stage.getCaseUUID());
+        daysElapsedCalculator.updateDaysElapsed(stage);
     }
 
     public void withdrawCase(UUID caseUUID, UUID stageUUID, WithdrawCaseRequest request) {
