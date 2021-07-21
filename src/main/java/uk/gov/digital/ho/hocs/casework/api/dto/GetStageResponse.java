@@ -52,6 +52,9 @@ public class GetStageResponse {
     private String data;
 
     @JsonRawValue
+    private String somu;
+
+    @JsonRawValue
     private String correspondents;
 
     @JsonProperty("caseCreated")
@@ -78,6 +81,7 @@ public class GetStageResponse {
                 stage.getCaseDataType(),
                 stage.getTransitionNoteUUID(),
                 stage.getData(),
+                stage.getSomu(),
                 stage.getCorrespondents(),
                 stage.getCaseCreated(),
                 stage.isActive(),

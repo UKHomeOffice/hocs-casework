@@ -25,11 +25,13 @@ public class CaseDataResourceTest {
     private final CaseDataType caseDataType = new CaseDataType("MIN", "a1");
     private final HashMap<String, String> data = new HashMap<>();
     private final UUID uuid = UUID.randomUUID();
-    @Mock
-    private CaseDataService caseDataService;
+    private final LocalDate dateArg = LocalDate.now();
+
     private CaseDataResource caseDataResource;
     private ObjectMapper objectMapper = new ObjectMapper();
-    private LocalDate caseReceived = LocalDate.now();
+
+    @Mock
+    private CaseDataService caseDataService;
 
     @Before
     public void setUp() {
@@ -39,14 +41,14 @@ public class CaseDataResourceTest {
     @Test
     public void shouldCreateCase() {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseReceived);
-        CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data, caseReceived);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, dateArg);
+        CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data, dateArg);
 
-        when(caseDataService.createCase(caseDataType.getDisplayCode(), data, caseReceived)).thenReturn(caseData);
+        when(caseDataService.createCase(caseDataType.getDisplayCode(), data, dateArg)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseDataType.getDisplayCode(), data, caseReceived);
+        verify(caseDataService, times(1)).createCase(caseDataType.getDisplayCode(), data, dateArg);
 
         verifyNoMoreInteractions(caseDataService);
 
@@ -57,7 +59,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCase() {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, dateArg);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
@@ -74,7 +76,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCaseNull() {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, caseReceived);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, dateArg);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
@@ -168,9 +170,40 @@ public class CaseDataResourceTest {
         ResponseEntity response = caseDataResource.updateCaseData(uuid, uuid, updateCaseDataRequest);
 
         verify(caseDataService, times(1)).updateCaseData(uuid, uuid, data);
-
         verifyNoMoreInteractions(caseDataService);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 
+
+    @Test
+    public void shouldUpdateDateReceived() {
+
+        // given
+        doNothing().when(caseDataService).updateDateReceived(uuid, uuid, dateArg, 0);
+
+        // when
+        ResponseEntity response = caseDataResource.updateCaseDateReceived(uuid, uuid, dateArg);
+
+        // then
+        verify(caseDataService, times(1)).updateDateReceived(uuid, uuid, dateArg, 0);
+        verifyNoMoreInteractions(caseDataService);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldUpdateDispatchDeadlineDate() {
+
+        // given
+        doNothing().when(caseDataService).updateDispatchDeadlineDate(uuid, uuid, dateArg);
+
+        // when
+        ResponseEntity response = caseDataResource.updateCaseDispatchDeadlineDate(uuid, uuid, dateArg);
+
+        // then
+        verify(caseDataService, times(1)).updateDispatchDeadlineDate(uuid, uuid, dateArg);
+        verifyNoMoreInteractions(caseDataService);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
