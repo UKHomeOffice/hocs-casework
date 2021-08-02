@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @NoArgsConstructor
 @AllArgsConstructor
-public class Statistic {
+public class Summary {
 
     private UUID teamUuid;
     private Integer count;

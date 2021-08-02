@@ -35,7 +35,7 @@ public class DashboardResourceTest {
         var response = dashboardResource.getDashboard();
 
         assertThat(response).isNotNull();
-        assertThat(Objects.requireNonNull(response.getBody()).getDashboardStatistics().get(0).getTeamUuid()).isEqualTo(caseUuid);
+        assertThat(Objects.requireNonNull(response.getBody()).getDashboardSummaries().get(0).getTeamUuid()).isEqualTo(caseUuid);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 

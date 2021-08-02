@@ -16,8 +16,8 @@ class DashboardResource {
 
     @GetMapping(value = "/dashboard", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<DashboardResponse> getDashboard() {
-        var dashboardStatistics = dashboardService.getDashboard();
-        return ResponseEntity.ok(DashboardResponse.from(dashboardStatistics));
+        var dashboardSummaries = dashboardService.getDashboard();
+        return ResponseEntity.ok(DashboardResponse.from(dashboardSummaries));
     }
 
 }

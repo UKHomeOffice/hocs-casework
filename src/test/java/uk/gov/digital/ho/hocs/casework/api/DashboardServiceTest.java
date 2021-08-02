@@ -5,17 +5,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.api.utils.DashboardStatisticFactory;
+import uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
-import uk.gov.digital.ho.hocs.casework.domain.model.Statistic;
-import uk.gov.digital.ho.hocs.casework.domain.repository.StatisticRepository;
+import uk.gov.digital.ho.hocs.casework.domain.model.Summary;
+import uk.gov.digital.ho.hocs.casework.domain.repository.SummaryRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.util.*;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardStatisticFactory.DashboardStatisticHeaders.*;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardServiceTest {
@@ -23,11 +23,11 @@ public class DashboardServiceTest {
     private DashboardService dashboardService;
 
     @Mock
-    private DashboardStatisticFactory dashboardStatisticFactory;
+    private DashboardSummaryFactory dashboardSummaryFactory;
     @Mock
     private RequestData requestData;
     @Mock
-    private StatisticRepository statisticRepository;
+    private SummaryRepository summaryRepository;
     @Mock
     private UserPermissionsService userPermissionsService;
 
@@ -39,29 +39,29 @@ public class DashboardServiceTest {
 
     @Before
     public void setUp() {
-        dashboardService = new DashboardService(dashboardStatisticFactory, requestData, statisticRepository, userPermissionsService);
+        dashboardService = new DashboardService(dashboardSummaryFactory, requestData, summaryRepository, userPermissionsService);
     }
 
     @Test
     public void getDashboard_returnsListOfResults() {
-        List<Statistic> teamWithCaseCount = List.of(new Statistic(userTeamUuid, 1));
-        List<Statistic> teamWithOverdueCaseCount = List.of(new Statistic(userTeamUuid, 1));
-        List<Statistic> teamWithUnallocatedCaseCount = List.of(new Statistic(userTeamUuid, 2));
-        List<Statistic> teamWithUserCaseCount = List.of(new Statistic(userTeamUuid, 3));
-        List<Statistic> teamWithUserOverdueCaseCount = List.of(new Statistic(userTeamUuid, 4));
+        List<Summary> teamWithCaseCount = List.of(new Summary(userTeamUuid, 1));
+        List<Summary> teamWithOverdueCaseCount = List.of(new Summary(userTeamUuid, 1));
+        List<Summary> teamWithUnallocatedCaseCount = List.of(new Summary(userTeamUuid, 2));
+        List<Summary> teamWithUserCaseCount = List.of(new Summary(userTeamUuid, 3));
+        List<Summary> teamWithUserOverdueCaseCount = List.of(new Summary(userTeamUuid, 4));
 
         when(userPermissionsService.getUserTeams()).thenReturn(setUserTeams);
         when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
 
         when(requestData.userId()).thenReturn(UUID.randomUUID().toString());
-        when(statisticRepository.findTeamsAndCaseCountByTeamUuidandCaseTypes(setUserTeams, caseTypes)).thenReturn(teamWithCaseCount);
-        when(statisticRepository.findOverdueCasesByTeam(collatedUserTeams)).thenReturn(teamWithOverdueCaseCount);
-        when(statisticRepository.findUnallocatedCasesByTeam(collatedUserTeams)).thenReturn(teamWithUnallocatedCaseCount);
+        when(summaryRepository.findTeamsAndCaseCountByTeamUuidandCaseTypes(setUserTeams, caseTypes)).thenReturn(teamWithCaseCount);
+        when(summaryRepository.findOverdueCasesByTeam(collatedUserTeams)).thenReturn(teamWithOverdueCaseCount);
+        when(summaryRepository.findUnallocatedCasesByTeam(collatedUserTeams)).thenReturn(teamWithUnallocatedCaseCount);
         when(requestData.userId()).thenReturn(userUuid.toString());
-        when(statisticRepository.findUserCasesInTeams(collatedUserTeams, userUuid.toString())).thenReturn(teamWithUserCaseCount);
-        when(statisticRepository.findOverdueUserCasesInTeams(collatedUserTeams, userUuid.toString())).thenReturn(teamWithUserOverdueCaseCount);
+        when(summaryRepository.findUserCasesInTeams(collatedUserTeams, userUuid.toString())).thenReturn(teamWithUserCaseCount);
+        when(summaryRepository.findOverdueUserCasesInTeams(collatedUserTeams, userUuid.toString())).thenReturn(teamWithUserOverdueCaseCount);
 
-        Map<DashboardStatisticFactory.DashboardStatisticHeaders, List<Statistic>> statisticMap =
+        Map<DashboardSummaryFactory.DashboardSummaryHeaders, List<Summary>> statisticMap =
                 Map.of(UNALLOCATED_TEAM_CASES, teamWithUnallocatedCaseCount,
                         OVERDUE_TEAM_CASES, teamWithOverdueCaseCount,
                         USERS_TEAM_CASES, teamWithUserCaseCount,
@@ -74,7 +74,7 @@ public class DashboardServiceTest {
                         USERS_TEAM_CASES.toString(), teamWithUserCaseCount.get(0).getCount(),
                         USERS_OVERDUE_TEAM_CASES.toString(), teamWithUserOverdueCaseCount.get(0).getCount()));
 
-        when(dashboardStatisticFactory.getZippedStatistics(teamWithCaseCount, statisticMap))
+        when(dashboardSummaryFactory.getZippedSummary(teamWithCaseCount, statisticMap))
                 .thenReturn(returnedMap);
 
         var result = dashboardService.getDashboard();

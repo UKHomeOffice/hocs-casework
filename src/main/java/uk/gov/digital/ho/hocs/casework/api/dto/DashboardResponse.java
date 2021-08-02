@@ -13,17 +13,17 @@ import java.util.stream.Collectors;
 public final class DashboardResponse {
 
     @JsonProperty("stages")
-    private final List<DashboardStatisticDto> dashboardStatistics;
+    private final List<DashboardSummaryDto> dashboardSummaries;
 
-    public static DashboardResponse from(Map<UUID, Map<String, Integer>> dashboardStageStatistics) {
-        return new DashboardResponse(dashboardStageStatistics.entrySet().stream()
-                .map((stageStatistic) -> new DashboardStatisticDto(stageStatistic.getKey(), stageStatistic.getValue()))
+    public static DashboardResponse from(Map<UUID, Map<String, Integer>> dashboardStageSummary) {
+        return new DashboardResponse(dashboardStageSummary.entrySet().stream()
+                .map((stageSummary) -> new DashboardSummaryDto(stageSummary.getKey(), stageSummary.getValue()))
                 .collect(Collectors.toList()));
     }
 
     @AllArgsConstructor
     @Getter
-    public static class DashboardStatisticDto {
+    public static class DashboardSummaryDto {
         private final UUID teamUuid;
         private final Map<String, Integer> statistics;
     }
