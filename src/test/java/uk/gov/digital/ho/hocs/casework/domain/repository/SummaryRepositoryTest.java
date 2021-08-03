@@ -45,7 +45,7 @@ public class SummaryRepositoryTest {
 
         assertThat(summary).isNotNull();
         assertThat(summary.size()).isEqualTo(1);
-        assertThat(summary.get(0).getCount()).isEqualTo(3);
+        assertThat(summary.get(0).getCount()).isEqualTo(2);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class SummaryRepositoryTest {
 
         assertThat(summary).isNotNull();
         assertThat(summary.size()).isEqualTo(2);
-        assertThat(summary.get(0).getCount()).isEqualTo(3);
+        assertThat(summary.get(0).getCount()).isEqualTo(2);
         assertThat(summary.get(1).getCount()).isEqualTo(1);
     }
 
@@ -123,7 +123,7 @@ public class SummaryRepositoryTest {
 
         assertThat(summary).isNotNull();
         assertThat(summary.size()).isEqualTo(1);
-        assertThat(summary.get(0).getCount()).isEqualTo(2);
+        assertThat(summary.get(0).getCount()).isEqualTo(1);
     }
 
     @Test
