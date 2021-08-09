@@ -115,6 +115,7 @@ public class CorrespondentService {
         correspondent.setAddress2(updateCorrespondentRequest.getAddress2());
         correspondent.setAddress3(updateCorrespondentRequest.getAddress3());
         correspondent.setPostcode(updateCorrespondentRequest.getPostcode());
+        correspondent.setCountry(updateCorrespondentRequest.getCountry());
         correspondent.setTelephone(updateCorrespondentRequest.getTelephone());
         correspondent.setEmail(updateCorrespondentRequest.getEmail());
         correspondent.setReference(updateCorrespondentRequest.getReference());

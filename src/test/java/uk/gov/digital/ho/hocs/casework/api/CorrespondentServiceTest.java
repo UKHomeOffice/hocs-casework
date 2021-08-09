@@ -1,14 +1,15 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
@@ -18,6 +19,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +43,12 @@ public class CorrespondentServiceTest {
     private InfoClient infoClient;
     @Mock
     private CaseDataService caseDataService;
+
+    @Captor
+    private ArgumentCaptor<Correspondent> correspondentRepoCapture = ArgumentCaptor.forClass(Correspondent.class);
+
+    @Captor
+    private ArgumentCaptor<Correspondent> correspondentAuditCaptor = ArgumentCaptor.forClass(Correspondent.class);
 
     @Before
     public void setUp() {
@@ -165,5 +173,61 @@ public class CorrespondentServiceTest {
         verify(caseDataRepository).save(caseData);
         verifyNoMoreInteractions(correspondentRepository);
         verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
+    public void shouldUpdateAddressCorrectly() {
+
+        // GIVEN
+        UUID testCaseUUID = UUID.randomUUID();
+        UUID testCorrespondenceUUID = UUID.randomUUID();
+        @NotEmpty String testFullname = "test name";
+        String testPostcode = "T3 5ST";
+        String testAdd1 = "Test House";
+        String testAdd2 = "Test Street";
+        String testAdd3 = "Test Village";
+        String testCountry = "TestCountry";
+        String testTelephone = "07900100100";
+        String testReference = "TestRef";
+        String testEmail = "test@test.com";
+
+        UpdateCorrespondentRequest  testRequest = new UpdateCorrespondentRequest(
+                testFullname,
+                testPostcode,
+                testAdd1,
+                testAdd2,
+                testAdd3,
+                testCountry,
+                testTelephone,
+                testEmail,
+                testReference
+        );
+
+
+        Correspondent mockDBResponse = new Correspondent(testCaseUUID, "SomeType" ,testFullname, null, null, null, null, null);
+        when(correspondentRepository.findByUUID(testCaseUUID, testCorrespondenceUUID)).thenReturn(mockDBResponse);
+
+        // WHEN
+        correspondentService.updateCorrespondent(testCaseUUID, testCorrespondenceUUID, testRequest);
+
+        // THEN
+        verify(correspondentRepository, times(1)).findByUUID(testCaseUUID, testCorrespondenceUUID);
+        verify(correspondentRepository, times(1)).save(correspondentRepoCapture.capture());
+        verify(auditClient, times(1)).updateCorrespondentAudit(any());
+
+        Correspondent captureOutput = correspondentRepoCapture.getValue();
+
+        assertThat(captureOutput.getFullName()).isEqualTo(testFullname);
+        assertThat(captureOutput.getPostcode()).isEqualTo(testPostcode);
+        assertThat(captureOutput.getAddress1()).isEqualTo(testAdd1);
+        assertThat(captureOutput.getAddress2()).isEqualTo(testAdd2);
+        assertThat(captureOutput.getAddress3()).isEqualTo(testAdd3);
+        assertThat(captureOutput.getCountry()).isEqualTo(testCountry);
+        assertThat(captureOutput.getEmail()).isEqualTo(testEmail);
+        assertThat(captureOutput.getCaseUUID()).isEqualTo(testCaseUUID);
+
+        verifyNoMoreInteractions(correspondentRepository, auditClient);
+        verifyNoInteractions(caseDataRepository);
+
     }
 }
