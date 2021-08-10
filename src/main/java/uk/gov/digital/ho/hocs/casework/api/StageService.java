@@ -219,7 +219,8 @@ public class StageService {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
         Set<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
         for (Stage stage : stages) {
-            addSomuData(stage); //List of case contributions from somu table required to show contributions status on teams dashboards
+            // Don't add somu, for now. This could cause performance issues.
+            // addSomuData(stage); //List of case contributions from somu table required to show contributions status on teams dashboards
             updatePriority(stage);
             updateDaysElapsed(stage);
         }
