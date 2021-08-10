@@ -37,6 +37,7 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_COMPLETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_RECREATED;
@@ -76,6 +77,7 @@ public class CaseDataService {
             STAGE_ALLOCATED_TO_USER.toString(),
             CORRESPONDENT_DELETED.toString(),
             CORRESPONDENT_CREATED.toString(),
+            CORRESPONDENT_UPDATED.toString(),
             DOCUMENT_CREATED.toString(),
             DOCUMENT_DELETED.toString()
     );
