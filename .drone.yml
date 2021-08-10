@@ -105,7 +105,7 @@ steps:
       ENVIRONMENT: hocs-gamma
       VERSION: build_${DRONE_BUILD_NUMBER}
       KUBE_TOKEN:
-        from_secret: hocs_frontend_hocs_gamma
+        from_secret: hocs_casework_hocs_gamma
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
     commands:
       - cd kube-hocs-casework
