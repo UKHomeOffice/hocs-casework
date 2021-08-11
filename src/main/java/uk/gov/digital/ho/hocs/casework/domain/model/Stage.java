@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
@@ -101,6 +103,11 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
     @Column(name = "somu", insertable = false, updatable = false)
     private String somu;
 
+    @Getter
+    @Setter
+    @Transient
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private ArrayList<String> tag;
 
 
     public Stage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, UUID transitionNoteUUID) {
