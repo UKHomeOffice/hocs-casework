@@ -5,8 +5,11 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
+import javax.persistence.Basic;
+import javax.persistence.Transient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -70,6 +73,13 @@ public class GetStageResponse {
     @JsonProperty("tag")
     private ArrayList<String> tag;
 
+    @JsonProperty("dueContribution")
+    private String dueContribution;
+
+    @JsonProperty("contributions")
+    private String contributions;
+
+
     public static GetStageResponse from(Stage stage) {
 
         return new GetStageResponse(
@@ -90,6 +100,8 @@ public class GetStageResponse {
                 stage.getCaseCreated(),
                 stage.isActive(),
                 stage.getAssignedTopic(),
-                stage.getTag());
+                stage.getTag(),
+                stage.getDueContribution(),
+                stage.getContributions());
     }
 }

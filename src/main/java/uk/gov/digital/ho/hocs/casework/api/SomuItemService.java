@@ -30,7 +30,7 @@ public class SomuItemService {
         this.auditClient = auditClient;
     }
 
-    Set<SomuItem> getCaseSomuItemsBySomuType(UUID caseUUID) {
+    public Set<SomuItem> getCaseSomuItemsBySomuType(UUID caseUUID) {
         log.debug("Getting all Somu Items for Case: {}", caseUUID);
         Set<SomuItem> somuItems = somuItemRepository.findAllByCaseUuid(caseUUID);
         log.info("Got {} Somu Item for Case: {}, Event {}", somuItems.size(), caseUUID, value(EVENT, SOMU_ITEM_RETRIEVED));
