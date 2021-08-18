@@ -1,8 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.contributions;
 
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.SomuItemService;
@@ -37,15 +35,15 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                 ContributionReceivedStages.contains(stage.getStageType())) {
             calculateDueContributionDate(contributionSomuItems)
                     .ifPresent(ld -> stage.setDueContribution(ld.toString()));
-        } 
-        
+        }
+
         if (COMPLIANT_CASE_TYPE.equals(stage.getCaseDataType())) {
             calculateDueContributionDate(contributionSomuItems)
                     .ifPresent(ld -> stage.setDueContribution(ld.toString()));
-            
+
             highestContributionStatus(contributionSomuItems)
                     .ifPresent(ld -> stage.setContributions(ld.getDisplayedStatus()));
-        } 
+        }
     }
 
     Optional<LocalDate> calculateDueContributionDate(Set<SomuItem> contributionSomuItems) {
@@ -56,10 +54,11 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                 .sorted()
                 .findFirst();
     }
-    
+
     Optional<ContributionStatus> highestContributionStatus(Set<SomuItem> contributionSomuItems) {
         return highestContributionStatus(contributionSomuItems, LocalDate.now());
     }
+
     Optional<ContributionStatus> highestContributionStatus(Set<SomuItem> contributionSomuItems, LocalDate now) {
         return contributionSomuItems
                 .stream()

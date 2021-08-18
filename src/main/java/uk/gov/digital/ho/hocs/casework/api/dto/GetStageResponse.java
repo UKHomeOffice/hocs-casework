@@ -5,11 +5,8 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
-import javax.persistence.Basic;
-import javax.persistence.Transient;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
