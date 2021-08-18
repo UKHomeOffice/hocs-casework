@@ -105,8 +105,24 @@ public class ContributionsProcessorTest {
     @Test
     public void shouldReturnOverdueBeforeDue() {
         SomuItem somuItem1 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-10-10\", \"contributionStatus\" : \"\"}");
-        SomuItem somuItem2 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-09-10\", \"contributionStatus\" : \"\"}");
+        SomuItem somuItem2 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-09-10\"}");
         ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(Set.of(somuItem1, somuItem2), LocalDate.of(2020, 10, 10)).orElse(null);
         assertEquals(ContributionStatus.CONTRIBUTION_OVERDUE, contributionStatus);
+    }
+
+    @Test
+    public void shouldReturnDueWithOtherCompleted() {
+        SomuItem somuItem1 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-10-10\", \"contributionStatus\" : \"contributionReceived\"}");
+        SomuItem somuItem2 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-09-10\", \"contributionStatus\" : \"contributionCancelled\"}");
+        SomuItem somuItem3 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-11-10\"}");
+        ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(Set.of(somuItem1, somuItem2, somuItem3), LocalDate.of(2020, 10, 10)).orElse(null);
+        assertEquals(ContributionStatus.CONTRIBUTION_DUE, contributionStatus);
+    }
+
+    @Test
+    public void shouldReturnDueForeDueFutureDueDate() {
+        SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-11-10\"}");
+        ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(Set.of(somuItem), LocalDate.of(2020, 10, 10)).orElse(null);
+        assertEquals(ContributionStatus.CONTRIBUTION_DUE, contributionStatus);
     }
 }
