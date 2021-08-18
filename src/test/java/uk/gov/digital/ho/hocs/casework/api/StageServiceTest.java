@@ -717,6 +717,14 @@ public class StageServiceTest {
         verifyZeroInteractions(notifyClient);
     }
 
+    @Test
+    public void shouldGetActiveStagesByTeamUUID() {
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        when(stageRepository.findAllActiveByTeamUUID(teamUUID)).thenReturn(Set.of(stage));
+        stageService.getActiveStagesByTeamUUID(teamUUID);
+        verify(contributionsProcessor).processContributionsForStage(stage);
+    }
+
     /**
      * The stage cannot be an instance as it does not have a function to set data (in the Stage Class).
      * I did not want to create a setData on the Stage class for testing only.
