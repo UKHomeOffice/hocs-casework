@@ -43,7 +43,7 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
             calculateDueContributionDate(contributionSomuItems)
                     .ifPresent(ld -> stage.setDueContribution(ld.toString()));
             
-            highestContributionStatus(contributionSomuItems, LocalDate.now())
+            highestContributionStatus(contributionSomuItems)
                     .ifPresent(ld -> stage.setContributions(ld.getDisplayedStatus()));
         } 
     }
@@ -57,6 +57,9 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                 .findFirst();
     }
     
+    Optional<ContributionStatus> highestContributionStatus(Set<SomuItem> contributionSomuItems) {
+        return highestContributionStatus(contributionSomuItems, LocalDate.now());
+    }
     Optional<ContributionStatus> highestContributionStatus(Set<SomuItem> contributionSomuItems, LocalDate now) {
         return contributionSomuItems
                 .stream()
