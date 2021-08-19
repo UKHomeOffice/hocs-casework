@@ -31,8 +31,7 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
     public void processContributionsForStage(Stage stage) {
         Set<SomuItem> contributionSomuItems = somuItemService.getCaseSomuItemsBySomuType(stage.getCaseUUID());
 
-        if (ContributionRequestedStages.contains(stage.getStageType()) ||
-                ContributionReceivedStages.contains(stage.getStageType())) {
+        if (MPAMContributionStages.contains(stage.getStageType())) {
             calculateDueContributionDate(contributionSomuItems)
                     .ifPresent(ld -> stage.setDueContribution(ld.toString()));
         }
