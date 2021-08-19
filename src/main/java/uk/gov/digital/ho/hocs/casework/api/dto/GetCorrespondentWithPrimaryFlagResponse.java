@@ -13,7 +13,6 @@ import java.util.UUID;
 @Getter
 public class GetCorrespondentWithPrimaryFlagResponse {
 
-
     @JsonProperty("uuid")
     private UUID uuid;
 
@@ -22,6 +21,9 @@ public class GetCorrespondentWithPrimaryFlagResponse {
 
     @JsonProperty("type")
     private String type;
+
+    @JsonProperty("typeDisplayName")
+    private String typeDisplayName;
 
     @JsonProperty("caseUUID")
     private UUID caseUUID;
@@ -52,6 +54,7 @@ public class GetCorrespondentWithPrimaryFlagResponse {
                 correspondent.getUuid(),
                 correspondent.getCreated(),
                 correspondent.getCorrespondentType(),
+                correspondent.getCorrespondentTypeName(),
                 correspondent.getCaseUUID(),
                 correspondent.getFullName(),
                 AddressDto.from(correspondent),
