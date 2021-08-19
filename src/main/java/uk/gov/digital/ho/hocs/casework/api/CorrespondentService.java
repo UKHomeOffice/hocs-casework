@@ -8,6 +8,7 @@ import org.springframework.util.CollectionUtils;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.api.utils.CorrespondentTypeNameDecorator;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -18,8 +19,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
-import java.util.Objects;
-import java.util.Optional;
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,6 +33,7 @@ public class CorrespondentService {
     private final CorrespondentRepository correspondentRepository;
     private final CaseDataRepository caseDataRepository;
     private final CaseDataService caseDataService;
+    private final CorrespondentTypeNameDecorator correspondentTypeNameDecorator;
     private final AuditClient auditClient;
     private final InfoClient infoClient;
 
@@ -42,33 +43,27 @@ public class CorrespondentService {
             CaseDataRepository caseDataRepository,
             AuditClient auditClient,
             InfoClient infoClient,
-            CaseDataService caseDataService) {
+            CaseDataService caseDataService,
+            CorrespondentTypeNameDecorator correspondentTypeNameDecorator) {
         this.correspondentRepository = correspondentRepository;
         this.caseDataRepository = caseDataRepository;
         this.auditClient = auditClient;
         this.infoClient = infoClient;
         this.caseDataService = caseDataService;
-    }
-
-    private Set<CorrespondentWithPrimaryFlag> attachCorrespondentTypeName(UUID caseUuid, Set<CorrespondentWithPrimaryFlag> correspondents) {
-        Set<CorrespondentTypeDto> correspondentTypes = getCorrespondentTypes(caseUuid);
-
-        correspondents.forEach(correspondent -> {
-            Optional<CorrespondentTypeDto> correspondentType = correspondentTypes.stream()
-                    .filter(correspondentTypeDto -> Objects.equals(correspondentTypeDto.getType(), correspondent.getCorrespondentType()))
-                    .findFirst();
-
-            correspondentType
-                    .ifPresent(correspondentTypeDto -> correspondent.setCorrespondentTypeName(correspondentTypeDto.getDisplayName()));
-
-        });
-
-        return correspondents;
+        this.correspondentTypeNameDecorator = correspondentTypeNameDecorator;
     }
 
     Set<Correspondent> getAllActiveCorrespondents() {
         log.debug("Getting all active Correspondents");
         Set<Correspondent> correspondents = correspondentRepository.findAllActive();
+
+        if (correspondents.size() == 0) {
+            return Collections.emptySet();
+        }
+
+        correspondentTypeNameDecorator
+                .addCorrespondentTypeName(infoClient.getAllCorrespondentType().getCorrespondentTypes(), correspondents);
+
         log.info("Got {} all active Correspondents", correspondents.size(), value(EVENT, CORRESPONDENTS_RETRIEVED));
         return correspondents;
     }
@@ -78,7 +73,11 @@ public class CorrespondentService {
 
         Set<CorrespondentWithPrimaryFlag> correspondents = correspondentRepository.findAllByCaseUUID(caseUUID);
 
-        attachCorrespondentTypeName(caseUUID, correspondents);
+        if (correspondents.size() == 0) {
+            return Collections.emptySet();
+        }
+
+        correspondentTypeNameDecorator.addCorrespondentTypeName(getCorrespondentTypes(caseUUID), correspondents);
 
         log.info("Got {} Correspondents for Case: {}", correspondents.size(), caseUUID, value(EVENT, CORRESPONDENTS_RETRIEVED));
         return correspondents;
@@ -88,6 +87,8 @@ public class CorrespondentService {
         log.debug("Getting Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
         Correspondent correspondent = correspondentRepository.findByUUID(caseUUID, correspondentUUID);
         if (correspondent != null) {
+            correspondentTypeNameDecorator.addCorrespondentTypeName(getCorrespondentTypes(caseUUID), correspondent);
+
             log.info("Got Correspondent: {} for Case: {}", correspondentUUID, caseUUID, value(EVENT, CORRESPONDENT_RETRIEVED));
             return correspondent;
         } else {

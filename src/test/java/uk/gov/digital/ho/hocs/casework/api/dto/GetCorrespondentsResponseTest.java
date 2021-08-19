@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
-import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 
 import java.util.HashSet;
@@ -13,48 +12,50 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GetCorrespondentsResponseTest {
 
+    private final CorrespondentWithPrimaryFlag correspondent = new CorrespondentWithPrimaryFlag(
+            UUID.randomUUID(),
+            "CORRESPONDENT",
+            "anyFullName",
+            new Address("anyPostcode", "any1", "any2", "any3", "anyCountry"),
+            "anyPhone",
+            "anyEmail",
+            "anyReference",
+            "external key",
+            true
+    );
+
     @Test
     public void getGetCorrespondentsResponse() {
-
-        UUID caseUUID = UUID.randomUUID();
-        String type = "CORRESPONDENT";
-        String fullName = "anyFullName";
-        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        String phone = "anyPhone";
-        String email = "anyEmail";
-        String reference = "anyReference";
-        String externalKey = "external key";
-        Boolean isPrimary = true;
-
-        CorrespondentWithPrimaryFlag correspondent = new CorrespondentWithPrimaryFlag(
-                caseUUID,
-                type,
-                fullName,
-                address,
-                phone,
-                email,
-                reference,
-                externalKey,
-                isPrimary
-        );
-
-        Set<CorrespondentWithPrimaryFlag> correspondents = new HashSet<>();
-        correspondents.add(correspondent);
+        Set<CorrespondentWithPrimaryFlag> correspondents = Set.of(correspondent);
 
         GetCorrespondentsResponse getCorrespondentsResponse = GetCorrespondentsResponse.from(correspondents);
 
         assertThat(getCorrespondentsResponse.getCorrespondents()).hasSize(1);
+    }
 
+    @Test
+    public void getGetCorrespondentsResponse_withDisplayName() {
+        CorrespondentWithPrimaryFlag correspondentVal = correspondent;
+        String displayName = "Super Awesome Name";
+
+        correspondentVal.setCorrespondentTypeName(displayName);
+
+        Set<CorrespondentWithPrimaryFlag> correspondents = Set.of(correspondentVal);
+
+        GetCorrespondentsResponse getCorrespondentsResponse = GetCorrespondentsResponse.from(correspondents);
+
+        assertThat(getCorrespondentsResponse.getCorrespondents()).hasSize(1);
+        //noinspection OptionalGetWithoutIsPresent
+        assertThat(getCorrespondentsResponse.getCorrespondents().stream().findFirst().get().getTypeDisplayName())
+                .isEqualTo(displayName);
     }
 
     @Test
     public void getGetCorrespondentsResponseEmpty() {
-
         Set<CorrespondentWithPrimaryFlag> correspondents = new HashSet<>();
 
         GetCorrespondentsResponse getCorrespondentsResponse = GetCorrespondentsResponse.from(correspondents);
 
         assertThat(getCorrespondentsResponse.getCorrespondents()).hasSize(0);
-
     }
 }
