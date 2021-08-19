@@ -11,10 +11,15 @@ import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.Address;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -45,6 +50,22 @@ public class CorrespondentService {
         this.caseDataService = caseDataService;
     }
 
+    private Set<CorrespondentWithPrimaryFlag> attachCorrespondentTypeName(UUID caseUuid, Set<CorrespondentWithPrimaryFlag> correspondents) {
+        Set<CorrespondentTypeDto> correspondentTypes = getCorrespondentTypes(caseUuid);
+
+        correspondents.forEach(correspondent -> {
+            Optional<CorrespondentTypeDto> correspondentType = correspondentTypes.stream()
+                    .filter(correspondentTypeDto -> Objects.equals(correspondentTypeDto.getType(), correspondent.getCorrespondentType()))
+                    .findFirst();
+
+            correspondentType
+                    .ifPresent(correspondentTypeDto -> correspondent.setCorrespondentTypeName(correspondentTypeDto.getDisplayName()));
+
+        });
+
+        return correspondents;
+    }
+
     Set<Correspondent> getAllActiveCorrespondents() {
         log.debug("Getting all active Correspondents");
         Set<Correspondent> correspondents = correspondentRepository.findAllActive();
@@ -54,7 +75,11 @@ public class CorrespondentService {
 
     Set<CorrespondentWithPrimaryFlag> getCorrespondents(UUID caseUUID) {
         log.debug("Getting all Correspondents for Case: {}", caseUUID);
+
         Set<CorrespondentWithPrimaryFlag> correspondents = correspondentRepository.findAllByCaseUUID(caseUUID);
+
+        attachCorrespondentTypeName(caseUUID, correspondents);
+
         log.info("Got {} Correspondents for Case: {}", correspondents.size(), caseUUID, value(EVENT, CORRESPONDENTS_RETRIEVED));
         return correspondents;
     }
@@ -71,7 +96,7 @@ public class CorrespondentService {
         }
     }
 
-    Set<CorrespondentTypeDto> getCorrespondentTypes(UUID caseUUID){
+    Set<CorrespondentTypeDto> getCorrespondentTypes(UUID caseUUID) {
         log.debug("Getting all Correspondent Types for Case: {}", caseUUID);
         String caseDataType = caseDataRepository.getCaseType(caseUUID);
         GetCorrespondentTypeResponse correspondentType = infoClient.getCorrespondentType(caseDataType);
@@ -80,7 +105,7 @@ public class CorrespondentService {
         return correspondentTypes;
     }
 
-    Set<CorrespondentTypeDto> getSelectableCorrespondentTypes(UUID caseUUID){
+    Set<CorrespondentTypeDto> getSelectableCorrespondentTypes(UUID caseUUID) {
         log.debug("Getting all Selectable Correspondent Types for Case: {}", caseUUID);
         String caseDataType = caseDataRepository.getCaseType(caseUUID);
         GetCorrespondentTypeResponse correspondentType = infoClient.getSelectableCorrespondentType(caseDataType);
@@ -89,7 +114,7 @@ public class CorrespondentService {
         return correspondentTypes;
     }
 
-    void createCorrespondent(UUID caseUUID, UUID stageUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference, String externalKey){
+    void createCorrespondent(UUID caseUUID, UUID stageUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference, String externalKey) {
         log.debug("Creating Correspondent of Type: {} for Case: {}", correspondentType, caseUUID);
         Correspondent correspondent = new Correspondent(caseUUID, correspondentType, fullname, address, telephone, email, reference, externalKey);
         try {
@@ -97,7 +122,7 @@ public class CorrespondentService {
             auditClient.createCorrespondentAudit(correspondent);
 
             Set<CorrespondentWithPrimaryFlag> caseCorrespondents = correspondentRepository.findAllByCaseUUID(caseUUID);
-            if(!CollectionUtils.isEmpty(caseCorrespondents) && caseCorrespondents.size() == 1){
+            if (!CollectionUtils.isEmpty(caseCorrespondents) && caseCorrespondents.size() == 1) {
                 caseDataService.updatePrimaryCorrespondent(caseUUID, stageUUID, caseCorrespondents.iterator().next().getUuid());
             }
 
@@ -107,7 +132,7 @@ public class CorrespondentService {
         log.info("Created Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID, value(EVENT, CORRESPONDENT_CREATED));
     }
 
-    void updateCorrespondent(UUID caseUUID, UUID correspondentUUID, UpdateCorrespondentRequest updateCorrespondentRequest){
+    void updateCorrespondent(UUID caseUUID, UUID correspondentUUID, UpdateCorrespondentRequest updateCorrespondentRequest) {
         log.debug("Updating Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
         Correspondent correspondent = getCorrespondent(caseUUID, correspondentUUID);
         correspondent.setFullName(updateCorrespondentRequest.getFullname());

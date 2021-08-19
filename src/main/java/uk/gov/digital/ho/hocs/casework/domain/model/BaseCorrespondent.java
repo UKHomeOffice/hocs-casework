@@ -30,6 +30,11 @@ public class BaseCorrespondent implements Serializable {
     protected String correspondentType;
 
     @Getter
+    @Setter
+    @Column(name = "type_name")
+    protected String correspondentTypeName;
+
+    @Getter
     @Column(name = "case_uuid")
     protected UUID caseUUID;
 
