@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @MappedSuperclass
-public class BaseCorrespondent implements Serializable {
+public abstract class BaseCorrespondent implements Serializable {
 
     @Id
     @Column(name = "id")
@@ -31,7 +31,7 @@ public class BaseCorrespondent implements Serializable {
 
     @Getter
     @Setter
-    @Column(name = "type_name")
+    @Transient
     protected String correspondentTypeName;
 
     @Getter
