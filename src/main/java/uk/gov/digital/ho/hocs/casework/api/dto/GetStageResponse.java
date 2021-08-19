@@ -70,6 +70,13 @@ public class GetStageResponse {
     @JsonProperty("tag")
     private ArrayList<String> tag;
 
+    @JsonProperty("dueContribution")
+    private String dueContribution;
+
+    @JsonProperty("contributions")
+    private String contributions;
+
+
     public static GetStageResponse from(Stage stage) {
 
         return new GetStageResponse(
@@ -90,6 +97,8 @@ public class GetStageResponse {
                 stage.getCaseCreated(),
                 stage.isActive(),
                 stage.getAssignedTopic(),
-                stage.getTag());
+                stage.getTag(),
+                stage.getDueContribution(),
+                stage.getContributions());
     }
 }

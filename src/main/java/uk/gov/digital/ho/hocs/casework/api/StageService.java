@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import com.amazonaws.util.json.Jackson;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,10 +13,10 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
+import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
@@ -48,7 +47,7 @@ public class StageService {
     private final DaysElapsedCalculator daysElapsedCalculator;
     private final StageTagsDecorator stageTagsDecorator;
     private final CaseNoteService caseNoteService;
-    private final SomuItemService somuItemService;
+    private final ContributionsProcessor contributionsProcessor;
 
     private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage::getCreated);
 
@@ -56,7 +55,7 @@ public class StageService {
     @Autowired
     public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient,
                         @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator,
-                        DaysElapsedCalculator daysElapsedCalculator, StageTagsDecorator stageTagsDecorator, CaseNoteService caseNoteService, SomuItemService somuItemService) {
+                        DaysElapsedCalculator daysElapsedCalculator, StageTagsDecorator stageTagsDecorator, CaseNoteService caseNoteService, ContributionsProcessor contributionsProcessor) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -68,7 +67,7 @@ public class StageService {
         this.daysElapsedCalculator = daysElapsedCalculator;
         this.stageTagsDecorator = stageTagsDecorator;
         this.caseNoteService = caseNoteService;
-        this.somuItemService = somuItemService;
+        this.contributionsProcessor = contributionsProcessor;
     }
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
@@ -222,8 +221,7 @@ public class StageService {
         Set<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
 
         for (Stage stage : stages) {
-            // Don't add somu, for now. This could cause performance issues.
-            // addSomuData(stage); //List of case contributions from somu table required to show contributions status on teams dashboards
+            updateContributions(stage);
             updatePriority(stage);
             updateDaysElapsed(stage);
             decorateTags(stage);
@@ -232,16 +230,9 @@ public class StageService {
         return stages;
     }
 
-    private void addSomuData(Stage stage) {
-        log.info("Adding somu data for stage : {}", stage.getCaseUUID());
-        Set<SomuItem> somuItems = somuItemService.getCaseSomuItemsBySomuType(stage.getCaseUUID());
-        JSONObject object = new JSONObject();
-        JSONArray jsonArray = new JSONArray();
-        for(SomuItem si : somuItems){
-            jsonArray.put(si.getData());
-        }
-        object.put("caseContributions", jsonArray);
-        stage.setSomu(object.toString());
+    void updateContributions(Stage stage) {
+        log.debug("Adding contributions data for stage : {}", stage.getCaseUUID());
+        contributionsProcessor.processContributionsForStage(stage);
     }
 
     Stage getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {

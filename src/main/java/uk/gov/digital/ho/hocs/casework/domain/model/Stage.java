@@ -109,6 +109,15 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private ArrayList<String> tag;
 
+    @Getter
+    @Setter
+    @Transient
+    private String dueContribution;
+
+    @Getter
+    @Setter
+    @Transient
+    private String contributions;
 
     public Stage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, UUID transitionNoteUUID) {
         if (caseUUID == null || stageType == null) {
