@@ -33,15 +33,24 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
 
         if (MPAMContributionStages.contains(stage.getStageType())) {
             calculateDueContributionDate(contributionSomuItems)
-                    .ifPresent(ld -> stage.setDueContribution(ld.toString()));
+                    .ifPresent(ld -> {
+                        log.info("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
+                        stage.setDueContribution(ld.toString());
+                    });
         }
 
         if (COMPLIANT_CASE_TYPE.equals(stage.getCaseDataType())) {
             calculateDueContributionDate(contributionSomuItems)
-                    .ifPresent(ld -> stage.setDueContribution(ld.toString()));
+                    .ifPresent(ld -> {
+                        log.info("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
+                        stage.setDueContribution(ld.toString());
+                    });
 
             highestContributionStatus(contributionSomuItems)
-                    .ifPresent(ld -> stage.setContributions(ld.getDisplayedStatus()));
+                    .ifPresent(cs -> {
+                        log.info("Setting contribution status {}, for caseId {}", cs.getDisplayedStatus(), stage.getCaseUUID());
+                        stage.setContributions(cs.getDisplayedStatus());
+                    });
         }
     }
 
