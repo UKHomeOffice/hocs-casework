@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -18,16 +17,20 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.*;
@@ -86,6 +89,10 @@ public class DeleteCorrespondentIntegrationTest {
                 .expect(ExpectedCount.times(3), requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/correspondentType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(GetCorrespondentTypeResponse.from(Collections.emptySet())), MediaType.APPLICATION_JSON));
         // mocking audit service
         mockInfoService
                 .expect(requestTo("http://localhost:8087/audit/case/14915b78-6977-42db-b343-0915a7f412a1/delete"))
@@ -177,6 +184,7 @@ public class DeleteCorrespondentIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess("{\"emailAddress\":\"bob\"}", MediaType.APPLICATION_JSON));
 
+
         long before = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
 
         ResponseEntity<Void> result1 = testRestTemplate.exchange(
@@ -207,6 +215,11 @@ public class DeleteCorrespondentIntegrationTest {
                 .expect(requestTo("http://localhost:8085/user/4035d37f-9c1d-436e-99de-1607866634d4"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess("{\"emailAddress\":\"bob\"}", MediaType.APPLICATION_JSON));
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/correspondentType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
 
         long before = correspondentRepository.findAllByCaseUUID(CASE_UUID2).size();
         ResponseEntity<Void> result1 = testRestTemplate.exchange(
@@ -252,6 +265,12 @@ public class DeleteCorrespondentIntegrationTest {
     @Test
     public void shouldReturnOkWhenCaseIsDeletedAndThenNotFoundDeleteCorrespondent() throws JsonProcessingException {
         setupMockTeams("TEST", 5, 4);
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/correspondentType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess("{}", MediaType.APPLICATION_JSON));
+
         Correspondent correspondentBefore = correspondentRepository.findByUUID(CASE_UUID1, CORRESPONDENT_UUID);
         ResponseEntity<String> result1 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/true", DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
