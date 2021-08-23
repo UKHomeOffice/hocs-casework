@@ -76,6 +76,14 @@ public class GetStageResponse {
     @JsonProperty("contributions")
     private String contributions;
 
+    @JsonProperty
+    private String nextCaseType;
+
+    @JsonProperty
+    private String nextCaseReference;
+
+    @JsonProperty
+    private String nextCaseUUID;
 
     public static GetStageResponse from(Stage stage) {
 
@@ -99,6 +107,9 @@ public class GetStageResponse {
                 stage.getAssignedTopic(),
                 stage.getTag(),
                 stage.getDueContribution(),
-                stage.getContributions());
+                stage.getContributions(),
+                stage.getNextCaseType(),
+                stage.getNextCaseReference(),
+                stage.getNextCaseUUID());
     }
 }

@@ -107,6 +107,23 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
     @Where(clause = "deleted = false")
     private Set<CaseNote> caseNotes;
 
+    @Getter
+    @Column(name = "primary_case_uuid", insertable = false, updatable = false)
+    private UUID previousCaseUUID;
+
+    @Getter
+    @Column(name = "primary_case_reference", insertable = false, updatable = false)
+    private String previousCaseReference;
+
+    @Getter
+    @Column(name = "secondary_case_uuid", insertable = false, updatable = false)
+    private UUID nextCaseUUID;
+
+    @Getter
+    @Column(name = "secondary_case_reference", insertable = false, updatable = false)
+    private String nextCaseReference;
+
+
     public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate dateReceived) {
         this(type, caseNumber, dateReceived);
         update(data, objectMapper);

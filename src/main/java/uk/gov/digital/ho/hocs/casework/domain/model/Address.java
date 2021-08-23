@@ -1,9 +1,11 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @java.lang.SuppressWarnings("squid:S1068")
+@Builder
 @AllArgsConstructor
 @Getter
 public class Address {

@@ -29,7 +29,7 @@ public class CorrespondentServiceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID stageUUID = UUID.randomUUID();
-    private final CaseDataType caseDataType = new CaseDataType("TEST", "1a", "TEST");
+    private final CaseDataType caseDataType = new CaseDataType("TEST", "1a", "TEST", null);
     @Mock
     private CorrespondentRepository correspondentRepository;
     @Mock

@@ -19,9 +19,13 @@ public class CaseDataType {
     @JsonProperty("type")
     private String displayCode;
 
+    @JsonProperty("previousCaseType")
+    private String previousCaseType;
+
     public CaseDataType(String type, String shortCode) {
         this.displayName = type;
         this.displayCode = type;
         this.shortCode = shortCode;
+        this.previousCaseType = null;
     }
 }

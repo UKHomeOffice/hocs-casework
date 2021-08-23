@@ -42,13 +42,13 @@ public class CaseDataResourceTest {
     public void shouldCreateCase() {
 
         CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, dateArg);
-        CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data, dateArg);
+        CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data, dateArg, null);
 
-        when(caseDataService.createCase(caseDataType.getDisplayCode(), data, dateArg)).thenReturn(caseData);
+        when(caseDataService.createCase(caseDataType.getDisplayCode(), data, dateArg, null)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseDataType.getDisplayCode(), data, dateArg);
+        verify(caseDataService, times(1)).createCase(caseDataType.getDisplayCode(), data, dateArg, null);
 
         verifyNoMoreInteractions(caseDataService);
 
@@ -108,7 +108,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCaseSummary() {
 
-        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary(null, null, null, null, null, null, null));
+        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary(null, null, null, null, null, null, null, null, null));
 
         ResponseEntity response = caseDataResource.getCaseSummary(uuid);
 

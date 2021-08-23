@@ -10,6 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
+import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
@@ -24,15 +25,29 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseLinkRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
 
@@ -64,11 +79,18 @@ public class CaseDataServiceTest {
     @Mock
     private AuditClient auditClient;
 
+    @Mock
+    private CaseCopyFactory caseCopyFactory;
+
+
+    @Mock
+    private CaseLinkRepository caseLinkRepository;
+
     @Before
     public void setUp() {
         configuration = new SpringConfiguration();
         objectMapper = configuration.initialiseObjectMapper();
-        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper, auditClient);
+        this.caseDataService = new CaseDataService(caseDataRepository, caseLinkRepository, infoClient, objectMapper, auditClient, caseCopyFactory);
     }
 
     @Test
@@ -78,7 +100,7 @@ public class CaseDataServiceTest {
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, null);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
@@ -94,7 +116,7 @@ public class CaseDataServiceTest {
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayName(), null, deadlineDate);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayName(), null, deadlineDate, null);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
@@ -110,7 +132,7 @@ public class CaseDataServiceTest {
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, null);
 
         verify(auditClient, times(1)).createCaseAudit(caseData);
         verifyNoMoreInteractions(auditClient);
@@ -119,7 +141,7 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
 
-        caseDataService.createCase(null, new HashMap<>(), deadlineDate);
+        caseDataService.createCase(null, new HashMap<>(), deadlineDate, null);
     }
 
     @Test()
@@ -128,7 +150,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         try {
-            caseDataService.createCase(null, new HashMap<>(), deadlineDate);
+            caseDataService.createCase(null, new HashMap<>(), deadlineDate, null);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
