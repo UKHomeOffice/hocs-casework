@@ -51,7 +51,6 @@ public class StageService {
 
     private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage::getCreated);
 
-
     @Autowired
     public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient,
                         @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator,
@@ -273,21 +272,47 @@ public class StageService {
         if (teams.isEmpty()) {
             log.warn("No teams - Returning 0 Stages", value(EVENT, TEAMS_STAGE_LIST_EMPTY));
             return new HashSet<>(0);
-        } else {
-            Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
-            if (caseTypes.isEmpty()) {
-                caseTypes.add("");
-            }
-            Set<Stage> stages = stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
+        }
 
-            for (Stage stage : stages) {
-                updatePriority(stage);
-                updateDaysElapsed(stage);
-                decorateTags(stage);
-            }
+        Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
+        if (caseTypes.isEmpty()) {
+            caseTypes.add("");
+        }
 
-            log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
-            return stages;
+        Set<Stage> stages = stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
+
+        updateStages(stages);
+
+        log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
+        return stages;
+    }
+
+    Set<Stage> getUserStages(UUID userUuid) {
+        log.debug("Getting users active stage");
+        Set<UUID> teams = userPermissionsService.getUserTeams();
+        if (teams.isEmpty()) {
+            log.warn("No teams - Returning 0 Stages", value(EVENT, TEAMS_STAGE_LIST_EMPTY));
+            return new HashSet<>(0);
+        }
+
+        Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
+        if (caseTypes.isEmpty()) {
+            caseTypes.add("");
+        }
+
+        Set<Stage> stages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUuid, teams, caseTypes);
+
+        updateStages(stages);
+
+        log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
+        return stages;
+    }
+
+    private void updateStages(Set<Stage> stages) {
+        for (Stage stage : stages) {
+            updatePriority(stage);
+            updateDaysElapsed(stage);
+            decorateTags(stage);
         }
     }
 
