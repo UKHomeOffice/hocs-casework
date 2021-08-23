@@ -19,6 +19,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
+import java.util.Optional;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -133,6 +134,24 @@ public class CorrespondentService {
         log.info("Created Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID, value(EVENT, CORRESPONDENT_CREATED));
     }
 
+    void createCorrespondent(UUID caseUUID, CorrespondentWithPrimaryFlag correspondent) {
+
+        createCorrespondent(caseUUID, null,
+                correspondent.getCorrespondentType(),
+                correspondent.getFullName(),
+                Address.builder()
+                        .address1(correspondent.getAddress1())
+                        .address2(correspondent.getAddress2())
+                        .address3(correspondent.getAddress3())
+                        .postcode(correspondent.getPostcode())
+                        .country(correspondent.getCountry()).build(),
+                correspondent.getTelephone(),
+                correspondent.getEmail(),
+                correspondent.getReference(),
+                correspondent.getExternalKey());
+
+    }
+
     void updateCorrespondent(UUID caseUUID, UUID correspondentUUID, UpdateCorrespondentRequest updateCorrespondentRequest) {
         log.debug("Updating Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
         Correspondent correspondent = getCorrespondent(caseUUID, correspondentUUID);
@@ -167,5 +186,32 @@ public class CorrespondentService {
             auditClient.updateCaseAudit(caseData, stageUUID);
         }
         log.info("Deleted Correspondent: {}", caseUUID, value(EVENT, CORRESPONDENT_DELETED));
+    }
+
+    /**
+     * Returns the primary_correspondent_uuid from the copy operation.
+     * @param fromCase
+     * @param toCase
+     * @return
+     */
+    public void copyCorrespondents(UUID fromCase, UUID toCase) {
+
+        // get the case correspondents
+        Set<CorrespondentWithPrimaryFlag> correspondents = getCorrespondents(fromCase);
+
+        // save the primary first and the existing logic will assign it within the case
+        Optional<CorrespondentWithPrimaryFlag> primaryCorrespondent = correspondents.stream().filter(CorrespondentWithPrimaryFlag::getIsPrimary).findFirst();
+        if (primaryCorrespondent.isPresent()) {
+            createCorrespondent(toCase, primaryCorrespondent.get());
+        }
+
+        // save the rest
+        correspondents.stream()
+                .filter(correspondent -> !correspondent.getIsPrimary())
+                .forEach(correspondent -> createCorrespondent(toCase, correspondent));
+
+        // TODO: Do I need to set the primary in the json data and row?
+
+
     }
 }

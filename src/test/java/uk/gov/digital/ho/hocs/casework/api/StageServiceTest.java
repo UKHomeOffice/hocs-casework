@@ -44,7 +44,7 @@ public class StageServiceTest {
     private final String stageType = "DCU_MIN_MARKUP";
     private final String allocationType = "anyAllocate";
     private final UUID transitionNoteUUID = UUID.randomUUID();
-    private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN");
+    private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN", null);
     private final String userID = UUID.randomUUID().toString();
 
     private StageService stageService;

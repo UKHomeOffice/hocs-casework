@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
@@ -23,13 +24,36 @@ import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_WITHDRAWN;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_EMPTY;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGES_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_TEAM;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_USER;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_COMPLETED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_RECREATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_TRANSITION_NOTE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_EMPTY;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.USERS_TEAMS_STAGE_LIST_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @Slf4j
@@ -350,11 +374,25 @@ public class StageService {
         if (caseUUIDs.isEmpty()) {
             log.info("No cases - Returning 0 Stages", value(EVENT, SEARCH_STAGE_LIST_EMPTY));
             return new HashSet<>(0);
-        } else {
-            Set<Stage> stages = stageRepository.findAllByCaseUUIDIn(caseUUIDs);
-            log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));
-            return groupByCaseUUID(stages);
         }
+
+        Set<Stage> stages = stageRepository.findAllByCaseUUIDIn(caseUUIDs);
+
+        // done like this because the case relationship is in the info schema
+        // get the case types with a previous case type and reduce to
+        // Map<String, String>, - K is the previousCaseType, V is the caseType
+        Map<String, String> caseTypes = infoClient.getAllCaseTypes()
+                .stream()
+                .filter( caseType -> Objects.nonNull(caseType.getPreviousCaseType()))
+                .collect(Collectors.toMap(CaseDataType::getPreviousCaseType, CaseDataType::getDisplayCode));
+
+        // map the previous case type on to the cases found
+        stages.stream()
+                .forEach(stage -> stage.setNextCaseType(caseTypes.get(stage.getCaseDataType())));
+
+        log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));
+        return groupByCaseUUID(stages);
+
     }
 
     Set<Stage> getAllStagesForCaseByCaseUUID(UUID caseUUID) {
@@ -369,7 +407,7 @@ public class StageService {
         }
     }
 
-    private static Set<Stage> groupByCaseUUID(Set<Stage> stages) {
+    private static Set<Stage> groupByCaseUUID(Set<? extends Stage> stages) {
 
         // Group the stages by case UUID
         Map<UUID, List<Stage>> groupedStages = stages.stream().collect(Collectors.groupingBy(Stage::getCaseUUID));

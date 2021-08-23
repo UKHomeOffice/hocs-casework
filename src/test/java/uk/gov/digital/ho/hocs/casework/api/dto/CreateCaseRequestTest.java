@@ -17,7 +17,7 @@ public class CreateCaseRequestTest {
         Map<String, String> data = new HashMap<>();
         LocalDate caseReceived = LocalDate.now();
 
-        CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseDataType.getDisplayCode(), data, caseReceived);
+        CreateCaseRequest createCaseRequest = new CreateCaseRequest(caseDataType.getDisplayCode(), data, caseReceived, null);
 
         assertThat(createCaseRequest.getType()).isEqualTo(caseDataType.getDisplayCode());
         assertThat(createCaseRequest.getData()).isEqualTo(data);
@@ -27,7 +27,7 @@ public class CreateCaseRequestTest {
     @Test
     public void getCreateCaseRequestNull() {
 
-        CreateCaseRequest createCaseRequest = new CreateCaseRequest(null, null, null);
+        CreateCaseRequest createCaseRequest = new CreateCaseRequest(null, null, null, null);
 
         assertThat(createCaseRequest.getType()).isNull();
         assertThat(createCaseRequest.getData()).isNull();

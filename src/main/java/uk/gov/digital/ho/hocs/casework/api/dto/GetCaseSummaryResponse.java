@@ -36,6 +36,11 @@ public class GetCaseSummaryResponse {
     @JsonProperty("activeStages")
     Set<ActiveStageDto> activeStages;
 
+    @JsonProperty("previousCaseReference")
+    private String previousCaseReference;
+
+    @JsonProperty("previousCaseUUID")
+    private UUID previousCaseUUID;
 
 
     public static GetCaseSummaryResponse from(CaseSummary caseSummary) {
@@ -59,6 +64,14 @@ public class GetCaseSummaryResponse {
             additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream().filter(field -> !StringUtils.isEmpty(field.getValue())).map(AdditionalFieldDto::from).collect(Collectors.toList()));
         }
         additionalFieldDtos.sort(Comparator.comparing(AdditionalFieldDto::getLabel));
-        return new GetCaseSummaryResponse(caseSummary.getCreatedDate(), caseSummary.getCaseDeadline(), caseSummary.getStageDeadlines(), additionalFieldDtos, getCorrespondentResponse, getTopicsResponse, activeStageDtos);
+        return new GetCaseSummaryResponse(caseSummary.getCreatedDate(),
+                caseSummary.getCaseDeadline(),
+                caseSummary.getStageDeadlines(),
+                additionalFieldDtos,
+                getCorrespondentResponse,
+                getTopicsResponse,
+                activeStageDtos,
+                caseSummary.getPreviousCaseReference(),
+                caseSummary.getPreviousCaseUUID());
     }
 }
