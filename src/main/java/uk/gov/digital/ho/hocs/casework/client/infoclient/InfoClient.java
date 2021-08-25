@@ -76,8 +76,6 @@ public class InfoClient {
     public List<CaseDataType> getAllCaseTypes() {
         List<CaseDataType> caseDataTypes = restHelper.get(serviceBaseURL, "/caseType", new ParameterizedTypeReference<List<CaseDataType>>() { });
         log.info("Got all case types", value(EVENT, INFO_CLIENT_GET_CASE_TYPES_SUCCESS));
-
-        // convert to an indexed map
         return caseDataTypes;
     }
 
