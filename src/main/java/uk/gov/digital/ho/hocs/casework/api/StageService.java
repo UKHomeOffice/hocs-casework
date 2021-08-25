@@ -355,7 +355,7 @@ public class StageService {
 
         // done like this because the case relationship is in the info schema
         // get the case types with a previous case type and reduce to
-        // Map<String, String>, - K is the previousCaseType, V is the caseType
+        // Map<K, V>, - K is the previousCaseType, V is the caseType
         Map<String, String> caseTypes = infoClient.getAllCaseTypes()
                 .stream()
                 .filter( caseType -> Objects.nonNull(caseType.getPreviousCaseType()))
