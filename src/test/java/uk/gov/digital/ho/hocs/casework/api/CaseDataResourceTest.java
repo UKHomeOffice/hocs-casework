@@ -8,20 +8,51 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseReferenceResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCaseDataRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateDeadlineForStagesRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdatePrimaryCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageDeadlineRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsResponse;
+import uk.gov.digital.ho.hocs.casework.domain.model.Address;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataResourceTest {
 
     private static final long caseID = 12345L;
+    public static final String PREVIOUS_CASE_REFERENCE = "COMP/1234567/21";
+    public static final UUID RANDOM_UUID = UUID.randomUUID();
+    public static final UUID FROM_CASE_UUID = UUID.randomUUID();
     private final CaseDataType caseDataType = new CaseDataType("MIN", "a1");
     private final HashMap<String, String> data = new HashMap<>();
     private final UUID uuid = UUID.randomUUID();
@@ -41,14 +72,15 @@ public class CaseDataResourceTest {
     @Test
     public void shouldCreateCase() {
 
+        //given
         CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, dateArg);
-        CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data, dateArg, null);
+        CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID);
 
-        when(caseDataService.createCase(caseDataType.getDisplayCode(), data, dateArg, null)).thenReturn(caseData);
+        when(caseDataService.createCase(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseDataType.getDisplayCode(), data, dateArg, null);
+        verify(caseDataService, times(1)).createCase(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID);
 
         verifyNoMoreInteractions(caseDataService);
 
@@ -108,15 +140,20 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCaseSummary() {
 
-        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary(null, null, null, null, null, null, null, null, null));
+        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary(null, null, null, null, null, null, null, PREVIOUS_CASE_REFERENCE, RANDOM_UUID));
 
-        ResponseEntity response = caseDataResource.getCaseSummary(uuid);
+        ResponseEntity<GetCaseSummaryResponse> response = caseDataResource.getCaseSummary(uuid);
 
         verify(caseDataService, times(1)).getCaseSummary(uuid);
 
         verifyNoMoreInteractions(caseDataService);
 
         assertThat(response).isNotNull();
+
+        // check the fields are returned
+        GetCaseSummaryResponse body = response.getBody();
+        assertThat(body.getPreviousCaseReference()).isEqualTo(PREVIOUS_CASE_REFERENCE);
+        assertThat(body.getPreviousCaseUUID()).isEqualTo(RANDOM_UUID);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 

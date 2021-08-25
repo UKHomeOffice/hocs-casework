@@ -28,4 +28,12 @@ public class CaseDataType {
         this.shortCode = shortCode;
         this.previousCaseType = null;
     }
+
+    public CaseDataType(String type, String shortCode, String previousCaseType) {
+        this.displayName = type;
+        this.displayCode = type;
+        this.shortCode = shortCode;
+        this.previousCaseType = previousCaseType;
+    }
+
 }

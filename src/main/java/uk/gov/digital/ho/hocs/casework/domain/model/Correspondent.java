@@ -15,7 +15,14 @@ import java.util.UUID;
 public class Correspondent extends BaseCorrespondent {
 
 
-    public Correspondent(UUID caseUUID, String correspondentType, String fullName, Address address, String telephone, String email, String reference, String externalKey) {
+    public Correspondent(UUID caseUUID,
+                         String correspondentType,
+                         String fullName,
+                         Address address,
+                         String telephone,
+                         String email,
+                         String reference,
+                         String externalKey) {
         if (caseUUID == null || correspondentType == null) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Correspondent(%s, %s, %s, %s, %s, %s).", caseUUID, correspondentType, fullName, "Address", telephone, email), LogEvent.CORRESPONDENT_CREATE_FAILURE);
         }

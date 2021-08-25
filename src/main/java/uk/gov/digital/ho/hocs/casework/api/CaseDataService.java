@@ -93,7 +93,7 @@ public class CaseDataService {
     protected final InfoClient infoClient;
     private final CaseCopyFactory caseCopyFactory;
     private final CaseLinkRepository caseLinkRepository;
-    private final Pattern caseReferencePattern = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
+    public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
 
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository, CaseLinkRepository caseLinkRepository, InfoClient infoClient,
@@ -233,7 +233,7 @@ public class CaseDataService {
         CaseData copyFromCase = getCaseData(fromCaseUUID);
 
         // get the existing case number
-        Matcher findSerialNumber = caseReferencePattern.matcher(copyFromCase.getReference());
+        Matcher findSerialNumber = CASE_REFERENCE_PATTERN.matcher(copyFromCase.getReference());
         if (!findSerialNumber.find()) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Cannot extract case sequence number! Failed to create Case: %s", caseType), CASE_CREATE_FAILURE);
         }
@@ -252,7 +252,7 @@ public class CaseDataService {
         if (strategy.isPresent()) {
             strategy.get().copyCase(copyFromCase, caseData);
         } else {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot find a copy strategy from:%s to :%s Failed to create Case: %s", copyFromCase.getType(), caseType), CASE_CREATE_FAILURE);
+            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot find a copy strategy from:%s to :%s", copyFromCase.getType(), caseType), CASE_CREATE_FAILURE);
         }
 
         log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
