@@ -11,7 +11,6 @@ public class GetCorrespondentTypeResponseTest {
 
     @Test
     public void getGetCorrespondentTypeResponse() {
-
         CorrespondentTypeDto correspondentType = new CorrespondentTypeDto();
         Set<CorrespondentTypeDto> correspondentTypes = new HashSet<>();
         correspondentTypes.add(correspondentType);

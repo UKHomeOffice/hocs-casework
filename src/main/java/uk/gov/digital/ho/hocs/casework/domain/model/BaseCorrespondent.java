@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @MappedSuperclass
-public class BaseCorrespondent implements Serializable {
+public abstract class BaseCorrespondent implements Serializable {
 
     @Id
     @Column(name = "id")
@@ -28,6 +28,11 @@ public class BaseCorrespondent implements Serializable {
     @Getter
     @Column(name = "type")
     protected String correspondentType;
+
+    @Getter
+    @Setter
+    @Transient
+    protected String correspondentTypeName;
 
     @Getter
     @Column(name = "case_uuid")

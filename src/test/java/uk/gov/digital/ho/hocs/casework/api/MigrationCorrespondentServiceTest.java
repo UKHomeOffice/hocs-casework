@@ -1,11 +1,13 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
+import uk.gov.digital.ho.hocs.casework.api.utils.CorrespondentTypeNameDecorator;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -15,7 +17,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,16 +40,16 @@ public class MigrationCorrespondentServiceTest {
     private InfoClient infoClient;
     @Mock
     private CaseDataService caseDataService;
+    @Mock
+    private CorrespondentTypeNameDecorator correspondentTypeNameDecorator;
 
     @Before
     public void setUp() {
-        correspondentService = new CorrespondentService(correspondentRepository, caseDataRepository, auditClient, infoClient, caseDataService);
+        correspondentService = Mockito.spy(new CorrespondentService(correspondentRepository, caseDataRepository, auditClient, infoClient, caseDataService, correspondentTypeNameDecorator));
     }
 
     @Test
     public void shouldGetCorrespondents() throws ApplicationExceptions.EntityNotFoundException {
-        HashSet<CorrespondentWithPrimaryFlag> correspondentData = new HashSet<>();
-
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         CorrespondentWithPrimaryFlag correspondent = new CorrespondentWithPrimaryFlag(
                 caseUUID,
@@ -60,10 +62,12 @@ public class MigrationCorrespondentServiceTest {
                 "external key",
                 true
         );
-
-        correspondentData.add(correspondent);
+        Set<CorrespondentWithPrimaryFlag> correspondentData = Set.of(correspondent);
+        Set<CorrespondentTypeDto> emptyCorrespondentSet = Collections.emptySet();
 
         when(correspondentRepository.findAllByCaseUUID(caseUUID)).thenReturn(correspondentData);
+        doReturn(emptyCorrespondentSet).when(correspondentService).getCorrespondentTypes(caseUUID);
+        when(correspondentTypeNameDecorator.addCorrespondentTypeName(emptyCorrespondentSet, correspondentData)).thenReturn(correspondentData);
 
         correspondentService.getCorrespondents(caseUUID);
 
@@ -74,7 +78,6 @@ public class MigrationCorrespondentServiceTest {
 
     @Test
     public void shouldNotGetCorrespondentsMissingUUIDException() throws ApplicationExceptions.EntityNotFoundException {
-
         correspondentService.getCorrespondents(null);
 
         verify(correspondentRepository, times(1)).findAllByCaseUUID(null);
@@ -83,7 +86,7 @@ public class MigrationCorrespondentServiceTest {
     }
 
     @Test
-    public void shouldCreateCorrespondent_firstCorrespondent() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
+    public void shouldCreateCorrespondent_firstCorrespondent() throws ApplicationExceptions.EntityCreationException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         CorrespondentWithPrimaryFlag correspondent = new CorrespondentWithPrimaryFlag(
@@ -110,7 +113,7 @@ public class MigrationCorrespondentServiceTest {
 
 
     @Test
-    public void shouldCreateCorrespondent_multipleCorrespondents() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
+    public void shouldCreateCorrespondent_multipleCorrespondents() throws ApplicationExceptions.EntityCreationException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         CorrespondentWithPrimaryFlag correspondent1 = new CorrespondentWithPrimaryFlag(
@@ -146,7 +149,7 @@ public class MigrationCorrespondentServiceTest {
     }
 
     @Test
-    public void shouldAuditCreateCorrespondent() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
+    public void shouldAuditCreateCorrespondent() throws ApplicationExceptions.EntityCreationException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         correspondentService.createCorrespondent(caseUUID, stageUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
@@ -157,14 +160,13 @@ public class MigrationCorrespondentServiceTest {
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
-    public void shouldNotCreateCorrespondentMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
+    public void shouldNotCreateCorrespondentMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         correspondentService.createCorrespondent(null, stageUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
     }
 
     @Test
-    public void shouldNotCreateCorrespondentMissingCaseUUID() throws JsonProcessingException {
-
+    public void shouldNotCreateCorrespondentMissingCaseUUID() {
         try {
             Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
             correspondentService.createCorrespondent(null, stageUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
@@ -172,18 +174,17 @@ public class MigrationCorrespondentServiceTest {
             // Do nothing.
         }
 
-        verifyZeroInteractions(correspondentRepository);
-
+        verifyNoMoreInteractions(correspondentRepository);
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
-    public void shouldNotCreateCorrespondentMissingCorrespondentTypeException() throws ApplicationExceptions.EntityCreationException, JsonProcessingException {
+    public void shouldNotCreateCorrespondentMissingCorrespondentTypeException() throws ApplicationExceptions.EntityCreationException {
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         correspondentService.createCorrespondent(caseUUID, stageUUID, null, "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
     }
 
     @Test
-    public void shouldNotCreateCorrespondentMissingCorrespondentType() throws JsonProcessingException {
+    public void shouldNotCreateCorrespondentMissingCorrespondentType() {
 
         try {
             Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
@@ -192,24 +193,25 @@ public class MigrationCorrespondentServiceTest {
             // Do nothing.
         }
 
-        verifyZeroInteractions(correspondentRepository);
+        verifyNoMoreInteractions(correspondentRepository);
 
     }
 
     @Test
     public void shouldGetCorrespondent() throws ApplicationExceptions.EntityNotFoundException {
-
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
+        Set<CorrespondentTypeDto> emptyCorrespondentSet = Collections.emptySet();
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
+        doReturn(emptyCorrespondentSet).when(correspondentService).getCorrespondentTypes(caseUUID);
+        when(correspondentTypeNameDecorator.addCorrespondentTypeName(emptyCorrespondentSet, correspondent)).thenReturn(correspondent);
 
         correspondentService.getCorrespondent(correspondent.getCaseUUID(), correspondent.getUuid());
 
         verify(correspondentRepository, times(1)).findByUUID(correspondent.getCaseUUID(), correspondent.getUuid());
 
         verifyNoMoreInteractions(correspondentRepository);
-
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
@@ -266,31 +268,34 @@ public class MigrationCorrespondentServiceTest {
 
     @Test
     public void shouldDeleteCorrespondent() {
-
         Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null, null);
+        Set<CorrespondentTypeDto> emptyCorrespondentSet = Collections.emptySet();
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
+        doReturn(emptyCorrespondentSet).when(correspondentService).getCorrespondentTypes(caseUUID);
+        when(correspondentTypeNameDecorator.addCorrespondentTypeName(emptyCorrespondentSet, correspondent)).thenReturn(correspondent);
 
         correspondentService.deleteCorrespondent(correspondent.getCaseUUID(), stageUUID, correspondent.getUuid());
 
         verify(correspondentRepository, times(1)).findByUUID(correspondent.getCaseUUID(), correspondent.getUuid());
+        verify(correspondentTypeNameDecorator, times(1)).addCorrespondentTypeName(emptyCorrespondentSet, correspondent);
         verify(correspondentRepository, times(1)).save(correspondent);
-
 
         verifyNoMoreInteractions(correspondentRepository);
     }
 
     @Test
     public void shouldAuditDeleteCorrespondent() {
-
         Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null, null);
+        Set<CorrespondentTypeDto> emptyCorrespondentSet = Collections.emptySet();
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
+        doReturn(emptyCorrespondentSet).when(correspondentService).getCorrespondentTypes(caseUUID);
+        when(correspondentTypeNameDecorator.addCorrespondentTypeName(emptyCorrespondentSet, correspondent)).thenReturn(correspondent);
 
         correspondentService.deleteCorrespondent(correspondent.getCaseUUID(), stageUUID, correspondent.getUuid());
 
         verify(auditClient, times(1)).deleteCorrespondentAudit(correspondent);
-
 
         verifyNoMoreInteractions(auditClient);
     }
