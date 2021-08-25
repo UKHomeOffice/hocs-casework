@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
@@ -21,8 +22,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 
 @Slf4j
 @RestController
@@ -126,7 +125,13 @@ class StageResource {
 
     @GetMapping(value = "/stage")
     ResponseEntity<GetStagesResponse> getActiveStages() {
-        Set<Stage> activeStages = stageService.getActiveStagesForUser();
+        Set<Stage> activeStages = stageService.getActiveStagesForUsersTeamsAndCaseType();
+        return ResponseEntity.ok(GetStagesResponse.from(activeStages));
+    }
+
+    @GetMapping(value = "/stage/user/{userUuid}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ResponseEntity<GetStagesResponse> getActiveStagesForUser(@PathVariable UUID userUuid) {
+        Set<Stage> activeStages = stageService.getActiveUserStagesWithTeamsAndCaseType(userUuid);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
