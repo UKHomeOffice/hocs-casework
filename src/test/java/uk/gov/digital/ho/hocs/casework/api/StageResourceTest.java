@@ -163,11 +163,27 @@ public class StageResourceTest {
 
         Set<Stage> stages = new HashSet<>();
 
-        when(stageService.getActiveStagesForUser()).thenReturn(stages);
+        when(stageService.getActiveStagesForUsersTeamsAndCaseType()).thenReturn(stages);
 
         ResponseEntity<GetStagesResponse> response = stageResource.getActiveStages();
 
-        verify(stageService).getActiveStagesForUser();
+        verify(stageService).getActiveStagesForUsersTeamsAndCaseType();
+
+        checkNoMoreInteractions();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetActiveStagesForUser() {
+        Set<Stage> stages = new HashSet<>();
+
+        when(stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID)).thenReturn(stages);
+
+        ResponseEntity<GetStagesResponse> response = stageResource.getActiveStagesForUser(userUUID);
+
+        verify(stageService).getActiveUserStagesWithTeamsAndCaseType(userUUID);
 
         checkNoMoreInteractions();
 

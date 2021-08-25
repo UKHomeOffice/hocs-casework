@@ -266,7 +266,7 @@ public class StageService {
         return nextAvailableStage;
     }
 
-    Set<Stage> getActiveStagesForUser() {
+    Set<Stage> getActiveStagesForUsersTeamsAndCaseType() {
         log.debug("Getting Active Stages for User");
         Set<UUID> teams = userPermissionsService.getUserTeams();
         if (teams.isEmpty()) {
@@ -287,7 +287,7 @@ public class StageService {
         return stages;
     }
 
-    Set<Stage> getUserStages(UUID userUuid) {
+    Set<Stage> getActiveUserStagesWithTeamsAndCaseType(UUID userUuid) {
         log.debug("Getting users active stage");
         Set<UUID> teams = userPermissionsService.getUserTeams();
         if (teams.isEmpty()) {
