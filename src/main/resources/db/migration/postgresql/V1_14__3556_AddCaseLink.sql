@@ -83,7 +83,8 @@ SELECT c.reference AS case_reference,
        t.text AS case_assigned_topic,
        s.somu,
        c.secondary_case_uuid,
-       c.secondary_case_reference
+       c.secondary_case_reference,
+       c.completed
 FROM casework.stage s
          JOIN casework.active_case c ON s.case_uuid = c.uuid
          LEFT JOIN casework.correspondents_json_by_case cs ON s.case_uuid = cs.case_uuid
@@ -108,7 +109,8 @@ SELECT c.reference AS case_reference,
        t.text      AS case_assigned_topic,
        s.somu,
        c.secondary_case_uuid,
-       c.secondary_case_reference
+       c.secondary_case_reference,
+       c.completed
 FROM casework.stage s
          JOIN casework.active_case c ON s.case_uuid = c.uuid
          LEFT JOIN casework.correspondents_json_by_case cs ON s.case_uuid = cs.case_uuid

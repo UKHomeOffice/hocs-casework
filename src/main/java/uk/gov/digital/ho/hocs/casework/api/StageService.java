@@ -387,7 +387,9 @@ public class StageService {
                 .collect(Collectors.toMap(CaseDataType::getPreviousCaseType, CaseDataType::getDisplayCode));
 
         // map the previous case type on to the cases found
+        // only stages with completed cases have the next caseType
         stages.stream()
+                .filter(stage -> stage.getCompleted())
                 .forEach(stage -> stage.setNextCaseType(caseTypes.get(stage.getCaseDataType())));
 
         log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));
