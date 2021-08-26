@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +10,15 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -24,7 +28,11 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -49,7 +57,7 @@ public class SecurityIntegrationTest {
 
     String userId = UUID.randomUUID().toString();
     UUID teamUUID = UUID.fromString("44444444-2222-2222-2222-222222222222");
-    CaseDataType caseDataType = new CaseDataType("MIN", "a1");
+    CaseDataType caseDataType = CaseDataTypeFactory.from("MIN", "a1");
 
     @Autowired
     ObjectMapper mapper;
@@ -146,7 +154,7 @@ public class SecurityIntegrationTest {
         }};
 
         CaseData caseData = new CaseData(
-                new CaseDataType("SOME_OTHER_CASE_TYPE", "a1"),
+                CaseDataTypeFactory.from("SOME_OTHER_CASE_TYPE", "a1"),
                 123456L, caseSubData, mapper, LocalDate.now()
         );
 
