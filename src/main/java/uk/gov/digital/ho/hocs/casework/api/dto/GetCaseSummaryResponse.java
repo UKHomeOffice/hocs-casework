@@ -4,11 +4,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.util.StringUtils;
+import org.springframework.util.ObjectUtils;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -36,12 +41,8 @@ public class GetCaseSummaryResponse {
     @JsonProperty("activeStages")
     Set<ActiveStageDto> activeStages;
 
-    @JsonProperty("previousCaseReference")
-    private String previousCaseReference;
-
-    @JsonProperty("previousCaseUUID")
-    private UUID previousCaseUUID;
-
+    @JsonProperty("previousCase")
+    private CaseSummaryLink previousCase;
 
     public static GetCaseSummaryResponse from(CaseSummary caseSummary) {
         GetCorrespondentResponse getCorrespondentResponse = null;
@@ -61,9 +62,10 @@ public class GetCaseSummaryResponse {
 
         List<AdditionalFieldDto> additionalFieldDtos = new ArrayList<>();
         if (caseSummary.getAdditionalFields() != null) {
-            additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream().filter(field -> !StringUtils.isEmpty(field.getValue())).map(AdditionalFieldDto::from).collect(Collectors.toList()));
+            additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream().filter(field -> !ObjectUtils.isEmpty(field.getValue())).map(AdditionalFieldDto::from).collect(Collectors.toList()));
         }
         additionalFieldDtos.sort(Comparator.comparing(AdditionalFieldDto::getLabel));
+
         return new GetCaseSummaryResponse(caseSummary.getCreatedDate(),
                 caseSummary.getCaseDeadline(),
                 caseSummary.getStageDeadlines(),
@@ -71,7 +73,8 @@ public class GetCaseSummaryResponse {
                 getCorrespondentResponse,
                 getTopicsResponse,
                 activeStageDtos,
-                caseSummary.getPreviousCaseReference(),
-                caseSummary.getPreviousCaseUUID());
+                CaseSummaryLink.builder()
+                        .caseUUID(caseSummary.getPreviousCaseUUID())
+                        .caseReference(caseSummary.getPreviousCaseReference()).build());
     }
 }
