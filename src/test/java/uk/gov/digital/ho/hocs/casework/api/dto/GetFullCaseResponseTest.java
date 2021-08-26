@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
 import java.time.LocalDate;
@@ -15,7 +16,7 @@ public class GetFullCaseResponseTest {
     @Test
     public void getFullCaseDataDto() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();

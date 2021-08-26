@@ -9,8 +9,11 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
+import uk.gov.digital.ho.hocs.casework.domain.model.Address;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -41,7 +44,7 @@ public class CorrespondentRepositoryTest {
     @Before
     public void setup() {
 
-        newCase = new CaseData(new CaseDataType("TEST", "a1"), 101l, LocalDate.of(2018, 1, 1));
+        newCase = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), 101l, LocalDate.of(2018, 1, 1));
         newCase.setCaseDeadline(LocalDate.of(2018,1,29));
         caseUUID = newCase.getUuid();
         this.entityManager.persist(newCase);

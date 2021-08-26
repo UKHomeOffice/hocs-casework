@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDate;
@@ -17,7 +18,7 @@ public class CaseDataTest {
 
     @Test
     public void getCaseData() {
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -38,7 +39,7 @@ public class CaseDataTest {
 
     @Test
     public void getCaseDataSetDeadline() {
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -59,7 +60,7 @@ public class CaseDataTest {
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getCaseDataNullCaseDataTypeInside() {
-        CaseDataType type = new CaseDataType(null, null);
+        CaseDataType type = CaseDataTypeFactory.from(null, null);
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -80,7 +81,7 @@ public class CaseDataTest {
     @Test
     public void getCaseDataReferenceFormat() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         long caseNumber = 1234L;
 
         Map<String, String> data = new HashMap<>();
@@ -111,7 +112,7 @@ public class CaseDataTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getCaseDataNullNumber() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseReceived = LocalDate.now();
@@ -121,7 +122,7 @@ public class CaseDataTest {
     @Test
     public void update() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -160,7 +161,7 @@ public class CaseDataTest {
     @Test
     public void updateWithExistingData() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("old", "anyOldValue");
@@ -184,7 +185,7 @@ public class CaseDataTest {
     @Test
     public void updateWithOverwriteExistingData() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("new", "anyOldValue");
@@ -205,7 +206,7 @@ public class CaseDataTest {
     @Test
     public void updateWithEmptyData() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("new", "anyOldValue");
@@ -226,7 +227,7 @@ public class CaseDataTest {
     @Test
     public void updateWithNullData() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("new", "anyOldValue");
@@ -245,7 +246,7 @@ public class CaseDataTest {
     @Test
     public void shouldComplete() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
 
@@ -279,7 +280,7 @@ public class CaseDataTest {
     @Test
     public void shouldDelete() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
 
@@ -311,7 +312,7 @@ public class CaseDataTest {
     @Test
     public void shouldSetPrimaryCorrespondent() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
 
@@ -346,7 +347,7 @@ public class CaseDataTest {
     @Test
     public void shouldSetPrimaryTopicUUID() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
 

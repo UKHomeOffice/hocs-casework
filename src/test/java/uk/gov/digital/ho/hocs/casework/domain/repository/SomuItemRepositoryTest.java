@@ -9,8 +9,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -38,7 +39,7 @@ public class SomuItemRepositoryTest {
     
     @Before
     public void setup() {
-        CaseData caseData = new CaseData(new CaseDataType("TEST", "a1"), 101L, LocalDate.of(2000, 12, 31));
+        CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), 101L, LocalDate.of(2000, 12, 31));
         caseData.setCaseDeadline(LocalDate.of(9999,12,31));
         caseUuid = caseData.getUuid();
         this.entityManager.persist(caseData);

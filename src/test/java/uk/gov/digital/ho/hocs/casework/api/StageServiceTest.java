@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -59,7 +60,7 @@ public class StageServiceTest {
     private final UUID transitionNoteUUID = UUID.randomUUID();
     private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN", null);
     private final List<CaseDataType> caseDataTypes = List.of(
-            new CaseDataType("NXT", "a5", "MIN"), // NXT can be reached through MIN
+            CaseDataTypeFactory.from("NXT", "a5", "MIN"), // NXT can be reached through MIN
                 caseDataType);
 
     private final String userID = UUID.randomUUID().toString();

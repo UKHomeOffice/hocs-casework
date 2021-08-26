@@ -22,6 +22,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.UpdatePrimaryCorrespondentRequest
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageDeadlineRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsResponse;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
@@ -53,7 +54,7 @@ public class CaseDataResourceTest {
     public static final String PREVIOUS_CASE_REFERENCE = "COMP/1234567/21";
     public static final UUID RANDOM_UUID = UUID.randomUUID();
     public static final UUID FROM_CASE_UUID = UUID.randomUUID();
-    private final CaseDataType caseDataType = new CaseDataType("MIN", "a1");
+    private final CaseDataType caseDataType = CaseDataTypeFactory.from("MIN", "a1");
     private final HashMap<String, String> data = new HashMap<>();
     private final UUID uuid = UUID.randomUUID();
     private final LocalDate dateArg = LocalDate.now();

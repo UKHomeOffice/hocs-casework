@@ -12,6 +12,7 @@ import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
@@ -82,7 +83,7 @@ public class CaseDataServiceTest {
     public static final String PREV_DATA_CLOB = "{\"key1\" : \"value1\", \"key2\" : \"value2\"}";
     private static final long caseID = 12345L;
     private static final String OFFLINE_QA_USER = "OfflineQaUser";
-    private final CaseDataType caseType = new CaseDataType("MIN", "a1");
+    private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID stageUUID = UUID.randomUUID();
     private final UUID primaryCorrespondentUUID = UUID.randomUUID();
@@ -138,7 +139,7 @@ public class CaseDataServiceTest {
 
         // given
         CaseDataType comp2 = new CaseDataType("display_name",
-                "c6", "display_code", PREVIOUS_CASE_TYPE);
+                "c6", "DISP", PREVIOUS_CASE_TYPE);
 
         CaseData previousCaseData = new CaseData(1l,
                 PREVIOUS_CASE_UUID,
@@ -849,7 +850,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(new CaseDataType("MIN", "a1", "COMP"));
+        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(CaseDataTypeFactory.from("MIN", "a1", "COMP"));
 
         caseDataService.getCaseType(caseUUID);
 
@@ -863,7 +864,7 @@ public class CaseDataServiceTest {
     public void shouldReturnCaseTypeWhenNullReturnedFromInfoClientAndButCaseInCaseDataOnGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
         when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenThrow(RestClientException.class);
-        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData(new CaseDataType("", ""), 1L, null));
+        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData(CaseDataTypeFactory.from("", ""), 1L, null));
 
         caseDataService.getCaseType(caseUUID);
 

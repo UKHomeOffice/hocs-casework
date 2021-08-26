@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import org.junit.Test;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -13,7 +14,7 @@ public class CreateCaseRequestTest {
     @Test
     public void getCreateCaseRequest() {
 
-        CaseDataType caseDataType = new CaseDataType("MIN", "a1");
+        CaseDataType caseDataType = CaseDataTypeFactory.from("MIN", "a1");
         Map<String, String> data = new HashMap<>();
         LocalDate caseReceived = LocalDate.now();
 
