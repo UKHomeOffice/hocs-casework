@@ -19,29 +19,24 @@ public class CaseCopyFactory {
         this.copyStrategies = copyStrategies;
     }
 
-    public Optional<CaseCopyStrategy> getStrategy(String fromCase, String toCase) {
+    public Optional<CaseCopyStrategy> getStrategy(String fromCaseType, String toCasetype) {
 
         // search the annotated strategies
         return copyStrategies.stream()
-                .filter(matchCaseTypes(fromCase, toCase))
+                .filter(isCopyStrategyForTypes(fromCaseType, toCasetype))
                 .findFirst();
 
     }
 
-    private Predicate<CaseCopyStrategy> matchCaseTypes(String fromCase, String toCase) {
+    private Predicate<CaseCopyStrategy> isCopyStrategyForTypes(String fromCaseType, String toCaseType) {
         return caseCopyStrategy -> {
-            Optional<CaseCopyStrategy> first = copyStrategies.stream().filter(strategy -> {
-                // check annotation is present and contains the requested from & to
-                Class<? extends CaseCopyStrategy> strategyClass = strategy.getClass();
-                if (strategyClass.isAnnotationPresent(CaseCopy.class)) {
-                    CaseCopy annotation = strategyClass.getAnnotation(CaseCopy.class);
-                    return annotation.fromCaseType().equals(fromCase) && annotation.toCaseType().equals(toCase);
-                }
-                return false;
-            }).findFirst();
-
-            return first.isPresent();
-
+            // check annotation is present and contains the requested from & to
+            Class<? extends CaseCopyStrategy> strategyClass = caseCopyStrategy.getClass();
+            if (strategyClass.isAnnotationPresent(CaseCopy.class)) {
+                CaseCopy annotation = strategyClass.getAnnotation(CaseCopy.class);
+                return annotation.fromCaseType().equals(fromCaseType) && annotation.toCaseType().equals(toCaseType);
+            }
+            return false;
         };
     }
 }
