@@ -62,7 +62,10 @@ public class GetCaseSummaryResponse {
 
         List<AdditionalFieldDto> additionalFieldDtos = new ArrayList<>();
         if (caseSummary.getAdditionalFields() != null) {
-            additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream().filter(field -> !ObjectUtils.isEmpty(field.getValue())).map(AdditionalFieldDto::from).collect(Collectors.toList()));
+            additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream()
+                    .filter(field -> !ObjectUtils.isEmpty(field.getValue()))
+                    .map(AdditionalFieldDto::from)
+                    .collect(Collectors.toList()));
         }
         additionalFieldDtos.sort(Comparator.comparing(AdditionalFieldDto::getLabel));
 
