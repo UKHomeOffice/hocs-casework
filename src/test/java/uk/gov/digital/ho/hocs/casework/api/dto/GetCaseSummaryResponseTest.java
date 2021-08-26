@@ -1,20 +1,26 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.AdditionalField;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class GetCaseSummaryResponseTest {
 
+    public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
+    public static final String PREV_CASE_REF = "REF/1234567/21";
+
     @Test
-    public void getCaseSummaryResponse_shouldOrderAdditionalFields() {
+    public void getCaseSummaryResponseIncludeAllFields() {
         LocalDate caseCreated = LocalDate.now().minusDays(10);
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
 
@@ -43,18 +49,24 @@ public class GetCaseSummaryResponseTest {
                 null,
                 null,
                 null,
-                null,
-                null);
+                PREV_CASE_REF,
+                PREVIOUS_CASE_UUID);
 
-        GetCaseSummaryResponse getCaseSummaryResponse = GetCaseSummaryResponse.from(caseSummary);
+        GetCaseSummaryResponse response = GetCaseSummaryResponse.from(caseSummary);
 
-        assertThat(getCaseSummaryResponse.getCaseCreated()).isEqualTo(caseCreated);
-        assertThat(getCaseSummaryResponse.getCaseDeadline()).isEqualTo(caseDeadline);
-        assertThat(getCaseSummaryResponse.getAdditionalFields().size()).isEqualTo(5);
-        assertThat(getCaseSummaryResponse.getAdditionalFields().get(0).getLabel()).isEqualTo(field1.getLabel());
-        assertThat(getCaseSummaryResponse.getAdditionalFields().get(1).getLabel()).isEqualTo(field2.getLabel());
-        assertThat(getCaseSummaryResponse.getAdditionalFields().get(2).getLabel()).isEqualTo(field3.getLabel());
-        assertThat(getCaseSummaryResponse.getAdditionalFields().get(3).getLabel()).isEqualTo(field4.getLabel());
-        assertThat(getCaseSummaryResponse.getAdditionalFields().get(4).getLabel()).isEqualTo(field5.getLabel());
+        assertThat(response.getCaseCreated()).isEqualTo(caseCreated);
+        assertThat(response.getCaseDeadline()).isEqualTo(caseDeadline);
+        List<AdditionalFieldDto> addFields = response.getAdditionalFields();
+        assertThat(addFields.size()).isEqualTo(5);
+        assertThat(addFields.get(0).getLabel()).isEqualTo(field1.getLabel());
+        assertThat(addFields.get(1).getLabel()).isEqualTo(field2.getLabel());
+        assertThat(addFields.get(2).getLabel()).isEqualTo(field3.getLabel());
+        assertThat(addFields.get(3).getLabel()).isEqualTo(field4.getLabel());
+        assertThat(addFields.get(4).getLabel()).isEqualTo(field5.getLabel());
+
+        CaseSummaryLink link = response.getPreviousCase();
+        assertThat(link).isNotNull();
+        assertThat(link.getCaseUUID()).isEqualTo(PREVIOUS_CASE_UUID);
+        assertThat(link.getCaseReference()).isEqualTo(PREV_CASE_REF);
     }
 }
