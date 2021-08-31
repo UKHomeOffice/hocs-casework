@@ -216,7 +216,7 @@ spec:
                 name: hocs-queue-config
           env:
             - name: JAVA_OPTS
-              value: '-Xms384m -Xmx1536m -XX:+UseG1GC -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
+              value: '-XX:+UseG1GC -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{.KUBE_NAMESPACE}}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{.KUBE_NAMESPACE}}.svc.cluster.local'
             - name: JDK_TRUST_FILE
               value: '/etc/keystore/truststore.jks'
             - name: SERVER_PORT
@@ -310,30 +310,40 @@ spec:
               memory: 2048Mi
             requests:
               cpu: 200m
-              memory: 896Mi
+              memory: 1600Mi
           ports:
             - name: http
               containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+              httpHeaders:
+                - name: X-probe
+                  value: kubelet
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 30
           livenessProbe:
             httpGet:
-              path: /actuator/health
+              path: /actuator/health/liveness
               port: http
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            initialDelaySeconds: 60
-            periodSeconds: 20
-            timeoutSeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 1
           readinessProbe:
             httpGet:
-              path: /actuator/health
+              path: /actuator/health/readiness
               port: http
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            initialDelaySeconds: 60
-            periodSeconds: 20
-            timeoutSeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 1
           volumeMounts:
             - mountPath: /etc/keystore
               name: keystore
