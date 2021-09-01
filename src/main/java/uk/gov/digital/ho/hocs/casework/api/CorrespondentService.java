@@ -19,12 +19,21 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
+import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CORRESPONDENTS_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CORRESPONDENT_CREATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CORRESPONDENT_CREATE_FAILURE;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CORRESPONDENT_DELETED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CORRESPONDENT_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CORRESPONDENT_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CORRESPONDENT_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CORRESPONDENT_UPDATE_FAILURE;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 
 @Slf4j
 @Service
