@@ -74,7 +74,7 @@ public class InfoClient {
     }
 
     public List<CaseDataType> getAllCaseTypes() {
-        List<CaseDataType> caseDataTypes = restHelper.get(serviceBaseURL, "/caseType", new ParameterizedTypeReference<List<CaseDataType>>() { });
+        List<CaseDataType> caseDataTypes = restHelper.get(serviceBaseURL, "/caseType?addCasesWithPreviousType=true", new ParameterizedTypeReference<>() { });
         log.info("Got all case types", value(EVENT, INFO_CLIENT_GET_CASE_TYPES_SUCCESS));
         return caseDataTypes;
     }
