@@ -37,7 +37,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.Collections;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;

@@ -79,13 +79,6 @@ public class InfoClient {
         return caseDataTypes;
     }
 
-    @Cacheable(value = "InfoClientGetCorrespondentType", unless = "#result == null")
-    public GetCorrespondentTypeResponse getAllCorrespondentType() {
-        GetCorrespondentTypeResponse correspondentType = restHelper.get(serviceBaseURL, "/correspondentType", GetCorrespondentTypeResponse.class);
-        log.info("Got CorrespondentTypes {}", correspondentType.getCorrespondentTypes().size(), value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
-        return correspondentType;
-    }
-
     @Cacheable(value = "InfoClientGetCorrespondentType", unless = "#result == null", key = "#caseType")
     public GetCorrespondentTypeResponse getCorrespondentType(String caseType) {
         GetCorrespondentTypeResponse correspondentType = restHelper.get(serviceBaseURL, String.format("/correspondentType/%s", caseType), GetCorrespondentTypeResponse.class);

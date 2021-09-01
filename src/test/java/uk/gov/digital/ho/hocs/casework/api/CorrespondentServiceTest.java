@@ -26,6 +26,10 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Collections;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -34,6 +38,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doReturn;
+
 
 @RunWith(MockitoJUnitRunner.class)
 public class CorrespondentServiceTest {
@@ -99,16 +104,43 @@ public class CorrespondentServiceTest {
     }
 
     @Test
+    public void shouldCreateCorrespondent() {
+
+        // given
+        Set<CorrespondentWithPrimaryFlag> primaryFlagSet = Set.of(getCorrespondentWithPrimaryFlag());
+        CorrespondentWithPrimaryFlag correspondent = getCorrespondentWithPrimaryFlag();
+        when(correspondentRepository.findAllByCaseUUID(caseUUID)).thenReturn(primaryFlagSet);
+
+        //when
+        correspondentService.createCorrespondent(caseUUID, correspondent);
+
+        // then
+        ArgumentCaptor<Correspondent> repoCaptureCorrespondent = ArgumentCaptor.forClass(Correspondent.class);
+        verify(correspondentRepository).save(repoCaptureCorrespondent.capture());
+        Correspondent paramCorrespondent = repoCaptureCorrespondent.getValue();
+        assertThat(paramCorrespondent.getCaseUUID()).isEqualTo(caseUUID);
+        assertThat(paramCorrespondent.getCorrespondentType()).isEqualTo(correspondent.getCorrespondentType());
+        assertThat(paramCorrespondent.getAddress1()).isEqualTo(correspondent.getAddress1());
+        assertThat(paramCorrespondent.getAddress2()).isEqualTo(correspondent.getAddress2());
+        assertThat(paramCorrespondent.getAddress3()).isEqualTo(correspondent.getAddress3());
+        assertThat(paramCorrespondent.getCountry()).isEqualTo(correspondent.getCountry());
+        assertThat(paramCorrespondent.getPostcode()).isEqualTo(correspondent.getPostcode());
+        assertThat(paramCorrespondent.getFullName()).isEqualTo(correspondent.getFullName());
+        assertThat(paramCorrespondent.getTelephone()).isEqualTo(correspondent.getTelephone());
+        assertThat(paramCorrespondent.getEmail()).isEqualTo(correspondent.getEmail());
+        assertThat(paramCorrespondent.getExternalKey()).isEqualTo(correspondent.getExternalKey());
+
+        ArgumentCaptor<Correspondent> auditCaptureCorrespondent = ArgumentCaptor.forClass(Correspondent.class);
+        verify(auditClient).createCorrespondentAudit(auditCaptureCorrespondent.capture());
+        assertThat(auditCaptureCorrespondent.getValue().getCaseUUID()).isEqualTo(caseUUID);
+
+        verify(correspondentRepository).findAllByCaseUUID(caseUUID);
+        verify(caseDataService).updatePrimaryCorrespondent( eq(caseUUID),any(), any());
+    }
+
+    @Test
     public void getAllActiveCorrespondentsThenFindAllActive() {
-        UUID caseUUID = UUID.randomUUID();
-        String type = "CORRESPONDENT";
-        String fullName = "anyFullName";
-        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        String phone = "anyPhone";
-        String email = "anyEmail";
-        String reference = "anyReference";
-        String externalKey = "external key";
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
+        Correspondent correspondent = getCorrespondent();
         Set<Correspondent> correspondentsExpected = Set.of(correspondent);
         GetCorrespondentTypeResponse emptyCorrespondentSet = new GetCorrespondentTypeResponse(Collections.emptySet());
 
@@ -122,6 +154,38 @@ public class CorrespondentServiceTest {
         assertThat(correspondents).isSameAs(correspondentsExpected);
         verify(correspondentRepository).findAllActive();
         verifyNoMoreInteractions(correspondentRepository);
+    }
+
+    private CorrespondentWithPrimaryFlag getCorrespondentWithPrimaryFlag() {
+        Correspondent correspondent = getCorrespondent();
+        return new CorrespondentWithPrimaryFlag(correspondent.getCaseUUID(),
+                correspondent.getCorrespondentType(),
+                correspondent.getFullName(),
+                Address.builder()
+                        .postcode(correspondent.getPostcode())
+                        .address1(correspondent.getAddress1())
+                        .address2(correspondent.getAddress1())
+                        .address3(correspondent.getAddress3())
+                        .country(correspondent.getCountry())
+                        .build(),
+                correspondent.getTelephone(),
+                correspondent.getEmail(),
+                correspondent.getReference(),
+                correspondent.getExternalKey(),
+                Boolean.TRUE);
+    }
+
+    private Correspondent getCorrespondent() {
+        UUID caseUUID = UUID.randomUUID();
+        String type = "CORRESPONDENT";
+        String fullName = "anyFullName";
+        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
+        String phone = "anyPhone";
+        String email = "anyEmail";
+        String reference = "anyReference";
+        String externalKey = "external key";
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
+        return correspondent;
     }
 
     private CorrespondentWithPrimaryFlag getCorrespondentWithPrimaryFlag() {

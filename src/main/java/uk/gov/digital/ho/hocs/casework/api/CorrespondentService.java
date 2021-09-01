@@ -20,7 +20,6 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
 import java.util.Optional;
-import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 
@@ -152,7 +151,7 @@ public class CorrespondentService {
 
     }
 
-    void updateCorrespondent(UUID caseUUID, UUID correspondentUUID, UpdateCorrespondentRequest updateCorrespondentRequest) {
+    void updateCorrespondent(UUID caseUUID, UUID correspondentUUID, UpdateCorrespondentRequest updateCorrespondentRequest){
         log.debug("Updating Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
         Correspondent correspondent = getCorrespondent(caseUUID, correspondentUUID);
         correspondent.setFullName(updateCorrespondentRequest.getFullname());
