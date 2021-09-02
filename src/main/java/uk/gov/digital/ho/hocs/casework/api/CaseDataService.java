@@ -504,7 +504,8 @@ public class CaseDataService {
                 caseData.getPrimaryTopic(),
                 caseData.getActiveStages(),
                 caseData.getPreviousCaseReference(),
-                caseData.getPreviousCaseUUID());
+                caseData.getPreviousCaseUUID(),
+                caseData.getPreviousCaseStageUUID());
         auditClient.viewCaseSummaryAudit(caseData);
         return caseSummary;
     }

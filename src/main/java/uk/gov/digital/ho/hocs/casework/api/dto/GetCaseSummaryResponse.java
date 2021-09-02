@@ -78,6 +78,7 @@ public class GetCaseSummaryResponse {
                 activeStageDtos,
                 CaseSummaryLink.builder()
                         .caseUUID(caseSummary.getPreviousCaseUUID())
-                        .caseReference(caseSummary.getPreviousCaseReference()).build());
+                        .caseReference(caseSummary.getPreviousCaseReference())
+                        .stageUUID(caseSummary.getPreviousCaseStageUUID()).build());
     }
 }

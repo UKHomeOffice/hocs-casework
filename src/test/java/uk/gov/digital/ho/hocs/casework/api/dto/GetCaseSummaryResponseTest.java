@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GetCaseSummaryResponseTest {
 
     public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
+    public static final UUID PREVIOUS_STAGE_UUID = UUID.randomUUID();
     public static final String PREV_CASE_REF = "REF/1234567/21";
 
     @Test
@@ -50,7 +51,8 @@ public class GetCaseSummaryResponseTest {
                 null,
                 null,
                 PREV_CASE_REF,
-                PREVIOUS_CASE_UUID);
+                PREVIOUS_CASE_UUID,
+                PREVIOUS_STAGE_UUID);
 
         GetCaseSummaryResponse response = GetCaseSummaryResponse.from(caseSummary);
 
@@ -67,6 +69,7 @@ public class GetCaseSummaryResponseTest {
         CaseSummaryLink link = response.getPreviousCase();
         assertThat(link).isNotNull();
         assertThat(link.getCaseUUID()).isEqualTo(PREVIOUS_CASE_UUID);
+        assertThat(link.getStageUUID()).isEqualTo(PREVIOUS_STAGE_UUID);
         assertThat(link.getCaseReference()).isEqualTo(PREV_CASE_REF);
     }
 }

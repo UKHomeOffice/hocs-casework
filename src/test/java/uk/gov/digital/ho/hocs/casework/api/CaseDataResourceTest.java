@@ -51,6 +51,8 @@ public class CaseDataResourceTest {
 
     private static final long caseID = 12345L;
     public static final String PREVIOUS_CASE_REFERENCE = "COMP/1234567/21";
+    public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
+    public static final UUID PREVIOUS_STAGE_UUID = UUID.randomUUID();
     public static final UUID RANDOM_UUID = UUID.randomUUID();
     public static final UUID FROM_CASE_UUID = UUID.randomUUID();
     private final CaseDataType caseDataType = CaseDataTypeFactory.from("MIN", "a1");
@@ -140,7 +142,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCaseSummary() {
 
-        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary(null, null, null, null, null, null, null, PREVIOUS_CASE_REFERENCE, RANDOM_UUID));
+        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary(null, null, null, null, null, null, null, PREVIOUS_CASE_REFERENCE, PREVIOUS_CASE_UUID, PREVIOUS_STAGE_UUID));
 
         ResponseEntity<GetCaseSummaryResponse> response = caseDataResource.getCaseSummary(uuid);
 
@@ -156,7 +158,8 @@ public class CaseDataResourceTest {
         assertThat(body.getPreviousCase()).isNotNull();
         CaseSummaryLink link = body.getPreviousCase();
         assertThat(link.getCaseReference()).isEqualTo(PREVIOUS_CASE_REFERENCE);
-        assertThat(link.getCaseUUID()).isEqualTo(RANDOM_UUID);
+        assertThat(link.getCaseUUID()).isEqualTo(PREVIOUS_CASE_UUID);
+        assertThat(link.getStageUUID()).isEqualTo(PREVIOUS_STAGE_UUID);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -329,7 +332,7 @@ public class CaseDataResourceTest {
 
         assertThat(results).isNotNull();
         assertThat(results.getStatusCodeValue()).isEqualTo(200);
-        
+
         verify(caseDataService).updateCaseData(uuid, null, Map.of(variableName, "TestValue"));
         verifyNoMoreInteractions(caseDataService);
     }

@@ -29,21 +29,25 @@ SELECT case_data.id,
        case_data.case_deadline_warning,
        next_case.uuid      AS secondary_case_uuid,
        next_case.reference AS secondary_case_reference,
-       next_stage.uuid     AS secondary_stage_uuid,
+       (select s.uuid
+        from casework.stage s
+        where s.case_uuid = next_case.uuid
+        order by s.team_uuid DESC nulls last, s.created desc limit 1) as secondary_stage_uuid,
        prev_case.uuid      AS primary_case_uuid,
        prev_case.reference AS primary_case_reference,
-       prev_stage.uuid     AS primary_stage_uuid
+       (select s.uuid
+        from casework.stage s
+        where s.case_uuid = prev_case.uuid
+        order by s.team_uuid DESC nulls last, s.created desc limit 1) as primary_stage_uuid
 FROM casework.case_data
          LEFT JOIN casework.case_link pl ON case_data.uuid = pl.primary_case_uuid
          LEFT JOIN casework.case_data next_case ON pl.secondary_case_uuid = next_case.uuid
          LEFT JOIN casework.case_link sl on case_data.uuid = sl.secondary_case_uuid
          LEFT JOIN casework.case_data prev_case ON sl.primary_case_uuid = prev_case.uuid
-         LEFT JOIN casework.stage prev_stage on prev_case.uuid = prev_stage.case_uuid and prev_stage.team_uuid IS NOT NULL
-         LEFT JOIN casework.stage next_stage on next_case.uuid = next_stage.case_uuid and next_stage.team_uuid IS NOT NULL
 WHERE NOT case_data.deleted;
 
 -- create a view on case_data that includes the link in both directions
-create or replace view casework.view_case_data(id, uuid, created, type, reference, data, primary_topic_uuid, primary_correspondent_uuid, case_deadline, date_received, deleted, completed, case_deadline_warning, secondary_case_uuid, secondary_case_reference, primary_case_uuid, primary_case_reference) as
+create or replace view casework.view_case_data(id, uuid, created, type, reference, data, primary_topic_uuid, primary_correspondent_uuid, case_deadline, date_received, deleted, completed, case_deadline_warning, secondary_case_uuid, secondary_case_reference, secondary_stage_uuid, primary_case_uuid, primary_case_reference, primary_stage_uuid) as
 SELECT case_data.id,
        case_data.uuid,
        case_data.created,
@@ -59,8 +63,16 @@ SELECT case_data.id,
        case_data.case_deadline_warning,
        next_case.uuid      AS secondary_case_uuid,
        next_case.reference AS secondary_case_reference,
+       (select s.uuid
+        from casework.stage s
+        where s.case_uuid = next_case.uuid
+        order by s.team_uuid DESC nulls last, s.created desc limit 1) as secondary_stage_uuid,
        prev_case.uuid            AS primary_case_uuid,
-       prev_case.reference       AS primary_case_reference
+       prev_case.reference       AS primary_case_reference,
+       (select s.uuid
+        from casework.stage s
+        where s.case_uuid = prev_case.uuid
+        order by s.team_uuid DESC nulls last, s.created desc limit 1) as primary_stage_uuid
 FROM casework.case_data
          LEFT JOIN casework.case_link pl ON case_data.uuid = pl.primary_case_uuid
          LEFT JOIN casework.case_data next_case ON pl.secondary_case_uuid = next_case.uuid

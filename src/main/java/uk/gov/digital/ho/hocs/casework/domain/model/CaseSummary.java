@@ -30,4 +30,6 @@ public class CaseSummary {
 
     UUID previousCaseUUID;
 
+    UUID previousCaseStageUUID;
+
 }

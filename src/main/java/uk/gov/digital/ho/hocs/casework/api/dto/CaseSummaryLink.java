@@ -16,4 +16,9 @@ public class CaseSummaryLink {
     @JsonProperty("caseUUID")
     @Getter
     private UUID caseUUID;
+
+    @JsonProperty("stageUUID")
+    @Getter
+    private UUID stageUUID;
+
 }

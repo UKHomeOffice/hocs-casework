@@ -127,6 +127,10 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
     private String previousCaseReference;
 
     @Getter
+    @Column(name = "primary_stage_uuid", insertable = false, updatable = false)
+    private UUID previousCaseStageUUID;
+
+    @Getter
     @Column(name = "secondary_case_uuid", insertable = false, updatable = false)
     private UUID nextCaseUUID;
 

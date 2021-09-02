@@ -90,6 +90,7 @@ public class CopyCompToComp2Test {
             null,
             null,
             null,
+            null,
             null);
 
     @Mock
@@ -117,6 +118,7 @@ public class CopyCompToComp2Test {
                 null,
                 null,
                 false,
+                null,
                 null,
                 null,
                 null,

@@ -47,6 +47,7 @@ public class AbstractCaseCopyStrategyTest {
             null,
             null,
             null,
+            null,
             null);
 
     private CaseData toCase;
@@ -71,6 +72,7 @@ public class AbstractCaseCopyStrategyTest {
                 null,
                 null,
                 false,
+                null,
                 null,
                 null,
                 null,
