@@ -85,6 +85,9 @@ public class GetStageResponse {
     @JsonProperty
     private String nextCaseUUID;
 
+    @JsonProperty
+    private String nextCaseStageUUID;
+
     public static GetStageResponse from(Stage stage) {
 
         return new GetStageResponse(
@@ -110,6 +113,7 @@ public class GetStageResponse {
                 stage.getContributions(),
                 stage.getNextCaseType(),
                 stage.getNextCaseReference(),
-                stage.getNextCaseUUID());
+                stage.getNextCaseUUID(),
+                stage.getNextCaseStageUUID());
     }
 }

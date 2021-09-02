@@ -136,6 +136,11 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
     @Column(name = "secondary_case_uuid", insertable = false, updatable = false)
     private String nextCaseUUID;
 
+    @Getter
+    @JsonInclude
+    @Column(name = "secondary_stage_uuid", insertable = false, updatable = false)
+    private String nextCaseStageUUID;
+
     @Setter
     @Getter
     @JsonInclude

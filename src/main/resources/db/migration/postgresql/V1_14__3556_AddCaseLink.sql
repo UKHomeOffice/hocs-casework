@@ -13,7 +13,7 @@ create table casework.case_link
 comment on table casework.case_link is 'Stores a link between a primary and secondary case';
 
 -- update the active_case view to include linking to the next case
-create or replace view casework.active_case(id, uuid, created, type, reference, data, primary_topic_uuid, primary_correspondent_uuid, case_deadline, date_received, deleted, completed, case_deadline_warning, secondary_case_uuid, secondary_case_reference, primary_case_uuid, primary_case_reference) as
+create or replace view casework.active_case(id, uuid, created, type, reference, data, primary_topic_uuid, primary_correspondent_uuid, case_deadline, date_received, deleted, completed, case_deadline_warning, secondary_case_uuid, secondary_case_reference, secondary_stage_uuid, primary_case_uuid, primary_case_reference, primary_stage_uuid) as
 SELECT case_data.id,
        case_data.uuid,
        case_data.created,
@@ -29,13 +29,17 @@ SELECT case_data.id,
        case_data.case_deadline_warning,
        next_case.uuid      AS secondary_case_uuid,
        next_case.reference AS secondary_case_reference,
-       prev_case.uuid            AS primary_case_uuid,
-       prev_case.reference       AS primary_case_reference
+       next_stage.uuid     AS secondary_stage_uuid,
+       prev_case.uuid      AS primary_case_uuid,
+       prev_case.reference AS primary_case_reference,
+       prev_stage.uuid     AS primary_stage_uuid
 FROM casework.case_data
          LEFT JOIN casework.case_link pl ON case_data.uuid = pl.primary_case_uuid
          LEFT JOIN casework.case_data next_case ON pl.secondary_case_uuid = next_case.uuid
          LEFT JOIN casework.case_link sl on case_data.uuid = sl.secondary_case_uuid
          LEFT JOIN casework.case_data prev_case ON sl.primary_case_uuid = prev_case.uuid
+         LEFT JOIN casework.stage prev_stage on prev_case.uuid = prev_stage.case_uuid and prev_stage.team_uuid IS NOT NULL
+         LEFT JOIN casework.stage next_stage on next_case.uuid = next_stage.case_uuid and next_stage.team_uuid IS NOT NULL
 WHERE NOT case_data.deleted;
 
 -- create a view on case_data that includes the link in both directions
@@ -84,7 +88,8 @@ SELECT c.reference AS case_reference,
        s.somu,
        c.secondary_case_uuid,
        c.secondary_case_reference,
-       c.completed
+       c.completed,
+       c.secondary_stage_uuid
 FROM casework.stage s
          JOIN casework.active_case c ON s.case_uuid = c.uuid
          LEFT JOIN casework.correspondents_json_by_case cs ON s.case_uuid = cs.case_uuid
@@ -110,7 +115,8 @@ SELECT c.reference AS case_reference,
        s.somu,
        c.secondary_case_uuid,
        c.secondary_case_reference,
-       c.completed
+       c.completed,
+       c.secondary_stage_uuid
 FROM casework.stage s
          JOIN casework.active_case c ON s.case_uuid = c.uuid
          LEFT JOIN casework.correspondents_json_by_case cs ON s.case_uuid = cs.case_uuid
