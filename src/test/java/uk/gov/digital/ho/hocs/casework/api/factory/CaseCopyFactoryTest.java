@@ -34,6 +34,39 @@ public class CaseCopyFactoryTest {
 
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptNullFromCase() {
+
+        // when
+        Optional<CaseCopyStrategy> strategy = factory.getStrategy(null, "B");
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptNullToCase() {
+
+        // when
+        Optional<CaseCopyStrategy> strategy = factory.getStrategy("A", null);
+
+    }
+
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptBlankFromCase() {
+
+        // when
+        Optional<CaseCopyStrategy> strategy = factory.getStrategy("", "B");
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldNotAcceptBlankToCase() {
+
+        // when
+        Optional<CaseCopyStrategy> strategy = factory.getStrategy("A", "");
+
+    }
+
     @Test
     public void shouldSelectCorrectStrategy() {
 

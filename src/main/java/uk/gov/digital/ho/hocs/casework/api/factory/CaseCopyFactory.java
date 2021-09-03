@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api.factory;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -19,16 +20,28 @@ public class CaseCopyFactory {
         this.copyStrategies = copyStrategies;
     }
 
-    public Optional<CaseCopyStrategy> getStrategy(String fromCaseType, String toCasetype) {
+    public Optional<CaseCopyStrategy> getStrategy(String fromCaseType, String toCaseType) {
+
+        if (StringUtils.isBlank(fromCaseType)) {
+            throw new IllegalArgumentException("fromCaseType must not be null or blank");
+        }
+
+        if (StringUtils.isBlank(toCaseType)) {
+            throw new IllegalArgumentException("toCaseType must not be null or blank");
+        }
 
         // search the annotated strategies
         return copyStrategies.stream()
-                .filter(isCopyStrategyForTypes(fromCaseType, toCasetype))
+                .filter(isCopyStrategyForTypes(fromCaseType, toCaseType))
                 .findFirst();
 
     }
 
     private Predicate<CaseCopyStrategy> isCopyStrategyForTypes(String fromCaseType, String toCaseType) {
+
+        assert fromCaseType != null;
+        assert toCaseType != null;
+
         return caseCopyStrategy -> {
             // check annotation is present and contains the requested from & to
             Class<? extends CaseCopyStrategy> strategyClass = caseCopyStrategy.getClass();
