@@ -208,7 +208,7 @@ public class CaseDataService {
 
         log.debug("Got extension type: {}", caseDeadlineExtensionType.getType());
 
-        caseData.getDeadlineExtensions().add(caseDeadlineExtensionType);
+        caseData.addDeadlineExtension(caseDeadlineExtensionType);
 
         int extensionDays = calculateExtensionDays(caseData.getDeadlineExtensions());
 
@@ -223,8 +223,9 @@ public class CaseDataService {
         auditClient.updateCaseAudit(caseData, stageUUID);
     }
 
-    private static int calculateExtensionDays(Set<CaseDeadlineExtensionType> caseDeadlineExtensionTypes) {
-        return caseDeadlineExtensionTypes.stream().map(e -> e.getWorkingDays()).reduce(0, Integer::sum);
+    private static int calculateExtensionDays(Set<CaseDeadlineExtension> caseDeadlineExtensions) {
+        return caseDeadlineExtensions.stream()
+                .map(e -> e.getCaseDeadlineExtensionType().getWorkingDays()).reduce(0, Integer::sum);
     }
 
     protected void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
@@ -431,7 +432,8 @@ public class CaseDataService {
 
 
         Map<String, Integer> caseDeadlineExtensions = Objects.isNull(caseData.getDeadlineExtensions()) ? Collections.emptyMap() :
-                caseData.getDeadlineExtensions().stream().collect(Collectors.toMap(e -> e.getType(), e -> e.getWorkingDays()));
+                caseData.getDeadlineExtensions().stream().collect(Collectors.toMap(
+                        e -> e.getCaseDeadlineExtensionType().getType(), e -> e.getCaseDeadlineExtensionType().getWorkingDays()));
 
         CaseSummary caseSummary = new CaseSummary(
                 caseData.getType(),
