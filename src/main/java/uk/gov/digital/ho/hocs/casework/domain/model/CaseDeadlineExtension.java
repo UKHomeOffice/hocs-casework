@@ -44,4 +44,21 @@ public class CaseDeadlineExtension {
         this.caseDeadlineExtensionType = caseDeadlineExtensionType;
         this.note = note;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) return true;
+
+        if (other == null || getClass() != other.getClass())
+            return false;
+
+        CaseDeadlineExtension otherCaseDeadlineExtension = (CaseDeadlineExtension) other;
+        return Objects.equals(caseData, otherCaseDeadlineExtension.caseData) &&
+                Objects.equals(caseDeadlineExtensionType, otherCaseDeadlineExtension.caseDeadlineExtensionType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(caseData, caseDeadlineExtensionType);
+    }
 }
