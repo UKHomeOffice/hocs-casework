@@ -20,6 +20,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseReferenceResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDeadlineExtension;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDeadlineExtensionType;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
@@ -96,11 +97,11 @@ public class ApplyExtensionIntegrationTest {
                 getBasePath() + "/case/" + CASE_UUID + "/stage/" + STAGE_UUID + "/extension",
                 POST, new HttpEntity(createBodyApplyExtension(), createValidAuthHeaders()), GetCaseReferenceResponse.class);
 
-        final CaseDeadlineExtensionType caseDeadlineExtensionType =
+        final CaseDeadlineExtension caseDeadlineExtension =
                 caseDataService.getCase(CASE_UUID).getDeadlineExtensions().stream().findAny().orElseThrow();
 
-        assertThat(caseDeadlineExtensionType.getType()).isEqualTo("TEST_EXTENSION");
-        assertThat(caseDeadlineExtensionType.getWorkingDays()).isEqualTo(20);
+        assertThat(caseDeadlineExtension.getCaseDeadlineExtensionType().getType()).isEqualTo("TEST_EXTENSION");
+        assertThat(caseDeadlineExtension.getCaseDeadlineExtensionType().getWorkingDays()).isEqualTo(20);
 
         final Set<CaseNote> caseNotes = caseNoteService.getCaseNotes(CASE_UUID);
         final CaseNote caseNote = caseNotes.stream().findFirst().get();

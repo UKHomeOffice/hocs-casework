@@ -22,11 +22,11 @@ public class CaseDeadlineExtension {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "case_uuid", referencedColumnName="uuid")
     private CaseData caseData;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "type")
     private CaseDeadlineExtensionType caseDeadlineExtensionType;
 

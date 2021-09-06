@@ -361,7 +361,7 @@ public class CaseDataResourceTest {
         assertThat(response.getBody().getReference()).isEqualTo(reference);
 
         verify(caseNoteService).createCaseNote(caseUUID, "EXTENSION", reason);
-        verify(caseDataService).applyExtension(caseUUID, stageUUID, applyExtensionRequest.getType());
+        verify(caseDataService).applyExtension(caseUUID, stageUUID, applyExtensionRequest.getType(), reason);
         verify(caseDataService).getCaseRef(caseUUID);
 
         verifyNoMoreInteractions(caseDataService, caseNoteService);

@@ -105,7 +105,8 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
     @OneToMany(
             mappedBy = "caseData",
             cascade = CascadeType.ALL,
-            orphanRemoval = true
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
     )
     private Set<CaseDeadlineExtension> deadlineExtensions;
 
