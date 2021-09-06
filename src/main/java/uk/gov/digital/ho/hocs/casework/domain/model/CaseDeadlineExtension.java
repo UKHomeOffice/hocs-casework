@@ -39,6 +39,13 @@ public class CaseDeadlineExtension {
     @Column(name = "note")
     private String note;
 
+    public CaseDeadlineExtension(CaseData caseData, CaseDeadlineExtensionType caseDeadlineExtensionType, String note) {
+        this.caseData = caseData;
+        this.caseDeadlineExtensionType = caseDeadlineExtensionType;
+        this.note = note;
+    }
+
+
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;
@@ -49,12 +56,6 @@ public class CaseDeadlineExtension {
         CaseDeadlineExtension otherCaseDeadlineExtension = (CaseDeadlineExtension) other;
         return Objects.equals(caseData, otherCaseDeadlineExtension.caseData) &&
                 Objects.equals(caseDeadlineExtensionType, otherCaseDeadlineExtension.caseDeadlineExtensionType);
-    }
-
-    public CaseDeadlineExtension(CaseData caseData, CaseDeadlineExtensionType caseDeadlineExtensionType, String note) {
-        this.caseData = caseData;
-        this.caseDeadlineExtensionType = caseDeadlineExtensionType;
-        this.note = note;
     }
 
     @Override
