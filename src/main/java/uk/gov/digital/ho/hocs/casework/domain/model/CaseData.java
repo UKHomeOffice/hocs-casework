@@ -116,13 +116,18 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
     @Where(clause = "deleted = false")
     private Set<CaseNote> caseNotes;
 
-    public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate dateReceived) {
+    public CaseData(CaseDataType type,
+                    Long caseNumber,
+                    Map<String, String> data,
+                    ObjectMapper objectMapper, LocalDate
+                            dateReceived) {
         this(type, caseNumber, dateReceived);
         update(data, objectMapper);
     }
 
-    public void addDeadlineExtension(CaseDeadlineExtensionType caseDeadlineExtensionType) {
-        CaseDeadlineExtension caseDeadlineExtension = new CaseDeadlineExtension(this, caseDeadlineExtensionType);
+    public void addDeadlineExtension(CaseDeadlineExtensionType caseDeadlineExtensionType, String note) {
+        CaseDeadlineExtension caseDeadlineExtension =
+                new CaseDeadlineExtension(this, caseDeadlineExtensionType, note);
         deadlineExtensions.add(caseDeadlineExtension);
     }
 

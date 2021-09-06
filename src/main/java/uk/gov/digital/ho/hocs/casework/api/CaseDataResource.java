@@ -96,7 +96,7 @@ class CaseDataResource {
                                                             @PathVariable UUID stageUUID,
                                                             @RequestBody ApplyExtensionRequest request) {
         try {
-            caseDataService.applyExtension(caseUUID, stageUUID, request.getType());
+            caseDataService.applyExtension(caseUUID, stageUUID, request.getType(), request.getCaseNote());
             caseNoteService.createCaseNote(caseUUID, "EXTENSION", request.getCaseNote());
 
             return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));

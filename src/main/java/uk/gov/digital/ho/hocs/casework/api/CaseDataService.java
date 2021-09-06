@@ -199,7 +199,7 @@ public class CaseDataService {
         return newDataMap;
     }
 
-    public void applyExtension(UUID caseUUID, UUID stageUUID, String type) {
+    public void applyExtension(UUID caseUUID, UUID stageUUID, String type, String note) {
         log.debug("Applying extension for Case: {} Extension: {}", caseUUID, type);
         CaseData caseData = getCaseData(caseUUID);
 
@@ -208,7 +208,7 @@ public class CaseDataService {
 
         log.debug("Got extension type: {}", caseDeadlineExtensionType.getType());
 
-        caseData.addDeadlineExtension(caseDeadlineExtensionType);
+        caseData.addDeadlineExtension(caseDeadlineExtensionType, note);
 
         int extensionDays = calculateExtensionDays(caseData.getDeadlineExtensions());
 

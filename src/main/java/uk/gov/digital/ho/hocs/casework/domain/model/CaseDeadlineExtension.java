@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -29,8 +30,14 @@ public class CaseDeadlineExtension {
     @JoinColumn(name = "type")
     private CaseDeadlineExtensionType caseDeadlineExtensionType;
 
+    @Getter
     @Column(name = "created")
     private Date created = new Date();
+
+    @Getter
+    @Setter
+    @Column(name = "note")
+    private String note;
 
     @Override
     public boolean equals(Object other) {
@@ -44,9 +51,10 @@ public class CaseDeadlineExtension {
                 Objects.equals(caseDeadlineExtensionType, otherCaseDeadlineExtension.caseDeadlineExtensionType);
     }
 
-    public CaseDeadlineExtension(CaseData caseData, CaseDeadlineExtensionType caseDeadlineExtensionType) {
+    public CaseDeadlineExtension(CaseData caseData, CaseDeadlineExtensionType caseDeadlineExtensionType, String note) {
         this.caseData = caseData;
         this.caseDeadlineExtensionType = caseDeadlineExtensionType;
+        this.note = note;
     }
 
     @Override
