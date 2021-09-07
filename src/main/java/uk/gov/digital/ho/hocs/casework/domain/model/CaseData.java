@@ -30,7 +30,7 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
     private Long id;
 
     @Getter
-    @Column(name = "uuid")
+    @Column(name = "uuid", columnDefinition ="uuid")
     private UUID uuid;
 
     @Getter
@@ -102,12 +102,13 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
 
     @Getter
     @Setter
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinTable(name = "case_deadline_extension",
-            joinColumns = @JoinColumn(name = "case_uuid", referencedColumnName = "uuid"),
-            inverseJoinColumns = @JoinColumn(name = "type",
-                    referencedColumnName = "type"))
-    private Set<CaseDeadlineExtensionType> deadlineExtensions;
+    @OneToMany(
+            mappedBy = "caseData",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
+    private Set<CaseDeadlineExtension> deadlineExtensions;
 
     @Getter
     @Setter
@@ -116,9 +117,19 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
     @Where(clause = "deleted = false")
     private Set<CaseNote> caseNotes;
 
-    public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate dateReceived) {
+    public CaseData(CaseDataType type,
+                    Long caseNumber,
+                    Map<String, String> data,
+                    ObjectMapper objectMapper, LocalDate
+                            dateReceived) {
         this(type, caseNumber, dateReceived);
         update(data, objectMapper);
+    }
+
+    public void addDeadlineExtension(CaseDeadlineExtensionType caseDeadlineExtensionType, String note) {
+        CaseDeadlineExtension caseDeadlineExtension =
+                new CaseDeadlineExtension(this, caseDeadlineExtensionType, note);
+        deadlineExtensions.add(caseDeadlineExtension);
     }
 
     public CaseData(CaseDataType type, Long caseNumber, LocalDate dateReceived) {

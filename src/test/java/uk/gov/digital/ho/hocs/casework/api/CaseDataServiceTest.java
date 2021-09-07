@@ -838,36 +838,45 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldApplyExtension() {
-        final String existingExtensionType = "EXISTING_EXTENSION";
-        final String additionalExtensionType = "ADDITIONAL_EXTENSION";
+        final CaseDeadlineExtensionType existingExtensionType =
+                new CaseDeadlineExtensionType("EXISTING_EXTENSION", 10);
 
-        final CaseDeadlineExtensionType existingExtension =
-                new CaseDeadlineExtensionType(existingExtensionType, 10);
-
-        final CaseDeadlineExtensionType additionalExtension =
-                new CaseDeadlineExtensionType(additionalExtensionType, 15);
+        final CaseDeadlineExtensionType additionalExtensionType =
+                new CaseDeadlineExtensionType("ADDITIONAL_EXTENSION", 15);
 
         final CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
-        final Set<CaseDeadlineExtensionType> initialDeadlineExtensions = new HashSet<>();
+
+        final CaseDeadlineExtension existingExtension = new CaseDeadlineExtension(
+                caseData,
+                existingExtensionType,
+                "existing note");
+
+
+        final CaseDeadlineExtension additionalExtension = new CaseDeadlineExtension(
+                caseData,
+                additionalExtensionType,
+                "additonal note");
+
+        final Set<CaseDeadlineExtension> initialDeadlineExtensions = new HashSet<>();
         initialDeadlineExtensions.add(existingExtension);
 
         caseData.setDeadlineExtensions(initialDeadlineExtensions);
 
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
-        when(caseDeadlineExtensionTypeRepository.findById(additionalExtensionType))
-                .thenReturn(Optional.of(additionalExtension));
+        when(caseDeadlineExtensionTypeRepository.findById(additionalExtensionType.getType()))
+                .thenReturn(Optional.of(additionalExtensionType));
 
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25))
                 .thenReturn(caseDeadlineExtended);
 
-        caseDataService.applyExtension(caseUUID, stageUUID, "ADDITIONAL_EXTENSION");
+        caseDataService.applyExtension(caseUUID, stageUUID, "ADDITIONAL_EXTENSION", "additional note");
 
         verify(caseDataRepository).findByUuid(caseUUID);
         verify(infoClient).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25);
         verify(caseDataRepository).save(caseDataCaptor.capture());
         verify(auditClient).updateCaseAudit(caseData, stageUUID);
 
-        Set<CaseDeadlineExtensionType> deadlineExtensions = caseDataCaptor.getValue().getDeadlineExtensions();
+        Set<CaseDeadlineExtension> deadlineExtensions = caseDataCaptor.getValue().getDeadlineExtensions();
 
         assertThat(deadlineExtensions.size()).isEqualTo(2);
         assertThat(deadlineExtensions.containsAll(List.of(existingExtension, additionalExtension))).isTrue();

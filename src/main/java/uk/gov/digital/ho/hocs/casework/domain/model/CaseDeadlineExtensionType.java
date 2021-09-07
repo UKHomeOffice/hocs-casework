@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
