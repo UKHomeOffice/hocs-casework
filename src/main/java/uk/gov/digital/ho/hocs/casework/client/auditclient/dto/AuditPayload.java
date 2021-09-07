@@ -7,10 +7,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.api.dto.AddressDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDeadlineExtension;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
 
@@ -172,6 +174,32 @@ public interface AuditPayload {
                     correspondent.getEmail(),
                     correspondent.getReference(),
                     correspondent.getExternalKey()
+            );
+        }
+    }
+
+    @AllArgsConstructor(access = AccessLevel.PRIVATE)
+    @Getter
+    class CreateExtensionRequest {
+
+        @JsonProperty("caseId")
+        private UUID caseId;
+
+        @JsonProperty("created")
+        private LocalDateTime created;
+
+        @JsonProperty("type")
+        private String type;
+
+        @JsonProperty("note")
+        private String note;
+
+        public static AuditPayload.CreateExtensionRequest from(CaseDeadlineExtension caseDeadlineExtension) {
+            return new AuditPayload.CreateExtensionRequest(
+                    caseDeadlineExtension.getCaseData().getUuid(),
+                    caseDeadlineExtension.getCreated(),
+                    caseDeadlineExtension.getCaseDeadlineExtensionType().getType(),
+                    caseDeadlineExtension.getNote()
             );
         }
     }

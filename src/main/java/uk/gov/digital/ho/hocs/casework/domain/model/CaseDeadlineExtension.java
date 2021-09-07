@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Objects;
 
@@ -32,7 +33,7 @@ public class CaseDeadlineExtension {
 
     @Getter
     @Column(name = "created")
-    private Date created = new Date();
+    private LocalDateTime created = LocalDateTime.now();;
 
     @Getter
     @Setter
