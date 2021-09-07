@@ -874,7 +874,7 @@ public class CaseDataServiceTest {
         verify(caseDataRepository).findByUuid(caseUUID);
         verify(infoClient).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25);
         verify(caseDataRepository).save(caseDataCaptor.capture());
-        verify(auditClient).updateCaseAudit(caseData, stageUUID);
+        verify(auditClient).createExtensionAudit(additionalExtension);
 
         Set<CaseDeadlineExtension> deadlineExtensions = caseDataCaptor.getValue().getDeadlineExtensions();
 
