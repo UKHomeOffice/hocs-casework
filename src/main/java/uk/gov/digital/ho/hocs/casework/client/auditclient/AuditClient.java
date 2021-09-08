@@ -30,6 +30,7 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.EXTENSION_APPLIED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_COMPLETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_RECREATED;
@@ -298,6 +299,21 @@ public class AuditClient {
                 logFailedToParseDataPayload(e);
             }
             sendAuditMessage(localDateTime, somuItem.getCaseUuid(), data, EventType.SOMU_ITEM_DELETED, null, data,
+                    requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
+    }
+
+    public void createExtensionAudit(CaseDeadlineExtension caseDeadlineExtension) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(AuditPayload.CreateExtensionRequest.from(caseDeadlineExtension));
+            } catch (JsonProcessingException e) {
+                logFailedToParseDataPayload(e);
+            }
+            sendAuditMessage(localDateTime, caseDeadlineExtension.getCaseData().getUuid(), data, EXTENSION_APPLIED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
