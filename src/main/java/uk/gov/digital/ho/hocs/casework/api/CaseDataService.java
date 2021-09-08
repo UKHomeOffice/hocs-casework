@@ -9,7 +9,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
+import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
+import uk.gov.digital.ho.hocs.casework.api.factory.strategies.CaseCopyStrategy;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
@@ -18,28 +23,64 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.AdditionalField;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseLink;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.domain.model.DataTotal;
+import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseLinkRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CALCULATED_TOTALS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_COMPLETED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DELETED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_UPDATED_NULL_DATA;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_SUMMARY_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_LOOKUP_FAILED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRESPONDENT_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_TOPIC_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.UNCAUGHT_EXCEPTION;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_DELETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.DOCUMENT_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.DOCUMENT_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_COMPLETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_RECREATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 
 @Service
 @Slf4j
@@ -50,14 +91,19 @@ public class CaseDataService {
     protected final AuditClient auditClient;
     protected final ObjectMapper objectMapper;
     protected final InfoClient infoClient;
+    private final CaseCopyFactory caseCopyFactory;
+    private final CaseLinkRepository caseLinkRepository;
+    public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
 
     @Autowired
-    public CaseDataService(CaseDataRepository caseDataRepository, InfoClient infoClient,
-                           ObjectMapper objectMapper, AuditClient auditClient) {
+    public CaseDataService(CaseDataRepository caseDataRepository, CaseLinkRepository caseLinkRepository, InfoClient infoClient,
+                           ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory) {
         this.caseDataRepository = caseDataRepository;
+        this.caseLinkRepository = caseLinkRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
         this.objectMapper = objectMapper;
+        this.caseCopyFactory = caseCopyFactory;
     }
 
     public static final List<String> TIMELINE_EVENTS = List.of(
@@ -157,9 +203,63 @@ public class CaseDataService {
         return caseType;
     }
 
-    CaseData createCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
+    CaseData createCase(String caseType, Map<String, String> data, LocalDate dateReceived, UUID fromCaseUUID) {
         log.debug("Creating Case of type: {}", caseType);
+
+        CaseData caseData;
+        if (fromCaseUUID == null) {
+            caseData = createSimpleCase(caseType, data, dateReceived);
+        } else {
+            caseData = createCaseFromCaseUUID(caseType, data, dateReceived, fromCaseUUID);
+        }
+
+        auditClient.createCaseAudit(caseData);
+
+        return caseData;
+    }
+
+
+    private CaseData createSimpleCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
+
         Long caseNumber = caseDataRepository.getNextSeriesId();
+        CaseData caseData = createCaseBaseData(caseType, data, dateReceived, caseNumber);
+        log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
+        return caseData;
+    }
+
+    private CaseData createCaseFromCaseUUID(String caseType, Map<String, String> data, LocalDate dateReceived, UUID fromCaseUUID) {
+
+        // does the previous case exist
+        CaseData copyFromCase = getCaseData(fromCaseUUID);
+
+        // get the existing case number
+        Matcher findSerialNumber = CASE_REFERENCE_PATTERN.matcher(copyFromCase.getReference());
+        if (!findSerialNumber.find()) {
+            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot extract case sequence number! Failed to create Case: %s", caseType), CASE_CREATE_FAILURE);
+        }
+        Long caseNumber = Long.parseLong(findSerialNumber.group(1));
+
+        // create new case with previous serial number
+        CaseData caseData = createCaseBaseData(caseType, data, dateReceived, caseNumber);
+
+        // create a case link so that the 2 cases are related
+        log.info("Creating link from case:{} to case:{}", fromCaseUUID, caseData.getUuid());
+        caseLinkRepository.save(new CaseLink(fromCaseUUID, caseData.getUuid()));
+
+        // copy the previous case details into the new case
+        Optional<CaseCopyStrategy> strategy = caseCopyFactory.getStrategy(copyFromCase.getType(), caseType);
+
+        if (strategy.isPresent()) {
+            strategy.get().copyCase(copyFromCase, caseData);
+        } else {
+            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot find a copy strategy from:%s to :%s", copyFromCase.getType(), caseType), CASE_CREATE_FAILURE);
+        }
+
+        log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
+        return caseData;
+    }
+
+    private CaseData createCaseBaseData(String caseType, Map<String, String> data, LocalDate dateReceived, Long caseNumber) {
         log.debug("Allocating Ref: {}", caseNumber);
         CaseDataType caseDataType = infoClient.getCaseType(caseType);
         CaseData caseData = new CaseData(caseDataType, caseNumber, data, objectMapper, dateReceived);
@@ -168,10 +268,10 @@ public class CaseDataService {
         LocalDate deadlineWarning = infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0);
         caseData.setCaseDeadlineWarning(deadlineWarning);
         caseDataRepository.save(caseData);
-        auditClient.createCaseAudit(caseData);
-        log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
+
         return caseData;
     }
+
 
     protected Map<String, String> calculateTotals(UUID caseUUID, UUID stageUUID, String listName) {
         log.debug("Calculating totals for Case: {} Stage: {}", caseUUID, stageUUID);
@@ -193,7 +293,7 @@ public class CaseDataService {
         return newDataMap;
     }
 
-    protected void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
+    public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseUUID);
         if (data != null) {
             log.debug("Data size {}", data.size());
@@ -402,7 +502,10 @@ public class CaseDataService {
                 additionalFields,
                 caseData.getPrimaryCorrespondent(),
                 caseData.getPrimaryTopic(),
-                caseData.getActiveStages());
+                caseData.getActiveStages(),
+                caseData.getPreviousCaseReference(),
+                caseData.getPreviousCaseUUID(),
+                caseData.getPreviousCaseStageUUID());
         auditClient.viewCaseSummaryAudit(caseData);
         return caseSummary;
     }

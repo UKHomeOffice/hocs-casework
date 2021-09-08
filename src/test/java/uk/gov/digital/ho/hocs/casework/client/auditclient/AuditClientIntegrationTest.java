@@ -10,13 +10,16 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.UUID;
-import static org.mockito.Mockito.*;
+
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuditClientIntegrationTest extends CamelTestSupport {
@@ -33,7 +36,7 @@ public class AuditClientIntegrationTest extends CamelTestSupport {
 
     private AuditClient auditClient;
     private static final long caseID = 12345L;
-    private final CaseDataType caseType = new CaseDataType("MIN", "a1");
+    private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
     private LocalDate caseReceived = LocalDate.now();
     private UUID stageUUID = UUID.randomUUID();
 

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -32,8 +33,8 @@ public class MigrationCaseDataService extends CaseDataService {
 
     @Autowired
     public MigrationCaseDataService(CaseDataRepository caseDataRepository, MigrationStageRepository migrationStageRepository, InfoClient infoClient,
-                                    ObjectMapper objectMapper, AuditClient auditClient) {
-        super(caseDataRepository, infoClient, objectMapper, auditClient);
+                                    ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory) {
+        super(caseDataRepository, null, infoClient, objectMapper, auditClient, caseCopyFactory);
         this.migrationStageRepository = migrationStageRepository;
     }
 
@@ -68,7 +69,7 @@ public class MigrationCaseDataService extends CaseDataService {
     }
 
     @Override
-    protected void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
+    public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseUUID);
         if (data != null) {
             log.debug("Data size {}", data.size());

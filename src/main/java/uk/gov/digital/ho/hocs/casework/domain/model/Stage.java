@@ -76,6 +76,7 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
     @Column(name = "case_reference", insertable = false, updatable = false)
     private String caseReference;
 
+    @Setter
     @Getter
     @Column(name = "case_type", insertable = false, updatable = false)
     private String caseDataType;
@@ -119,6 +120,33 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
     @Transient
     private String contributions;
 
+    @Getter
+    @Setter
+    @Transient
+    @JsonInclude
+    private String nextCaseType;
+
+    @Getter
+    @JsonInclude
+    @Column(name = "secondary_case_reference", insertable = false, updatable = false)
+    private String nextCaseReference;
+
+    @Getter
+    @JsonInclude
+    @Column(name = "secondary_case_uuid", insertable = false, updatable = false)
+    private String nextCaseUUID;
+
+    @Getter
+    @JsonInclude
+    @Column(name = "secondary_stage_uuid", insertable = false, updatable = false)
+    private String nextCaseStageUUID;
+
+    @Setter
+    @Getter
+    @JsonInclude
+    @Column(name = "completed", insertable = false, updatable = false)
+    private Boolean completed;
+
     public Stage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, UUID transitionNoteUUID) {
         if (caseUUID == null || stageType == null) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
@@ -129,6 +157,7 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
         this.caseUUID = caseUUID;
         this.stageType = stageType;
         this.transitionNoteUUID = transitionNoteUUID;
+        completed = Boolean.FALSE;
         setTeam(teamUUID);
         setUser(userUUID);
     }

@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
 import java.io.IOException;
@@ -17,7 +18,7 @@ public class GetCaseResponseTest {
     @Test
     public void getCaseDataDto() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -43,7 +44,7 @@ public class GetCaseResponseTest {
     @Test
     public void caseDataUUIDSubstitution() throws IOException {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
 
         Map<String, String> data = new HashMap<>();
@@ -83,7 +84,7 @@ public class GetCaseResponseTest {
     @Test
     public void getCaseDataDtoNull() {
 
-        CaseDataType type = new CaseDataType("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseDeadline = LocalDate.now().plusDays(20);

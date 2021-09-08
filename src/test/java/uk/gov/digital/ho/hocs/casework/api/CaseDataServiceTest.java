@@ -5,11 +5,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
+import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
@@ -19,30 +22,68 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseLink;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
+import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseLinkRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataServiceTest {
 
+    public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
+    public static final String TOPIC_NAME = "topic_name";
+    public static final UUID TOPIC_NAME_UUID = UUID.randomUUID();
+    public static final String PREVIOUS_CASE_REFERENCE = "COMP/1234567/21";
+    public static final String PREVIOUS_CASE_TYPE = "COMP";
+    public static final String PREV_CORRESPONDENT_TYPE = "correspondent_type";
+    public static final String PREV_FULLNAME = "fullname";
+    public static final String PREV_ADDR_1 = "addr1";
+    public static final String PREV_ADDR_2 = "addr2";
+    public static final String PREV_ADDR_3 = "addr3";
+    public static final String PREV_ADDR_4 = "add4";
+    public static final String PREV_ADDR_5 = "addr5";
+    public static final String PREV_TELEPHONE = "string 1";
+    public static final String PREV_EMAIL = "string 2";
+    public static final String PREV_REFERENCE = "string 3";
+    public static final String PREV_EXTERNAL_KEY = "string 4";
+    public static final String PREV_DATA_CLOB = "{\"key1\" : \"value1\", \"key2\" : \"value2\"}";
     private static final long caseID = 12345L;
     private static final String OFFLINE_QA_USER = "OfflineQaUser";
-    
-    private final CaseDataType caseType = new CaseDataType("MIN", "a1");
+    private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID stageUUID = UUID.randomUUID();
     private final UUID primaryCorrespondentUUID = UUID.randomUUID();
@@ -64,11 +105,17 @@ public class CaseDataServiceTest {
     @Mock
     private AuditClient auditClient;
 
+    @Mock
+    private CaseCopyFactory caseCopyFactory;
+
+    @Mock
+    private CaseLinkRepository caseLinkRepository;
+
     @Before
     public void setUp() {
         configuration = new SpringConfiguration();
         objectMapper = configuration.initialiseObjectMapper();
-        this.caseDataService = new CaseDataService(caseDataRepository, infoClient, objectMapper, auditClient);
+        this.caseDataService = new CaseDataService(caseDataRepository, caseLinkRepository, infoClient, objectMapper, auditClient, caseCopyFactory);
     }
 
     @Test
@@ -78,7 +125,7 @@ public class CaseDataServiceTest {
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, null);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
@@ -88,13 +135,92 @@ public class CaseDataServiceTest {
     }
 
     @Test
+    public void shouldCreateCaseUsingPreviousUUID() throws ApplicationExceptions.EntityCreationException {
+
+        // given
+        CaseDataType comp2 = new CaseDataType("display_name",
+                "c6", "DISP", PREVIOUS_CASE_TYPE);
+
+        CaseData previousCaseData = new CaseData(1l,
+                PREVIOUS_CASE_UUID,
+                LocalDateTime.now(),
+                PREVIOUS_CASE_TYPE,
+                PREVIOUS_CASE_REFERENCE,
+                false,
+                PREV_DATA_CLOB,
+                UUID.randomUUID(),
+                new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID),
+                UUID.randomUUID(),
+                new Correspondent(PREVIOUS_CASE_UUID,
+                PREV_CORRESPONDENT_TYPE,
+                PREV_FULLNAME,
+                new Address(PREV_ADDR_1,
+                        PREV_ADDR_2,
+                        PREV_ADDR_3,
+                        PREV_ADDR_4,
+                        PREV_ADDR_5),
+                PREV_TELEPHONE,
+                PREV_EMAIL,
+                PREV_REFERENCE,
+                PREV_EXTERNAL_KEY),
+                LocalDate.now(),
+                LocalDate.now(),
+                LocalDate.now().minusDays(10),
+                false,
+                Set.of(new ActiveStage(), new ActiveStage()),
+                Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")),
+                null,
+                null,
+                null,
+                null,
+                null);
+
+
+        when(caseDataRepository.findByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);
+
+        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
+        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(comp2);
+        when(caseCopyFactory.getStrategy(any(), any())).thenReturn(Optional.of((fromCase, toCase) -> {}));
+
+        // when
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, PREVIOUS_CASE_UUID);
+
+        // then
+        verify(caseDataRepository, times(1)).findByUuid(PREVIOUS_CASE_UUID);
+        verify(caseDataRepository, times(0)).getNextSeriesId(); // ensure not used
+        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
+        verify(caseDataRepository, times(1)).save(caseData);
+        ArgumentCaptor<CaseLink> caseLink = ArgumentCaptor.forClass(CaseLink.class);
+        verify(caseLinkRepository, times(1)).save(caseLink.capture());
+        verifyNoMoreInteractions(caseDataRepository);
+
+        // assert the save link values
+        assertThat(caseLink.getValue()).isNotNull();
+        CaseLink parameterUsed = caseLink.getValue();
+        assertThat(parameterUsed.getPrimaryCase()).isEqualTo(PREVIOUS_CASE_UUID);
+        assertThat(parameterUsed.getSecondaryCase()).isEqualTo(caseData.getUuid());
+
+        // assert the reference matches expectations
+        Matcher previousReferenceMatcher = CaseDataService.CASE_REFERENCE_PATTERN.matcher(PREVIOUS_CASE_REFERENCE);
+        Matcher caseReferenceMatcher = CaseDataService.CASE_REFERENCE_PATTERN.matcher(caseData.getReference());
+
+        // + assert the patterns are valid
+        assertThat(previousReferenceMatcher.find()).isTrue();
+        assertThat(caseReferenceMatcher.find()).isTrue();
+
+        // assert the reference sequence number part is valid
+        assertThat(previousReferenceMatcher.group(1)).isEqualTo(caseReferenceMatcher.group(1));
+
+    }
+
+    @Test
     public void shouldCreateCaseWithValidParamsNullData() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayName(), null, deadlineDate);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayName(), null, deadlineDate, null);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
@@ -110,7 +236,7 @@ public class CaseDataServiceTest {
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, null);
 
         verify(auditClient, times(1)).createCaseAudit(caseData);
         verifyNoMoreInteractions(auditClient);
@@ -119,7 +245,7 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
 
-        caseDataService.createCase(null, new HashMap<>(), deadlineDate);
+        caseDataService.createCase(null, new HashMap<>(), deadlineDate, null);
     }
 
     @Test()
@@ -128,7 +254,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         try {
-            caseDataService.createCase(null, new HashMap<>(), deadlineDate);
+            caseDataService.createCase(null, new HashMap<>(), deadlineDate, null);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
@@ -139,7 +265,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldGetDocumentTags(){
+    public void shouldGetDocumentTags() {
         UUID caseUUID = UUID.randomUUID();
         when(caseDataRepository.getCaseType(caseUUID)).thenReturn("TEST");
         List<String> documentTags = new ArrayList<String>(Arrays.asList("Tag"));
@@ -155,7 +281,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldGetCaseTimeline()  {
+    public void shouldGetCaseTimeline() {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         Set<CaseNote> caseNoteData = Set.of(
                 new CaseNote(caseUUID, "MANUAL", "case note 1", "a user"),
@@ -167,7 +293,7 @@ public class CaseDataServiceTest {
                 caseUUID,
                 null,
                 "correlation Id",
-                "hocs-casework","",
+                "hocs-casework", "",
                 "namespace", ZonedDateTime.now(), CASE_CREATED.toString(),
                 "user"));
 
@@ -176,7 +302,6 @@ public class CaseDataServiceTest {
         when(auditClient.getAuditLinesForCase(eq(caseData.getUuid()), any())).thenReturn(auditResponse);
 
         List<TimelineItem> timeline = caseDataService.getCaseTimeline(caseData.getUuid()).collect(Collectors.toList());
-
 
 
         assertThat(timeline.size()).isEqualTo(3);
@@ -191,7 +316,7 @@ public class CaseDataServiceTest {
 
 
     @Test
-    public void shouldGetCaseNotesOnlyTimelineOnAuditFailure()  {
+    public void shouldGetCaseNotesOnlyTimelineOnAuditFailure() {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         Set<CaseNote> caseNoteData = Set.of(
                 new CaseNote(caseUUID, "MANUAL", "case note 1", "a user"),
@@ -215,7 +340,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldUpdateTeamByStageAndTexts(){
+    public void shouldUpdateTeamByStageAndTexts() {
         Map<String, String> data = new HashMap<>();
         data.put("Key1", "Value1");
         data.put("Key2", "Value2");
@@ -224,7 +349,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         TeamDto teamDto = new TeamDto("Team", UUID.randomUUID(), true, null);
         when(infoClient.getTeamByStageAndText("stageType", "Value1_Value2_Value3")).thenReturn(teamDto);
-        String[] texts = { "Key1", "Key2", "Key3" };
+        String[] texts = {"Key1", "Key2", "Key3"};
 
         Map<String, String> teamMap = caseDataService.updateTeamByStageAndTexts(
                 caseData.getUuid(), stageUUID, "stageType", "teamUUIDKey", "teamNameKey", texts);
@@ -240,8 +365,8 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         UUID auditResponseUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
-        LocalDate deadline = LocalDate.of(2019,1,1);
-        LocalDate deadlineWarning = LocalDate.of(2020,2,1);
+        LocalDate deadline = LocalDate.of(2019, 1, 1);
+        LocalDate deadlineWarning = LocalDate.of(2020, 2, 1);
 
         String payload = objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stageUUID, teamUUID, "STAGE_TYPE", deadline, deadlineWarning));
 
@@ -327,7 +452,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldAuditGetCaseSummary()  {
+    public void shouldAuditGetCaseSummary() {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         Set<FieldDto> filterFields = new HashSet<>();
 
@@ -405,17 +530,17 @@ public class CaseDataServiceTest {
 
         Set<FieldDto> filterFields = new HashSet<>();
 
-        FieldDto field0 = new FieldDto(UUID.randomUUID(),"TEMPCReference", "what is your TEMPCReference", "Text", new String[]{}, true, true, null);
+        FieldDto field0 = new FieldDto(UUID.randomUUID(), "TEMPCReference", "what is your TEMPCReference", "Text", new String[]{}, true, true, null);
         filterFields.add(field0);
 
-        FieldDto field1 = new FieldDto(UUID.randomUUID(),"CopyNumberTen",  "what is your CopyNumberTen", "Text", new String[]{},  true, true, null);
+        FieldDto field1 = new FieldDto(UUID.randomUUID(), "CopyNumberTen", "what is your CopyNumberTen", "Text", new String[]{}, true, true, null);
         filterFields.add(field1);
 
 
         Map<String, String> additionalData = Map.of(
-            "TEMPCReference", "test ref",
-            "CopyNumberTen", "true",
-            "UnfilteredField", "some value"
+                "TEMPCReference", "test ref",
+                "CopyNumberTen", "true",
+                "UnfilteredField", "some value"
         );
 
         CaseData caseData = new CaseData(caseType, caseID, additionalData, objectMapper, deadlineDate);
@@ -578,7 +703,7 @@ public class CaseDataServiceTest {
     public void shouldUpdateDateReceived() {
 
         // given
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
         when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0)).thenReturn(caseDeadlineWarning);
@@ -604,7 +729,7 @@ public class CaseDataServiceTest {
     public void shouldUpdateDispatchDeadlineDate() {
 
         // given
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
         when(infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0)).thenReturn(caseDeadlineWarning);
 
@@ -626,7 +751,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldUpdateStageDeadline() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
         LocalDate caseDeadline = LocalDate.now();
         when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 7)).thenReturn(caseDeadline);
@@ -643,7 +768,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldCompleteCase() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
 
         when(caseDataRepository.findByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -678,7 +803,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldDeleteCase() {
 
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
 
         when(caseDataRepository.findAnyByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -692,7 +817,7 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldAuditDeleteCase() {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper , deadlineDate);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
 
         when(caseDataRepository.findAnyByUuid(caseData.getUuid())).thenReturn(caseData);
 
@@ -726,7 +851,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(new CaseDataType("MIN", "a1"));
+        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(CaseDataTypeFactory.from("MIN", "a1", "COMP"));
 
         caseDataService.getCaseType(caseUUID);
 
@@ -740,7 +865,7 @@ public class CaseDataServiceTest {
     public void shouldReturnCaseTypeWhenNullReturnedFromInfoClientAndButCaseInCaseDataOnGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
         when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenThrow(RestClientException.class);
-        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData(new CaseDataType("", ""),1L, null ));
+        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(new CaseData(CaseDataTypeFactory.from("", ""), 1L, null));
 
         caseDataService.getCaseType(caseUUID);
 
@@ -769,7 +894,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void getCaseRef(){
+    public void getCaseRef() {
 
         when(caseDataRepository.getCaseRef(caseUUID)).thenReturn(caseRef);
 
@@ -805,7 +930,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void getCaseDataByReference(){
+    public void getCaseDataByReference() {
         String testCaseRef = "TestReference";
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         when(caseDataRepository.findByReference(testCaseRef)).thenReturn(caseData);
@@ -820,7 +945,7 @@ public class CaseDataServiceTest {
 
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void getCaseDataByReference_forNullResult(){
+    public void getCaseDataByReference_forNullResult() {
         String testCaseRef = "TestReference";
         when(caseDataRepository.findByReference(testCaseRef)).thenReturn(null);
 
@@ -828,7 +953,7 @@ public class CaseDataServiceTest {
 
     }
 
-    private void checkNoMoreInteractions(){
+    private void checkNoMoreInteractions() {
         verifyNoMoreInteractions(auditClient, caseDataRepository, infoClient);
     }
 }
