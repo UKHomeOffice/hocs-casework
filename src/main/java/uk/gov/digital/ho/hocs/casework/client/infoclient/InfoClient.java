@@ -134,6 +134,7 @@ public class InfoClient {
         return response;
     }
 
+    @Cacheable(value = "InfoClientGetStageDeadline", unless = "#result == null", key = "{#stageType, #received.toString(), #caseDeadline.toString() }")
     public LocalDate getStageDeadline(String stageType, LocalDate received, LocalDate caseDeadline) {
         LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadline?received=%s&caseDeadline=%s", stageType, received, caseDeadline), LocalDate.class);
         log.info("Got {} as deadline for StageType {} and Date {} and Case Deadline {}", response.toString(), stageType, received, caseDeadline, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS));
