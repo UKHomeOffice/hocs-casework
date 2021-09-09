@@ -878,6 +878,9 @@ public class CaseDataServiceTest {
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25))
                 .thenReturn(caseDeadlineExtended);
 
+        when(infoClient.getStageDeadlineWarning(
+                eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended.minusDays(2))))
+                .thenReturn(caseDeadlineExtended.minusDays(2));
 
         // when
         caseDataService.applyExtension(caseUUID, stageUUID, "ADDITIONAL_EXTENSION", "additional note");
@@ -887,6 +890,8 @@ public class CaseDataServiceTest {
         verify(caseDataRepository).findByUuid(caseUUID);
         verify(infoClient).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25);
         verify(infoClient).getStageDeadline(eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended));
+        verify(infoClient).getStageDeadlineWarning(
+                eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended.minusDays(2)));
         verify(caseDataRepository).save(caseDataCaptor.capture());
         verify(auditClient).createExtensionAudit(additionalExtension);
 
