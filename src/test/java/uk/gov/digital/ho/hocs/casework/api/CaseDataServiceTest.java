@@ -8,6 +8,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
@@ -71,6 +72,9 @@ public class CaseDataServiceTest {
 
     @Captor
     ArgumentCaptor<CaseData> caseDataCaptor;
+
+    @Spy
+    ActiveStage activeStage = new ActiveStage();
 
     @Before
     public void setUp() {
@@ -838,6 +842,7 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldApplyExtension() {
+        // given
         final CaseDeadlineExtensionType existingExtensionType =
                 new CaseDeadlineExtensionType("EXISTING_EXTENSION", 10);
 
@@ -855,24 +860,38 @@ public class CaseDataServiceTest {
         final CaseDeadlineExtension additionalExtension = new CaseDeadlineExtension(
                 caseData,
                 additionalExtensionType,
-                "additonal note");
+                "additional note");
 
         final Set<CaseDeadlineExtension> initialDeadlineExtensions = new HashSet<>();
         initialDeadlineExtensions.add(existingExtension);
 
         caseData.setDeadlineExtensions(initialDeadlineExtensions);
+        caseData.setActiveStages(Set.of(activeStage));
 
         when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
         when(caseDeadlineExtensionTypeRepository.findById(additionalExtensionType.getType()))
                 .thenReturn(Optional.of(additionalExtensionType));
 
+        when(infoClient.getStageDeadline(activeStage.getStageType(), caseReceived, caseDeadlineExtended))
+                .thenReturn(caseDeadlineExtended);
+
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25))
                 .thenReturn(caseDeadlineExtended);
 
+        when(infoClient.getStageDeadlineWarning(
+                eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended.minusDays(2))))
+                .thenReturn(caseDeadlineExtended.minusDays(2));
+
+        // when
         caseDataService.applyExtension(caseUUID, stageUUID, "ADDITIONAL_EXTENSION", "additional note");
 
+
+        // then
         verify(caseDataRepository).findByUuid(caseUUID);
         verify(infoClient).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25);
+        verify(infoClient).getStageDeadline(eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended));
+        verify(infoClient).getStageDeadlineWarning(
+                eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended.minusDays(2)));
         verify(caseDataRepository).save(caseDataCaptor.capture());
         verify(auditClient).createExtensionAudit(additionalExtension);
 
@@ -880,6 +899,9 @@ public class CaseDataServiceTest {
 
         assertThat(deadlineExtensions.size()).isEqualTo(2);
         assertThat(deadlineExtensions.containsAll(List.of(existingExtension, additionalExtension))).isTrue();
+
+        verify(activeStage).setDeadline(eq(caseDeadlineExtended));
+        verify(activeStage).setDeadlineWarning(eq(caseDeadlineExtended.minusDays(2)));
 
         checkNoMoreInteractions();
     }

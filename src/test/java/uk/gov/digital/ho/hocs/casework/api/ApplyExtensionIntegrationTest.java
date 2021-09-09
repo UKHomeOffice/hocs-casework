@@ -80,7 +80,15 @@ public class ApplyExtensionIntegrationTest {
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType/TEST/deadline?received=2018-01-01&days=0&extensionDays=20"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON_UTF8));
+                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadline?received=2018-01-01&caseDeadline=2018-01-29"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadlineWarning?received=2018-01-01&caseDeadlineWarning=2018-01-27"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess("\"2018-01-27\"", MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
