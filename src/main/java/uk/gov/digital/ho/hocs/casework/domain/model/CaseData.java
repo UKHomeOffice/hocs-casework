@@ -96,6 +96,7 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
     private boolean completed;
 
     @Getter
+    @Setter
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false)
     private Set<ActiveStage> activeStages;

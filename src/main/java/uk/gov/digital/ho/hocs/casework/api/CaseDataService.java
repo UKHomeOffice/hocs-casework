@@ -220,7 +220,11 @@ public class CaseDataService {
                 extensionDays);
 
         caseData.setCaseDeadline(deadline);
+        caseData.setCaseDeadlineWarning(deadline.minusDays(2));
+
         caseDataRepository.save(caseData);
+
+        updateStageDeadlines(caseData);
         auditClient.createExtensionAudit(caseDeadlineExtension);
     }
 
