@@ -19,6 +19,7 @@ public class GetCorrespondentsResponseTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "An Organisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
@@ -30,6 +31,7 @@ public class GetCorrespondentsResponseTest {
                 caseUUID,
                 type,
                 fullName,
+                organisation,
                 address,
                 phone,
                 email,

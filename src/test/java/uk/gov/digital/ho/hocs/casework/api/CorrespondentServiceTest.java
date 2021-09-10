@@ -60,12 +60,13 @@ public class CorrespondentServiceTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "A Large Organisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
         Set<Correspondent> correspondentsExpected = Set.of(correspondent);
         when(correspondentRepository.findAllActive()).thenReturn(correspondentsExpected);
 
@@ -103,6 +104,7 @@ public class CorrespondentServiceTest {
           caseUUID,
           "Type",
           "full name",
+                "organisation",
                 address,
                 "01923478393",
                 "email@test.com",
@@ -129,6 +131,7 @@ public class CorrespondentServiceTest {
                 caseUUID,
                 "Type",
                 "full name",
+                "organisation",
                 address,
                 "01923478393",
                 "email@test.com",
@@ -155,6 +158,7 @@ public class CorrespondentServiceTest {
                 caseUUID,
                 "Type",
                 "full name",
+                "organisation",
                 address,
                 "01923478393",
                 "email@test.com",
@@ -182,6 +186,7 @@ public class CorrespondentServiceTest {
         UUID testCaseUUID = UUID.randomUUID();
         UUID testCorrespondenceUUID = UUID.randomUUID();
         @NotEmpty String testFullname = "test name";
+        String testOrganisation = "Organisation";
         String testPostcode = "T3 5ST";
         String testAdd1 = "Test House";
         String testAdd2 = "Test Street";
@@ -193,6 +198,7 @@ public class CorrespondentServiceTest {
 
         UpdateCorrespondentRequest  testRequest = new UpdateCorrespondentRequest(
                 testFullname,
+                testOrganisation,
                 testPostcode,
                 testAdd1,
                 testAdd2,
@@ -204,7 +210,7 @@ public class CorrespondentServiceTest {
         );
 
 
-        Correspondent mockDBResponse = new Correspondent(testCaseUUID, "SomeType" ,testFullname, null, null, null, null, null);
+        Correspondent mockDBResponse = new Correspondent(testCaseUUID, "SomeType" ,testFullname, null, null, null, null, null, null);
         when(correspondentRepository.findByUUID(testCaseUUID, testCorrespondenceUUID)).thenReturn(mockDBResponse);
 
         // WHEN
@@ -218,6 +224,7 @@ public class CorrespondentServiceTest {
         Correspondent captureOutput = correspondentRepoCapture.getValue();
 
         assertThat(captureOutput.getFullName()).isEqualTo(testFullname);
+        assertThat(captureOutput.getOrganisation()).isEqualTo(testOrganisation);
         assertThat(captureOutput.getPostcode()).isEqualTo(testPostcode);
         assertThat(captureOutput.getAddress1()).isEqualTo(testAdd1);
         assertThat(captureOutput.getAddress2()).isEqualTo(testAdd2);

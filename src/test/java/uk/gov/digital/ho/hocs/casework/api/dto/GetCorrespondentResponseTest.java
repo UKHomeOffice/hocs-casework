@@ -16,13 +16,14 @@ public class GetCorrespondentResponseTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "An Organisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
 
         GetCorrespondentResponse getCorrespondentResponse = GetCorrespondentResponse.from(correspondent);
 
@@ -31,7 +32,7 @@ public class GetCorrespondentResponseTest {
         assertThat(getCorrespondentResponse.getType()).isEqualTo(correspondent.getCorrespondentType());
         assertThat(getCorrespondentResponse.getCaseUUID()).isEqualTo(correspondent.getCaseUUID());
         assertThat(getCorrespondentResponse.getFullname()).isEqualTo(correspondent.getFullName());
-
+        assertThat(getCorrespondentResponse.getOrganisation()).isEqualTo(correspondent.getOrganisation());
         assertThat(getCorrespondentResponse.getAddress().getPostcode()).isEqualTo(correspondent.getPostcode());
         assertThat(getCorrespondentResponse.getAddress().getAddress1()).isEqualTo(correspondent.getAddress1());
         assertThat(getCorrespondentResponse.getAddress().getAddress2()).isEqualTo(correspondent.getAddress2());
@@ -51,7 +52,7 @@ public class GetCorrespondentResponseTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, null, null, null, null, null, null);
+        Correspondent correspondent = new Correspondent(caseUUID, type, null, null, null, null, null, null, null);
 
         GetCorrespondentResponse getCorrespondentResponse = GetCorrespondentResponse.from(correspondent);
 
@@ -60,6 +61,7 @@ public class GetCorrespondentResponseTest {
         assertThat(getCorrespondentResponse.getType()).isEqualTo(correspondent.getCorrespondentType());
         assertThat(getCorrespondentResponse.getCaseUUID()).isEqualTo(correspondent.getCaseUUID());
         assertThat(getCorrespondentResponse.getFullname()).isEqualTo(correspondent.getFullName());
+        assertThat(getCorrespondentResponse.getOrganisation()).isEqualTo(correspondent.getOrganisation());
         assertThat(getCorrespondentResponse.getAddress().getPostcode()).isEqualTo(correspondent.getPostcode());
         assertThat(getCorrespondentResponse.getAddress().getAddress1()).isEqualTo(correspondent.getAddress1());
         assertThat(getCorrespondentResponse.getAddress().getAddress2()).isEqualTo(correspondent.getAddress2());

@@ -40,6 +40,11 @@ public class BaseCorrespondent implements Serializable {
 
     @Setter
     @Getter
+    @Column(name = "organisation")
+    protected String organisation;
+
+    @Setter
+    @Getter
     @Column(name = "postcode")
     protected String postcode;
 

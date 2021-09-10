@@ -16,6 +16,7 @@ public class CorrespondentWithPrimaryFlagTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "An Organisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
@@ -27,6 +28,7 @@ public class CorrespondentWithPrimaryFlagTest {
                 caseUUID,
                 type,
                 fullName,
+                organisation,
                 address,
                 phone,
                 email,
@@ -40,6 +42,7 @@ public class CorrespondentWithPrimaryFlagTest {
         assertThat(correspondent.getCorrespondentType()).isEqualTo(type);
         assertThat(correspondent.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(correspondent.getFullName()).isEqualTo(fullName);
+        assertThat(correspondent.getOrganisation()).isEqualTo(organisation);
         assertThat(correspondent.getPostcode()).isEqualTo(address.getPostcode());
         assertThat(correspondent.getAddress1()).isEqualTo(address.getAddress1());
         assertThat(correspondent.getAddress2()).isEqualTo(address.getAddress2());
@@ -59,6 +62,7 @@ public class CorrespondentWithPrimaryFlagTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "An Organisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
@@ -70,6 +74,7 @@ public class CorrespondentWithPrimaryFlagTest {
                 caseUUID,
                 type,
                 fullName,
+                organisation,
                 address,
                 phone,
                 email,
@@ -82,6 +87,7 @@ public class CorrespondentWithPrimaryFlagTest {
         assertThat(correspondent.getCorrespondentType()).isEqualTo(type);
         assertThat(correspondent.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(correspondent.getFullName()).isEqualTo(fullName);
+        assertThat(correspondent.getOrganisation()).isEqualTo(organisation);
         assertThat(correspondent.getPostcode()).isEqualTo(address.getPostcode());
         assertThat(correspondent.getAddress1()).isEqualTo(address.getAddress1());
         assertThat(correspondent.getAddress2()).isEqualTo(address.getAddress2());
@@ -120,6 +126,7 @@ public class CorrespondentWithPrimaryFlagTest {
         UUID caseUUID = null;
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "An Organisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
@@ -131,6 +138,7 @@ public class CorrespondentWithPrimaryFlagTest {
                 caseUUID,
                 type,
                 fullName,
+                organisation,
                 address,
                 phone,
                 email,
@@ -146,6 +154,7 @@ public class CorrespondentWithPrimaryFlagTest {
 
         UUID caseUUID = UUID.randomUUID();
         String fullName = "anyFullName";
+        String organisation = "An Organisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
@@ -158,6 +167,7 @@ public class CorrespondentWithPrimaryFlagTest {
                 caseUUID,
                 type,
                 fullName,
+                organisation,
                 address,
                 phone,
                 email,

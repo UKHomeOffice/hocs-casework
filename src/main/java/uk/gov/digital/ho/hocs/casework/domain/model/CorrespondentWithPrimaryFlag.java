@@ -25,6 +25,7 @@ public class CorrespondentWithPrimaryFlag extends BaseCorrespondent {
             UUID caseUUID,
             String correspondentType,
             String fullName,
+            String organisation,
             Address address,
             String telephone,
             String email,
@@ -41,6 +42,7 @@ public class CorrespondentWithPrimaryFlag extends BaseCorrespondent {
         this.caseUUID = caseUUID;
         this.correspondentType = correspondentType;
         this.fullName = fullName;
+        this.organisation = organisation;
         if (address != null) {
             this.postcode = address.getPostcode();
             this.address1 = address.getAddress1();

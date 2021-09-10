@@ -54,7 +54,7 @@ public class AuditClientTest {
     private LocalDate caseReceived = LocalDate.now();
     private String auditQueue ="audit-queue";
     private Address address = new Address("S1 3NS","some street","some town","some count","UK");
-    private Correspondent correspondent = new Correspondent(randomUUID(), "MP", "John Smith", address, "123456789","test@test.com", "1234", "external key" );
+    private Correspondent correspondent = new Correspondent(randomUUID(), "MP", "John Smith", "An Organisation", address, "123456789","test@test.com", "1234", "external key" );
     private Topic topic = new Topic(caseUUID, "some topic", randomUUID());
 
     @Captor

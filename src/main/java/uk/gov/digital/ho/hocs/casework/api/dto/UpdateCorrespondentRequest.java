@@ -17,6 +17,9 @@ public class UpdateCorrespondentRequest {
     @JsonProperty(value = "fullname", required = true)
     String fullname;
 
+    @JsonProperty("organisation")
+    String organisation;
+
     @JsonProperty("postcode")
     String postcode;
 
