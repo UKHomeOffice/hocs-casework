@@ -30,6 +30,22 @@ public class InfoClientTest {
     }
 
     @Test
+    public void getAllCorrespondentType() {
+        CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();
+        GetCorrespondentTypeResponse getCorrespondentType = new GetCorrespondentTypeResponse(new HashSet<>(Arrays.asList(correspondentTypeDto)));
+        when(restHelper.get("infoService", "/correspondentType", GetCorrespondentTypeResponse.class)).thenReturn(getCorrespondentType);
+
+        GetCorrespondentTypeResponse getCorrespondentTypeResponse = infoClient.getAllCorrespondentType();
+
+        assertThat(getCorrespondentTypeResponse).isNotNull();
+        assertThat(getCorrespondentTypeResponse.getCorrespondentTypes()).isNotNull();
+        assertThat(getCorrespondentTypeResponse.getCorrespondentTypes().size()).isEqualTo(1);
+
+        verify(restHelper).get("infoService", "/correspondentType", GetCorrespondentTypeResponse.class);
+        verifyNoMoreInteractions(restHelper);
+    }
+
+    @Test
     public void getCorrespondentType() {
 
         CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();

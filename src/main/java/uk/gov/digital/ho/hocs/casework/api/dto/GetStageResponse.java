@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -66,6 +67,27 @@ public class GetStageResponse {
     @JsonProperty("assignedTopic")
     private String assignedTopic;
 
+    @JsonProperty("tag")
+    private ArrayList<String> tag;
+
+    @JsonProperty("dueContribution")
+    private String dueContribution;
+
+    @JsonProperty("contributions")
+    private String contributions;
+
+    @JsonProperty
+    private String nextCaseType;
+
+    @JsonProperty
+    private String nextCaseReference;
+
+    @JsonProperty
+    private String nextCaseUUID;
+
+    @JsonProperty
+    private String nextCaseStageUUID;
+
     public static GetStageResponse from(Stage stage) {
 
         return new GetStageResponse(
@@ -85,6 +107,13 @@ public class GetStageResponse {
                 stage.getCorrespondents(),
                 stage.getCaseCreated(),
                 stage.isActive(),
-                stage.getAssignedTopic());
+                stage.getAssignedTopic(),
+                stage.getTag(),
+                stage.getDueContribution(),
+                stage.getContributions(),
+                stage.getNextCaseType(),
+                stage.getNextCaseReference(),
+                stage.getNextCaseUUID(),
+                stage.getNextCaseStageUUID());
     }
 }

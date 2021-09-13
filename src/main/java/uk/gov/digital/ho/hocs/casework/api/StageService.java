@@ -2,11 +2,11 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import com.amazonaws.util.json.Jackson;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
@@ -14,23 +14,46 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
+import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_WITHDRAWN;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_EMPTY;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGES_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_TEAM;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_USER;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_COMPLETED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_RECREATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_TRANSITION_NOTE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_EMPTY;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.USERS_TEAMS_STAGE_LIST_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @Slf4j
@@ -46,16 +69,16 @@ public class StageService {
     private final CaseDataService caseDataService;
     private final StagePriorityCalculator stagePriorityCalculator;
     private final DaysElapsedCalculator daysElapsedCalculator;
+    private final StageTagsDecorator stageTagsDecorator;
     private final CaseNoteService caseNoteService;
-    private final SomuItemService somuItemService;
+    private final ContributionsProcessor contributionsProcessor;
 
     private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage::getCreated);
-
 
     @Autowired
     public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient,
                         @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator,
-                        DaysElapsedCalculator daysElapsedCalculator, CaseNoteService caseNoteService, SomuItemService somuItemService) {
+                        DaysElapsedCalculator daysElapsedCalculator, StageTagsDecorator stageTagsDecorator, CaseNoteService caseNoteService, ContributionsProcessor contributionsProcessor) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -65,8 +88,9 @@ public class StageService {
         this.caseDataService = caseDataService;
         this.stagePriorityCalculator = stagePriorityCalculator;
         this.daysElapsedCalculator = daysElapsedCalculator;
+        this.stageTagsDecorator = stageTagsDecorator;
         this.caseNoteService = caseNoteService;
-        this.somuItemService = somuItemService;
+        this.contributionsProcessor = contributionsProcessor;
     }
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
@@ -218,24 +242,20 @@ public class StageService {
     Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
         Set<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
-        addSomuData(stages); //List of case contributions from somu table required to show contributions status on teams dashboards
-        updatePriority(stages);
-        updateDaysElapsed(stages);
+
+        for (Stage stage : stages) {
+            updateContributions(stage);
+            updatePriority(stage);
+            updateDaysElapsed(stage);
+            decorateTags(stage);
+        }
+
         return stages;
     }
 
-    private void addSomuData(Collection<Stage> stages) {
-        log.info("Adding somu data for {} Stages", stages.size());
-        stages.forEach(stage -> {
-            Set<SomuItem> somuItems = somuItemService.getCaseSomuItemsBySomuType(stage.getCaseUUID());
-            JSONObject object = new JSONObject();
-            JSONArray jsonArray = new JSONArray();
-            for(SomuItem si : somuItems){
-                jsonArray.put(si.getData());
-            }
-            object.put("caseContributions", jsonArray);
-            stage.setSomu(object.toString());
-        });
+    void updateContributions(Stage stage) {
+        log.debug("Adding contributions data for stage : {}", stage.getCaseUUID());
+        contributionsProcessor.processContributionsForStage(stage);
     }
 
     Stage getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {
@@ -245,8 +265,11 @@ public class StageService {
             log.debug("No unassigned case found for user: {} in team {}", userUUID, teamUUID);
             return null;
         }
-        updatePriority(unassignedStages);
-        updateDaysElapsed(unassignedStages);
+
+        for (Stage stage : unassignedStages) {
+            updatePriority(stage);
+            updateDaysElapsed(stage);
+        }
 
         double prevSystemCalculatedPriority = 0;
         Stage nextAvailableStage = unassignedStages.stream().findFirst().get();
@@ -267,22 +290,53 @@ public class StageService {
         return nextAvailableStage;
     }
 
-    Set<Stage> getActiveStagesForUser() {
+    Set<Stage> getActiveStagesForUsersTeamsAndCaseType() {
         log.debug("Getting Active Stages for User");
         Set<UUID> teams = userPermissionsService.getUserTeams();
         if (teams.isEmpty()) {
             log.warn("No teams - Returning 0 Stages", value(EVENT, TEAMS_STAGE_LIST_EMPTY));
             return new HashSet<>(0);
-        } else {
-            Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
-            if (caseTypes.isEmpty()) {
-                caseTypes.add("");
-            }
-            Set<Stage> stages = stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
-            updatePriority(stages);
-            updateDaysElapsed(stages);
-            log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
-            return stages;
+        }
+
+        Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
+        if (caseTypes.isEmpty()) {
+            caseTypes.add("");
+        }
+
+        Set<Stage> stages = stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
+
+        updateStages(stages);
+
+        log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
+        return stages;
+    }
+
+    Set<Stage> getActiveUserStagesWithTeamsAndCaseType(UUID userUuid) {
+        log.debug("Getting users active stage");
+        Set<UUID> teams = userPermissionsService.getUserTeams();
+        if (teams.isEmpty()) {
+            log.warn("No teams - Returning 0 Stages", value(EVENT, TEAMS_STAGE_LIST_EMPTY));
+            return new HashSet<>(0);
+        }
+
+        Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
+        if (caseTypes.isEmpty()) {
+            caseTypes.add("");
+        }
+
+        Set<Stage> stages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUuid, teams, caseTypes);
+
+        updateStages(stages);
+
+        log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
+        return stages;
+    }
+
+    private void updateStages(Set<Stage> stages) {
+        for (Stage stage : stages) {
+            updatePriority(stage);
+            updateDaysElapsed(stage);
+            decorateTags(stage);
         }
     }
 
@@ -320,11 +374,27 @@ public class StageService {
         if (caseUUIDs.isEmpty()) {
             log.info("No cases - Returning 0 Stages", value(EVENT, SEARCH_STAGE_LIST_EMPTY));
             return new HashSet<>(0);
-        } else {
-            Set<Stage> stages = stageRepository.findAllByCaseUUIDIn(caseUUIDs);
-            log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));
-            return groupByCaseUUID(stages);
         }
+
+        Set<Stage> stages = stageRepository.findAllByCaseUUIDIn(caseUUIDs);
+
+        // done like this because the case relationship is in the info schema
+        // get the case types with a previous case type and reduce to
+        // Map<K, V>, - K is the previousCaseType, V is the caseType
+        Map<String, String> caseTypes = infoClient.getAllCaseTypes()
+                .stream()
+                .filter( caseType -> Objects.nonNull(caseType.getPreviousCaseType()))
+                .collect(Collectors.toMap(CaseDataType::getPreviousCaseType, CaseDataType::getDisplayCode));
+
+        // map the previous case type on to the cases found
+        // only stages with completed cases have the next caseType
+        stages.stream()
+                .filter(stage -> stage.getCompleted())
+                .forEach(stage -> stage.setNextCaseType(caseTypes.get(stage.getCaseDataType())));
+
+        log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));
+        return groupByCaseUUID(stages);
+
     }
 
     Set<Stage> getAllStagesForCaseByCaseUUID(UUID caseUUID) {
@@ -339,7 +409,7 @@ public class StageService {
         }
     }
 
-    private static Set<Stage> groupByCaseUUID(Set<Stage> stages) {
+    private static Set<Stage> groupByCaseUUID(Set<? extends Stage> stages) {
 
         // Group the stages by case UUID
         Map<UUID, List<Stage>> groupedStages = stages.stream().collect(Collectors.groupingBy(Stage::getCaseUUID));
@@ -373,14 +443,19 @@ public class StageService {
         caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
     }
 
-    private void updatePriority(Collection<Stage> stages) {
-        log.info("Updating priority for {} Stages", stages.size());
-        stages.forEach(stagePriorityCalculator::updatePriority);
+    private void updatePriority(Stage stage) {
+        log.info("Updating priority for stage : {}", stage.getCaseUUID());
+        stagePriorityCalculator.updatePriority(stage);
     }
 
-    private void updateDaysElapsed(Collection<Stage> stages) {
-        log.info("Updating days elapsed for {} Stages", stages.size());
-        stages.forEach(daysElapsedCalculator::updateDaysElapsed);
+    private void updateDaysElapsed(Stage stage) {
+        log.info("Updating days elapsed for stage : {}", stage.getCaseUUID());
+        daysElapsedCalculator.updateDaysElapsed(stage);
+    }
+
+    private void decorateTags(Stage stage) {
+        log.info("Updating tags for stage: {}", stage.getCaseUUID());
+        stageTagsDecorator.decorateTags(stage);
     }
 
     public void withdrawCase(UUID caseUUID, UUID stageUUID, WithdrawCaseRequest request) {

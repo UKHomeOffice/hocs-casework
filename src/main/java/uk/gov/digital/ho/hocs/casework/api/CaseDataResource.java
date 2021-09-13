@@ -44,48 +44,48 @@ class CaseDataResource {
 
     @Authorised(accessLevel = AccessLevel.OWNER)
     @PostMapping(value = "/case")
-    ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
-        CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getDateRecieved());
+    public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
+        CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getDateRecieved(), request.getFromCaseUUID());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
     @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/{caseUUID}")
-    ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID, @RequestParam("full") Optional<Boolean> full) {
+    public ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID, @RequestParam("full") Optional<Boolean> full) {
         CaseData caseData = caseDataService.getCase(caseUUID);
         return ResponseEntity.ok(GetCaseResponse.from(caseData, full.orElse(false)));
     }
 
     @Authorised(accessLevel = AccessLevel.OWNER)
     @DeleteMapping(value = "/case/{caseUUID}/{deleted}")
-    ResponseEntity deleteCase(@PathVariable UUID caseUUID, @PathVariable Boolean deleted) {
+    public ResponseEntity<Void> deleteCase(@PathVariable UUID caseUUID, @PathVariable Boolean deleted) {
         caseDataService.deleteCase(caseUUID, deleted);
         return ResponseEntity.ok().build();
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/timeline")
-    ResponseEntity<Set<TimelineItemDto>> getCaseTimeline(@PathVariable UUID caseUUID) {
+    public ResponseEntity<Set<TimelineItemDto>> getCaseTimeline(@PathVariable UUID caseUUID) {
         Stream<TimelineItem> timeline = caseDataService.getCaseTimeline(caseUUID);
         return ResponseEntity.ok(timeline.map(TimelineItemDto::from).collect(Collectors.toSet()));
     }
 
     @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/{caseUUID}/summary")
-    ResponseEntity<GetCaseSummaryResponse> getCaseSummary(@PathVariable UUID caseUUID) {
+    public ResponseEntity<GetCaseSummaryResponse> getCaseSummary(@PathVariable UUID caseUUID) {
         CaseSummary caseSummary = caseDataService.getCaseSummary(caseUUID);
         return ResponseEntity.ok(GetCaseSummaryResponse.from(caseSummary));
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/calculateTotals")
-    ResponseEntity<Map<String, String>> calculateTotals(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody String listName) {
+    public ResponseEntity<Map<String, String>> calculateTotals(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody String listName) {
         Map<String, String> totals = caseDataService.calculateTotals(caseUUID, stageUUID, listName);
         return ResponseEntity.ok(totals);
     }
 
     @Authorised(accessLevel = AccessLevel.WRITE)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data")
-    ResponseEntity updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {
+    public ResponseEntity<Void> updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {
         caseDataService.updateCaseData(caseUUID, stageUUID, request.getData());
         return ResponseEntity.ok().build();
     }
@@ -110,44 +110,46 @@ class CaseDataResource {
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/dateReceived")
-    ResponseEntity updateCaseDateReceived(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody LocalDate dateReceived) {
+    public ResponseEntity<Void> updateCaseDateReceived(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody LocalDate dateReceived) {
         caseDataService.updateDateReceived(caseUUID, stageUUID, dateReceived, 0);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/dispatchDeadlineDate")
-    ResponseEntity updateCaseDispatchDeadlineDate(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody LocalDate dispatchDate) {
+    public ResponseEntity<Void> updateCaseDispatchDeadlineDate(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody LocalDate dispatchDate) {
         caseDataService.updateDispatchDeadlineDate(caseUUID, stageUUID, dispatchDate);
         return ResponseEntity.ok().build();
     }
 
+    // TODO: Add test
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/deadline")
-    ResponseEntity updateCaseDeadlineDays(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody int days) {
+    public ResponseEntity<Void> updateCaseDeadlineDays(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody int days) {
         caseDataService.updateDateReceived(caseUUID, stageUUID, null, days);
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/stageDeadline")
-    ResponseEntity updateStageDeadline(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageDeadlineRequest request) {
+    public ResponseEntity<Void> updateStageDeadline(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageDeadlineRequest request) {
         caseDataService.updateStageDeadline(caseUUID, stageUUID, request.getStageType(), request.getDays());
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/stageDeadlines")
-    ResponseEntity updateDeadlineForStages(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateDeadlineForStagesRequest request) {
+    public ResponseEntity<Void> updateDeadlineForStages(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateDeadlineForStagesRequest request) {
         caseDataService.updateDeadlineForStages(caseUUID, stageUUID, request.getStageTypeAndDaysMap());
         return ResponseEntity.ok().build();
     }
 
+    // TODO: Add test
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryCorrespondent")
-    ResponseEntity updateCasePrimaryCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryCorrespondentUUID) {
+    public ResponseEntity<Void> updateCasePrimaryCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryCorrespondentUUID) {
         caseDataService.updatePrimaryCorrespondent(caseUUID, stageUUID, primaryCorrespondentUUID);
         return ResponseEntity.ok().build();
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/updatePrimaryCorrespondent")
-    ResponseEntity updatePrimaryCorrespondent(
+    public ResponseEntity<Void> updatePrimaryCorrespondent(
             @PathVariable UUID caseUUID,
             @PathVariable UUID stageUUID,
             @RequestBody UpdatePrimaryCorrespondentRequest primaryCorrespondentUUID) {
@@ -156,35 +158,37 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
+    // TODO: Add test
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryTopic")
-    ResponseEntity updateCasePrimaryTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryTopicUUID) {
+    public ResponseEntity<Void> updateCasePrimaryTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryTopicUUID) {
         caseDataService.updatePrimaryTopic(caseUUID, stageUUID, primaryTopicUUID);
         return ResponseEntity.ok().build();
     }
 
     @Authorised(accessLevel = AccessLevel.OWNER)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/teamTexts")
-    ResponseEntity<UpdateTeamByStageAndTextsResponse> updateTeamByStageAndTexts(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateTeamByStageAndTextsRequest request) {
+    public ResponseEntity<UpdateTeamByStageAndTextsResponse> updateTeamByStageAndTexts(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateTeamByStageAndTextsRequest request) {
         Map<String, String> teamMap = caseDataService.updateTeamByStageAndTexts(caseUUID, stageUUID, request.getStageType(), request.getTeamUUIDKey(), request.getTeamNameKey(), request.getTexts());
         return ResponseEntity.ok(UpdateTeamByStageAndTextsResponse.from(teamMap));
     }
 
+    // TODO: Add test
     @PutMapping(value = "/case/{caseUUID}/complete")
-    ResponseEntity updateCompleteCase(@PathVariable UUID caseUUID, @RequestBody boolean complete) {
+    public ResponseEntity<Void> updateCompleteCase(@PathVariable UUID caseUUID, @RequestBody boolean complete) {
         caseDataService.completeCase(caseUUID, complete);
         return ResponseEntity.ok().build();
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/documentTags")
-    ResponseEntity<List<String>> getDocumentTags(@PathVariable UUID caseUUID) {
+    public ResponseEntity<List<String>> getDocumentTags(@PathVariable UUID caseUUID) {
         List<String> documentTags = caseDataService.getDocumentTags(caseUUID);
         return ResponseEntity.ok(documentTags);
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/standardLine")
-    ResponseEntity<Set<GetStandardLineResponse>> getStandardLine(@PathVariable UUID caseUUID) {
+    public ResponseEntity<Set<GetStandardLineResponse>> getStandardLine(@PathVariable UUID caseUUID) {
         Set<GetStandardLineResponse> standardLine = caseDataService.getStandardLine(caseUUID);
         return ResponseEntity.ok(standardLine);
     }
@@ -197,24 +201,24 @@ class CaseDataResource {
     }
 
     @PostMapping(value = "/caseType/{caseType}/clearCachedTemplate")
-    ResponseEntity clearCachedTemplateForCaseType(@PathVariable String caseType) {
+    public ResponseEntity<String> clearCachedTemplateForCaseType(@PathVariable String caseType) {
         caseDataService.clearCachedTemplateForCaseType(caseType);
         return ResponseEntity.ok("Cache Cleared");
     }
 
     @GetMapping(value = "/case/{caseUUID}/data/{variableName}")
-    ResponseEntity<String> getCaseDataValue(@PathVariable UUID caseUUID, @PathVariable String variableName) {
+    public ResponseEntity<String> getCaseDataValue(@PathVariable UUID caseUUID, @PathVariable String variableName) {
         return ResponseEntity.ok(caseDataService.getCaseDataField(caseUUID, variableName));
     }
 
     @PutMapping(value = "/case/{caseUUID}/data/{variableName}")
-    ResponseEntity updateCaseDataValue(@PathVariable UUID caseUUID, @PathVariable String variableName, @RequestBody String value) {
+    public ResponseEntity<Void> updateCaseDataValue(@PathVariable UUID caseUUID, @PathVariable String variableName, @RequestBody String value) {
         caseDataService.updateCaseData(caseUUID, null, Map.of(variableName, value));
         return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/case/data/{reference}")
-    ResponseEntity<GetCaseResponse> getCaseDataByReference(@PathVariable String reference) throws UnsupportedEncodingException {
+    public ResponseEntity<GetCaseResponse> getCaseDataByReference(@PathVariable String reference) throws UnsupportedEncodingException {
         String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8.name());
         CaseData caseData = caseDataService.getCaseDataByReference(decodedRef);
         return ResponseEntity.ok(GetCaseResponse.from(caseData, true));

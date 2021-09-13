@@ -3,25 +3,43 @@ package uk.gov.digital.ho.hocs.casework.api;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetStageResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetStagesResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.RecreateStageRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageUserRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@RunWith(MockitoJUnitRunner.class)
+@WebMvcTest(StageResource.class)
+@RunWith(SpringRunner.class)
 public class StageResourceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
@@ -31,10 +49,16 @@ public class StageResourceTest {
     private final UUID transitionNoteUUID = UUID.randomUUID();
     private final String stageType = "DCU_MIN_MARKUP";
     private final String allocationType = "anyAllocation";
-    @Mock
+
+    @Autowired
+    private MockMvc mockMvc;
+
+    @MockBean
     private StageService stageService;
-    @Mock
+
+    @MockBean
     private InfoClient infoClient;
+
     private StageResource stageResource;
 
     @Before
@@ -163,11 +187,27 @@ public class StageResourceTest {
 
         Set<Stage> stages = new HashSet<>();
 
-        when(stageService.getActiveStagesForUser()).thenReturn(stages);
+        when(stageService.getActiveStagesForUsersTeamsAndCaseType()).thenReturn(stages);
 
         ResponseEntity<GetStagesResponse> response = stageResource.getActiveStages();
 
-        verify(stageService).getActiveStagesForUser();
+        verify(stageService).getActiveStagesForUsersTeamsAndCaseType();
+
+        checkNoMoreInteractions();
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetActiveStagesForUser() {
+        Set<Stage> stages = new HashSet<>();
+
+        when(stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID)).thenReturn(stages);
+
+        ResponseEntity<GetStagesResponse> response = stageResource.getActiveStagesForUser(userUUID);
+
+        verify(stageService).getActiveUserStagesWithTeamsAndCaseType(userUUID);
 
         checkNoMoreInteractions();
 
@@ -191,6 +231,34 @@ public class StageResourceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    /**
+     * Test to ensure the reference regex is used.
+     * @throws Exception
+     */
+    @Test
+    public void shouldUseReferenceRegex() throws Exception {
+
+        // given
+        // These are all BAD references
+        String references[] = new String[] {
+                "A/1234567/99", // caseType is < 2
+                "AA/12345678/99", //seqNo.length > 7
+                "AA/A234567/99", // seqNo contains A
+                "AA/1234567/A9", // year suffix contains A
+                "5a1562e2-052b-44fa-87be-376b7cee489b", // The wrong  identifier
+                "A duff string" }; // duff
+
+        // when
+        for (String badRef : references) {
+            mockMvc.perform(get("/case/{reference}/stage", URLEncoder.encode(badRef, StandardCharsets.UTF_8.name())))
+                    // then
+                    .andExpect(result -> assertThat(result.getResolvedException())
+                            .isInstanceOf(HttpRequestMethodNotSupportedException.class)
+                    );
+        }
+
     }
 
     @Test

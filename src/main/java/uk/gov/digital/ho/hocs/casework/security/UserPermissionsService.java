@@ -66,10 +66,12 @@ public class UserPermissionsService {
     }
 
     public Set<String> getCaseTypesIfUserTeamIsCaseTypeAdmin() {
-        return getUserPermission().stream()
+        Set<String> caseTypes = getUserPermission().stream()
                 .filter(permission -> permission.getAccessLevel() == AccessLevel.CASE_ADMIN)
                 .map(PermissionDto::getCaseTypeCode)
                 .collect(Collectors.toSet());
+
+        return caseTypes.isEmpty() ? Set.of("") : caseTypes;
     }
 
     private UUID getUUIDFromBase64(String uuid) {

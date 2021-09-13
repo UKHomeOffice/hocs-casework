@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentDto;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsResponse;
@@ -17,10 +18,19 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDocumentServiceTest {
@@ -63,7 +73,7 @@ public class CaseDocumentServiceTest {
     @Test
     public void getDocuments() {
         GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Collections.singletonList(documentDto)), new ArrayList<>(Arrays.asList("ORIGINAL", "DRAFT")));
-        CaseDataType type = new CaseDataType("CaseType", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("CaseType", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("DraftDocuments", documentUUID.toString());

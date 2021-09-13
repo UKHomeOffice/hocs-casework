@@ -6,6 +6,7 @@ import lombok.Getter;
 import java.time.LocalDate;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
@@ -28,4 +29,11 @@ public class CaseSummary {
     Set<ActiveStage> activeStages;
 
     Map<String, Integer> deadLineExtensions;
+
+    String previousCaseReference;
+
+    UUID previousCaseUUID;
+
+    UUID previousCaseStageUUID;
+
 }

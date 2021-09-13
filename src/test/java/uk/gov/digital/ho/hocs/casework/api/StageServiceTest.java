@@ -11,11 +11,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
+import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
@@ -27,10 +29,23 @@ import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -43,7 +58,11 @@ public class StageServiceTest {
     private final String stageType = "DCU_MIN_MARKUP";
     private final String allocationType = "anyAllocate";
     private final UUID transitionNoteUUID = UUID.randomUUID();
-    private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN");
+    private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN", null);
+    private final List<CaseDataType> caseDataTypes = List.of(
+            CaseDataTypeFactory.from("NXT", "a5", "MIN"), // NXT can be reached through MIN
+                caseDataType);
+
     private final String userID = UUID.randomUUID().toString();
 
     private StageService stageService;
@@ -67,16 +86,18 @@ public class StageServiceTest {
     @Mock
     private DaysElapsedCalculator daysElapsedCalculator;
     @Mock
+    private StageTagsDecorator stageTagsDecorator;
+    @Mock
     private CaseNoteService caseNoteService;
     @Mock
-    private SomuItemService somuItemService;
+    private ContributionsProcessor contributionsProcessor;
     @Mock
     private Stage stage;
 
     @Before
     public void setUp() {
         this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient,
-                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, caseNoteService, somuItemService);
+                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, stageTagsDecorator, caseNoteService, contributionsProcessor);
     }
 
     @Test
@@ -306,14 +327,13 @@ public class StageServiceTest {
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
 
-        stageService.getActiveStagesForUser();
+        stageService.getActiveStagesForUsersTeamsAndCaseType();
 
         verify(stageRepository).findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
 
         verifyZeroInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
     }
-
 
     @Test
     public void shouldGetActiveStages() {
@@ -326,7 +346,7 @@ public class StageServiceTest {
         when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
         when(stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes)).thenReturn(Set.of(stage));
 
-        stageService.getActiveStagesForUser();
+        stageService.getActiveStagesForUsersTeamsAndCaseType();
 
         verify(userPermissionsService).getUserTeams();
         verify(userPermissionsService).getCaseTypesIfUserTeamIsCaseTypeAdmin();
@@ -343,7 +363,7 @@ public class StageServiceTest {
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
 
-        stageService.getActiveStagesForUser();
+        stageService.getActiveStagesForUsersTeamsAndCaseType();
 
         // We don't try and get active stages with no teams (empty set) because we're going to get 0 results.
         verify(userPermissionsService).getUserTeams();
@@ -535,6 +555,48 @@ public class StageServiceTest {
     }
 
     @Test
+    public void shouldSearchCaseAndNextCaseTypesPresent() {
+        Stage stageFound = testCaseWithNextCaseType(Boolean.TRUE);
+        assertThat(stageFound.getNextCaseType()).isNotBlank();
+    }
+
+    @Test
+    public void shouldSearchIncompleteCaseAndNextCaseTypesPresent() {
+        Stage stageFound = testCaseWithNextCaseType(Boolean.FALSE);
+        assertThat(stageFound.getNextCaseType()).isNull();
+    }
+
+    private Stage testCaseWithNextCaseType(Boolean completeCase) {
+
+        // given
+        Set<UUID> caseUUIDS = Set.of(caseUUID);
+        Stage repositoryStage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        repositoryStage.setCompleted(completeCase);
+        repositoryStage.setCaseDataType("MIN");
+
+        SearchRequest searchRequest = new SearchRequest();
+
+        when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
+        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(Set.of(repositoryStage));
+
+        when(infoClient.getAllCaseTypes()).thenReturn(caseDataTypes);
+
+        // when
+        Set<Stage> stageResults = stageService.search(searchRequest);
+
+        // then
+        verify(searchClient).search(searchRequest);
+        verify(stageRepository).findAllByCaseUUIDIn(caseUUIDS);
+        verifyNoMoreInteractions(searchClient);
+        verifyNoMoreInteractions(stageRepository);
+
+        assertThat(stageResults).hasSize(1);
+
+        return stageResults.iterator().next();
+
+    }
+
+    @Test
     public void shouldSearchInactiveStage() {
 
         Set<UUID> caseUUIDS = new HashSet<>();
@@ -666,15 +728,15 @@ public class StageServiceTest {
     }
 
     @Test
-    public void withdrawCase(){
+    public void withdrawCase() {
 
         WithdrawCaseRequest withdrawCaseRequest = new WithdrawCaseRequest("Note 1", "2010-11-23");
         CaseData mockedCaseData = mock(CaseData.class);
         ActiveStage activeStage1 = new ActiveStage(1L,
-                UUID.randomUUID(), LocalDateTime.now(),"MPAM", LocalDate.now(), LocalDate.now(),
+                UUID.randomUUID(), LocalDateTime.now(), "MPAM", LocalDate.now(), LocalDate.now(),
                 UUID.randomUUID(), caseUUID, teamUUID, UUID.randomUUID());
         ActiveStage activeStage2 = new ActiveStage(2L,
-                UUID.randomUUID(), LocalDateTime.now(),"MPAM", LocalDate.now(), LocalDate.now(),
+                UUID.randomUUID(), LocalDateTime.now(), "MPAM", LocalDate.now(), LocalDate.now(),
                 UUID.randomUUID(), caseUUID, teamUUID, UUID.randomUUID());
         Stage stage1 = new Stage(caseUUID, "stageType1", teamUUID, userUUID, transitionNoteUUID);
         Stage stage2 = new Stage(caseUUID, "stageType2", teamUUID, userUUID, transitionNoteUUID);
@@ -713,7 +775,63 @@ public class StageServiceTest {
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);
     }
-    
+
+    @Test
+    public void shouldGetActiveStagesByTeamUUID() {
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        when(stageRepository.findAllActiveByTeamUUID(teamUUID)).thenReturn(Set.of(stage));
+        stageService.getActiveStagesByTeamUUID(teamUUID);
+        verify(contributionsProcessor).processContributionsForStage(stage);
+    }
+
+    @Test
+    public void shouldGetActiveUserStagesWithTeamsAndCaseType() {
+        Set<UUID> teams = new HashSet<>();
+        Set<String> caseTypes = Set.of("CASE_TYPE1", "CASE_TYPE2");
+        teams.add(UUID.randomUUID());
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+
+        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+        when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
+        when(stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes)).thenReturn(Set.of(stage));
+
+        stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID);
+
+        verify(userPermissionsService).getUserTeams();
+        verify(userPermissionsService).getCaseTypesIfUserTeamIsCaseTypeAdmin();
+        verify(stageRepository).findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes);
+        verify(stagePriorityCalculator).updatePriority(stage);
+        verify(daysElapsedCalculator).updateDaysElapsed(stage);
+
+        checkNoMoreInteraction();
+    }
+
+    @Test
+    public void shouldGetActiveUserStagesWithTeamsAndCaseType_noTeams() {
+        Set<UUID> teams = new HashSet<>();
+
+        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+
+        stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID);
+
+        verify(userPermissionsService).getUserTeams();
+        checkNoMoreInteraction();
+    }
+
+    @Test
+    public void getActiveUserStagesWithTeamsAndCaseType_blankResult() {
+        Set<UUID> teams = Set.of(UUID.randomUUID());
+        Set<String> caseTypes = Set.of("");
+
+        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+
+        stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID);
+
+        verify(stageRepository).findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes);
+
+        verifyNoMoreInteractions(stageRepository, notifyClient);
+    }
+
     /**
      * The stage cannot be an instance as it does not have a function to set data (in the Stage Class).
      * I did not want to create a setData on the Stage class for testing only.

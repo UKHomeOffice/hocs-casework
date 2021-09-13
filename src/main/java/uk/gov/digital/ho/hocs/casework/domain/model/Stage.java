@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
@@ -74,6 +76,7 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
     @Column(name = "case_reference", insertable = false, updatable = false)
     private String caseReference;
 
+    @Setter
     @Getter
     @Column(name = "case_type", insertable = false, updatable = false)
     private String caseDataType;
@@ -101,7 +104,48 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
     @Column(name = "somu", insertable = false, updatable = false)
     private String somu;
 
+    @Getter
+    @Setter
+    @Transient
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private ArrayList<String> tag;
 
+    @Getter
+    @Setter
+    @Transient
+    private String dueContribution;
+
+    @Getter
+    @Setter
+    @Transient
+    private String contributions;
+
+    @Getter
+    @Setter
+    @Transient
+    @JsonInclude
+    private String nextCaseType;
+
+    @Getter
+    @JsonInclude
+    @Column(name = "secondary_case_reference", insertable = false, updatable = false)
+    private String nextCaseReference;
+
+    @Getter
+    @JsonInclude
+    @Column(name = "secondary_case_uuid", insertable = false, updatable = false)
+    private String nextCaseUUID;
+
+    @Getter
+    @JsonInclude
+    @Column(name = "secondary_stage_uuid", insertable = false, updatable = false)
+    private String nextCaseStageUUID;
+
+    @Setter
+    @Getter
+    @JsonInclude
+    @Column(name = "completed", insertable = false, updatable = false)
+    private Boolean completed;
 
     public Stage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, UUID transitionNoteUUID) {
         if (caseUUID == null || stageType == null) {
@@ -113,6 +157,7 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
         this.caseUUID = caseUUID;
         this.stageType = stageType;
         this.transitionNoteUUID = transitionNoteUUID;
+        completed = Boolean.FALSE;
         setTeam(teamUUID);
         setUser(userUUID);
     }

@@ -9,21 +9,29 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.ExpectedCount;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
+
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -62,7 +70,7 @@ public class GetCorrespondentIntegrationTest {
     private final UUID INVALID_CASE_UUID = UUID.fromString("89334528-7769-2db4-b432-456091f132a1");
     private final UUID CORRESPONDENT_UUID = UUID.fromString("2c9e1eb9-ee78-4f57-a626-b8b75cf3b937");
 
-    private static final CaseDataType CASE_DATA_TYPE = new CaseDataType("TEST", "a1");
+    private static final CaseDataType CASE_DATA_TYPE = CaseDataTypeFactory.from("TEST", "a1");
 
     private MockRestServiceServer mockInfoService;
 
@@ -77,6 +85,10 @@ public class GetCorrespondentIntegrationTest {
                 .expect(ExpectedCount.times(3), requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/correspondentType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(GetCorrespondentTypeResponse.from(Collections.emptySet())), MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
@@ -189,11 +201,14 @@ public class GetCorrespondentIntegrationTest {
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
-
-
     @Test
     public void shouldReturnOkWhenGetCorrespondentAndThenOkAndEmptySetWhenCorrespondentsDeleted() throws JsonProcessingException {
-        setupMockTeams("TEST",5, 4);
+        setupMockTeams("TEST", 5, 4);
+
+        mockInfoService
+                .expect(ExpectedCount.times(2), requestTo("http://localhost:8085/correspondentType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(GetCorrespondentTypeResponse.from(Collections.emptySet())), MediaType.APPLICATION_JSON));
 
         ResponseEntity<String> result1 = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/correspondent/" + CORRESPONDENT_UUID, GET, new HttpEntity(createValidAuthHeaders()), String.class);

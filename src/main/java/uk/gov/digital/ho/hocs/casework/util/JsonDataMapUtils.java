@@ -13,7 +13,7 @@ public class JsonDataMapUtils {
     public static Map<String, String> getDataMap(String dataString, ObjectMapper objectMapper) {
         Map<String, String> dataMap;
         try {
-            dataMap = objectMapper.readValue(dataString, new TypeReference<Map<String, String>>() {
+            dataMap = objectMapper.readValue(dataString, new TypeReference<>() {
             });
         } catch (Exception e) {
             throw new ApplicationExceptions.EntityCreationException("Object Mapper failed to read data value!", CASE_DATA_JSON_PARSE_ERROR, e);

@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -9,7 +10,16 @@ import org.hibernate.annotations.Where;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,6 +29,7 @@ import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
 
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "case_data")
@@ -103,6 +114,33 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
 
     @Getter
     @Setter
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
+    @Where(clause = "deleted = false")
+    private Set<CaseNote> caseNotes;
+
+    @Getter
+    @Column(name = "primary_case_uuid", insertable = false, updatable = false)
+    private UUID previousCaseUUID;
+
+    @Getter
+    @Column(name = "primary_case_reference", insertable = false, updatable = false)
+    private String previousCaseReference;
+
+    @Getter
+    @Column(name = "primary_stage_uuid", insertable = false, updatable = false)
+    private UUID previousCaseStageUUID;
+
+    @Getter
+    @Column(name = "secondary_case_uuid", insertable = false, updatable = false)
+    private UUID nextCaseUUID;
+
+    @Getter
+    @Column(name = "secondary_case_reference", insertable = false, updatable = false)
+    private String nextCaseReference;
+
+    @Getter
+    @Setter
     @OneToMany(
             mappedBy = "caseData",
             cascade = CascadeType.ALL,
@@ -121,8 +159,8 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
     public CaseData(CaseDataType type,
                     Long caseNumber,
                     Map<String, String> data,
-                    ObjectMapper objectMapper, LocalDate
-                            dateReceived) {
+                    ObjectMapper objectMapper,
+                    LocalDate dateReceived) {
         this(type, caseNumber, dateReceived);
         update(data, objectMapper);
     }
