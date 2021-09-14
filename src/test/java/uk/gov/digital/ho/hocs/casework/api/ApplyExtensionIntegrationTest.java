@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
@@ -66,8 +67,7 @@ public class ApplyExtensionIntegrationTest {
     private final UUID CASE_UUID = UUID.fromString("14915b78-6977-42db-b343-0915a7f412a1");
     private final UUID STAGE_UUID = UUID.fromString("e9151b83-7602-4419-be83-bff1c924c80d");
 
-    private static final CaseDataType CASE_DATA_TYPE = new CaseDataType("TEST", "a1");
-
+    private static final CaseDataType CASE_DATA_TYPE = new CaseDataType("TEST", "a1", "type", "previousCaseType");
 
     @Before
     public void setup() throws IOException {

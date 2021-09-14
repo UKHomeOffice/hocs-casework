@@ -49,9 +49,7 @@ public class GetCaseSummaryResponseTest {
                 caseDeadline,
                 stageDeadlines,
                 additionalFields,
-                null,
-                null,
-                null,
+                null,null,null,null,
                 PREV_CASE_REF,
                 PREVIOUS_CASE_UUID,
                 PREVIOUS_STAGE_UUID);

@@ -5,8 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDeadlineExtension;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,7 +51,8 @@ public class AbstractCaseCopyStrategyTest {
             null,
             null,
             null,
-            null);
+            null,
+            new HashSet<>());
 
     private CaseData toCase;
     private AbstractCaseCopyStrategy abstractStrategy;
@@ -78,7 +82,8 @@ public class AbstractCaseCopyStrategyTest {
                 null,
                 null,
                 null,
-                null);
+                null,
+                new HashSet<>());
     }
 
 

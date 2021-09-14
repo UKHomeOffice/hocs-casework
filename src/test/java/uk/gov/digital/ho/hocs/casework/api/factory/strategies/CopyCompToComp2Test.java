@@ -13,6 +13,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 
@@ -91,7 +92,8 @@ public class CopyCompToComp2Test {
             null,
             null,
             null,
-            null);
+            null,
+            new HashSet<>());
 
     @Mock
     private CaseDataService caseDataService;
@@ -124,7 +126,8 @@ public class CopyCompToComp2Test {
                 null,
                 null,
                 null,
-                null);
+                null,
+                new HashSet<>());
     }
 
     @Test

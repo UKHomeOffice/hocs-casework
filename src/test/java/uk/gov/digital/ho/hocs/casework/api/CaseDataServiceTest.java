@@ -87,7 +87,6 @@ public class CaseDataServiceTest {
     public static final String PREV_DATA_CLOB = "{\"key1\" : \"value1\", \"key2\" : \"value2\"}";
     private static final long caseID = 12345L;
 
-    private final CaseDataType caseType = new CaseDataType("MIN", "a1");
     private static final String OFFLINE_QA_USER = "OfflineQaUser";
     private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
     private final UUID caseUUID = UUID.randomUUID();
@@ -133,7 +132,6 @@ public class CaseDataServiceTest {
     public void setUp() {
         configuration = new SpringConfiguration();
         objectMapper = configuration.initialiseObjectMapper();
-        this.caseDataService = new CaseDataService(caseDataRepository, caseLinkRepository, infoClient, objectMapper, auditClient, caseCopyFactory);
         this.caseDataService = new CaseDataService(caseDataRepository, caseLinkRepository, infoClient, objectMapper, auditClient, caseCopyFactory, caseDeadlineExtensionTypeRepository);
     }
 
@@ -160,7 +158,8 @@ public class CaseDataServiceTest {
         CaseDataType comp2 = new CaseDataType("display_name",
                 "c6", "DISP", PREVIOUS_CASE_TYPE);
 
-        CaseData previousCaseData = new CaseData(1l,
+        CaseData previousCaseData = new CaseData(
+                1l,
                 PREVIOUS_CASE_UUID,
                 LocalDateTime.now(),
                 PREVIOUS_CASE_TYPE,
@@ -192,7 +191,8 @@ public class CaseDataServiceTest {
                 null,
                 null,
                 null,
-                null);
+                null,
+                new HashSet<>());
 
 
         when(caseDataRepository.findByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);

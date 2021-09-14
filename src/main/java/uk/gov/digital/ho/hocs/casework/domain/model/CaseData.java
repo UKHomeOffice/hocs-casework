@@ -10,16 +10,7 @@ import org.hibernate.annotations.Where;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -149,12 +140,6 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
     )
     private Set<CaseDeadlineExtension> deadlineExtensions;
 
-    @Getter
-    @Setter
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
-    @Where(clause = "deleted = false")
-    private Set<CaseNote> caseNotes;
 
     public CaseData(CaseDataType type,
                     Long caseNumber,

@@ -23,29 +23,14 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
-import uk.gov.digital.ho.hocs.casework.domain.model.AdditionalField;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseLink;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
-import uk.gov.digital.ho.hocs.casework.domain.model.DataTotal;
-import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDeadlineExtensionTypeRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseLinkRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -334,7 +319,7 @@ public class CaseDataService {
                 .map(e -> e.getCaseDeadlineExtensionType().getWorkingDays()).reduce(0, Integer::sum);
     }
 
-    protected void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
+    public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseUUID);
         if (data != null) {
             log.debug("Data size {}", data.size());
@@ -550,11 +535,10 @@ public class CaseDataService {
                 caseData.getPrimaryCorrespondent(),
                 caseData.getPrimaryTopic(),
                 caseData.getActiveStages(),
+                caseDeadlineExtensions,
                 caseData.getPreviousCaseReference(),
                 caseData.getPreviousCaseUUID(),
                 caseData.getPreviousCaseStageUUID());
-                caseData.getActiveStages(),
-                caseDeadlineExtensions);
         auditClient.viewCaseSummaryAudit(caseData);
         return caseSummary;
     }

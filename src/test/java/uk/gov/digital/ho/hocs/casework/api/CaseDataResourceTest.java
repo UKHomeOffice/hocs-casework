@@ -8,21 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummaryLink;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseReferenceResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCaseDataRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.UpdateDeadlineForStagesRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.UpdatePrimaryCorrespondentRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageDeadlineRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
@@ -143,7 +129,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCaseSummary() {
 
-        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary(null, null, null, null, null, null, null, PREVIOUS_CASE_REFERENCE, PREVIOUS_CASE_UUID, PREVIOUS_STAGE_UUID));
+        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary(null, null, null, null, null, null, null, null, null, PREVIOUS_CASE_REFERENCE, PREVIOUS_CASE_UUID, PREVIOUS_STAGE_UUID));
 
         ResponseEntity<GetCaseSummaryResponse> response = caseDataResource.getCaseSummary(uuid);
 

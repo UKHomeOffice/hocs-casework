@@ -88,4 +88,6 @@ public class GetCaseSummaryResponse {
                         .caseReference(caseSummary.getPreviousCaseReference())
                         .stageUUID(caseSummary.getPreviousCaseStageUUID()).build());
 
+
+    }
 }

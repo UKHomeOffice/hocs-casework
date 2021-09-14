@@ -22,13 +22,7 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
-import uk.gov.digital.ho.hocs.casework.domain.model.Address;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
