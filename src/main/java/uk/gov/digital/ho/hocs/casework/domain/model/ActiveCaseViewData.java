@@ -1,11 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Where;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -23,8 +19,8 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_F
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "case_data")
-public class CaseData extends AbstractJsonDataMap implements Serializable {
+@Table(name = "active_case")
+public class ActiveCaseViewData extends AbstractJsonDataMap implements Serializable {
 
     @Id
     @Column(name = "id")
@@ -111,35 +107,35 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
     private Set<CaseNote> caseNotes;
 
     @Getter
-    @Setter
-    @OneToMany(
-            mappedBy = "caseData",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.EAGER
-    )
-    private Set<CaseDeadlineExtension> deadlineExtensions;
+    @Column(name = "primary_case_uuid", insertable = false, updatable = false)
+    private UUID previousCaseUUID;
 
+    @Getter
+    @Column(name = "primary_case_reference", insertable = false, updatable = false)
+    private String previousCaseReference;
 
-    public CaseData(CaseDataType type,
-                    Long caseNumber,
-                    Map<String, String> data,
-                    ObjectMapper objectMapper,
-                    LocalDate dateReceived) {
+    @Getter
+    @Column(name = "primary_stage_uuid", insertable = false, updatable = false)
+    private UUID previousCaseStageUUID;
+
+    @Getter
+    @Column(name = "secondary_case_uuid", insertable = false, updatable = false)
+    private UUID nextCaseUUID;
+
+    @Getter
+    @Column(name = "secondary_case_reference", insertable = false, updatable = false)
+    private String nextCaseReference;
+
+    public ActiveCaseViewData(CaseDataType type,
+                              Long caseNumber,
+                              Map<String, String> data,
+                              ObjectMapper objectMapper,
+                              LocalDate dateReceived) {
         this(type, caseNumber, dateReceived);
         update(data, objectMapper);
     }
 
-    public CaseDeadlineExtension addDeadlineExtension(CaseDeadlineExtensionType caseDeadlineExtensionType,
-                                                      String note) {
-        CaseDeadlineExtension caseDeadlineExtension =
-                new CaseDeadlineExtension(this, caseDeadlineExtensionType, note);
-        deadlineExtensions.add(caseDeadlineExtension);
-
-        return caseDeadlineExtension;
-    }
-
-    public CaseData(CaseDataType type, Long caseNumber, LocalDate dateReceived) {
+    public ActiveCaseViewData(CaseDataType type, Long caseNumber, LocalDate dateReceived) {
         if (type == null || caseNumber == null) {
             throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
         }
@@ -161,12 +157,12 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
 
 
     // --------  Migration Code Start --------
-    public CaseData(CaseDataType type, String caseReference, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived, LocalDateTime caseCreated) {
+    public ActiveCaseViewData(CaseDataType type, String caseReference, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived, LocalDateTime caseCreated) {
         this(type, caseReference, caseDeadline, dateReceived, caseCreated);
         update(data, objectMapper);
     }
 
-    public CaseData(CaseDataType type, String caseReference, LocalDate caseDeadline, LocalDate dateReceived, LocalDateTime caseCreated) {
+    public ActiveCaseViewData(CaseDataType type, String caseReference, LocalDate caseDeadline, LocalDate dateReceived, LocalDateTime caseCreated) {
         if (type == null || caseReference == null) {
             throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
         }

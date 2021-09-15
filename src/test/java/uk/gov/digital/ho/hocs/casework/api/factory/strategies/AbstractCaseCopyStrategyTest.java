@@ -47,11 +47,6 @@ public class AbstractCaseCopyStrategyTest {
             false,
             null,
             null,
-            null,
-            null,
-            null,
-            null,
-            null,
             new HashSet<>());
 
     private CaseData toCase;
@@ -76,11 +71,6 @@ public class AbstractCaseCopyStrategyTest {
                 null,
                 null,
                 false,
-                null,
-                null,
-                null,
-                null,
-                null,
                 null,
                 null,
                 new HashSet<>());

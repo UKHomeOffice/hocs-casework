@@ -88,11 +88,6 @@ public class CopyCompToComp2Test {
             false,
             null,
             null,
-            null,
-            null,
-            null,
-            null,
-            null,
             new HashSet<>());
 
     @Mock
@@ -120,11 +115,6 @@ public class CopyCompToComp2Test {
                 null,
                 null,
                 false,
-                null,
-                null,
-                null,
-                null,
-                null,
                 null,
                 null,
                 new HashSet<>());

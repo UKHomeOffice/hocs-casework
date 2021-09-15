@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseReferenceGenerator;
+import uk.gov.digital.ho.hocs.casework.domain.repository.ActiveCaseViewDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDeadlineExtensionTypeRepository;
 
@@ -33,9 +34,10 @@ public class MigrationCaseDataService extends CaseDataService {
     private final MigrationStageRepository migrationStageRepository;
 
     @Autowired
-    public MigrationCaseDataService(CaseDataRepository caseDataRepository, MigrationStageRepository migrationStageRepository, InfoClient infoClient,
+    public MigrationCaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
+                                    MigrationStageRepository migrationStageRepository, InfoClient infoClient,
                                     ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory, CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository) {
-        super(caseDataRepository, null, infoClient, objectMapper, auditClient, caseCopyFactory, caseDeadlineExtensionTypeRepository);
+        super(caseDataRepository, activeCaseViewDataRepository,null, infoClient, objectMapper, auditClient, caseCopyFactory, caseDeadlineExtensionTypeRepository);
         this.migrationStageRepository = migrationStageRepository;
     }
 
@@ -57,7 +59,7 @@ public class MigrationCaseDataService extends CaseDataService {
 
         if (!StringUtils.isNullOrEmpty(totalsListName)) {
             calculateTotals(caseData.getUuid(), null, totalsListName);
-            caseData = caseDataRepository.findByUuid(caseData.getUuid());
+            caseData = caseDataRepository.findActiveByUuid(caseData.getUuid());
         }
 
         auditClient.createCaseAudit(caseData);
@@ -86,7 +88,7 @@ public class MigrationCaseDataService extends CaseDataService {
     @Override
     public CaseData getCase(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
-        CaseData caseData = caseDataRepository.findByUuid(caseUUID);
+        CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
         if (caseData != null) {
             log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
             return caseData;

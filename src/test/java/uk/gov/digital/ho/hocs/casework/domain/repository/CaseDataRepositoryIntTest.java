@@ -42,7 +42,7 @@ public class CaseDataRepositoryIntTest {
 
     @Test()
     public void shouldInsertCaseDataWithUUID() {
-        CaseData caseData = repository.findByUuid(caseUUID);
+        CaseData caseData = repository.findActiveByUuid(caseUUID);
         assertThat(caseData.getType()).isEqualTo("TEST");
         assertThat(caseData.getCreated().toLocalDate()).isEqualTo(LocalDate.now());
         assertThat(caseData.getReference()).isEqualTo("TEST/0000101/" + String.format("%ty", caseData.getCreated()));
@@ -70,11 +70,11 @@ public class CaseDataRepositoryIntTest {
 
     @Test()
     public void shouldOnlyAnyReturnsDeletedCases() {
-        CaseData caseData = repository.findByUuid(caseUUID);
+        CaseData caseData = repository.findActiveByUuid(caseUUID);
         caseData.setDeleted(true);
         repository.save(caseData);
 
-        CaseData caseDataFind = repository.findByUuid(caseUUID);
+        CaseData caseDataFind = repository.findActiveByUuid(caseUUID);
         assertThat(caseDataFind).isNull();
         CaseData caseDataFindAny = repository.findAnyByUuid(caseUUID);
         assertThat(caseDataFindAny).isNotNull();
@@ -82,7 +82,7 @@ public class CaseDataRepositoryIntTest {
         caseData.setDeleted(false);
         repository.save(caseData);
 
-        caseDataFind = repository.findByUuid(caseUUID);
+        caseDataFind = repository.findActiveByUuid(caseUUID);
         assertThat(caseDataFind).isNotNull();
         caseDataFindAny = repository.findAnyByUuid(caseUUID);
         assertThat(caseDataFindAny).isNotNull();

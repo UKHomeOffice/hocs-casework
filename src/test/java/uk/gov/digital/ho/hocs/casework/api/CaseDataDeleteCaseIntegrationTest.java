@@ -119,7 +119,7 @@ public class CaseDataDeleteCaseIntegrationTest {
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/true", DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
-        CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+        CaseData postDeleteCaseData = caseDataRepository.findActiveByUuid(CASE_UUID);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(originalCaseData).isNotNull();
@@ -144,12 +144,12 @@ public class CaseDataDeleteCaseIntegrationTest {
     @Test
     public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelRead() throws JsonProcessingException {
 
-        CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
+        CaseData originalCaseData = caseDataRepository.findActiveByUuid(CASE_UUID);
         setupMockTeams("TEST", 2);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/false", DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
-        CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+        CaseData postDeleteCaseData = caseDataRepository.findActiveByUuid(CASE_UUID);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(originalCaseData).isNotNull();
@@ -159,12 +159,12 @@ public class CaseDataDeleteCaseIntegrationTest {
     @Test
     public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelSummary() throws JsonProcessingException {
 
-        CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
+        CaseData originalCaseData = caseDataRepository.findActiveByUuid(CASE_UUID);
         setupMockTeams("TEST", 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/false", DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
-        CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+        CaseData postDeleteCaseData = caseDataRepository.findActiveByUuid(CASE_UUID);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(originalCaseData).isNotNull();
@@ -174,12 +174,12 @@ public class CaseDataDeleteCaseIntegrationTest {
     @Test
     public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelUnset() throws JsonProcessingException {
         setupEmptyMockAudit(CASE_UUID);
-        CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
+        CaseData originalCaseData = caseDataRepository.findActiveByUuid(CASE_UUID);
         setupMockTeams("TEST", 0);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/false", DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
-        CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+        CaseData postDeleteCaseData = caseDataRepository.findActiveByUuid(CASE_UUID);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(originalCaseData).isNotNull();
@@ -189,12 +189,12 @@ public class CaseDataDeleteCaseIntegrationTest {
     @Test
     public void shouldReturnUnauthorisedWhenDeleteCaseWithPermissionLevelEmpty() throws JsonProcessingException {
         setupEmptyMockAudit(CASE_UUID);
-        CaseData originalCaseData = caseDataRepository.findByUuid(CASE_UUID);
+        CaseData originalCaseData = caseDataRepository.findActiveByUuid(CASE_UUID);
         setupMockTeams("TEST1", 5);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/false", DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
-        CaseData postDeleteCaseData = caseDataRepository.findByUuid(CASE_UUID);
+        CaseData postDeleteCaseData = caseDataRepository.findActiveByUuid(CASE_UUID);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(originalCaseData).isNotNull();

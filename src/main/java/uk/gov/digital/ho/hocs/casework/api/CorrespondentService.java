@@ -188,7 +188,7 @@ public class CorrespondentService {
         correspondent.setDeleted(true);
         correspondentRepository.save(correspondent);
         auditClient.deleteCorrespondentAudit(correspondent);
-        CaseData caseData = caseDataRepository.findByUuid(caseUUID);
+        CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
         if (caseData != null && correspondentUUID.equals(caseData.getPrimaryCorrespondentUUID())) {
             caseData.setPrimaryCorrespondentUUID(null);
             caseDataRepository.save(caseData);
