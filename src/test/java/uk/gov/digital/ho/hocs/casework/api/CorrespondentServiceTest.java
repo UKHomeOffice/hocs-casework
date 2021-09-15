@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import javax.validation.constraints.NotEmpty;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
-import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -218,7 +216,7 @@ public class CorrespondentServiceTest {
         Set<CorrespondentTypeDto> emptyCorrespondentSet = Collections.emptySet();
 
         when(correspondentRepository.findByUUID(caseUUID, correspondent.getUuid())).thenReturn(correspondent);
-        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
+        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
         doReturn(emptyCorrespondentSet).when(correspondentService).getCorrespondentTypes(caseUUID);
         when(correspondentTypeNameDecorator.addCorrespondentTypeName(emptyCorrespondentSet, correspondent)).thenReturn(correspondent);
 
@@ -226,7 +224,7 @@ public class CorrespondentServiceTest {
 
         verify(correspondentRepository).findByUUID(caseUUID, correspondent.getUuid());
         verify(correspondentRepository).save(correspondent);
-        verify(caseDataRepository).findByUuid(caseUUID);
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
         verifyNoMoreInteractions(correspondentRepository);
         verifyNoMoreInteractions(caseDataRepository);
     }
@@ -249,7 +247,7 @@ public class CorrespondentServiceTest {
         Set<CorrespondentTypeDto> emptyCorrespondentSet = Collections.emptySet();
 
         when(correspondentRepository.findByUUID(caseUUID, correspondent.getUuid())).thenReturn(correspondent);
-        when(caseDataRepository.findByUuid(caseUUID)).thenReturn(caseData);
+        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
         doReturn(emptyCorrespondentSet).when(correspondentService).getCorrespondentTypes(caseUUID);
         when(correspondentTypeNameDecorator.addCorrespondentTypeName(emptyCorrespondentSet, correspondent)).thenReturn(correspondent);
 
@@ -257,7 +255,7 @@ public class CorrespondentServiceTest {
 
         verify(correspondentRepository).findByUUID(caseUUID, correspondent.getUuid());
         verify(correspondentRepository).save(correspondent);
-        verify(caseDataRepository).findByUuid(caseUUID);
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
         verify(caseDataRepository).save(caseData);
         verifyNoMoreInteractions(correspondentRepository);
         verifyNoMoreInteractions(caseDataRepository);
@@ -303,8 +301,10 @@ public class CorrespondentServiceTest {
         correspondentService.updateCorrespondent(testCaseUUID, testCorrespondenceUUID, testRequest);
 
         // THEN
+
         verify(correspondentRepository, times(1)).findByUUID(testCaseUUID, testCorrespondenceUUID);
         verify(correspondentRepository, times(1)).save(correspondentRepoCapture.capture());
+        verify(caseDataRepository, times(1)).getCaseType(any());
         verify(auditClient, times(1)).updateCorrespondentAudit(any());
 
         Correspondent captureOutput = correspondentRepoCapture.getValue();
@@ -319,6 +319,7 @@ public class CorrespondentServiceTest {
         assertThat(captureOutput.getCaseUUID()).isEqualTo(testCaseUUID);
 
         verifyNoMoreInteractions(correspondentRepository, auditClient);
+        verifyNoMoreInteractions(caseDataRepository);
 
     }
 }

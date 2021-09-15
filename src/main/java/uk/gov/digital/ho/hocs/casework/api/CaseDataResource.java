@@ -90,7 +90,7 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.WRITE)
+    @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/extension")
     ResponseEntity<GetCaseReferenceResponse> applyExtension(@PathVariable UUID caseUUID,
                                                             @PathVariable UUID stageUUID,

@@ -24,6 +24,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.repository.ActiveCaseViewDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDeadlineExtensionTypeRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseLinkRepository;
@@ -75,6 +76,7 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE
 public class CaseDataService {
 
     protected final CaseDataRepository caseDataRepository;
+    protected final ActiveCaseViewDataRepository activeCaseViewDataRepository;
     protected final AuditClient auditClient;
     protected final ObjectMapper objectMapper;
     protected final InfoClient infoClient;
@@ -84,11 +86,13 @@ public class CaseDataService {
     protected final CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository;
 
     @Autowired
-    public CaseDataService(CaseDataRepository caseDataRepository, CaseLinkRepository caseLinkRepository, InfoClient infoClient,
+    public CaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
+                           CaseLinkRepository caseLinkRepository, InfoClient infoClient,
                            ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory, CaseDeadlineExtensionTypeRepository
                            caseDeadlineExtensionTypeRepository) {
 
         this.caseDataRepository = caseDataRepository;
+        this.activeCaseViewDataRepository = activeCaseViewDataRepository;
         this.caseLinkRepository = caseLinkRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
@@ -122,7 +126,7 @@ public class CaseDataService {
 
     private CaseData getCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
-        CaseData caseData = caseDataRepository.findByUuid(caseUUID);
+        CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
         if (caseData != null) {
             log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
             return caseData;
@@ -131,6 +135,19 @@ public class CaseDataService {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
         }
     }
+
+    private ActiveCaseViewData getActiveCaseData(UUID caseUUID) {
+        log.debug("Getting Case: {}", caseUUID);
+        ActiveCaseViewData caseData = activeCaseViewDataRepository.findByUuid(caseUUID);
+        if (caseData != null) {
+            log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+            return caseData;
+        } else {
+            log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
+        }
+    }
+
 
     public CaseData getCaseDataByReference(String reference) {
         log.debug("Getting Case by reference: {}", reference);
@@ -499,6 +516,8 @@ public class CaseDataService {
         log.debug("Building CaseSummary for Case: {}", caseUUID);
 
         CaseData caseData = getCaseData(caseUUID);
+        ActiveCaseViewData activeCaseViewData = getActiveCaseData(caseUUID);
+
         Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
         Set<AdditionalField> additionalFields = summaryFields.stream()
@@ -536,9 +555,9 @@ public class CaseDataService {
                 caseData.getPrimaryTopic(),
                 caseData.getActiveStages(),
                 caseDeadlineExtensions,
-                caseData.getPreviousCaseReference(),
-                caseData.getPreviousCaseUUID(),
-                caseData.getPreviousCaseStageUUID());
+                activeCaseViewData.getPreviousCaseReference(),
+                activeCaseViewData.getPreviousCaseUUID(),
+                activeCaseViewData.getPreviousCaseStageUUID());
         auditClient.viewCaseSummaryAudit(caseData);
         return caseSummary;
     }
