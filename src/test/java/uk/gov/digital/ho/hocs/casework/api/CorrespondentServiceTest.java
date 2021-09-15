@@ -42,7 +42,7 @@ public class CorrespondentServiceTest {
     private static final UUID PREV_CASE_UUID = UUID.randomUUID();
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID stageUUID = UUID.randomUUID();
-    private final CaseDataType caseDataType = new CaseDataType("TEST", "1a", "TEST", null);
+    private final CaseDataType caseDataType = new CaseDataType("TEST", "1a", "TEST", "Testfield");
     @Mock
     private CorrespondentRepository correspondentRepository;
     @Mock
@@ -294,6 +294,10 @@ public class CorrespondentServiceTest {
 
         Correspondent mockDBResponse = new Correspondent(testCaseUUID, "SomeType" ,testFullname, null, null, null, null, null);
         when(correspondentRepository.findByUUID(testCaseUUID, testCorrespondenceUUID)).thenReturn(mockDBResponse);
+        when(caseDataRepository.getCaseType(testCaseUUID)).thenReturn("TEST");
+        CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();
+        GetCorrespondentTypeResponse getCorrespondentTypeResponse = new GetCorrespondentTypeResponse(Set.of(correspondentTypeDto));
+        when(infoClient.getCorrespondentType("TEST")).thenReturn(getCorrespondentTypeResponse);
 
         // WHEN
         correspondentService.updateCorrespondent(testCaseUUID, testCorrespondenceUUID, testRequest);
@@ -315,7 +319,6 @@ public class CorrespondentServiceTest {
         assertThat(captureOutput.getCaseUUID()).isEqualTo(testCaseUUID);
 
         verifyNoMoreInteractions(correspondentRepository, auditClient);
-        verifyNoInteractions(caseDataRepository);
 
     }
 }
