@@ -218,7 +218,7 @@ public class CsvCaseDataUpdater {
 
                     // Report if the service does not return a 200 code
                     if (response.statusCode() != 200) {
-                        throw new RuntimeException("Failed to update case "
+                        LOGGER.log(Level.SEVERE, "FAILED: "
                                 + caseData.uuid
                                 + " with url: "
                                 + request.uri());
