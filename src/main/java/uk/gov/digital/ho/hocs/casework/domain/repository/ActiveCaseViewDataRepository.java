@@ -12,7 +12,4 @@ public interface ActiveCaseViewDataRepository extends CrudRepository<ActiveCaseV
 
     @Query(value = "SELECT ac.* FROM active_case ac where ac.uuid = ?1", nativeQuery = true)
     ActiveCaseViewData findByUuid(UUID uuid);
-
-    @Query(value = "SELECT ac.* FROM active_case ac where ac.reference = ?1", nativeQuery = true)
-    ActiveCaseViewData findByReference(String reference);
 }
