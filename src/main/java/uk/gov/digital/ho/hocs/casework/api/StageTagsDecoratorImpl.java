@@ -19,6 +19,7 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
     private static final String OVERRIDE_PO_TEAM_UUID_FIELD_NAME = "OverridePOTeamUUID";
     private static final String PO_TEAM_UUID_FIELD_NAME = "POTeamUUID";
     private static final String HOME_SEC_PO_TEAM_UUID = "3d2c7893-92c5-4347-804a-8826f06f0c9d";
+    private static final String OVERRIDE_PO_TEAM_NAME = "OverridePOTeamName";
 
     @Autowired
     public StageTagsDecoratorImpl(ObjectMapper objectMapper) {
@@ -45,7 +46,7 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
     }
 
     private Boolean addHomeSecReplyTag(Stage stage) {
-        if(hasDataFieldAndValue(stage, HOME_SEC_REPLY_FIELD_NAME, "TRUE")) {
+        if(hasDataFieldAndValue(stage, HOME_SEC_REPLY_FIELD_NAME, "TRUE") || hasDataFieldAndValue(stage, OVERRIDE_PO_TEAM_NAME, "Home Secretary")) {
             return  isAtDcuMarkup(stage) ||
                     isHomeSecReplyNoPoTeam(stage) ||
                     hasHomeSecPoTeam(stage);
