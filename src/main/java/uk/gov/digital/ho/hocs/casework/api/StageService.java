@@ -326,7 +326,12 @@ public class StageService {
 
         Set<Stage> stages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUuid, teams, caseTypes);
 
-        updateStages(stages);
+        for (Stage stage : stages) {
+            updateContributions(stage);
+            updatePriority(stage);
+            updateDaysElapsed(stage);
+            decorateTags(stage);
+        }
 
         log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
         return stages;
