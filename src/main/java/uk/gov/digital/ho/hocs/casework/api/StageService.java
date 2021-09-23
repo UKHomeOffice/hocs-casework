@@ -339,6 +339,7 @@ public class StageService {
 
     private void updateStages(Set<Stage> stages) {
         for (Stage stage : stages) {
+            updateContributions(stage);
             updatePriority(stage);
             updateDaysElapsed(stage);
             decorateTags(stage);
