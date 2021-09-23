@@ -6,6 +6,7 @@ import com.jayway.jsonpath.ReadContext;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class ContributionSomuInspector {
     private final ReadContext ctx;
@@ -33,7 +34,8 @@ public class ContributionSomuInspector {
     }
 
     public LocalDate getContributionDueLocalDate() {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("y-M-d");
         String contributionDueDate = getContributionDueDate();
-        return LocalDate.parse(contributionDueDate);
+        return LocalDate.parse(contributionDueDate, dtf);
     }
 }
