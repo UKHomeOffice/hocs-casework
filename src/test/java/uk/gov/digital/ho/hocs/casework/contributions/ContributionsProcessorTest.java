@@ -36,7 +36,7 @@ public class ContributionsProcessorTest {
     }
 
     @Test
-    public void shouldAddContributionsForCompCase() {
+    public void shouldAddOverdueContributionsForCompCase() {
         String stageType = "COMP";
         Stage stage = spy(new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID));
         doReturn("COMP").when(stage).getCaseDataType();
@@ -47,10 +47,26 @@ public class ContributionsProcessorTest {
 
         contributionsProcessor.processContributionsForStage(stage);
         assertEquals("2020-10-10", stage.getDueContribution());
+        assertEquals("Overdue", stage.getContributions());
     }
 
     @Test
-    public void shouldAddContributionsForMPAMCase() {
+    public void shouldAddDueContributionsForCompCase() {
+        String stageType = "COMP";
+        Stage stage = spy(new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID));
+        doReturn("COMP").when(stage).getCaseDataType();
+
+        SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-10-10\"}");
+
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID)).thenReturn(Set.of(somuItem));
+
+        contributionsProcessor.processContributionsForStage(stage);
+        assertEquals("9999-10-10", stage.getDueContribution());
+        assertEquals("Due", stage.getContributions());
+    }
+
+    @Test
+    public void shouldAddOverdueContributionsForMPAMCase() {
         String stageType = "MPAM_TRIAGE";
         Stage stage = spy(new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID));
         doReturn("MPAM_TRIAGE").when(stage).getStageType();
@@ -61,6 +77,22 @@ public class ContributionsProcessorTest {
 
         contributionsProcessor.processContributionsForStage(stage);
         assertEquals("2020-10-10", stage.getDueContribution());
+        assertEquals("Overdue", stage.getContributions());
+    }
+
+    @Test
+    public void shouldAddDueContributionsForMPAMCase() {
+        String stageType = "MPAM_TRIAGE";
+        Stage stage = spy(new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID));
+        doReturn("MPAM_TRIAGE").when(stage).getStageType();
+
+        SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-10-10\"}");
+
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID)).thenReturn(Set.of(somuItem));
+
+        contributionsProcessor.processContributionsForStage(stage);
+        assertEquals("9999-10-10", stage.getDueContribution());
+        assertEquals("Due", stage.getContributions());
     }
 
     @Test
