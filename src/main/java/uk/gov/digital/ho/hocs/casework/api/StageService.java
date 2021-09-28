@@ -243,12 +243,7 @@ public class StageService {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
         Set<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
 
-        for (Stage stage : stages) {
-            updateContributions(stage);
-            updatePriority(stage);
-            updateDaysElapsed(stage);
-            decorateTags(stage);
-        }
+        updateStages(stages);
 
         return stages;
     }
@@ -326,18 +321,14 @@ public class StageService {
 
         Set<Stage> stages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUuid, teams, caseTypes);
 
-        for (Stage stage : stages) {
-            updateContributions(stage);
-            updatePriority(stage);
-            updateDaysElapsed(stage);
-            decorateTags(stage);
-        }
+        updateStages(stages);
 
         log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
         return stages;
     }
 
     private void updateStages(Set<Stage> stages) {
+        auditClient.viewAllSomuItemsAudit(null);
         for (Stage stage : stages) {
             updateContributions(stage);
             updatePriority(stage);

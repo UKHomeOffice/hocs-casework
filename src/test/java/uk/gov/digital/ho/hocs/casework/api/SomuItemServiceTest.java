@@ -44,7 +44,7 @@ public class SomuItemServiceTest {
         
         when(somuItemRepository.findAllByCaseUuid(any())).thenReturn(Set.of(somuItem));
         
-        somuItemService.getCaseSomuItemsBySomuType(caseUuid);
+        somuItemService.getCaseSomuItemsBySomuType(caseUuid, true);
 
         verify(somuItemRepository, times(1)).findAllByCaseUuid(caseUuid);
         verify(auditClient, times(1)).viewAllSomuItemsAudit(caseUuid);

@@ -71,11 +71,11 @@ public class SomuItemResourceTest {
     public void shouldGetSomuItems() {
         SomuItem somuItem = new SomuItem(uuid, caseUUID, somuUUID, "{}");
 
-        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID)).thenReturn(Set.of(somuItem));
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID, true)).thenReturn(Set.of(somuItem));
 
         ResponseEntity<Set<GetSomuItemResponse>> response = somuItemResource.getAllCaseSomuItems(caseUUID);
 
-        verify(somuItemService, times(1)).getCaseSomuItemsBySomuType(caseUUID);
+        verify(somuItemService, times(1)).getCaseSomuItemsBySomuType(caseUUID, true);
 
         checkNoMoreInteractions();
 
