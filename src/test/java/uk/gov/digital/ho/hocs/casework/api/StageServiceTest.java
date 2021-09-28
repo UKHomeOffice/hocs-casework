@@ -353,6 +353,7 @@ public class StageServiceTest {
         verify(stageRepository).findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
         verify(stagePriorityCalculator).updatePriority(stage);
         verify(daysElapsedCalculator).updateDaysElapsed(stage);
+        verify(auditClient).viewAllSomuItemsAudit(null);
 
         checkNoMoreInteraction();
     }
@@ -802,6 +803,7 @@ public class StageServiceTest {
         verify(stageRepository).findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes);
         verify(stagePriorityCalculator).updatePriority(stage);
         verify(daysElapsedCalculator).updateDaysElapsed(stage);
+        verify(auditClient).viewAllSomuItemsAudit(null);
 
         checkNoMoreInteraction();
     }
