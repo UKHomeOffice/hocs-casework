@@ -34,10 +34,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
-import uk.gov.digital.ho.hocs.casework.domain.repository.ActiveCaseViewDataRepository;
-import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
-import uk.gov.digital.ho.hocs.casework.domain.repository.CaseLinkRepository;
-import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDeadlineExtensionTypeRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -115,6 +112,9 @@ public class CaseDataServiceTest {
     private AuditClient auditClient;
 
     @Mock
+    private SomuItemRepository somuItemRepository;
+
+    @Mock
     private CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository;
 
     private LocalDate caseDeadlineExtended = LocalDate.now().plusDays(45);
@@ -143,7 +143,8 @@ public class CaseDataServiceTest {
                 objectMapper,
                 auditClient,
                 caseCopyFactory,
-                caseDeadlineExtensionTypeRepository
+                caseDeadlineExtensionTypeRepository,
+                somuItemRepository
         );
     }
 

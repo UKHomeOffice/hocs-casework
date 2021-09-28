@@ -6,14 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.util.ObjectUtils;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummarySomuItems;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -48,6 +44,9 @@ public class GetCaseSummaryResponse {
 
     @JsonProperty("previousCase")
     private CaseSummaryLink previousCase;
+
+    @JsonProperty("somuItems")
+    private final Collection<CaseSummarySomuItems> somuItems;
 
     public static GetCaseSummaryResponse from(CaseSummary caseSummary) {
         GetCorrespondentResponse getCorrespondentResponse = null;
@@ -86,7 +85,8 @@ public class GetCaseSummaryResponse {
                 CaseSummaryLink.builder()
                         .caseUUID(caseSummary.getPreviousCaseUUID())
                         .caseReference(caseSummary.getPreviousCaseReference())
-                        .stageUUID(caseSummary.getPreviousCaseStageUUID()).build());
+                        .stageUUID(caseSummary.getPreviousCaseStageUUID()).build(),
+                caseSummary.getSomuItems());
 
 
     }

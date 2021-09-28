@@ -129,7 +129,20 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCaseSummary() {
 
-        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary(null, null, null, null, null, null, null, null, null, PREVIOUS_CASE_REFERENCE, PREVIOUS_CASE_UUID, PREVIOUS_STAGE_UUID));
+        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                PREVIOUS_CASE_REFERENCE,
+                PREVIOUS_CASE_UUID,
+                PREVIOUS_STAGE_UUID,
+                null));
 
         ResponseEntity<GetCaseSummaryResponse> response = caseDataResource.getCaseSummary(uuid);
 
