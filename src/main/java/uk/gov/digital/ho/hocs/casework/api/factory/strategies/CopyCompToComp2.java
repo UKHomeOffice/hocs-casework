@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 public class CopyCompToComp2 extends AbstractCaseCopyStrategy implements CaseCopyStrategy {
 
     private static final String[] DATA_CLOB_KEYS = {
+            "BusArea",
             "CatLost",
             "CatRude",
             "Channel",
@@ -26,6 +27,7 @@ public class CopyCompToComp2 extends AbstractCaseCopyStrategy implements CaseCop
             "Severity",
             "CatRacism",
             "CatUnfair",
+            "EnqReason",
             "OwningCSU",
             "CatAssault",
             "CatCCAvail",
@@ -34,6 +36,7 @@ public class CopyCompToComp2 extends AbstractCaseCopyStrategy implements CaseCop
             "CatAdminErr",
             "CatCCHandle",
             "CatPoorComm",
+            "LoaRequired",
             "PrevUkviRef",
             "CatCustodyBF",
             "CatWrongInfo",
