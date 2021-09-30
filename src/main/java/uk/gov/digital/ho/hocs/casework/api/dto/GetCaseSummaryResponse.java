@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class GetCaseSummaryResponse {
+    @JsonProperty("type")
+    String type;
 
     @JsonProperty("caseCreated")
     LocalDate caseCreated;
@@ -40,6 +42,9 @@ public class GetCaseSummaryResponse {
 
     @JsonProperty("activeStages")
     Set<ActiveStageDto> activeStages;
+
+    @JsonProperty("deadLineExtensions")
+    Map<String, Integer> deadLineExtensions;
 
     @JsonProperty("previousCase")
     private CaseSummaryLink previousCase;
@@ -68,17 +73,21 @@ public class GetCaseSummaryResponse {
                     .collect(Collectors.toList()));
         }
         additionalFieldDtos.sort(Comparator.comparing(AdditionalFieldDto::getLabel));
-
-        return new GetCaseSummaryResponse(caseSummary.getCreatedDate(),
+        return new GetCaseSummaryResponse(
+                caseSummary.getType(),
+                caseSummary.getCreatedDate(),
                 caseSummary.getCaseDeadline(),
                 caseSummary.getStageDeadlines(),
                 additionalFieldDtos,
                 getCorrespondentResponse,
                 getTopicsResponse,
                 activeStageDtos,
+                caseSummary.getDeadLineExtensions(),
                 CaseSummaryLink.builder()
                         .caseUUID(caseSummary.getPreviousCaseUUID())
                         .caseReference(caseSummary.getPreviousCaseReference())
                         .stageUUID(caseSummary.getPreviousCaseStageUUID()).build());
+
+
     }
 }

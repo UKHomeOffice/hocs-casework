@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
@@ -23,15 +24,22 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+
 @Slf4j
 @RestController
 class CaseDataResource {
 
     private final CaseDataService caseDataService;
+    private final CaseNoteService caseNoteService;
 
     @Autowired
-    public CaseDataResource(@Qualifier("CaseDataService") CaseDataService caseDataService) {
+    public CaseDataResource(
+            @Qualifier("CaseDataService") CaseDataService caseDataService,
+            CaseNoteService caseNoteService) {
         this.caseDataService = caseDataService;
+        this.caseNoteService = caseNoteService;
     }
 
     @Authorised(accessLevel = AccessLevel.OWNER)
@@ -80,6 +88,25 @@ class CaseDataResource {
     public ResponseEntity<Void> updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {
         caseDataService.updateCaseData(caseUUID, stageUUID, request.getData());
         return ResponseEntity.ok().build();
+    }
+
+    @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
+    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/extension")
+    ResponseEntity<GetCaseReferenceResponse> applyExtension(@PathVariable UUID caseUUID,
+                                                            @PathVariable UUID stageUUID,
+                                                            @RequestBody ApplyExtensionRequest request) {
+        try {
+            caseDataService.applyExtension(caseUUID, stageUUID, request.getType(), request.getCaseNote());
+            caseNoteService.createCaseNote(caseUUID, "EXTENSION", request.getCaseNote());
+
+            return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
+        } catch (NoSuchElementException e) {
+            log.error("Failed to apply extension to case: {}, invalid extension type", caseUUID, value(EVENT, EXTENSION_APPLY_FAILED));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } catch (Exception e) {
+            log.error("Failed to apply extension to case: {}", caseUUID, value(EVENT, EXTENSION_APPLY_FAILED));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/dateReceived")

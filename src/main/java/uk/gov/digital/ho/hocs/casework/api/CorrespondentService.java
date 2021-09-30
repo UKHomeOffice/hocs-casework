@@ -168,6 +168,7 @@ public class CorrespondentService {
         correspondent.setAddress2(updateCorrespondentRequest.getAddress2());
         correspondent.setAddress3(updateCorrespondentRequest.getAddress3());
         correspondent.setPostcode(updateCorrespondentRequest.getPostcode());
+        correspondent.setCountry(updateCorrespondentRequest.getCountry());
         correspondent.setTelephone(updateCorrespondentRequest.getTelephone());
         correspondent.setEmail(updateCorrespondentRequest.getEmail());
         correspondent.setReference(updateCorrespondentRequest.getReference());
@@ -187,7 +188,7 @@ public class CorrespondentService {
         correspondent.setDeleted(true);
         correspondentRepository.save(correspondent);
         auditClient.deleteCorrespondentAudit(correspondent);
-        CaseData caseData = caseDataRepository.findByUuid(caseUUID);
+        CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
         if (caseData != null && correspondentUUID.equals(caseData.getPrimaryCorrespondentUUID())) {
             caseData.setPrimaryCorrespondentUUID(null);
             caseDataRepository.save(caseData);

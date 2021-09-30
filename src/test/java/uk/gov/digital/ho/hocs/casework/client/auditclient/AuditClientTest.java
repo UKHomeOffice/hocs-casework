@@ -22,13 +22,7 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
-import uk.gov.digital.ho.hocs.casework.domain.model.Address;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -217,6 +211,7 @@ public class AuditClientTest {
         assertThat(request.getType()).isEqualTo(EventType.TEMPLATE_VIEWED);
         assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
     }
+
     @Test
     public void createCorrespondentAudit() throws IOException {
         auditClient.createCorrespondentAudit(correspondent);
@@ -224,6 +219,22 @@ public class AuditClientTest {
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
         assertThat(request.getType()).isEqualTo(EventType.CORRESPONDENT_CREATED);
         assertThat(request.getCaseUUID()).isEqualTo(correspondent.getCaseUUID());
+    }
+
+    @Test
+    public void createExtensionAudit() throws IOException {
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
+        CaseDeadlineExtension caseDeadlineExtension =
+                new CaseDeadlineExtension(
+                        caseData,
+                        new CaseDeadlineExtensionType("TEST_EXT_TYPE", 5),
+                        "TEST NOTE"
+                );
+        auditClient.createExtensionAudit(caseDeadlineExtension);
+        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
+        assertThat(request.getType()).isEqualTo(EventType.EXTENSION_APPLIED);
+        assertThat(request.getCaseUUID()).isEqualTo(caseDeadlineExtension.getCaseData().getUuid());
     }
 
     @Test

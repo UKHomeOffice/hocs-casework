@@ -33,7 +33,6 @@ public class RestResponseEntityExceptionHandlerTest {
 
     @Before
     public void beforeTest(){
-        System.out.println("test");
         restResponseEntityExceptionHandler = new RestResponseEntityExceptionHandler();
 
         Logger exceptionLogger = (Logger) LoggerFactory.getLogger(RestResponseEntityExceptionHandler.class);

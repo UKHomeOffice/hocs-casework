@@ -43,13 +43,13 @@ public class GetCaseSummaryResponseTest {
         additionalFields.add(field2);
         additionalFields.add(field4);
 
-        CaseSummary caseSummary = new CaseSummary(caseCreated,
+        CaseSummary caseSummary = new CaseSummary(
+                "type",
+                caseCreated,
                 caseDeadline,
                 stageDeadlines,
                 additionalFields,
-                null,
-                null,
-                null,
+                null,null,null,null,
                 PREV_CASE_REF,
                 PREVIOUS_CASE_UUID,
                 PREVIOUS_STAGE_UUID);

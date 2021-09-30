@@ -72,7 +72,7 @@ public class CaseDataCreateCaseIntegrationTest {
         setupMockTeams("TEST", 5);
         ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
 
-        CaseData caseData = caseDataRepository.findByUuid(result.getBody().getUuid());
+        CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -180,7 +180,7 @@ public class CaseDataCreateCaseIntegrationTest {
         setupMockTeams("TEST", 5);
         ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST","{}"), "TEST", "5");
 
-        CaseData caseData = caseDataRepository.findByUuid(result.getBody().getUuid());
+        CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -196,7 +196,7 @@ public class CaseDataCreateCaseIntegrationTest {
         setupMockTeams("TEST", 5);
         ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST",null), "TEST", "5");
 
-        CaseData caseData = caseDataRepository.findByUuid(result.getBody().getUuid());
+        CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -215,8 +215,8 @@ public class CaseDataCreateCaseIntegrationTest {
 
         ResponseEntity<CreateCaseResponse> result2 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
 
-        CaseData caseData1 = caseDataRepository.findByUuid(result1.getBody().getUuid());
-        CaseData caseData2 = caseDataRepository.findByUuid(result2.getBody().getUuid());
+        CaseData caseData1 = caseDataRepository.findActiveByUuid(result1.getBody().getUuid());
+        CaseData caseData2 = caseDataRepository.findActiveByUuid(result2.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
 
         assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -243,8 +243,8 @@ public class CaseDataCreateCaseIntegrationTest {
         ResponseEntity<Void> result2 = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "2");
         ResponseEntity<CreateCaseResponse> result3 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
 
-        CaseData caseData1 = caseDataRepository.findByUuid(result1.getBody().getUuid());
-        CaseData caseData2 = caseDataRepository.findByUuid(result3.getBody().getUuid());
+        CaseData caseData1 = caseDataRepository.findActiveByUuid(result1.getBody().getUuid());
+        CaseData caseData2 = caseDataRepository.findActiveByUuid(result3.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
 
         assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.OK);

@@ -6,20 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Where;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -33,126 +23,37 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_F
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "case_data")
-public class CaseData extends AbstractJsonDataMap implements Serializable {
-
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Getter
-    @Column(name = "uuid")
-    private UUID uuid;
-
-    @Getter
-    @Column(name = "created")
-    private LocalDateTime created = LocalDateTime.now();
-
-    @Getter
-    @Column(name = "type")
-    private String type;
-
-    @Getter
-    @Column(name = "reference")
-    private String reference;
-
-    @Setter
-    @Getter
-    @Column(name = "deleted")
-    private boolean deleted;
-
-    @Getter
-    @Setter(AccessLevel.PROTECTED)
-    @Column(name = "data")
-    private String data = "{}";
-
-    @Setter
-    @Getter
-    @Column(name = "primary_topic_uuid")
-    private UUID primaryTopicUUID;
-
-    @Getter
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "primary_topic_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
-    private Topic primaryTopic;
-
-    @Setter
-    @Getter
-    @Column(name = "primary_correspondent_uuid")
-    private UUID primaryCorrespondentUUID;
-
-    @Getter
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "primary_correspondent_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
-    private Correspondent primaryCorrespondent;
-
-    @Setter
-    @Getter
-    @Column(name = "case_deadline")
-    private LocalDate caseDeadline;
-
-    @Setter
-    @Getter
-    @Column(name = "case_deadline_warning")
-    private LocalDate caseDeadlineWarning;
-
-    @Setter
-    @Getter
-    @Column(name = "date_received")
-    private LocalDate dateReceived;
-
-    @Setter
-    @Getter
-    @Column(name = "completed")
-    private boolean completed;
-
-    @Getter
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false)
-    private Set<ActiveStage> activeStages;
-
+public class CaseData extends AbstractCaseData implements Serializable {
     @Getter
     @Setter
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
-    @Where(clause = "deleted = false")
-    private Set<CaseNote> caseNotes;
-
-    @Getter
-    @Column(name = "primary_case_uuid", insertable = false, updatable = false)
-    private UUID previousCaseUUID;
-
-    @Getter
-    @Column(name = "primary_case_reference", insertable = false, updatable = false)
-    private String previousCaseReference;
-
-    @Getter
-    @Column(name = "primary_stage_uuid", insertable = false, updatable = false)
-    private UUID previousCaseStageUUID;
-
-    @Getter
-    @Column(name = "secondary_case_uuid", insertable = false, updatable = false)
-    private UUID nextCaseUUID;
-
-    @Getter
-    @Column(name = "secondary_case_reference", insertable = false, updatable = false)
-    private String nextCaseReference;
+    @OneToMany(
+            mappedBy = "caseData",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.EAGER
+    )
+    private Set<CaseDeadlineExtension> deadlineExtensions;
 
 
-    public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, ObjectMapper objectMapper, LocalDate dateReceived) {
-        this(type, caseNumber, dateReceived);
-        update(data, objectMapper);
+    public CaseData(CaseDataType type,
+                    Long caseNumber,
+                    Map<String, String> data,
+                    ObjectMapper objectMapper,
+                    LocalDate dateReceived) {
+        super(type, caseNumber, data, objectMapper, dateReceived);
+    }
+
+    public CaseDeadlineExtension addDeadlineExtension(CaseDeadlineExtensionType caseDeadlineExtensionType,
+                                                      String note) {
+        CaseDeadlineExtension caseDeadlineExtension =
+                new CaseDeadlineExtension(this, caseDeadlineExtensionType, note);
+        deadlineExtensions.add(caseDeadlineExtension);
+
+        return caseDeadlineExtension;
     }
 
     public CaseData(CaseDataType type, Long caseNumber, LocalDate dateReceived) {
-        if (type == null || caseNumber == null) {
-            throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
-        }
-
-        this.type = type.getDisplayCode();
-        this.reference = CaseReferenceGenerator.generateCaseReference(this.type, caseNumber, this.created);
-        this.uuid = randomUUID(type.getShortCode());
-        this.dateReceived = dateReceived;
+        super(type, caseNumber, dateReceived);
     }
 
     private static UUID randomUUID(String shortCode) {
@@ -172,18 +73,49 @@ public class CaseData extends AbstractJsonDataMap implements Serializable {
     }
 
     public CaseData(CaseDataType type, String caseReference, LocalDate caseDeadline, LocalDate dateReceived, LocalDateTime caseCreated) {
-        if (type == null || caseReference == null) {
-            throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
-        }
-        this.created = caseCreated;
-        this.type = type.getDisplayCode();
-        this.reference = caseReference;
-        this.uuid = randomUUID(type.getShortCode());
-        this.caseDeadline = caseDeadline;
-        this.dateReceived = dateReceived;
+        super(type, caseReference, caseDeadline, dateReceived, caseCreated);
     }
-
 
     // --------  Migration Code End --------
 
+    public CaseData(Long id,
+                    UUID uuid,
+                    LocalDateTime created,
+                    String type,
+                    String reference,
+                    boolean deleted,
+                    String data,
+                    UUID primaryTopicUUID,
+                    Topic primaryTopic,
+                    UUID primaryCorrespondentUUID,
+                    Correspondent primaryCorrespondent,
+                    LocalDate caseDeadline,
+                    LocalDate caseDeadlineWarning,
+                    LocalDate dateReceived,
+                    boolean completed,
+                    Set<ActiveStage> activeStages,
+                    Set<CaseNote> caseNotes,
+                    Set<CaseDeadlineExtension> caseDeadlineExtensions) {
+        super(
+                id,
+                uuid,
+                created,
+                type,
+                reference,
+                deleted,
+                data,
+                primaryTopicUUID,
+                primaryTopic,
+                primaryCorrespondentUUID,
+                primaryCorrespondent,
+                caseDeadline,
+                caseDeadlineWarning,
+                dateReceived,
+                completed,
+                activeStages,
+                caseNotes
+        );
+
+        this.deadlineExtensions = caseDeadlineExtensions;
+    }
 }
