@@ -46,9 +46,10 @@ steps:
       DOCKER_PASSWORD:
         from_secret: QUAY_ROBOT_TOKEN
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
-    branch:
-      exclude:
-        - main
+    when:
+      branch:
+        exclude:
+          - main
     depends_on:
       - test project
 
