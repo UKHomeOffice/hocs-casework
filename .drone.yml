@@ -33,7 +33,7 @@ steps:
     depends_on:
       - build project
 
-  - name: build & push
+  - name: build & push branch image
     image: plugins/docker
     settings:
       registry: quay.io
@@ -46,15 +46,21 @@ steps:
       DOCKER_PASSWORD:
         from_secret: QUAY_ROBOT_TOKEN
       DOCKER_USERNAME: ukhomeofficedigital+hocs_quay_robot
+    branch:
+      exclude:
+        - main
     depends_on:
       - test project
 
-  - name: build & push latest
+  - name: build & push main image
     image: plugins/docker
     settings:
       registry: quay.io
       repo: quay.io/ukhomeofficedigital/hocs-casework
       tags:
+        - build_${DRONE_BUILD_NUMBER}
+        - ${DRONE_COMMIT_SHA}
+        - branch-${DRONE_COMMIT_BRANCH/\//_}
         - latest
     environment:
       DOCKER_PASSWORD:
