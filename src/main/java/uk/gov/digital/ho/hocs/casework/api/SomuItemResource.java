@@ -29,7 +29,7 @@ public class SomuItemResource {
     @Authorised (accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUuid}/item", produces = APPLICATION_JSON_UTF8_VALUE)
     ResponseEntity<Set<GetSomuItemResponse>> getAllCaseSomuItems(@PathVariable UUID caseUuid) {
-        Set<SomuItem> somuItems = somuItemService.getCaseSomuItemsBySomuType(caseUuid);
+        Set<SomuItem> somuItems = somuItemService.getCaseSomuItemsBySomuType(caseUuid, true);
         return ResponseEntity.ok(somuItems.stream().map(GetSomuItemResponse::from).collect(Collectors.toSet()));
     }
 

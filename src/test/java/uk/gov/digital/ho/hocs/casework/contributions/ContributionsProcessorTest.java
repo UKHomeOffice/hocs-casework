@@ -43,7 +43,7 @@ public class ContributionsProcessorTest {
 
         SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-10-10\"}");
 
-        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID)).thenReturn(Set.of(somuItem));
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID, false)).thenReturn(Set.of(somuItem));
 
         contributionsProcessor.processContributionsForStage(stage);
         assertEquals("2020-10-10", stage.getDueContribution());
@@ -58,7 +58,7 @@ public class ContributionsProcessorTest {
 
         SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-10-10\"}");
 
-        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID)).thenReturn(Set.of(somuItem));
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID, false)).thenReturn(Set.of(somuItem));
 
         contributionsProcessor.processContributionsForStage(stage);
         assertEquals("9999-10-10", stage.getDueContribution());
@@ -73,7 +73,7 @@ public class ContributionsProcessorTest {
 
         SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-10-10\"}");
 
-        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID)).thenReturn(Set.of(somuItem));
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID, false)).thenReturn(Set.of(somuItem));
 
         contributionsProcessor.processContributionsForStage(stage);
         assertEquals("2020-10-10", stage.getDueContribution());
@@ -88,7 +88,7 @@ public class ContributionsProcessorTest {
 
         SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-10-10\"}");
 
-        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID)).thenReturn(Set.of(somuItem));
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID, false)).thenReturn(Set.of(somuItem));
 
         contributionsProcessor.processContributionsForStage(stage);
         assertEquals("9999-10-10", stage.getDueContribution());

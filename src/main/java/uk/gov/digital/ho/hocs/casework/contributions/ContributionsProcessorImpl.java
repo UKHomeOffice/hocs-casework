@@ -29,10 +29,8 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
 
     @Override
     public void processContributionsForStage(Stage stage) {
-        Set<SomuItem> contributionSomuItems = somuItemService.getCaseSomuItemsBySomuType(stage.getCaseUUID());
-
-        if (MPAMContributionStages.contains(stage.getStageType()) ||
-                COMPLIANT_CASE_TYPE.equals(stage.getCaseDataType())) {
+        if (MPAMContributionStages.contains(stage.getStageType()) || COMPLIANT_CASE_TYPE.equals(stage.getCaseDataType())) {
+            Set<SomuItem> contributionSomuItems = somuItemService.getCaseSomuItemsBySomuType(stage.getCaseUUID(), false);
             calculateDueContributionDate(contributionSomuItems)
                     .ifPresent(ld -> {
                         log.info("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
