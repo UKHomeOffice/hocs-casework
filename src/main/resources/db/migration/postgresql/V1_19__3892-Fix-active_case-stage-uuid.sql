@@ -33,7 +33,7 @@ FROM casework.case_data
                     ORDER BY s.case_uuid, s.team_uuid DESC NULLS LAST, s.created DESC) pri_stage_uuid ON pri_stage_uuid.case_uuid = prev_case.uuid
 WHERE NOT case_data.deleted;
 
-create view casework.view_case_data(id, uuid, created, type, reference, data, primary_topic_uuid, primary_correspondent_uuid, case_deadline, date_received, deleted, completed, case_deadline_warning, secondary_case_uuid, secondary_case_reference, secondary_stage_uuid, primary_case_uuid, primary_case_reference, primary_stage_uuid) as
+create or replace view casework.view_case_data(id, uuid, created, type, reference, data, primary_topic_uuid, primary_correspondent_uuid, case_deadline, date_received, deleted, completed, case_deadline_warning, secondary_case_uuid, secondary_case_reference, secondary_stage_uuid, primary_case_uuid, primary_case_reference, primary_stage_uuid) as
 SELECT case_data.id,
        case_data.uuid,
        case_data.created,
