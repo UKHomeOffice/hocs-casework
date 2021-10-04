@@ -65,6 +65,6 @@ FROM casework.case_data
          LEFT JOIN (SELECT distinct on (s.case_uuid) s.uuid,
                                                      s.case_uuid
                     FROM casework.stage s
-                    ORDER BY s.case_uuid, s.team_uuid DESC NULLS LAST, s.created DESC) pri_stage_uuid ON pri_stage_uuid.case_uuid = prev_case.uuid
+                    ORDER BY s.case_uuid, s.team_uuid DESC NULLS LAST, s.created DESC) pri_stage_uuid ON pri_stage_uuid.case_uuid = prev_case.uuid;
 
 
