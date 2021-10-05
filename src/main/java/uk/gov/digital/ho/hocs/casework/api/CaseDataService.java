@@ -33,23 +33,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CALCULATED_TOTALS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_COMPLETED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DELETED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUND;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_UPDATED_NULL_DATA;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_RETRIEVED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_SUMMARY_RETRIEVED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_LOOKUP_FAILED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRESPONDENT_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_TOPIC_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.UNCAUGHT_EXCEPTION;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_DELETED;
@@ -535,7 +519,9 @@ public class CaseDataService {
                 infoClient.getAllSomuTypesForCaseType(caseData.getType())
                         .stream()
                         .filter(SomuTypeDto::isActive)
-                        .filter(type -> type.getSchema().getOrDefault("showInSummary", false).equals(true))
+                        .filter(type ->
+                                type.getSchema().getOrDefault("showInSummary", false).equals(true)
+                        )
                         .collect(Collectors.toMap(SomuTypeDto::getUuid, Function.identity()));
 
         eligibleSomuTypesByUuid.values()
@@ -545,7 +531,10 @@ public class CaseDataService {
                                     try {
                                         summaryBuilder.addSomuItem(somuType, somuItem.getData());
                                     } catch (JsonProcessingException e) {
-                                        e.printStackTrace();
+                                        log.error("Error parsing somu item in summary for " +
+                                                        "Case: {} Ref: {} Somu Item UUID: {}",
+                                                caseData.getUuid(), caseData.getReference(), somuItem.getUuid()
+                                                value(EVENT, CASE_SUMMARY_CANNOT_PARSE_SOMU_ITEM));
                                     }
                                 }
                         )

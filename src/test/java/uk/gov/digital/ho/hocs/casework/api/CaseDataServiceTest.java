@@ -470,8 +470,15 @@ public class CaseDataServiceTest {
                 true,
                 Map.of("showInSummary", true));
 
+        final SomuTypeDto somuType2 = new SomuTypeDto(UUID.randomUUID(),
+                "CaseType",
+                "SomuType1",
+                true,
+                Map.of("showInSummary", false));
+
         Set<SomuTypeDto> caseSomuType = Set.of(
-                somuType1
+                somuType1,
+                somuType2
         );
 
         SomuItem somuItem = new SomuItem(UUID.randomUUID(), caseData.getUuid(), somuType1.getUuid(), "{\"testKey\": \"testVal\"}");
