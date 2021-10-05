@@ -533,7 +533,7 @@ public class CaseDataService {
                                     } catch (JsonProcessingException e) {
                                         log.error("Error parsing somu item in summary for " +
                                                         "Case: {} Ref: {} Somu Item UUID: {}",
-                                                caseData.getUuid(), caseData.getReference(), somuItem.getUuid()
+                                                caseData.getUuid(), caseData.getReference(), somuItem.getUuid(),
                                                 value(EVENT, CASE_SUMMARY_CANNOT_PARSE_SOMU_ITEM));
                                     }
                                 }
