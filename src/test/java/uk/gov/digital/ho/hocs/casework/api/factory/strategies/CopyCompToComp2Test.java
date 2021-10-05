@@ -47,6 +47,7 @@ public class CopyCompToComp2Test {
     private static final UUID FROM_CASE_UUID = UUID.randomUUID();
     private static final String CORRESPONDENT_TYPE = "correspondent_type";
     private static final String FULLNAME = "fullname";
+    private static final String ORGANISATION = "organisation";
     private static final String ADDRESS_1 = "address1";
     private static final String ADDRESS_2 = "address2";
     private static final String ADDRESS_3 = "address3";
@@ -59,6 +60,7 @@ public class CopyCompToComp2Test {
     private static final Correspondent PRIMARY_CORRESPONDENT = new Correspondent(FROM_CASE_UUID,
             CORRESPONDENT_TYPE,
             FULLNAME,
+            ORGANISATION,
             Address.builder()
                     .address1(ADDRESS_1)
                     .address2(ADDRESS_2)

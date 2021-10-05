@@ -31,6 +31,9 @@ public class GetCorrespondentWithPrimaryFlagResponse {
     @JsonProperty("fullname")
     private String fullname;
 
+    @JsonProperty("organisation")
+    private String organisation;
+
     @JsonProperty("address")
     private AddressDto address;
 
@@ -57,6 +60,7 @@ public class GetCorrespondentWithPrimaryFlagResponse {
                 correspondent.getCorrespondentTypeName(),
                 correspondent.getCaseUUID(),
                 correspondent.getFullName(),
+                correspondent.getOrganisation(),
                 AddressDto.from(correspondent),
                 correspondent.getTelephone(),
                 correspondent.getEmail(),

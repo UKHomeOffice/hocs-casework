@@ -55,6 +55,7 @@ public class MigrationCorrespondentServiceTest {
                 caseUUID,
                 "CORRESPONDENT",
                 "anyFullName",
+                "organisation",
                 address,
                 "anyPhone",
                 "anyEmail",
@@ -93,6 +94,7 @@ public class MigrationCorrespondentServiceTest {
                 caseUUID,
                 "CORRESPONDENT",
                 "anyFullName",
+                "organisation",
                 address,
                 "anyPhone",
                 "anyEmail",
@@ -102,7 +104,7 @@ public class MigrationCorrespondentServiceTest {
         );
 
         when(correspondentRepository.findAllByCaseUUID(caseUUID)).thenReturn(Set.of(correspondent));
-        correspondentService.createCorrespondent(caseUUID, stageUUID,"CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
+        correspondentService.createCorrespondent(caseUUID, stageUUID,"CORRESPONDENT", "anyFullName", "organisation", address, "anyPhone", "anyEmail", "anyReference", "external key");
 
         verify(correspondentRepository).save(any(Correspondent.class));
         verify(correspondentRepository).findAllByCaseUUID(caseUUID);
@@ -120,6 +122,7 @@ public class MigrationCorrespondentServiceTest {
                 caseUUID,
                 "CORRESPONDENT",
                 "anyFullName1",
+                "organisation",
                 address,
                 "anyPhone1",
                 "anyEmail1",
@@ -131,6 +134,7 @@ public class MigrationCorrespondentServiceTest {
                 caseUUID,
                 "CORRESPONDENT",
                 "anyFullName2",
+                "organisation",
                 address,
                 "anyPhone2",
                 "anyEmail2",
@@ -140,7 +144,7 @@ public class MigrationCorrespondentServiceTest {
         );
 
         when(correspondentRepository.findAllByCaseUUID(caseUUID)).thenReturn(Set.of(correspondent1, correspondent2));
-        correspondentService.createCorrespondent(caseUUID, stageUUID,"CORRESPONDENT", "anyFullName2", address, "anyPhone2", "anyEmail2", "anyReference2", "external key2");
+        correspondentService.createCorrespondent(caseUUID, stageUUID,"CORRESPONDENT", "anyFullName2", "organisation", address, "anyPhone2", "anyEmail2", "anyReference2", "external key2");
 
         verify(correspondentRepository).save(any(Correspondent.class));
         verify(correspondentRepository).findAllByCaseUUID(caseUUID);
@@ -152,7 +156,7 @@ public class MigrationCorrespondentServiceTest {
     public void shouldAuditCreateCorrespondent() throws ApplicationExceptions.EntityCreationException {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        correspondentService.createCorrespondent(caseUUID, stageUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
+        correspondentService.createCorrespondent(caseUUID, stageUUID, "CORRESPONDENT", "anyFullName", "organisation", address, "anyPhone", "anyEmail", "anyReference", "external key");
 
         verify(auditClient, times(1)).createCorrespondentAudit(any(Correspondent.class));
 
@@ -162,14 +166,14 @@ public class MigrationCorrespondentServiceTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCorrespondentMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        correspondentService.createCorrespondent(null, stageUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
+        correspondentService.createCorrespondent(null, stageUUID, "CORRESPONDENT", "anyFullName", "organisation", address, "anyPhone", "anyEmail", "anyReference", "external key");
     }
 
     @Test
     public void shouldNotCreateCorrespondentMissingCaseUUID() {
         try {
             Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-            correspondentService.createCorrespondent(null, stageUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
+            correspondentService.createCorrespondent(null, stageUUID, "CORRESPONDENT", "anyFullName", "organisation", address, "anyPhone", "anyEmail", "anyReference", "external key");
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
@@ -180,7 +184,7 @@ public class MigrationCorrespondentServiceTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCorrespondentMissingCorrespondentTypeException() throws ApplicationExceptions.EntityCreationException {
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        correspondentService.createCorrespondent(caseUUID, stageUUID, null, "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
+        correspondentService.createCorrespondent(caseUUID, stageUUID, null, "anyFullName", "organisation", address, "anyPhone", "anyEmail", "anyReference", "external key");
     }
 
     @Test
@@ -188,7 +192,7 @@ public class MigrationCorrespondentServiceTest {
 
         try {
             Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-            correspondentService.createCorrespondent(caseUUID, stageUUID, null, "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
+            correspondentService.createCorrespondent(caseUUID, stageUUID, null, "anyFullName", "organisation", address, "anyPhone", "anyEmail", "anyReference", "external key");
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
@@ -200,7 +204,7 @@ public class MigrationCorrespondentServiceTest {
     @Test
     public void shouldGetCorrespondent() throws ApplicationExceptions.EntityNotFoundException {
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
+        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", "organisation", address, "anyPhone", "anyEmail", "anyReference", "external key");
         Set<CorrespondentTypeDto> emptyCorrespondentSet = Collections.emptySet();
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
@@ -268,7 +272,7 @@ public class MigrationCorrespondentServiceTest {
 
     @Test
     public void shouldDeleteCorrespondent() {
-        Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null, null);
+        Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null, null, null);
         Set<CorrespondentTypeDto> emptyCorrespondentSet = Collections.emptySet();
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);
@@ -286,7 +290,7 @@ public class MigrationCorrespondentServiceTest {
 
     @Test
     public void shouldAuditDeleteCorrespondent() {
-        Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null, null);
+        Correspondent correspondent = new Correspondent(caseUUID, "any", null, null, null, null, null, null, null);
         Set<CorrespondentTypeDto> emptyCorrespondentSet = Collections.emptySet();
 
         when(correspondentRepository.findByUUID(correspondent.getCaseUUID(), correspondent.getUuid())).thenReturn(correspondent);

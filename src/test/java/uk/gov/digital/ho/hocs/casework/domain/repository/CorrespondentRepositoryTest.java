@@ -55,6 +55,7 @@ public class CorrespondentRepositoryTest {
                 caseUUID,
                 "some_type",
                 "full name",
+                "organisation",
                 address,
                 "01923478393",
                 "email@test.com",
@@ -73,6 +74,7 @@ public class CorrespondentRepositoryTest {
         Correspondent correspondent = repository.findByUUID(caseUUID, correspondentUUID);
         assertThat(correspondent.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(correspondent.getFullName()).isEqualTo("full name");
+        assertThat(correspondent.getOrganisation()).isEqualTo("organisation");
         assertThat(correspondent.getEmail()).isEqualTo("email@test.com");
         assertThat(correspondent.getReference()).isEqualTo("ref");
         assertThat(correspondent.getCorrespondentType()).isEqualTo("some_type");
