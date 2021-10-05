@@ -534,6 +534,7 @@ public class CaseDataService {
         final Map<UUID, SomuTypeDto> eligibleSomuTypesByUuid =
                 infoClient.getAllSomuTypesForCaseType(caseData.getType())
                         .stream()
+                        .filter(SomuTypeDto::isActive)
                         .filter(type -> type.getSchema().getOrDefault("showInSummary", false).equals(true))
                         .collect(Collectors.toMap(SomuTypeDto::getUuid, Function.identity()));
 

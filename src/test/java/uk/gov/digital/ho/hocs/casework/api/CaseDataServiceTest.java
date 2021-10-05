@@ -13,6 +13,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.SomuTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
@@ -450,6 +451,52 @@ public class CaseDataServiceTest {
         verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
         verify(infoClient, times(1)).getStageDeadlines(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
+    }
+
+    @Test
+    public void shouldGetCaseSummaryWithSomuItems() throws ApplicationExceptions.EntityNotFoundException, IOException {
+
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
+        caseData.setCaseDeadline(caseDeadline);
+        caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
+
+        ActiveCaseViewData activeCaseViewData = new ActiveCaseViewData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
+        activeCaseViewData.setCaseDeadline(caseDeadline);
+        activeCaseViewData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
+
+        final SomuTypeDto somuType1 = new SomuTypeDto(UUID.randomUUID(),
+                "CaseType",
+                "SomuType1",
+                true,
+                Map.of("showInSummary", true));
+
+        Set<SomuTypeDto> caseSomuType = Set.of(
+                somuType1
+        );
+
+        SomuItem somuItem = new SomuItem(UUID.randomUUID(), caseData.getUuid(), somuType1.getUuid(), "{\"testKey\": \"testVal\"}");
+        Set<SomuItem> somuItems = Set.of(somuItem);
+
+        when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
+        when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
+        when(infoClient.getAllSomuTypesForCaseType(caseData.getType())).thenReturn(caseSomuType);
+        when(somuItemRepository.findByCaseUuidAndSomuUuid(caseData.getUuid(), somuType1.getUuid())).thenReturn(somuItems);
+
+        CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
+
+        final CaseSummarySomuItems expectedSomuItems = new CaseSummarySomuItems(somuType1.getSchema());
+        expectedSomuItems.addItem(somuItem.getData());
+        assertThat(result.getSomuItems().size()).isEqualTo(1);
+        assertThat(result.getSomuItems().stream().findFirst().get().getItems().get(0).get("testKey")).isEqualTo("testVal");
+        assertThat(result.getSomuItems().stream().findFirst().get().getSchema()).isEqualTo(somuType1.getSchema());
+
+        verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
+        verify(infoClient, times(1)).getStageDeadlines(caseData.getType(), caseData.getDateReceived());
+        verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
+        verify(infoClient, times(1)).getAllSomuTypesForCaseType(caseData.getType());
+
+        verify(somuItemRepository, times(1))
+                .findByCaseUuidAndSomuUuid(caseData.getUuid(), somuType1.getUuid());
     }
 
     @Test
