@@ -124,9 +124,9 @@ public class CorrespondentService {
         return correspondentTypes;
     }
 
-    void createCorrespondent(UUID caseUUID, UUID stageUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference, String externalKey) {
+    void createCorrespondent(UUID caseUUID, UUID stageUUID, String correspondentType, String fullname, String organisation, Address address, String telephone, String email, String reference, String externalKey) {
         log.debug("Creating Correspondent of Type: {} for Case: {}", correspondentType, caseUUID);
-        Correspondent correspondent = new Correspondent(caseUUID, correspondentType, fullname, address, telephone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, correspondentType, fullname, organisation, address, telephone, email, reference, externalKey);
         try {
             correspondentRepository.save(correspondent);
             auditClient.createCorrespondentAudit(correspondent);
@@ -147,6 +147,7 @@ public class CorrespondentService {
         createCorrespondent(caseUUID, null,
                 correspondent.getCorrespondentType(),
                 correspondent.getFullName(),
+                correspondent.getOrganisation(),
                 Address.builder()
                         .address1(correspondent.getAddress1())
                         .address2(correspondent.getAddress2())
@@ -164,6 +165,7 @@ public class CorrespondentService {
         log.debug("Updating Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
         Correspondent correspondent = getCorrespondent(caseUUID, correspondentUUID);
         correspondent.setFullName(updateCorrespondentRequest.getFullname());
+        correspondent.setOrganisation(updateCorrespondentRequest.getOrganisation());
         correspondent.setAddress1(updateCorrespondentRequest.getAddress1());
         correspondent.setAddress2(updateCorrespondentRequest.getAddress2());
         correspondent.setAddress3(updateCorrespondentRequest.getAddress3());

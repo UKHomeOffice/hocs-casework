@@ -27,7 +27,7 @@ public class MigrationCorrespondentResource {
     @PostMapping(value = "/migration/case/{caseUUID}/stage/{stageUUID}/correspondent")
     ResponseEntity<UUID> addCorrespondentToCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @Valid @RequestBody CreateCorrespondentRequest request) {
         Address address = new Address(request.getPostcode(), request.getAddress1(), request.getAddress2(), request.getAddress3(), request.getCountry());
-        UUID correspondentUUID = migrationCorrespondentService.createCorrespondent(caseUUID, request.getType(), request.getFullname(), address, request.getTelephone(), request.getEmail(), request.getReference(), request.getExternalKey());
+        UUID correspondentUUID = migrationCorrespondentService.createCorrespondent(caseUUID, request.getType(), request.getFullname(), request.getOrganisation(), address, request.getTelephone(), request.getEmail(), request.getReference(), request.getExternalKey());
         return ResponseEntity.ok(correspondentUUID);
     }
 

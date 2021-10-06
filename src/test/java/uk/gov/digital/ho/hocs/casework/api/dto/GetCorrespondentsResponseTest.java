@@ -16,6 +16,7 @@ public class GetCorrespondentsResponseTest {
             UUID.randomUUID(),
             "CORRESPONDENT",
             "anyFullName",
+            "anyOrganisation",
             new Address("anyPostcode", "any1", "any2", "any3", "anyCountry"),
             "anyPhone",
             "anyEmail",

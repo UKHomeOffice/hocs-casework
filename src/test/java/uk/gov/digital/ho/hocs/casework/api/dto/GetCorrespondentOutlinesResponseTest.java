@@ -18,12 +18,13 @@ public class GetCorrespondentOutlinesResponseTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "An Organisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
         Set<Correspondent> correspondents = Set.of(correspondent);
 
         GetCorrespondentOutlinesResponse getCorrespondentOutlinesResponse = GetCorrespondentOutlinesResponse.from(correspondents);

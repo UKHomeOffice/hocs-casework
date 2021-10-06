@@ -26,6 +26,7 @@ public class CorrespondentTypeNameDecoratorTest {
                 UUID.randomUUID(),
                 "Type",
                 "full name",
+                "organisation",
                 address,
                 "01923478393",
                 "email@test.com",

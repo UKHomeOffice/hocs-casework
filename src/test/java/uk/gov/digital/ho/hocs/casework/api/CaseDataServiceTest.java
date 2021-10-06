@@ -74,6 +74,7 @@ public class CaseDataServiceTest {
     public static final String PREVIOUS_CASE_TYPE = "COMP";
     public static final String PREV_CORRESPONDENT_TYPE = "correspondent_type";
     public static final String PREV_FULLNAME = "fullname";
+    public static final String PREV_ORGANISATION = "organisation";
     public static final String PREV_ADDR_1 = "addr1";
     public static final String PREV_ADDR_2 = "addr2";
     public static final String PREV_ADDR_3 = "addr3";
@@ -186,6 +187,7 @@ public class CaseDataServiceTest {
                 new Correspondent(PREVIOUS_CASE_UUID,
                 PREV_CORRESPONDENT_TYPE,
                 PREV_FULLNAME,
+                PREV_ORGANISATION,
                 new Address(PREV_ADDR_1,
                         PREV_ADDR_2,
                         PREV_ADDR_3,
