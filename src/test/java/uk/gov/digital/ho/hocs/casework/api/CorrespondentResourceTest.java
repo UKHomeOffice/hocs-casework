@@ -51,12 +51,12 @@ public class CorrespondentResourceTest {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
 
-        doNothing().when(correspondentService).createCorrespondent(eq(caseUUID), eq(stageUUID), eq("any"), eq("anyFullName"), any(Address.class), eq("anyPhone"), eq("anyEmail"), eq("anyReference"), eq("external key"));
+        doNothing().when(correspondentService).createCorrespondent(eq(caseUUID), eq(stageUUID), eq("any"), eq("anyFullName"), eq("organisation"), any(Address.class), eq("anyPhone"), eq("anyEmail"), eq("anyReference"), eq("external key"));
 
-        CreateCorrespondentRequest createCorrespondentRequest = new CreateCorrespondentRequest("any", "anyFullName","anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference", "external key");
+        CreateCorrespondentRequest createCorrespondentRequest = new CreateCorrespondentRequest("any", "anyFullName", "organisation", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference", "external key");
         ResponseEntity response = correspondentResource.addCorrespondentToCase(caseUUID, stageUUID, createCorrespondentRequest);
 
-        verify(correspondentService, times(1)).createCorrespondent(eq(caseUUID), eq(stageUUID), eq("any"), eq("anyFullName"), any(Address.class), eq("anyPhone"), eq("anyEmail"), eq("anyReference"), eq("external key"));
+        verify(correspondentService, times(1)).createCorrespondent(eq(caseUUID), eq(stageUUID), eq("any"), eq("anyFullName"), eq("organisation"),  any(Address.class), eq("anyPhone"), eq("anyEmail"), eq("anyReference"), eq("external key"));
 
         verifyNoMoreInteractions(correspondentService);
 
@@ -83,7 +83,7 @@ public class CorrespondentResourceTest {
     public void shouldGetCorrespondent() {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", address, "anyPhone", "anyEmail", "anyReference", "external key");
+        Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName", "organisation", address, "anyPhone", "anyEmail", "anyReference", "external key");
 
         when(correspondentService.getCorrespondent(caseUUID, correspondentUUID)).thenReturn(correspondent);
 
@@ -131,7 +131,7 @@ public class CorrespondentResourceTest {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
 
-        UpdateCorrespondentRequest updateCorrespondentRequest = new UpdateCorrespondentRequest("anyFullName","anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
+        UpdateCorrespondentRequest updateCorrespondentRequest = new UpdateCorrespondentRequest("anyFullName", "organisation","anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference");
         doNothing().when(correspondentService).updateCorrespondent(eq(caseUUID), eq(correspondentUUID), eq(updateCorrespondentRequest));
 
         ResponseEntity response = correspondentResource.updateCorrespondent(caseUUID, stageUUID, correspondentUUID, updateCorrespondentRequest);

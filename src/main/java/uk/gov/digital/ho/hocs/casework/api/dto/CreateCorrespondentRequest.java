@@ -21,6 +21,9 @@ public class CreateCorrespondentRequest {
     @JsonProperty(value = "fullname", required = true)
     String fullname;
 
+    @JsonProperty(value = "organisation")
+    String organisation;
+
     @JsonProperty("postcode")
     String postcode;
 

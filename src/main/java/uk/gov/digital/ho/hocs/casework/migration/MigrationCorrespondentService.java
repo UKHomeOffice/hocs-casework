@@ -25,9 +25,9 @@ public class MigrationCorrespondentService {
         this.correspondentRepository = correspondentRepository;
     }
 
-    UUID createCorrespondent(UUID caseUUID, String correspondentType, String fullname, Address address, String telephone, String email, String reference, String externalKey) {
+    UUID createCorrespondent(UUID caseUUID, String correspondentType, String fullname, String organisation, Address address, String telephone, String email, String reference, String externalKey) {
         log.debug("Creating Correspondent of Type: {} for Case: {}", correspondentType, caseUUID);
-        Correspondent correspondent = new Correspondent(caseUUID, correspondentType, fullname, address, telephone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, correspondentType, fullname, organisation, address, telephone, email, reference, externalKey);
         try {
             correspondentRepository.save(correspondent);
 

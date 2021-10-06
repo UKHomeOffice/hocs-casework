@@ -126,6 +126,7 @@ public class CorrespondentServiceTest {
         return new CorrespondentWithPrimaryFlag(correspondent.getCaseUUID(),
                 correspondent.getCorrespondentType(),
                 correspondent.getFullName(),
+                correspondent.getOrganisation(),
                 Address.builder()
                         .postcode(correspondent.getPostcode())
                         .address1(correspondent.getAddress1())
@@ -144,12 +145,13 @@ public class CorrespondentServiceTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "A Large Organisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
         return correspondent;
     }
 
@@ -179,6 +181,7 @@ public class CorrespondentServiceTest {
           caseUUID,
           "Type",
           "full name",
+                "organisation",
                 address,
                 "01923478393",
                 "email@test.com",
@@ -207,6 +210,7 @@ public class CorrespondentServiceTest {
                 caseUUID,
                 "Type",
                 "full name",
+                "organisation",
                 address,
                 "01923478393",
                 "email@test.com",
@@ -237,6 +241,7 @@ public class CorrespondentServiceTest {
                 caseUUID,
                 "Type",
                 "full name",
+                "organisation",
                 address,
                 "01923478393",
                 "email@test.com",
@@ -268,6 +273,7 @@ public class CorrespondentServiceTest {
         UUID testCaseUUID = UUID.randomUUID();
         UUID testCorrespondenceUUID = UUID.randomUUID();
         @NotEmpty String testFullname = "test name";
+        String testOrganisation = "Organisation";
         String testPostcode = "T3 5ST";
         String testAdd1 = "Test House";
         String testAdd2 = "Test Street";
@@ -279,6 +285,7 @@ public class CorrespondentServiceTest {
 
         UpdateCorrespondentRequest  testRequest = new UpdateCorrespondentRequest(
                 testFullname,
+                testOrganisation,
                 testPostcode,
                 testAdd1,
                 testAdd2,
@@ -290,7 +297,7 @@ public class CorrespondentServiceTest {
         );
 
 
-        Correspondent mockDBResponse = new Correspondent(testCaseUUID, "SomeType" ,testFullname, null, null, null, null, null);
+        Correspondent mockDBResponse = new Correspondent(testCaseUUID, "SomeType" ,testFullname, null, null, null, null, null, null);
         when(correspondentRepository.findByUUID(testCaseUUID, testCorrespondenceUUID)).thenReturn(mockDBResponse);
         when(caseDataRepository.getCaseType(testCaseUUID)).thenReturn("TEST");
         CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();

@@ -153,7 +153,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCaseWithCorrespondentAndTopic() {
 
-        Correspondent correspondent = new Correspondent(UUID.randomUUID(), "TYPE", "name",
+        Correspondent correspondent = new Correspondent(UUID.randomUUID(), "TYPE", "name", "organisation",
                 new Address("postcode", "address1", "address2", "address3", "county"),
                 "phone", "email", "", "");
 

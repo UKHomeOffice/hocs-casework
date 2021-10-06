@@ -15,12 +15,13 @@ public class GetCorrespondentOutlineResponseTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "An Organisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
 
         GetCorrespondentOutlineResponse getCorrespondentOutlineResponse = GetCorrespondentOutlineResponse.from(correspondent);
 
@@ -32,7 +33,7 @@ public class GetCorrespondentOutlineResponseTest {
     public void getCorrespondentOutlineResponseFromNullDto() {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
-        Correspondent correspondent = new Correspondent(caseUUID, type, null, null, null, null, null, null);
+        Correspondent correspondent = new Correspondent(caseUUID, type, null, null, null, null, null, null, null);
 
         GetCorrespondentOutlineResponse getCorrespondentOutlineResponse = GetCorrespondentOutlineResponse.from(correspondent);
 

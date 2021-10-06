@@ -16,19 +16,21 @@ public class CorrespondentTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "anyOrganisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
 
         assertThat(correspondent.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(correspondent.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
         assertThat(correspondent.getCorrespondentType()).isEqualTo(type);
         assertThat(correspondent.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(correspondent.getFullName()).isEqualTo(fullName);
+        assertThat(correspondent.getOrganisation()).isEqualTo(organisation);
         assertThat(correspondent.getPostcode()).isEqualTo(address.getPostcode());
         assertThat(correspondent.getAddress1()).isEqualTo(address.getAddress1());
         assertThat(correspondent.getAddress2()).isEqualTo(address.getAddress2());
@@ -47,19 +49,21 @@ public class CorrespondentTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "anyOrganisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, address, phone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
 
         assertThat(correspondent.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(correspondent.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
         assertThat(correspondent.getCorrespondentType()).isEqualTo(type);
         assertThat(correspondent.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(correspondent.getFullName()).isEqualTo(fullName);
+        assertThat(correspondent.getOrganisation()).isEqualTo(organisation);
         assertThat(correspondent.getPostcode()).isEqualTo(address.getPostcode());
         assertThat(correspondent.getAddress1()).isEqualTo(address.getAddress1());
         assertThat(correspondent.getAddress2()).isEqualTo(address.getAddress2());
@@ -78,6 +82,7 @@ public class CorrespondentTest {
         assertThat(correspondent.getCorrespondentType()).isEqualTo(type);
         assertThat(correspondent.getCaseUUID()).isEqualTo(caseUUID);
         assertThat(correspondent.getFullName()).isEqualTo(fullName);
+        assertThat(correspondent.getOrganisation()).isEqualTo(organisation);
         assertThat(correspondent.getPostcode()).isEqualTo(address.getPostcode());
         assertThat(correspondent.getAddress1()).isEqualTo(address.getAddress1());
         assertThat(correspondent.getAddress2()).isEqualTo(address.getAddress2());
@@ -95,13 +100,14 @@ public class CorrespondentTest {
 
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "anyOrganisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
 
-        new Correspondent(null, type, fullName, address, phone, email, reference, externalKey);
+        new Correspondent(null, type, fullName, organisation, address, phone, email, reference, externalKey);
 
     }
 
@@ -110,13 +116,14 @@ public class CorrespondentTest {
 
         UUID caseUUID = UUID.randomUUID();
         String fullName = "anyFullName";
+        String organisation = "anyOrganisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
 
-        new Correspondent(caseUUID, null, fullName, address, phone, email, reference, externalKey);
+        new Correspondent(caseUUID, null, fullName, organisation, address, phone, email, reference, externalKey);
 
     }
 

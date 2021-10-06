@@ -16,6 +16,7 @@ public class GetCorrespondentWithPrimaryFlagResponseTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
         String fullName = "anyFullName";
+        String organisation = "An Organisation";
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
         String phone = "anyPhone";
         String email = "anyEmail";
@@ -27,6 +28,7 @@ public class GetCorrespondentWithPrimaryFlagResponseTest {
                 caseUUID,
                 type,
                 fullName,
+                organisation,
                 address,
                 phone,
                 email,
@@ -43,6 +45,7 @@ public class GetCorrespondentWithPrimaryFlagResponseTest {
         assertThat(getCorrespondentResponse.getType()).isEqualTo(correspondent.getCorrespondentType());
         assertThat(getCorrespondentResponse.getCaseUUID()).isEqualTo(correspondent.getCaseUUID());
         assertThat(getCorrespondentResponse.getFullname()).isEqualTo(correspondent.getFullName());
+        assertThat(getCorrespondentResponse.getOrganisation()).isEqualTo(correspondent.getOrganisation());
         assertThat(getCorrespondentResponse.getAddress().getPostcode()).isEqualTo(correspondent.getPostcode());
         assertThat(getCorrespondentResponse.getAddress().getAddress1()).isEqualTo(correspondent.getAddress1());
         assertThat(getCorrespondentResponse.getAddress().getAddress2()).isEqualTo(correspondent.getAddress2());
@@ -72,6 +75,7 @@ public class GetCorrespondentWithPrimaryFlagResponseTest {
                 null,
                 null,
                 null,
+                null,
                 null
         );
 
@@ -83,6 +87,7 @@ public class GetCorrespondentWithPrimaryFlagResponseTest {
         assertThat(getCorrespondentResponse.getType()).isEqualTo(correspondent.getCorrespondentType());
         assertThat(getCorrespondentResponse.getCaseUUID()).isEqualTo(correspondent.getCaseUUID());
         assertThat(getCorrespondentResponse.getFullname()).isEqualTo(correspondent.getFullName());
+        assertThat(getCorrespondentResponse.getOrganisation()).isEqualTo(correspondent.getOrganisation());
         assertThat(getCorrespondentResponse.getAddress().getPostcode()).isEqualTo(correspondent.getPostcode());
         assertThat(getCorrespondentResponse.getAddress().getAddress1()).isEqualTo(correspondent.getAddress1());
         assertThat(getCorrespondentResponse.getAddress().getAddress2()).isEqualTo(correspondent.getAddress2());
