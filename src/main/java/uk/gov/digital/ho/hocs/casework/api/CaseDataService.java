@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
 import uk.gov.digital.ho.hocs.casework.api.factory.strategies.CaseCopyStrategy;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
@@ -24,37 +21,19 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
-import uk.gov.digital.ho.hocs.casework.domain.repository.ActiveCaseViewDataRepository;
-import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
-import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDeadlineExtensionTypeRepository;
-import uk.gov.digital.ho.hocs.casework.domain.repository.CaseLinkRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CALCULATED_TOTALS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_COMPLETED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DELETED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUND;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_UPDATED_NULL_DATA;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_RETRIEVED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_SUMMARY_RETRIEVED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_LOOKUP_FAILED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRESPONDENT_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_TOPIC_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.UNCAUGHT_EXCEPTION;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_DELETED;
@@ -80,6 +59,7 @@ public class CaseDataService {
     protected final AuditClient auditClient;
     protected final ObjectMapper objectMapper;
     protected final InfoClient infoClient;
+    protected final SomuItemRepository somuItemRepository;
     private final CaseCopyFactory caseCopyFactory;
     private final CaseLinkRepository caseLinkRepository;
     public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
@@ -89,7 +69,7 @@ public class CaseDataService {
     public CaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
                            CaseLinkRepository caseLinkRepository, InfoClient infoClient,
                            ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory, CaseDeadlineExtensionTypeRepository
-                           caseDeadlineExtensionTypeRepository) {
+                                   caseDeadlineExtensionTypeRepository, SomuItemRepository somuItemRepository) {
 
         this.caseDataRepository = caseDataRepository;
         this.activeCaseViewDataRepository = activeCaseViewDataRepository;
@@ -99,6 +79,7 @@ public class CaseDataService {
         this.objectMapper = objectMapper;
         this.caseDeadlineExtensionTypeRepository = caseDeadlineExtensionTypeRepository;
         this.caseCopyFactory = caseCopyFactory;
+        this.somuItemRepository = somuItemRepository;
     }
 
     public static final List<String> TIMELINE_EVENTS = List.of(
@@ -395,7 +376,7 @@ public class CaseDataService {
 
     private void updateStageDeadlines(CaseData caseData) {
 
-        if (caseData.getActiveStages() == null ) {
+        if (caseData.getActiveStages() == null) {
             log.warn("Case uuid:{} supplied with null active stages", caseData.getUuid());
             return;
         }
@@ -493,8 +474,8 @@ public class CaseDataService {
         log.debug("Updating completed status Case: {} completed {}", caseUUID, completed);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setCompleted(completed);
-        if(completed){
-            caseData.update(Map.of(CaseworkConstants.CURRENT_STAGE, ""), objectMapper );
+        if (completed) {
+            caseData.update(Map.of(CaseworkConstants.CURRENT_STAGE, ""), objectMapper);
         }
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, null);
@@ -512,17 +493,74 @@ public class CaseDataService {
         log.info("Deleted Case: {} flag: {}", caseUUID, deleted, value(EVENT, CASE_DELETED));
     }
 
-    CaseSummary getCaseSummary(UUID caseUUID) {
+    CaseSummary getCaseSummary(final UUID caseUUID) {
         log.debug("Building CaseSummary for Case: {}", caseUUID);
 
-        CaseData caseData = getCaseData(caseUUID);
-        ActiveCaseViewData activeCaseViewData = getActiveCaseData(caseUUID);
+        final CaseData caseData = getCaseData(caseUUID);
+
+        CaseSummary.Builder summaryBuilder = new CaseSummary.Builder();
+
+        summaryBuilder
+                .withCaseType(caseData.getType())
+                .withCreatedDate(caseData.getCreated().toLocalDate())
+                .withCaseDeadline(caseData.getCaseDeadline())
+                .withPrimaryCorrespondent(caseData.getPrimaryCorrespondent())
+                .withPrimaryTopic(caseData.getPrimaryTopic())
+                .withActiveStages(caseData.getActiveStages());
 
         Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
-        Set<AdditionalField> additionalFields = summaryFields.stream()
-                .map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent(), extractChoices(field)))
-                .collect(Collectors.toSet());
+
+        summaryBuilder.withAdditionalFields(getAdditionalFieldsForSummary(summaryFields, caseDataMap));
+        summaryBuilder.withStageDeadlines(getStageDeadlines(caseData, caseDataMap));
+        summaryBuilder.withDeadlineExtensions(getCaseDeadlineExtensions(caseData));
+
+        final Map<UUID, SomuTypeDto> eligibleSomuTypesByUuid =
+                infoClient.getAllSomuTypesForCaseType(caseData.getType())
+                        .stream()
+                        .filter(SomuTypeDto::isActive)
+                        .filter(type ->
+                                type.getSchema().getOrDefault("showInSummary", false).equals(true)
+                        )
+                        .collect(Collectors.toMap(SomuTypeDto::getUuid, Function.identity()));
+
+        eligibleSomuTypesByUuid.values()
+                .forEach(
+                        somuType -> somuItemRepository.findByCaseUuidAndSomuUuid(caseUUID, somuType.getUuid()).forEach(
+                                somuItem -> {
+                                    try {
+                                        summaryBuilder.addSomuItem(somuType, somuItem.getData());
+                                    } catch (JsonProcessingException e) {
+                                        log.error("Error parsing somu item in summary for " +
+                                                        "Case: {} Ref: {} Somu Item UUID: {}",
+                                                caseData.getUuid(), caseData.getReference(), somuItem.getUuid(),
+                                                value(EVENT, CASE_SUMMARY_CANNOT_PARSE_SOMU_ITEM));
+                                    }
+                                }
+                        )
+                );
+
+        auditClient.viewCaseSummaryAudit(caseData);
+
+        final ActiveCaseViewData activeCaseViewData = getActiveCaseData(caseUUID);
+        final CaseSummary caseSummary = summaryBuilder
+                .withPreviousCaseReference(activeCaseViewData.getPreviousCaseReference())
+                .withPreviousCaseUUID(activeCaseViewData.getPreviousCaseUUID())
+                .withPreviousCaseStageUUID(activeCaseViewData.getPreviousCaseStageUUID())
+                .build();
+
+        log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
+
+        return caseSummary;
+    }
+
+    private Map<String, Integer> getCaseDeadlineExtensions(CaseData caseData) {
+        return Objects.isNull(caseData.getDeadlineExtensions()) ? Collections.emptyMap() :
+                caseData.getDeadlineExtensions().stream().collect(Collectors.toMap(
+                        e -> e.getCaseDeadlineExtensionType().getType(), e -> e.getCaseDeadlineExtensionType().getWorkingDays()));
+    }
+
+    private Map<String, LocalDate> getStageDeadlines(CaseData caseData, Map<String, String> caseDataMap) {
         Map<String, LocalDate> stageDeadlinesOrig = infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived());
         // Make a deep copy of the cached map so it isn't modified below
         Map<String, LocalDate> stageDeadlines = new LinkedHashMap<String, LocalDate>();
@@ -537,29 +575,14 @@ public class CaseDataService {
                 stageDeadlines.put(stageType, deadline);
             }
         }
+        return stageDeadlines;
+    }
 
-        log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
-
-
-        Map<String, Integer> caseDeadlineExtensions = Objects.isNull(caseData.getDeadlineExtensions()) ? Collections.emptyMap() :
-                caseData.getDeadlineExtensions().stream().collect(Collectors.toMap(
-                        e -> e.getCaseDeadlineExtensionType().getType(), e -> e.getCaseDeadlineExtensionType().getWorkingDays()));
-
-        CaseSummary caseSummary = new CaseSummary(
-                caseData.getType(),
-                caseData.getCreated().toLocalDate(),
-                caseData.getCaseDeadline(),
-                stageDeadlines,
-                additionalFields,
-                caseData.getPrimaryCorrespondent(),
-                caseData.getPrimaryTopic(),
-                caseData.getActiveStages(),
-                caseDeadlineExtensions,
-                activeCaseViewData.getPreviousCaseReference(),
-                activeCaseViewData.getPreviousCaseUUID(),
-                activeCaseViewData.getPreviousCaseStageUUID());
-        auditClient.viewCaseSummaryAudit(caseData);
-        return caseSummary;
+    private Set<AdditionalField> getAdditionalFieldsForSummary(Set<FieldDto> summaryFields, Map<String, String> caseDataMap) {
+        Set<AdditionalField> additionalFields = summaryFields.stream()
+                .map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent(), extractChoices(field)))
+                .collect(Collectors.toSet());
+        return additionalFields;
     }
 
     private Object extractChoices(FieldDto fieldDto) {

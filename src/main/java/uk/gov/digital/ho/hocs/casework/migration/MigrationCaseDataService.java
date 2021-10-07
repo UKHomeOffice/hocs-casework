@@ -17,6 +17,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseReferenceGenerator;
 import uk.gov.digital.ho.hocs.casework.domain.repository.ActiveCaseViewDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDeadlineExtensionTypeRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.SomuItemRepository;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -36,8 +37,18 @@ public class MigrationCaseDataService extends CaseDataService {
     @Autowired
     public MigrationCaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
                                     MigrationStageRepository migrationStageRepository, InfoClient infoClient,
-                                    ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory, CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository) {
-        super(caseDataRepository, activeCaseViewDataRepository,null, infoClient, objectMapper, auditClient, caseCopyFactory, caseDeadlineExtensionTypeRepository);
+                                    ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory,
+                                    CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository,
+                                    SomuItemRepository somuItemRepository) {
+        super(caseDataRepository,
+                activeCaseViewDataRepository,
+                null,
+                infoClient,
+                objectMapper,
+                auditClient,
+                caseCopyFactory,
+                caseDeadlineExtensionTypeRepository,
+                somuItemRepository);
         this.migrationStageRepository = migrationStageRepository;
     }
 
