@@ -27,6 +27,8 @@ public class StageTagsDecoratorImplTest {
     private static final String OVERRIDE_PO_TEAM_UUID_FIELD_NAME = "OverridePOTeamUUID";
     private static final String PO_TEAM_UUID_FIELD_NAME = "POTeamUUID";
     private static final String HOME_SEC_PO_TEAM_UUID = "3d2c7893-92c5-4347-804a-8826f06f0c9d";
+    private static final String OVERRIDE_PO_TEAM_NAME = "OverridePOTeamName";
+    private static final String PO_TEAM_NAME = "POTeamName";
 
     private StageTagsDecoratorImpl stageTagsDecorator;
 
@@ -85,6 +87,32 @@ public class StageTagsDecoratorImplTest {
                 PO_TEAM_UUID_FIELD_NAME, ""
         ));
         when(stage.getStageType()).thenReturn("TEST_STAGE_TYPE");
+
+        ArrayList<String> tags = new ArrayList<>();
+        tags.add(StageTags.HOME_SEC_REPLY_TAG);
+
+        stageTagsDecorator.decorateTags(stage);
+
+        verify(stage).setTag(tags);
+    }
+
+    @Test
+    public void addsTagsWhenOverrideToHSTeam(){
+        when(stage.getDataMap(objectMapper)).thenReturn(Map.of(OVERRIDE_PO_TEAM_NAME, "Home Secretary"));
+        when(stage.getStageType()).thenReturn("DCU_MIN_MARKUP");
+
+        ArrayList<String> tags = new ArrayList<>();
+        tags.add(StageTags.HOME_SEC_REPLY_TAG);
+
+        stageTagsDecorator.decorateTags(stage);
+
+        verify(stage).setTag(tags);
+    }
+
+    @Test
+    public void addsTagsWhenDefaultToHSTeam(){
+        when(stage.getDataMap(objectMapper)).thenReturn(Map.of(PO_TEAM_NAME, "Home Secretary"));
+        when(stage.getStageType()).thenReturn("DCU_MIN_MARKUP");
 
         ArrayList<String> tags = new ArrayList<>();
         tags.add(StageTags.HOME_SEC_REPLY_TAG);
