@@ -52,5 +52,21 @@ public class ContributionSomuInspectorTest {
         ContributionSomuInspector somuInspector = new ContributionSomuInspector(somuItem);
         assertEquals(ContributionStatus.NONE, somuInspector.getContributionStatus());
     }
+
+    @Test
+    public void shouldReturnFalseIfNotContribution() {
+        String jsonString = "{}";
+        SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, jsonString);
+        ContributionSomuInspector somuInspector = new ContributionSomuInspector(somuItem);
+        assertFalse(somuInspector.isContribution());
+    }
+
+    @Test
+    public void shouldReturnTrueIfContribution() {
+        String jsonString = "{ \"contributionDueDate\" : \"2020-10-10\"}";
+        SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, jsonString);
+        ContributionSomuInspector somuInspector = new ContributionSomuInspector(somuItem);
+        assertTrue(somuInspector.isContribution());
+    }
     
 }

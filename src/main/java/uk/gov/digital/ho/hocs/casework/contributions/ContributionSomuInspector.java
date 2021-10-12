@@ -38,4 +38,17 @@ public class ContributionSomuInspector {
         String contributionDueDate = getContributionDueDate();
         return LocalDate.parse(contributionDueDate, dtf);
     }
+
+    public boolean isContribution() {
+        try {
+            /*
+             * Read method throws an exception if it does not find the item,
+             * all contributions have a 'contributionDueDate' at present.
+             */
+            ctx.read("$.contributionDueDate");
+            return true;
+        } catch(PathNotFoundException ex) {
+            return false;
+        }
+    }
 }
