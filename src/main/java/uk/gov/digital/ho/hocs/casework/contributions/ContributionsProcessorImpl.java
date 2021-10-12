@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
 import static uk.gov.digital.ho.hocs.casework.contributions.ContributionStatus.*;
@@ -34,6 +35,9 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                 || COMPLIANT_CASE_TYPE.equals(stage.getCaseDataType())) {
 
             Set<SomuItem> contributionSomuItems = somuItemService.getCaseSomuItemsBySomuType(stage.getCaseUUID(), false);
+
+            contributionSomuItems = filterContributions(contributionSomuItems);
+
             calculateDueContributionDate(contributionSomuItems)
                     .ifPresent(ld -> {
                         log.info("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
@@ -78,5 +82,11 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                     }
                 })
                 .max(Comparator.naturalOrder());
+    }
+
+    Set<SomuItem> filterContributions(Set<SomuItem> items) {
+        return items.stream()
+                .filter(item -> new ContributionSomuInspector(item).isContribution())
+                .collect(Collectors.toSet());
     }
 }
