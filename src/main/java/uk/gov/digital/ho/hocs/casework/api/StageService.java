@@ -105,7 +105,7 @@ public class StageService {
         Stage.StageTeamUuid stageTeamUuid = stageRepository.findTeamUuidByCaseUuidAndStageUuid(caseUUID, stageUUID);
 
         if (stageTeamUuid == null) {
-            log.info("No team exists is linked to stage: {} and case: {}", stageUUID, caseUUID);
+            log.warn("No team exists is linked to stage: {} and case: {}", stageUUID, caseUUID);
 
             return null;
         }
