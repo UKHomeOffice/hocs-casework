@@ -50,4 +50,8 @@ public interface StageRepository extends CrudRepository<Stage, Long> {
     @Query(value = "SELECT sd.* FROM stage_data sd join active_case ac on sd.case_uuid = ac.uuid where ac.reference = ?1", nativeQuery = true)
     Set<Stage> findByCaseReference(String reference);
 
+    @SuppressWarnings("SpringDataRepositoryMethodReturnTypeInspection") // caused by using 'By' in method name
+    @Query(value = "SELECT CAST(team_uuid AS VARCHAR(36)) AS teamUuid FROM stage WHERE case_uuid = ?1 AND uuid = ?2", nativeQuery = true)
+    Stage.StageTeamUuid findTeamUuidByCaseUuidAndStageUuid(UUID caseUuid, UUID stageUuid);
+
 }

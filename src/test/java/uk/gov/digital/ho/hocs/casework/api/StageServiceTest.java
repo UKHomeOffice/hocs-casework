@@ -834,6 +834,38 @@ public class StageServiceTest {
         verifyNoMoreInteractions(stageRepository, notifyClient);
     }
 
+    @Test
+    public void getStageTeam_valid() {
+        var caseUuid = UUID.randomUUID();
+        var stageUuid = UUID.randomUUID();
+        var teamUUID = UUID.randomUUID();
+
+        when(stageRepository.findTeamUuidByCaseUuidAndStageUuid(any(), any())).thenReturn(teamUUID::toString);
+
+        var result = stageService.getStageTeam(caseUuid, stageUuid);
+        assertThat(result).isNotNull();
+        assertThat(result.toString()).isEqualTo(teamUUID.toString());
+
+        verify(stageRepository).findTeamUuidByCaseUuidAndStageUuid(caseUuid, stageUuid);
+
+        verifyNoMoreInteractions(stageRepository);
+    }
+
+    @Test
+    public void getStageTeam_nullResult() {
+        var caseUuid = UUID.randomUUID();
+        var stageUuid = UUID.randomUUID();
+
+        when(stageRepository.findTeamUuidByCaseUuidAndStageUuid(any(), any())).thenReturn(null);
+
+        var result = stageService.getStageTeam(caseUuid, stageUuid);
+        assertThat(result).isNull();
+
+        verify(stageRepository).findTeamUuidByCaseUuidAndStageUuid(caseUuid, stageUuid);
+
+        verifyNoMoreInteractions(stageRepository);
+    }
+
     /**
      * The stage cannot be an instance as it does not have a function to set data (in the Stage Class).
      * I did not want to create a setData on the Stage class for testing only.
