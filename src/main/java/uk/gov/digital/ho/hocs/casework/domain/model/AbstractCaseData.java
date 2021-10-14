@@ -48,7 +48,7 @@ public class AbstractCaseData extends AbstractJsonDataMap implements Serializabl
     private boolean deleted;
 
     @Getter
-    @Setter(AccessLevel.PROTECTED)
+    @Setter(AccessLevel.PUBLIC)
     @Column(name = "data")
     private String data = "{}";
 

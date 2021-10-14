@@ -17,6 +17,5 @@ public interface TopicRepository extends CrudRepository<Topic, Long> {
     @Query(value = "SELECT ato.* FROM active_topic ato WHERE ato.case_uuid = ?1 AND ato.uuid = ?2", nativeQuery = true)
     Topic findByUUID(UUID caseUUID, UUID topicUUID);
 
-
     Set<Topic> findAll();
 }
