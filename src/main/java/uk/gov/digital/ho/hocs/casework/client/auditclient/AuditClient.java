@@ -318,17 +318,17 @@ public class AuditClient {
         });
     }
 
-    public void createExtensionAudit(CaseDeadlineExtension caseDeadlineExtension) {
+    public void createExtensionAudit(ActionDataDeadlineExtension actionDataDeadlineExtension) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(AuditPayload.CreateExtensionRequest.from(caseDeadlineExtension));
+                data = objectMapper.writeValueAsString(AuditPayload.CreateExtensionRequest.from(actionDataDeadlineExtension));
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
-            sendAuditMessage(localDateTime, caseDeadlineExtension.getCaseData().getUuid(), data, EXTENSION_APPLIED, null, data,
+            sendAuditMessage(localDateTime, actionDataDeadlineExtension.getUuid(), data, EXTENSION_APPLIED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }

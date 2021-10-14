@@ -6,12 +6,16 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.api.dto.AddressDto;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataDeadlineExtension;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDeadlineExtension;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
+import javax.persistence.Column;
+import javax.persistence.Id;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.Set;
 import java.util.UUID;
@@ -182,24 +186,40 @@ public interface AuditPayload {
     @Getter
     class CreateExtensionRequest {
 
+        @JsonProperty("uuid")
+        private UUID uuid;
+
+        @JsonProperty("action_uuid")
+        private UUID caseTypeActionUuid;
+
+        @Column(name = "case_data_type")
+        private String caseDataType;
+
         @JsonProperty("caseId")
         private UUID caseId;
 
-        @JsonProperty("created")
-        private LocalDateTime created;
+        @JsonProperty("originalDeadline")
+        private LocalDate originalDeadline;
 
-        @JsonProperty("type")
-        private String type;
+        @JsonProperty("updatedDeadline")
+        private LocalDate updatedDeadline;
 
         @JsonProperty("note")
         private String note;
 
-        public static AuditPayload.CreateExtensionRequest from(CaseDeadlineExtension caseDeadlineExtension) {
+        @JsonProperty("created_timestamp")
+        private LocalDateTime createTimestamp;
+
+        public static AuditPayload.CreateExtensionRequest from(ActionDataDeadlineExtension actionDataDeadlineExtension) {
             return new AuditPayload.CreateExtensionRequest(
-                    caseDeadlineExtension.getCaseData().getUuid(),
-                    caseDeadlineExtension.getCreated(),
-                    caseDeadlineExtension.getCaseDeadlineExtensionType().getType(),
-                    caseDeadlineExtension.getNote()
+                    actionDataDeadlineExtension.getUuid(),
+                    actionDataDeadlineExtension.getCaseTypeActionUuid(),
+                    actionDataDeadlineExtension.getCaseDataType(),
+                    actionDataDeadlineExtension.getCaseDataUuid(),
+                    actionDataDeadlineExtension.getOriginalDeadline(),
+                    actionDataDeadlineExtension.getUpdatedDeadline(),
+                    actionDataDeadlineExtension.getNote(),
+                    actionDataDeadlineExtension.getCreateTimestamp()
             );
         }
     }

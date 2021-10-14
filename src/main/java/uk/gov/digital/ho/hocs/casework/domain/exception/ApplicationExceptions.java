@@ -56,4 +56,15 @@ public interface ApplicationExceptions {
             super(String.format(msg, args));
         }
     }
+
+    class ActionDataException extends RuntimeException {
+        private final LogEvent event;
+        private final LogEvent exception;
+
+        public ActionDataException(String msg, LogEvent event, Object... args) {
+            super(String.format(msg, args));
+            this.event = event;
+            this.exception = null;
+        }
+    }
 }

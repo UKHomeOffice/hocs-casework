@@ -93,6 +93,7 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
+    // fixme: update this endpoint to become case action generic endpoint 
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/extension")
     ResponseEntity<GetCaseReferenceResponse> applyExtension(@PathVariable UUID caseUUID,

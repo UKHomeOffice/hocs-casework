@@ -284,6 +284,10 @@ public class CaseDataService {
         return newDataMap;
     }
 
+    public void updateStageDeadlinesForExtension(CaseData updateCaseData) {
+        updateStageDeadlines(updateCaseData);
+    }
+
     public void applyExtension(UUID caseUUID, UUID stageUUID, String type, String note) {
         log.debug("Applying extension for Case: {} Extension: {}", caseUUID, type);
         CaseData caseData = getCaseData(caseUUID);
@@ -310,7 +314,7 @@ public class CaseDataService {
         caseDataRepository.save(caseData);
 
         updateStageDeadlines(caseData);
-        auditClient.createExtensionAudit(caseDeadlineExtension);
+//        auditClient.createExtensionAudit(caseDeadlineExtension);
     }
 
     private static int calculateExtensionDays(Set<CaseDeadlineExtension> caseDeadlineExtensions) {
