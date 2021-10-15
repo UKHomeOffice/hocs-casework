@@ -96,6 +96,36 @@ public class ContributionsProcessorTest {
     }
 
     @Test
+    public void shouldAddOverdueContributionsForFOICase() {
+        String stageType = "FOI_APPROVAL";
+        Stage stage = spy(new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID));
+        doReturn("FOI_APPROVAL").when(stage).getStageType();
+
+        SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-10-10\"}");
+
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID, false)).thenReturn(Set.of(somuItem));
+
+        contributionsProcessor.processContributionsForStage(stage);
+        assertEquals("2020-10-10", stage.getDueContribution());
+        assertEquals("Overdue", stage.getContributions());
+    }
+
+    @Test
+    public void shouldAddDueContributionsForFOICase() {
+        String stageType = "FOI_APPROVAL";
+        Stage stage = spy(new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID));
+        doReturn("FOI_APPROVAL").when(stage).getStageType();
+
+        SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-10-10\"}");
+
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID, false)).thenReturn(Set.of(somuItem));
+
+        contributionsProcessor.processContributionsForStage(stage);
+        assertEquals("9999-10-10", stage.getDueContribution());
+        assertEquals("Due", stage.getContributions());
+    }
+
+    @Test
     public void shouldCalculateDueContribution() {
         SomuItem somuItem1 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-10-10\"}");
         SomuItem somuItem2 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-09-10\"}");
@@ -156,5 +186,32 @@ public class ContributionsProcessorTest {
         SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-11-10\"}");
         ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(Set.of(somuItem), LocalDate.of(2020, 10, 10)).orElse(null);
         assertEquals(ContributionStatus.CONTRIBUTION_DUE, contributionStatus);
+    }
+
+    @Test
+    public void shouldReturnFilteredSomuItems() {
+        SomuItem somuItem1 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-11-10\"}");
+        SomuItem somuItem2 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"TEST\" : \"2020-11-10\"}");
+        Set<SomuItem> contributions = contributionsProcessor.filterContributions(Set.of(somuItem1, somuItem2));
+        assertEquals(contributions.size(),1);
+        assertTrue(contributions.contains(somuItem1));
+    }
+
+    @Test
+    public void shouldReturnFilteredSomuItems_noContributions() {
+        SomuItem somuItem1 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"TEST\" : \"2020-11-10\"}");
+        SomuItem somuItem2 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"TEST\" : \"2020-11-10\"}");
+        Set<SomuItem> contributions = contributionsProcessor.filterContributions(Set.of(somuItem1, somuItem2));
+        assertEquals(contributions.size(),0);
+    }
+
+    @Test
+    public void shouldReturnFilteredSomuItems_allContributions() {
+        SomuItem somuItem1 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-11-10\"}");
+        SomuItem somuItem2 = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-11-11\"}");
+        Set<SomuItem> contributions = contributionsProcessor.filterContributions(Set.of(somuItem1, somuItem2));
+        assertEquals(contributions.size(),2);
+        assertTrue(contributions.contains(somuItem1));
+        assertTrue(contributions.contains(somuItem2));
     }
 }
