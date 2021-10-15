@@ -102,9 +102,16 @@ public class StageService {
 
     public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting Team for Stage: {}", stageUUID);
-        Stage stage = getStage(caseUUID, stageUUID);
-        log.debug("Got Team: {} for Stage: {}", stage.getTeamUUID(), stageUUID);
-        return stage.getTeamUUID();
+        Stage.StageTeamUuid stageTeamUuid = stageRepository.findTeamUuidByCaseUuidAndStageUuid(caseUUID, stageUUID);
+
+        if (stageTeamUuid == null) {
+            log.warn("No team exists is linked to stage: {} and case: {}", stageUUID, caseUUID);
+
+            return null;
+        }
+
+        log.info("Team: {} exists is linked to stage: {} and case: {}", stageTeamUuid.getTeamUuid(), stageUUID, caseUUID, stageUUID);
+        return UUID.fromString(stageTeamUuid.getTeamUuid());
     }
 
     public String getStageTypeFromStageData(UUID caseUUID, UUID stageUUID) {
