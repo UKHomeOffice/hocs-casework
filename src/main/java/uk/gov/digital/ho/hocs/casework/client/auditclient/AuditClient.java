@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
@@ -482,7 +480,6 @@ public class AuditClient {
         sendAuditMessage(localDateTime, caseUUID, payload, eventType, stageUUID, "{}", correlationId, userId, username, groups);
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     private void sendAuditMessage(LocalDateTime localDateTime, UUID caseUUID, String payload, EventType eventType, UUID stageUUID, String data, String correlationId, String userId, String username, String groups) {
         CreateAuditRequest request = new CreateAuditRequest(
                 correlationId,
