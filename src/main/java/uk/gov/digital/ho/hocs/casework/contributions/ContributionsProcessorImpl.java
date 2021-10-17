@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.contributions;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.SomuItemService;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
@@ -11,6 +10,7 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static java.time.temporal.ChronoUnit.DAYS;
@@ -23,32 +23,45 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
     public static final String COMPLIANT_CASE_TYPE = "COMP";
     private final SomuItemService somuItemService;
 
-    @Autowired
     public ContributionsProcessorImpl(SomuItemService somuItemService) {
         this.somuItemService = somuItemService;
     }
 
     @Override
-    public void processContributionsForStage(Stage stage) {
-        if (MPAMContributionStages.contains(stage.getStageType())
-                || FOIContributionStages.contains(stage.getStageType())
-                || COMPLIANT_CASE_TYPE.equals(stage.getCaseDataType())) {
+    public void processContributionsForStages(Set<Stage> stages) {
+        Set<SomuItem> contributionSomuItems =
+                somuItemService.getCaseItemsByCaseUuids(stages.stream().map(Stage::getCaseUUID).collect(Collectors.toSet()));
 
-            Set<SomuItem> contributionSomuItems = somuItemService.getCaseSomuItemsBySomuType(stage.getCaseUUID(), false);
+        if (contributionSomuItems.size() == 0) {
+            return;
+        }
 
-            contributionSomuItems = filterContributions(contributionSomuItems);
+        contributionSomuItems = filterContributions(contributionSomuItems);
 
-            calculateDueContributionDate(contributionSomuItems)
-                    .ifPresent(ld -> {
-                        log.info("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
-                        stage.setDueContribution(ld.toString());
-                    });
+        if (contributionSomuItems.size() == 0) {
+            return;
+        }
 
-            highestContributionStatus(contributionSomuItems)
-                    .ifPresent(cs -> {
-                        log.info("Setting contribution status {}, for caseId {}", cs.getDisplayedStatus(), stage.getCaseUUID());
-                        stage.setContributions(cs.getDisplayedStatus());
-                    });
+        for (Stage stage :
+                stages) {
+            if (MPAMContributionStages.contains(stage.getStageType())
+                    || FOIContributionStages.contains(stage.getStageType())
+                    || COMPLIANT_CASE_TYPE.equals(stage.getCaseDataType())) {
+
+                Set<SomuItem> caseContributions = filterContributionsByCase(stage.getCaseUUID(), contributionSomuItems);
+
+                calculateDueContributionDate(caseContributions)
+                        .ifPresent(ld -> {
+                            log.info("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
+                            stage.setDueContribution(ld.toString());
+                        });
+
+                highestContributionStatus(caseContributions)
+                        .ifPresent(cs -> {
+                            log.info("Setting contribution status {}, for caseId {}", cs.getDisplayedStatus(), stage.getCaseUUID());
+                            stage.setContributions(cs.getDisplayedStatus());
+                        });
+            }
         }
     }
 
@@ -89,4 +102,11 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                 .filter(item -> new ContributionSomuInspector(item).isContribution())
                 .collect(Collectors.toSet());
     }
+
+    Set<SomuItem> filterContributionsByCase(UUID caseUuid, Set<SomuItem> items) {
+        return items.stream()
+                .filter(item -> item.getCaseUuid().equals(caseUuid))
+                .collect(Collectors.toSet());
+    }
+
 }
