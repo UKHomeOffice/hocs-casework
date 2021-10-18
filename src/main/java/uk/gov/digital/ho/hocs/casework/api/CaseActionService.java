@@ -25,17 +25,27 @@ public class CaseActionService {
         log.info("Loaded {} ActionService implementations: {}", actionServiceMap.size(), actionServiceMap.keySet());
     }
 
-    public void createActionDataForCase(UUID caseUUID, UUID stageUuid, String caseType, ActionDataDto actionData) {
+    public void createActionDataForCase(UUID caseUUID, UUID stageUUID, String caseType, ActionDataDto actionData) {
         ActionService typeServiceInstance = getActionServiceInstance(actionData);
 
         if (typeServiceInstance != null) {
-            typeServiceInstance.create(caseUUID, stageUuid, caseType, actionData);
+            typeServiceInstance.create(caseUUID, stageUUID, caseType, actionData);
         } else {
-            throw new UnsupportedOperationException(String.format("There is no Service available to process actionDataDto's of type: %s",actionData.getClass().getSimpleName()));
+            throw new UnsupportedOperationException(String.format("No Service available to CREATE actionDataDto's of type: %s",actionData.getClass().getSimpleName()));
         }
     }
 
     private ActionService getActionServiceInstance(ActionDataDto actionDataDto) {
         return actionServiceMap.get(actionDataDto.getClass().getSimpleName());
+    }
+
+    public void updateActionDataForCase(UUID caseUUID, UUID stageUUID, String caseType, ActionDataDto actionData) {
+        ActionService typeServiceInstance = getActionServiceInstance(actionData);
+
+        if (typeServiceInstance != null) {
+            typeServiceInstance.update(caseUUID, stageUUID, caseType, actionData);
+        } else {
+            throw new UnsupportedOperationException(String.format("No Service available to UPDATE actionDataDto's of type: %s",actionData.getClass().getSimpleName()));
+        }
     }
 }

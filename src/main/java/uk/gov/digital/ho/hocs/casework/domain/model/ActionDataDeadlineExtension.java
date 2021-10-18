@@ -21,7 +21,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @NoArgsConstructor
-public class ActionDataDeadlineExtension implements ActionDataEntity,Serializable {
+public class ActionDataDeadlineExtension implements Serializable {
 
     @Id
     @Column(name = "uuid")
@@ -54,12 +54,12 @@ public class ActionDataDeadlineExtension implements ActionDataEntity,Serializabl
     @Column(name = "last_updated_timestamp")
     private LocalDateTime lastUpdateTimestamp;
 
-    public ActionDataDeadlineExtension(UUID uuid, UUID caseTypeActionUuid,
+    public ActionDataDeadlineExtension(UUID caseTypeActionUuid,
                                        String caseTypeActionLabel,
                                        String caseDataType, UUID caseDataUuid,
                                        LocalDate originalDeadline, LocalDate updatedDeadline,
                                        String note) {
-        this.uuid = uuid;
+        this.uuid = UUID.randomUUID();
         this.caseTypeActionUuid = caseTypeActionUuid;
         this.caseTypeActionLabel = caseTypeActionLabel;
         this.caseDataType = caseDataType;

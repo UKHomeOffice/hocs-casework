@@ -43,6 +43,6 @@ public class CaseActionServiceTest {
         public void create(UUID caseUuid, UUID stageUuid, String caseType, ActionDataDto actionData) {}
 
         @Override
-        public void update(UUID caseUuid, UUID stageUuid, String caseType, UUID actionDataUuid, ActionDataDto actionData) {}
+        public void update(UUID caseUuid, UUID stageUuid, String caseType, ActionDataDto actionData) {}
     }
 }

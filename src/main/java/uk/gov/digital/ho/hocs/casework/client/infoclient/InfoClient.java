@@ -260,4 +260,11 @@ public class InfoClient {
         return response;
     }
 
+    public CaseTypeActionDto getCaseTypeActionByUuid(String caseDataType, UUID caseTypeActionUuid) {
+        log.debug("Requesting action type with id: {}", caseTypeActionUuid);
+        CaseTypeActionDto response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/actions/%s", caseDataType, caseTypeActionUuid), new ParameterizedTypeReference<CaseTypeActionDto>() {
+        });
+        log.info("Received Action: {} for action id: {}", response.toString(), caseTypeActionUuid );
+        return response;
+    }
 }

@@ -277,4 +277,16 @@ public interface AuditPayload {
         private Set<GetAuditResponse> audits;
 
     }
+
+    @AllArgsConstructor
+    class AppealItem {
+
+        private UUID uuid;
+        private UUID caseUUID;
+        private String caseType;
+        private UUID caseTypeActionUUID;
+        private String caseTypeActionLabel;
+        private String data;
+
+    }
 }

@@ -10,6 +10,5 @@ public interface ActionService {
 
     void create(UUID caseUuid, UUID stageUuid, String caseType, ActionDataDto actionData);
 
-    void update(UUID caseUuid, UUID stageUuid, String caseType, UUID actionDataUuid, ActionDataDto actionData);
-
+    void update(UUID caseUUID, UUID stageUUID, String caseType, ActionDataDto actionData);
 }

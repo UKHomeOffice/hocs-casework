@@ -1,9 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,14 +13,18 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-public class ActionDataAppeal implements ActionDataEntity,Serializable {
+@ToString
+public class ActionDataAppeal implements Serializable {
 
     @Id
     @Column(name = "uuid")
     private UUID uuid;
 
     @Column(name = "action_uuid")
-    private UUID actionUuid;
+    private UUID caseTypeActionUuid;
+
+    @Column(name = "action_label")
+    private String caseTypeActionLabel;
 
     @Column(name = "case_data_type")
     private String caseDataType;
@@ -39,4 +40,14 @@ public class ActionDataAppeal implements ActionDataEntity,Serializable {
 
     @Column(name = "last_updated_timestamp")
     private LocalDateTime lastUpdateTimestamp;
+
+    public ActionDataAppeal(UUID caseTypeActionUuid,
+                            String caseTypeActionLabel,
+                            String caseDataType, UUID caseDataUuid, String data) {
+        this.caseTypeActionUuid = caseTypeActionUuid;
+        this.caseTypeActionLabel = caseTypeActionLabel;
+        this.caseDataType = caseDataType;
+        this.caseDataUuid = caseDataUuid;
+        this.data = data;
+    }
 }

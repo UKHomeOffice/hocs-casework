@@ -333,6 +333,50 @@ public class AuditClient {
         });
     }
 
+    public void createAppealAudit(ActionDataAppeal appealEntity) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(new AuditPayload.AppealItem(
+                        appealEntity.getUuid(),
+                        appealEntity.getCaseDataUuid(),
+                        appealEntity.getCaseDataType(),
+                        appealEntity.getCaseTypeActionUuid(),
+                        appealEntity.getCaseTypeActionLabel(),
+                        appealEntity.getData()
+                ));
+            } catch (JsonProcessingException e) {
+                logFailedToParseDataPayload(e);
+            }
+            sendAuditMessage(localDateTime, appealEntity.getCaseDataUuid(), data, EventType.APPEAL_CREATED, null, data,
+                    requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
+    }
+
+    public void updateAppealAudit(ActionDataAppeal appealEntity) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(new AuditPayload.AppealItem(
+                        appealEntity.getUuid(),
+                        appealEntity.getCaseDataUuid(),
+                        appealEntity.getCaseDataType(),
+                        appealEntity.getCaseTypeActionUuid(),
+                        appealEntity.getCaseTypeActionLabel(),
+                        appealEntity.getData()
+                ));
+            } catch (JsonProcessingException e) {
+                logFailedToParseDataPayload(e);
+            }
+            sendAuditMessage(localDateTime, appealEntity.getCaseDataUuid(), data, EventType.APPEAL_UPDATED, null, data,
+                    requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
+    }
+
     public void createCorrespondentAudit(Correspondent correspondent) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();

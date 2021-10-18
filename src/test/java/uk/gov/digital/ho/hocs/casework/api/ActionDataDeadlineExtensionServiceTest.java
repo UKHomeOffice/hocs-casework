@@ -10,7 +10,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionDto;
 
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.ActionDataDeadlineExtensionRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
@@ -21,9 +23,13 @@ import java.time.Month;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.anyInt;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ActionDataDeadlineExtensionServiceTest {
@@ -45,12 +51,14 @@ public class ActionDataDeadlineExtensionServiceTest {
     @Mock
     private AuditClient mockAuditClient;
 
+    @Mock
+    private CaseNoteService caseNoteService;
+
     @Captor
     private ArgumentCaptor<CaseData> caseDataArgCapture = ArgumentCaptor.forClass(CaseData.class);
 
     @Captor
     private ArgumentCaptor<ActionDataDeadlineExtension> extensionArgumentCaptor = ArgumentCaptor.forClass(ActionDataDeadlineExtension.class);
-
 
     public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
     public static final String TOPIC_NAME = "topic_name";
@@ -78,8 +86,8 @@ public class ActionDataDeadlineExtensionServiceTest {
                 mockCaseDataRepository,
                 mockCaseDataService,
                 mockInfoClient,
-                mockAuditClient
-        );
+                mockAuditClient,
+                caseNoteService);
     }
 
     @Test
@@ -87,11 +95,12 @@ public class ActionDataDeadlineExtensionServiceTest {
 
         // GIVEN
         UUID caseUUID = UUID.randomUUID();
+        UUID actionTypeUuid = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
         String caseType = "TEST_CASE_TYPE";
         int extendByDays = 8;
         ActionDataDeadlineExtensionDto extensionDto = new ActionDataDeadlineExtensionDto(
-                caseUUID,
+                actionTypeUuid,
                 "ANY_STRING",
                 "ACTION_LABEL",
                 extendByDays,
@@ -133,6 +142,12 @@ public class ActionDataDeadlineExtensionServiceTest {
                 Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")),
                 null);
 
+        CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
+                actionTypeUuid,
+                null, caseType, null, null, 10, true, null
+        );
+
+        when(mockInfoClient.getCaseTypeActionByUuid(caseType, extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(previousCaseData);
         when(mockInfoClient.getCaseDeadline(anyString(), any(LocalDate.class), anyInt())).thenReturn(LocalDate.now().plusDays(extendByDays));
         when(mockInfoClient.getCaseDeadlineWarning(anyString(), any(LocalDate.class), anyInt())).thenReturn(LocalDate.now().plusDays(extendByDays - 2));
@@ -143,25 +158,80 @@ public class ActionDataDeadlineExtensionServiceTest {
         // THEN
         verify(mockExtensionRepository, times(1)).save(extensionArgumentCaptor.capture());
 
-        assertEquals(LocalDate.now().plusDays(8), extensionArgumentCaptor.getValue().getUpdatedDeadline());
-        assertEquals(originalCaseDeadline, extensionArgumentCaptor.getValue().getOriginalDeadline());
+        assertThat(extensionArgumentCaptor.getValue().getUpdatedDeadline()).isEqualTo(LocalDate.now().plusDays(8));
+        assertThat(extensionArgumentCaptor.getValue().getOriginalDeadline()).isEqualTo(originalCaseDeadline);
 
         verify(mockCaseDataRepository, times(1)).save(caseDataArgCapture.capture());
 
-        assertEquals(LocalDate.now().plusDays(8), caseDataArgCapture.getValue().getCaseDeadline());
-        assertEquals(LocalDate.now().plusDays(6), caseDataArgCapture.getValue().getCaseDeadlineWarning());
+        assertThat(caseDataArgCapture.getValue().getCaseDeadline()).isEqualTo(LocalDate.now().plusDays(8));
+        assertThat(caseDataArgCapture.getValue().getCaseDeadlineWarning()).isEqualTo(LocalDate.now().plusDays(6));
+
+        verify(caseNoteService, times(1)).createCaseNote(any(), any(), any());
 
         verify(mockAuditClient, times(1)).updateCaseAudit(any(), any());
         verify(mockAuditClient, times(1)).createExtensionAudit(any());
         verify(mockCaseDataService, times(1)).updateStageDeadlinesForExtension(any(CaseData.class));
     }
 
-    @Test
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void create_noActionTypeForIDFound() {
+
+        // GIVEN
+        UUID caseUUID = UUID.randomUUID();
+        UUID actionTypeUuid = UUID.randomUUID();
+        UUID stageUUID = UUID.randomUUID();
+        String caseType = "TEST_CASE_TYPE";
+        int extendByDays = 8;
+        ActionDataDeadlineExtensionDto extensionDto = new ActionDataDeadlineExtensionDto(
+                actionTypeUuid,
+                "ANY_STRING",
+                "ACTION_LABEL",
+                extendByDays,
+                "ANY NOTE HERE"
+        );
+
+        when(mockInfoClient.getCaseTypeActionByUuid(caseType, actionTypeUuid)).thenReturn(null);
+
+        // WHEN
+        actionDataDeadlineExtensionService.create(caseUUID,stageUUID, caseType, extensionDto);
+
+        // THEN expect throw
+    }
+
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void create_noCaseForIDFound() {
+
+        // GIVEN
+        UUID caseUUID = UUID.randomUUID();
+        UUID actionTypeUuid = UUID.randomUUID();
+        UUID stageUUID = UUID.randomUUID();
+        String caseType = "TEST_CASE_TYPE";
+        int extendByDays = 8;
+        ActionDataDeadlineExtensionDto extensionDto = new ActionDataDeadlineExtensionDto(
+                actionTypeUuid,
+                "ANY_STRING",
+                "ACTION_LABEL",
+                extendByDays,
+                "ANY NOTE HERE"
+        );
+        CaseTypeActionDto caseTypeActionDto = new CaseTypeActionDto(
+                actionTypeUuid, null, caseType, null, null, 10, true, null
+        );
+
+        when(mockInfoClient.getCaseTypeActionByUuid(caseType, actionTypeUuid)).thenReturn(caseTypeActionDto);
+        when(mockCaseDataService.getCase(caseUUID)).thenReturn(null);
+
+        // WHEN
+        actionDataDeadlineExtensionService.create(caseUUID,stageUUID, caseType, extensionDto);
+
+        // THEN expect throw
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
     public void update_shouldAlwaysThrowUnsupportedActionException() {
         UUID caseUUID = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
         String caseType = "TEST_CASE_TYPE";
-        UUID actionTypeUUID = UUID.randomUUID();
         ActionDataDeadlineExtensionDto extensionDto = new ActionDataDeadlineExtensionDto(
                 caseUUID,
                 "ANY_STRING",
@@ -170,9 +240,6 @@ public class ActionDataDeadlineExtensionServiceTest {
                 "ANY NOTE HERE"
         );
 
-        assertThrows(UnsupportedOperationException.class,  () -> {
-            actionDataDeadlineExtensionService.update(caseUUID, stageUUID, caseType, actionTypeUUID, extensionDto);
-        });
+        actionDataDeadlineExtensionService.update(caseUUID, stageUUID, caseType, extensionDto);
     }
-
 }

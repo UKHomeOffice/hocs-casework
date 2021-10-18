@@ -12,15 +12,18 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@JsonTypeName("EXTENSION")
 @ToString
+@JsonTypeName("EXTENSION")
 public class ActionDataDeadlineExtensionDto extends ActionDataDto {
 
-    private UUID caseTypeActionUuid;
-    private String caseTypeActionLabel;
     private String extendFrom;
     private int extendBy;
     private String note;
 
+    public ActionDataDeadlineExtensionDto(UUID caseTypeActionUuid, String caseTypeActionLabel, String extendFrom, int extendBy, String note) {
+        super(caseTypeActionUuid, caseTypeActionLabel);
+        this.extendFrom = extendFrom;
+        this.extendBy = extendBy;
+        this.note = note;
+    }
 }
