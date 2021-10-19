@@ -9,6 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -18,28 +19,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_TEMPLATE_CACHE_INVALIDATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPES_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPE_SHORT_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_DEADLINES_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_DEFAULT_USERS_FOR_STAGE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_ENTITY_LIST;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_PRIORITY_POLICIES_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_PROFILE_BY_CASE_TYPE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_STAGE_DEADLINE_WARNING_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_STANDARD_LINE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEAMS_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEMPLATE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TOPIC_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USER;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USERS_FOR_TEAM_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_WORKING_DAYS_FOR_CASE_TYPE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TOPIC_STANDARD_LINE_CACHE_INVALIDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Slf4j
 @Component
@@ -262,9 +242,15 @@ public class InfoClient {
 
     public CaseTypeActionDto getCaseTypeActionByUuid(String caseDataType, UUID caseTypeActionUuid) {
         log.debug("Requesting action type with id: {}", caseTypeActionUuid);
-        CaseTypeActionDto response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/actions/%s", caseDataType, caseTypeActionUuid), new ParameterizedTypeReference<CaseTypeActionDto>() {
-        });
-        log.info("Received Action: {} for action id: {}", response.toString(), caseTypeActionUuid );
+        CaseTypeActionDto response = null;
+//        try {
+            response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/actions/%s", caseDataType, caseTypeActionUuid), CaseTypeActionDto.class);
+            log.info("Received Action: {} for action id: {}", response.toString(), caseTypeActionUuid );
+//
+//        } catch (Exception err) {
+//            log.error(err.getMessage());
+//        }
+
         return response;
     }
 }

@@ -100,6 +100,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         String caseType = "TEST_CASE_TYPE";
         int extendByDays = 8;
         ActionDataDeadlineExtensionDto extensionDto = new ActionDataDeadlineExtensionDto(
+                null,
                 actionTypeUuid,
                 "ANY_STRING",
                 "ACTION_LABEL",
@@ -183,6 +184,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         String caseType = "TEST_CASE_TYPE";
         int extendByDays = 8;
         ActionDataDeadlineExtensionDto extensionDto = new ActionDataDeadlineExtensionDto(
+                null,
                 actionTypeUuid,
                 "ANY_STRING",
                 "ACTION_LABEL",
@@ -208,6 +210,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         String caseType = "TEST_CASE_TYPE";
         int extendByDays = 8;
         ActionDataDeadlineExtensionDto extensionDto = new ActionDataDeadlineExtensionDto(
+                null,
                 actionTypeUuid,
                 "ANY_STRING",
                 "ACTION_LABEL",
@@ -230,9 +233,12 @@ public class ActionDataDeadlineExtensionServiceTest {
     @Test(expected = UnsupportedOperationException.class)
     public void update_shouldAlwaysThrowUnsupportedActionException() {
         UUID caseUUID = UUID.randomUUID();
+        UUID actionUuid = UUID.randomUUID();
+        UUID actionEntityId = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
         String caseType = "TEST_CASE_TYPE";
         ActionDataDeadlineExtensionDto extensionDto = new ActionDataDeadlineExtensionDto(
+                actionUuid,
                 caseUUID,
                 "ANY_STRING",
                 "ACTION_LABEL",
@@ -240,6 +246,6 @@ public class ActionDataDeadlineExtensionServiceTest {
                 "ANY NOTE HERE"
         );
 
-        actionDataDeadlineExtensionService.update(caseUUID, stageUUID, caseType, extensionDto);
+        actionDataDeadlineExtensionService.update(caseUUID, stageUUID, caseType, actionEntityId, extensionDto);
     }
 }

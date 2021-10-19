@@ -78,7 +78,7 @@ public class ActionDataAppealsService implements ActionService {
     }
 
     @Override
-    public void update(UUID caseUuid, UUID stageUuid, String caseDataType, ActionDataDto updatedActionData) {
+    public void update(UUID caseUuid, UUID stageUuid, String caseDataType, UUID actionEntityId, ActionDataDto updatedActionData) {
 
         ActionDataAppealDto appealDto = (ActionDataAppealDto) updatedActionData;
         log.debug("Received request to update action: {} for case: {}, stage: {}, caseDataType: {}", appealDto, caseUuid, stageUuid, caseDataType);
@@ -97,14 +97,14 @@ public class ActionDataAppealsService implements ActionService {
         }
 
         ActionDataAppeal existingAppealData = appealsRepository.findByUuidAndCaseDataUuid(appealUuid, caseUuid);
-        if (existingAppealData != null) {
+        if (existingAppealData == null) {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Action with id:  %s does not exist.", appealUuid), ACTION_DATA_UPDATE_FAILURE);
         }
 
         existingAppealData.setData((appealDto.getData()));
         ActionDataAppeal updatedAppealEntity = appealsRepository.save(existingAppealData);
 
-        caseNoteService.createCaseNote(caseUuid, UPDATE_CASE_NOTE_KEY, caseTypeActionDto.getActionLabel());
+        caseNoteService.createCaseNote(caseUuid, UPDATE_CASE_NOTE_KEY, updatedAppealEntity.getCaseTypeActionLabel());
         auditClient.updateAppealAudit(updatedAppealEntity);
         log.info("Updated Action: {}  for Case: {}", updatedActionData, caseData.getUuid(), value(EVENT, ACTION_DATA_UPDATE_SUCCESS) );
 

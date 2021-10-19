@@ -2,7 +2,9 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionDto;
 
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
@@ -63,7 +65,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
 
         CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseDataType, extensionTypeUuid);
         if (caseTypeActionDto == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", extensionTypeUuid), ACTION_DATA_CREATE_FAILURE);
+            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, String.format("No Case Type Action exists for actionId: %s", extensionTypeUuid));
         }
 
         CaseData caseData = caseDataService.getCase(caseUuid);
@@ -103,7 +105,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
     }
 
     @Override
-    public void update(UUID caseUuid, UUID stageUuid, String caseType, ActionDataDto actionData) {
+    public void update(UUID caseUuid, UUID stageUuid, String caseType, UUID actionEntityId, ActionDataDto actionData) {
         String msg = (String.format("Update of Case Deadline Extension Data is not supported, caseUuid: %s, actionData: %s", caseUuid, actionData.toString()));
         log.error(msg);
         throw new UnsupportedOperationException(msg);

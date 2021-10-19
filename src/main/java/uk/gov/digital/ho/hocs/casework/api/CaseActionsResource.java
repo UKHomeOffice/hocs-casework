@@ -22,7 +22,7 @@ public class CaseActionsResource {
     }
 
     @PostMapping(path = "/case/{caseUUID}/stage/{stageUUID}/caseType/{caseType}/action")
-    public ResponseEntity<GetCaseReferenceResponse> createActionData(@PathVariable UUID caseUUID,
+    public ResponseEntity<?> createActionData(@PathVariable UUID caseUUID,
                                                                      @PathVariable UUID stageUUID,
                                                                      @PathVariable String caseType,
                                                                      @RequestBody ActionDataDto actionData) {
@@ -31,13 +31,14 @@ public class CaseActionsResource {
         return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
     }
 
-    @PutMapping(path = "/case/{caseUUID}/stage/{stageUUID}/caseType/{caseType}/action")
+    @PutMapping(path = "/case/{caseUUID}/stage/{stageUUID}/caseType/{caseType}/action/{actionId}")
     public ResponseEntity<GetCaseReferenceResponse> updateActionData(@PathVariable UUID caseUUID,
                                                                      @PathVariable UUID stageUUID,
                                                                      @PathVariable String caseType,
+                                                                     @PathVariable UUID actionId,
                                                                      @RequestBody ActionDataDto actionData){
 
-        caseActionService.updateActionDataForCase(caseUUID, stageUUID, caseType, actionData);
+        caseActionService.updateActionDataForCase(caseUUID, stageUUID, caseType, actionId, actionData);
         return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
     }
 }

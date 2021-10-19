@@ -27,7 +27,7 @@ public class CaseActionService {
 
     public void createActionDataForCase(UUID caseUUID, UUID stageUUID, String caseType, ActionDataDto actionData) {
         ActionService typeServiceInstance = getActionServiceInstance(actionData);
-
+        System.out.println(typeServiceInstance);
         if (typeServiceInstance != null) {
             typeServiceInstance.create(caseUUID, stageUUID, caseType, actionData);
         } else {
@@ -36,14 +36,15 @@ public class CaseActionService {
     }
 
     private ActionService getActionServiceInstance(ActionDataDto actionDataDto) {
+
         return actionServiceMap.get(actionDataDto.getClass().getSimpleName());
     }
 
-    public void updateActionDataForCase(UUID caseUUID, UUID stageUUID, String caseType, ActionDataDto actionData) {
+    public void updateActionDataForCase(UUID caseUUID, UUID stageUUID, String caseType, UUID actionEntityId, ActionDataDto actionData) {
         ActionService typeServiceInstance = getActionServiceInstance(actionData);
 
         if (typeServiceInstance != null) {
-            typeServiceInstance.update(caseUUID, stageUUID, caseType, actionData);
+            typeServiceInstance.update(caseUUID, stageUUID, caseType, actionEntityId, actionData);
         } else {
             throw new UnsupportedOperationException(String.format("No Service available to UPDATE actionDataDto's of type: %s",actionData.getClass().getSimpleName()));
         }
