@@ -462,17 +462,23 @@ public class CaseDataService {
         log.info("Updated Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID, value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
     }
 
-    void updatePrimaryTopic(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID, UUID textUUID) {
+    void updatePrimaryTopic(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID) {
         log.debug("Updating Primary Topic for Case: {} Topic: {}", caseUUID, primaryTopicUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryTopicUUID(primaryTopicUUID);
-        // If we have been passed a text UUID we should change the data to replace it in data with the topic UUID
-        // to allow
-        if (textUUID != null){
-            if(caseData.getData().contains(textUUID.toString())){
-                caseData.setData(StringUtils.replace(caseData.getData(),
-                        textUUID.toString(), primaryTopicUUID.toString()));
-            }
+        caseDataRepository.save(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
+        log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));
+    }
+
+    void updatePrimaryTopicWithTextUUID(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID, UUID textUUID) {
+        log.debug("Updating Primary Topic for Case: {} Topic: {}", caseUUID, primaryTopicUUID);
+        CaseData caseData = getCaseData(caseUUID);
+        caseData.setPrimaryTopicUUID(primaryTopicUUID);
+        // If we have been passed a text UUID we should change the data to replace it with the topic UUID
+        if(caseData.getData().contains(textUUID.toString())){
+            caseData.setData(StringUtils.replace(caseData.getData(),
+                    textUUID.toString(), primaryTopicUUID.toString()));
         }
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);

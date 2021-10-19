@@ -164,7 +164,7 @@ class CaseDataResource {
     // TODO: Add test
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryTopic")
     public ResponseEntity<Void> updateCasePrimaryTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryTopicUUID) {
-        caseDataService.updatePrimaryTopic(caseUUID, stageUUID, primaryTopicUUID, null);
+        caseDataService.updatePrimaryTopic(caseUUID, stageUUID, primaryTopicUUID);
         return ResponseEntity.ok().build();
     }
 
@@ -172,7 +172,7 @@ class CaseDataResource {
     ResponseEntity<Void> addSingularTopicToCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID topicUUID) {
         Set<Topic> topics = topicService.getTopics(caseUUID);
         Topic topic = topicService.getTopicFromSetByTextUUID(topics, topicUUID);
-        caseDataService.updatePrimaryTopic(caseUUID, stageUUID, topic.getUuid(), topicUUID);
+        caseDataService.updatePrimaryTopicWithTextUUID(caseUUID, stageUUID, topic.getUuid(), topicUUID);
         return ResponseEntity.ok().build();
     }
 
