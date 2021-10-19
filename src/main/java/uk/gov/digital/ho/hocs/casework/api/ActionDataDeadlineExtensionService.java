@@ -62,10 +62,9 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         LocalDate extendFromDate = LocalDate.now();
         UUID extensionTypeUuid = extensionDto.getCaseTypeActionUuid();
 
-
         CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseDataType, extensionTypeUuid);
         if (caseTypeActionDto == null) {
-            throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, String.format("No Case Type Action exists for actionId: %s", extensionTypeUuid));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action exists for actionId: %s", extensionTypeUuid), ACTION_DATA_CREATE_FAILURE);
         }
 
         CaseData caseData = caseDataService.getCase(caseUuid);

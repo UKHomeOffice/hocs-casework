@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "action_appeals")
+@Table(name = "action_data_appeals")
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -44,6 +44,7 @@ public class ActionDataAppeal implements Serializable {
     public ActionDataAppeal(UUID caseTypeActionUuid,
                             String caseTypeActionLabel,
                             String caseDataType, UUID caseDataUuid, String data) {
+        this.uuid = UUID.randomUUID();
         this.caseTypeActionUuid = caseTypeActionUuid;
         this.caseTypeActionLabel = caseTypeActionLabel;
         this.caseDataType = caseDataType;

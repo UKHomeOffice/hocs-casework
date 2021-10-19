@@ -83,11 +83,11 @@ public class ActionDataAppealsService implements ActionService {
         ActionDataAppealDto appealDto = (ActionDataAppealDto) updatedActionData;
         log.debug("Received request to update action: {} for case: {}, stage: {}, caseDataType: {}", appealDto, caseUuid, stageUuid, caseDataType);
 
-        UUID appealUuid = updatedActionData.getCaseTypeActionUuid();
+        UUID appealUuid = updatedActionData.getUuid();
 
         CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseDataType, appealDto.getCaseTypeActionUuid());
         if (caseTypeActionDto == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", appealUuid), ACTION_DATA_CREATE_FAILURE);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", appealUuid), ACTION_DATA_UPDATE_FAILURE);
         }
 
         CaseData caseData = caseDataService.getCase(caseUuid);
@@ -101,6 +101,7 @@ public class ActionDataAppealsService implements ActionService {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Action with id:  %s does not exist.", appealUuid), ACTION_DATA_UPDATE_FAILURE);
         }
 
+        // todo: make more like the appeal form on front end.
         existingAppealData.setData((appealDto.getData()));
         ActionDataAppeal updatedAppealEntity = appealsRepository.save(existingAppealData);
 

@@ -15,3 +15,13 @@ INSERT INTO correspondent (uuid, created, type, case_uuid, fullname, postcode, a
 VALUES ('2c9e1eb9-ee78-4f57-a626-b8b75cf3b937', '2018-12-14 12:00:00', 'Member', '14915b78-6977-42db-b343-0915a7f412a1',
         'Bob Someone', 'S1 1DJ', '1 SomeWhere Close', 'Sheffield', 'South Yorkshire', 'England', '01142595959',
         'a@a.com', '1', false) ON CONFLICT DO NOTHING;
+
+INSERT INTO action_data_appeals (uuid, action_uuid, action_label, case_data_type, case_data_uuid, data)
+VALUES (
+        'd159c936-b727-464e-a0ed-b63134fe0b37',
+        '326eddb3-ba64-4253-ad39-916ccbb59f4e',
+        'IR APPEAL',
+        'FOI',
+        '14915b78-6977-42db-b343-0915a7f412a1',
+        '{}'::jsonb
+       );

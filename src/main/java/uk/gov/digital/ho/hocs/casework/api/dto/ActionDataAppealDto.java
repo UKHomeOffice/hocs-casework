@@ -1,7 +1,9 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -11,6 +13,8 @@ import java.util.UUID;
 @Setter
 @ToString(callSuper = true)
 @JsonTypeName("APPEAL")
+@AllArgsConstructor
+@NoArgsConstructor
 public class ActionDataAppealDto extends ActionDataDto {
 
     private String data;

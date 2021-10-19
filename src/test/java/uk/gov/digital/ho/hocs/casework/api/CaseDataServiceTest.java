@@ -1062,72 +1062,72 @@ public class CaseDataServiceTest {
 
     }
 
-    @Test
-    @Ignore // todo: remove and replace with new actions test
-    public void shouldApplyExtension() {
-        // given
-        final CaseDeadlineExtensionType existingExtensionType =
-                new CaseDeadlineExtensionType("EXISTING_EXTENSION", 10);
-
-        final CaseDeadlineExtensionType additionalExtensionType =
-                new CaseDeadlineExtensionType("ADDITIONAL_EXTENSION", 15);
-
-        final CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
-
-        final CaseDeadlineExtension existingExtension = new CaseDeadlineExtension(
-                caseData,
-                existingExtensionType,
-                "existing note");
-
-
-        final CaseDeadlineExtension additionalExtension = new CaseDeadlineExtension(
-                caseData,
-                additionalExtensionType,
-                "additional note");
-
-        final Set<CaseDeadlineExtension> initialDeadlineExtensions = new HashSet<>();
-        initialDeadlineExtensions.add(existingExtension);
-
-        caseData.setDeadlineExtensions(initialDeadlineExtensions);
-        caseData.setActiveStages(Set.of(activeStage));
-
-        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
-        when(caseDeadlineExtensionTypeRepository.findById(additionalExtensionType.getType()))
-                .thenReturn(Optional.of(additionalExtensionType));
-
-        when(infoClient.getStageDeadline(activeStage.getStageType(), caseReceived, caseDeadlineExtended))
-                .thenReturn(caseDeadlineExtended);
-
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25))
-                .thenReturn(caseDeadlineExtended);
-
-        when(infoClient.getStageDeadlineWarning(
-                eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended.minusDays(2))))
-                .thenReturn(caseDeadlineExtended.minusDays(2));
-
-        // when
-        caseDataService.applyExtension(caseUUID, stageUUID, "ADDITIONAL_EXTENSION", "additional note");
-
-
-        // then
-        verify(caseDataRepository).findActiveByUuid(caseUUID);
-        verify(infoClient).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25);
-        verify(infoClient).getStageDeadline(eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended));
-        verify(infoClient).getStageDeadlineWarning(
-                eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended.minusDays(2)));
-        verify(caseDataRepository).save(caseDataCaptor.capture());
-//        verify(auditClient).createExtensionAudit(additionalExtension);
-
-        Set<CaseDeadlineExtension> deadlineExtensions = caseDataCaptor.getValue().getDeadlineExtensions();
-
-        assertThat(deadlineExtensions.size()).isEqualTo(2);
-        assertThat(deadlineExtensions.containsAll(List.of(existingExtension, additionalExtension))).isTrue();
-
-        verify(activeStage).setDeadline(eq(caseDeadlineExtended));
-        verify(activeStage).setDeadlineWarning(eq(caseDeadlineExtended.minusDays(2)));
-
-        checkNoMoreInteractions();
-    }
+//    @Test
+//    @Ignore // todo: remove and replace with new actions test
+//    public void shouldApplyExtension() {
+//        // given
+//        final CaseDeadlineExtensionType existingExtensionType =
+//                new CaseDeadlineExtensionType("EXISTING_EXTENSION", 10);
+//
+//        final CaseDeadlineExtensionType additionalExtensionType =
+//                new CaseDeadlineExtensionType("ADDITIONAL_EXTENSION", 15);
+//
+//        final CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
+//
+//        final CaseDeadlineExtension existingExtension = new CaseDeadlineExtension(
+//                caseData,
+//                existingExtensionType,
+//                "existing note");
+//
+//
+//        final CaseDeadlineExtension additionalExtension = new CaseDeadlineExtension(
+//                caseData,
+//                additionalExtensionType,
+//                "additional note");
+//
+//        final Set<CaseDeadlineExtension> initialDeadlineExtensions = new HashSet<>();
+//        initialDeadlineExtensions.add(existingExtension);
+//
+//        caseData.setDeadlineExtensions(initialDeadlineExtensions);
+//        caseData.setActiveStages(Set.of(activeStage));
+//
+//        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+//        when(caseDeadlineExtensionTypeRepository.findById(additionalExtensionType.getType()))
+//                .thenReturn(Optional.of(additionalExtensionType));
+//
+//        when(infoClient.getStageDeadline(activeStage.getStageType(), caseReceived, caseDeadlineExtended))
+//                .thenReturn(caseDeadlineExtended);
+//
+//        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25))
+//                .thenReturn(caseDeadlineExtended);
+//
+//        when(infoClient.getStageDeadlineWarning(
+//                eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended.minusDays(2))))
+//                .thenReturn(caseDeadlineExtended.minusDays(2));
+//
+//        // when
+//        caseDataService.applyExtension(caseUUID, stageUUID, "ADDITIONAL_EXTENSION", "additional note");
+//
+//
+//        // then
+//        verify(caseDataRepository).findActiveByUuid(caseUUID);
+//        verify(infoClient).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25);
+//        verify(infoClient).getStageDeadline(eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended));
+//        verify(infoClient).getStageDeadlineWarning(
+//                eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended.minusDays(2)));
+//        verify(caseDataRepository).save(caseDataCaptor.capture());
+////        verify(auditClient).createExtensionAudit(additionalExtension);
+//
+//        Set<CaseDeadlineExtension> deadlineExtensions = caseDataCaptor.getValue().getDeadlineExtensions();
+//
+//        assertThat(deadlineExtensions.size()).isEqualTo(2);
+//        assertThat(deadlineExtensions.containsAll(List.of(existingExtension, additionalExtension))).isTrue();
+//
+//        verify(activeStage).setDeadline(eq(caseDeadlineExtended));
+//        verify(activeStage).setDeadlineWarning(eq(caseDeadlineExtended.minusDays(2)));
+//
+//        checkNoMoreInteractions();
+//    }
 
     private void checkNoMoreInteractions() {
         verifyNoMoreInteractions(auditClient, caseDataRepository, infoClient);
