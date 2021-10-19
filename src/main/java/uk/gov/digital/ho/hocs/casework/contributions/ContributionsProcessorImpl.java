@@ -106,7 +106,7 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                         return CONTRIBUTION_CANCELLED;
                     } else {
                         LocalDate contributionDueDate = csi.getDueDate();
-                        if (contributionDueDate.plus(1, DAYS).isBefore(now)) {
+                        if (contributionDueDate.isBefore(now)) {
                             return CONTRIBUTION_OVERDUE;
                         } else {
                             return CONTRIBUTION_DUE;
