@@ -7,8 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
@@ -239,6 +237,23 @@ public class AuditClient {
         LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> sendAuditMessage(localDateTime, caseUUID, "", EventType.SOMU_ITEMS_VIEWED, null, requestDataDto.getCorrelationId(),
                 requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups()));
+    }
+
+    public void viewAllSomuItemsForCasesAudit(Set<UUID> caseUuids) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(caseUuids);
+            } catch (JsonProcessingException e) {
+                logFailedToParseDataPayload(e);
+            }
+
+            sendAuditMessage(localDateTime, null, data, EventType.SOMU_ITEMS_VIEWED, null, requestDataDto.getCorrelationId(),
+                    requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
     }
 
     public void viewCaseSomuItemsBySomuTypeAudit(UUID caseUUID, UUID somuTypeUUID) {
@@ -482,7 +497,6 @@ public class AuditClient {
         sendAuditMessage(localDateTime, caseUUID, payload, eventType, stageUUID, "{}", correlationId, userId, username, groups);
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     private void sendAuditMessage(LocalDateTime localDateTime, UUID caseUUID, String payload, EventType eventType, UUID stageUUID, String data, String correlationId, String userId, String username, String groups) {
         CreateAuditRequest request = new CreateAuditRequest(
                 correlationId,

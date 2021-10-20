@@ -255,9 +255,9 @@ public class StageService {
         return stages;
     }
 
-    void updateContributions(Stage stage) {
-        log.debug("Adding contributions data for stage : {}", stage.getCaseUUID());
-        contributionsProcessor.processContributionsForStage(stage);
+    void updateContributions(Set<Stage> stage) {
+        log.debug("Adding contributions data for stages");
+        contributionsProcessor.processContributionsForStages(stage);
     }
 
     Stage getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {
@@ -335,9 +335,9 @@ public class StageService {
     }
 
     private void updateStages(Set<Stage> stages) {
-        auditClient.viewAllSomuItemsAudit(null);
+        updateContributions(stages);
+
         for (Stage stage : stages) {
-            updateContributions(stage);
             updatePriority(stage);
             updateDaysElapsed(stage);
             decorateTags(stage);

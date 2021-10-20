@@ -17,7 +17,9 @@ import java.time.LocalDate;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
@@ -27,55 +29,63 @@ public class SomuItemRepositoryTest {
 
     @Autowired
     private TestEntityManager entityManager;
-    
+
     @Autowired
     private SomuItemRepository repository;
 
-    private final UUID SOMU_ITEM_UUID = UUID.randomUUID();
-    private final UUID SOMU_ITEM_TYPE_UUID = UUID.randomUUID();
-
-    private UUID caseUuid = null;
     private SomuItem somuItem = null;
-    
+
     @Before
     public void setup() {
-        CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), 101L, LocalDate.of(2000, 12, 31));
-        caseData.setCaseDeadline(LocalDate.of(9999,12,31));
-        caseUuid = caseData.getUuid();
-        this.entityManager.persist(caseData);
-        
-        somuItem = new SomuItem(SOMU_ITEM_UUID, caseUuid, SOMU_ITEM_TYPE_UUID, "{}");
-        
-        this.entityManager.persist(somuItem);
+        somuItem = setUpCaseDataAndSomuItem(1L);
     }
 
-    @Test()
+    @Test
     public void shouldFindSomuItemByUuid() {
-        SomuItem somuItem = repository.findByUuid(SOMU_ITEM_UUID);
+        var returnedSomuItem = repository.findByUuid(somuItem.getUuid());
 
-        assertThat(somuItem).isNotNull();
-        assertThat(somuItem).isEqualTo(this.somuItem);
+        assertNotNull(returnedSomuItem);
+        assertEquals(returnedSomuItem, somuItem);
     }
 
-    @Test()
+    @Test
     public void shouldFindSomuItemsByCaseUuid() {
-        UUID somuItemUuid = UUID.randomUUID();
-        SomuItem somuItem = new SomuItem(somuItemUuid, caseUuid, UUID.randomUUID(), "{}");
-        this.entityManager.persist(somuItem);
+        var secondSomuItem = setUpSomuItem(somuItem.getCaseUuid());
 
-        Set<SomuItem> somuItems = repository.findAllByCaseUuid(caseUuid);
+        Set<SomuItem> somuItems = repository.findAllByCaseUuid(somuItem.getCaseUuid());
 
-        assertThat(somuItems.size()).isEqualTo(2);
-        assertThat(somuItems.contains(this.somuItem)).isTrue();
-        assertThat(somuItems.contains(somuItem)).isTrue();
+        assertEquals(somuItems.size(), 2);
+        assertTrue(somuItems.containsAll(Set.of(somuItem, secondSomuItem)));
     }
 
-    @Test()
+    @Test
     public void shouldFindSomuItemsByCaseUuidAndSomuUuid() {
-        Set<SomuItem> somuItem = repository.findByCaseUuidAndSomuUuid(caseUuid, SOMU_ITEM_TYPE_UUID);
+        var somuItems = repository.findByCaseUuidAndSomuUuid(somuItem.getCaseUuid(), somuItem.getSomuUuid());
 
-        assertThat(somuItem).isNotNull();
-        assertThat(somuItem.size()).isEqualTo(1);
+        assertNotNull(somuItems);
+        assertEquals(somuItems.size(), 1);
     }
-    
+
+    @Test
+    public void shouldFindSomuItemsByCaseUuids() {
+        var secondSomuItem = setUpCaseDataAndSomuItem(2L);
+
+        Set<SomuItem> somuItems = repository.findAllByCaseUuidIn(Set.of(somuItem.getCaseUuid(), secondSomuItem.getCaseUuid()));
+
+        assertEquals(somuItems.size(),2);
+        assertTrue(somuItems.containsAll(Set.of(somuItem, secondSomuItem)));
+    }
+
+    private SomuItem setUpCaseDataAndSomuItem(long caseNumber) {
+        CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), caseNumber, LocalDate.of(2000, 12, 31));
+        caseData.setCaseDeadline(LocalDate.of(9999, 12, 31));
+        this.entityManager.persist(caseData);
+
+        return setUpSomuItem(caseData.getUuid());
+    }
+
+    private SomuItem setUpSomuItem(UUID caseUuid) {
+        SomuItem somuItem = new SomuItem(UUID.randomUUID(), caseUuid, UUID.randomUUID(), "{}");
+        return entityManager.persist(somuItem);
+    }
 }

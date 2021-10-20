@@ -353,7 +353,6 @@ public class StageServiceTest {
         verify(stageRepository).findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
         verify(stagePriorityCalculator).updatePriority(stage);
         verify(daysElapsedCalculator).updateDaysElapsed(stage);
-        verify(auditClient).viewAllSomuItemsAudit(null);
 
         checkNoMoreInteraction();
     }
@@ -778,11 +777,14 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldGetActiveStagesByTeamUUID() {
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        when(stageRepository.findAllActiveByTeamUUID(teamUUID)).thenReturn(Set.of(stage));
+    public void shouldGetActiveStagesByTeamUuids() {
+        Stage stage1 = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        Stage stage2 = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        Set<Stage> stages = Set.of(stage1, stage2);
+
+        when(stageRepository.findAllActiveByTeamUUID(teamUUID)).thenReturn(stages);
         stageService.getActiveStagesByTeamUUID(teamUUID);
-        verify(contributionsProcessor).processContributionsForStage(stage);
+        verify(contributionsProcessor).processContributionsForStages(stages);
     }
 
     @Test
@@ -803,7 +805,6 @@ public class StageServiceTest {
         verify(stageRepository).findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes);
         verify(stagePriorityCalculator).updatePriority(stage);
         verify(daysElapsedCalculator).updateDaysElapsed(stage);
-        verify(auditClient).viewAllSomuItemsAudit(null);
 
         checkNoMoreInteraction();
     }
