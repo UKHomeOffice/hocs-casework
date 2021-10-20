@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionDto;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,7 +12,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity

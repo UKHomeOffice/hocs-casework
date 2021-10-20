@@ -20,14 +20,14 @@ public class CaseActionService {
     private void setActionTypes(List<ActionService> actionServices) {
         log.info("Loading ActionService implementations.");
         for (ActionService actionService : actionServices) {
-            actionServiceMap.putIfAbsent(actionService.getActionName(), actionService);
+            actionServiceMap.putIfAbsent(actionService.getServiceDtoTypeKey(), actionService);
         }
         log.info("Loaded {} ActionService implementations: {}", actionServiceMap.size(), actionServiceMap.keySet());
     }
 
     public void createActionDataForCase(UUID caseUUID, UUID stageUUID, String caseType, ActionDataDto actionData) {
         ActionService typeServiceInstance = getActionServiceInstance(actionData);
-        System.out.println(typeServiceInstance);
+
         if (typeServiceInstance != null) {
             typeServiceInstance.create(caseUUID, stageUUID, caseType, actionData);
         } else {

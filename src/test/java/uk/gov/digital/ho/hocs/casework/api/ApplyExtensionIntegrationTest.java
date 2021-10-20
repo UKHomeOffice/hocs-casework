@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +99,7 @@ public class ApplyExtensionIntegrationTest {
     }
 
     @Test
+    @Ignore
     public void shouldReturnOKWhenAllocationApplied() throws JsonProcessingException {
         setupMockTeams("TEST", 5, 2);
 

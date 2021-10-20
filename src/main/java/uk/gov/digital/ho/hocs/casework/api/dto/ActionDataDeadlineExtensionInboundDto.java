@@ -13,13 +13,13 @@ import java.util.UUID;
 @JsonTypeName("EXTENSION")
 @AllArgsConstructor
 @NoArgsConstructor
-public class ActionDataDeadlineExtensionDto extends ActionDataDto {
+public class ActionDataDeadlineExtensionInboundDto extends ActionDataDto {
 
     private String extendFrom;
     private int extendBy;
     private String note;
 
-    public ActionDataDeadlineExtensionDto(UUID uuid, UUID caseTypeActionUuid, String caseTypeActionLabel, String extendFrom, int extendBy, String note) {
+    public ActionDataDeadlineExtensionInboundDto(UUID uuid, UUID caseTypeActionUuid, String caseTypeActionLabel, String extendFrom, int extendBy, String note) {
         super(uuid, caseTypeActionUuid, caseTypeActionLabel);
         this.extendFrom = extendFrom;
         this.extendBy = extendBy;

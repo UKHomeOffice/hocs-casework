@@ -10,7 +10,7 @@ import java.util.UUID;
         use = JsonTypeInfo.Id.NAME,
         property = "actionType")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ActionDataDeadlineExtensionDto.class, name = "EXTENSION"),
+        @JsonSubTypes.Type(value = ActionDataDeadlineExtensionInboundDto.class, name = "EXTENSION"),
         @JsonSubTypes.Type(value = ActionDataAppealDto.class, name = "APPEAL"),
 })
 @Getter

@@ -13,8 +13,12 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataAppeal;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.ActionDataAppealsRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -24,26 +28,31 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 public class ActionDataAppealsService implements ActionService {
 
     private final ActionDataAppealsRepository appealsRepository;
-    private final CaseDataService caseDataService;
+    private final CaseDataRepository caseDataRepository;
     private final InfoClient infoClient;
     private final AuditClient auditClient;
     private final CaseNoteService caseNoteService;
 
-    private static String CREATE_CASE_NOTE_KEY = "APPEAL_CREATED";
-    private static String UPDATE_CASE_NOTE_KEY = "APPEAL_UPDATED";
+    private static final String CREATE_CASE_NOTE_KEY = "APPEAL_CREATED";
+    private static final String UPDATE_CASE_NOTE_KEY = "APPEAL_UPDATED";
 
     @Autowired
-    public ActionDataAppealsService(ActionDataAppealsRepository appealsRepository, CaseDataService caseDataService, InfoClient infoClient, AuditClient auditClient, CaseNoteService caseNoteService) {
+    public ActionDataAppealsService(ActionDataAppealsRepository appealsRepository, CaseDataRepository caseDataRepository, InfoClient infoClient, AuditClient auditClient, CaseNoteService caseNoteService) {
         this.appealsRepository = appealsRepository;
-        this.caseDataService = caseDataService;
+        this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
         this.caseNoteService = caseNoteService;
     }
 
     @Override
-    public String getActionName() {
+    public String getServiceDtoTypeKey() {
         return ActionDataAppealDto.class.getSimpleName();
+    }
+
+    @Override
+    public String getServiceMapKey() {
+        return "appeals";
     }
 
     @Override
@@ -58,7 +67,7 @@ public class ActionDataAppealsService implements ActionService {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", appealUuid), ACTION_DATA_CREATE_FAILURE);
         }
 
-        CaseData caseData = caseDataService.getCase(caseUuid);
+        CaseData caseData = caseDataRepository.findActiveByUuid(caseUuid);
         if (caseData == null) {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case with id: %s does not exist.", caseUuid), CASE_NOT_FOUND);
         }
@@ -90,7 +99,7 @@ public class ActionDataAppealsService implements ActionService {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", appealUuid), ACTION_DATA_UPDATE_FAILURE);
         }
 
-        CaseData caseData = caseDataService.getCase(caseUuid);
+        CaseData caseData = caseDataRepository.findActiveByUuid(caseUuid);
         if (caseData == null) {
             // Should have exited from the getCase call if no case with ID, however put here for safety to stop orphaned records.
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case with id: %s does not exist.", caseUuid), CASE_NOT_FOUND);
@@ -109,5 +118,17 @@ public class ActionDataAppealsService implements ActionService {
         auditClient.updateAppealAudit(updatedAppealEntity);
         log.info("Updated Action: {}  for Case: {}", updatedActionData, caseData.getUuid(), value(EVENT, ACTION_DATA_UPDATE_SUCCESS) );
 
+    }
+
+    @Override
+    public List<ActionDataDto> getAllActionsForCase(UUID caseUUID) {
+        List<ActionDataAppeal> appeals = appealsRepository.findAllByCaseDataUuid(caseUUID);
+        log.info("Returning {} Appeals for caseId: {}", appeals.size(), caseUUID);
+        return appeals.stream().map(appeal -> new ActionDataAppealDto(
+                appeal.getUuid(),
+                appeal.getCaseTypeActionUuid(),
+                appeal.getCaseTypeActionLabel(),
+                appeal.getData()
+        )).collect(Collectors.toList());
     }
 }

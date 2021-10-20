@@ -20,6 +20,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.domain.repository.ActionDataAppealsRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,7 +40,7 @@ public class ActionDataAppealsServiceTest {
     private ActionDataAppealsService actionDataAppealsService;
 
     @Mock
-    private CaseDataService mockCaseDataService;
+    private CaseDataRepository mockCaseDataRepository;
 
     @Mock
     private InfoClient mockInfoClient;
@@ -80,7 +81,7 @@ public class ActionDataAppealsServiceTest {
 
         actionDataAppealsService = new ActionDataAppealsService(
                 mockAppealRepository,
-                mockCaseDataService,
+                mockCaseDataRepository,
                 mockInfoClient,
                 mockAuditClient,
                 mockCaseNoteService
@@ -130,7 +131,7 @@ public class ActionDataAppealsServiceTest {
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
-        when(mockCaseDataService.getCase(caseUUID)).thenReturn(null);
+        when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
 
         // WHEN
         actionDataAppealsService.create(caseUUID, stageUUID, caseType, appealDto);
@@ -193,7 +194,7 @@ public class ActionDataAppealsServiceTest {
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
-        when(mockCaseDataService.getCase(caseUUID)).thenReturn(caseData);
+        when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
         // WHEN
         actionDataAppealsService.create(caseUUID, stageUUID, caseType, appealDto);
@@ -203,7 +204,7 @@ public class ActionDataAppealsServiceTest {
 
         assertThat(appealArgumentCaptor.getValue().getCaseTypeActionUuid()).isEqualTo(actionTypeUuid);
 
-        verify(mockCaseDataService, times(1)).getCase(caseUUID);
+        verify(mockCaseDataRepository, times(1)).findActiveByUuid(caseUUID);
         verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("APPEAL_CREATED"), anyString());
         verify(mockAuditClient, times(1)).createAppealAudit(any());
     }
@@ -252,7 +253,7 @@ public class ActionDataAppealsServiceTest {
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
-        when(mockCaseDataService.getCase(caseUUID)).thenReturn(null);
+        when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
 
         // WHEN
         actionDataAppealsService.update(caseUUID, stageUUID, caseType, actionEntityId, appealDto);
@@ -316,8 +317,8 @@ public class ActionDataAppealsServiceTest {
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
-        when(mockCaseDataService.getCase(caseUUID)).thenReturn(caseData);
-        when(mockAppealRepository.findByUuidAndCaseDataUuid(appealDto.getCaseTypeActionUuid(), caseUUID)).thenReturn(null);
+        when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+        when(mockAppealRepository.findByUuidAndCaseDataUuid(appealDto.getUuid(), caseUUID)).thenReturn(null);
 
         // WHEN
         actionDataAppealsService.update(caseUUID, stageUUID, caseType, actionEntityId, appealDto);
@@ -347,7 +348,7 @@ public class ActionDataAppealsServiceTest {
 
         CaseData caseData = new CaseData(
                 1L,
-                PREVIOUS_CASE_UUID,
+                caseUUID,
                 LocalDateTime.of(2021, Month.APRIL,1, 0,0),
                 PREVIOUS_CASE_TYPE,
                 PREVIOUS_CASE_REFERENCE,
@@ -405,8 +406,8 @@ public class ActionDataAppealsServiceTest {
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
-        when(mockCaseDataService.getCase(caseUUID)).thenReturn(caseData);
-        when(mockAppealRepository.findByUuidAndCaseDataUuid(appealDto.getCaseTypeActionUuid(), caseUUID)).thenReturn(existingAppealEntity);
+        when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+        when(mockAppealRepository.findByUuidAndCaseDataUuid(appealDto.getUuid(), caseUUID)).thenReturn(existingAppealEntity);
         when(mockAppealRepository.save(any(ActionDataAppeal.class))).thenReturn(updatedAppealEntity);
 
         // WHEN

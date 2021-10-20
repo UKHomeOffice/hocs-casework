@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboundDto;
 
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
@@ -43,9 +44,6 @@ public class ActionDataDeadlineExtensionServiceTest {
     private ActionDataDeadlineExtensionRepository mockExtensionRepository;
 
     @Mock
-    private CaseDataService mockCaseDataService;
-
-    @Mock
     private InfoClient mockInfoClient;
 
     @Mock
@@ -59,6 +57,8 @@ public class ActionDataDeadlineExtensionServiceTest {
 
     @Captor
     private ArgumentCaptor<ActionDataDeadlineExtension> extensionArgumentCaptor = ArgumentCaptor.forClass(ActionDataDeadlineExtension.class);
+
+    private ObjectMapper objectMapper = new ObjectMapper();
 
     public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
     public static final String TOPIC_NAME = "topic_name";
@@ -84,10 +84,11 @@ public class ActionDataDeadlineExtensionServiceTest {
         actionDataDeadlineExtensionService = new ActionDataDeadlineExtensionService(
                 mockExtensionRepository,
                 mockCaseDataRepository,
-                mockCaseDataService,
                 mockInfoClient,
                 mockAuditClient,
-                caseNoteService);
+                caseNoteService,
+                objectMapper
+        );
     }
 
     @Test
@@ -99,7 +100,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         UUID stageUUID = UUID.randomUUID();
         String caseType = "TEST_CASE_TYPE";
         int extendByDays = 8;
-        ActionDataDeadlineExtensionDto extensionDto = new ActionDataDeadlineExtensionDto(
+        ActionDataDeadlineExtensionInboundDto extensionDto = new ActionDataDeadlineExtensionInboundDto(
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
@@ -153,7 +154,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         when(mockInfoClient.getCaseDeadline(anyString(), any(LocalDate.class), anyInt())).thenReturn(LocalDate.now().plusDays(extendByDays));
         when(mockInfoClient.getCaseDeadlineWarning(anyString(), any(LocalDate.class), anyInt())).thenReturn(LocalDate.now().plusDays(extendByDays - 2));
 
-        // WHEN
+       // WHEN
         actionDataDeadlineExtensionService.create(caseUUID,stageUUID, caseType, extensionDto);
 
         // THEN
@@ -171,7 +172,7 @@ public class ActionDataDeadlineExtensionServiceTest {
 
         verify(mockAuditClient, times(1)).updateCaseAudit(any(), any());
         verify(mockAuditClient, times(1)).createExtensionAudit(any());
-        verify(mockCaseDataService, times(1)).updateStageDeadlinesForExtension(any(CaseData.class));
+
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
@@ -183,7 +184,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         UUID stageUUID = UUID.randomUUID();
         String caseType = "TEST_CASE_TYPE";
         int extendByDays = 8;
-        ActionDataDeadlineExtensionDto extensionDto = new ActionDataDeadlineExtensionDto(
+        ActionDataDeadlineExtensionInboundDto extensionDto = new ActionDataDeadlineExtensionInboundDto(
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
@@ -209,7 +210,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         UUID stageUUID = UUID.randomUUID();
         String caseType = "TEST_CASE_TYPE";
         int extendByDays = 8;
-        ActionDataDeadlineExtensionDto extensionDto = new ActionDataDeadlineExtensionDto(
+        ActionDataDeadlineExtensionInboundDto extensionDto = new ActionDataDeadlineExtensionInboundDto(
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
@@ -222,8 +223,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, actionTypeUuid)).thenReturn(caseTypeActionDto);
-        when(mockCaseDataService.getCase(caseUUID)).thenReturn(null);
-
+        when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
         // WHEN
         actionDataDeadlineExtensionService.create(caseUUID,stageUUID, caseType, extensionDto);
 
@@ -237,7 +237,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         UUID actionEntityId = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
         String caseType = "TEST_CASE_TYPE";
-        ActionDataDeadlineExtensionDto extensionDto = new ActionDataDeadlineExtensionDto(
+        ActionDataDeadlineExtensionInboundDto extensionDto = new ActionDataDeadlineExtensionInboundDto(
                 actionUuid,
                 caseUUID,
                 "ANY_STRING",

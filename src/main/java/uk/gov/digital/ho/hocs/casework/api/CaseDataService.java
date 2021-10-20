@@ -86,6 +86,8 @@ public class CaseDataService {
     public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
     protected final CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository;
 
+    private final List<ActionService> actionServiceList = new ArrayList<>();
+
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
                            CaseLinkRepository caseLinkRepository, InfoClient infoClient,
@@ -122,6 +124,12 @@ public class CaseDataService {
             APPEAL_CREATED.toString(),
             EXTENSION_APPLIED.toString()
     );
+
+    @Autowired
+    private void setActionServiceList(List<ActionService> actionServices) {
+        this.actionServiceList.addAll(actionServices);
+        log.info("Registered {} ActionService classes: {}", this.actionServiceList.size(), this.actionServiceList);
+    }
 
     public CaseData getCase(UUID caseUUID) {
         CaseData caseData = getCaseData(caseUUID);
@@ -554,34 +562,41 @@ public class CaseDataService {
         Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
 
+        Map<String, List<ActionDataDto>> rawActions = new HashMap<>();
+        actionServiceList.forEach(service -> {
+            rawActions.put(service.getServiceMapKey(), service.getAllActionsForCase(caseUUID));
+        });
+
+        summaryBuilder.withActions(rawActions);
+
         summaryBuilder.withAdditionalFields(getAdditionalFieldsForSummary(summaryFields, caseDataMap));
         summaryBuilder.withStageDeadlines(getStageDeadlines(caseData, caseDataMap));
-        summaryBuilder.withDeadlineExtensions(getCaseDeadlineExtensions(caseData));
+//        summaryBuilder.withDeadlineExtensions(getCaseDeadlineExtensions(caseData));
 
-        final Map<UUID, SomuTypeDto> eligibleSomuTypesByUuid =
-                infoClient.getAllSomuTypesForCaseType(caseData.getType())
-                        .stream()
-                        .filter(SomuTypeDto::isActive)
-                        .filter(type ->
-                                type.getSchema().getOrDefault("showInSummary", false).equals(true)
-                        )
-                        .collect(Collectors.toMap(SomuTypeDto::getUuid, Function.identity()));
-
-        eligibleSomuTypesByUuid.values()
-                .forEach(
-                        somuType -> somuItemRepository.findByCaseUuidAndSomuUuid(caseUUID, somuType.getUuid()).forEach(
-                                somuItem -> {
-                                    try {
-                                        summaryBuilder.addSomuItem(somuType, somuItem.getData());
-                                    } catch (JsonProcessingException e) {
-                                        log.error("Error parsing somu item in summary for " +
-                                                        "Case: {} Ref: {} Somu Item UUID: {}",
-                                                caseData.getUuid(), caseData.getReference(), somuItem.getUuid(),
-                                                value(EVENT, CASE_SUMMARY_CANNOT_PARSE_SOMU_ITEM));
-                                    }
-                                }
-                        )
-                );
+//        final Map<UUID, SomuTypeDto> eligibleSomuTypesByUuid =
+//                infoClient.getAllSomuTypesForCaseType(caseData.getType())
+//                        .stream()
+//                        .filter(SomuTypeDto::isActive)
+//                        .filter(type ->
+//                                type.getSchema().getOrDefault("showInSummary", false).equals(true)
+//                        )
+//                        .collect(Collectors.toMap(SomuTypeDto::getUuid, Function.identity()));
+//
+//        eligibleSomuTypesByUuid.values()
+//                .forEach(
+//                        somuType -> somuItemRepository.findByCaseUuidAndSomuUuid(caseUUID, somuType.getUuid()).forEach(
+//                                somuItem -> {
+//                                    try {
+//                                        summaryBuilder.addSomuItem(somuType, somuItem.getData());
+//                                    } catch (JsonProcessingException e) {
+//                                        log.error("Error parsing somu item in summary for " +
+//                                                        "Case: {} Ref: {} Somu Item UUID: {}",
+//                                                caseData.getUuid(), caseData.getReference(), somuItem.getUuid(),
+//                                                value(EVENT, CASE_SUMMARY_CANNOT_PARSE_SOMU_ITEM));
+//                                    }
+//                                }
+//                        )
+//                );
 
         auditClient.viewCaseSummaryAudit(caseData);
 
@@ -597,11 +612,12 @@ public class CaseDataService {
         return caseSummary;
     }
 
-    private Map<String, Integer> getCaseDeadlineExtensions(CaseData caseData) {
-        return Objects.isNull(caseData.getDeadlineExtensions()) ? Collections.emptyMap() :
-                caseData.getDeadlineExtensions().stream().collect(Collectors.toMap(
-                        e -> e.getCaseDeadlineExtensionType().getType(), e -> e.getCaseDeadlineExtensionType().getWorkingDays()));
-    }
+    // todo: remove and replace with call for all
+//    private Map<String, Integer> getCaseDeadlineExtensions(CaseData caseData) {
+//        return Objects.isNull(caseData.getDeadlineExtensions()) ? Collections.emptyMap() :
+//                caseData.getDeadlineExtensions().stream().collect(Collectors.toMap(
+//                        e -> e.getCaseDeadlineExtensionType().getType(), e -> e.getCaseDeadlineExtensionType().getWorkingDays()));
+//    }
 
     private Map<String, LocalDate> getStageDeadlines(CaseData caseData, Map<String, String> caseDataMap) {
         Map<String, LocalDate> stageDeadlinesOrig = infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived());

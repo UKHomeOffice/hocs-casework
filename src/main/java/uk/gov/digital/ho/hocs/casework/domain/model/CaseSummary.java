@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.SomuTypeDto;
 
 import java.time.LocalDate;
@@ -25,6 +26,7 @@ public class CaseSummary {
     private final UUID previousCaseUUID;
     private final UUID previousCaseStageUUID;
     private final Collection<CaseSummarySomuItems> somuItems;
+    private final Map<String, List<ActionDataDto>> actions;
 
     public static class Builder {
         private String type;
@@ -40,6 +42,7 @@ public class CaseSummary {
         private UUID previousCaseUUID;
         private UUID previousCaseStageUUID;
         private Map<UUID, CaseSummarySomuItems> somuItems = new HashMap<>();
+        private Map<String, List<ActionDataDto>> actions = new HashMap<>();
 
         public Builder withCaseType(final String type) {
             this.type = type;
@@ -123,6 +126,12 @@ public class CaseSummary {
             return this;
         }
 
+        public Builder withActions(Map<String, List<ActionDataDto>> actions) {
+            this.actions = actions;
+
+            return this;
+        }
+
         public CaseSummary build() {
             return new CaseSummary(
                     type,
@@ -137,7 +146,8 @@ public class CaseSummary {
                     previousCaseReference,
                     previousCaseUUID,
                     previousCaseStageUUID,
-                    somuItems.values()
+                    somuItems.values(),
+                    actions
             );
         }
     }

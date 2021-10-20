@@ -16,7 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataAppealDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboundDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseReferenceResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
@@ -123,7 +123,7 @@ public class CaseActionServiceIntegrationTest {
         String caseType = "FOI";
         String caseTypeActionLabel = "PIT Extension";
 
-        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionDto(null, EXTENSION_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "today", 8, "NOTE");
+        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(null, EXTENSION_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "today", 8, "NOTE");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<GetCaseReferenceResponse> response = testRestTemplate.exchange(
@@ -143,7 +143,7 @@ public class CaseActionServiceIntegrationTest {
         String caseType = "FOI";
         String caseTypeActionLabel = "PIT Extension";
 
-        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionDto(null, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "today", 8, "NOTE");
+        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(null, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "today", 8, "NOTE");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -163,7 +163,7 @@ public class CaseActionServiceIntegrationTest {
         String caseType = "FOI";
         String caseTypeActionLabel = "PIT Extension";
 
-        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionDto(null, EXTENSION_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "today", 8, "NOTE");
+        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(null, EXTENSION_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "today", 8, "NOTE");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -184,7 +184,7 @@ public class CaseActionServiceIntegrationTest {
         String caseType = "FOI";
         String caseTypeActionLabel = "PIT Extension";
 
-        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionDto(UUID.randomUUID(), EXTENSION_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "today", 8, "NOTE");
+        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(UUID.randomUUID(), EXTENSION_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "today", 8, "NOTE");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(

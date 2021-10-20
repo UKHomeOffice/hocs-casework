@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
 
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
@@ -37,12 +38,17 @@ public class CaseActionServiceTest {
     @Service
     static class Fake2ServiceDtoService implements ActionService {
 
-        public String getActionName() {return Fake2Dto.class.getSimpleName();}
+        public String getServiceDtoTypeKey() {return Fake2Dto.class.getSimpleName();}
 
         @Override
         public void create(UUID caseUuid, UUID stageUuid, String caseType, ActionDataDto actionData) {}
 
         @Override
         public void update(UUID caseUuid, UUID stageUuid, String caseType, UUID actionEntityId, ActionDataDto actionData) {}
+
+        @Override
+        public List<ActionDataDto> getAllActionsForCase(UUID caseUUID) {
+            return null;
+        }
     }
 }

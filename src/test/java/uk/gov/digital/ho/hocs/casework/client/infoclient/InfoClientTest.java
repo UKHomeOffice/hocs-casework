@@ -230,8 +230,7 @@ public class InfoClientTest {
         String caseDataType = "CT1";
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(actionTypeUuid, UUID.randomUUID(), caseDataType, null, null, 10, true, null);
-        when(restHelper.get("infoService", "/caseType/" + caseDataType + "/actions/" + actionTypeUuid, new ParameterizedTypeReference<CaseTypeActionDto>() {
-        })).thenReturn(mockCaseTypeActionDto);
+        when(restHelper.get("infoService", "/caseType/" + caseDataType + "/actions/" + actionTypeUuid, CaseTypeActionDto.class)).thenReturn(mockCaseTypeActionDto);
 
         // WHEN
         CaseTypeActionDto response = infoClient.getCaseTypeActionByUuid(caseDataType, actionTypeUuid);
