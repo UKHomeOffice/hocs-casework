@@ -141,7 +141,6 @@ public class CaseDataResourceTest {
                 null,
                 null,
                 null,
-                null,
                 PREVIOUS_CASE_REFERENCE,
                 PREVIOUS_CASE_UUID,
                 PREVIOUS_STAGE_UUID,
@@ -391,28 +390,5 @@ public class CaseDataResourceTest {
         verifyNoMoreInteractions(caseDataService);
 
     }
-
-//    @Test
-//    public void shouldApplyExtension() {
-//        UUID caseUUID = UUID.randomUUID();
-//        UUID stageUUID = UUID.randomUUID();
-//
-//        String testType = "TEST_TYPE";
-//        String reference = "CASE/123456/789";;
-//        String reason = "extension reason";
-//
-//        when(caseDataService.getCaseRef(caseUUID)).thenReturn(reference);
-//
-//        ApplyExtensionRequest applyExtensionRequest = new ApplyExtensionRequest(testType, reason);
-//        ResponseEntity<GetCaseReferenceResponse> response = caseDataResource.applyExtension(caseUUID, stageUUID, applyExtensionRequest);
-//
-//        assertThat(response.getBody().getReference()).isEqualTo(reference);
-//
-//        verify(caseNoteService).createCaseNote(caseUUID, "EXTENSION", reason);
-//        verify(caseDataService).applyExtension(caseUUID, stageUUID, applyExtensionRequest.getType(), reason);
-//        verify(caseDataService).getCaseRef(caseUUID);
-//
-//        verifyNoMoreInteractions(caseDataService, caseNoteService);
-//    }
 }
 

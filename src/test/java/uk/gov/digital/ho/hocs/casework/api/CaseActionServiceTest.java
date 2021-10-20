@@ -41,6 +41,11 @@ public class CaseActionServiceTest {
         public String getServiceDtoTypeKey() {return Fake2Dto.class.getSimpleName();}
 
         @Override
+        public String getServiceMapKey() {
+            return null;
+        }
+
+        @Override
         public void create(UUID caseUuid, UUID stageUuid, String caseType, ActionDataDto actionData) {}
 
         @Override

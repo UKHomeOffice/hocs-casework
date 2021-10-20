@@ -13,6 +13,7 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Entity
 @Table(name = "case_deadline_extension_type")
+// todo: remove
 public class CaseDeadlineExtensionType {
 
     @Id

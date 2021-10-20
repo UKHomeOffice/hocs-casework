@@ -39,14 +39,11 @@ public class GetCaseSummaryResponse {
     @JsonProperty("activeStages")
     Set<ActiveStageDto> activeStages;
 
-    @JsonProperty("deadLineExtensions")
-    Map<String, Integer> deadLineExtensions;
-
     @JsonProperty("previousCase")
     private CaseSummaryLink previousCase;
 
-    @JsonProperty("somuItems")
-    private final Collection<CaseSummarySomuItems> somuItems;
+    @JsonProperty("actions")
+    private final Map<String, List<ActionDataDto>> actions;
 
     public static GetCaseSummaryResponse from(CaseSummary caseSummary) {
         GetCorrespondentResponse getCorrespondentResponse = null;
@@ -72,6 +69,7 @@ public class GetCaseSummaryResponse {
                     .collect(Collectors.toList()));
         }
         additionalFieldDtos.sort(Comparator.comparing(AdditionalFieldDto::getLabel));
+
         return new GetCaseSummaryResponse(
                 caseSummary.getType(),
                 caseSummary.getCreatedDate(),
@@ -81,12 +79,12 @@ public class GetCaseSummaryResponse {
                 getCorrespondentResponse,
                 getTopicsResponse,
                 activeStageDtos,
-                caseSummary.getDeadLineExtensions(),
                 CaseSummaryLink.builder()
                         .caseUUID(caseSummary.getPreviousCaseUUID())
                         .caseReference(caseSummary.getPreviousCaseReference())
                         .stageUUID(caseSummary.getPreviousCaseStageUUID()).build(),
-                caseSummary.getSomuItems());
+                caseSummary.getActions()
+        );
 
 
     }

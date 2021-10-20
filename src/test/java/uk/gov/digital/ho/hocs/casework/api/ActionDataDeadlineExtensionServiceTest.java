@@ -141,8 +141,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 LocalDate.now().minusDays(10),
                 false,
                 Set.of(new ActiveStage(), new ActiveStage()),
-                Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")),
-                null);
+                Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,

@@ -89,8 +89,7 @@ public class CopyCompToComp2Test {
             null,
             false,
             null,
-            null,
-            new HashSet<>());
+            null);
 
     @Mock
     private CaseDataService caseDataService;
@@ -118,8 +117,7 @@ public class CopyCompToComp2Test {
                 null,
                 false,
                 null,
-                null,
-                new HashSet<>());
+                null);
     }
 
     @Test

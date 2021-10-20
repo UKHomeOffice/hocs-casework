@@ -175,7 +175,7 @@ public class CaseDataServiceTest {
                 "c6", "DISP", PREVIOUS_CASE_TYPE);
 
         CaseData previousCaseData = new CaseData(
-                1l,
+                1L,
                 PREVIOUS_CASE_UUID,
                 LocalDateTime.now(),
                 PREVIOUS_CASE_TYPE,
@@ -203,8 +203,7 @@ public class CaseDataServiceTest {
                 LocalDate.now().minusDays(10),
                 false,
                 Set.of(new ActiveStage(), new ActiveStage()),
-                Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")),
-                null);
+                Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
 
 
         when(caseDataRepository.findActiveByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);
@@ -454,59 +453,6 @@ public class CaseDataServiceTest {
         verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
         verify(infoClient, times(1)).getStageDeadlines(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
-    }
-
-    @Test
-    public void shouldGetCaseSummaryWithSomuItems() throws ApplicationExceptions.EntityNotFoundException, IOException {
-
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
-        caseData.setCaseDeadline(caseDeadline);
-        caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-
-        ActiveCaseViewData activeCaseViewData = new ActiveCaseViewData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
-        activeCaseViewData.setCaseDeadline(caseDeadline);
-        activeCaseViewData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-
-        final SomuTypeDto somuType1 = new SomuTypeDto(UUID.randomUUID(),
-                "CaseType",
-                "SomuType1",
-                true,
-                Map.of("showInSummary", true));
-
-        final SomuTypeDto somuType2 = new SomuTypeDto(UUID.randomUUID(),
-                "CaseType",
-                "SomuType1",
-                true,
-                Map.of("showInSummary", false));
-
-        Set<SomuTypeDto> caseSomuType = Set.of(
-                somuType1,
-                somuType2
-        );
-
-        SomuItem somuItem = new SomuItem(UUID.randomUUID(), caseData.getUuid(), somuType1.getUuid(), "{\"testKey\": \"testVal\"}");
-        Set<SomuItem> somuItems = Set.of(somuItem);
-
-        when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
-        when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
-        when(infoClient.getAllSomuTypesForCaseType(caseData.getType())).thenReturn(caseSomuType);
-        when(somuItemRepository.findByCaseUuidAndSomuUuid(caseData.getUuid(), somuType1.getUuid())).thenReturn(somuItems);
-
-        CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
-
-        final CaseSummarySomuItems expectedSomuItems = new CaseSummarySomuItems(somuType1.getSchema());
-        expectedSomuItems.addItem(somuItem.getData());
-        assertThat(result.getSomuItems().size()).isEqualTo(1);
-        assertThat(result.getSomuItems().stream().findFirst().get().getItems().get(0).get("testKey")).isEqualTo("testVal");
-        assertThat(result.getSomuItems().stream().findFirst().get().getSchema()).isEqualTo(somuType1.getSchema());
-
-        verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
-        verify(infoClient, times(1)).getStageDeadlines(caseData.getType(), caseData.getDateReceived());
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
-        verify(infoClient, times(1)).getAllSomuTypesForCaseType(caseData.getType());
-
-        verify(somuItemRepository, times(1))
-                .findByCaseUuidAndSomuUuid(caseData.getUuid(), somuType1.getUuid());
     }
 
     @Test
@@ -1061,73 +1007,6 @@ public class CaseDataServiceTest {
         caseDataService.getCaseDataByReference(testCaseRef);
 
     }
-
-//    @Test
-//    @Ignore // todo: remove and replace with new actions test
-//    public void shouldApplyExtension() {
-//        // given
-//        final CaseDeadlineExtensionType existingExtensionType =
-//                new CaseDeadlineExtensionType("EXISTING_EXTENSION", 10);
-//
-//        final CaseDeadlineExtensionType additionalExtensionType =
-//                new CaseDeadlineExtensionType("ADDITIONAL_EXTENSION", 15);
-//
-//        final CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, caseReceived);
-//
-//        final CaseDeadlineExtension existingExtension = new CaseDeadlineExtension(
-//                caseData,
-//                existingExtensionType,
-//                "existing note");
-//
-//
-//        final CaseDeadlineExtension additionalExtension = new CaseDeadlineExtension(
-//                caseData,
-//                additionalExtensionType,
-//                "additional note");
-//
-//        final Set<CaseDeadlineExtension> initialDeadlineExtensions = new HashSet<>();
-//        initialDeadlineExtensions.add(existingExtension);
-//
-//        caseData.setDeadlineExtensions(initialDeadlineExtensions);
-//        caseData.setActiveStages(Set.of(activeStage));
-//
-//        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
-//        when(caseDeadlineExtensionTypeRepository.findById(additionalExtensionType.getType()))
-//                .thenReturn(Optional.of(additionalExtensionType));
-//
-//        when(infoClient.getStageDeadline(activeStage.getStageType(), caseReceived, caseDeadlineExtended))
-//                .thenReturn(caseDeadlineExtended);
-//
-//        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25))
-//                .thenReturn(caseDeadlineExtended);
-//
-//        when(infoClient.getStageDeadlineWarning(
-//                eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended.minusDays(2))))
-//                .thenReturn(caseDeadlineExtended.minusDays(2));
-//
-//        // when
-//        caseDataService.applyExtension(caseUUID, stageUUID, "ADDITIONAL_EXTENSION", "additional note");
-//
-//
-//        // then
-//        verify(caseDataRepository).findActiveByUuid(caseUUID);
-//        verify(infoClient).getCaseDeadline(caseType.getDisplayCode(), caseReceived, 0, 25);
-//        verify(infoClient).getStageDeadline(eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended));
-//        verify(infoClient).getStageDeadlineWarning(
-//                eq(activeStage.getStageType()), eq(caseReceived), eq(caseDeadlineExtended.minusDays(2)));
-//        verify(caseDataRepository).save(caseDataCaptor.capture());
-////        verify(auditClient).createExtensionAudit(additionalExtension);
-//
-//        Set<CaseDeadlineExtension> deadlineExtensions = caseDataCaptor.getValue().getDeadlineExtensions();
-//
-//        assertThat(deadlineExtensions.size()).isEqualTo(2);
-//        assertThat(deadlineExtensions.containsAll(List.of(existingExtension, additionalExtension))).isTrue();
-//
-//        verify(activeStage).setDeadline(eq(caseDeadlineExtended));
-//        verify(activeStage).setDeadlineWarning(eq(caseDeadlineExtended.minusDays(2)));
-//
-//        checkNoMoreInteractions();
-//    }
 
     private void checkNoMoreInteractions() {
         verifyNoMoreInteractions(auditClient, caseDataRepository, infoClient);

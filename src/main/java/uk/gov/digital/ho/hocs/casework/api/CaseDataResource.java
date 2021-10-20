@@ -93,26 +93,6 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    // fixme: update this endpoint to become case action generic endpoint 
-//    @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
-//    @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/extension")
-//    ResponseEntity<GetCaseReferenceResponse> applyExtension(@PathVariable UUID caseUUID,
-//                                                            @PathVariable UUID stageUUID,
-//                                                            @RequestBody ApplyExtensionRequest request) {
-//        try {
-//            caseDataService.applyExtension(caseUUID, stageUUID, request.getType(), request.getCaseNote());
-//            caseNoteService.createCaseNote(caseUUID, "EXTENSION", request.getCaseNote());
-//
-//            return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
-//        } catch (NoSuchElementException e) {
-//            log.error("Failed to apply extension to case: {}, invalid extension type", caseUUID, value(EVENT, EXTENSION_APPLY_FAILED));
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-//        } catch (Exception e) {
-//            log.error("Failed to apply extension to case: {}", caseUUID, value(EVENT, EXTENSION_APPLY_FAILED));
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-//        }
-//    }
-
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/dateReceived")
     public ResponseEntity<Void> updateCaseDateReceived(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody LocalDate dateReceived) {
         caseDataService.updateDateReceived(caseUUID, stageUUID, dateReceived, 0);
