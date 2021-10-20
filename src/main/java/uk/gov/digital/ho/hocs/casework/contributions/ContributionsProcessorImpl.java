@@ -10,12 +10,12 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.time.temporal.ChronoUnit.DAYS;
 import static uk.gov.digital.ho.hocs.casework.contributions.Contribution.ContributionStatus.CONTRIBUTION_CANCELLED;
 import static uk.gov.digital.ho.hocs.casework.contributions.Contribution.ContributionStatus.CONTRIBUTION_DUE;
 import static uk.gov.digital.ho.hocs.casework.contributions.Contribution.ContributionStatus.CONTRIBUTION_OVERDUE;
@@ -26,7 +26,7 @@ import static uk.gov.digital.ho.hocs.casework.contributions.Contribution.Contrib
 @Slf4j
 public class ContributionsProcessorImpl implements ContributionsProcessor {
 
-    private static final String COMPLIANT_CASE_TYPE = "COMP";
+    private static final List<String> COMPLIANT_CASE_TYPES = List.of("COMP", "COMP2");
     private final SomuItemService somuItemService;
     private final ObjectMapper objectMapper;
 
@@ -48,7 +48,7 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                 stages) {
             if (MPAMContributionStages.contains(stage.getStageType())
                     || FOIContributionStages.contains(stage.getStageType())
-                    || COMPLIANT_CASE_TYPE.equals(stage.getCaseDataType())) {
+                    || COMPLIANT_CASE_TYPES.contains(stage.getCaseDataType())) {
                 Set<Contribution> contributions =
                         contributionSomuItems.stream()
                                 .filter(somuItem -> somuItem.getCaseUuid().equals(stage.getCaseUUID()))
@@ -56,7 +56,10 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                                     try {
                                         return objectMapper.readValue(somuItem.getData(), Contribution.class);
                                     } catch (JsonProcessingException e) {
-                                        log.error(String.format("Failed to process somu item for reason: %s", e.getMessage()), e);
+                                        log.error(
+                                                String.format("Failed to process somu item %s for reason: %s",
+                                                    somuItem.getUuid(), e.getMessage()),
+                                                e);
                                     }
                                     return null;
                                 })
@@ -100,18 +103,17 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                 .stream()
                 .map(csi -> {
                     Contribution.ContributionStatus contributionStatus = csi.getStatus();
-                    if (contributionStatus.equals(CONTRIBUTION_RECEIVED)) {
-                        return CONTRIBUTION_RECEIVED;
-                    } else if (contributionStatus.equals(CONTRIBUTION_CANCELLED)) {
-                        return CONTRIBUTION_CANCELLED;
-                    } else {
-                        LocalDate contributionDueDate = csi.getDueDate();
-                        if (contributionDueDate.isBefore(now)) {
-                            return CONTRIBUTION_OVERDUE;
-                        } else {
-                            return CONTRIBUTION_DUE;
-                        }
+                    if (contributionStatus.equals(CONTRIBUTION_RECEIVED) ||
+                        contributionStatus.equals(CONTRIBUTION_CANCELLED)) {
+                        return contributionStatus;
                     }
+
+                    LocalDate contributionDueDate = csi.getDueDate();
+                    if (contributionDueDate.isBefore(now)) {
+                        return CONTRIBUTION_OVERDUE;
+                    }
+
+                    return CONTRIBUTION_DUE;
                 })
                 .max(Comparator.naturalOrder());
     }

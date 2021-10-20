@@ -9,6 +9,8 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 @Setter
 @AllArgsConstructor
@@ -53,7 +55,8 @@ public class Contribution {
                 return NONE;
             }
 
-            return Arrays.stream(values()).filter(cs -> cs.status.contains(status))
+            return Arrays.stream(values())
+                    .filter(cs -> cs.status.contains(status))
                     .findFirst()
                     .orElse(NONE);
         }
