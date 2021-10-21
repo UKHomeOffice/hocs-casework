@@ -30,17 +30,26 @@ public class SomuItemService {
         this.auditClient = auditClient;
     }
 
-    public Set<SomuItem> getCaseSomuItemsBySomuType(UUID caseUUID, boolean audit) {
-        log.debug("Getting all Somu Items for Case: {}", caseUUID);
-        Set<SomuItem> somuItems = somuItemRepository.findAllByCaseUuid(caseUUID);
-        log.info("Got {} Somu Item for Case: {}, Event {}", somuItems.size(), caseUUID, value(EVENT, SOMU_ITEM_RETRIEVED));
-        if(audit){
-            auditClient.viewAllSomuItemsAudit(caseUUID);
-        }
+    public Set<SomuItem> getCaseItemsByCaseUuids(Set<UUID> caseUuids) {
+        log.debug("Getting all Somu Items for Case: {}", caseUuids);
+        Set<SomuItem> somuItems = somuItemRepository.findAllByCaseUuidIn(caseUuids);
+        log.info("Got {} Somu Item for Case: {}, Event {}", somuItems.size(), caseUuids, value(EVENT, SOMU_ITEM_RETRIEVED));
+
+        auditClient.viewAllSomuItemsForCasesAudit(caseUuids);
+
         return somuItems;
     }
 
-    public Set<SomuItem> getCaseSomuItemsBySomuType(UUID caseUuid, UUID somuTypeUuid) {
+    public Set<SomuItem> getItemsByCaseUuid(UUID caseUUID) {
+        log.debug("Getting all Somu Items for Case: {}", caseUUID);
+        Set<SomuItem> somuItems = somuItemRepository.findAllByCaseUuid(caseUUID);
+        log.info("Got {} Somu Item for Case: {}, Event {}", somuItems.size(), caseUUID, value(EVENT, SOMU_ITEM_RETRIEVED));
+        auditClient.viewAllSomuItemsAudit(caseUUID);
+
+        return somuItems;
+    }
+
+    public Set<SomuItem> getItemsByCaseUuidAndType(UUID caseUuid, UUID somuTypeUuid) {
         Set<SomuItem> somuItems = somuItemRepository.findByCaseUuidAndSomuUuid(caseUuid, somuTypeUuid);
         
         log.info("Got SomuItems for UUID: {}, Event {}", somuTypeUuid, value(EVENT, SOMU_ITEM_RETRIEVED));
