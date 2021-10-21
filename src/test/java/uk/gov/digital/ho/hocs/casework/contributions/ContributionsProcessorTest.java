@@ -111,6 +111,36 @@ public class ContributionsProcessorTest {
     }
 
     @Test
+    public void shouldAddDueContributionsForComp2Case() {
+        String stageType = "COMP2_SERVICE_ESCALATE";
+        Stage stage = spy(new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID));
+        doReturn("COMP2_SERVICE_ESCALATE").when(stage).getStageType();
+
+        SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-10-10\"}");
+
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID, false)).thenReturn(Set.of(somuItem));
+
+        contributionsProcessor.processContributionsForStage(stage);
+        assertEquals("9999-10-10", stage.getDueContribution());
+        assertEquals("Due", stage.getContributions());
+    }
+
+    @Test
+    public void shouldAddOverdueContributionsForComp2Case() {
+        String stageType = "COMP2_SERVICE_ESCALATE";
+        Stage stage = spy(new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID));
+        doReturn("COMP2_SERVICE_ESCALATE").when(stage).getStageType();
+
+        SomuItem somuItem = new SomuItem(somuUUID, caseUUID, somuTypeUuid, "{ \"contributionDueDate\" : \"2020-10-10\"}");
+
+        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID, false)).thenReturn(Set.of(somuItem));
+
+        contributionsProcessor.processContributionsForStage(stage);
+        assertEquals("2020-10-10", stage.getDueContribution());
+        assertEquals("Overdue", stage.getContributions());
+    }
+
+    @Test
     public void shouldAddDueContributionsForFOICase() {
         String stageType = "FOI_APPROVAL";
         Stage stage = spy(new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID));

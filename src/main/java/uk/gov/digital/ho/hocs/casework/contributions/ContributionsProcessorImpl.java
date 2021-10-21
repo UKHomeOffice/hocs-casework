@@ -32,7 +32,7 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
     public void processContributionsForStage(Stage stage) {
         if (MPAMContributionStages.contains(stage.getStageType())
                 || FOIContributionStages.contains(stage.getStageType())
-                || COMPLIANT_CASE_TYPE.equals(stage.getCaseDataType())) {
+                || CompContributionStages.contains(stage.getStageType())) {
 
             Set<SomuItem> contributionSomuItems = somuItemService.getCaseSomuItemsBySomuType(stage.getCaseUUID(), false);
 
