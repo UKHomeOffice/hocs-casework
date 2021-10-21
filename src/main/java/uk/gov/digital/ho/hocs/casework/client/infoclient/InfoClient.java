@@ -25,6 +25,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_G
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPE_SHORT_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPE_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_DEADLINES_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CONTRIBUTIONS_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_DEFAULT_USERS_FOR_STAGE_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_ENTITY_LIST;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_PRIORITY_POLICIES_SUCCESS;
@@ -168,11 +169,19 @@ public class InfoClient {
         return response;
     }
 
+
     @Cacheable(value = "InfoClientGetStageDeadlines", unless = "#result.size() == 0", key = "{#caseType, #received.toString() }")
     public Map<String, LocalDate> getStageDeadlines(String caseType, LocalDate received) {
         Map<String, LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, received), new ParameterizedTypeReference<Map<String, LocalDate>>() {
         });
         log.info("Got {} stage deadlines for CaseType {} and Date {}", response.size(), caseType, received, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
+        return response;
+    }
+
+    @Cacheable(value = "InfoClientGetStageContributions", unless = "#result == null", key = "{#stageType}")
+    public Boolean getStageContributions(String stageType) {
+        Boolean response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/contributions", stageType), new ParameterizedTypeReference<Boolean>() {});
+        log.info("Got {} as contributions for StageType {}", response.toString(), stageType, value(EVENT, INFO_CLIENT_GET_CONTRIBUTIONS_SUCCESS));
         return response;
     }
 

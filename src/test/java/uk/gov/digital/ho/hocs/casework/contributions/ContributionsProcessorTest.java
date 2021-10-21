@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.SomuItemService;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
@@ -36,11 +37,14 @@ public class ContributionsProcessorTest {
     @Mock
     private SomuItemService somuItemService;
 
+    @Mock
+    private InfoClient infoClient;
+
     private ContributionsProcessorImpl contributionsProcessor;
 
     @Before
     public void before() {
-        contributionsProcessor = spy(new ContributionsProcessorImpl(objectMapper, somuItemService));
+        contributionsProcessor = spy(new ContributionsProcessorImpl(objectMapper, somuItemService, infoClient));
     }
 
     @Test
@@ -71,11 +75,13 @@ public class ContributionsProcessorTest {
 
     @Test
     public void shouldReturnDataWithValidDueContribution() {
-        Stage stage = spy(new Stage(caseUuid, "ANY", teamUuid, userUuid, transitionNoteUuid));
+        Stage stage = spy(new Stage(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-12-31\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
+
+        when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
 
         contributionsProcessor.processContributionsForStages(Set.of(stage));
 
@@ -92,11 +98,13 @@ public class ContributionsProcessorTest {
 
     @Test
     public void shouldReturnDataWithValidOverdueContribution() {
-        Stage stage = spy(new Stage(caseUuid, "ANY", teamUuid, userUuid, transitionNoteUuid));
+        Stage stage = spy(new Stage(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"0000-12-31\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
+
+        when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
 
         contributionsProcessor.processContributionsForStages(Set.of(stage));
 
@@ -113,11 +121,13 @@ public class ContributionsProcessorTest {
 
     @Test
     public void shouldReturnDataWithValidReceivedContribution() {
-        Stage stage = spy(new Stage(caseUuid, "ANY", teamUuid, userUuid, transitionNoteUuid));
+        Stage stage = spy(new Stage(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-12-31\", \"contributionStatus\": \"contributionReceived\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
+
+        when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
 
         contributionsProcessor.processContributionsForStages(Set.of(stage));
 
@@ -134,11 +144,13 @@ public class ContributionsProcessorTest {
 
     @Test
     public void shouldReturnDataWithValidCancelledContribution() {
-        Stage stage = spy(new Stage(caseUuid, "ANY", teamUuid, userUuid, transitionNoteUuid));
+        Stage stage = spy(new Stage(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-12-31\", \"contributionStatus\": \"contributionCancelled\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
+
+        when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
 
         contributionsProcessor.processContributionsForStages(Set.of(stage));
 

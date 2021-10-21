@@ -5,12 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.SomuItemService;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.time.LocalDate;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -26,31 +26,30 @@ import static uk.gov.digital.ho.hocs.casework.contributions.Contribution.Contrib
 @Slf4j
 public class ContributionsProcessorImpl implements ContributionsProcessor {
 
-    private static final List<String> COMPLIANT_CASE_TYPES = List.of("COMP", "COMP2");
     private final SomuItemService somuItemService;
     private final ObjectMapper objectMapper;
+    private final InfoClient infoClient;
 
-    public ContributionsProcessorImpl(ObjectMapper objectMapper, SomuItemService somuItemService) {
+    public ContributionsProcessorImpl(ObjectMapper objectMapper, SomuItemService somuItemService, InfoClient infoClient) {
         this.somuItemService = somuItemService;
         this.objectMapper = objectMapper;
+        this.infoClient = infoClient;
     }
 
     @Override
     public void processContributionsForStages(Set<Stage> stages) {
-        Set<SomuItem> contributionSomuItems =
+        Set<SomuItem> allSomuItems =
                 somuItemService.getCaseItemsByCaseUuids(stages.stream().map(Stage::getCaseUUID).collect(Collectors.toSet()));
 
-        if (contributionSomuItems.size() == 0) {
+        if (allSomuItems.size() == 0) {
             return;
         }
 
         for (Stage stage :
                 stages) {
-            if (MPAMContributionStages.contains(stage.getStageType())
-                    || FOIContributionStages.contains(stage.getStageType())
-                    || COMPLIANT_CASE_TYPES.contains(stage.getCaseDataType())) {
+            if (infoClient.getStageContributions(stage.getStageType())) {
                 Set<Contribution> contributions =
-                        contributionSomuItems.stream()
+                        allSomuItems.stream()
                                 .filter(somuItem -> somuItem.getCaseUuid().equals(stage.getCaseUUID()))
                                 .map(somuItem -> {
                                     try {
