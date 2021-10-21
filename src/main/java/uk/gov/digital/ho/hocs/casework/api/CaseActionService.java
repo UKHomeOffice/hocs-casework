@@ -1,27 +1,34 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseActionDataResponseDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Slf4j
 public class CaseActionService {
 
-    Map<String, ActionService> actionServiceMap = new HashMap<>();
+    private final CaseDataRepository caseDataRepository;
+    private final InfoClient infoClient;
 
-    @Autowired
-    private void setActionTypes(List<ActionService> actionServices) {
+    private final Map<String, ActionService> actionServiceMap = new HashMap<>();
+
+    public CaseActionService(CaseDataRepository caseDataRepository, InfoClient infoClient, List<ActionService> actionServices ) {
+        this.caseDataRepository = caseDataRepository;
+        this.infoClient = infoClient;
+
         log.info("Loading ActionService implementations.");
+
         for (ActionService actionService : actionServices) {
-            actionServiceMap.putIfAbsent(actionService.getServiceDtoTypeKey(), actionService);
+            this.actionServiceMap.putIfAbsent(actionService.getServiceDtoTypeKey(), actionService);
         }
+
         log.info("Loaded {} ActionService implementations: {}", actionServiceMap.size(), actionServiceMap.keySet());
     }
 
@@ -35,11 +42,6 @@ public class CaseActionService {
         }
     }
 
-    private ActionService getActionServiceInstance(ActionDataDto actionDataDto) {
-
-        return actionServiceMap.get(actionDataDto.getClass().getSimpleName());
-    }
-
     public void updateActionDataForCase(UUID caseUUID, UUID stageUUID, String caseType, UUID actionEntityId, ActionDataDto actionData) {
         ActionService typeServiceInstance = getActionServiceInstance(actionData);
 
@@ -48,5 +50,31 @@ public class CaseActionService {
         } else {
             throw new UnsupportedOperationException(String.format("No Service available to UPDATE actionDataDto's of type: %s",actionData.getClass().getSimpleName()));
         }
+    }
+
+    public CaseActionDataResponseDto getAllCaseActionDataForCase(UUID caseId) {
+        log.debug("Received request for all case action data for caseId: {}", caseId);
+
+        Map<String, List<ActionDataDto>> actions = new HashMap<>();
+
+        getAllActionsForCaseById(caseId, actions);
+
+        String caseType = caseDataRepository.getCaseType(caseId);
+        List<CaseTypeActionDto> caseTypeActionDtoList =  infoClient.getCaseTypeActionForCaseType(caseType);
+
+        log.info("Returning case action data for caseId: {}", caseId);
+        return CaseActionDataResponseDto.from(actions, caseTypeActionDtoList);
+    }
+
+    public void getAllActionsForCaseById(UUID caseId, Map<String, List<ActionDataDto>> caseActionDataMap) {
+        Collection<ActionService> actionServices = this.actionServiceMap.values();
+
+        actionServices.forEach(actionService -> {
+            caseActionDataMap.put(actionService.getServiceMapKey(), actionService.getAllActionsForCase(caseId));
+        });
+    }
+
+    private ActionService getActionServiceInstance(ActionDataDto actionDataDto) {
+        return actionServiceMap.get(actionDataDto.getClass().getSimpleName());
     }
 }

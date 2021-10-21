@@ -24,4 +24,16 @@ VALUES (
         'FOI',
         '14915b78-6977-42db-b343-0915a7f412a1',
         '{}'::jsonb
-       );
+       ) ON CONFLICT DO NOTHING;
+
+INSERT INTO action_data_extensions(uuid, action_uuid, action_label,case_data_type,case_data_uuid, original_deadline, updated_deadline, note)
+VALUES(
+      'd159c936-b727-464e-a0ed-b63134fe0b39',
+      'a68b0ff2-a9fc-4312-8b28-504523d04026',
+      'PIT Extension',
+      'FOI',
+      '14915b78-6977-42db-b343-0915a7f412a1',
+      '2018-12-14',
+      '2018-12-30',
+      'SOME RANDOM TEXT'
+      ) ON CONFLICT DO NOTHING;

@@ -12,6 +12,7 @@ import java.util.UUID;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = ActionDataDeadlineExtensionInboundDto.class, name = "EXTENSION"),
         @JsonSubTypes.Type(value = ActionDataAppealDto.class, name = "APPEAL"),
+        @JsonSubTypes.Type(value = ActionDataDeadlineExtensionOutboundDto.class, name = "EXTENSION_OUT")
 })
 @Getter
 @Setter

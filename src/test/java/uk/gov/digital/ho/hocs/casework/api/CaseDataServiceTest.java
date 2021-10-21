@@ -115,10 +115,7 @@ public class CaseDataServiceTest {
     private AuditClient auditClient;
 
     @Mock
-    private SomuItemRepository somuItemRepository;
-
-    @Mock
-    private CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository;
+    private CaseActionService caseActionService;
 
     private LocalDate caseDeadlineExtended = LocalDate.now().plusDays(45);
     private LocalDate caseReceived = LocalDate.now();
@@ -146,8 +143,7 @@ public class CaseDataServiceTest {
                 objectMapper,
                 auditClient,
                 caseCopyFactory,
-                caseDeadlineExtensionTypeRepository,
-                somuItemRepository
+                caseActionService
         );
     }
 

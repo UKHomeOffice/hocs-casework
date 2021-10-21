@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseActionDataResponseDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseReferenceResponse;
 
 
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -40,5 +43,11 @@ public class CaseActionsResource {
 
         caseActionService.updateActionDataForCase(caseUUID, stageUUID, caseType, actionId, actionData);
         return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
+    }
+
+    @GetMapping(path = "/case/{caseId}/actions")
+    public ResponseEntity<CaseActionDataResponseDto> getAllCaseActionDataForCase(@PathVariable UUID caseId) {
+        CaseActionDataResponseDto caseActionData = caseActionService.getAllCaseActionDataForCase(caseId);
+        return ResponseEntity.ok(caseActionData);
     }
 }

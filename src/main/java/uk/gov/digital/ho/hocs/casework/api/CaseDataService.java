@@ -27,7 +27,6 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.*;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -43,7 +42,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DELETED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_UPDATED_NULL_DATA;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_RETRIEVED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_SUMMARY_CANNOT_PARSE_SOMU_ITEM;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_SUMMARY_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_LOOKUP_FAILED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
@@ -80,19 +78,15 @@ public class CaseDataService {
     protected final AuditClient auditClient;
     protected final ObjectMapper objectMapper;
     protected final InfoClient infoClient;
-    protected final SomuItemRepository somuItemRepository;
     private final CaseCopyFactory caseCopyFactory;
     private final CaseLinkRepository caseLinkRepository;
+    private final CaseActionService caseActionService;
     public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
-    protected final CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository;
-
-    private final List<ActionService> actionServiceList = new ArrayList<>();
 
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
                            CaseLinkRepository caseLinkRepository, InfoClient infoClient,
-                           ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory, CaseDeadlineExtensionTypeRepository
-                                   caseDeadlineExtensionTypeRepository, SomuItemRepository somuItemRepository) {
+                           ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory, CaseActionService caseActionService) {
 
         this.caseDataRepository = caseDataRepository;
         this.activeCaseViewDataRepository = activeCaseViewDataRepository;
@@ -100,9 +94,8 @@ public class CaseDataService {
         this.infoClient = infoClient;
         this.auditClient = auditClient;
         this.objectMapper = objectMapper;
-        this.caseDeadlineExtensionTypeRepository = caseDeadlineExtensionTypeRepository;
         this.caseCopyFactory = caseCopyFactory;
-        this.somuItemRepository = somuItemRepository;
+        this.caseActionService = caseActionService;
     }
 
     public static final List<String> TIMELINE_EVENTS = List.of(
@@ -124,12 +117,6 @@ public class CaseDataService {
             APPEAL_CREATED.toString(),
             EXTENSION_APPLIED.toString()
     );
-
-    @Autowired
-    private void setActionServiceList(List<ActionService> actionServices) {
-        this.actionServiceList.addAll(actionServices);
-        log.info("Registered {} ActionService classes: {}", this.actionServiceList.size(), this.actionServiceList);
-    }
 
     public CaseData getCase(UUID caseUUID) {
         CaseData caseData = getCaseData(caseUUID);
@@ -563,9 +550,8 @@ public class CaseDataService {
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
 
         Map<String, List<ActionDataDto>> rawActions = new HashMap<>();
-        actionServiceList.forEach(service -> {
-            rawActions.put(service.getServiceMapKey(), service.getAllActionsForCase(caseUUID));
-        });
+
+        caseActionService.getAllActionsForCaseById(caseUUID, rawActions);
 
         summaryBuilder.withActions(rawActions);
 

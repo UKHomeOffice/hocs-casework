@@ -15,13 +15,11 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataAppealDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboundDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseReferenceResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,6 +110,10 @@ public class CaseActionServiceIntegrationTest {
                 .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadlineWarning?received=2018-01-01&caseDeadlineWarning=" + LocalDate.now().plusDays(6)))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(6).toString()), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(manyTimes(),requestTo("http://localhost:8085/caseType/TEST/actions"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(List.of(MOCK_CASE_TYPE_ACTION_EXTENSION_DTO,MOCK_CASE_TYPE_ACTION_APPEAL_DTO)), MediaType.APPLICATION_JSON));
     }
 
     // EXTENSIONS - CREATE
@@ -332,6 +334,23 @@ public class CaseActionServiceIntegrationTest {
         );
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void getAllCaseActionsByCaseId_shouldReturn200AndCaseActionDataResponseDto() {
+
+        ResponseEntity<CaseActionDataResponseDto> response = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID + "/actions",
+                GET,
+                new HttpEntity<>(createValidAuthHeaders()),
+                CaseActionDataResponseDto.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getCaseActionData().containsKey("appeals")).isTrue();
+        assertThat(response.getBody().getCaseActionData().containsKey("extensions")).isTrue();
+
     }
 
     // -------- HELPERS ----------

@@ -1,0 +1,27 @@
+package uk.gov.digital.ho.hocs.casework.api.dto;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Getter
+public class CaseActionDataResponseDto {
+
+    private Map<String, List<ActionDataDto>> caseActionData;
+    private List<CaseTypeActionDto> caseTypeActionData;
+
+    public static CaseActionDataResponseDto from(Map<String, List<ActionDataDto>> caseActionData, List<CaseTypeActionDto> caseTypeActionData) {
+
+        Map<String, List<ActionDataDto>> caseActionDataMap = new HashMap<>(caseActionData);
+        List<CaseTypeActionDto> caseTypeActionDataList = new ArrayList<>(caseTypeActionData);
+
+        return new CaseActionDataResponseDto(caseActionDataMap, caseTypeActionDataList);
+    }
+}

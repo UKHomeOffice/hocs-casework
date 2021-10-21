@@ -239,4 +239,20 @@ public class InfoClientTest {
         assertThat(response).isNotNull();
         assertThat(response).isEqualTo(mockCaseTypeActionDto);
     }
+
+    @Test
+    public void getCaseTypeActionForCaseType_shouldReturnListOfCaseTypeActionDtos() {
+
+        // GIVEN
+        String caseType = "CT1";
+        ParameterizedTypeReference<List<CaseTypeActionDto>> typeRef = new ParameterizedTypeReference<>() {};
+
+        when(restHelper.get("infoService", "/caseType/" + caseType + "/actions", typeRef)).thenReturn(List.of());
+
+        // WHEN
+        List<CaseTypeActionDto> response = infoClient.getCaseTypeActionForCaseType(caseType);
+
+        // THEN
+        assertThat(response).isNotNull();
+    }
 }
