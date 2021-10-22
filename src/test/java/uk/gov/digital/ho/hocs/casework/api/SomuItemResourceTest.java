@@ -44,7 +44,7 @@ public class SomuItemResourceTest {
 
         ResponseEntity<GetSomuItemResponse> response = somuItemResource.upsertCaseSomuItemBySomuType(caseUUID, somuUUID, somuItemRequest);
 
-        verify(somuItemService, times(1)).upsertCaseSomuItemBySomuType(caseUUID, somuUUID, somuItemRequest);
+        verify(somuItemService).upsertCaseSomuItemBySomuType(caseUUID, somuUUID, somuItemRequest);
 
         checkNoMoreInteractions();
 
@@ -57,9 +57,9 @@ public class SomuItemResourceTest {
     
     @Test
     public void shouldDeleteSomuItem() {
-        ResponseEntity response = somuItemResource.deleteSomuItem(uuid);
+        ResponseEntity<Void> response = somuItemResource.deleteSomuItem(uuid);
 
-        verify(somuItemService, times(1)).deleteSomuItem(uuid);
+        verify(somuItemService).deleteSomuItem(uuid);
 
         checkNoMoreInteractions();
 
@@ -71,11 +71,11 @@ public class SomuItemResourceTest {
     public void shouldGetSomuItems() {
         SomuItem somuItem = new SomuItem(uuid, caseUUID, somuUUID, "{}");
 
-        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID, true)).thenReturn(Set.of(somuItem));
+        when(somuItemService.getItemsByCaseUuid(caseUUID)).thenReturn(Set.of(somuItem));
 
         ResponseEntity<Set<GetSomuItemResponse>> response = somuItemResource.getAllCaseSomuItems(caseUUID);
 
-        verify(somuItemService, times(1)).getCaseSomuItemsBySomuType(caseUUID, true);
+        verify(somuItemService).getItemsByCaseUuid(caseUUID);
 
         checkNoMoreInteractions();
 
@@ -89,11 +89,11 @@ public class SomuItemResourceTest {
     public void shouldGetSomuItem() {
         SomuItem somuItem = new SomuItem(uuid, caseUUID, somuUUID, "{}");
 
-        when(somuItemService.getCaseSomuItemsBySomuType(caseUUID, somuUUID)).thenReturn(Set.of(somuItem));
+        when(somuItemService.getItemsByCaseUuidAndType(caseUUID, somuUUID)).thenReturn(Set.of(somuItem));
 
         ResponseEntity<Set<GetSomuItemResponse>> response = somuItemResource.getCaseSomuItemsBySomuType(caseUUID, somuUUID);
 
-        verify(somuItemService, times(1)).getCaseSomuItemsBySomuType(caseUUID, somuUUID);
+        verify(somuItemService).getItemsByCaseUuidAndType(caseUUID, somuUUID);
 
         checkNoMoreInteractions();
 

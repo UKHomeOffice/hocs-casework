@@ -1,14 +1,16 @@
 package uk.gov.digital.ho.hocs.casework.domain.repository;
 
 import lombok.extern.slf4j.Slf4j;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
@@ -21,12 +23,14 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
+import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 
 @Slf4j
 @RunWith(SpringRunner.class)
 @DataJpaTest(showSql = false)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Sql(scripts = "classpath:stage/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
 @ActiveProfiles("test")
 public class StageRepositoryTest {
 
@@ -34,10 +38,15 @@ public class StageRepositoryTest {
     private static final UUID TEAM_UUID = UUID.randomUUID();
 
     @Autowired
-    StageRepository stageRepository;
+    private StageRepository stageRepository;
 
     @Autowired
     private TestEntityManager entityManager;
+
+    @After
+    public void teardown() {
+        entityManager.clear();
+    }
 
     @Test
     public void findAllActiveByTeamUUID() {
@@ -46,7 +55,7 @@ public class StageRepositoryTest {
         long[] timings = new long[QUERY_RUNS];
         long[] timingsWithValidTeam = new long[QUERY_RUNS];
 
-        // given
+        // gi
         createLargeDataSet(10000);
 
         // when
@@ -94,6 +103,7 @@ public class StageRepositoryTest {
     }
 
     private void runFindAllActiveByTeamUuidQuery(UUID team, long[] timings, int iteration) {
+        log.info("runFindAllActiveByTeamUuidQuery: " +iteration);
         long start = System.currentTimeMillis();
         stageRepository.findAllActiveByTeamUUID(team);
         long finish = System.currentTimeMillis();

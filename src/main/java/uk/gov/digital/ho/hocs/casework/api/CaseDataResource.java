@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
+import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
@@ -33,13 +34,15 @@ class CaseDataResource {
 
     private final CaseDataService caseDataService;
     private final CaseNoteService caseNoteService;
+    private final TopicService topicService;
 
     @Autowired
     public CaseDataResource(
             @Qualifier("CaseDataService") CaseDataService caseDataService,
-            CaseNoteService caseNoteService) {
+            CaseNoteService caseNoteService, TopicService topicService) {
         this.caseDataService = caseDataService;
         this.caseNoteService = caseNoteService;
+        this.topicService = topicService;
     }
 
     @Authorised(accessLevel = AccessLevel.OWNER)
@@ -162,6 +165,14 @@ class CaseDataResource {
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryTopic")
     public ResponseEntity<Void> updateCasePrimaryTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryTopicUUID) {
         caseDataService.updatePrimaryTopic(caseUUID, stageUUID, primaryTopicUUID);
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/topic/textUUID")
+    ResponseEntity<Void> addSingularTopicToCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID topicUUID) {
+        Set<Topic> topics = topicService.getTopics(caseUUID);
+        Topic topic = topicService.getTopicFromSetByTextUUID(topics, topicUUID);
+        caseDataService.updatePrimaryTopicWithTextUUID(caseUUID, stageUUID, topic.getUuid(), topicUUID);
         return ResponseEntity.ok().build();
     }
 

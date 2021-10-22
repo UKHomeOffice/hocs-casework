@@ -53,9 +53,12 @@ public class CaseDataResourceTest {
     private CaseDataResource caseDataResource;
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    @Mock
+    private TopicService topicService;
+
     @Before
     public void setUp() {
-        caseDataResource = new CaseDataResource(caseDataService, caseNoteService);
+        caseDataResource = new CaseDataResource(caseDataService, caseNoteService, topicService);
     }
 
     @Test

@@ -14,6 +14,8 @@ public interface SomuItemRepository extends CrudRepository<SomuItem, Long> {
 
     Set<SomuItem> findAllByCaseUuid(UUID caseUuid);
 
+    Set<SomuItem> findAllByCaseUuidIn(Set<UUID> caseUuids);
+
     Set<SomuItem> findByCaseUuidAndSomuUuid(UUID caseUuid, UUID somuUuid);
 
 }

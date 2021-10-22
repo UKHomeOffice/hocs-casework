@@ -44,7 +44,7 @@ public class SomuItemServiceTest {
         
         when(somuItemRepository.findAllByCaseUuid(any())).thenReturn(Set.of(somuItem));
         
-        somuItemService.getCaseSomuItemsBySomuType(caseUuid, true);
+        somuItemService.getItemsByCaseUuid(caseUuid);
 
         verify(somuItemRepository, times(1)).findAllByCaseUuid(caseUuid);
         verify(auditClient, times(1)).viewAllSomuItemsAudit(caseUuid);
@@ -57,7 +57,7 @@ public class SomuItemServiceTest {
 
         when(somuItemRepository.findByCaseUuidAndSomuUuid(any(), any())).thenReturn(Set.of(somuItem));
 
-        somuItemService.getCaseSomuItemsBySomuType(caseUuid, somuTypeUuid);
+        somuItemService.getItemsByCaseUuidAndType(caseUuid, somuTypeUuid);
 
         verify(somuItemRepository, times(1)).findByCaseUuidAndSomuUuid(caseUuid, somuTypeUuid);
         verify(auditClient, times(1)).viewCaseSomuItemsBySomuTypeAudit(caseUuid, somuTypeUuid);
@@ -68,7 +68,7 @@ public class SomuItemServiceTest {
     public void shouldGetSomuItem_EmptySetReturnedWhenNoneExist() throws ApplicationExceptions.EntityNotFoundException {
         when(somuItemRepository.findByCaseUuidAndSomuUuid(any(), any())).thenReturn(Collections.emptySet());
 
-        Set<SomuItem> somuItem = somuItemService.getCaseSomuItemsBySomuType(caseUuid, somuTypeUuid);
+        Set<SomuItem> somuItem = somuItemService.getItemsByCaseUuidAndType(caseUuid, somuTypeUuid);
 
         verify(somuItemRepository, times(1)).findByCaseUuidAndSomuUuid(caseUuid, somuTypeUuid);
         verify(auditClient, times(1)).viewCaseSomuItemsBySomuTypeAudit(caseUuid, somuTypeUuid);
