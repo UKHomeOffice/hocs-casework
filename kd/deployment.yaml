@@ -195,10 +195,10 @@ spec:
               containerPort: 10443
           resources:
             limits:
-              memory: 32Mi
+              memory: 100Mi
               cpu: 400m
             requests:
-              memory: 4Mi
+              memory: 50Mi
               cpu: 100m
 
 
