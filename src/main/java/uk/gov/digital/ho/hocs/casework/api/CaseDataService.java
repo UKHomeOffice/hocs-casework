@@ -477,8 +477,9 @@ public class CaseDataService {
         caseData.setPrimaryTopicUUID(primaryTopicUUID);
         // If we have been passed a text UUID we should change the data to replace it with the topic UUID
         if(caseData.getData().contains(textUUID.toString())){
-            caseData.setData(StringUtils.replace(caseData.getData(),
-                    textUUID.toString(), primaryTopicUUID.toString()));
+            Map<String, String> dataMap = new HashMap<>();
+            dataMap.put("Topics", primaryTopicUUID.toString());
+            updateCaseData(caseUUID, stageUUID, dataMap);
         }
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);
