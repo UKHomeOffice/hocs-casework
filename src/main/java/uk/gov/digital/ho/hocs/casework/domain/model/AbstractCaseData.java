@@ -48,7 +48,7 @@ public class AbstractCaseData extends AbstractJsonDataMap implements Serializabl
     private boolean deleted;
 
     @Getter
-    @Setter(AccessLevel.PUBLIC)
+    @Setter(AccessLevel.PROTECTED)
     @Column(name = "data")
     private String data = "{}";
 
@@ -135,6 +135,9 @@ public class AbstractCaseData extends AbstractJsonDataMap implements Serializabl
         }
     }
 
+    public void setDataTo(String data) {
+        this.data = data;
+    }
 
     // --------  Migration Code Start --------
     public AbstractCaseData(CaseDataType type, String caseReference, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived, LocalDateTime caseCreated) {
@@ -154,6 +157,6 @@ public class AbstractCaseData extends AbstractJsonDataMap implements Serializabl
         this.dateReceived = dateReceived;
     }
 
-// --------  Migration Code End --------
+    // --------  Migration Code End --------
 
 }
