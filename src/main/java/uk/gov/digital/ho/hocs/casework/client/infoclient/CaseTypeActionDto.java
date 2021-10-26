@@ -16,6 +16,7 @@ public class CaseTypeActionDto {
     private String caseType;
     private String actionType;
     private String actionLabel;
+    private int maxConcurrentEvents;
     private int sortOrder;
     private boolean active;
     private String props;

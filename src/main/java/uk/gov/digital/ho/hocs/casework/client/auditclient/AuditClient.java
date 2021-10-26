@@ -345,7 +345,12 @@ public class AuditClient {
                         appealEntity.getCaseDataType(),
                         appealEntity.getCaseTypeActionUuid(),
                         appealEntity.getCaseTypeActionLabel(),
-                        appealEntity.getData()
+                        appealEntity.getStatus(),
+                        appealEntity.getDateSentRMS(),
+                        appealEntity.getOutcome(),
+                        appealEntity.getComplexCase(),
+                        appealEntity.getNote(),
+                        appealEntity.getAppealOfficerData()
                 ));
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
@@ -367,7 +372,12 @@ public class AuditClient {
                         appealEntity.getCaseDataType(),
                         appealEntity.getCaseTypeActionUuid(),
                         appealEntity.getCaseTypeActionLabel(),
-                        appealEntity.getData()
+                        appealEntity.getStatus(),
+                        appealEntity.getDateSentRMS(),
+                        appealEntity.getOutcome(),
+                        appealEntity.getComplexCase(),
+                        appealEntity.getNote(),
+                        appealEntity.getAppealOfficerData()
                 ));
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);

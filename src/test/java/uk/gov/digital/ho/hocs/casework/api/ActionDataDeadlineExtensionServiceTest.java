@@ -145,7 +145,7 @@ public class ActionDataDeadlineExtensionServiceTest {
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, null, 10, true, null
+                null, caseType, null, null,1, 10, true, null
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
@@ -154,7 +154,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         when(mockInfoClient.getCaseDeadlineWarning(anyString(), any(LocalDate.class), anyInt())).thenReturn(LocalDate.now().plusDays(extendByDays - 2));
 
        // WHEN
-        actionDataDeadlineExtensionService.create(caseUUID,stageUUID, caseType, extensionDto);
+        actionDataDeadlineExtensionService.create(caseUUID,stageUUID, extensionDto);
 
         // THEN
         verify(mockExtensionRepository, times(1)).save(extensionArgumentCaptor.capture());
@@ -195,7 +195,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, actionTypeUuid)).thenReturn(null);
 
         // WHEN
-        actionDataDeadlineExtensionService.create(caseUUID,stageUUID, caseType, extensionDto);
+        actionDataDeadlineExtensionService.create(caseUUID,stageUUID, extensionDto);
 
         // THEN expect throw
     }
@@ -218,13 +218,13 @@ public class ActionDataDeadlineExtensionServiceTest {
                 "ANY NOTE HERE"
         );
         CaseTypeActionDto caseTypeActionDto = new CaseTypeActionDto(
-                actionTypeUuid, null, caseType, null, null, 10, true, null
+                actionTypeUuid, null, caseType, null, null, 1,10, true, null
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, actionTypeUuid)).thenReturn(caseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
         // WHEN
-        actionDataDeadlineExtensionService.create(caseUUID,stageUUID, caseType, extensionDto);
+        actionDataDeadlineExtensionService.create(caseUUID,stageUUID, extensionDto);
 
         // THEN expect throw
     }
@@ -245,6 +245,6 @@ public class ActionDataDeadlineExtensionServiceTest {
                 "ANY NOTE HERE"
         );
 
-        actionDataDeadlineExtensionService.update(caseUUID, stageUUID, caseType, actionEntityId, extensionDto);
+        actionDataDeadlineExtensionService.update(caseUUID, stageUUID, actionEntityId, extensionDto);
     }
 }

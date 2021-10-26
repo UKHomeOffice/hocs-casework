@@ -286,7 +286,12 @@ public interface AuditPayload {
         private String caseType;
         private UUID caseTypeActionUUID;
         private String caseTypeActionLabel;
-        private String data;
+        private String status;
+        private LocalDate dateSentRMS;
+        private String outcome;
+        private Boolean complexCase;
+        private String note;
+        private String appealOfficerData;
 
     }
 }

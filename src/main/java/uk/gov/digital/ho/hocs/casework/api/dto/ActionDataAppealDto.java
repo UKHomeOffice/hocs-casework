@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Getter
@@ -17,10 +18,28 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ActionDataAppealDto extends ActionDataDto {
 
-    private String data;
+    private String status;
+    private LocalDate dateSentRMS;
+    private String outcome;
+    private Boolean complexCase;
+    private String note;
+    private String appealOfficerData;
 
-    public ActionDataAppealDto(UUID uuid, UUID caseTypeActionUuid, String caseTypeActionLabel, String data) {
+    public ActionDataAppealDto(UUID uuid, UUID caseTypeActionUuid, String caseTypeActionLabel,
+                               String status,
+                               LocalDate dateSentRMS,
+                               String outcome,
+                               Boolean complexCase,
+                               String note,
+                               String appealOfficerData) {
+
         super(uuid, caseTypeActionUuid, caseTypeActionLabel);
-        this.data = data;
+        this.status = status;
+        this.dateSentRMS = dateSentRMS;
+        this.outcome = outcome;
+        this.complexCase = complexCase;
+        this.note = note;
+        this.appealOfficerData = appealOfficerData;
+
     }
 }

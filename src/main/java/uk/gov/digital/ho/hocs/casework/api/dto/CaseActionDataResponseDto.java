@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +18,13 @@ public class CaseActionDataResponseDto {
 
     private Map<String, List<ActionDataDto>> caseActionData;
     private List<CaseTypeActionDto> caseTypeActionData;
+    private LocalDate currentCaseDeadline;
 
-    public static CaseActionDataResponseDto from(Map<String, List<ActionDataDto>> caseActionData, List<CaseTypeActionDto> caseTypeActionData) {
+    public static CaseActionDataResponseDto from(Map<String, List<ActionDataDto>> caseActionData, List<CaseTypeActionDto> caseTypeActionData, LocalDate currentCaseDeadline) {
 
         Map<String, List<ActionDataDto>> caseActionDataMap = new HashMap<>(caseActionData);
         List<CaseTypeActionDto> caseTypeActionDataList = new ArrayList<>(caseTypeActionData);
 
-        return new CaseActionDataResponseDto(caseActionDataMap, caseTypeActionDataList);
+        return new CaseActionDataResponseDto(caseActionDataMap, caseTypeActionDataList,currentCaseDeadline);
     }
 }

@@ -6,8 +6,10 @@ import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseActionDataResponseDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -32,21 +34,21 @@ public class CaseActionService {
         log.info("Loaded {} ActionService implementations: {}", actionServiceMap.size(), actionServiceMap.keySet());
     }
 
-    public void createActionDataForCase(UUID caseUUID, UUID stageUUID, String caseType, ActionDataDto actionData) {
+    public void createActionDataForCase(UUID caseUUID, UUID stageUUID, ActionDataDto actionData) {
         ActionService typeServiceInstance = getActionServiceInstance(actionData);
 
         if (typeServiceInstance != null) {
-            typeServiceInstance.create(caseUUID, stageUUID, caseType, actionData);
+            typeServiceInstance.create(caseUUID, stageUUID, actionData);
         } else {
             throw new UnsupportedOperationException(String.format("No Service available to CREATE actionDataDto's of type: %s",actionData.getClass().getSimpleName()));
         }
     }
 
-    public void updateActionDataForCase(UUID caseUUID, UUID stageUUID, String caseType, UUID actionEntityId, ActionDataDto actionData) {
+    public void updateActionDataForCase(UUID caseUUID, UUID stageUUID, UUID actionEntityId, ActionDataDto actionData) {
         ActionService typeServiceInstance = getActionServiceInstance(actionData);
 
         if (typeServiceInstance != null) {
-            typeServiceInstance.update(caseUUID, stageUUID, caseType, actionEntityId, actionData);
+            typeServiceInstance.update(caseUUID, stageUUID, actionEntityId, actionData);
         } else {
             throw new UnsupportedOperationException(String.format("No Service available to UPDATE actionDataDto's of type: %s",actionData.getClass().getSimpleName()));
         }
@@ -59,11 +61,11 @@ public class CaseActionService {
 
         getAllActionsForCaseById(caseId, actions);
 
-        String caseType = caseDataRepository.getCaseType(caseId);
-        List<CaseTypeActionDto> caseTypeActionDtoList =  infoClient.getCaseTypeActionForCaseType(caseType);
+        CaseData caseData = caseDataRepository.findActiveByUuid(caseId);
+        List<CaseTypeActionDto> caseTypeActionDtoList =  infoClient.getCaseTypeActionForCaseType(caseData.getType());
 
         log.info("Returning case action data for caseId: {}", caseId);
-        return CaseActionDataResponseDto.from(actions, caseTypeActionDtoList);
+        return CaseActionDataResponseDto.from(actions, caseTypeActionDtoList, caseData.getCaseDeadline());
     }
 
     public void getAllActionsForCaseById(UUID caseId, Map<String, List<ActionDataDto>> caseActionDataMap) {

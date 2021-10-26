@@ -24,24 +24,22 @@ public class CaseActionsResource {
         this.caseDataService = caseDataService;
     }
 
-    @PostMapping(path = "/case/{caseUUID}/stage/{stageUUID}/caseType/{caseType}/action")
+    @PostMapping(path = "/case/{caseUUID}/stage/{stageUUID}/action")
     public ResponseEntity<?> createActionData(@PathVariable UUID caseUUID,
                                                                      @PathVariable UUID stageUUID,
-                                                                     @PathVariable String caseType,
                                                                      @RequestBody ActionDataDto actionData) {
 
-        caseActionService.createActionDataForCase(caseUUID, stageUUID, caseType, actionData);
+        caseActionService.createActionDataForCase(caseUUID, stageUUID, actionData);
         return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
     }
 
-    @PutMapping(path = "/case/{caseUUID}/stage/{stageUUID}/caseType/{caseType}/action/{actionId}")
+    @PutMapping(path = "/case/{caseUUID}/stage/{stageUUID}/action/{actionId}")
     public ResponseEntity<GetCaseReferenceResponse> updateActionData(@PathVariable UUID caseUUID,
                                                                      @PathVariable UUID stageUUID,
-                                                                     @PathVariable String caseType,
                                                                      @PathVariable UUID actionId,
                                                                      @RequestBody ActionDataDto actionData){
 
-        caseActionService.updateActionDataForCase(caseUUID, stageUUID, caseType, actionId, actionData);
+        caseActionService.updateActionDataForCase(caseUUID, stageUUID, actionId, actionData);
         return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
     }
 

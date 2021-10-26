@@ -99,13 +99,18 @@ public class ActionDataAppealsServiceTest {
                 null,
                 actionTypeUuid,
                 "ACTION_LABEL",
+                null,
+                LocalDate.MAX,
+                null,
+                true,
+                "TEST NOTE",
                 "{}"
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(null);
 
         // WHEN
-        actionDataAppealsService.create(caseUUID, stageUUID, caseType, appealDto);
+        actionDataAppealsService.create(caseUUID, stageUUID, appealDto);
 
         // THEN Throws
 
@@ -122,19 +127,24 @@ public class ActionDataAppealsServiceTest {
                 null,
                 actionTypeUuid,
                 "ACTION_LABEL",
+                null,
+                LocalDate.MAX,
+                null,
+                true,
+                "TEST NOTE",
                 "{}"
         );
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, null, 10, true, null
+                null, caseType, null, null, 1,10, true, null
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
 
         // WHEN
-        actionDataAppealsService.create(caseUUID, stageUUID, caseType, appealDto);
+        actionDataAppealsService.create(caseUUID, stageUUID, appealDto);
 
         // THEN Throws
     }
@@ -153,6 +163,11 @@ public class ActionDataAppealsServiceTest {
                 null,
                 actionTypeUuid,
                 "ACTION_LABEL",
+                null,
+                LocalDate.MAX,
+                null,
+                true,
+                "TEST NOTE",
                 "{}"
         );
 
@@ -189,14 +204,14 @@ public class ActionDataAppealsServiceTest {
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, null, 10, true, null
+                null, caseType, null, null, 1,10, true, null
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
         // WHEN
-        actionDataAppealsService.create(caseUUID, stageUUID, caseType, appealDto);
+        actionDataAppealsService.create(caseUUID, stageUUID, appealDto);
 
         // THEN
         verify(mockAppealRepository, times(1)).save(appealArgumentCaptor.capture());
@@ -220,13 +235,18 @@ public class ActionDataAppealsServiceTest {
                 actionEntityId,
                 actionTypeUuid,
                 "ACTION_LABEL",
+                null,
+                LocalDate.MAX,
+                null,
+                true,
+                "TEST NOTE",
                 "{}"
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(null);
 
         // WHEN
-        actionDataAppealsService.update(caseUUID, stageUUID, caseType, actionEntityId, appealDto);
+        actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
 
         // THEN Throws
     }
@@ -243,19 +263,24 @@ public class ActionDataAppealsServiceTest {
                 actionEntityId,
                 actionTypeUuid,
                 "ACTION_LABEL",
+                null,
+                LocalDate.MAX,
+                null,
+                true,
+                "TEST NOTE",
                 "{}"
         );
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, null, 10, true, null
+                null, caseType, null, null, 1,10, true, null
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
 
         // WHEN
-        actionDataAppealsService.update(caseUUID, stageUUID, caseType, actionEntityId, appealDto);
+        actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
 
         // THEN Throws
     }
@@ -275,6 +300,11 @@ public class ActionDataAppealsServiceTest {
                 actionEntityId,
                 actionTypeUuid,
                 "ACTION_LABEL",
+                null,
+                LocalDate.MAX,
+                null,
+                true,
+                "TEST NOTE",
                 "{}"
         );
 
@@ -311,7 +341,7 @@ public class ActionDataAppealsServiceTest {
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, null, 10, true, null
+                null, caseType, null, null, 1,10, true, null
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
@@ -319,7 +349,7 @@ public class ActionDataAppealsServiceTest {
         when(mockAppealRepository.findByUuidAndCaseDataUuid(appealDto.getUuid(), caseUUID)).thenReturn(null);
 
         // WHEN
-        actionDataAppealsService.update(caseUUID, stageUUID, caseType, actionEntityId, appealDto);
+        actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
 
         // THEN Throws
     }
@@ -340,7 +370,12 @@ public class ActionDataAppealsServiceTest {
         ActionDataAppealDto appealDto = new ActionDataAppealDto(
                 actionEntityId,
                 actionTypeUuid,
-                actionTypeLabel,
+                "ACTION_LABEL",
+                null,
+                LocalDate.MAX,
+                null,
+                true,
+                "TEST NOTE",
                 updatedDataField
         );
 
@@ -377,7 +412,7 @@ public class ActionDataAppealsServiceTest {
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, null, 10, true, null
+                null, caseType, null, null, 1,10, true, null
         );
 
         ActionDataAppeal existingAppealEntity = new ActionDataAppeal(
@@ -385,6 +420,11 @@ public class ActionDataAppealsServiceTest {
                 actionTypeUuid,
                 actionTypeLabel,
                 caseType,
+                null,
+                null,
+                null,
+                null,
+                false,
                 null,
                 "{}",
                 LocalDateTime.MIN,
@@ -397,10 +437,17 @@ public class ActionDataAppealsServiceTest {
                 actionTypeLabel,
                 caseType,
                 null,
+                null,
+                null,
+                null,
+                false,
+                null,
                 updatedDataField,
                 LocalDateTime.MIN,
                 LocalDateTime.MIN
         );
+
+
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
@@ -408,11 +455,11 @@ public class ActionDataAppealsServiceTest {
         when(mockAppealRepository.save(any(ActionDataAppeal.class))).thenReturn(updatedAppealEntity);
 
         // WHEN
-        actionDataAppealsService.update(caseUUID, stageUUID, caseType, actionEntityId, appealDto);
+        actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
 
         verify(mockAppealRepository, times(1)).save(appealArgumentCaptor.capture());
 
-        assertThat(appealArgumentCaptor.getValue().getData()).isEqualTo(updatedDataField);
+        assertThat(appealArgumentCaptor.getValue().getAppealOfficerData()).isEqualTo(updatedDataField);
 
         verify(mockInfoClient, times(1)).getCaseTypeActionByUuid(eq(caseType), eq(actionTypeUuid));
         verify(mockAuditClient, times(1)).updateAppealAudit(any());

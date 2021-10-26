@@ -43,7 +43,7 @@ public class CaseActionServiceTest {
 
         // WHEN
         assertThrows(UnsupportedOperationException.class, () -> {
-            caseActionService.createActionDataForCase(UUID.randomUUID(), UUID.randomUUID(),"CASE_TYPE", new FakeDto());
+            caseActionService.createActionDataForCase(UUID.randomUUID(), UUID.randomUUID(), new FakeDto());
         });
     }
 
@@ -54,9 +54,9 @@ public class CaseActionServiceTest {
         String caseType = "CASE_TYPE";
         ActionDataDto expectedDtoType = new Fake2Dto();
 
-        caseActionService.createActionDataForCase(caseUUID, stageUUID, caseType, expectedDtoType);
+        caseActionService.createActionDataForCase(caseUUID, stageUUID, expectedDtoType);
 
-        verify(fake2ServiceDtoService, times(1)).create(caseUUID, stageUUID, caseType, expectedDtoType);
+        verify(fake2ServiceDtoService, times(1)).create(caseUUID, stageUUID, expectedDtoType);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class CaseActionServiceTest {
 
         // WHEN
         assertThrows(UnsupportedOperationException.class, () -> {
-            caseActionService.updateActionDataForCase(UUID.randomUUID(), UUID.randomUUID(),"CASE_TYPE", UUID.randomUUID(), new FakeDto());
+            caseActionService.updateActionDataForCase(UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID(), new FakeDto());
         });
     }
 
@@ -76,9 +76,9 @@ public class CaseActionServiceTest {
         String caseType = "CASE_TYPE";
         ActionDataDto expectedDtoType = new Fake2Dto();
 
-        caseActionService.updateActionDataForCase(caseUUID, stageUUID, caseType, actionEntityId, expectedDtoType);
+        caseActionService.updateActionDataForCase(caseUUID, stageUUID, actionEntityId, expectedDtoType);
 
-        verify(fake2ServiceDtoService, times(1)).update(caseUUID, stageUUID, caseType, actionEntityId, expectedDtoType);
+        verify(fake2ServiceDtoService, times(1)).update(caseUUID, stageUUID, actionEntityId, expectedDtoType);
     }
 
     @NoArgsConstructor
@@ -98,10 +98,10 @@ public class CaseActionServiceTest {
         }
 
         @Override
-        public void create(UUID caseUuid, UUID stageUuid, String caseType, ActionDataDto actionData) {}
+        public void create(UUID caseUuid, UUID stageUuid, ActionDataDto actionData) {}
 
         @Override
-        public void update(UUID caseUuid, UUID stageUuid, String caseType, UUID actionEntityId, ActionDataDto actionData) {}
+        public void update(UUID caseUuid, UUID stageUuid, UUID actionEntityId, ActionDataDto actionData) {}
 
         @Override
         public List<ActionDataDto> getAllActionsForCase(UUID caseUUID) {

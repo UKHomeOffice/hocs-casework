@@ -207,7 +207,7 @@ public class CaseActionServiceIntegrationTest {
         String caseType = "FOI";
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(null, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(null, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel,null,null,null, null,null, "{}");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -226,7 +226,7 @@ public class CaseActionServiceIntegrationTest {
         String caseType = "FOI";
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(null, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(null, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel,null,null,null, null,null, "{}");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -245,7 +245,7 @@ public class CaseActionServiceIntegrationTest {
         String caseType = "FOI";
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(null, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(null, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel,null,null,null, null,null, "{}");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -266,7 +266,7 @@ public class CaseActionServiceIntegrationTest {
         String caseType = "FOI";
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID_NON_EXISTING, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID_NON_EXISTING, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel, null,null,null, null,null,"{}");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -285,7 +285,7 @@ public class CaseActionServiceIntegrationTest {
         String caseType = "FOI";
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel, null,null,null, null,null,"{}");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -304,7 +304,7 @@ public class CaseActionServiceIntegrationTest {
         String caseType = "FOI";
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel,null,null,null, null,null, "{}");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -323,7 +323,7 @@ public class CaseActionServiceIntegrationTest {
         String caseType = "FOI";
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "{\"updated\":\"true\"}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel,null,null,null, null,null, "{\"updated\":\"true\"}");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(

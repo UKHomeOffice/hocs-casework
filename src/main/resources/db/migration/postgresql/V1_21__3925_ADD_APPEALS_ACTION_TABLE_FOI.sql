@@ -14,14 +14,18 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
--- todo: satisfied :)
 CREATE TABLE action_data_appeals (
     uuid                        UUID PRIMARY KEY,
     action_uuid                 UUID NOT NULL, -- knitted to info.schema case_type_action table entry uuid.
     action_label                TEXT NOT NULL,
     case_data_type              TEXT NOT NULL,
     case_data_uuid              UUID NOT NULL, -- fk case_data.uuid
-    data                        jsonb,
+    status                      TEXT NOT NULL,
+    date_sent_rms               TIMESTAMP WITHOUT TIME ZONE,
+    outcome                     TEXT,
+    complex_case                BOOLEAN,
+    note                        TEXT DEFAULT '',
+    appeal_officer_data         jsonb,
     created_timestamp           TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
     last_updated_timestamp      TIMESTAMP WITHOUT TIME ZONE,
 

@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -32,8 +33,23 @@ public class ActionDataAppeal implements Serializable {
     @Column(name = "case_data_uuid")
     private UUID caseDataUuid;
 
-    @Column(name = "data")
-    private String data;
+    @Column(name = "status")
+    private String status;
+
+    @Column(name = "date_sent_rms")
+    private LocalDate dateSentRMS;
+
+    @Column(name = "outcome")
+    private String outcome;
+
+    @Column(name = "complex_case")
+    private Boolean complexCase;
+
+    @Column(name = "note")
+    private String note;
+
+    @Column(name = "appeal_officer_data")
+    private String appealOfficerData;
 
     @Column(name = "created_timestamp")
     private LocalDateTime createTimestamp;
@@ -43,12 +59,23 @@ public class ActionDataAppeal implements Serializable {
 
     public ActionDataAppeal(UUID caseTypeActionUuid,
                             String caseTypeActionLabel,
-                            String caseDataType, UUID caseDataUuid, String data) {
+                            String caseDataType, UUID caseDataUuid,
+                            String status,
+                            LocalDate dateSentRMS,
+                            String outcome,
+                            Boolean complexCase,
+                            String note,
+                            String appealOfficerData) {
         this.uuid = UUID.randomUUID();
         this.caseTypeActionUuid = caseTypeActionUuid;
         this.caseTypeActionLabel = caseTypeActionLabel;
         this.caseDataType = caseDataType;
         this.caseDataUuid = caseDataUuid;
-        this.data = data;
+        this.status = status;
+        this.dateSentRMS = dateSentRMS;
+        this.outcome = outcome;
+        this.complexCase = complexCase;
+        this.note = note;
+        this.appealOfficerData = appealOfficerData;
     }
 }

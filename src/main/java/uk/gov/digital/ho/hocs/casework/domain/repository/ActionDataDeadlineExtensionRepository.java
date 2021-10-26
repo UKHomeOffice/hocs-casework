@@ -13,4 +13,6 @@ public interface ActionDataDeadlineExtensionRepository extends CrudRepository <A
     List<ActionDataDeadlineExtension> findAllByCaseDataType(String caseDataType);
 
     ActionDataDeadlineExtension findByCaseDataUuid(UUID actionDataUuid);
+
+    List<ActionDataDeadlineExtension> findAllByCaseTypeActionUuid(UUID caseTypeActionUuid);
 }

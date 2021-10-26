@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboundDto;
 
@@ -65,10 +63,10 @@ public class ActionDataDeadlineExtensionService implements ActionService {
     }
 
     @Override
-    public void create(UUID caseUuid, UUID stageUuid, String caseDataType, ActionDataDto actionData) {
+    public void create(UUID caseUuid, UUID stageUuid, ActionDataDto actionData) {
 
         ActionDataDeadlineExtensionInboundDto extensionDto = (ActionDataDeadlineExtensionInboundDto) actionData;
-        log.debug("Received request to create action: {} for case: {}, stage: {}, caseType: {}", extensionDto, caseUuid, stageUuid, caseDataType);
+        log.debug("Received request to create action: {} for case: {}, stage: {}", extensionDto, caseUuid, stageUuid);
 
         int extendByNumberOfDays = extensionDto.getExtendBy();
 
@@ -83,27 +81,41 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         LocalDate extendFromDate = LocalDate.now();
         UUID extensionTypeUuid = extensionDto.getCaseTypeActionUuid();
 
-        CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseDataType, extensionTypeUuid);
-        if (caseTypeActionDto == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action exists for actionId: %s", extensionTypeUuid), ACTION_DATA_CREATE_FAILURE);
-        }
-
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUuid);
         if (caseData == null) {
             // Should have exited from the getCase call if no case with ID, however put here for safety to stop orphaned records.
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case with id: %s does not exist.", caseUuid), CASE_NOT_FOUND);
         }
 
+        CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(), extensionTypeUuid);
+        if (caseTypeActionDto == null) {
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action exists for actionId: %s", extensionTypeUuid), ACTION_DATA_CREATE_FAILURE);
+        }
+
+        if (hasMaxRequests(caseTypeActionDto)) {
+            String msg = String.format("The maximum number of requests of type: %s already exist for caseId: %s", caseTypeActionDto.getActionLabel(), caseUuid);
+            log.error(msg);
+            throw new HttpClientErrorException(HttpStatus.FORBIDDEN,msg);
+        }
+
+
+
         if (extendFrom != ExtendFrom.TODAY) {
             extendFromDate = caseData.getCaseDeadline();
         }
 
-        LocalDate updatedDeadline = infoClient.getCaseDeadline(caseDataType,extendFromDate,extendByNumberOfDays);
-        LocalDate updateDeadlineWarning = infoClient.getCaseDeadlineWarning(caseDataType,extendFromDate,extendByNumberOfDays);
+        LocalDate updatedDeadline = infoClient.getCaseDeadline(caseData.getType(),extendFromDate,extendByNumberOfDays);
+        LocalDate updateDeadlineWarning = infoClient.getCaseDeadlineWarning(caseData.getType(),extendFromDate,extendByNumberOfDays);
+
+        if (caseData.getCaseDeadline().isAfter(updatedDeadline)) {
+            String msg = String.format("CaseId: %s, existing deadline (%s) is later than requested extension (%s). Extension not applied.", caseUuid, caseData.getCaseDeadline(), updatedDeadline);
+            log.warn(msg);
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, msg);
+        }
 
         ActionDataDeadlineExtension extensionEntity = new ActionDataDeadlineExtension(
                 extensionDto.getCaseTypeActionUuid(),
-                extensionDto.getCaseTypeActionLabel(),
+                caseTypeActionDto.getActionLabel(),
                 caseData.getType(),
                 caseUuid,
                 caseData.getCaseDeadline(),
@@ -121,11 +133,16 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         auditClient.createExtensionAudit(createdExtension);
         updateStageDeadlines(caseData);
 
-        log.info("Created action:  {} for case: {}, caseType {}", actionData, caseUuid, caseDataType);
+        log.info("Created action:  {} for case: {}", actionData, caseUuid);
+    }
+
+    private boolean hasMaxRequests(CaseTypeActionDto caseTypeActionDto) {
+        List<ActionDataDeadlineExtension> existingDeadlinesOfMatchingType = extensionRepository.findAllByCaseTypeActionUuid(caseTypeActionDto.getCaseTypeUuid());
+        return existingDeadlinesOfMatchingType.size() >= caseTypeActionDto.getMaxConcurrentEvents();
     }
 
     @Override
-    public void update(UUID caseUuid, UUID stageUuid, String caseType, UUID actionEntityId, ActionDataDto actionData) {
+    public void update(UUID caseUuid, UUID stageUuid, UUID actionEntityId, ActionDataDto actionData) {
         String msg = (String.format("Update of Case Deadline Extension Data is not supported, caseUuid: %s, actionData: %s", caseUuid, actionData.toString()));
         log.error(msg);
         throw new UnsupportedOperationException(msg);
