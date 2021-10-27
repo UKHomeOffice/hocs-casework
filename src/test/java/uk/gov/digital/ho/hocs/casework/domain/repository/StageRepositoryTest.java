@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.domain.repository;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +49,7 @@ public class StageRepositoryTest {
         entityManager.clear();
     }
 
+    @Ignore
     @Test
     public void findAllActiveByTeamUUID() {
         final int QUERY_RUNS = 10;
