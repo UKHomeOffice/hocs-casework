@@ -27,6 +27,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 
+@Ignore
 @Slf4j
 @RunWith(SpringRunner.class)
 @DataJpaTest(showSql = false)
@@ -49,7 +50,6 @@ public class StageRepositoryTest {
         entityManager.clear();
     }
 
-    @Ignore
     @Test
     public void findAllActiveByTeamUUID() {
         final int QUERY_RUNS = 10;
