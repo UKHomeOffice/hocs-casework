@@ -13,12 +13,10 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataAppeal;
-import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataDeadlineExtension;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.ActionDataAppealsRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -75,10 +73,10 @@ public class ActionDataAppealsService implements ActionService {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", appealUuid), ACTION_DATA_CREATE_FAILURE);
         }
 
-        if (hasMaxRequests(caseTypeActionDto)) {
-            String msg = String.format("The maximum number of requests of type: %s already exist for caseId: %s", caseTypeActionDto.getActionLabel(), caseUuid);
+        if (hasMaxActiveRequests(caseTypeActionDto)) {
+            String msg = String.format("The maximum number of 'Pending' requests of type: %s already exist for caseId: %s", caseTypeActionDto.getActionLabel(), caseUuid);
             log.error(msg);
-            throw new HttpClientErrorException(HttpStatus.FORBIDDEN,msg);
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,msg);
         }
 
 
@@ -125,7 +123,13 @@ public class ActionDataAppealsService implements ActionService {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Action with id:  %s does not exist.", appealUuid), ACTION_DATA_UPDATE_FAILURE);
         }
 
+        existingAppealData.setStatus(appealDto.getStatus());
+        existingAppealData.setDateSentRMS(appealDto.getDateSentRMS());
+        existingAppealData.setOutcome(appealDto.getOutcome());
+        existingAppealData.setComplexCase(appealDto.getComplexCase());
+        existingAppealData.setNote(appealDto.getNote());
         existingAppealData.setAppealOfficerData(appealDto.getAppealOfficerData());
+
         ActionDataAppeal updatedAppealEntity = appealsRepository.save(existingAppealData);
 
         caseNoteService.createCaseNote(caseUuid, UPDATE_CASE_NOTE_KEY, updatedAppealEntity.getCaseTypeActionLabel());
@@ -151,8 +155,9 @@ public class ActionDataAppealsService implements ActionService {
         )).collect(Collectors.toList());
     }
 
-    private boolean hasMaxRequests(CaseTypeActionDto caseTypeActionDto) {
-        List<ActionDataAppeal> existingDeadlinesOfMatchingType = appealsRepository.findAllByCaseTypeActionUuid(caseTypeActionDto.getCaseTypeUuid());
-        return existingDeadlinesOfMatchingType.size() >= caseTypeActionDto.getMaxConcurrentEvents();
+    private boolean hasMaxActiveRequests(CaseTypeActionDto caseTypeActionDto) {
+        List<ActionDataAppeal> existing = appealsRepository.findAllByCaseTypeActionUuid(caseTypeActionDto.getUuid());
+        return existing.stream()
+                .filter(appeal -> !appeal.getStatus().equals("Complete")).count() >= caseTypeActionDto.getMaxConcurrentEvents();
     }
 }

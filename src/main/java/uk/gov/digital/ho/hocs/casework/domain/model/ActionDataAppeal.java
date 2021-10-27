@@ -43,7 +43,7 @@ public class ActionDataAppeal implements Serializable {
     private String outcome;
 
     @Column(name = "complex_case")
-    private Boolean complexCase;
+    private String complexCase;
 
     @Column(name = "note")
     private String note;
@@ -63,7 +63,7 @@ public class ActionDataAppeal implements Serializable {
                             String status,
                             LocalDate dateSentRMS,
                             String outcome,
-                            Boolean complexCase,
+                            String complexCase,
                             String note,
                             String appealOfficerData) {
         this.uuid = UUID.randomUUID();

@@ -102,12 +102,10 @@ public class ActionDataAppealsServiceTest {
                 null,
                 LocalDate.MAX,
                 null,
-                true,
+                null,
                 "TEST NOTE",
                 "{}"
         );
-
-        when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(null);
 
         // WHEN
         actionDataAppealsService.create(caseUUID, stageUUID, appealDto);
@@ -130,17 +128,11 @@ public class ActionDataAppealsServiceTest {
                 null,
                 LocalDate.MAX,
                 null,
-                true,
+                null,
                 "TEST NOTE",
                 "{}"
         );
 
-        CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
-                actionTypeUuid,
-                null, caseType, null, null, 1,10, true, null
-        );
-
-        when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
 
         // WHEN
@@ -166,7 +158,7 @@ public class ActionDataAppealsServiceTest {
                 null,
                 LocalDate.MAX,
                 null,
-                true,
+                null,
                 "TEST NOTE",
                 "{}"
         );
@@ -204,10 +196,10 @@ public class ActionDataAppealsServiceTest {
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, null, 1,10, true, null
+                null, caseType, null, appealDto.getCaseTypeActionLabel(), 1,10, true, null
         );
 
-        when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
+        when(mockInfoClient.getCaseTypeActionByUuid(caseData.getType(), appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
         // WHEN
@@ -238,12 +230,10 @@ public class ActionDataAppealsServiceTest {
                 null,
                 LocalDate.MAX,
                 null,
-                true,
+                null,
                 "TEST NOTE",
                 "{}"
         );
-
-        when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(null);
 
         // WHEN
         actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
@@ -266,17 +256,11 @@ public class ActionDataAppealsServiceTest {
                 null,
                 LocalDate.MAX,
                 null,
-                true,
+                null,
                 "TEST NOTE",
                 "{}"
         );
 
-        CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
-                actionTypeUuid,
-                null, caseType, null, null, 1,10, true, null
-        );
-
-        when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
 
         // WHEN
@@ -303,7 +287,7 @@ public class ActionDataAppealsServiceTest {
                 null,
                 LocalDate.MAX,
                 null,
-                true,
+                null,
                 "TEST NOTE",
                 "{}"
         );
@@ -344,9 +328,7 @@ public class ActionDataAppealsServiceTest {
                 null, caseType, null, null, 1,10, true, null
         );
 
-        when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
-        when(mockAppealRepository.findByUuidAndCaseDataUuid(appealDto.getUuid(), caseUUID)).thenReturn(null);
 
         // WHEN
         actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
@@ -374,7 +356,7 @@ public class ActionDataAppealsServiceTest {
                 null,
                 LocalDate.MAX,
                 null,
-                true,
+                null,
                 "TEST NOTE",
                 updatedDataField
         );
@@ -424,7 +406,7 @@ public class ActionDataAppealsServiceTest {
                 null,
                 null,
                 null,
-                false,
+                null,
                 null,
                 "{}",
                 LocalDateTime.MIN,
@@ -440,7 +422,7 @@ public class ActionDataAppealsServiceTest {
                 null,
                 null,
                 null,
-                false,
+                null,
                 null,
                 updatedDataField,
                 LocalDateTime.MIN,
@@ -449,7 +431,7 @@ public class ActionDataAppealsServiceTest {
 
 
 
-        when(mockInfoClient.getCaseTypeActionByUuid(caseType, appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
+        when(mockInfoClient.getCaseTypeActionByUuid(caseData.getType(), appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
         when(mockAppealRepository.findByUuidAndCaseDataUuid(appealDto.getUuid(), caseUUID)).thenReturn(existingAppealEntity);
         when(mockAppealRepository.save(any(ActionDataAppeal.class))).thenReturn(updatedAppealEntity);
@@ -461,7 +443,7 @@ public class ActionDataAppealsServiceTest {
 
         assertThat(appealArgumentCaptor.getValue().getAppealOfficerData()).isEqualTo(updatedDataField);
 
-        verify(mockInfoClient, times(1)).getCaseTypeActionByUuid(eq(caseType), eq(actionTypeUuid));
+        verify(mockInfoClient, times(1)).getCaseTypeActionByUuid(eq(caseData.getType()), eq(actionTypeUuid));
         verify(mockAuditClient, times(1)).updateAppealAudit(any());
         verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("APPEAL_UPDATED"), eq(actionTypeLabel));
 

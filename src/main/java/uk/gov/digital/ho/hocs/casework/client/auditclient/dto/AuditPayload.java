@@ -289,7 +289,7 @@ public interface AuditPayload {
         private String status;
         private LocalDate dateSentRMS;
         private String outcome;
-        private Boolean complexCase;
+        private String complexCase;
         private String note;
         private String appealOfficerData;
 

@@ -21,7 +21,7 @@ public class ActionDataAppealDto extends ActionDataDto {
     private String status;
     private LocalDate dateSentRMS;
     private String outcome;
-    private Boolean complexCase;
+    private String complexCase;
     private String note;
     private String appealOfficerData;
 
@@ -29,7 +29,7 @@ public class ActionDataAppealDto extends ActionDataDto {
                                String status,
                                LocalDate dateSentRMS,
                                String outcome,
-                               Boolean complexCase,
+                               String complexCase,
                                String note,
                                String appealOfficerData) {
 

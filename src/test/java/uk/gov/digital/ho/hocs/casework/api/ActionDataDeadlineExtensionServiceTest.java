@@ -104,7 +104,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
-                "ACTION_LABEL",
+                "TODAY",
                 extendByDays,
                 "ANY NOTE HERE"
         );
@@ -148,7 +148,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 null, caseType, null, null,1, 10, true, null
         );
 
-        when(mockInfoClient.getCaseTypeActionByUuid(caseType, extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
+        when(mockInfoClient.getCaseTypeActionByUuid(previousCaseData.getType(), extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(previousCaseData);
         when(mockInfoClient.getCaseDeadline(anyString(), any(LocalDate.class), anyInt())).thenReturn(LocalDate.now().plusDays(extendByDays));
         when(mockInfoClient.getCaseDeadlineWarning(anyString(), any(LocalDate.class), anyInt())).thenReturn(LocalDate.now().plusDays(extendByDays - 2));
@@ -181,18 +181,15 @@ public class ActionDataDeadlineExtensionServiceTest {
         UUID caseUUID = UUID.randomUUID();
         UUID actionTypeUuid = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
-        String caseType = "TEST_CASE_TYPE";
         int extendByDays = 8;
         ActionDataDeadlineExtensionInboundDto extensionDto = new ActionDataDeadlineExtensionInboundDto(
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
-                "ACTION_LABEL",
+                "TODAY",
                 extendByDays,
                 "ANY NOTE HERE"
         );
-
-        when(mockInfoClient.getCaseTypeActionByUuid(caseType, actionTypeUuid)).thenReturn(null);
 
         // WHEN
         actionDataDeadlineExtensionService.create(caseUUID,stageUUID, extensionDto);
@@ -213,7 +210,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
-                "ACTION_LABEL",
+                "TODAY",
                 extendByDays,
                 "ANY NOTE HERE"
         );
@@ -221,7 +218,6 @@ public class ActionDataDeadlineExtensionServiceTest {
                 actionTypeUuid, null, caseType, null, null, 1,10, true, null
         );
 
-        when(mockInfoClient.getCaseTypeActionByUuid(caseType, actionTypeUuid)).thenReturn(caseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
         // WHEN
         actionDataDeadlineExtensionService.create(caseUUID,stageUUID, extensionDto);

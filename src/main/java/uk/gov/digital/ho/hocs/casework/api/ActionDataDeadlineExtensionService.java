@@ -93,7 +93,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         }
 
         if (hasMaxRequests(caseTypeActionDto)) {
-            String msg = String.format("The maximum number of requests of type: %s already exist for caseId: %s", caseTypeActionDto.getActionLabel(), caseUuid);
+            String msg = String.format("The maximum number of extensions of type: %s have already been applied for caseId: %s", caseTypeActionDto.getActionLabel(), caseUuid);
             log.error(msg);
             throw new HttpClientErrorException(HttpStatus.FORBIDDEN,msg);
         }
@@ -137,7 +137,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
     }
 
     private boolean hasMaxRequests(CaseTypeActionDto caseTypeActionDto) {
-        List<ActionDataDeadlineExtension> existingDeadlinesOfMatchingType = extensionRepository.findAllByCaseTypeActionUuid(caseTypeActionDto.getCaseTypeUuid());
+        List<ActionDataDeadlineExtension> existingDeadlinesOfMatchingType = extensionRepository.findAllByCaseTypeActionUuid(caseTypeActionDto.getUuid());
         return existingDeadlinesOfMatchingType.size() >= caseTypeActionDto.getMaxConcurrentEvents();
     }
 

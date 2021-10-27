@@ -55,12 +55,17 @@ VALUES (
         'TEST NOTE'
        );
 
-INSERT INTO action_data_appeals(uuid, action_uuid, action_label, case_data_type, case_data_uuid, data)
+INSERT INTO action_data_appeals (uuid, action_uuid, action_label, case_data_type, case_data_uuid, status, date_sent_rms,outcome,complex_case, note,appeal_officer_data)
 VALUES (
-        'b124e71a-37be-410a-87a0-739be996d07e',
-        'f124e71a-37be-410a-87a0-739be996d07e',
-        'Action Label Appeal',
-        'TEST',
-        '14915b78-6977-42db-b343-0915a7f412a1',
-        '{}'::jsonb
-       )
+           'd159c936-b727-464e-a0ed-b63134fe0b37',
+           '326eddb3-ba64-4253-ad39-916ccbb59f4e',
+           'IR APPEAL',
+           'FOI',
+           '14915b78-6977-42db-b343-0915a7f412a1',
+           'Pending',
+           null,
+           null,
+           null,
+           null,
+           '{}'::jsonb
+       ) ON CONFLICT DO NOTHING;

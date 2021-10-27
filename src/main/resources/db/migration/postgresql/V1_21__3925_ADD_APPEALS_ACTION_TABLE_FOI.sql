@@ -23,7 +23,7 @@ CREATE TABLE action_data_appeals (
     status                      TEXT NOT NULL,
     date_sent_rms               TIMESTAMP WITHOUT TIME ZONE,
     outcome                     TEXT,
-    complex_case                BOOLEAN,
+    complex_case                TEXT,
     note                        TEXT DEFAULT '',
     appeal_officer_data         jsonb,
     created_timestamp           TIMESTAMP WITHOUT TIME ZONE DEFAULT now(),
@@ -56,6 +56,3 @@ CREATE TABLE action_data_extensions (
 
 CREATE TRIGGER action_data_extensions_last_updated_timestamp
     BEFORE INSERT OR UPDATE ON action_data_appeals FOR EACH ROW EXECUTE PROCEDURE update_last_updated_timestamp_on_data_change();
-
--- Remove old implementation... originally for FOI however replaced before release.
--- DROP TABLE IF EXISTS case_deadline_extension;
