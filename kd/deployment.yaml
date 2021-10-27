@@ -331,7 +331,7 @@ spec:
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            periodSeconds: 10
+            periodSeconds: 2
             timeoutSeconds: 5
             failureThreshold: 1
           readinessProbe:
@@ -341,7 +341,7 @@ spec:
               httpHeaders:
                 - name: X-probe
                   value: kubelet
-            periodSeconds: 10
+            periodSeconds: 2
             timeoutSeconds: 5
             failureThreshold: 1
           volumeMounts:
