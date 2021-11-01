@@ -292,6 +292,33 @@ public class CaseActionServiceIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
+    @Test
+    public void appealCreate_shouldReturn200ForBothCasesAndCreateAppeal() throws JsonProcessingException {
+        UUID stageUUID1 = UUID.randomUUID();
+        String caseTypeActionLabel = "IR Appeal";
+        UUID caseUUID2 = UUID.fromString("bb915b78-6977-42db-b343-0915a7f412a1");
+
+        ActionDataDto actionDataDto = new ActionDataAppealDto(null, APPEAL_CASE_TYPE_ACTION_ID_ALT_ID, caseTypeActionLabel,"Pending",null,null, null,null, "{}");
+
+        String requestBody = mapper.writeValueAsString(actionDataDto);
+        ResponseEntity<Void> response1 = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID1 + "/action",
+                POST,
+                new HttpEntity<>(requestBody, createValidAuthHeaders()),
+                Void.class
+        );
+
+        ResponseEntity<Void> response2 = testRestTemplate.exchange(
+                getBasePath() + "/case/" + caseUUID2 + "/stage/" + stageUUID1 + "/action",
+                POST,
+                new HttpEntity<>(requestBody, createValidAuthHeaders()),
+                Void.class
+        );
+
+        assertThat(response1.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response2.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
     // APPEALS - UPDATE
 
     @Test
