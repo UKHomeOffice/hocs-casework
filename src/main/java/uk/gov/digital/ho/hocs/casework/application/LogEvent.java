@@ -119,7 +119,11 @@ public enum LogEvent {
     CASE_TYPE_TEMPLATE_CACHE_INVALIDATED,
     ALL_CASE_TOPICS_RETRIEVED,
     EXTENSION_APPLIED,
-    EXTENSION_APPLY_FAILED;
+    EXTENSION_APPLY_FAILED,
+    ACTION_DATA_CREATE_SUCCESS,
+    ACTION_DATA_CREATE_FAILURE,
+    ACTION_DATA_UPDATE_SUCCESS,
+    ACTION_DATA_UPDATE_FAILURE;
     public static final String EVENT = "event_id";
     public static final String EXCEPTION = "exception";
     public static final String STACKTRACE = "stacktrace";

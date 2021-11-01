@@ -27,14 +27,32 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.*;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CALCULATED_TOTALS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_COMPLETED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DELETED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_UPDATED_NULL_DATA;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_SUMMARY_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_LOOKUP_FAILED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRESPONDENT_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_TOPIC_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.UNCAUGHT_EXCEPTION;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.APPEAL_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.APPEAL_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.EXTENSION_APPLIED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_DELETED;
@@ -60,17 +78,15 @@ public class CaseDataService {
     protected final AuditClient auditClient;
     protected final ObjectMapper objectMapper;
     protected final InfoClient infoClient;
-    protected final SomuItemRepository somuItemRepository;
     private final CaseCopyFactory caseCopyFactory;
     private final CaseLinkRepository caseLinkRepository;
+    private final CaseActionService caseActionService;
     public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
-    protected final CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository;
 
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
                            CaseLinkRepository caseLinkRepository, InfoClient infoClient,
-                           ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory, CaseDeadlineExtensionTypeRepository
-                                   caseDeadlineExtensionTypeRepository, SomuItemRepository somuItemRepository) {
+                           ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory, CaseActionService caseActionService) {
 
         this.caseDataRepository = caseDataRepository;
         this.activeCaseViewDataRepository = activeCaseViewDataRepository;
@@ -78,9 +94,8 @@ public class CaseDataService {
         this.infoClient = infoClient;
         this.auditClient = auditClient;
         this.objectMapper = objectMapper;
-        this.caseDeadlineExtensionTypeRepository = caseDeadlineExtensionTypeRepository;
         this.caseCopyFactory = caseCopyFactory;
-        this.somuItemRepository = somuItemRepository;
+        this.caseActionService = caseActionService;
     }
 
     public static final List<String> TIMELINE_EVENTS = List.of(
@@ -97,7 +112,10 @@ public class CaseDataService {
             CORRESPONDENT_CREATED.toString(),
             CORRESPONDENT_UPDATED.toString(),
             DOCUMENT_CREATED.toString(),
-            DOCUMENT_DELETED.toString()
+            DOCUMENT_DELETED.toString(),
+            APPEAL_UPDATED.toString(),
+            APPEAL_CREATED.toString(),
+            EXTENSION_APPLIED.toString()
     );
 
     public CaseData getCase(UUID caseUUID) {
@@ -284,34 +302,38 @@ public class CaseDataService {
         return newDataMap;
     }
 
-    public void applyExtension(UUID caseUUID, UUID stageUUID, String type, String note) {
-        log.debug("Applying extension for Case: {} Extension: {}", caseUUID, type);
-        CaseData caseData = getCaseData(caseUUID);
-
-        CaseDeadlineExtensionType caseDeadlineExtensionType =
-                caseDeadlineExtensionTypeRepository.findById(type).orElseThrow();
-
-        log.debug("Got extension type: {}", caseDeadlineExtensionType.getType());
-
-        final CaseDeadlineExtension caseDeadlineExtension =
-                caseData.addDeadlineExtension(caseDeadlineExtensionType, note);
-
-        int extensionDays = calculateExtensionDays(caseData.getDeadlineExtensions());
-
-        LocalDate deadline = infoClient.getCaseDeadline(
-                caseData.getType(),
-                caseData.getDateReceived(),
-                0,
-                extensionDays);
-
-        caseData.setCaseDeadline(deadline);
-        caseData.setCaseDeadlineWarning(deadline.minusDays(2));
-
-        caseDataRepository.save(caseData);
-
-        updateStageDeadlines(caseData);
-        auditClient.createExtensionAudit(caseDeadlineExtension);
+    public void updateStageDeadlinesForExtension(CaseData updateCaseData) {
+        updateStageDeadlines(updateCaseData);
     }
+
+//    public void applyExtension(UUID caseUUID, UUID stageUUID, String type, String note) {
+//        log.debug("Applying extension for Case: {} Extension: {}", caseUUID, type);
+//        CaseData caseData = getCaseData(caseUUID);
+//
+//        CaseDeadlineExtensionType caseDeadlineExtensionType =
+//                caseDeadlineExtensionTypeRepository.findById(type).orElseThrow();
+//
+//        log.debug("Got extension type: {}", caseDeadlineExtensionType.getType());
+//
+//        final CaseDeadlineExtension caseDeadlineExtension =
+//                caseData.addDeadlineExtension(caseDeadlineExtensionType, note);
+//
+//        int extensionDays = calculateExtensionDays(caseData.getDeadlineExtensions());
+//
+//        LocalDate deadline = infoClient.getCaseDeadline(
+//                caseData.getType(),
+//                caseData.getDateReceived(),
+//                0,
+//                extensionDays);
+//
+//        caseData.setCaseDeadline(deadline);
+//        caseData.setCaseDeadlineWarning(deadline.minusDays(2));
+//
+//        caseDataRepository.save(caseData);
+//
+//        updateStageDeadlines(caseData);
+////        auditClient.createExtensionAudit(caseDeadlineExtension);
+//    }
 
     private static int calculateExtensionDays(Set<CaseDeadlineExtension> caseDeadlineExtensions) {
         return caseDeadlineExtensions.stream()
@@ -527,34 +549,15 @@ public class CaseDataService {
         Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
 
+        Map<String, List<ActionDataDto>> rawActions = new HashMap<>();
+
+        caseActionService.getAllActionsForCaseById(caseUUID, rawActions);
+
+        summaryBuilder.withActions(rawActions);
+
         summaryBuilder.withAdditionalFields(getAdditionalFieldsForSummary(summaryFields, caseDataMap));
         summaryBuilder.withStageDeadlines(getStageDeadlines(caseData, caseDataMap));
-        summaryBuilder.withDeadlineExtensions(getCaseDeadlineExtensions(caseData));
 
-        final Map<UUID, SomuTypeDto> eligibleSomuTypesByUuid =
-                infoClient.getAllSomuTypesForCaseType(caseData.getType())
-                        .stream()
-                        .filter(SomuTypeDto::isActive)
-                        .filter(type ->
-                                type.getSchema().getOrDefault("showInSummary", false).equals(true)
-                        )
-                        .collect(Collectors.toMap(SomuTypeDto::getUuid, Function.identity()));
-
-        eligibleSomuTypesByUuid.values()
-                .forEach(
-                        somuType -> somuItemRepository.findByCaseUuidAndSomuUuid(caseUUID, somuType.getUuid()).forEach(
-                                somuItem -> {
-                                    try {
-                                        summaryBuilder.addSomuItem(somuType, somuItem.getData());
-                                    } catch (JsonProcessingException e) {
-                                        log.error("Error parsing somu item in summary for " +
-                                                        "Case: {} Ref: {} Somu Item UUID: {}",
-                                                caseData.getUuid(), caseData.getReference(), somuItem.getUuid(),
-                                                value(EVENT, CASE_SUMMARY_CANNOT_PARSE_SOMU_ITEM));
-                                    }
-                                }
-                        )
-                );
 
         auditClient.viewCaseSummaryAudit(caseData);
 
@@ -568,12 +571,6 @@ public class CaseDataService {
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
 
         return caseSummary;
-    }
-
-    private Map<String, Integer> getCaseDeadlineExtensions(CaseData caseData) {
-        return Objects.isNull(caseData.getDeadlineExtensions()) ? Collections.emptyMap() :
-                caseData.getDeadlineExtensions().stream().collect(Collectors.toMap(
-                        e -> e.getCaseDeadlineExtensionType().getType(), e -> e.getCaseDeadlineExtensionType().getWorkingDays()));
     }
 
     private Map<String, LocalDate> getStageDeadlines(CaseData caseData, Map<String, String> caseDataMap) {

@@ -1,3 +1,5 @@
+SET search_path TO casework;
+
 INSERT INTO case_data (uuid, created, type, reference, data, primary_topic_uuid, primary_correspondent_uuid,
                        case_deadline, date_received, deleted)
 VALUES ('14915b78-6977-42db-b343-0915a7f412a1', '2018-12-14 12:00:00', 'TEST', 'TEST/9990190/18',
@@ -31,11 +33,39 @@ VALUES ('d472a1a9-d32d-46cb-a08a-56c22637c584', '2018-12-14 12:00:00', '14915b78
 INSERT INTO case_deadline_extension_type (type, working_days) VALUES ('TEST_EXTENSION', 20);
 
 
-INSERT INTO casework.somu_item
+INSERT INTO somu_item
 (id, uuid, case_uuid, somu_uuid, data)
 VALUES
     ('1',
      '55129fdf-17b8-4455-bd4f-03b4f15cf72a',
      '14915b78-6977-42db-b343-0915a7f412a1',
      'b124e71a-37be-410a-87a0-737be996d07e',
-     '{"field1": "value1"}'::jsonb)
+     '{"field1": "value1"}'::jsonb);
+
+
+INSERT INTO action_data_extensions(uuid, action_uuid, action_label, case_data_type, case_data_uuid, original_deadline, updated_deadline, note)
+VALUES (
+        '55129fdf-17b8-4455-bd41-03b4f15cf72a',
+        'b124e71a-37be-410a-87a0-737be996d07a',
+        'Action Label Extension',
+        'TEST',
+        '14915b78-6977-42db-b343-0915a7f412a1',
+        '2018-01-29',
+        '2018-03-31',
+        'TEST NOTE'
+       );
+
+INSERT INTO action_data_appeals (uuid, action_uuid, action_label, case_data_type, case_data_uuid, status, date_sent_rms,outcome,complex_case, note,appeal_officer_data)
+VALUES (
+           'd159c936-b727-464e-a0ed-b63134fe0b37',
+           '326eddb3-ba64-4253-ad39-916ccbb59f4e',
+           'IR APPEAL',
+           'FOI',
+           '14915b78-6977-42db-b343-0915a7f412a1',
+           'Pending',
+           null,
+           null,
+           null,
+           null,
+           '{}'::jsonb
+       ) ON CONFLICT DO NOTHING;

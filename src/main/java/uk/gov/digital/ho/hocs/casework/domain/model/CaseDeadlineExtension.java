@@ -16,6 +16,7 @@ import java.util.Objects;
 
 @Entity(name = "CaseDeadlineExtension")
 @Table(name = "case_deadline_extension")
+// todo: remove
 public class CaseDeadlineExtension {
 
     @Id

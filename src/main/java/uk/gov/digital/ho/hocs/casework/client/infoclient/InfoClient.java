@@ -9,13 +9,13 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
+import java.lang.reflect.Parameter;
+import java.lang.reflect.Type;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_TEMPLATE_CACHE_INVALIDATED;
@@ -269,4 +269,22 @@ public class InfoClient {
         return response;
     }
 
+    public CaseTypeActionDto getCaseTypeActionByUuid(String caseDataType, UUID caseTypeActionUuid) {
+        log.debug("Requesting action type with id: {}", caseTypeActionUuid);
+
+        CaseTypeActionDto response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/actions/%s", caseDataType, caseTypeActionUuid), CaseTypeActionDto.class);
+
+        log.info("Received Action: {} for action id: {}", response.toString(), caseTypeActionUuid );
+        return response;
+    }
+
+    public List<CaseTypeActionDto> getCaseTypeActionForCaseType(String caseType) {
+        log.debug("Requesting case type actions for case type: {}", caseType);
+
+        ParameterizedTypeReference<List<CaseTypeActionDto>> typeRef = new ParameterizedTypeReference<>() {};
+        List<CaseTypeActionDto> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/actions", caseType),typeRef);
+
+        log.info("Received {} CaseTypeActions for caseType {}", response.size(), caseType);
+        return response;
+    }
 }

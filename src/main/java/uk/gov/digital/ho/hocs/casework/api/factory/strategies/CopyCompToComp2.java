@@ -50,7 +50,8 @@ public class CopyCompToComp2 extends AbstractCaseCopyStrategy implements CaseCop
             "SeverityVulnerable",
             "SeveritySafeGuarding",
             "ComplainantCompanyName",
-            "ComplainantNationality"
+            "ComplainantNationality",
+            "Directorate"
     };
 
     private CaseDataService caseDataService;

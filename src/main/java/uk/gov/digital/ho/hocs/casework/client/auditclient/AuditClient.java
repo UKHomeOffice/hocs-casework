@@ -318,17 +318,71 @@ public class AuditClient {
         });
     }
 
-    public void createExtensionAudit(CaseDeadlineExtension caseDeadlineExtension) {
+    public void createExtensionAudit(ActionDataDeadlineExtension actionDataDeadlineExtension) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(AuditPayload.CreateExtensionRequest.from(caseDeadlineExtension));
+                data = objectMapper.writeValueAsString(AuditPayload.CreateExtensionRequest.from(actionDataDeadlineExtension));
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
-            sendAuditMessage(localDateTime, caseDeadlineExtension.getCaseData().getUuid(), data, EXTENSION_APPLIED, null, data,
+            sendAuditMessage(localDateTime, actionDataDeadlineExtension.getUuid(), data, EXTENSION_APPLIED, null, data,
+                    requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
+    }
+
+    public void createAppealAudit(ActionDataAppeal appealEntity) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(new AuditPayload.AppealItem(
+                        appealEntity.getUuid(),
+                        appealEntity.getCaseDataUuid(),
+                        appealEntity.getCaseDataType(),
+                        appealEntity.getCaseTypeActionUuid(),
+                        appealEntity.getCaseTypeActionLabel(),
+                        appealEntity.getStatus(),
+                        appealEntity.getDateSentRMS(),
+                        appealEntity.getOutcome(),
+                        appealEntity.getComplexCase(),
+                        appealEntity.getNote(),
+                        appealEntity.getAppealOfficerData()
+                ));
+            } catch (JsonProcessingException e) {
+                logFailedToParseDataPayload(e);
+            }
+            sendAuditMessage(localDateTime, appealEntity.getCaseDataUuid(), data, EventType.APPEAL_CREATED, null, data,
+                    requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
+    }
+
+    public void updateAppealAudit(ActionDataAppeal appealEntity) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(new AuditPayload.AppealItem(
+                        appealEntity.getUuid(),
+                        appealEntity.getCaseDataUuid(),
+                        appealEntity.getCaseDataType(),
+                        appealEntity.getCaseTypeActionUuid(),
+                        appealEntity.getCaseTypeActionLabel(),
+                        appealEntity.getStatus(),
+                        appealEntity.getDateSentRMS(),
+                        appealEntity.getOutcome(),
+                        appealEntity.getComplexCase(),
+                        appealEntity.getNote(),
+                        appealEntity.getAppealOfficerData()
+                ));
+            } catch (JsonProcessingException e) {
+                logFailedToParseDataPayload(e);
+            }
+            sendAuditMessage(localDateTime, appealEntity.getCaseDataUuid(), data, EventType.APPEAL_UPDATED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }

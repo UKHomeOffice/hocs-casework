@@ -83,10 +83,6 @@ public class CaseDataGetCaseSummaryIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(new HashMap<>()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/somuType/TEST"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(Set.of(somuType)), MediaType.APPLICATION_JSON));
-        mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
@@ -107,16 +103,21 @@ public class CaseDataGetCaseSummaryIntegrationTest {
     }
 
     @Test
-    public void shouldReturnCaseSummaryWithSomuItemsWhenGetValidCaseWithPermissionLevelOwner() throws JsonProcessingException {
+    public void shouldReturnCaseSummaryWithActionData() throws JsonProcessingException {
         setupMockTeams("TEST", 5);
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/summary", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+                getBasePath() + "/case/" + CASE_UUID + "/summary", GET,
+                new HttpEntity<>(createValidAuthHeaders()),
+                String.class);
+
         final Map<String, Object> deserialisedResponse  = mapper.readValue(result.getBody(), Map.class);
-        final Map<String, Object> somuItems = ((Map) ((List) deserialisedResponse.get("somuItems")).get(0));
+        System.out.println(deserialisedResponse.get("actions"));
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(((List) somuItems.get("items")).get(0)).isEqualTo(Map.of("field1", "value1"));
-        assertThat(((Map) somuItems.get("schema")).get("showInSummary")).isEqualTo(true);
+        assertThat(deserialisedResponse).hasFieldOrProperty("actions");
+        assertThat(deserialisedResponse.get("actions")).hasFieldOrProperty("appeals");
+        assertThat(deserialisedResponse.get("actions")).hasFieldOrProperty("extensions");
+
     }
 
     private String getBasePath() {
