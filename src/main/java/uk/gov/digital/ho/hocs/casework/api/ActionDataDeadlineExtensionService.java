@@ -92,10 +92,10 @@ public class ActionDataDeadlineExtensionService implements ActionService {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action exists for actionId: %s", extensionTypeUuid), ACTION_DATA_CREATE_FAILURE);
         }
 
-        if (hasMaxRequests(caseTypeActionDto)) {
+        if (hasMaxRequests(caseTypeActionDto, caseUuid)) {
             String msg = String.format("The maximum number of extensions of type: %s have already been applied for caseId: %s", caseTypeActionDto.getActionLabel(), caseUuid);
             log.error(msg);
-            throw new HttpClientErrorException(HttpStatus.FORBIDDEN,msg);
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,msg);
         }
 
 
@@ -136,8 +136,8 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         log.info("Created action:  {} for case: {}", actionData, caseUuid);
     }
 
-    private boolean hasMaxRequests(CaseTypeActionDto caseTypeActionDto) {
-        List<ActionDataDeadlineExtension> existingDeadlinesOfMatchingType = extensionRepository.findAllByCaseTypeActionUuid(caseTypeActionDto.getUuid());
+    private boolean hasMaxRequests(CaseTypeActionDto caseTypeActionDto, UUID caseUUID) {
+        List<ActionDataDeadlineExtension> existingDeadlinesOfMatchingType = extensionRepository.findAllByCaseTypeActionUuidAndCaseDataUuid(caseTypeActionDto.getUuid(), caseUUID);
         return existingDeadlinesOfMatchingType.size() >= caseTypeActionDto.getMaxConcurrentEvents();
     }
 
