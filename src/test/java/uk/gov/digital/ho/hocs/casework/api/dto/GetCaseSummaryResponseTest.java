@@ -43,17 +43,21 @@ public class GetCaseSummaryResponseTest {
         additionalFields.add(field2);
         additionalFields.add(field4);
 
+        Map<String, List<ActionDataDto>> actions = new HashMap<>();
+
         CaseSummary caseSummary = new CaseSummary(
                 "type",
                 caseCreated,
                 caseDeadline,
                 stageDeadlines,
                 additionalFields,
-                null,null,null,null,
+                null,
+                null,
+                null,
                 PREV_CASE_REF,
                 PREVIOUS_CASE_UUID,
                 PREVIOUS_STAGE_UUID,
-                null);
+                actions);
 
         GetCaseSummaryResponse response = GetCaseSummaryResponse.from(caseSummary);
 

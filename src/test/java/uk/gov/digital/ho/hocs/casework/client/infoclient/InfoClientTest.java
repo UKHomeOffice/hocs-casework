@@ -220,4 +220,39 @@ public class InfoClientTest {
         });
         verifyNoMoreInteractions(restHelper);
     }
+
+
+    @Test
+    public void getCaseTypeActionByUuid() {
+
+        // GIVEN
+        UUID actionTypeUuid = UUID.randomUUID();
+        String caseDataType = "CT1";
+
+        CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(actionTypeUuid, UUID.randomUUID(), caseDataType, null, null, 1,10, true, null);
+        when(restHelper.get("infoService", "/caseType/" + caseDataType + "/actions/" + actionTypeUuid, CaseTypeActionDto.class)).thenReturn(mockCaseTypeActionDto);
+
+        // WHEN
+        CaseTypeActionDto response = infoClient.getCaseTypeActionByUuid(caseDataType, actionTypeUuid);
+
+        // THEN
+        assertThat(response).isNotNull();
+        assertThat(response).isEqualTo(mockCaseTypeActionDto);
+    }
+
+    @Test
+    public void getCaseTypeActionForCaseType_shouldReturnListOfCaseTypeActionDtos() {
+
+        // GIVEN
+        String caseType = "CT1";
+        ParameterizedTypeReference<List<CaseTypeActionDto>> typeRef = new ParameterizedTypeReference<>() {};
+
+        when(restHelper.get("infoService", "/caseType/" + caseType + "/actions", typeRef)).thenReturn(List.of());
+
+        // WHEN
+        List<CaseTypeActionDto> response = infoClient.getCaseTypeActionForCaseType(caseType);
+
+        // THEN
+        assertThat(response).isNotNull();
+    }
 }

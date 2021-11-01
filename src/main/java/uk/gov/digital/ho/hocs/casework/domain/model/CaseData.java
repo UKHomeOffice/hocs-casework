@@ -20,20 +20,9 @@ import java.util.UUID;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
 
 @AllArgsConstructor
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "case_data")
 public class CaseData extends AbstractCaseData implements Serializable {
-    @Getter
-    @Setter
-    @OneToMany(
-            mappedBy = "caseData",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.EAGER
-    )
-    private Set<CaseDeadlineExtension> deadlineExtensions;
-
 
     public CaseData(CaseDataType type,
                     Long caseNumber,
@@ -41,15 +30,6 @@ public class CaseData extends AbstractCaseData implements Serializable {
                     ObjectMapper objectMapper,
                     LocalDate dateReceived) {
         super(type, caseNumber, data, objectMapper, dateReceived);
-    }
-
-    public CaseDeadlineExtension addDeadlineExtension(CaseDeadlineExtensionType caseDeadlineExtensionType,
-                                                      String note) {
-        CaseDeadlineExtension caseDeadlineExtension =
-                new CaseDeadlineExtension(this, caseDeadlineExtensionType, note);
-        deadlineExtensions.add(caseDeadlineExtension);
-
-        return caseDeadlineExtension;
     }
 
     public CaseData(CaseDataType type, Long caseNumber, LocalDate dateReceived) {
@@ -94,8 +74,7 @@ public class CaseData extends AbstractCaseData implements Serializable {
                     LocalDate dateReceived,
                     boolean completed,
                     Set<ActiveStage> activeStages,
-                    Set<CaseNote> caseNotes,
-                    Set<CaseDeadlineExtension> caseDeadlineExtensions) {
+                    Set<CaseNote> caseNotes) {
         super(
                 id,
                 uuid,
@@ -115,7 +94,5 @@ public class CaseData extends AbstractCaseData implements Serializable {
                 activeStages,
                 caseNotes
         );
-
-        this.deadlineExtensions = caseDeadlineExtensions;
     }
 }

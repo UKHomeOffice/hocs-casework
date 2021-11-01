@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.CaseActionService;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
@@ -38,8 +39,7 @@ public class MigrationCaseDataService extends CaseDataService {
     public MigrationCaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
                                     MigrationStageRepository migrationStageRepository, InfoClient infoClient,
                                     ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory,
-                                    CaseDeadlineExtensionTypeRepository caseDeadlineExtensionTypeRepository,
-                                    SomuItemRepository somuItemRepository) {
+                                    CaseActionService caseActionService) {
         super(caseDataRepository,
                 activeCaseViewDataRepository,
                 null,
@@ -47,8 +47,7 @@ public class MigrationCaseDataService extends CaseDataService {
                 objectMapper,
                 auditClient,
                 caseCopyFactory,
-                caseDeadlineExtensionTypeRepository,
-                somuItemRepository);
+                caseActionService);
         this.migrationStageRepository = migrationStageRepository;
     }
 

@@ -77,6 +77,12 @@ public class RestResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
+    @ExceptionHandler(UnsupportedOperationException.class)
+    public ResponseEntity handle(UnsupportedOperationException e) {
+        log.error("UnsupportedOperationException: {}", e.getMessage(), value(EVENT, METHOD_NOT_ALLOWED));
+        return new ResponseEntity<>(e.getMessage(), METHOD_NOT_ALLOWED);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity handle(Exception e) {
         Writer stackTraceWriter = new StringWriter();
