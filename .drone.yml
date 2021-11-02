@@ -16,23 +16,6 @@ steps:
     commands:
       - ./gradlew assemble --no-daemon
 
-  - name: test project
-    image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
-    environment:
-      SPRING_PROFILES_ACTIVE: "development, local"
-      HOCS_DOCUMENT_SERVICE: "http://documents:8080"
-      DB_HOST: "postgres"
-      AWS_LOCAL_HOST: "localstack"
-    commands:
-      - ./gradlew check --no-daemon
-    depends_on:
-      - build project
-
-  - name: sonar scanner
-    image: quay.io/ukhomeofficedigital/sonar-scanner:v3.0.3
-    depends_on:
-      - build project
-
   - name: build & push branch image
     image: plugins/docker
     settings:
@@ -51,7 +34,7 @@ steps:
         exclude:
           - main
     depends_on:
-      - test project
+      - build project
 
   - name: build & push main image
     image: plugins/docker
@@ -71,7 +54,7 @@ steps:
       branch:
         - main
     depends_on:
-      - test project
+      - build project
 
 trigger:
   event:
