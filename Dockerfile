@@ -15,7 +15,7 @@ RUN addgroup -S ${GROUP} && \
     mkdir -p /app && \
     chown -R ${USER}:${GROUP} /app
 
-COPY build/libs/hocs-casework.jar /app
+COPY build/libs/hocs-casework*.jar /app
 
 ADD scripts /app/scripts
 
