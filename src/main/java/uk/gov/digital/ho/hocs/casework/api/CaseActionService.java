@@ -40,7 +40,7 @@ public class CaseActionService {
         if (typeServiceInstance != null) {
             typeServiceInstance.create(caseUUID, stageUUID, actionData);
         } else {
-            throw new UnsupportedOperationException(String.format("No Service available to CREATE actionDataDto's of type: %s",actionData.getClass().getSimpleName()));
+            throw new UnsupportedOperationException(String.format("No Service available to CREATE actionDataDtos of type: %s",actionData.getClass().getSimpleName()));
         }
     }
 
@@ -50,7 +50,7 @@ public class CaseActionService {
         if (typeServiceInstance != null) {
             typeServiceInstance.update(caseUUID, stageUUID, actionEntityId, actionData);
         } else {
-            throw new UnsupportedOperationException(String.format("No Service available to UPDATE actionDataDto's of type: %s",actionData.getClass().getSimpleName()));
+            throw new UnsupportedOperationException(String.format("No Service available to UPDATE actionDataDtos of type: %s",actionData.getClass().getSimpleName()));
         }
     }
 

@@ -191,6 +191,13 @@ public class InfoClient {
         return entityListDtos;
     }
 
+    public EntityDto<Map<String, Object>> getEntityBySimpleName(String simpleName) {
+        EntityDto<Map<String, Object>> entityDto =
+                restHelper.get(serviceBaseURL, String.format("/entity/simpleName/%s", simpleName), EntityDto.class);
+        log.info("Got Entity By Simple Name {} ", value(EVENT, INFO_CLIENT_GET_ENTITY_BY_SIMPLE_NAME));
+        return entityDto;
+    }
+
     @CacheEvict(value = "InfoClientGetStandardLine", key = "#topicUUID")
     public void clearCachedStandardLineForTopic(UUID topicUUID) {
         log.info("Cache invalidated for Topic: {}, {}", topicUUID, value(EVENT, TOPIC_STANDARD_LINE_CACHE_INVALIDATED));
