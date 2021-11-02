@@ -80,6 +80,7 @@ dependencies {
     runtimeOnly('org.postgresql:postgresql')
     compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
     annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
+    annotationProcessor "org.springframework:spring-context-indexer:5.3.12"
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation("org.apache.camel:camel-test-spring:${camelVersion}")
