@@ -153,7 +153,8 @@ class CaseDataResource {
     ResponseEntity<Void> addSingularTopicToCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID topicUUID) {
         Set<Topic> topics = topicService.getTopics(caseUUID);
         Topic topic = topicService.getTopicFromSetByTextUUID(topics, topicUUID);
-        caseDataService.updatePrimaryTopicWithTextUUID(caseUUID, stageUUID, topic.getUuid(), topicUUID);
+        caseDataService.updatePrimaryTopic(caseUUID, stageUUID,topic.getUuid());
+//        caseDataService.updatePrimaryTopicWithTextUUID(caseUUID, stageUUID, topic.getUuid(), topicUUID);
         return ResponseEntity.ok().build();
     }
 
