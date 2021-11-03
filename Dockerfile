@@ -4,9 +4,9 @@ USER root
 
 RUN apk add --no-cache openjdk11-jre
 
-COPY build/libs/*.jar app.jar
+COPY build/libs/*.jar .
 
-RUN java -Djarmode=layertools -jar app.jar extract
+RUN java -Djarmode=layertools -jar *.jar extract
 
 FROM quay.io/ukhomeofficedigital/alpine:v3.13
 
@@ -31,6 +31,7 @@ RUN chmod a+x /app/scripts/*
 
 COPY --from=builder dependencies/ ./
 COPY --from=builder snapshot-dependencies/ ./
+RUN true # Bug where copying null/0diff fails docker build
 COPY --from=builder spring-boot-loader/ ./
 COPY --from=builder application/ ./
 
