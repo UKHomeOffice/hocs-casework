@@ -1,4 +1,4 @@
-FROM quay.io/ukhomeofficedigital/alpine:v3.13 as builder
+FROM quay.io/ukhomeofficedigital/alpine:v3.14 as builder
 
 USER root
 
@@ -8,7 +8,7 @@ COPY build/libs/*.jar .
 
 RUN java -Djarmode=layertools -jar *.jar extract
 
-FROM quay.io/ukhomeofficedigital/alpine:v3.13
+FROM quay.io/ukhomeofficedigital/alpine:v3.14
 
 USER root
 
