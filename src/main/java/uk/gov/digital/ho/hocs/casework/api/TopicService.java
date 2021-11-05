@@ -82,19 +82,4 @@ public class TopicService {
         log.info("Got {} Topics", topics.size(), value(EVENT, ALL_CASE_TOPICS_RETRIEVED));
         return topics;
     }
-
-    /**
-     * Gets a topic from a set of topics using a textUUID (the uuid listed in the info database)
-     * @param topics The set of topics to search
-     * @param textUUID The uuid of the topic in the info database
-     * @return The searched for topic if it is in the set, null otherwise
-     */
-    Topic getTopicFromSetByTextUUID(Set<Topic> topics, UUID textUUID){
-        for(Topic topic : topics ){
-            if(topic.getTextUUID().equals(textUUID)){
-                return topic;
-            }
-        }
-        return null;
-    }
 }
