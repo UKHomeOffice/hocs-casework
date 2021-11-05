@@ -125,13 +125,13 @@ public class ActionDataDeadlineExtensionService implements ActionService {
 
         caseData.setCaseDeadline(updatedDeadline);
         caseData.setCaseDeadlineWarning(updateDeadlineWarning);
+        updateStageDeadlines(caseData);
 
         ActionDataDeadlineExtension createdExtension = extensionRepository.save(extensionEntity);
         caseDataRepository.save(caseData);
         caseNoteService.createCaseNote(caseUuid, CREATE_CASE_NOTE_KEY, extensionDto.getNote());
         auditClient.updateCaseAudit(caseData, stageUuid);
         auditClient.createExtensionAudit(createdExtension);
-        updateStageDeadlines(caseData);
 
         log.info("Created action:  {} for case: {}", actionData, caseUuid);
     }
@@ -190,6 +190,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
                 LocalDate deadline = LocalDate.parse(overrideDeadline);
                 stage.setDeadline(deadline);
             }
+
         }
     }
 
