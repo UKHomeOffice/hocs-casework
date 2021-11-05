@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.EventType;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -87,7 +89,8 @@ public class ActionDataExternalInterestService implements ActionService {
                 actionDataExternalInterest.getDetailsOfInterest());
         actionDataExternalInterestRepository.save(actionDataExternalInterest);
         auditClient.updateCaseAudit(caseData, stageUuid);
-//        auditClient.createExtensionAudit(createdExtension);
+
+        auditClient.createExternalInterestAudit(actionDataExternalInterest);
 
         log.info("Created action:  {} for case: {}", actionData, caseUuid);
     }
@@ -127,7 +130,7 @@ public class ActionDataExternalInterestService implements ActionService {
                 existingExternalInterestData.getDetailsOfInterest());
         actionDataExternalInterestRepository.save(existingExternalInterestData);
 
-        //        auditClient.createExtensionAudit(createdExtension);
+        auditClient.updateExternalInterestAudit(existingExternalInterestData);
         auditClient.updateCaseAudit(caseData, stageUuid);
     }
 

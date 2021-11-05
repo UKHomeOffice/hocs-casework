@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.api.dto.AddressDto;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.EventType;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataDeadlineExtension;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDeadlineExtension;
@@ -22,7 +23,6 @@ import java.util.UUID;
 
 @java.lang.SuppressWarnings("squid:S1068")
 public interface AuditPayload {
-
     @AllArgsConstructor
     @Getter
     class CaseReference {
@@ -85,7 +85,7 @@ public interface AuditPayload {
     class SomuItemWithData extends SomuItem {
         @JsonProperty("uuid")
         private UUID uuid;
-        
+
         @JsonRawValue
         private String data;
 
@@ -293,5 +293,21 @@ public interface AuditPayload {
         private String note;
         private String appealOfficerData;
 
+    }
+
+    interface ActionAuditPayload {
+        UUID getCaseDataUuid();
+        EventType getEventType();
+    }
+
+    @AllArgsConstructor
+    @Getter
+    class ExternalInterestItem implements ActionAuditPayload {
+
+        private UUID uuid;
+        private UUID caseDataUuid;
+        private String caseType;
+        private String interestDetails;
+        private EventType eventType;
     }
 }

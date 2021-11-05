@@ -30,3 +30,15 @@ VALUES (
         null,
         '{}'::jsonb
        ) ON CONFLICT DO NOTHING;
+
+INSERT INTO action_data_external_interest
+    (uuid, action_uuid, action_label, case_data_type, case_data_uuid, party_type, details_of_interest)
+VALUES (
+        '7a4ce582-e698-462f-9024-d33de6b85983',
+        '1e549055-9115-438a-9c21-29c191bcc58b',
+        'External Interest',
+        'FOI',
+        '14915b78-6977-42db-b343-0915a7f412a1',
+        'TEST_INTERESTED_PARTY',
+        'details of interests'
+       ) ON CONFLICT DO NOTHING;

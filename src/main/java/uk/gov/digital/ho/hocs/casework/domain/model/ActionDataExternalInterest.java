@@ -51,7 +51,7 @@ public class ActionDataExternalInterest implements Serializable {
                                       String caseTypeActionLabel,
                                       String caseDataType,
                                       UUID caseDataUuid,
-                                      String partType,
+                                      String partyType,
                                       String detailsOfInterest) {
         this.uuid = UUID.randomUUID();
 
@@ -60,7 +60,7 @@ public class ActionDataExternalInterest implements Serializable {
         this.caseDataType = caseDataType;
 
         this.caseDataUuid = caseDataUuid;
-        this.partyType = partType;
+        this.partyType = partyType;
         this.detailsOfInterest = detailsOfInterest;
     }
 }
