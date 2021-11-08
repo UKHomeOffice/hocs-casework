@@ -151,6 +151,9 @@ public interface AuditPayload {
         @JsonProperty("fullname")
         private String fullname;
 
+        @JsonProperty("organisation")
+        private String organisation;
+
         @JsonProperty("address")
         private AddressDto address;
 
@@ -173,6 +176,7 @@ public interface AuditPayload {
                     correspondent.getCorrespondentType(),
                     correspondent.getCaseUUID(),
                     correspondent.getFullName(),
+                    correspondent.getOrganisation(),
                     AddressDto.from(correspondent),
                     correspondent.getTelephone(),
                     correspondent.getEmail(),

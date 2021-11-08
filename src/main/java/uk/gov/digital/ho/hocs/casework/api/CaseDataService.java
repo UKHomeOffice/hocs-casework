@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -302,44 +301,6 @@ public class CaseDataService {
         return newDataMap;
     }
 
-    public void updateStageDeadlinesForExtension(CaseData updateCaseData) {
-        updateStageDeadlines(updateCaseData);
-    }
-
-//    public void applyExtension(UUID caseUUID, UUID stageUUID, String type, String note) {
-//        log.debug("Applying extension for Case: {} Extension: {}", caseUUID, type);
-//        CaseData caseData = getCaseData(caseUUID);
-//
-//        CaseDeadlineExtensionType caseDeadlineExtensionType =
-//                caseDeadlineExtensionTypeRepository.findById(type).orElseThrow();
-//
-//        log.debug("Got extension type: {}", caseDeadlineExtensionType.getType());
-//
-//        final CaseDeadlineExtension caseDeadlineExtension =
-//                caseData.addDeadlineExtension(caseDeadlineExtensionType, note);
-//
-//        int extensionDays = calculateExtensionDays(caseData.getDeadlineExtensions());
-//
-//        LocalDate deadline = infoClient.getCaseDeadline(
-//                caseData.getType(),
-//                caseData.getDateReceived(),
-//                0,
-//                extensionDays);
-//
-//        caseData.setCaseDeadline(deadline);
-//        caseData.setCaseDeadlineWarning(deadline.minusDays(2));
-//
-//        caseDataRepository.save(caseData);
-//
-//        updateStageDeadlines(caseData);
-////        auditClient.createExtensionAudit(caseDeadlineExtension);
-//    }
-
-    private static int calculateExtensionDays(Set<CaseDeadlineExtension> caseDeadlineExtensions) {
-        return caseDeadlineExtensions.stream()
-                .map(e -> e.getCaseDeadlineExtensionType().getWorkingDays()).reduce(0, Integer::sum);
-    }
-
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseUUID);
         if (data != null) {
@@ -488,21 +449,6 @@ public class CaseDataService {
         log.debug("Updating Primary Topic for Case: {} Topic: {}", caseUUID, primaryTopicUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryTopicUUID(primaryTopicUUID);
-        caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData, stageUUID);
-        log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));
-    }
-
-    void updatePrimaryTopicWithTextUUID(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID, UUID textUUID) {
-        log.debug("Updating Primary Topic for Case: {} Topic: {}", caseUUID, primaryTopicUUID);
-        CaseData caseData = getCaseData(caseUUID);
-        caseData.setPrimaryTopicUUID(primaryTopicUUID);
-        // If we have been passed a text UUID we should change the data to replace it with the topic UUID
-        if(caseData.getData().contains(textUUID.toString())){
-            Map<String, String> dataMap = new HashMap<>();
-            dataMap.put("Topics", primaryTopicUUID.toString());
-            updateCaseData(caseUUID, stageUUID, dataMap);
-        }
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);
         log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));

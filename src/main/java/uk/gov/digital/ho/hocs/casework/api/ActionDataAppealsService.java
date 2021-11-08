@@ -73,7 +73,7 @@ public class ActionDataAppealsService implements ActionService {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", appealUuid), ACTION_DATA_CREATE_FAILURE);
         }
 
-        if (hasMaxActiveRequests(caseTypeActionDto)) {
+        if (hasMaxActiveRequests(caseTypeActionDto, caseUuid)) {
             String msg = String.format("The maximum number of 'Pending' requests of type: %s already exist for caseId: %s", caseTypeActionDto.getActionLabel(), caseUuid);
             log.error(msg);
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,msg);
@@ -155,8 +155,8 @@ public class ActionDataAppealsService implements ActionService {
         )).collect(Collectors.toList());
     }
 
-    private boolean hasMaxActiveRequests(CaseTypeActionDto caseTypeActionDto) {
-        List<ActionDataAppeal> existing = appealsRepository.findAllByCaseTypeActionUuid(caseTypeActionDto.getUuid());
+    private boolean hasMaxActiveRequests(CaseTypeActionDto caseTypeActionDto, UUID caseUUID) {
+        List<ActionDataAppeal> existing = appealsRepository.findAllByCaseTypeActionUuidAndCaseDataUuid(caseTypeActionDto.getUuid(), caseUUID);
         return existing.stream()
                 .filter(appeal -> !appeal.getStatus().equals("Complete")).count() >= caseTypeActionDto.getMaxConcurrentEvents();
     }

@@ -8,6 +8,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboundDto;
 
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
@@ -21,6 +22,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -242,5 +244,78 @@ public class ActionDataDeadlineExtensionServiceTest {
         );
 
         actionDataDeadlineExtensionService.update(caseUUID, stageUUID, actionEntityId, extensionDto);
+    }
+
+    @Test(expected = HttpClientErrorException.class)
+    public void create_shouldAlwaysThrowBadRequestIfSecondWhenMaxConcurrentEventsExceededException() {
+        // GIVEN
+        UUID caseUUID = UUID.randomUUID();
+        UUID actionTypeUuid = UUID.randomUUID();
+        UUID stageUUID = UUID.randomUUID();
+        String caseType = "TEST_CASE_TYPE";
+        int extendByDays = 8;
+        ActionDataDeadlineExtensionInboundDto extensionDto = new ActionDataDeadlineExtensionInboundDto(
+                null,
+                actionTypeUuid,
+                "ANY_STRING",
+                "TODAY",
+                extendByDays,
+                "ANY NOTE HERE"
+        );
+
+        ActionDataDeadlineExtension existingExtensionEntity = new ActionDataDeadlineExtension(
+                UUID.randomUUID(),
+                null,
+                null,
+                caseUUID,
+                null,
+                null,
+                null
+        );
+
+        LocalDate originalCaseDeadline = LocalDate.of(2021, Month.APRIL,30);
+        LocalDate originalDeadlineWarning = LocalDate.of(2021, Month.APRIL,28);
+
+        CaseData previousCaseData = new CaseData(
+                1l,
+                PREVIOUS_CASE_UUID,
+                LocalDateTime.of(2021, Month.APRIL,1, 0,0),
+                PREVIOUS_CASE_TYPE,
+                PREVIOUS_CASE_REFERENCE,
+                false,
+                PREV_DATA_CLOB,
+                UUID.randomUUID(),
+                new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID),
+                UUID.randomUUID(),
+                new Correspondent(PREVIOUS_CASE_UUID,
+                        PREV_CORRESPONDENT_TYPE,
+                        PREV_FULLNAME,
+                        PREV_ORGANISATION,
+                        new Address(PREV_ADDR_1,
+                                PREV_ADDR_2,
+                                PREV_ADDR_3,
+                                PREV_ADDR_4,
+                                PREV_ADDR_5),
+                        PREV_TELEPHONE,
+                        PREV_EMAIL,
+                        PREV_REFERENCE,
+                        PREV_EXTERNAL_KEY),
+                originalCaseDeadline,
+                originalDeadlineWarning,
+                LocalDate.now().minusDays(10),
+                false,
+                Set.of(new ActiveStage(), new ActiveStage()),
+                Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
+
+        CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
+                actionTypeUuid,
+                null, caseType, null, null,1, 10, true, null
+        );
+
+        when(mockInfoClient.getCaseTypeActionByUuid(previousCaseData.getType(), extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
+        when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(previousCaseData);
+        when(mockExtensionRepository.findAllByCaseTypeActionUuidAndCaseDataUuid(actionTypeUuid, caseUUID)).thenReturn(List.of(existingExtensionEntity));
+
+        actionDataDeadlineExtensionService.create(caseUUID, stageUUID, extensionDto);
     }
 }
