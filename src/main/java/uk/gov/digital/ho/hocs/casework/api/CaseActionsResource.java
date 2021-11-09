@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseActionDataResponseDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateActionDataResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseReferenceResponse;
 
 
@@ -29,8 +30,8 @@ public class CaseActionsResource {
                                                                      @PathVariable UUID stageUUID,
                                                                      @RequestBody ActionDataDto actionData) {
 
-        caseActionService.createActionDataForCase(caseUUID, stageUUID, actionData);
-        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
+        final UUID actionUUID = caseActionService.createActionDataForCase(caseUUID, stageUUID, actionData);
+        return ResponseEntity.ok(new CreateActionDataResponse(actionUUID, caseUUID, caseDataService.getCaseRef(caseUUID)));
     }
 
     @PutMapping(path = "/case/{caseUUID}/stage/{stageUUID}/action/{actionId}")

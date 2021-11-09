@@ -13,7 +13,9 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -46,8 +48,35 @@ public class CaseDocumentService {
     public GetDocumentsResponse getDocuments(UUID caseUUID, String type) {
         log.debug("Getting documents for Case: {} with type: {}", caseUUID, type);
         GetDocumentsResponse getDocumentsResponse = documentClient.getDocuments(caseUUID, type);
-        enrichDocumentsResponse(caseUUID, getDocumentsResponse);
+
+        CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
+
+        enrichDocumentsResponse(getDocumentsResponse, caseData);
+
+        getDocumentsResponse.setDocumentTags(infoClient.getDocumentTags(caseData.getType()));
+
         log.info("Got {} documents and {} document tags for Case: {} with type: {}", getDocumentsResponse.getDocumentDtos().size(), getDocumentsResponse.getDocumentTags().size(), caseUUID, value(EVENT, CASE_DOCUMENTS_RETRIEVED));
+        return getDocumentsResponse;
+    }
+
+    public GetDocumentsResponse getDocumentsForAction(UUID caseUUID, UUID actionDataUuid, String type) {
+        log.debug("Getting documents for Case: {}, type {}, and action: {}", caseUUID, type, actionDataUuid);
+        GetDocumentsResponse getDocumentsResponse =
+                documentClient.getDocumentsForAction(caseUUID, actionDataUuid, type);
+
+        CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
+
+        enrichDocumentsResponse(getDocumentsResponse, caseData);
+
+        getDocumentsResponse.setDocumentTags(List.of(type));
+
+        log.info("Got {} documents and {} document tags for Case: {}, type: {}, and action: {}",
+                getDocumentsResponse.getDocumentDtos().size(),
+                getDocumentsResponse.getDocumentTags().size(),
+                caseUUID,
+                type,
+                actionDataUuid,
+                value(EVENT, CASE_DOCUMENTS_RETRIEVED));
         return getDocumentsResponse;
     }
 
@@ -78,15 +107,13 @@ public class CaseDocumentService {
         return document;
     }
 
-    private void enrichDocumentsResponse(UUID caseUUID, GetDocumentsResponse getDocumentsResponse) {
-        CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
+    private void enrichDocumentsResponse(GetDocumentsResponse getDocumentsResponse, CaseData caseData) {
         String caseType = caseData.getType();
         Map<String, String> data = caseData.getDataMap(objectMapper);
 
         for (DocumentDto documentDto : getDocumentsResponse.getDocumentDtos()) {
             updateDocumentLabels(documentDto, data);
         }
-        getDocumentsResponse.setDocumentTags(infoClient.getDocumentTags(caseType));
     }
 
     private void updateDocumentLabels(DocumentDto documentDto, Map<String, String> caseData) {

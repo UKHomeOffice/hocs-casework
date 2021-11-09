@@ -34,11 +34,11 @@ public class CaseActionService {
         log.info("Loaded {} ActionService implementations: {}", actionServiceMap.size(), actionServiceMap.keySet());
     }
 
-    public void createActionDataForCase(UUID caseUUID, UUID stageUUID, ActionDataDto actionData) {
+    public UUID createActionDataForCase(UUID caseUUID, UUID stageUUID, ActionDataDto actionData) {
         ActionService typeServiceInstance = getActionServiceInstance(actionData);
 
         if (typeServiceInstance != null) {
-            typeServiceInstance.create(caseUUID, stageUUID, actionData);
+            return typeServiceInstance.create(caseUUID, stageUUID, actionData);
         } else {
             throw new UnsupportedOperationException(String.format("No Service available to CREATE actionDataDto's of type: %s",actionData.getClass().getSimpleName()));
         }

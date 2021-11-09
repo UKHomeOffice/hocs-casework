@@ -34,6 +34,23 @@ public class DocumentClient {
         return documents;
     }
 
+    public GetDocumentsResponse getDocumentsForAction(UUID caseUUID,  UUID actionDataUuid, String type) {
+        String url = String.format("/document/reference/%s/actionDataUuid/%s/type/%s",
+                caseUUID, actionDataUuid, type);
+
+        GetDocumentsResponse documents = restHelper.get(serviceBaseURL, url, GetDocumentsResponse.class);
+        log.info(
+                "Got Documents {} for Case {}, Type {}, and Action {}",
+                documents.getDocumentDtos(),
+                caseUUID,
+                type,
+                actionDataUuid,
+                value(EVENT, DOCUMENT_CLIENT_GET_DOCUMENTS_SUCCESS)
+        );
+
+        return documents;
+    }
+
     public DocumentDto getDocument(UUID documentUUID) {
         DocumentDto documentDto = restHelper.get(serviceBaseURL, String.format("/document/%s", documentUUID), DocumentDto.class);
         log.info("Got documentDto with id {}", documentDto.getUuid(), value(EVENT, DOCUMENT_CLIENT_GET_DOCUMENT_DTO_SUCCESS));

@@ -11,7 +11,7 @@ public interface ActionService {
 
     String getServiceMapKey();
 
-    void create(UUID caseUuid, UUID stageUuid, ActionDataDto actionData);
+    UUID create(UUID caseUuid, UUID stageUuid, ActionDataDto actionData);
 
     void update(UUID caseUUID, UUID stageUUID, UUID actionEntityId, ActionDataDto actionData);
 

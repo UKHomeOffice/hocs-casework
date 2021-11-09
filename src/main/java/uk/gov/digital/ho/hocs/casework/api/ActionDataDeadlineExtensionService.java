@@ -63,7 +63,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
     }
 
     @Override
-    public void create(UUID caseUuid, UUID stageUuid, ActionDataDto actionData) {
+    public UUID create(UUID caseUuid, UUID stageUuid, ActionDataDto actionData) {
 
         ActionDataDeadlineExtensionInboundDto extensionDto = (ActionDataDeadlineExtensionInboundDto) actionData;
         log.debug("Received request to create action: {} for case: {}, stage: {}", extensionDto, caseUuid, stageUuid);
@@ -134,6 +134,8 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         auditClient.createExtensionAudit(createdExtension);
 
         log.info("Created action:  {} for case: {}", actionData, caseUuid);
+
+        return createdExtension.getUuid();
     }
 
     private boolean hasMaxRequests(CaseTypeActionDto caseTypeActionDto, UUID caseUUID) {
