@@ -300,7 +300,7 @@ public class CaseActionServiceIntegrationTest {
 
         assertThat(allActionsResponse
                 .getBody()
-                .getCaseActionData().get("RECORD_INTEREST").size()).isEqualTo(2);
+                .getCaseActionData().get("recordInterest").size()).isEqualTo(2);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
