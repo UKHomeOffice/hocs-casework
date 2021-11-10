@@ -5,8 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.EventType;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -54,7 +52,7 @@ public class ActionDataExternalInterestService implements ActionService {
 
     @Override
     public String getServiceMapKey() {
-        return "RECORD_INTEREST";
+        return "recordInterest";
     }
 
     @Override
@@ -62,6 +60,7 @@ public class ActionDataExternalInterestService implements ActionService {
 
         ActionDataExternalInterestInboundDto actionDataExternalInterestDto =
                 (ActionDataExternalInterestInboundDto) actionData;
+
 
         log.debug("Received request to create external " +
                 "interest: {} for case: {}, stage: {}", actionDataExternalInterestDto, caseUuid, stageUuid);
@@ -71,6 +70,14 @@ public class ActionDataExternalInterestService implements ActionService {
         if (caseData == null) {
             // Should have exited from the getCase call if no case with ID, however put here for safety to stop orphaned records.
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case with id: %s does not exist.", caseUuid), CASE_NOT_FOUND);
+        }
+
+        CaseTypeActionDto caseTypeActionDto
+                = infoClient.getCaseTypeActionByUuid(caseData.getType(), actionData.getCaseTypeActionUuid());
+        if (caseTypeActionDto == null) {
+            throw new ApplicationExceptions.EntityNotFoundException(
+                    String.format("No Case Type Action found for actionId: %s", actionData.getUuid())
+                    , ACTION_DATA_CREATE_FAILURE);
         }
 
 
@@ -83,12 +90,9 @@ public class ActionDataExternalInterestService implements ActionService {
                 actionDataExternalInterestDto.getDetailsOfInterest()
         );
 
-
-        caseDataRepository.save(caseData);
         caseNoteService.createCaseNote(caseUuid, CREATE_CASE_NOTE_KEY,
                 actionDataExternalInterest.getDetailsOfInterest());
         actionDataExternalInterestRepository.save(actionDataExternalInterest);
-        auditClient.updateCaseAudit(caseData, stageUuid);
 
         auditClient.createExternalInterestAudit(actionDataExternalInterest);
 
@@ -131,18 +135,17 @@ public class ActionDataExternalInterestService implements ActionService {
         actionDataExternalInterestRepository.save(existingExternalInterestData);
 
         auditClient.updateExternalInterestAudit(existingExternalInterestData);
-        auditClient.updateCaseAudit(caseData, stageUuid);
     }
 
     @Override
     public List<ActionDataDto> getAllActionsForCase(UUID caseUUID) {
         List<ActionDataExternalInterest> externalInterests =
                 actionDataExternalInterestRepository.findAllByCaseDataUuid(caseUUID);
-        log.info("Returning {} Extensions for caseId: {}", externalInterests.size(), caseUUID);
+        log.info("Returning {} Extensions for caseIsd: {}", externalInterests.size(), caseUUID);
 
         return externalInterests.stream().map(interest ->
                 {
-                    Map<String, Object> interestedPartyEntity =
+                    Map<String, String> interestedPartyEntity =
                             infoClient.getEntityBySimpleName(interest.getPartyType()).getData();
 
                     return new ActionDataExternalInterestOutboundDto(

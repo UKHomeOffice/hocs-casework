@@ -195,8 +195,8 @@ public class InfoClient {
         return entityListDtos;
     }
 
-    public EntityDto<Map<String, Object>> getEntityBySimpleName(String simpleName) {
-        EntityDto<Map<String, Object>> entityDto =
+    public EntityDto<Map<String, String>> getEntityBySimpleName(String simpleName) {
+        EntityDto<Map<String, String>> entityDto =
                 restHelper.get(serviceBaseURL, String.format("/entity/simpleName/%s", simpleName), EntityDto.class);
         log.info("Got Entity By Simple Name {} ", value(EVENT, INFO_CLIENT_GET_ENTITY_BY_SIMPLE_NAME));
         return entityDto;

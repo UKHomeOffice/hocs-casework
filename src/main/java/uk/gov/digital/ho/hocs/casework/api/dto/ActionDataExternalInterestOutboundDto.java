@@ -11,13 +11,13 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString(callSuper = true)
-@JsonTypeName("EXTENSION_OUT")
+@JsonTypeName("INTEREST_OUT")
 @AllArgsConstructor
 @NoArgsConstructor
 public class ActionDataExternalInterestOutboundDto extends ActionDataDto {
 
     private String interestedPartyType;
-    private Map<String, Object> interestedPartyEntity;
+    private Map<String, String> interestedPartyEntity;
     private String detailsOfInterest;
     private String note;
 
@@ -25,7 +25,7 @@ public class ActionDataExternalInterestOutboundDto extends ActionDataDto {
                                                  UUID caseTypeActionUuid,
                                                  String caseTypeActionLabel,
                                                  String interestedPartyType,
-                                                 Map<String, Object> interestedPartyEntity,
+                                                 Map<String, String> interestedPartyEntity,
                                                  String detailsOfInterest) {
         super(uuid, caseTypeActionUuid, caseTypeActionLabel);
 

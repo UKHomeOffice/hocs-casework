@@ -12,11 +12,5 @@ public interface ActionDataExternalInterestRepository extends CrudRepository <Ac
 
     List<ActionDataExternalInterest> findAllByCaseDataUuid(UUID caseDataUuid);
 
-    List<ActionDataExternalInterest> findAllByCaseDataType(String caseDataType);
-
-    ActionDataExternalInterest findByCaseDataUuid(UUID actionDataUuid);
-
     ActionDataExternalInterest findByUuidAndCaseDataUuid(UUID uuid, UUID caseUuid);
-
-    List<ActionDataExternalInterest> findAllByCaseTypeActionUuid(UUID caseTypeActionUuid);
 }
