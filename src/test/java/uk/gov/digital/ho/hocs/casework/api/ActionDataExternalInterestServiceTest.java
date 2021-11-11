@@ -167,6 +167,8 @@ public class ActionDataExternalInterestServiceTest {
                 null, caseType, null, externalInterestDto.getCaseTypeActionLabel(), 1,10, true, null
         );
 
+        when(mockInfoClient.getCaseTypeActionByUuid(caseData.getType(),
+                externalInterestDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
         // WHEN

@@ -129,7 +129,6 @@ public class ActionDataExternalInterestService implements ActionService {
         existingExternalInterestData.setDetailsOfInterest(updateExternalInterestDto.getDetailsOfInterest());
         existingExternalInterestData.setPartyType(updateExternalInterestDto.getInterestedPartyType());
 
-        caseDataRepository.save(caseData);
         caseNoteService.createCaseNote(caseUuid, UPDATE_CASE_NOTE_KEY,
                 existingExternalInterestData.getDetailsOfInterest());
         actionDataExternalInterestRepository.save(existingExternalInterestData);
