@@ -328,7 +328,7 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
-            sendAuditMessage(localDateTime, actionDataDeadlineExtension.getUuid(), data, EXTENSION_APPLIED, null, data,
+            sendAuditMessage(localDateTime, actionDataDeadlineExtension.getCaseDataUuid(), data, EXTENSION_APPLIED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
