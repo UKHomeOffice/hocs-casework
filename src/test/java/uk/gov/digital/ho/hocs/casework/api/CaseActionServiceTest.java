@@ -98,7 +98,9 @@ public class CaseActionServiceTest {
         }
 
         @Override
-        public void create(UUID caseUuid, UUID stageUuid, ActionDataDto actionData) {}
+        public UUID create(UUID caseUuid, UUID stageUuid, ActionDataDto actionData) {
+            return UUID.randomUUID();
+        }
 
         @Override
         public void update(UUID caseUuid, UUID stageUuid, UUID actionEntityId, ActionDataDto actionData) {}

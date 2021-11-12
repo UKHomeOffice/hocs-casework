@@ -199,8 +199,12 @@ public class ActionDataAppealsServiceTest {
                 null, caseType, null, appealDto.getCaseTypeActionLabel(), 1,10, true, null
         );
 
+        ActionDataAppeal createdActionDataAppeal = new ActionDataAppeal();
+        createdActionDataAppeal.setUuid(UUID.randomUUID());
+
         when(mockInfoClient.getCaseTypeActionByUuid(caseData.getType(), appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+        when(mockAppealRepository.save((any()))).thenReturn(createdActionDataAppeal);
 
         // WHEN
         actionDataAppealsService.create(caseUUID, stageUUID, appealDto);

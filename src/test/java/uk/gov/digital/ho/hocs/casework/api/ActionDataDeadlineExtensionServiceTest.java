@@ -150,19 +150,24 @@ public class ActionDataDeadlineExtensionServiceTest {
                 null, caseType, null, null,1, 10, true, null
         );
 
+        ActionDataDeadlineExtension extensionEntity = new ActionDataDeadlineExtension();
+        extensionEntity.setUuid(UUID.randomUUID());
+
         when(mockInfoClient.getCaseTypeActionByUuid(previousCaseData.getType(), extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(previousCaseData);
         when(mockInfoClient.getCaseDeadline(anyString(), any(LocalDate.class), anyInt())).thenReturn(LocalDate.now().plusDays(extendByDays));
         when(mockInfoClient.getCaseDeadlineWarning(anyString(), any(LocalDate.class), anyInt())).thenReturn(LocalDate.now().plusDays(extendByDays - 2));
+        when(mockExtensionRepository.save(any())).thenReturn(extensionEntity);
 
-       // WHEN
-        actionDataDeadlineExtensionService.create(caseUUID,stageUUID, extensionDto);
+        // WHEN
+        UUID result = actionDataDeadlineExtensionService.create(caseUUID,stageUUID, extensionDto);
 
         // THEN
         verify(mockExtensionRepository, times(1)).save(extensionArgumentCaptor.capture());
 
         assertThat(extensionArgumentCaptor.getValue().getUpdatedDeadline()).isEqualTo(LocalDate.now().plusDays(8));
         assertThat(extensionArgumentCaptor.getValue().getOriginalDeadline()).isEqualTo(originalCaseDeadline);
+        assertThat(result).isEqualTo(extensionEntity.getUuid());
 
         verify(mockCaseDataRepository, times(1)).save(caseDataArgCapture.capture());
 

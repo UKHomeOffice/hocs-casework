@@ -34,7 +34,7 @@ public class DocumentClient {
         return documents;
     }
 
-    public GetDocumentsResponse getDocumentsForAction(UUID caseUUID,  UUID actionDataUuid, String type) {
+    public GetDocumentsResponse getDocumentsForAction(UUID caseUUID, UUID actionDataUuid, String type) {
         String url = String.format("/document/reference/%s/actionDataUuid/%s/type/%s",
                 caseUUID, actionDataUuid, type);
 

@@ -65,6 +65,27 @@ public class CaseDocumentResourceTest {
     }
 
     @Test
+    public void getDocumentsForAction() {
+        UUID actionUuid = UUID.randomUUID();
+
+        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)), new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
+
+        // todo: Remove hardcoding
+        when(caseDocumentService
+                .getDocumentsForAction(caseUUID, actionUuid, "Appeal Information")).thenReturn(documentsResponse);
+
+        ResponseEntity<GetDocumentsResponse> response =
+                caseDocumentResource.getDocumentsForAction(caseUUID, actionUuid);
+
+        // todo: Remove hardcoding
+        verify(caseDocumentService).getDocumentsForAction(caseUUID, actionUuid, "Appeal Information");
+        verifyNoMoreInteractions(caseDocumentService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     public void deleteDocument() {
         ResponseEntity<String> response = caseDocumentResource.deleteDocument(caseUUID, documentUUID);
 

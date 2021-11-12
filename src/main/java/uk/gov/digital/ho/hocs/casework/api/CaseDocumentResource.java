@@ -41,7 +41,7 @@ public class CaseDocumentResource {
             (@PathVariable UUID caseUUID, @PathVariable UUID actionDataUuid) {
         return ResponseEntity.ok(caseDocumentService.getDocumentsForAction(caseUUID,
                 actionDataUuid,
-                "Appeal Information"));
+                "Appeal Information")); // TODO : remove hardcoding
     }
 
 

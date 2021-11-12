@@ -56,7 +56,7 @@ public class ActionDataExternalInterestService implements ActionService {
     }
 
     @Override
-    public void create(UUID caseUuid, UUID stageUuid, ActionDataDto actionData) {
+    public UUID create(UUID caseUuid, UUID stageUuid, ActionDataDto actionData) {
 
         ActionDataExternalInterestInboundDto actionDataExternalInterestDto =
                 (ActionDataExternalInterestInboundDto) actionData;
@@ -97,6 +97,7 @@ public class ActionDataExternalInterestService implements ActionService {
         auditClient.createExternalInterestAudit(actionDataExternalInterest);
 
         log.info("Created action:  {} for case: {}", actionData, caseUuid);
+        return actionData.getUuid();
     }
 
     @Override
