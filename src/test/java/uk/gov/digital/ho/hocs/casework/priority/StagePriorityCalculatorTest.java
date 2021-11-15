@@ -16,9 +16,9 @@ import static org.mockito.Mockito.*;
 import static uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator.SYSTEM_PRIORITY_FIELD_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StagePriorityCalculatorImplTest {
+public class StagePriorityCalculatorTest {
 
-    private StagePriorityCalculatorImpl stagePriorityCalculator;
+    private StagePriorityCalculator stagePriorityCalculator;
 
     @Mock
     StagePriorityPolicyProvider stagePriorityPolicyProvider;
@@ -32,7 +32,7 @@ public class StagePriorityCalculatorImplTest {
     @Before
     public void before(){
         when(stage.getCaseDataType()).thenReturn(caseType);
-        stagePriorityCalculator = new StagePriorityCalculatorImpl(stagePriorityPolicyProvider, objectMapper);
+        stagePriorityCalculator = new StagePriorityCalculator(stagePriorityPolicyProvider, objectMapper);
     }
 
     @Test
@@ -44,6 +44,7 @@ public class StagePriorityCalculatorImplTest {
 
         verify(stage).getDataMap(objectMapper);
         verify(stage).getCaseDataType();
+        verify(stage).getCaseUUID();
         verify(stagePriorityPolicyProvider).getPolicies(caseType);
         verify(stage).update(Map.of(SYSTEM_PRIORITY_FIELD_NAME, "0.0"), objectMapper);
 
@@ -68,6 +69,7 @@ public class StagePriorityCalculatorImplTest {
         verify(stage).getCaseDataType();
         verify(stagePriorityPolicyProvider).getPolicies(caseType);
         verify(stage).update(Map.of(SYSTEM_PRIORITY_FIELD_NAME, "15.0"), objectMapper);
+        verify(stage).getCaseUUID();
         verify(policyA).apply(dataMap);
         verify(policyB).apply(dataMap);
 

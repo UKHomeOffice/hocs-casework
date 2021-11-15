@@ -18,22 +18,15 @@ public class WorkingDaysElapsedProviderImplTest {
     @Mock
     InfoClient infoClient;
 
-    private WorkingDaysElapsedProviderImpl workingDaysElapsedProvider;
-
     private static final String CASE_TYPE = "CASE_TYPE_A";
 
-
-    @Before
-    public void before(){
-        workingDaysElapsedProvider = new WorkingDaysElapsedProviderImpl(infoClient);
-    }
 
      @Test
     public void getWorkingDaysSince(){
         LocalDate fromDate = LocalDate.parse("2020-05-11");
         when(infoClient.getWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate)).thenReturn(25);
 
-        Integer results = workingDaysElapsedProvider.getWorkingDaysSince(CASE_TYPE, fromDate);
+        Integer results = infoClient.getWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate);
         assertThat(results).isEqualTo(25);
 
         verify(infoClient).getWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate);

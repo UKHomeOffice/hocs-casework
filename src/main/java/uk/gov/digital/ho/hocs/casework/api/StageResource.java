@@ -33,6 +33,7 @@ import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -133,19 +134,19 @@ class StageResource {
 
     @GetMapping(value = "/stage/team/{teamUUID}")
     ResponseEntity<GetStagesResponse> getActiveStagesByTeamUUID(@PathVariable UUID teamUUID) {
-        Set<Stage> activeStages = stageService.getActiveStagesByTeamUUID(teamUUID);
+        Collection<Stage> activeStages = stageService.getActiveStagesByTeamUUID(teamUUID);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
     @GetMapping(value = "/stage")
     ResponseEntity<GetStagesResponse> getActiveStages() {
-        Set<Stage> activeStages = stageService.getActiveStagesForUsersTeamsAndCaseType();
+        Collection<Stage> activeStages = stageService.getActiveStagesForUsersTeamsAndCaseType();
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
     @GetMapping(value = "/stage/user/{userUuid}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<GetStagesResponse> getActiveStagesForUser(@PathVariable UUID userUuid) {
-        Set<Stage> activeStages = stageService.getActiveUserStagesWithTeamsAndCaseType(userUuid);
+        Collection<Stage> activeStages = stageService.getActiveUserStagesWithTeamsAndCaseType(userUuid);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 

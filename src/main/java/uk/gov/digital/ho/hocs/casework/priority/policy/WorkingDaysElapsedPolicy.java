@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.priority.policy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
-import uk.gov.digital.ho.hocs.casework.api.WorkingDaysElapsedProvider;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -13,8 +13,6 @@ import java.util.Map;
 @Getter
 public class WorkingDaysElapsedPolicy implements StagePriorityPolicy {
 
-    private WorkingDaysElapsedProvider workingDaysElapsedProvider;
-
     private String propertyName;
     private String propertyValue;
     private String dateFieldName;
@@ -22,6 +20,8 @@ public class WorkingDaysElapsedPolicy implements StagePriorityPolicy {
     private int capNumberOfDays;
     private double capPointsToAward;
     private double pointsToAwardPerDay;
+    private InfoClient infoClient;
+
 
     @Override
     public double apply(Map<String, String> data) {
@@ -30,7 +30,7 @@ public class WorkingDaysElapsedPolicy implements StagePriorityPolicy {
             if (StringUtils.hasText(dateString)) {
                 LocalDate dateToCheck = LocalDate.parse(dateString, DateTimeFormatter.ofPattern(dateFormat));
 
-                int daysElapsed = workingDaysElapsedProvider.getWorkingDaysSince(data.get(CASE_TYPE), dateToCheck);
+                int daysElapsed = infoClient.getWorkingDaysElapsedForCaseType(data.get(CASE_TYPE), dateToCheck);
                 if (capNumberOfDays > -1 && daysElapsed >= capNumberOfDays) {
                     return capPointsToAward;
                 }

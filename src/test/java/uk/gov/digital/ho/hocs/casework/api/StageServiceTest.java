@@ -92,12 +92,15 @@ public class StageServiceTest {
     @Mock
     private ContributionsProcessor contributionsProcessor;
     @Mock
+    private SomuItemService somuItemService;
+    @Mock
     private Stage stage;
 
     @Before
     public void setUp() {
         this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient,
-                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, stageTagsDecorator, caseNoteService, contributionsProcessor);
+                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, stageTagsDecorator,
+                caseNoteService, contributionsProcessor, somuItemService);
     }
 
     @Test
@@ -344,7 +347,7 @@ public class StageServiceTest {
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
         when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
-        when(stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes)).thenReturn(Set.of(stage));
+        when(stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes)).thenReturn(List.of(stage));
 
         stageService.getActiveStagesForUsersTeamsAndCaseType();
 
@@ -780,11 +783,13 @@ public class StageServiceTest {
     public void shouldGetActiveStagesByTeamUuids() {
         Stage stage1 = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
         Stage stage2 = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        Set<Stage> stages = Set.of(stage1, stage2);
+        List<Stage> stages = List.of(stage1, stage2);
 
         when(stageRepository.findAllActiveByTeamUUID(teamUUID)).thenReturn(stages);
+        when(somuItemService.getCaseItemsByCaseUuids(any())).thenReturn(Collections.emptySet());
         stageService.getActiveStagesByTeamUUID(teamUUID);
-        verify(contributionsProcessor).processContributionsForStages(stages);
+        verify(contributionsProcessor).processContributionsForStages(stage1, Collections.emptySet());
+        verify(contributionsProcessor).processContributionsForStages(stage2, Collections.emptySet());
     }
 
     @Test
@@ -796,7 +801,7 @@ public class StageServiceTest {
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
         when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
-        when(stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes)).thenReturn(Set.of(stage));
+        when(stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes)).thenReturn(List.of(stage));
 
         stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID);
 

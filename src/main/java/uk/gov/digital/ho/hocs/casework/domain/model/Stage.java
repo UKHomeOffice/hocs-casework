@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

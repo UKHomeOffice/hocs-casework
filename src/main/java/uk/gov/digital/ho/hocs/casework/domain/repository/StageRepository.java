@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ public interface StageRepository extends CrudRepository<Stage, Long> {
     Set<Stage> findAllByCaseUUIDIn(Set<UUID> caseUUID);
 
     @Query(value = "SELECT sd.* FROM active_stage_data sd WHERE sd.team_uuid = ?1", nativeQuery = true)
-    Set<Stage> findAllActiveByTeamUUID(UUID teamUUID);
+    List<Stage> findAllActiveByTeamUUID(UUID teamUUID);
 
     @Query(
             value = "SELECT sd.* FROM active_stage_data sd WHERE sd.team_uuid = ?1 AND sd.user_uuid IS NULL",
@@ -36,10 +37,10 @@ public interface StageRepository extends CrudRepository<Stage, Long> {
     Set<Stage> findAllUnassignedAndActiveByTeamUUID(UUID teamUUID);
 
     @Query(value = "SELECT * FROM active_stage_data sd WHERE sd.team_uuid IN ?1 OR sd.case_type IN ?2", nativeQuery = true)
-    Set<Stage> findAllActiveByTeamUUIDAndCaseType(Set<UUID> teamUUID, Set<String> caseTypes);
+    List<Stage> findAllActiveByTeamUUIDAndCaseType(Set<UUID> teamUUID, Set<String> caseTypes);
 
     @Query(value = "SELECT * FROM active_stage_data sd WHERE user_uuid = ?1 AND NOT data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) AND (sd.team_uuid IN ?2 OR sd.case_type IN ?3)", nativeQuery = true)
-    Set<Stage> findAllActiveByUserUuidAndTeamUuidAndCaseType(UUID userUuid, Set<UUID> teamUUID, Set<String> caseTypes);
+    List<Stage> findAllActiveByUserUuidAndTeamUuidAndCaseType(UUID userUuid, Set<UUID> teamUUID, Set<String> caseTypes);
 
     @Query(value = "SELECT * FROM active_stage_data", nativeQuery = true)
     Set<Stage> findAllActive();

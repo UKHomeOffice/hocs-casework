@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.api.WorkingDaysElapsedProvider;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PriorityPolicyDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -18,15 +17,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StagePriorityPolicyProviderImplTest {
+public class StagePriorityPolicyProviderTest {
 
-    private StagePriorityPolicyProviderImpl stagePriorityPolicyProvider;
+    private StagePriorityPolicyProvider stagePriorityPolicyProvider;
 
     @Mock
     InfoClient infoClient;
-
-    @Mock
-    WorkingDaysElapsedProvider workingDaysElapsedProvider;
 
     private static final String CASE_TYPE = "TestCaseType";
     private static final String PROPERTY_NAME_1 = "property1";
@@ -38,7 +34,7 @@ public class StagePriorityPolicyProviderImplTest {
 
     @Before
     public void before(){
-        stagePriorityPolicyProvider = new StagePriorityPolicyProviderImpl(infoClient, workingDaysElapsedProvider);
+        stagePriorityPolicyProvider = new StagePriorityPolicyProvider(infoClient);
     }
 
     @Test

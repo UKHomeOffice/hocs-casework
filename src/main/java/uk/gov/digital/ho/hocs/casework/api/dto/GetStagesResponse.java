@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,7 +17,7 @@ public class GetStagesResponse {
     @JsonProperty("stages")
     private Set<GetStageResponse> stages;
 
-    public static GetStagesResponse from(Set<Stage> stages) {
+    public static GetStagesResponse from(Collection<Stage> stages) {
         Set<GetStageResponse> stageDataResponses = stages
                 .stream()
                 .map(GetStageResponse::from)

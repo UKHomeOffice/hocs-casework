@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.time.LocalDate;
@@ -17,7 +18,7 @@ import static org.mockito.Mockito.*;
 public class DaysElapsedCalculatorImplTest {
 
     @Mock
-    WorkingDaysElapsedProvider workingDaysElapsedProvider;
+    InfoClient infoClient;
 
     @Mock
     ObjectMapper objectMapper;
@@ -25,14 +26,14 @@ public class DaysElapsedCalculatorImplTest {
     @Mock
     Stage stage;
 
-    private DaysElapsedCalculatorImpl daysElapsedCalculator;
+    private DaysElapsedCalculator daysElapsedCalculator;
 
     private static final String SYSTEM_DAYS_ELAPSED_FIELD_NAME = "systemDaysElapsed";
     private static final String DATE_RECEIVED_FIELD_NAME = "DateReceived";
 
     @Before
     public void before() {
-        daysElapsedCalculator = new DaysElapsedCalculatorImpl(workingDaysElapsedProvider, objectMapper);
+        daysElapsedCalculator = new DaysElapsedCalculator(objectMapper, infoClient);
     }
 
     @Test
@@ -42,6 +43,7 @@ public class DaysElapsedCalculatorImplTest {
 
         verify(stage).getDataMap(objectMapper);
         verify(stage).update(Map.of(SYSTEM_DAYS_ELAPSED_FIELD_NAME, "0"), objectMapper);
+        verify(stage).getCaseUUID();
         checkNoMoreInteractions();
 
     }
@@ -55,6 +57,7 @@ public class DaysElapsedCalculatorImplTest {
 
         verify(stage).getDataMap(objectMapper);
         verify(stage).update(Map.of(SYSTEM_DAYS_ELAPSED_FIELD_NAME, "0"), objectMapper);
+        verify(stage).getCaseUUID();
         checkNoMoreInteractions();
 
     }
@@ -67,18 +70,19 @@ public class DaysElapsedCalculatorImplTest {
         when(stage.getCaseDataType()).thenReturn(dummyCaseType);
 
         LocalDate localDate = LocalDate.of(2020, 6, 14);
-        when(workingDaysElapsedProvider.getWorkingDaysSince(dummyCaseType, localDate)).thenReturn(35);
+        when(infoClient.getWorkingDaysElapsedForCaseType(dummyCaseType, localDate)).thenReturn(35);
         daysElapsedCalculator.updateDaysElapsed(stage);
 
         verify(stage).getCaseDataType();
         verify(stage).getDataMap(objectMapper);
         verify(stage).update(Map.of(SYSTEM_DAYS_ELAPSED_FIELD_NAME, "35"), objectMapper);
-        verify(workingDaysElapsedProvider).getWorkingDaysSince(dummyCaseType, localDate);
+        verify(stage).getCaseUUID();
+        verify(infoClient).getWorkingDaysElapsedForCaseType(dummyCaseType, localDate);
         checkNoMoreInteractions();
 
     }
 
     private void checkNoMoreInteractions() {
-        verifyNoMoreInteractions(workingDaysElapsedProvider, objectMapper, stage);
+        verifyNoMoreInteractions(infoClient, objectMapper, stage);
     }
 }

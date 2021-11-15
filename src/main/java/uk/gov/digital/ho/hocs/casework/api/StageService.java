@@ -18,6 +18,7 @@ import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
@@ -25,6 +26,7 @@ import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -72,13 +74,14 @@ public class StageService {
     private final StageTagsDecorator stageTagsDecorator;
     private final CaseNoteService caseNoteService;
     private final ContributionsProcessor contributionsProcessor;
+    private final SomuItemService somuItemService;
 
     private static final Comparator<Stage> CREATED_COMPARATOR = Comparator.comparing(Stage::getCreated);
 
     @Autowired
     public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient,
                         @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator,
-                        DaysElapsedCalculator daysElapsedCalculator, StageTagsDecorator stageTagsDecorator, CaseNoteService caseNoteService, ContributionsProcessor contributionsProcessor) {
+                        DaysElapsedCalculator daysElapsedCalculator, StageTagsDecorator stageTagsDecorator, CaseNoteService caseNoteService, ContributionsProcessor contributionsProcessor, SomuItemService somuItemService) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -91,6 +94,7 @@ public class StageService {
         this.stageTagsDecorator = stageTagsDecorator;
         this.caseNoteService = caseNoteService;
         this.contributionsProcessor = contributionsProcessor;
+        this.somuItemService = somuItemService;
     }
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
@@ -246,18 +250,12 @@ public class StageService {
         return stageRepository.findAllActiveByCaseUUID(caseUUID);
     }
 
-    Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
+    Collection<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
-        Set<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
-
+        List<Stage> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
         updateStages(stages);
 
         return stages;
-    }
-
-    void updateContributions(Set<Stage> stage) {
-        log.debug("Adding contributions data for stages");
-        contributionsProcessor.processContributionsForStages(stage);
     }
 
     Stage getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {
@@ -269,8 +267,8 @@ public class StageService {
         }
 
         for (Stage stage : unassignedStages) {
-            updatePriority(stage);
-            updateDaysElapsed(stage);
+            stagePriorityCalculator.updatePriority(stage);
+            daysElapsedCalculator.updateDaysElapsed(stage);
         }
 
         double prevSystemCalculatedPriority = 0;
@@ -292,7 +290,7 @@ public class StageService {
         return nextAvailableStage;
     }
 
-    Set<Stage> getActiveStagesForUsersTeamsAndCaseType() {
+    Collection<Stage> getActiveStagesForUsersTeamsAndCaseType() {
         log.debug("Getting Active Stages for User");
         Set<UUID> teams = userPermissionsService.getUserTeams();
         if (teams.isEmpty()) {
@@ -305,7 +303,7 @@ public class StageService {
             caseTypes.add("");
         }
 
-        Set<Stage> stages = stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
+        List<Stage> stages = stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
 
         updateStages(stages);
 
@@ -313,7 +311,7 @@ public class StageService {
         return stages;
     }
 
-    Set<Stage> getActiveUserStagesWithTeamsAndCaseType(UUID userUuid) {
+    Collection<Stage> getActiveUserStagesWithTeamsAndCaseType(UUID userUuid) {
         log.debug("Getting users active stage");
         Set<UUID> teams = userPermissionsService.getUserTeams();
         if (teams.isEmpty()) {
@@ -326,7 +324,7 @@ public class StageService {
             caseTypes.add("");
         }
 
-        Set<Stage> stages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUuid, teams, caseTypes);
+        List<Stage> stages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUuid, teams, caseTypes);
 
         updateStages(stages);
 
@@ -334,13 +332,15 @@ public class StageService {
         return stages;
     }
 
-    private void updateStages(Set<Stage> stages) {
-        updateContributions(stages);
+    private void updateStages(Collection<Stage> stages) {
+        log.debug("Adding contributions data for stages");
 
+        Set<SomuItem> somuItems = somuItemService.getCaseItemsByCaseUuids(stages.stream().map(Stage::getCaseUUID).collect(Collectors.toSet()));
         for (Stage stage : stages) {
-            updatePriority(stage);
-            updateDaysElapsed(stage);
-            decorateTags(stage);
+            contributionsProcessor.processContributionsForStages(stage, somuItems);
+            stagePriorityCalculator.updatePriority(stage);
+            daysElapsedCalculator.updateDaysElapsed(stage);
+            stageTagsDecorator.decorateTags(stage);
         }
     }
 
@@ -445,21 +445,6 @@ public class StageService {
 
     private void updateCurrentStageForCase(UUID caseUUID, UUID stageUUID, String stageType) {
         caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
-    }
-
-    private void updatePriority(Stage stage) {
-        log.info("Updating priority for stage : {}", stage.getCaseUUID());
-        stagePriorityCalculator.updatePriority(stage);
-    }
-
-    private void updateDaysElapsed(Stage stage) {
-        log.info("Updating days elapsed for stage : {}", stage.getCaseUUID());
-        daysElapsedCalculator.updateDaysElapsed(stage);
-    }
-
-    private void decorateTags(Stage stage) {
-        log.info("Updating tags for stage: {}", stage.getCaseUUID());
-        stageTagsDecorator.decorateTags(stage);
     }
 
     public void withdrawCase(UUID caseUUID, UUID stageUUID, WithdrawCaseRequest request) {

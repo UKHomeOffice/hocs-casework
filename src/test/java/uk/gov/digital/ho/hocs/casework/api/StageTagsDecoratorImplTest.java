@@ -30,11 +30,11 @@ public class StageTagsDecoratorImplTest {
     private static final String OVERRIDE_PO_TEAM_NAME = "OverridePOTeamName";
     private static final String PO_TEAM_NAME = "POTeamName";
 
-    private StageTagsDecoratorImpl stageTagsDecorator;
+    private StageTagsDecorator stageTagsDecorator;
 
     @Before
     public void before() {
-        stageTagsDecorator = new StageTagsDecoratorImpl(objectMapper);
+        stageTagsDecorator = new StageTagsDecorator(objectMapper);
     }
 
     @Test

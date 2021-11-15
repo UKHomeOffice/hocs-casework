@@ -35,27 +35,24 @@ public class ContributionsProcessorTest {
     private ObjectMapper objectMapper;
 
     @Mock
-    private SomuItemService somuItemService;
-
-    @Mock
     private InfoClient infoClient;
 
-    private ContributionsProcessorImpl contributionsProcessor;
+    private ContributionsProcessor contributionsProcessor;
 
     @Before
     public void before() {
-        contributionsProcessor = spy(new ContributionsProcessorImpl(objectMapper, somuItemService, infoClient));
+        contributionsProcessor = spy(new ContributionsProcessor(objectMapper, infoClient));
     }
 
     @Test
     public void shouldReturnIfZeroSomuItems() {
-        when(somuItemService.getCaseItemsByCaseUuids(Collections.emptySet())).thenReturn(Collections.emptySet());
+        Stage stage = new Stage(caseUuid, "ANY", teamUuid, userUuid, transitionNoteUuid);
 
-        contributionsProcessor.processContributionsForStages(Collections.emptySet());
+        contributionsProcessor.processContributionsForStages(stage, Collections.emptySet());
 
-        verify(contributionsProcessor).processContributionsForStages(Collections.emptySet());
-        verify(somuItemService).getCaseItemsByCaseUuids(Set.of());
-        verifyNoMoreInteractions(contributionsProcessor, somuItemService);
+        verify(contributionsProcessor).processContributionsForStages(stage, Collections.emptySet());
+        verifyNoInteractions(infoClient);
+        verifyNoMoreInteractions(contributionsProcessor);
     }
 
     @Test
@@ -63,14 +60,12 @@ public class ContributionsProcessorTest {
         Stage stage = spy(new Stage(caseUuid, "ANY", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"TEST\" : \"TEST\"}");
 
-        when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
 
-        contributionsProcessor.processContributionsForStages(Set.of(stage));
+        contributionsProcessor.processContributionsForStages(stage, Set.of(somuItem));
 
-        verify(contributionsProcessor).processContributionsForStages(Set.of(stage));
-        verify(somuItemService).getCaseItemsByCaseUuids(Set.of(caseUuid));
-        verifyNoMoreInteractions(contributionsProcessor, somuItemService);
+        verify(contributionsProcessor).processContributionsForStages(stage, Set.of(somuItem));
+        verifyNoMoreInteractions(contributionsProcessor);
     }
 
     @Test
@@ -78,19 +73,17 @@ public class ContributionsProcessorTest {
         Stage stage = spy(new Stage(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-12-31\"}");
 
-        when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
 
         when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
 
-        contributionsProcessor.processContributionsForStages(Set.of(stage));
+        contributionsProcessor.processContributionsForStages(stage, Set.of(somuItem));
 
-        verify(contributionsProcessor).processContributionsForStages(Set.of(stage));
-        verify(somuItemService).getCaseItemsByCaseUuids(Set.of(caseUuid));
+        verify(contributionsProcessor).processContributionsForStages(stage, Set.of(somuItem));
         verify(contributionsProcessor).calculateDueContributionDate(any());
         verify(contributionsProcessor).highestContributionStatus(any());
         verify(contributionsProcessor).highestContributionStatus(any(), any());
-        verifyNoMoreInteractions(contributionsProcessor, somuItemService);
+        verifyNoMoreInteractions(contributionsProcessor);
 
         assertEquals(stage.getDueContribution(), "9999-12-31");
         assertEquals(stage.getContributions(), Contribution.ContributionStatus.CONTRIBUTION_DUE.getDisplayedStatus());
@@ -101,19 +94,17 @@ public class ContributionsProcessorTest {
         Stage stage = spy(new Stage(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"0000-12-31\"}");
 
-        when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
 
         when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
 
-        contributionsProcessor.processContributionsForStages(Set.of(stage));
+        contributionsProcessor.processContributionsForStages(stage, Set.of(somuItem));
 
-        verify(contributionsProcessor).processContributionsForStages(Set.of(stage));
-        verify(somuItemService).getCaseItemsByCaseUuids(Set.of(caseUuid));
+        verify(contributionsProcessor).processContributionsForStages(stage, Set.of(somuItem));
         verify(contributionsProcessor).calculateDueContributionDate(any());
         verify(contributionsProcessor).highestContributionStatus(any());
         verify(contributionsProcessor).highestContributionStatus(any(), any());
-        verifyNoMoreInteractions(contributionsProcessor, somuItemService);
+        verifyNoMoreInteractions(contributionsProcessor);
 
         assertEquals(stage.getDueContribution(), "0000-12-31");
         assertEquals(stage.getContributions(), Contribution.ContributionStatus.CONTRIBUTION_OVERDUE.getDisplayedStatus());
@@ -124,19 +115,17 @@ public class ContributionsProcessorTest {
         Stage stage = spy(new Stage(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-12-31\", \"contributionStatus\": \"contributionReceived\"}");
 
-        when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
 
         when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
 
-        contributionsProcessor.processContributionsForStages(Set.of(stage));
+        contributionsProcessor.processContributionsForStages(stage,Set.of(somuItem));
 
-        verify(contributionsProcessor).processContributionsForStages(Set.of(stage));
-        verify(somuItemService).getCaseItemsByCaseUuids(Set.of(caseUuid));
+        verify(contributionsProcessor).processContributionsForStages(stage, Set.of(somuItem));
         verify(contributionsProcessor).calculateDueContributionDate(any());
         verify(contributionsProcessor).highestContributionStatus(any());
         verify(contributionsProcessor).highestContributionStatus(any(), any());
-        verifyNoMoreInteractions(contributionsProcessor, somuItemService);
+        verifyNoMoreInteractions(contributionsProcessor);
 
         assertNull(stage.getDueContribution());
         assertEquals(stage.getContributions(), Contribution.ContributionStatus.CONTRIBUTION_RECEIVED.getDisplayedStatus());
@@ -147,19 +136,17 @@ public class ContributionsProcessorTest {
         Stage stage = spy(new Stage(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-12-31\", \"contributionStatus\": \"contributionCancelled\"}");
 
-        when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
 
         when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
 
-        contributionsProcessor.processContributionsForStages(Set.of(stage));
+        contributionsProcessor.processContributionsForStages(stage, Set.of(somuItem));
 
-        verify(contributionsProcessor).processContributionsForStages(Set.of(stage));
-        verify(somuItemService).getCaseItemsByCaseUuids(Set.of(caseUuid));
+        verify(contributionsProcessor).processContributionsForStages(stage, Set.of(somuItem));
         verify(contributionsProcessor).calculateDueContributionDate(any());
         verify(contributionsProcessor).highestContributionStatus(any());
         verify(contributionsProcessor).highestContributionStatus(any(), any());
-        verifyNoMoreInteractions(contributionsProcessor, somuItemService);
+        verifyNoMoreInteractions(contributionsProcessor);
 
         assertNull(stage.getDueContribution());
         assertEquals(stage.getContributions(), Contribution.ContributionStatus.CONTRIBUTION_CANCELLED.getDisplayedStatus());
