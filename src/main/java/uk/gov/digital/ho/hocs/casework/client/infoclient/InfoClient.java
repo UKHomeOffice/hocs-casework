@@ -14,29 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_TEMPLATE_CACHE_INVALIDATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPES_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPE_SHORT_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_DEADLINES_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CONTRIBUTIONS_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_DEFAULT_USERS_FOR_STAGE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_ENTITY_LIST;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_PRIORITY_POLICIES_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_PROFILE_BY_CASE_TYPE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_STAGE_DEADLINE_WARNING_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_STANDARD_LINE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEAMS_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEMPLATE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TOPIC_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USER;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USERS_FOR_TEAM_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_WORKING_DAYS_FOR_CASE_TYPE_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TOPIC_STANDARD_LINE_CACHE_INVALIDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Slf4j
 @Component
@@ -215,6 +193,13 @@ public class InfoClient {
         });
         log.info("Got Entity List By List Name {} ", value(EVENT, INFO_CLIENT_GET_ENTITY_LIST));
         return entityListDtos;
+    }
+
+    public EntityDto<Map<String, String>> getEntityBySimpleName(String simpleName) {
+        EntityDto<Map<String, String>> entityDto =
+                restHelper.get(serviceBaseURL, String.format("/entity/simpleName/%s", simpleName), EntityDto.class);
+        log.info("Got Entity By Simple Name {} ", value(EVENT, INFO_CLIENT_GET_ENTITY_BY_SIMPLE_NAME));
+        return entityDto;
     }
 
     @CacheEvict(value = "InfoClientGetStandardLine", key = "#topicUUID")

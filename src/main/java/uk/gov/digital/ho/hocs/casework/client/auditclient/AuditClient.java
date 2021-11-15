@@ -259,7 +259,7 @@ public class AuditClient {
     public void viewCaseSomuItemsBySomuTypeAudit(UUID caseUUID, UUID somuTypeUUID) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
-        
+
         executorService.execute(() -> {
             String data = "{}";
             try {
@@ -267,7 +267,7 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
-            
+
             sendAuditMessage(localDateTime, caseUUID, data, EventType.SOMU_ITEM_VIEWED, null, requestDataDto.getCorrelationId(),
                     requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
@@ -383,6 +383,41 @@ public class AuditClient {
                 logFailedToParseDataPayload(e);
             }
             sendAuditMessage(localDateTime, appealEntity.getCaseDataUuid(), data, EventType.APPEAL_UPDATED, null, data,
+                    requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
+        });
+    }
+
+    public void updateExternalInterestAudit(ActionDataExternalInterest actionDataExternalInterest) {
+        saveActionAudit(new AuditPayload.ExternalInterestItem(
+                actionDataExternalInterest.getUuid(),
+                actionDataExternalInterest.getCaseDataUuid(),
+                actionDataExternalInterest.getCaseDataType(),
+                actionDataExternalInterest.getDetailsOfInterest(),
+                EventType.EXTERNAL_INTEREST_UPDATED
+        ));
+    }
+
+    public void createExternalInterestAudit(ActionDataExternalInterest actionDataExternalInterest) {
+        saveActionAudit(new AuditPayload.ExternalInterestItem(
+                actionDataExternalInterest.getUuid(),
+                actionDataExternalInterest.getCaseDataUuid(),
+                actionDataExternalInterest.getCaseDataType(),
+                actionDataExternalInterest.getDetailsOfInterest(),
+                EventType.EXTERNAL_INTEREST_CREATED
+        ));
+    }
+
+    private void saveActionAudit(AuditPayload.ActionAuditPayload actionAuditPayload) {
+        RequestDataDto requestDataDto = RequestDataDto.from(requestData);
+        LocalDateTime localDateTime = LocalDateTime.now();
+        executorService.execute(() -> {
+            String data = "{}";
+            try {
+                data = objectMapper.writeValueAsString(actionAuditPayload);
+            } catch (JsonProcessingException e) {
+                logFailedToParseDataPayload(e);
+            }
+            sendAuditMessage(localDateTime, actionAuditPayload.getCaseDataUuid(), data, actionAuditPayload.getEventType(), null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
