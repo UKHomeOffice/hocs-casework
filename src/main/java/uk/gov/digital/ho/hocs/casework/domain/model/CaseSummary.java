@@ -2,7 +2,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseActionDataResponseDto;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -22,7 +22,7 @@ public class CaseSummary {
     private final String previousCaseReference;
     private final UUID previousCaseUUID;
     private final UUID previousCaseStageUUID;
-    private final Map<String, List<ActionDataDto>> actions;
+    private final CaseActionDataResponseDto actions;
 
     public static class Builder {
         private String type;
@@ -36,7 +36,7 @@ public class CaseSummary {
         private String previousCaseReference;
         private UUID previousCaseUUID;
         private UUID previousCaseStageUUID;
-        private Map<String, List<ActionDataDto>> actions = new HashMap<>();
+        private CaseActionDataResponseDto actions;
 
         public Builder withCaseType(final String type) {
             this.type = type;
@@ -104,7 +104,7 @@ public class CaseSummary {
             return this;
         }
 
-        public Builder withActions(Map<String, List<ActionDataDto>> actions) {
+        public Builder withActions(CaseActionDataResponseDto actions) {
             this.actions = actions;
 
             return this;
