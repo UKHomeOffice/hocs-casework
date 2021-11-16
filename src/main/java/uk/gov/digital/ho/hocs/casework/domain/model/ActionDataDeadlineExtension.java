@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -7,6 +8,8 @@ import lombok.Setter;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -18,6 +21,7 @@ import java.util.UUID;
 @Table(name = "action_data_extensions")
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
 public class ActionDataDeadlineExtension implements Serializable {
 
@@ -46,6 +50,7 @@ public class ActionDataDeadlineExtension implements Serializable {
     @Column(name = "note")
     private String note;
 
+
     @Column(name = "created_timestamp")
     private LocalDateTime createTimestamp;
 
@@ -65,5 +70,16 @@ public class ActionDataDeadlineExtension implements Serializable {
         this.originalDeadline = originalDeadline;
         this.updatedDeadline = updatedDeadline;
         this.note = note;
+    }
+
+    @PrePersist
+    private void setCreatedAndLastUpdatedTimestamps() {
+        this.createTimestamp = LocalDateTime.now();
+        this.lastUpdateTimestamp = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void updateLastUpdatedTimestamp() {
+        this.lastUpdateTimestamp = LocalDateTime.now();
     }
 }
