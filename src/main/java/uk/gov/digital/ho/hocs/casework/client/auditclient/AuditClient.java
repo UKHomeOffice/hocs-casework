@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.client.auditclient;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
+import uk.gov.digital.ho.hocs.casework.api.dto.AppealOfficerDto;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RequestDataDto;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.*;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 
 import java.time.LocalDateTime;
@@ -21,6 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.api.dto.AppealOfficerDto.*;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_DELETED;
@@ -328,30 +332,29 @@ public class AuditClient {
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
-            sendAuditMessage(localDateTime, actionDataDeadlineExtension.getUuid(), data, EXTENSION_APPLIED, null, data,
+            sendAuditMessage(localDateTime, actionDataDeadlineExtension.getCaseDataUuid(), data, EXTENSION_APPLIED, null, data,
                     requestDataDto.getCorrelationId(), requestDataDto.getUserId(), requestDataDto.getUsername(), requestDataDto.getGroups());
         });
     }
 
-    public void createAppealAudit(ActionDataAppeal appealEntity) {
+    public void createAppealAudit(ActionDataAppeal appealEntity, CaseTypeActionDto caseTypeActionDto) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
+
+        AuditPayload.AppealItem.AppealItemBuilder appealAuditItemBuilder = AuditPayload.AppealItem.builder()
+                .caseTypeActionUuid(appealEntity.getCaseTypeActionUuid())
+                .complexCase(appealEntity.getComplexCase())
+                .created(appealEntity.getCreateTimestamp())
+                .dateSentRMS(appealEntity.getDateSentRMS())
+                .status(appealEntity.getStatus())
+                .outcome(appealEntity.getOutcome())
+                .note(appealEntity.getNote());
+
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(new AuditPayload.AppealItem(
-                        appealEntity.getUuid(),
-                        appealEntity.getCaseDataUuid(),
-                        appealEntity.getCaseDataType(),
-                        appealEntity.getCaseTypeActionUuid(),
-                        appealEntity.getCaseTypeActionLabel(),
-                        appealEntity.getStatus(),
-                        appealEntity.getDateSentRMS(),
-                        appealEntity.getOutcome(),
-                        appealEntity.getComplexCase(),
-                        appealEntity.getNote(),
-                        appealEntity.getAppealOfficerData()
-                ));
+                addAppealOfficerInfo(appealAuditItemBuilder, appealEntity, caseTypeActionDto);
+                data = objectMapper.writeValueAsString(appealAuditItemBuilder.build());
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
@@ -360,25 +363,24 @@ public class AuditClient {
         });
     }
 
-    public void updateAppealAudit(ActionDataAppeal appealEntity) {
+    public void updateAppealAudit(ActionDataAppeal appealEntity, CaseTypeActionDto caseTypeActionDto) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
+
+        AuditPayload.AppealItem.AppealItemBuilder appealAuditItemBuilder = AuditPayload.AppealItem.builder()
+                .caseTypeActionUuid(appealEntity.getCaseTypeActionUuid())
+                .complexCase(appealEntity.getComplexCase())
+                .created(appealEntity.getCreateTimestamp())
+                .dateSentRMS(appealEntity.getDateSentRMS())
+                .status(appealEntity.getStatus())
+                .outcome(appealEntity.getOutcome())
+                .note(appealEntity.getNote());
+
         executorService.execute(() -> {
             String data = "{}";
             try {
-                data = objectMapper.writeValueAsString(new AuditPayload.AppealItem(
-                        appealEntity.getUuid(),
-                        appealEntity.getCaseDataUuid(),
-                        appealEntity.getCaseDataType(),
-                        appealEntity.getCaseTypeActionUuid(),
-                        appealEntity.getCaseTypeActionLabel(),
-                        appealEntity.getStatus(),
-                        appealEntity.getDateSentRMS(),
-                        appealEntity.getOutcome(),
-                        appealEntity.getComplexCase(),
-                        appealEntity.getNote(),
-                        appealEntity.getAppealOfficerData()
-                ));
+                addAppealOfficerInfo(appealAuditItemBuilder, appealEntity, caseTypeActionDto);
+                data = objectMapper.writeValueAsString(appealAuditItemBuilder.build());
             } catch (JsonProcessingException e) {
                 logFailedToParseDataPayload(e);
             }
@@ -649,6 +651,38 @@ public class AuditClient {
         log.error("Failed to parse data payload, event {}, exception: {}", value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
     }
 
+
+    public void addAppealOfficerInfo(AuditPayload.AppealItem.AppealItemBuilder builder, ActionDataAppeal existingAppealData, CaseTypeActionDto caseTypeActionDto) throws JsonProcessingException {
+
+        if (existingAppealData.getAppealOfficerData() == null) {
+            log.warn("No officer data exists for for case action type: {}", caseTypeActionDto.getActionLabel());
+            return;
+        }
+
+        TypeReference<OfficerData> typeRefSchema = new TypeReference<>() {};
+        OfficerData officerDetailsSchema;
+
+        TypeReference<Map<String, String>> typeRefData = new TypeReference<>() {};
+        Map<String, String> appealOfficerDataMap;
+        try {
+            officerDetailsSchema = objectMapper.readValue(caseTypeActionDto.getProps(),typeRefSchema);
+            appealOfficerDataMap = objectMapper.readValue(existingAppealData.getAppealOfficerData(), typeRefData);
+
+            if (appealOfficerDataMap != null) {
+                builder
+                        .officerType(officerDetailsSchema.getAppealOfficerData().getOfficer().getValue())
+                        .officerName(appealOfficerDataMap.get(
+                                officerDetailsSchema.getAppealOfficerData().getOfficer().getValue())
+                        )
+                        .officerDirectorate(appealOfficerDataMap.get(
+                                officerDetailsSchema.getAppealOfficerData().getDirectorate().getValue())
+                        );
+            }
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw e;
+        }
+    }
 
 
 }
