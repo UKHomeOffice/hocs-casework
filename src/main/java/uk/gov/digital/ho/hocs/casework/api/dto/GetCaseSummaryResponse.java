@@ -43,7 +43,7 @@ public class GetCaseSummaryResponse {
     private CaseSummaryLink previousCase;
 
     @JsonProperty("actions")
-    private final Map<String, List<ActionDataDto>> actions;
+    private final CaseActionDataResponseDto actions;
 
     public static GetCaseSummaryResponse from(CaseSummary caseSummary) {
         GetCorrespondentResponse getCorrespondentResponse = null;

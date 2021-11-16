@@ -43,7 +43,10 @@ public class GetCaseSummaryResponseTest {
         additionalFields.add(field2);
         additionalFields.add(field4);
 
-        Map<String, List<ActionDataDto>> actions = new HashMap<>();
+        Map<String, List<ActionDataDto>> actionData = new HashMap<>();
+
+        CaseActionDataResponseDto actions = CaseActionDataResponseDto.from(actionData, List.of(), caseDeadline);
+
 
         CaseSummary caseSummary = new CaseSummary(
                 "type",
