@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -65,19 +66,21 @@ public class CaseDocumentResourceTest {
     }
 
     @Test
-    public void getDocumentsForAction() {
+    public void getDocumentsForAction() throws JsonProcessingException {
+        // given
         UUID actionUuid = UUID.randomUUID();
 
         GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)), new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
 
-        // todo: Remove hardcoding
         when(caseDocumentService
                 .getDocumentsForAction(caseUUID, actionUuid, "Appeal Information")).thenReturn(documentsResponse);
 
+        // when
         ResponseEntity<GetDocumentsResponse> response =
-                caseDocumentResource.getDocumentsForAction(caseUUID, actionUuid);
+                caseDocumentResource.getDocumentsForAction(caseUUID, actionUuid, "Appeal Information");
 
-        // todo: Remove hardcoding
+
+        // then
         verify(caseDocumentService).getDocumentsForAction(caseUUID, actionUuid, "Appeal Information");
         verifyNoMoreInteractions(caseDocumentService);
 

@@ -36,12 +36,13 @@ public class CaseDocumentResource {
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
-    @GetMapping(value = "/case/document/reference/{caseUUID}/action/{actionDataUuid}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/case/document/reference/{caseUUID}/action/{actionDataUuid}/document_type/{documentType}",
+            produces = APPLICATION_JSON_VALUE)
     ResponseEntity<GetDocumentsResponse> getDocumentsForAction
-            (@PathVariable UUID caseUUID, @PathVariable UUID actionDataUuid) {
+            (@PathVariable UUID caseUUID, @PathVariable UUID actionDataUuid, @PathVariable String documentType) {
         return ResponseEntity.ok(caseDocumentService.getDocumentsForAction(caseUUID,
                 actionDataUuid,
-                "Appeal Information")); // TODO : remove hardcoding
+                documentType));
     }
 
 

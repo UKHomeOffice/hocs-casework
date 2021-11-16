@@ -1,5 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +67,6 @@ public class CaseDocumentService {
                 documentClient.getDocumentsForAction(caseUUID, actionDataUuid, type);
 
         CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
-
         enrichDocumentsResponse(getDocumentsResponse, caseData);
 
         getDocumentsResponse.setDocumentTags(List.of(type));

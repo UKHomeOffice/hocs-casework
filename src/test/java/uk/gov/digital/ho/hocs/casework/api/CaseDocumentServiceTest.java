@@ -112,7 +112,6 @@ public class CaseDocumentServiceTest {
 
         when(caseDataRepository.findAnyByUuid(caseUUID)).thenReturn(caseData);
         when(documentClient.getDocumentsForAction(caseUUID, actionDataUuid, "ACTION_DOC")).thenReturn(documentsResponse);
-        when(infoClient.getDocumentTags("CaseType")).thenReturn(new ArrayList<>(Arrays.asList("ACTION_DOC")));
 
         GetDocumentsResponse result = caseDocumentService.getDocumentsForAction(caseUUID, actionDataUuid, "ACTION_DOC");
 
