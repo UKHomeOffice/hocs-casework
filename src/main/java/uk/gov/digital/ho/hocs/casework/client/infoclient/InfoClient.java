@@ -24,6 +24,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_G
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CONTRIBUTIONS_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_DEFAULT_USERS_FOR_STAGE_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_ENTITY_LIST;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_EXEMPTIONS_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_PRIORITY_POLICIES_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_PROFILE_BY_CASE_TYPE_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS;
@@ -33,7 +34,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_G
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEAMS_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEMPLATE_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TOPIC_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USER;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USERS_FOR_TEAM_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_WORKING_DAYS_FOR_CASE_TYPE_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TOPIC_STANDARD_LINE_CACHE_INVALIDATED;
@@ -131,14 +131,6 @@ public class InfoClient {
         return response;
     }
 
-    @Cacheable(value = "InfoAllSomuTypesForCaseTypeRequest", unless = "#result.size() == 0", key = "#caseType")
-    public Set<SomuTypeDto> getAllSomuTypesForCaseType(String caseType) {
-        Set<SomuTypeDto> response = restHelper.get(serviceBaseURL, String.format("/somuType/%s", caseType), new ParameterizedTypeReference<Set<SomuTypeDto>>() {
-        });
-        log.info("Got {} case summary fields for CaseType {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
-        return response;
-    }
-
     @Cacheable(value = "InfoClientGetDocumentTagsRequest", unless = "#result == null or #result.size() == 0", key = "#caseType")
     public List<String> getDocumentTags(String caseType) {
         List<String> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/documentTags", caseType), new ParameterizedTypeReference<List<String>>() {});
@@ -174,13 +166,6 @@ public class InfoClient {
         return response;
     }
 
-    @Cacheable(value = "InfoClientGetStageContributions", unless = "#result == null", key = "{#stageType}")
-    public Boolean getStageContributions(String stageType) {
-        Boolean response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/contributions", stageType), new ParameterizedTypeReference<Boolean>() {});
-        log.info("Got {} as contributions for StageType {}", response.toString(), stageType, value(EVENT, INFO_CLIENT_GET_CONTRIBUTIONS_SUCCESS));
-        return response;
-    }
-
     @Cacheable(value = "InfoClientGetStageDeadline", unless = "#result == null", key = "{#stageType, #received.toString(), #caseDeadline.toString() }")
     public LocalDate getStageDeadline(String stageType, LocalDate received, LocalDate caseDeadline) {
         LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadline?received=%s&caseDeadline=%s", stageType, received, caseDeadline), LocalDate.class);
@@ -202,13 +187,6 @@ public class InfoClient {
         return infoTopic;
     }
 
-    @Cacheable(value = "InfoClientGetUser", unless = "#result == null", key = "{ #userUUID}")
-    public UserDto getUser(UUID userUUID) {
-        UserDto userDto = restHelper.get(serviceBaseURL, String.format("/user/%s", userUUID), UserDto.class);
-        log.info("Got User UserUUID {}", userUUID, value(EVENT, INFO_CLIENT_GET_USER));
-        return userDto;
-    }
-
     @Cacheable(value = "InfoClientGetEntityListDtos", unless = "#result == null", key = "#listName")
     public List<EntityDto<EntityTotalDto>> getEntityListTotals(String listName) {
         List<EntityDto<EntityTotalDto>> entityListDtos = restHelper.get(serviceBaseURL, String.format("/entity/list/%s", listName), new ParameterizedTypeReference<List<EntityDto<EntityTotalDto>>>() {
@@ -225,23 +203,6 @@ public class InfoClient {
     @CacheEvict(value = "InfoClientGetTemplatesByCaseType", key = "#caseType")
     public void clearCachedTemplateForCaseType(String caseType) {
         log.info("Cache invalidated for Case Type: {}, {}", caseType, value(EVENT, CASE_TYPE_TEMPLATE_CACHE_INVALIDATED));
-    }
-
-    @Cacheable(value = "InfoClientGetPriorityPoliciesForCaseType")
-    public List<PriorityPolicyDto> getPriorityPoliciesForCaseType(String caseType) {
-        List<PriorityPolicyDto> policies = restHelper.get(serviceBaseURL, String.format("/priority/policy/%s", caseType), new ParameterizedTypeReference<List<PriorityPolicyDto>>() {
-        });
-        log.info("Got {} policies", policies.size(), value(EVENT, INFO_CLIENT_GET_PRIORITY_POLICIES_SUCCESS));
-        return policies;
-    }
-
-    @Cacheable(value = "InfoClientGetWorkingDaysElapsedForCaseType")
-    public Integer getWorkingDaysElapsedForCaseType(String caseType, LocalDate fromDate) {
-        String dateString = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(fromDate);
-        Integer elapsedWorkingDays = restHelper.get(serviceBaseURL, String.format("/caseType/%s/workingDays/%s", caseType, dateString), new ParameterizedTypeReference<Integer>() {
-        });
-        log.info("Got working days elapsed for case type: {} fromDate: {}, event {}", caseType, dateString, value(EVENT, INFO_CLIENT_GET_WORKING_DAYS_FOR_CASE_TYPE_SUCCESS));
-        return elapsedWorkingDays;
     }
 
     @Cacheable(value = "InfoGetProfileByCaseType", unless = "#result == null")
@@ -282,5 +243,26 @@ public class InfoClient {
 
         log.info("Received {} CaseTypeActions for caseType {}", response.size(), caseType);
         return response;
+    }
+
+    @Cacheable(value = "InfoClientGetAllStageTypes")
+    public List<StageTypeDto> getAllStageTypes() {
+        List<StageTypeDto> response = restHelper.get(serviceBaseURL, "/stageType", new ParameterizedTypeReference<>() {});
+        log.info("Received {} StageTypes", response.size());
+        return response;
+    }
+
+    @Cacheable(value = "InfoClientGetPriorityPolicies")
+    public List<PriorityPolicyDto> getAllPriorityPolicies() {
+        List<PriorityPolicyDto> policies = restHelper.get(serviceBaseURL, "/priority/policy", new ParameterizedTypeReference<>() {});
+        log.info("Got {} policies", policies.size(), value(EVENT, INFO_CLIENT_GET_PRIORITY_POLICIES_SUCCESS));
+        return policies;
+    }
+
+    @Cacheable(value = "InfoClientGetAllExemptions")
+    public List<ExemptionDateDto> getAllExemptions() {
+        List<ExemptionDateDto> exemptions = restHelper.get(serviceBaseURL, "/exemption", new ParameterizedTypeReference<>() {});
+        log.info("Got {} exemptions", exemptions.size(), value(EVENT, INFO_CLIENT_GET_EXEMPTIONS_SUCCESS));
+        return exemptions;
     }
 }

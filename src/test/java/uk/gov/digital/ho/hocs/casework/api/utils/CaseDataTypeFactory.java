@@ -2,6 +2,8 @@ package uk.gov.digital.ho.hocs.casework.api.utils;
 
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 
+import java.util.UUID;
+
 public class CaseDataTypeFactory {
 
     /**
@@ -11,7 +13,7 @@ public class CaseDataTypeFactory {
      * @return
      */
     public static CaseDataType from(String type, String shortCode) {
-        return new CaseDataType( type, shortCode, type, null);
+        return new CaseDataType(UUID.randomUUID(), type, shortCode, type, null);
     }
 
     /**
@@ -22,6 +24,6 @@ public class CaseDataTypeFactory {
      * @return
      */
     public static CaseDataType from(String type, String shortCode, String previousCaseType) {
-        return new CaseDataType( type, shortCode, type, previousCaseType);
+        return new CaseDataType(UUID.randomUUID(), type, shortCode, type, previousCaseType);
     }
 }

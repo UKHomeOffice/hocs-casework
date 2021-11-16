@@ -4,12 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -26,22 +26,19 @@ import static uk.gov.digital.ho.hocs.casework.contributions.Contribution.Contrib
 public class ContributionsProcessor {
 
     private final ObjectMapper objectMapper;
-    private final InfoClient infoClient;
 
-    public ContributionsProcessor(ObjectMapper objectMapper,InfoClient infoClient) {
+    public ContributionsProcessor(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.infoClient = infoClient;
     }
 
-    public void processContributionsForStages(Stage stage, Set<SomuItem> somuItems) {
+    public void processContributionsForStages(Stage stage, List<SomuItem> somuItems, List<String> contributionStageTypes) {
 
         if (somuItems.size() == 0) {
             return;
         }
-        if (infoClient.getStageContributions(stage.getStageType())) {
+        if (contributionStageTypes.contains(stage.getStageType())) {
             Set<Contribution> contributions =
                     somuItems.stream()
-                            .filter(somuItem -> somuItem.getCaseUuid().equals(stage.getCaseUUID()))
                             .map(somuItem -> {
                                 try {
                                     return objectMapper.readValue(somuItem.getData(), Contribution.class);
@@ -106,7 +103,5 @@ public class ContributionsProcessor {
                 })
                 .max(Comparator.naturalOrder());
     }
-
-
 
 }

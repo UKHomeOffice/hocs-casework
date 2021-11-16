@@ -10,15 +10,13 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DaysElapsedCalculatorImplTest {
-
-    @Mock
-    InfoClient infoClient;
 
     @Mock
     ObjectMapper objectMapper;
@@ -33,33 +31,7 @@ public class DaysElapsedCalculatorImplTest {
 
     @Before
     public void before() {
-        daysElapsedCalculator = new DaysElapsedCalculator(objectMapper, infoClient);
-    }
-
-    @Test
-    public void updateDaysElapsed_nullDateReceived() {
-
-        daysElapsedCalculator.updateDaysElapsed(stage);
-
-        verify(stage).getDataMap(objectMapper);
-        verify(stage).update(Map.of(SYSTEM_DAYS_ELAPSED_FIELD_NAME, "0"), objectMapper);
-        verify(stage).getCaseUUID();
-        checkNoMoreInteractions();
-
-    }
-
-    @Test
-    public void updateDaysElapsed_blankDateReceived() {
-
-        when(stage.getDataMap(objectMapper)).thenReturn(Map.of(DATE_RECEIVED_FIELD_NAME, ""));
-
-        daysElapsedCalculator.updateDaysElapsed(stage);
-
-        verify(stage).getDataMap(objectMapper);
-        verify(stage).update(Map.of(SYSTEM_DAYS_ELAPSED_FIELD_NAME, "0"), objectMapper);
-        verify(stage).getCaseUUID();
-        checkNoMoreInteractions();
-
+        daysElapsedCalculator = new DaysElapsedCalculator(objectMapper);
     }
 
     @Test

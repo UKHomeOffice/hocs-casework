@@ -5,10 +5,15 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
+import java.util.UUID;
+
 @Getter
 @AllArgsConstructor
 @EqualsAndHashCode(of = {"shortCode"})
 public class CaseDataType {
+
+    @JsonProperty("uuid")
+    private UUID uuid;
 
     @JsonProperty("displayName")
     private String displayName;

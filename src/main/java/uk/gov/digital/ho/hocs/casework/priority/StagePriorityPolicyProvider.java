@@ -1,9 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.priority;
 
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PriorityPolicyDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.priority.policy.*;
@@ -31,15 +29,8 @@ public class StagePriorityPolicyProvider {
     private static final String PROPERTY_CAP_POINTS_TO_AWARD = "capPointsToAward";
     private static final String PROPERTY_POINTS_TO_AWARD_PER_DAY = "pointsToAwardPerDay";
 
-    @Autowired
-    public StagePriorityPolicyProvider(InfoClient infoClient) {
-        this.infoClient = infoClient;
-    }
-    private InfoClient infoClient;
 
-
-    public List<StagePriorityPolicy> getPolicies(String caseType) {
-        List<PriorityPolicyDto> policies = infoClient.getPriorityPoliciesForCaseType(caseType);
+    public List<StagePriorityPolicy> getPolicies(List<PriorityPolicyDto> policies) {
         return policies.stream().map(this::convert).collect(Collectors.toList());
     }
 
@@ -65,8 +56,7 @@ public class StagePriorityPolicyProvider {
                         data.get(PROPERTY_DATE_FIELD_NAME), data.get(PROPERTY_DATE_FIELD_FORMAT),
                         Integer.parseInt(data.get(PROPERTY_CAP_NUMBER_OF_DAYS)),
                         Double.parseDouble(data.get(PROPERTY_CAP_POINTS_TO_AWARD)),
-                        Double.parseDouble(data.get(PROPERTY_POINTS_TO_AWARD_PER_DAY)),
-                        infoClient);
+                        Double.parseDouble(data.get(PROPERTY_POINTS_TO_AWARD_PER_DAY)));
             default:
                 throw new ApplicationExceptions.InvalidPriorityTypeException("Cannot map %s priority policy type", policyDto.getPolicyType());
         }

@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,20 +30,18 @@ public class WorkingDaysElapsedPolicyTest {
     private static final double POINTS_TO_AWARD_PER_DAY = 2d;
     private static final String TEST_CASE_TYPE = "CASE_TYPE_1";
 
-    @Mock
-    private InfoClient infoClient;
 
     @Before
     public void before() {
         policy = new WorkingDaysElapsedPolicy(PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DATE_FORMAT, CAP_NUMBER_OF_DAYS,
-                CAP_POINTS_TO_AWARD, POINTS_TO_AWARD_PER_DAY, infoClient);
+                CAP_POINTS_TO_AWARD, POINTS_TO_AWARD_PER_DAY);
     }
 
     @Test
     public void apply_criteriaMatched() {
         LocalDate testDate = LocalDate.now().minusDays(10);
         when(infoClient.getWorkingDaysElapsedForCaseType(TEST_CASE_TYPE, testDate)).thenReturn(10);
-        double result = policy.apply(Map.of(CASE_TYPE, TEST_CASE_TYPE, PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate)));
+        double result = policy.apply(Map.of(CASE_TYPE, TEST_CASE_TYPE, PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate)), Collections.emptySet());
         assertThat(result).isEqualTo(20d);
 
         verify(infoClient).getWorkingDaysElapsedForCaseType(TEST_CASE_TYPE, testDate);
@@ -53,7 +52,7 @@ public class WorkingDaysElapsedPolicyTest {
     public void apply_criteriaMatched_capped() {
         LocalDate testDate = LocalDate.now().minusDays(74);
         when(infoClient.getWorkingDaysElapsedForCaseType(TEST_CASE_TYPE, testDate)).thenReturn(55);
-        double result = policy.apply(Map.of(CASE_TYPE, TEST_CASE_TYPE, PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate)));
+        double result = policy.apply(Map.of(CASE_TYPE, TEST_CASE_TYPE, PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate)), Collections.emptySet());
         assertThat(result).isEqualTo(35d);
 
         verify(infoClient).getWorkingDaysElapsedForCaseType(TEST_CASE_TYPE, testDate);
@@ -62,7 +61,7 @@ public class WorkingDaysElapsedPolicyTest {
 
     @Test
     public void apply_criteriaNotMatched() {
-        double result = policy.apply(Map.of(PROPERTY_NAME, "C"));
+        double result = policy.apply(Map.of(PROPERTY_NAME, "C"), Collections.emptySet());
         assertThat(result).isEqualTo(0);
 
         verifyNoMoreInteractions(infoClient);
@@ -70,7 +69,7 @@ public class WorkingDaysElapsedPolicyTest {
 
     @Test
     public void apply_propertyMissing() {
-        double result = policy.apply(Map.of());
+        double result = policy.apply(Map.of(), Collections.emptySet());
         assertThat(result).isEqualTo(0);
 
         verifyNoMoreInteractions(infoClient);

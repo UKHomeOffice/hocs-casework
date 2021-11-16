@@ -58,7 +58,7 @@ public class StageServiceTest {
     private final String stageType = "DCU_MIN_MARKUP";
     private final String allocationType = "anyAllocate";
     private final UUID transitionNoteUUID = UUID.randomUUID();
-    private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN", null);
+    private final CaseDataType caseDataType = new CaseDataType(UUID.randomUUID(), "MIN", "1a", "MIN", null);
     private final List<CaseDataType> caseDataTypes = List.of(
             CaseDataTypeFactory.from("NXT", "a5", "MIN"), // NXT can be reached through MIN
                 caseDataType);
@@ -354,8 +354,8 @@ public class StageServiceTest {
         verify(userPermissionsService).getUserTeams();
         verify(userPermissionsService).getCaseTypesIfUserTeamIsCaseTypeAdmin();
         verify(stageRepository).findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
-        verify(stagePriorityCalculator).updatePriority(stage);
-        verify(daysElapsedCalculator).updateDaysElapsed(stage);
+        verify(stagePriorityCalculator).updatePriority(stage, Collections.emptyList(), Collections.emptySet());
+        verify(daysElapsedCalculator).updateDaysElapsed(stage, Collections.emptySet());
 
         checkNoMoreInteraction();
     }
@@ -788,8 +788,8 @@ public class StageServiceTest {
         when(stageRepository.findAllActiveByTeamUUID(teamUUID)).thenReturn(stages);
         when(somuItemService.getCaseItemsByCaseUuids(any())).thenReturn(Collections.emptySet());
         stageService.getActiveStagesByTeamUUID(teamUUID);
-        verify(contributionsProcessor).processContributionsForStages(stage1, Collections.emptySet());
-        verify(contributionsProcessor).processContributionsForStages(stage2, Collections.emptySet());
+        verify(contributionsProcessor).processContributionsForStages(stage1, Collections.emptyList(), Collections.emptyList());
+        verify(contributionsProcessor).processContributionsForStages(stage2, Collections.emptyList(), Collections.emptyList());
     }
 
     @Test
@@ -808,8 +808,8 @@ public class StageServiceTest {
         verify(userPermissionsService).getUserTeams();
         verify(userPermissionsService).getCaseTypesIfUserTeamIsCaseTypeAdmin();
         verify(stageRepository).findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes);
-        verify(stagePriorityCalculator).updatePriority(stage);
-        verify(daysElapsedCalculator).updateDaysElapsed(stage);
+        verify(stagePriorityCalculator).updatePriority(stage, Collections.emptyList(), Collections.emptySet());
+        verify(daysElapsedCalculator).updateDaysElapsed(stage, Collections.emptySet());
 
         checkNoMoreInteraction();
     }

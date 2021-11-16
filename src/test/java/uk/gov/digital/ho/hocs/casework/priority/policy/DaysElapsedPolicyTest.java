@@ -5,6 +5,7 @@ import org.junit.Test;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -30,26 +31,26 @@ public class DaysElapsedPolicyTest {
     @Test
     public void apply_criteriaMatched() {
         LocalDate testDate = LocalDate.now().minusDays(10);
-        double result = policy.apply(Map.of(PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate)));
+        double result = policy.apply(Map.of(PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate)), Collections.EMPTY_SET);
         assertThat(result).isEqualTo(20d);
     }
 
     @Test
     public void apply_criteriaMatched_capped() {
         LocalDate testDate = LocalDate.now().minusDays(55);
-        double result = policy.apply(Map.of(PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate)));
+        double result = policy.apply(Map.of(PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate)), Collections.emptySet());
         assertThat(result).isEqualTo(35d);
     }
 
     @Test
     public void apply_criteriaNotMatched() {
-        double result = policy.apply(Map.of(PROPERTY_NAME, "C"));
+        double result = policy.apply(Map.of(PROPERTY_NAME, "C"), Collections.emptySet());
         assertThat(result).isEqualTo(0);
     }
 
     @Test
     public void apply_propertyMissing() {
-        double result = policy.apply(Map.of());
+        double result = policy.apply(Map.of(), Collections.emptySet());
         assertThat(result).isEqualTo(0);
     }
 }

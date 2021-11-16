@@ -34,24 +34,20 @@ public class ContributionsProcessorTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    @Mock
-    private InfoClient infoClient;
-
     private ContributionsProcessor contributionsProcessor;
 
     @Before
     public void before() {
-        contributionsProcessor = spy(new ContributionsProcessor(objectMapper, infoClient));
+        contributionsProcessor = spy(new ContributionsProcessor(objectMapper));
     }
 
     @Test
     public void shouldReturnIfZeroSomuItems() {
         Stage stage = new Stage(caseUuid, "ANY", teamUuid, userUuid, transitionNoteUuid);
 
-        contributionsProcessor.processContributionsForStages(stage, Collections.emptySet());
+        contributionsProcessor.processContributionsForStages(stage, Collections.emptyList(), Collections.emptyList());
 
-        verify(contributionsProcessor).processContributionsForStages(stage, Collections.emptySet());
-        verifyNoInteractions(infoClient);
+        verify(contributionsProcessor).processContributionsForStages(stage, Collections.emptyList(), Collections.emptyList());
         verifyNoMoreInteractions(contributionsProcessor);
     }
 
@@ -62,9 +58,9 @@ public class ContributionsProcessorTest {
 
         when(stage.getCaseDataType()).thenReturn("COMP");
 
-        contributionsProcessor.processContributionsForStages(stage, Set.of(somuItem));
+        contributionsProcessor.processContributionsForStages(stage, List.of(somuItem), Collections.emptyList());
 
-        verify(contributionsProcessor).processContributionsForStages(stage, Set.of(somuItem));
+        verify(contributionsProcessor).processContributionsForStages(stage, List.of(somuItem), Collections.emptyList());
         verifyNoMoreInteractions(contributionsProcessor);
     }
 
@@ -75,11 +71,11 @@ public class ContributionsProcessorTest {
 
         when(stage.getCaseDataType()).thenReturn("COMP");
 
-        when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
+        //when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
 
-        contributionsProcessor.processContributionsForStages(stage, Set.of(somuItem));
+        contributionsProcessor.processContributionsForStages(stage, List.of(somuItem), Collections.emptyList());
 
-        verify(contributionsProcessor).processContributionsForStages(stage, Set.of(somuItem));
+        verify(contributionsProcessor).processContributionsForStages(stage, List.of(somuItem), Collections.emptyList());
         verify(contributionsProcessor).calculateDueContributionDate(any());
         verify(contributionsProcessor).highestContributionStatus(any());
         verify(contributionsProcessor).highestContributionStatus(any(), any());
@@ -96,11 +92,11 @@ public class ContributionsProcessorTest {
 
         when(stage.getCaseDataType()).thenReturn("COMP");
 
-        when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
+        //when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
 
-        contributionsProcessor.processContributionsForStages(stage, Set.of(somuItem));
+        contributionsProcessor.processContributionsForStages(stage, List.of(somuItem), Collections.emptyList());
 
-        verify(contributionsProcessor).processContributionsForStages(stage, Set.of(somuItem));
+        verify(contributionsProcessor).processContributionsForStages(stage, List.of(somuItem), Collections.emptyList());
         verify(contributionsProcessor).calculateDueContributionDate(any());
         verify(contributionsProcessor).highestContributionStatus(any());
         verify(contributionsProcessor).highestContributionStatus(any(), any());
@@ -117,11 +113,11 @@ public class ContributionsProcessorTest {
 
         when(stage.getCaseDataType()).thenReturn("COMP");
 
-        when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
+        //when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
 
-        contributionsProcessor.processContributionsForStages(stage,Set.of(somuItem));
+        contributionsProcessor.processContributionsForStages(stage, List.of(somuItem), Collections.emptyList());
 
-        verify(contributionsProcessor).processContributionsForStages(stage, Set.of(somuItem));
+        verify(contributionsProcessor).processContributionsForStages(stage, List.of(somuItem), Collections.emptyList());
         verify(contributionsProcessor).calculateDueContributionDate(any());
         verify(contributionsProcessor).highestContributionStatus(any());
         verify(contributionsProcessor).highestContributionStatus(any(), any());
@@ -138,11 +134,11 @@ public class ContributionsProcessorTest {
 
         when(stage.getCaseDataType()).thenReturn("COMP");
 
-        when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
+        //when(infoClient.getStageContributions(stage.getStageType())).thenReturn(true);
 
-        contributionsProcessor.processContributionsForStages(stage, Set.of(somuItem));
+        contributionsProcessor.processContributionsForStages(stage, List.of(somuItem), Collections.emptyList());
 
-        verify(contributionsProcessor).processContributionsForStages(stage, Set.of(somuItem));
+        verify(contributionsProcessor).processContributionsForStages(stage, List.of(somuItem), Collections.emptyList());
         verify(contributionsProcessor).calculateDueContributionDate(any());
         verify(contributionsProcessor).highestContributionStatus(any());
         verify(contributionsProcessor).highestContributionStatus(any(), any());

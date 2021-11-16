@@ -21,9 +21,6 @@ public class StagePriorityPolicyProviderTest {
 
     private StagePriorityPolicyProvider stagePriorityPolicyProvider;
 
-    @Mock
-    InfoClient infoClient;
-
     private static final String CASE_TYPE = "TestCaseType";
     private static final String PROPERTY_NAME_1 = "property1";
     private static final String PROPERTY_VALUE_1 = "propertyValue1";
@@ -34,7 +31,7 @@ public class StagePriorityPolicyProviderTest {
 
     @Before
     public void before(){
-        stagePriorityPolicyProvider = new StagePriorityPolicyProvider(infoClient);
+        stagePriorityPolicyProvider = new StagePriorityPolicyProvider();
     }
 
     @Test
@@ -44,7 +41,7 @@ public class StagePriorityPolicyProviderTest {
         assertThat(results).isNotNull();
         assertThat(results.size()).isZero();
 
-        verify(infoClient).getPriorityPoliciesForCaseType(CASE_TYPE);
+        verify(infoClient).getPriorityPolicies(CASE_TYPE);
         verifyNoMoreInteractions(infoClient);
     }
 
@@ -69,7 +66,7 @@ public class StagePriorityPolicyProviderTest {
                         "capNumberOfDays", "7", "capPointsToAward", "12"));
 
 
-        when(infoClient.getPriorityPoliciesForCaseType(CASE_TYPE)).thenReturn(List.of(policy1, policy2, policy3, policy4, policy5));
+        when(infoClient.getPriorityPolicies(CASE_TYPE)).thenReturn(List.of(policy1, policy2, policy3, policy4, policy5));
         List<StagePriorityPolicy> results = stagePriorityPolicyProvider.getPolicies(CASE_TYPE);
 
         assertThat(results).isNotNull();
@@ -115,7 +112,7 @@ public class StagePriorityPolicyProviderTest {
         assertThat(resultPolicy5.getPointsToAwardPerDay()).isEqualTo(2d);
         assertThat(resultPolicy5.getCapPointsToAward()).isEqualTo(12d);
 
-        verify(infoClient).getPriorityPoliciesForCaseType(CASE_TYPE);
+        verify(infoClient).getPriorityPolicies(CASE_TYPE);
         verifyNoMoreInteractions(infoClient);
 
     }
@@ -125,7 +122,7 @@ public class StagePriorityPolicyProviderTest {
         PriorityPolicyDto unsupportedPolicy = new PriorityPolicyDto("UnsupportedPolicy", CASE_TYPE,
                 Map.of("propertyName", PROPERTY_NAME_1, "propertyValue", PROPERTY_VALUE_1, "pointsToAward", "2"));
 
-        when(infoClient.getPriorityPoliciesForCaseType(CASE_TYPE)).thenReturn(List.of(unsupportedPolicy));
+        when(infoClient.getPriorityPolicies(CASE_TYPE)).thenReturn(List.of(unsupportedPolicy));
         stagePriorityPolicyProvider.getPolicies(CASE_TYPE);
         verifyNoMoreInteractions(infoClient);
     }

@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
 import java.time.LocalDate;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -23,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 public class CaseCopyFactoryTest {
 
-    public static final CaseDataType CASE_DATA_TYPE = new CaseDataType("a", "b", "c", "d");
+    public static final CaseDataType CASE_DATA_TYPE = new CaseDataType(UUID.randomUUID(),"a", "b", "c", "d");
     public static final CaseData CASE = new CaseData(CASE_DATA_TYPE, 1L, LocalDate.now());
 
     @Autowired

@@ -11,7 +11,10 @@ import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.ExemptionDateDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.PriorityPolicyDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
@@ -266,9 +269,16 @@ public class StageService {
             return null;
         }
 
+        List<CaseDataType> caseTypes = infoClient.getAllCaseTypes();
+        List<ExemptionDateDto> exemptionDatesByCaseType = infoClient.getAllExemptions();
+        Map<String, List<PriorityPolicyDto>> priorityPoliciesByCaseType = infoClient.getAllPriorityPolicies().stream().collect(Collectors.groupingBy(PriorityPolicyDto::getCaseType));
+
         for (Stage stage : unassignedStages) {
-            stagePriorityCalculator.updatePriority(stage);
-            daysElapsedCalculator.updateDaysElapsed(stage);
+            CaseDataType caseType = caseTypes.stream().filter(it -> it.getDisplayCode().equals(stage.getCaseDataType())).findFirst().get();
+            Set<LocalDate> exemptionDates = exemptionDatesByCaseType.stream().filter(it -> it.caseTypeUUID.equals(caseType.getUuid())).map(ExemptionDateDto::getDate).collect(Collectors.toSet());
+
+            stagePriorityCalculator.updatePriority(stage, priorityPoliciesByCaseType.get(caseType.getDisplayCode()), exemptionDates);
+            daysElapsedCalculator.updateDaysElapsed(stage, exemptionDates);
         }
 
         double prevSystemCalculatedPriority = 0;
@@ -332,17 +342,62 @@ public class StageService {
         return stages;
     }
 
+    /*
+     * This method has been shown to have really poor performance characteristics.
+     * Some work has been undertaken to remove rest calls made in a tight loop
+     * by bringing the data fetching outside the loop.
+     * e.g. getAllStageTypes() rather than getStageType(uuid) x 1000
+     */
     private void updateStages(Collection<Stage> stages) {
         log.debug("Adding contributions data for stages");
 
-        Set<SomuItem> somuItems = somuItemService.getCaseItemsByCaseUuids(stages.stream().map(Stage::getCaseUUID).collect(Collectors.toSet()));
+        // SomuItems grouped by CaseUUID - based on a distinct set of caseUUIDs from the stages collection
+        Map<UUID, List<SomuItem>> somuItemsByCaseUUID = getSomuItemsByCaseUUID(stages);
+
+        // StageTypes where CanDisplayContributions is true
+        List<String> stageTypesWithContributions = getStageTypesWithContributions();
+
+        List<CaseDataType> caseTypes = infoClient.getAllCaseTypes();
+
+        Map<UUID,Set<LocalDate>> exemptionDatesByCaseTypeUUID = infoClient.getAllExemptions().stream().collect(Collectors.groupingBy(
+                ExemptionDateDto::getCaseTypeUUID,
+                Collectors.mapping(ExemptionDateDto::getDate, Collectors.toSet())));
+
+        Map<String, List<PriorityPolicyDto>> priorityPoliciesByCaseType = infoClient.getAllPriorityPolicies().stream().collect(Collectors.groupingBy(PriorityPolicyDto::getCaseType));
+
         for (Stage stage : stages) {
-            contributionsProcessor.processContributionsForStages(stage, somuItems);
-            stagePriorityCalculator.updatePriority(stage);
-            daysElapsedCalculator.updateDaysElapsed(stage);
+            CaseDataType caseType = getCaseTypeForStage(caseTypes, stage);
+            Set<LocalDate> exemptionDates = exemptionDatesByCaseTypeUUID.get(caseType.getUuid());
+
+
+            contributionsProcessor.processContributionsForStages(
+                    stage,
+                    somuItemsByCaseUUID.get(stage.getCaseUUID()),
+                    stageTypesWithContributions);
+
+
+            stagePriorityCalculator.updatePriority(stage,priorityPoliciesByCaseType.get(caseType.getDisplayCode()), exemptionDates);
+            daysElapsedCalculator.updateDaysElapsed(stage, exemptionDates);
             stageTagsDecorator.decorateTags(stage);
         }
     }
+
+    private Map<UUID, List<SomuItem>> getSomuItemsByCaseUUID(Collection<Stage> stages) {
+        // Get a distinct list of CaseUUIDs in the collection of stages we have
+        Set<UUID> caseUUIDsForStages = stages.stream().map(Stage::getCaseUUID).collect(Collectors.toSet());
+        Set<SomuItem> somuItems = somuItemService.getCaseItemsByCaseUuids(caseUUIDsForStages);
+        return somuItems.stream().collect(Collectors.groupingBy(SomuItem::getCaseUuid));
+    }
+
+    private List<String> getStageTypesWithContributions() {
+        List<StageTypeDto> stageTypes = infoClient.getAllStageTypes();
+        return stageTypes.stream().filter(StageTypeDto::isCanDisplayContributions).map(StageTypeDto::getType).collect(Collectors.toList());
+    }
+
+    private CaseDataType getCaseTypeForStage(Collection<CaseDataType> caseTypes, Stage stage) {
+        return caseTypes.stream().filter(it -> it.getDisplayCode().equals(stage.getCaseDataType())).findFirst().get();
+    }
+
 
     private Stage getStage(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting Stage: {} for Case: {}", stageUUID, caseUUID);

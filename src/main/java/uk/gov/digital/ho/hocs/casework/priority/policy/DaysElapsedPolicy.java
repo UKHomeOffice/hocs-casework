@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
+import java.util.Set;
 
 @AllArgsConstructor
 @Getter
@@ -22,7 +23,7 @@ public class DaysElapsedPolicy implements StagePriorityPolicy {
     private double pointsToAwardPerDay;
 
     @Override
-    public double apply(Map<String, String> data) {
+    public double apply(Map<String, String> data, Set<LocalDate> exemptions) {
         if (propertyValue.equals(data.get(propertyName))) {
             String dateString = data.get(dateFieldName);
             if (StringUtils.hasText(dateString)) {

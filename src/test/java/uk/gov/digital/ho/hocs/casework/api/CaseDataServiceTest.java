@@ -167,7 +167,7 @@ public class CaseDataServiceTest {
     public void shouldCreateCaseUsingPreviousUUID() throws ApplicationExceptions.EntityCreationException {
 
         // given
-        CaseDataType comp2 = new CaseDataType("display_name",
+        CaseDataType comp2 = new CaseDataType(UUID.randomUUID(), "display_name",
                 "c6", "DISP", PREVIOUS_CASE_TYPE);
 
         CaseData previousCaseData = new CaseData(
