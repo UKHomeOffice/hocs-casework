@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,9 @@ public class ActionDataAppealsServiceTest {
 
     @Mock
     private CaseNoteService mockCaseNoteService;
+
+    @Mock
+    private ObjectMapper mockObjectMapper;
 
     @Captor
     private ArgumentCaptor<ActionDataAppeal> appealArgumentCaptor = ArgumentCaptor.forClass(ActionDataAppeal.class);
@@ -212,7 +216,7 @@ public class ActionDataAppealsServiceTest {
 
         verify(mockCaseDataRepository, times(1)).findActiveByUuid(caseUUID);
         verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("APPEAL_CREATED"), anyString());
-        verify(mockAuditClient, times(1)).createAppealAudit(any());
+        verify(mockAuditClient, times(1)).createAppealAudit(any(), any());
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
@@ -444,7 +448,7 @@ public class ActionDataAppealsServiceTest {
         assertThat(appealArgumentCaptor.getValue().getAppealOfficerData()).isEqualTo(updatedDataField);
 
         verify(mockInfoClient, times(1)).getCaseTypeActionByUuid(eq(caseData.getType()), eq(actionTypeUuid));
-        verify(mockAuditClient, times(1)).updateAppealAudit(any());
+        verify(mockAuditClient, times(1)).updateAppealAudit(any(), any());
         verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("APPEAL_UPDATED"), eq(actionTypeLabel));
 
     }

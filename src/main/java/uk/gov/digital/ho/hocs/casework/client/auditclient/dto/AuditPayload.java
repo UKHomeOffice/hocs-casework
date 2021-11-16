@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.api.dto.AddressDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.EventType;
@@ -190,36 +191,17 @@ public interface AuditPayload {
     @Getter
     class CreateExtensionRequest {
 
-        @JsonProperty("uuid")
         private UUID uuid;
-
-        @JsonProperty("action_uuid")
         private UUID caseTypeActionUuid;
-
-        @Column(name = "case_data_type")
-        private String caseDataType;
-
-        @JsonProperty("caseId")
-        private UUID caseId;
-
-        @JsonProperty("originalDeadline")
         private LocalDate originalDeadline;
-
-        @JsonProperty("updatedDeadline")
         private LocalDate updatedDeadline;
-
-        @JsonProperty("note")
         private String note;
-
-        @JsonProperty("created_timestamp")
         private LocalDateTime createTimestamp;
 
         public static AuditPayload.CreateExtensionRequest from(ActionDataDeadlineExtension actionDataDeadlineExtension) {
             return new AuditPayload.CreateExtensionRequest(
                     actionDataDeadlineExtension.getUuid(),
                     actionDataDeadlineExtension.getCaseTypeActionUuid(),
-                    actionDataDeadlineExtension.getCaseDataType(),
-                    actionDataDeadlineExtension.getCaseDataUuid(),
                     actionDataDeadlineExtension.getOriginalDeadline(),
                     actionDataDeadlineExtension.getUpdatedDeadline(),
                     actionDataDeadlineExtension.getNote(),
@@ -283,20 +265,21 @@ public interface AuditPayload {
     }
 
     @AllArgsConstructor
+    @Getter
+    @Builder
     class AppealItem {
 
         private UUID uuid;
-        private UUID caseUUID;
-        private String caseType;
-        private UUID caseTypeActionUUID;
-        private String caseTypeActionLabel;
+        private UUID caseTypeActionUuid;
         private String status;
         private LocalDate dateSentRMS;
         private String outcome;
         private String complexCase;
         private String note;
-        private String appealOfficerData;
-
+        private String officerType;
+        private String officerName;
+        private String officerDirectorate;
+        private LocalDateTime created;
     }
 
     interface ActionAuditPayload {

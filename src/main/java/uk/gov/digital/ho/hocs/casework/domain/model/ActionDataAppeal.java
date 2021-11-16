@@ -1,8 +1,17 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -77,5 +86,17 @@ public class ActionDataAppeal implements Serializable {
         this.complexCase = complexCase;
         this.note = note;
         this.appealOfficerData = appealOfficerData;
+    }
+
+
+    @PrePersist
+    private void setCreatedAndLastUpdatedTimestamps() {
+        this.createTimestamp = LocalDateTime.now();
+        this.lastUpdateTimestamp = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    private void updateLastUpdatedTimestamp() {
+        this.lastUpdateTimestamp = LocalDateTime.now();
     }
 }
