@@ -1,1 +1,1 @@
-DROP VIEW IF EXISTS 'active_topic';
+DROP VIEW IF EXISTS active_topic;
