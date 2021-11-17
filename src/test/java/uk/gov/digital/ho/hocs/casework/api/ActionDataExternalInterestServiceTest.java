@@ -108,7 +108,7 @@ public class ActionDataExternalInterestServiceTest {
 
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
         // WHEN
-        actionDataExternalInterestService.create(caseUUID,stageUUID, extensionDto);
+        actionDataExternalInterestService.createExternalInterest(caseUUID,stageUUID, extensionDto);
 
         // THEN expect throw specified in annotation
     }
@@ -172,7 +172,7 @@ public class ActionDataExternalInterestServiceTest {
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
         // WHEN
-        actionDataExternalInterestService.create(caseUUID, stageUUID, externalInterestDto);
+        actionDataExternalInterestService.createExternalInterest(caseUUID, stageUUID, externalInterestDto);
 
         // THEN
         verify(mockExternalInterestRepository, times(1)).save(externalInterestArgumentCaptor.capture());
@@ -269,7 +269,7 @@ public class ActionDataExternalInterestServiceTest {
                 .thenReturn(updatedExternalInterest);
 
         // WHEN
-        actionDataExternalInterestService.update(caseUUID, stageUUID, actionEntityId, actionDataExternalInterestDto);
+        actionDataExternalInterestService.updateExternalInterest(caseUUID, actionEntityId, actionDataExternalInterestDto);
 
         verify(mockExternalInterestRepository, times(1)).save(externalInterestArgumentCaptor.capture());
 

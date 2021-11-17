@@ -112,7 +112,7 @@ public class ActionDataAppealsServiceTest {
         );
 
         // WHEN
-        actionDataAppealsService.create(caseUUID, stageUUID, appealDto);
+        actionDataAppealsService.createAppeal(caseUUID, stageUUID, appealDto);
 
         // THEN Throws
 
@@ -140,7 +140,7 @@ public class ActionDataAppealsServiceTest {
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
 
         // WHEN
-        actionDataAppealsService.create(caseUUID, stageUUID, appealDto);
+        actionDataAppealsService.createAppeal(caseUUID, stageUUID, appealDto);
 
         // THEN Throws
     }
@@ -207,7 +207,7 @@ public class ActionDataAppealsServiceTest {
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
         // WHEN
-        actionDataAppealsService.create(caseUUID, stageUUID, appealDto);
+        actionDataAppealsService.createAppeal(caseUUID, stageUUID, appealDto);
 
         // THEN
         verify(mockAppealRepository, times(1)).save(appealArgumentCaptor.capture());
@@ -240,7 +240,7 @@ public class ActionDataAppealsServiceTest {
         );
 
         // WHEN
-        actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
+        actionDataAppealsService.updateAppeal(caseUUID, actionEntityId, appealDto);
 
         // THEN Throws
     }
@@ -268,7 +268,7 @@ public class ActionDataAppealsServiceTest {
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
 
         // WHEN
-        actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
+        actionDataAppealsService.updateAppeal(caseUUID, actionEntityId, appealDto);
 
         // THEN Throws
     }
@@ -335,7 +335,7 @@ public class ActionDataAppealsServiceTest {
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
         // WHEN
-        actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
+        actionDataAppealsService.updateAppeal(caseUUID, actionEntityId, appealDto);
 
         // THEN Throws
     }
@@ -441,7 +441,7 @@ public class ActionDataAppealsServiceTest {
         when(mockAppealRepository.save(any(ActionDataAppeal.class))).thenReturn(updatedAppealEntity);
 
         // WHEN
-        actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
+        actionDataAppealsService.updateAppeal(caseUUID, actionEntityId, appealDto);
 
         verify(mockAppealRepository, times(1)).save(appealArgumentCaptor.capture());
 
