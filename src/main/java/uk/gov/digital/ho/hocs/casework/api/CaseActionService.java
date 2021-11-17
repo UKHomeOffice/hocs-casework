@@ -9,8 +9,11 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -18,40 +21,12 @@ public class CaseActionService {
 
     private final CaseDataRepository caseDataRepository;
     private final InfoClient infoClient;
+    private final List<ActionService> actionServiceList;
 
-    private final Map<String, ActionService> actionServiceMap = new HashMap<>();
-
-    public CaseActionService(CaseDataRepository caseDataRepository, InfoClient infoClient, List<ActionService> actionServices ) {
+    public CaseActionService(CaseDataRepository caseDataRepository, InfoClient infoClient, List<ActionService> actionServiceMap ) {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
-
-        log.info("Loading ActionService implementations.");
-
-        for (ActionService actionService : actionServices) {
-            this.actionServiceMap.putIfAbsent(actionService.getServiceDtoTypeKey(), actionService);
-        }
-
-        log.info("Loaded {} ActionService implementations: {}", actionServiceMap.size(), actionServiceMap.keySet());
-    }
-
-    public void createActionDataForCase(UUID caseUUID, UUID stageUUID, ActionDataDto actionData) {
-        ActionService typeServiceInstance = getActionServiceInstance(actionData);
-
-        if (typeServiceInstance != null) {
-            typeServiceInstance.create(caseUUID, stageUUID, actionData);
-        } else {
-            throw new UnsupportedOperationException(String.format("No Service available to CREATE actionDataDtos of type: %s",actionData.getClass().getSimpleName()));
-        }
-    }
-
-    public void updateActionDataForCase(UUID caseUUID, UUID stageUUID, UUID actionEntityId, ActionDataDto actionData) {
-        ActionService typeServiceInstance = getActionServiceInstance(actionData);
-
-        if (typeServiceInstance != null) {
-            typeServiceInstance.update(caseUUID, stageUUID, actionEntityId, actionData);
-        } else {
-            throw new UnsupportedOperationException(String.format("No Service available to UPDATE actionDataDtos of type: %s",actionData.getClass().getSimpleName()));
-        }
+        this.actionServiceList = new LinkedList<>(actionServiceMap);
     }
 
     public CaseActionDataResponseDto getAllCaseActionDataForCase(UUID caseId) {
@@ -69,14 +44,8 @@ public class CaseActionService {
     }
 
     public void getAllActionsForCaseById(UUID caseId, Map<String, List<ActionDataDto>> caseActionDataMap) {
-        Collection<ActionService> actionServices = this.actionServiceMap.values();
-
-        actionServices.forEach(actionService -> {
+        actionServiceList.forEach(actionService -> {
             caseActionDataMap.put(actionService.getServiceMapKey(), actionService.getAllActionsForCase(caseId));
         });
-    }
-
-    private ActionService getActionServiceInstance(ActionDataDto actionDataDto) {
-        return actionServiceMap.get(actionDataDto.getClass().getSimpleName());
     }
 }

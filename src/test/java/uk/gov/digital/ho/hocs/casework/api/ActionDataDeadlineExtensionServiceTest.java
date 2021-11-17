@@ -156,7 +156,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         when(mockInfoClient.getCaseDeadlineWarning(anyString(), any(LocalDate.class), anyInt())).thenReturn(LocalDate.now().plusDays(extendByDays - 2));
 
        // WHEN
-        actionDataDeadlineExtensionService.create(caseUUID,stageUUID, extensionDto);
+        actionDataDeadlineExtensionService.createExtension(caseUUID,stageUUID, extensionDto);
 
         // THEN
         verify(mockExtensionRepository, times(1)).save(extensionArgumentCaptor.capture());
@@ -194,7 +194,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         );
 
         // WHEN
-        actionDataDeadlineExtensionService.create(caseUUID,stageUUID, extensionDto);
+        actionDataDeadlineExtensionService.createExtension(caseUUID,stageUUID, extensionDto);
 
         // THEN expect throw
     }
@@ -222,28 +222,9 @@ public class ActionDataDeadlineExtensionServiceTest {
 
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
         // WHEN
-        actionDataDeadlineExtensionService.create(caseUUID,stageUUID, extensionDto);
+        actionDataDeadlineExtensionService.createExtension(caseUUID,stageUUID, extensionDto);
 
         // THEN expect throw
-    }
-
-    @Test(expected = UnsupportedOperationException.class)
-    public void update_shouldAlwaysThrowUnsupportedActionException() {
-        UUID caseUUID = UUID.randomUUID();
-        UUID actionUuid = UUID.randomUUID();
-        UUID actionEntityId = UUID.randomUUID();
-        UUID stageUUID = UUID.randomUUID();
-        String caseType = "TEST_CASE_TYPE";
-        ActionDataDeadlineExtensionInboundDto extensionDto = new ActionDataDeadlineExtensionInboundDto(
-                actionUuid,
-                caseUUID,
-                "ANY_STRING",
-                "ACTION_LABEL",
-                8,
-                "ANY NOTE HERE"
-        );
-
-        actionDataDeadlineExtensionService.update(caseUUID, stageUUID, actionEntityId, extensionDto);
     }
 
     @Test(expected = HttpClientErrorException.class)
@@ -316,6 +297,6 @@ public class ActionDataDeadlineExtensionServiceTest {
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(previousCaseData);
         when(mockExtensionRepository.findAllByCaseTypeActionUuidAndCaseDataUuid(actionTypeUuid, caseUUID)).thenReturn(List.of(existingExtensionEntity));
 
-        actionDataDeadlineExtensionService.create(caseUUID, stageUUID, extensionDto);
+        actionDataDeadlineExtensionService.createExtension(caseUUID, stageUUID, extensionDto);
     }
 }

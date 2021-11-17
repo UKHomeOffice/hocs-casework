@@ -6,7 +6,6 @@ import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +24,6 @@ public class CaseActionDataResponseDto {
         Map<String, List<ActionDataDto>> caseActionDataMap = new HashMap<>(caseActionData);
         List<CaseTypeActionDto> caseTypeActionDataList = new ArrayList<>(caseTypeActionData);
 
-        return new CaseActionDataResponseDto(caseActionDataMap, caseTypeActionDataList,currentCaseDeadline);
+        return new CaseActionDataResponseDto(caseActionDataMap, caseTypeActionDataList, currentCaseDeadline);
     }
 }

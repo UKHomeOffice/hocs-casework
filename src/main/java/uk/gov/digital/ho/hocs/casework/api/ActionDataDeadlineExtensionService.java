@@ -53,30 +53,22 @@ public class ActionDataDeadlineExtensionService implements ActionService {
     }
 
     @Override
-    public String getServiceDtoTypeKey() {
-        return ActionDataDeadlineExtensionInboundDto.class.getSimpleName();
-    }
-
-    @Override
     public String getServiceMapKey() {
         return "extensions";
     }
 
-    @Override
-    public void create(UUID caseUuid, UUID stageUuid, ActionDataDto actionData) {
+    public void createExtension(UUID caseUuid, UUID stageUuid, ActionDataDeadlineExtensionInboundDto extensionDto) {
 
-        ActionDataDeadlineExtensionInboundDto extensionDto = (ActionDataDeadlineExtensionInboundDto) actionData;
-        log.debug("Received request to create action: {} for case: {}, stage: {}", extensionDto, caseUuid, stageUuid);
+        log.debug("Received request to create extension: {} for case: {}, stage: {}", extensionDto, caseUuid, stageUuid);
 
         int extendByNumberOfDays = extensionDto.getExtendBy();
 
-        ExtendFrom extendFrom = null;
+        ExtendFrom extendFrom;
         try {
             extendFrom = ExtendFrom.valueOf(extensionDto.getExtendFrom());
         } catch (IllegalArgumentException e) {
-            String msg = String.format("\"extendFrom\" value invalid: %s", extensionDto.getExtendFrom());
-            log.info(msg);
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, msg);
+            log.info(e.getMessage());
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
         LocalDate extendFromDate = LocalDate.now();
         UUID extensionTypeUuid = extensionDto.getCaseTypeActionUuid();
@@ -97,8 +89,6 @@ public class ActionDataDeadlineExtensionService implements ActionService {
             log.error(msg);
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,msg);
         }
-
-
 
         if (extendFrom != ExtendFrom.TODAY) {
             extendFromDate = caseData.getCaseDeadline();
@@ -133,19 +123,12 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         auditClient.updateCaseAudit(caseData, stageUuid);
         auditClient.createExtensionAudit(createdExtension);
 
-        log.info("Created action:  {} for case: {}", actionData, caseUuid);
+        log.info("Created action:  {} for case: {}", createdExtension, caseUuid);
     }
 
     private boolean hasMaxRequests(CaseTypeActionDto caseTypeActionDto, UUID caseUUID) {
         List<ActionDataDeadlineExtension> existingDeadlinesOfMatchingType = extensionRepository.findAllByCaseTypeActionUuidAndCaseDataUuid(caseTypeActionDto.getUuid(), caseUUID);
         return existingDeadlinesOfMatchingType.size() >= caseTypeActionDto.getMaxConcurrentEvents();
-    }
-
-    @Override
-    public void update(UUID caseUuid, UUID stageUuid, UUID actionEntityId, ActionDataDto actionData) {
-        String msg = (String.format("Update of Case Deadline Extension Data is not supported, caseUuid: %s, actionData: %s", caseUuid, actionData.toString()));
-        log.error(msg);
-        throw new UnsupportedOperationException(msg);
     }
 
     @Override
@@ -195,13 +178,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
     }
 
     enum ExtendFrom {
-        TODAY("today"),
-        DATE_RECEIVED("DateReceived");
-
-        private final String dataSchemaName;
-
-        ExtendFrom(String dataSchemaName) {
-            this.dataSchemaName = dataSchemaName;
-        }
+        TODAY,
+        DATE_RECEIVED;
     }
 }
