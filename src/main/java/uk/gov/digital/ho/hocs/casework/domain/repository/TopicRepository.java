@@ -18,5 +18,7 @@ public interface TopicRepository extends CrudRepository<Topic, Long> {
     @Query(value = "SELECT t.* FROM topic t JOIN case_data cd ON t.case_uuid = cd.uuid WHERE t.case_uuid = ?1 AND t.uuid = ?2 AND NOT t.deleted AND NOT cd.deleted", nativeQuery = true)
     Topic findByUUID(UUID caseUUID, UUID topicUUID);
 
-    Set<Topic> findAll();
+
+    @Query(value = "SELECT t.* FROM topic t JOIN case_data cd ON t.case_uuid = cd.uuid WHERE NOT t.deleted AND NOT cd.deleted", nativeQuery = true)
+    Set<Topic> findAllTopics();
 }

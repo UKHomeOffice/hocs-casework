@@ -272,13 +272,12 @@ public class TopicServiceTest {
         HashSet<Topic> topicData = new HashSet<>();
         topicData.add(new Topic(caseUUID, topicName, topicNameUUID));
 
-        when(topicRepository.findAll()).thenReturn(topicData);
+        when(topicRepository.findAllTopics()).thenReturn(topicData);
 
         topicService.getAllTopics();
 
-        verify(topicRepository, times(1)).findAll();
+        verify(topicRepository, times(1)).findAllTopics();
 
         verifyNoMoreInteractions(topicRepository);
     }
 }
-

@@ -78,7 +78,7 @@ public class TopicService {
 
     Set<Topic> getAllTopics() {
         log.debug("Getting all Topics allocated to cases");
-        Set<Topic> topics = topicRepository.findAll();
+        Set<Topic> topics = topicRepository.findAllTopics();
         log.info("Got {} Topics", topics.size(), value(EVENT, ALL_CASE_TOPICS_RETRIEVED));
         return topics;
     }
