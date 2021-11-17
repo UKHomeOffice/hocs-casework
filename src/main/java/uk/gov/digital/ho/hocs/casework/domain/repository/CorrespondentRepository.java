@@ -13,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface CorrespondentRepository extends CrudRepository<BaseCorrespondent, Long> {
 
-    @Query(value = "SELECT aco.* FROM active_correspondent aco WHERE aco.case_uuid = ?1 AND aco.uuid = ?2", nativeQuery = true)
+    @Query(value = "SELECT c.* FROM correspondent c JOIN case_data cd ON c.case_uuid = cd.uuid WHERE c.case_uuid = ?1 AND c.uuid = ?2 AND NOT c.deleted AND NOT cd.deleted", nativeQuery = true)
     Correspondent findByUUID(UUID caseUUID, UUID correspondentUUID);
 
     @Query(value =
