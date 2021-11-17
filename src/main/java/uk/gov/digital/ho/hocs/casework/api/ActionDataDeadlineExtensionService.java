@@ -65,7 +65,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
 
         ExtendFrom extendFrom;
         try {
-            extendFrom = ExtendFrom.getByLabel(extensionDto.getExtendFrom());
+            extendFrom = ExtendFrom.valueOf(extensionDto.getExtendFrom());
         } catch (IllegalArgumentException e) {
             log.info(e.getMessage());
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
@@ -178,24 +178,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
     }
 
     enum ExtendFrom {
-        TODAY("today"),
-        DATE_RECEIVED("DateReceived");
-
-        private final String label;
-
-        ExtendFrom(String dataSchemaName) {
-            this.label = dataSchemaName;
-        }
-
-        public static ExtendFrom getByLabel(String label) {
-
-            for (ExtendFrom e : values()) {
-                if (e.label.equals(label)) {
-                    return e;
-                }
-            }
-            String msg = String.format("\"extendFrom\" value invalid: %s", label);
-            throw new IllegalArgumentException(msg);
-        }
+        TODAY,
+        DATE_RECEIVED;
     }
 }

@@ -106,7 +106,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
-                "today",
+                "TODAY",
                 extendByDays,
                 "ANY NOTE HERE"
         );
@@ -188,7 +188,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
-                "today",
+                "TODAY",
                 extendByDays,
                 "ANY NOTE HERE"
         );
@@ -212,7 +212,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
-                "today",
+                "TODAY",
                 extendByDays,
                 "ANY NOTE HERE"
         );
@@ -239,7 +239,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
-                "today",
+                "TODAY",
                 extendByDays,
                 "ANY NOTE HERE"
         );
