@@ -11,7 +11,7 @@ import java.util.UUID;
 @Repository
 public interface CaseNoteRepository extends CrudRepository<CaseNote, Long> {
 
-    @Query(value = "SELECT acn.* FROM active_case_note acn WHERE acn.case_uuid = ?1", nativeQuery = true)
+    @Query(value = "SELECT cn.* FROM case_note cn JOIN case_data cd on cn.case_uuid = cd.uuid WHERE cn.case_uuid = ?1 AND NOT cn.deleted AND NOT cd.deleted", nativeQuery = true)
     Set<CaseNote> findAllByCaseUUID(UUID caseUUID);
 
     CaseNote findByUuid(UUID caseNoteUUID);
