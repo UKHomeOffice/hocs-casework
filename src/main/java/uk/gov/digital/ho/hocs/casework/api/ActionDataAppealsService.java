@@ -59,7 +59,7 @@ public class ActionDataAppealsService implements ActionService {
         return "appeals";
     }
 
-    public void createAppeal(UUID caseUuid, UUID stageUuid, ActionDataAppealDto appealDto) {
+    public UUID createAppeal(UUID caseUuid, UUID stageUuid, ActionDataAppealDto appealDto) {
 
         log.debug("Received request to create Appeal: {} for case: {}, stage: {}", appealDto, caseUuid, stageUuid);
         UUID appealUuid = appealDto.getCaseTypeActionUuid();
@@ -98,6 +98,8 @@ public class ActionDataAppealsService implements ActionService {
         caseNoteService.createCaseNote(caseUuid, CREATE_CASE_NOTE_KEY, appealEntity.getCaseTypeActionLabel());
         auditClient.createAppealAudit(createdAppealEntity, caseTypeActionDto);
         log.info("Created Action: {}  for Case: {}", createdAppealEntity, caseData.getUuid(), value(EVENT, ACTION_DATA_CREATE_SUCCESS) );
+
+        return createdAppealEntity.getUuid();
     }
 
     public void updateAppeal(UUID caseUuid, UUID actionEntityId, ActionDataAppealDto appealDto) {
