@@ -13,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface StageRepository extends CrudRepository<BaseStage, Long> {
 
-    @Query(value = "SELECT s.* FROM stage s JOIN case_data cd ON s.case_uuid = cd.uuid WHERE s.case_uuid = ?1 AND s.uuid = ?2 AND NOT cd.deleted", nativeQuery = true)
+    @Query(value = "SELECT s.* FROM stage s JOIN case_data cd ON s.case_uuid = cd.uuid WHERE s.case_uuid = ?1 AND s.uuid = ?2 AND s.team_uuid IS NOT NULL AND NOT cd.deleted", nativeQuery = true)
     BasicStage findActiveBasicStageByCaseUuidStageUUID(UUID caseUUID, UUID stageUUID);
 
     @Query(value = "SELECT s.* FROM stage s WHERE s.case_uuid = ?1 AND s.uuid = ?2", nativeQuery = true)
@@ -52,10 +52,10 @@ public interface StageRepository extends CrudRepository<BaseStage, Long> {
     @Query(value = "SELECT * FROM active_stage_data", nativeQuery = true)
     Set<Stage> findAllActive();
 
-    @Query(value = "SELECT sd.* FROM active_stage_data sd WHERE sd.user_uuid = ?1 AND sd.team_uuid = ?2", nativeQuery = true)
-    Set<Stage> findStageCaseUUIDsByUserUUIDTeamUUID(UUID userUUID, UUID teamUUID);
+    @Query(value = "SELECT sd.* FROM stage sd JOIN case_data cd ON sd.case_uuid = cd.uuid WHERE sd.user_uuid = ?1 AND sd.team_uuid = ?2 AND NOT cd.deleted", nativeQuery = true)
+    Set<BasicStage> findStageCaseUUIDsByUserUUIDTeamUUID(UUID userUUID, UUID teamUUID);
 
-    @Query(value = "SELECT sd.* FROM stage_data sd join active_case ac on sd.case_uuid = ac.uuid where ac.reference = ?1", nativeQuery = true)
+    @Query(value = "SELECT sd.* FROM stage_data sd where sd.case_reference = ?1", nativeQuery = true)
     Set<Stage> findByCaseReference(String reference);
 
 }
