@@ -20,6 +20,7 @@ import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.BasicStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
@@ -709,11 +710,12 @@ public class StageServiceTest {
     @Test
     public void shouldGetStageTypeFromStageData() {
         String stageType = "a-stage-type";
+        BasicStage stage = new BasicStage(UUID.randomUUID(), stageType, teamUUID, null, null);
 
-        when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
-        when(stage.getStageType()).thenReturn(stageType);
+        when(stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
         String result = stageService.getStageTypeFromStageData(caseUUID, stageUUID);
+
         Assert.assertEquals(stageType, result);
     }
 
@@ -840,14 +842,15 @@ public class StageServiceTest {
         var caseUuid = UUID.randomUUID();
         var stageUuid = UUID.randomUUID();
         var teamUUID = UUID.randomUUID();
+        BasicStage stage = new BasicStage(caseUuid, "A Type", teamUUID, null, null);
 
-        when(stageRepository.findTeamUuidByCaseUuidAndStageUuid(any(), any())).thenReturn(teamUUID::toString);
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(any(), any())).thenReturn(stage);
 
         var result = stageService.getStageTeam(caseUuid, stageUuid);
         assertThat(result).isNotNull();
         assertThat(result.toString()).isEqualTo(teamUUID.toString());
 
-        verify(stageRepository).findTeamUuidByCaseUuidAndStageUuid(caseUuid, stageUuid);
+        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUuid, stageUuid);
 
         verifyNoMoreInteractions(stageRepository);
     }
@@ -857,12 +860,12 @@ public class StageServiceTest {
         var caseUuid = UUID.randomUUID();
         var stageUuid = UUID.randomUUID();
 
-        when(stageRepository.findTeamUuidByCaseUuidAndStageUuid(any(), any())).thenReturn(null);
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(any(), any())).thenReturn(null);
 
         var result = stageService.getStageTeam(caseUuid, stageUuid);
         assertThat(result).isNull();
 
-        verify(stageRepository).findTeamUuidByCaseUuidAndStageUuid(caseUuid, stageUuid);
+        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUuid, stageUuid);
 
         verifyNoMoreInteractions(stageRepository);
     }
