@@ -17,6 +17,7 @@ import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.BasicStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
@@ -95,28 +96,27 @@ public class StageService {
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting User for Stage: {}", stageUUID);
-        Stage stage = getStage(caseUUID, stageUUID);
+        BasicStage stage = getBasicStage(caseUUID, stageUUID);
         log.debug("Got User: {} for Stage: {}", stage.getUserUUID(), stageUUID);
         return stage.getUserUUID();
     }
 
     public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting Team for Stage: {}", stageUUID);
-        Stage.StageTeamUuid stageTeamUuid = stageRepository.findTeamUuidByCaseUuidAndStageUuid(caseUUID, stageUUID);
+        BasicStage stage = stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
 
-        if (stageTeamUuid == null) {
+        if (stage == null) {
             log.warn("No team exists is linked to stage: {} and case: {}", stageUUID, caseUUID);
-
             return null;
         }
 
-        log.info("Team: {} exists is linked to stage: {} and case: {}", stageTeamUuid.getTeamUuid(), stageUUID, caseUUID, stageUUID);
-        return UUID.fromString(stageTeamUuid.getTeamUuid());
+        log.info("Team: {} exists is linked to stage: {} and case: {}", stage.getTeamUUID(), stageUUID, caseUUID, stageUUID);
+        return stage.getTeamUUID();
     }
 
     public String getStageTypeFromStageData(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting Type for Stage: {}", stageUUID);
-        String stageType = getStage(caseUUID, stageUUID).getStageType();
+        String stageType = getBasicStage(caseUUID, stageUUID).getStageType();
         log.debug("Got Type: {} for Stage: {}", stageType, stageUUID);
         return stageType;
     }
@@ -349,6 +349,17 @@ public class StageService {
         Stage stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
         if (stage != null) {
             log.info("Got Stage: {} for Case: {}", stageUUID, caseUUID);
+            return stage;
+        } else {
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Stage UUID: %s not found!", stageUUID), STAGE_NOT_FOUND);
+        }
+    }
+
+    private BasicStage getBasicStage(UUID caseUUID, UUID stageUUID) {
+        log.debug("Getting Base Stage: {} for Case: {}", stageUUID, caseUUID);
+        BasicStage stage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID);
+        if (stage != null) {
+            log.info("Got BaseStage: {} for Case: {}", stageUUID, caseUUID);
             return stage;
         } else {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Stage UUID: %s not found!", stageUUID), STAGE_NOT_FOUND);

@@ -1,17 +1,20 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.util.JsonDataMapUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
@@ -19,7 +22,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_
 @NoArgsConstructor
 @Entity
 @Table(name = "stage")
-public class Stage extends AbstractJsonDataMap implements Serializable {
+public class Stage extends BaseStage {
 
     public interface StageTeamUuid {
         String getTeamUuid();
@@ -30,51 +33,11 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
     public static final String DCU_DTEN_INITIAL_DRAFT = "DCU_DTEN_INITIAL_DRAFT";
     public static final String OFFLINE_QA_USER = "OfflineQaUser";
 
-    @Id
-    @Column(name = "id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Getter
-    @Column(name = "uuid", columnDefinition = "uuid")
-    private UUID uuid;
-
-    @Getter
-    @Column(name = "created")
-    private LocalDateTime created;
-
-    @Getter
-    @Column(name = "type")
-    private String stageType;
-
-    @Getter
-    @Column(name = "deadline")
-    private LocalDate deadline;
-
-    @Getter
-    @Column(name = "deadline_warning")
-    private LocalDate deadlineWarning;
-
-    @Getter
-    @Column(name = "transition_note_uuid", columnDefinition = "uuid")
-    private UUID transitionNoteUUID;
-
     @Getter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transition_note_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
     private CaseNote transitionNote;
 
-    @Getter
-    @Column(name = "case_uuid", columnDefinition = "uuid")
-    private UUID caseUUID;
-
-    @Getter
-    @Column(name = "team_uuid", columnDefinition = "uuid")
-    private UUID teamUUID;
-
-    @Getter
-    @Column(name = "user_uuid", columnDefinition = "uuid")
-    private UUID userUUID;
 
     @Getter
     @Column(name = "case_reference", insertable = false, updatable = false)
@@ -193,6 +156,14 @@ public class Stage extends AbstractJsonDataMap implements Serializable {
 
     public boolean isActive() {
         return this.teamUUID != null;
+    }
+
+    public void update(Map<String, String> newData, ObjectMapper objectMapper) {
+        setData(JsonDataMapUtils.update(getData(), newData, objectMapper));
+    }
+
+    public Map<String, String> getDataMap(ObjectMapper objectMapper) {
+        return JsonDataMapUtils.getDataMap(getData(), objectMapper);
     }
 
 }

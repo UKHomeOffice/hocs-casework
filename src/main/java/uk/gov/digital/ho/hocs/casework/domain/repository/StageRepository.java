@@ -3,13 +3,21 @@ package uk.gov.digital.ho.hocs.casework.domain.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
+import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.BasicStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.util.Set;
 import java.util.UUID;
 
 @Repository
-public interface StageRepository extends CrudRepository<Stage, Long> {
+public interface StageRepository extends CrudRepository<BaseStage, Long> {
+
+    @Query(value = "SELECT s.* FROM stage s JOIN case_data cd ON s.case_uuid = cd.uuid WHERE s.case_uuid = ?1 AND s.uuid = ?2 AND NOT cd.deleted", nativeQuery = true)
+    BasicStage findActiveBasicStageByCaseUuidStageUUID(UUID caseUUID, UUID stageUUID);
+
+    @Query(value = "SELECT s.* FROM stage s WHERE s.case_uuid = ?1 AND s.uuid = ?2", nativeQuery = true)
+    BasicStage findBasicStageByCaseUuidAndStageUuid(UUID caseUuid, UUID stageUuid);
 
     @Query(value = "SELECT sd.* FROM active_stage_data sd WHERE sd.case_uuid = ?1 AND sd.uuid = ?2", nativeQuery = true)
     Stage findActiveByCaseUuidStageUUID(UUID caseUUID, UUID stageUUID);
@@ -49,9 +57,5 @@ public interface StageRepository extends CrudRepository<Stage, Long> {
 
     @Query(value = "SELECT sd.* FROM stage_data sd join active_case ac on sd.case_uuid = ac.uuid where ac.reference = ?1", nativeQuery = true)
     Set<Stage> findByCaseReference(String reference);
-
-    @SuppressWarnings("SpringDataRepositoryMethodReturnTypeInspection") // caused by using 'By' in method name
-    @Query(value = "SELECT CAST(team_uuid AS VARCHAR(36)) AS teamUuid FROM stage WHERE case_uuid = ?1 AND uuid = ?2", nativeQuery = true)
-    Stage.StageTeamUuid findTeamUuidByCaseUuidAndStageUuid(UUID caseUuid, UUID stageUuid);
 
 }

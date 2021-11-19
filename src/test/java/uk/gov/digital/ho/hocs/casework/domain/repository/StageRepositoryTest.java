@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
+import uk.gov.digital.ho.hocs.casework.domain.model.BasicStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseLink;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
@@ -85,12 +86,12 @@ public class StageRepositoryTest {
 
         for (int i = 0; i < QUERY_AMOUNT; i++) {
             var stage = stages.get(i);
-            var stageTeamUuid = runFindTeamUuidByCaseAndStageQuery(stage.getCaseUUID(), stage.getUuid(), timings, i);
+            var basicStage = runFindTeamUuidByCaseAndStageQuery(stage.getCaseUUID(), stage.getUuid(), timings, i);
 
             if (stage.getTeamUUID() == null) {
-                assertThat("No team uuid should return null", stageTeamUuid == null);
+                assertThat("No team uuid should return null", basicStage.getTeamUUID() == null);
             } else {
-                assertThat("Uuid should match the projection", stage.getTeamUUID().toString().equals(stageTeamUuid.getTeamUuid()));
+                assertThat("Uuid should match the projection", stage.getTeamUUID().equals(basicStage.getTeamUUID()));
             }
         }
 
@@ -112,9 +113,9 @@ public class StageRepositoryTest {
         timings[iteration] = finish - start;
     }
 
-    private Stage.StageTeamUuid runFindTeamUuidByCaseAndStageQuery(UUID caseUuid, UUID stageUuid, long[] timings, int iteration) {
+    private BasicStage runFindTeamUuidByCaseAndStageQuery(UUID caseUuid, UUID stageUuid, long[] timings, int iteration) {
         long start = System.currentTimeMillis();
-        var result = stageRepository.findTeamUuidByCaseUuidAndStageUuid(caseUuid, stageUuid);
+        var result = stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUuid, stageUuid);
         long finish = System.currentTimeMillis();
         timings[iteration] = finish - start;
         return result;
