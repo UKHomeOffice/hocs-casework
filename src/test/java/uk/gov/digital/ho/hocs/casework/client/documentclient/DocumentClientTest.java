@@ -154,4 +154,28 @@ public class DocumentClientTest {
         assertThat(result.getMimeType()).isEqualTo(mimeType);
     }
 
+    @Test
+    public void getDocumentsForAction() {
+        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(
+                new HashSet<>(Arrays.asList(documentDto)), new ArrayList<>(Arrays.asList("ACTION_DOC")));
+
+        UUID actionDataUuid = UUID.randomUUID();
+
+        String url = String.format("/document/reference/%s/actionDataUuid/%s/type/%s",
+                caseUUID, actionDataUuid, "ACTION_DOC");
+
+        when(restHelper.get(anyString(), anyString(), any(Class.class))).thenReturn(documentsResponse);
+
+        GetDocumentsResponse actualResult = documentClient.getDocumentsForAction(caseUUID, actionDataUuid, "ACTION_DOC");
+
+        assertThat(actualResult).isNotNull();
+        assertThat(actualResult.getDocumentDtos()).isNotNull();
+        assertThat(actualResult.getDocumentDtos().size()).isOne();
+        assertThat(actualResult.getDocumentTags()).isNotNull();
+        assertThat(actualResult.getDocumentTags().size()).isEqualTo(1);
+        assertThat(actualResult.getDocumentTags().get(0)).isEqualTo("ACTION_DOC");
+        checkDocumentDto(actualResult.getDocumentDtos().iterator().next());
+        verify(restHelper).get(documentService, url, GetDocumentsResponse.class);
+        verifyNoMoreInteractions(restHelper);
+    }
 }
