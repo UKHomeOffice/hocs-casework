@@ -515,8 +515,8 @@ public class StageServiceTest {
     @Test
     public void shouldGetActiveStageCaseUUIDsForUserAndTeam() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        Set<Stage> stages = new HashSet<>();
+        BasicStage stage = new BasicStage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        Set<BasicStage> stages = new HashSet<>();
         stages.add(stage);
 
         when(stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(userUUID, teamUUID)).thenReturn(stages);

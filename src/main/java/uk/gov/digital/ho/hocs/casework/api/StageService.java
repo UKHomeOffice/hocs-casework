@@ -368,13 +368,9 @@ public class StageService {
 
     Set<UUID> getActiveStageCaseUUIDsForUserAndTeam(UUID userUUID, UUID teamUUID) {
         log.debug("Getting Active Stages for User in Team");
-        Set<Stage> stages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(userUUID, teamUUID);
+        Set<BasicStage> stages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(userUUID, teamUUID);
         log.info("Returning CaseUUIDs for Active Stages for User {} in team {}", userUUID, teamUUID, value(EVENT, USERS_TEAMS_STAGE_LIST_RETRIEVED));
-        Set<UUID> caseUUIDs = new HashSet<>();
-        for (Stage stage : stages) {
-            caseUUIDs.add(stage.getCaseUUID());
-        }
-        return caseUUIDs;
+        return stages.stream().map(BasicStage::getCaseUUID).collect(Collectors.toSet());
     }
 
     Set<Stage> getActiveStagesByCaseReference(String reference) {
