@@ -8,11 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataAppealDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboundDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataExternalInterestInboundDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseActionDataResponseDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseReferenceResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 
 import java.util.UUID;
 
@@ -54,12 +50,12 @@ public class CaseActionsResource {
 
     // ---- Case Appeals ----
     @PostMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/appeal")
-    public ResponseEntity<GetCaseReferenceResponse> createAppeal(@PathVariable UUID caseUUID,
+    public ResponseEntity<CreateActionDataResponse> createAppeal(@PathVariable UUID caseUUID,
                                                                  @PathVariable UUID stageUUID,
                                                                  @RequestBody ActionDataAppealDto appealData) {
 
-        appealsService.createAppeal(caseUUID, stageUUID, appealData);
-        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
+        final UUID actionUUID = appealsService.createAppeal(caseUUID, stageUUID, appealData);
+        return ResponseEntity.ok(new CreateActionDataResponse(actionUUID, caseUUID, caseDataService.getCaseRef(caseUUID)));
     }
 
     @PutMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/appeal/{appealUUID}")
