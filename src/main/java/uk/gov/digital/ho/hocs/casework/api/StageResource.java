@@ -23,6 +23,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
+import uk.gov.digital.ho.hocs.casework.domain.model.BasicStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Allocated;
@@ -174,10 +175,10 @@ class StageResource {
         return ResponseEntity.ok(GetStagesResponse.from(stages));
     }
 
-    @GetMapping(value = "/active-stage/case/{caseUUID}")
+    @GetMapping(value = {"/active-stage/case/{caseUUID"})
     ResponseEntity<GetStagesResponse> getActiveStagesByCase(@PathVariable UUID caseUUID) {
-        Set<Stage> stages = stageService.getActiveStagesByCaseUUID(caseUUID);
-        return ResponseEntity.ok(GetStagesResponse.from(stages));
+        Set<BasicStage> stages = stageService.getActiveStagesByCaseUUID(caseUUID);
+        return ResponseEntity.ok(GetStagesResponse.fromBasic(stages));
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)

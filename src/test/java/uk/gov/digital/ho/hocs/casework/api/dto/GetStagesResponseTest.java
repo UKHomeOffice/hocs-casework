@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import org.junit.Test;
+import uk.gov.digital.ho.hocs.casework.domain.model.BasicStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.util.HashSet;
@@ -24,6 +25,24 @@ public class GetStagesResponseTest {
         stages.add(stage);
 
         GetStagesResponse getStagesResponse = GetStagesResponse.from(stages);
+
+        assertThat(getStagesResponse.getStages()).hasSize(1);
+
+    }
+
+    @Test
+    public void getGetStagesResponseFromBasic() {
+
+        UUID caseUUID = UUID.randomUUID();
+        UUID teamUUID = UUID.randomUUID();
+        UUID userUUID = UUID.randomUUID();
+        UUID transitionNoteUUID = UUID.randomUUID();
+        BasicStage stage = new BasicStage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+
+        Set<BasicStage> stages = new HashSet<>();
+        stages.add(stage);
+
+        GetStagesResponse getStagesResponse = GetStagesResponse.fromBasic(stages);
 
         assertThat(getStagesResponse.getStages()).hasSize(1);
 

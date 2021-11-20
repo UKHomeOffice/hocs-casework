@@ -24,9 +24,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_
 @Table(name = "stage")
 public class Stage extends BaseStage {
 
-    public interface StageTeamUuid {
-        String getTeamUuid();
-    }
 
     public static final String DCU_MIN_INITIAL_DRAFT = "DCU_MIN_INITIAL_DRAFT";
     public static final String DCU_TRO_INITIAL_DRAFT = "DCU_TRO_INITIAL_DRAFT";

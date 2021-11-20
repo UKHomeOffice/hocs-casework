@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.domain.model.BasicStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.time.LocalDate;
@@ -115,5 +116,34 @@ public class GetStageResponse {
                 stage.getNextCaseReference(),
                 stage.getNextCaseUUID(),
                 stage.getNextCaseStageUUID());
+    }
+
+    public static GetStageResponse fromBasic(BasicStage stage) {
+
+        return new GetStageResponse(
+                stage.getUuid(),
+                stage.getCreated(),
+                stage.getStageType(),
+                stage.getDeadline(),
+                stage.getDeadlineWarning(),
+                stage.getCaseUUID(),
+                stage.getTeamUUID(),
+                stage.getUserUUID(),
+                null,
+                null,
+                stage.getTransitionNoteUUID(),
+                null,
+                stage.getSomu(),
+                null,
+                null,
+                stage.isActive(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
     }
 }

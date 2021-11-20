@@ -21,6 +21,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageUserRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
+import uk.gov.digital.ho.hocs.casework.domain.model.BasicStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.io.UnsupportedEncodingException;
@@ -167,7 +168,7 @@ public class StageResourceTest {
 
     @Test
     public void shouldGetActiveStagesCaseUUID() {
-        Set<Stage> stages = new HashSet<>();
+        Set<BasicStage> stages = new HashSet<>();
         UUID caseUUID = UUID.randomUUID();
 
         when(stageService.getActiveStagesByCaseUUID(caseUUID)).thenReturn(stages);

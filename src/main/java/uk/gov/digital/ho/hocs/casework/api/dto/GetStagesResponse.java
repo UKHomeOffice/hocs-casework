@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.domain.model.BasicStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.util.Set;
@@ -24,4 +25,15 @@ public class GetStagesResponse {
 
         return new GetStagesResponse(stageDataResponses);
     }
+
+    public static GetStagesResponse fromBasic(Set<BasicStage> stages) {
+        Set<GetStageResponse> stageDataResponses = stages
+                .stream()
+                .map(GetStageResponse::fromBasic)
+                .collect(Collectors.toSet());
+
+        return new GetStagesResponse(stageDataResponses);
+    }
+
+
 }

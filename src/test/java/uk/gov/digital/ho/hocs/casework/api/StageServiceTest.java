@@ -313,7 +313,7 @@ public class StageServiceTest {
 
         stageService.getActiveStagesByCaseUUID(caseUUID);
 
-        verify(stageRepository).findAllActiveByCaseUUID(caseUUID);
+        verify(stageRepository).findAllActiveBasicStageByCaseUUID(caseUUID);
 
         verifyNoMoreInteractions(stageRepository);
         verifyZeroInteractions(notifyClient);

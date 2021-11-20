@@ -241,9 +241,9 @@ public class StageService {
         notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, getCaseRef(caseUUID));
     }
 
-    Set<Stage> getActiveStagesByCaseUUID(UUID caseUUID) {
+    Set<BasicStage> getActiveStagesByCaseUUID(UUID caseUUID) {
         log.debug("Getting Active Stages for Case: {}", caseUUID);
-        return stageRepository.findAllActiveByCaseUUID(caseUUID);
+        return stageRepository.findAllActiveBasicStageByCaseUUID(caseUUID);
     }
 
     Set<Stage> getActiveStagesByTeamUUID(UUID teamUUID) {
