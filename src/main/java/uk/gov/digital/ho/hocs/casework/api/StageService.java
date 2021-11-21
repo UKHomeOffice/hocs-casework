@@ -389,9 +389,9 @@ public class StageService {
 
     }
 
-    Set<Stage> getAllStagesForCaseByCaseUUID(UUID caseUUID) {
+    Set<BasicStage> getAllStagesForCaseByCaseUUID(UUID caseUUID) {
         log.debug("Getting all stages for case: {}", caseUUID);
-        Set<Stage> caseStages = stageRepository.findAllByCaseUUID(caseUUID);
+        Set<BasicStage> caseStages = stageRepository.findAllBasicStageByCaseUUID(caseUUID);
         if (!caseStages.isEmpty()) {
             return caseStages;
         } else {

@@ -67,6 +67,7 @@ class StageResource {
         return ResponseEntity.ok().build();
     }
 
+    /* Frontend - allocate */
     @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user")
     ResponseEntity updateStageUser(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageUserRequest request) {
@@ -89,6 +90,7 @@ class StageResource {
         return ResponseEntity.ok(userUUID);
     }
 
+    /* Workflow - allocate */
     @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/team")
     ResponseEntity updateStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageTeamRequest request) {
@@ -96,6 +98,7 @@ class StageResource {
         return ResponseEntity.ok().build();
     }
 
+    /* Not sure this is used anywhere */
     @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/transitionNote")
     ResponseEntity updateStageTransitionNote(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageTeamRequest request) {
@@ -121,6 +124,7 @@ class StageResource {
         return ResponseEntity.ok(users);
     }
 
+    /* Workflow: Used to get StageType to get the caseNote - must be a better way */
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/type")
     ResponseEntity<String> getStageTypeFromStageData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
         String stageType = stageService.getStageTypeFromStageData(caseUUID, stageUUID);
@@ -148,6 +152,7 @@ class StageResource {
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
+    /* Frontend: Dashboard search by reference */
     @GetMapping(value = "/case/{reference:[a-zA-Z0-9]{2,}%2F[0-9]{7}%2F[0-9]{2}}/stage")
     ResponseEntity<GetStagesResponse> getActiveStagesForCase(@PathVariable String reference) throws UnsupportedEncodingException {
         String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8.name());
@@ -162,24 +167,28 @@ class StageResource {
         return ResponseEntity.ok(caseUUIDs);
     }
 
+    /* Frontend: Search */
     @PostMapping(value = "/search")
     ResponseEntity<GetStagesResponse> search(@Valid @RequestBody SearchRequest request) {
         Set<Stage> stages = stageService.search(request);
         return ResponseEntity.ok(GetStagesResponse.from(stages));
     }
 
+    /* Workflow: For the caseViewAllStagesAdapter in the frontend */
     @GetMapping(value = "/stage/case/{caseUUID}")
     ResponseEntity<GetStagesResponse> getAllStagesByCase(@PathVariable UUID caseUUID) {
-        Set<Stage> stages = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
-        return ResponseEntity.ok(GetStagesResponse.from(stages));
+        Set<BasicStage> stages = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
+        return ResponseEntity.ok(GetStagesResponse.fromBasic(stages));
     }
 
+    /* Case Creator: Gets active Stage UUID */
     @GetMapping(value = {"/active-stage/case/{caseUUID"})
     ResponseEntity<GetStagesResponse> getActiveStagesByCase(@PathVariable UUID caseUUID) {
         Set<BasicStage> stages = stageService.getActiveStagesByCaseUUID(caseUUID);
         return ResponseEntity.ok(GetStagesResponse.fromBasic(stages));
     }
 
+    /* MUI: withdraw a case */
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/withdraw")
     ResponseEntity withdrawCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody WithdrawCaseRequest request) {

@@ -410,11 +410,11 @@ public class StageServiceTest {
 
         BasicStage stage = new BasicStage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
-        when(stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(stage);
 
         stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, allocationType);
 
-        verify(stageRepository).findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID);
+        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
         verify(auditClient).updateStageTeam(stage);
         verify(caseDataService).getCaseRef(caseUUID);
@@ -430,12 +430,12 @@ public class StageServiceTest {
 
         BasicStage stage = new BasicStage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
-        when(stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(stage);
 
         stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, null);
 
         verify(auditClient).updateStageTeam(stage);
-        verify(stageRepository).findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID);
+        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
         verify(notifyClient).sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, null, null);
         verify(caseDataService).getCaseRef(caseUUID);
@@ -450,11 +450,11 @@ public class StageServiceTest {
 
         BasicStage stage = new BasicStage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
-        when(stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(stage);
 
         stageService.updateStageTeam(caseUUID, stageUUID, null, allocationType);
 
-        verify(stageRepository).findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID);
+        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
 
         verifyNoMoreInteractions(stageRepository);
@@ -692,12 +692,12 @@ public class StageServiceTest {
     @Test
     public void getAllStagesForCaseByUUID() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
-        Set<Stage> stages = Set.of(stage);
+        BasicStage stage = new BasicStage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        Set<BasicStage> stages = Set.of(stage);
 
-        when(stageRepository.findAllByCaseUUID(caseUUID)).thenReturn(stages);
+        when(stageRepository.findAllBasicStageByCaseUUID(caseUUID)).thenReturn(stages);
 
-        Set<Stage> result = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
+        Set<BasicStage> result = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
         Assert.assertEquals(stages, result);
     }
 
@@ -715,12 +715,12 @@ public class StageServiceTest {
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void getAllStagesForCaseByUuidThrowsExceptionIfEmpty() {
-        Set<Stage> stages = Set.of();
+        Set<BasicStage> stages = Set.of();
 
-        when(stageRepository.findAllByCaseUUID(caseUUID)).thenReturn(stages);
+        when(stageRepository.findAllBasicStageByCaseUUID(caseUUID)).thenReturn(stages);
 
         stageService.getAllStagesForCaseByCaseUUID(caseUUID);
-        verify(stageRepository).findAllByCaseUUID(caseUUID);
+        verify(stageRepository).findAllBasicStageByCaseUUID(caseUUID);
     }
 
     @Test
@@ -738,8 +738,8 @@ public class StageServiceTest {
         BasicStage stage2 = new BasicStage(caseUUID, "stageType2", teamUUID, userUUID, transitionNoteUUID);
 
         when(mockedCaseData.getActiveStages()).thenReturn(Sets.newLinkedHashSet(activeStage1, activeStage2));
-        when(stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, activeStage1.getUuid())).thenReturn(stage1);
-        when(stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, activeStage2.getUuid())).thenReturn(stage2);
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, activeStage1.getUuid())).thenReturn(stage1);
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, activeStage2.getUuid())).thenReturn(stage2);
         when(caseDataService.getCase(caseUUID)).thenReturn(mockedCaseData);
 
         stageService.withdrawCase(caseUUID, stageUUID, withdrawCaseRequest);
@@ -752,8 +752,8 @@ public class StageServiceTest {
         verify(caseDataService).getCase(caseUUID);
         verify(caseDataService).updateCaseData(caseUUID, stageUUID, expectedData);
         verify(caseDataService).completeCase(caseUUID, true);
-        verify(stageRepository).findActiveBasicStageByCaseUuidStageUUID(caseUUID, activeStage1.getUuid());
-        verify(stageRepository).findActiveBasicStageByCaseUuidStageUUID(caseUUID, activeStage2.getUuid());
+        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, activeStage1.getUuid());
+        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, activeStage2.getUuid());
         verify(stageRepository).save(stage1);
         verify(stageRepository).save(stage2);
         verify(auditClient).updateStageTeam(stage1);

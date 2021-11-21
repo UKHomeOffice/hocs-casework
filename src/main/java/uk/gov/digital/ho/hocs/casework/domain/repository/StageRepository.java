@@ -13,6 +13,9 @@ import java.util.UUID;
 @Repository
 public interface StageRepository extends CrudRepository<BaseStage, Long> {
 
+    @Query(value = "SELECT s.* FROM stage s JOIN case_data cd ON s.case_uuid = cd.uuid WHERE s.case_uuid = ?1 AND NOT cd.deleted", nativeQuery = true)
+    Set<BasicStage> findAllBasicStageByCaseUUID(UUID caseUUID);
+
     @Query(value = "SELECT s.* FROM stage s JOIN case_data cd ON s.case_uuid = cd.uuid WHERE s.case_uuid = ?1 AND s.team_uuid IS NOT NULL AND NOT cd.deleted", nativeQuery = true)
     Set<BasicStage> findAllActiveBasicStageByCaseUUID(UUID caseUUID);
 
@@ -27,9 +30,6 @@ public interface StageRepository extends CrudRepository<BaseStage, Long> {
 
     @Query(value = "SELECT sd.* FROM stage_data sd WHERE sd.case_uuid = ?1 AND sd.uuid = ?2", nativeQuery = true)
     Stage findByCaseUuidStageUUID(UUID caseUUID, UUID stageUUID);
-
-    @Query(value = "SELECT sd.* FROM stage_data sd WHERE sd.case_uuid = ?1", nativeQuery = true)
-    Set<Stage> findAllByCaseUUID(UUID caseUUID);
 
     @Query(value = "SELECT sd.* FROM stage_data sd WHERE sd.case_uuid IN ?1", nativeQuery = true)
     Set<Stage> findAllByCaseUUIDIn(Set<UUID> caseUUID);
