@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.amazonaws.util.json.Jackson;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,9 +136,9 @@ public class StageService {
         log.debug("Creating Stage of type: {}", stageType);
         Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         // Try and overwrite the deadline with inputted values from the data map.
-        String overrideDeadline = caseDataService.getCaseDataField(caseUUID, String.format("%s_DEADLINE", stageType));
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        String overrideDeadline = caseDataService.getCaseDataField(caseData, String.format("%s_DEADLINE", stageType));
         if (overrideDeadline == null) {
-            CaseData caseData = caseDataService.getCase(caseUUID);
             LocalDate deadline = infoClient.getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
             stage.setDeadline(deadline);
             if (caseData.getCaseDeadlineWarning() != null) {
@@ -154,16 +153,16 @@ public class StageService {
         stage.setUserUUID(userUUID);
         stageRepository.save(stage);
         auditClient.createStage(stage);
-        updateCurrentStageForCase(caseUUID, stage.getUuid(), stageType);
+        caseDataService.updateCaseData(caseData, stage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
         log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
-        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, getCaseRef(caseUUID), emailType);
+        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, caseData.getReference(), emailType);
         return stage;
     }
 
     public void recreateStage(UUID caseUUID, UUID stageUUID, String stageType) {
         Stage stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
         auditClient.recreateStage(stage);
-        updateCurrentStageForCase(caseUUID, stageUUID, stageType);
+        caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
         log.debug("Recreated Stage {} for Case: {}, event: {}", stageUUID, caseUUID, value(EVENT, STAGE_RECREATED));
 
     }
@@ -429,10 +428,6 @@ public class StageService {
 
     private String getCaseRef(UUID caseUUID) {
         return caseDataService.getCaseRef(caseUUID);
-    }
-
-    private void updateCurrentStageForCase(UUID caseUUID, UUID stageUUID, String stageType) {
-        caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
     }
 
     private void updatePriority(Stage stage) {

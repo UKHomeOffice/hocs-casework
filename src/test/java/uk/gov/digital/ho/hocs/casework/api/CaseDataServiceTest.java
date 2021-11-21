@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -14,7 +13,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.SomuTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
@@ -88,7 +86,6 @@ public class CaseDataServiceTest {
     public static final String PREV_DATA_CLOB = "{\"key1\" : \"value1\", \"key2\" : \"value2\"}";
     private static final long caseID = 12345L;
 
-    private static final String OFFLINE_QA_USER = "OfflineQaUser";
     private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID stageUUID = UUID.randomUUID();
@@ -116,15 +113,6 @@ public class CaseDataServiceTest {
 
     @Mock
     private CaseActionService caseActionService;
-
-    private LocalDate caseDeadlineExtended = LocalDate.now().plusDays(45);
-    private LocalDate caseReceived = LocalDate.now();
-
-    @Captor
-    ArgumentCaptor<CaseData> caseDataCaptor;
-
-    @Spy
-    ActiveStage activeStage = new ActiveStage();
 
     @Mock
     private CaseCopyFactory caseCopyFactory;
@@ -732,14 +720,14 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotUpdateCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
 
-        caseDataService.updateCaseData(null, stageUUID, new HashMap<>());
+        caseDataService.updateCaseData((UUID)null, stageUUID, new HashMap<>());
     }
 
     @Test()
     public void shouldNotUpdateCaseMissingCaseUUID() throws JsonProcessingException {
 
         try {
-            caseDataService.updateCaseData(null, stageUUID, new HashMap<>());
+            caseDataService.updateCaseData((UUID)null, stageUUID, new HashMap<>());
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
