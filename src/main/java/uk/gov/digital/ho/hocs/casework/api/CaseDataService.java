@@ -189,10 +189,14 @@ public class CaseDataService {
     }
 
     public String getCaseDataField(UUID caseUUID, String key) {
-        log.debug("Looking up key {} for Case: {}", key, caseUUID);
-        Map<String, String> dataMap = getCaseData(caseUUID).getDataMap(objectMapper);
+        return getCaseDataField(getCaseData(caseUUID), key);
+    }
+
+    public String getCaseDataField(CaseData caseData, String key) {
+        log.debug("Looking up key {} for Case: {}", key, caseData.getUuid());
+        Map<String, String> dataMap = caseData.getDataMap(objectMapper);
         String value = dataMap.getOrDefault(key, null);
-        log.debug("returning {} found value for Case: {}", value, caseUUID);
+        log.debug("returning {} found value for Case: {}", value, caseData.getUuid());
         return value;
     }
 
@@ -225,7 +229,6 @@ public class CaseDataService {
 
         return caseData;
     }
-
 
     private CaseData createSimpleCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
 

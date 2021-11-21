@@ -123,7 +123,7 @@ public class Stage extends BaseStage {
         this.transitionNoteUUID = transitionNoteUUID;
         completed = Boolean.FALSE;
         setTeam(teamUUID);
-        setUser(userUUID);
+        this.setUserUUID(userUUID);
     }
 
     public void setDeadline(LocalDate deadline) {
@@ -134,25 +134,8 @@ public class Stage extends BaseStage {
         this.deadlineWarning = deadlineWarning;
     }
 
-    public void setTransitionNote(UUID transitionNoteUUID) {
-        this.transitionNoteUUID = transitionNoteUUID;
-    }
-
-    public void setTeam(UUID teamUUID) {
-        this.teamUUID = teamUUID;
-        this.userUUID = null;
-    }
-
-    public void setUser(UUID userUUID) {
-        this.userUUID = userUUID;
-    }
-
     public void setAssignedTopic(String assignedTopic) {
         this.assignedTopic = assignedTopic;
-    }
-
-    public boolean isActive() {
-        return this.teamUUID != null;
     }
 
     public void update(Map<String, String> newData, ObjectMapper objectMapper) {

@@ -49,9 +49,6 @@ public interface StageRepository extends CrudRepository<BaseStage, Long> {
     @Query(value = "SELECT * FROM active_stage_data sd WHERE user_uuid = ?1 AND NOT data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) AND (sd.team_uuid IN ?2 OR sd.case_type IN ?3)", nativeQuery = true)
     Set<Stage> findAllActiveByUserUuidAndTeamUuidAndCaseType(UUID userUuid, Set<UUID> teamUUID, Set<String> caseTypes);
 
-    @Query(value = "SELECT * FROM active_stage_data", nativeQuery = true)
-    Set<Stage> findAllActive();
-
     @Query(value = "SELECT sd.* FROM stage sd JOIN case_data cd ON sd.case_uuid = cd.uuid WHERE sd.user_uuid = ?1 AND sd.team_uuid = ?2 AND NOT cd.deleted", nativeQuery = true)
     Set<BasicStage> findStageCaseUUIDsByUserUUIDTeamUUID(UUID userUUID, UUID teamUUID);
 

@@ -115,22 +115,7 @@ public class StageResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
-    @Test
-    public void shouldGetStage() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
-
-        when(stageService.getActiveStage(caseUUID, stageUUID)).thenReturn(stage);
-
-        ResponseEntity<GetStageResponse> response = stageResource.getStage(caseUUID, stageUUID);
-
-        verify(stageService).getActiveStage(caseUUID, stageUUID);
-
-        checkNoMoreInteractions();
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
 
     @Test
     public void shouldAllocateStage() {

@@ -515,7 +515,7 @@ public class AuditClient {
         });
     }
 
-    public void updateStageUser(Stage stage) {
+    public void updateStageUser(BaseStage stage) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
@@ -563,7 +563,7 @@ public class AuditClient {
         });
     }
 
-    public void updateStageTeam(Stage stage) {
+    public void updateStageTeam(BaseStage stage) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
 

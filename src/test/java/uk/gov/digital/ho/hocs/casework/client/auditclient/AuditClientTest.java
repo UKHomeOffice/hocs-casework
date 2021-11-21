@@ -334,7 +334,7 @@ public class AuditClientTest {
     @Test
     public void auditStageUserAllocate() throws IOException {
         Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID(), randomUUID());
-        stage.setUser(randomUUID());
+        stage.setUserUUID(randomUUID());
         auditClient.updateStageUser(stage);
               verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -345,7 +345,7 @@ public class AuditClientTest {
     @Test
     public void auditStageUserUnallocate() throws IOException {
         Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), null, null);
-        stage.setUser(null);
+        stage.setUserUUID(null);
         auditClient.updateStageUser(stage);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -356,7 +356,7 @@ public class AuditClientTest {
     @Test
     public void auditStageTeamAllocate() throws IOException {
         Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID(), randomUUID());
-        stage.setUser(randomUUID());
+        stage.setUserUUID(randomUUID());
         auditClient.updateStageTeam(stage);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);

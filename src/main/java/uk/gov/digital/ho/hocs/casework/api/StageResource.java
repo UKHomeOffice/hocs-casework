@@ -51,6 +51,7 @@ class StageResource {
         this.infoClient = infoClient;
     }
 
+    /* Workflow: Create case */
     @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/case/{caseUUID}/stage")
     ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
@@ -58,18 +59,12 @@ class StageResource {
         return ResponseEntity.ok(CreateStageResponse.from(stage));
     }
 
+    /* Workflow: Recreate case */
     @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/recreate")
     ResponseEntity recreateStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody RecreateStageRequest request) {
         stageService.recreateStage(caseUUID, request.getStageUUID(), request.getStageType());
         return ResponseEntity.ok().build();
-    }
-
-    @Authorised(accessLevel = AccessLevel.READ)
-    @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
-    ResponseEntity<GetStageResponse> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
-        Stage stage = stageService.getActiveStage(caseUUID, stageUUID);
-        return ResponseEntity.ok(GetStageResponse.from(stage));
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
@@ -132,18 +127,21 @@ class StageResource {
         return ResponseEntity.ok(stageType);
     }
 
+    /* Frontend: Used for the Team workstack */
     @GetMapping(value = "/stage/team/{teamUUID}")
     ResponseEntity<GetStagesResponse> getActiveStagesByTeamUUID(@PathVariable UUID teamUUID) {
         Set<Stage> activeStages = stageService.getActiveStagesByTeamUUID(teamUUID);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
+    /* Frontend: Used for the Stage and Workflow workstack*/
     @GetMapping(value = "/stage")
     ResponseEntity<GetStagesResponse> getActiveStages() {
         Set<Stage> activeStages = stageService.getActiveStagesForUsersTeamsAndCaseType();
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
+    /* Frontend: Ued for the User workstack */
     @GetMapping(value = "/stage/user/{userUuid}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<GetStagesResponse> getActiveStagesForUser(@PathVariable UUID userUuid) {
         Set<Stage> activeStages = stageService.getActiveUserStagesWithTeamsAndCaseType(userUuid);
@@ -157,6 +155,7 @@ class StageResource {
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
+    /* Info: to remove user from team */
     @GetMapping(value = "/stage/team/{teamUUID}/user/{userUUID}")
     ResponseEntity<Set<UUID>> getActiveStageCaseUUIDsForUserAndTeam(@PathVariable UUID userUUID, @PathVariable UUID teamUUID) {
         Set<UUID> caseUUIDs = stageService.getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
