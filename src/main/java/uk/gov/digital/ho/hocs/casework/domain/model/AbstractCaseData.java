@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.Where;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.util.JsonDataMapUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -19,7 +20,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_F
 @MappedSuperclass
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class AbstractCaseData extends AbstractJsonDataMap implements Serializable {
+public class AbstractCaseData implements Serializable {
 
     @Id
     @Column(name = "id")
@@ -133,6 +134,14 @@ public class AbstractCaseData extends AbstractJsonDataMap implements Serializabl
         } else {
             throw new ApplicationExceptions.EntityCreationException("shortCode is null", CASE_CREATE_FAILURE);
         }
+    }
+
+    public void update(Map<String,String> newData, ObjectMapper objectMapper) {
+        setData(JsonDataMapUtils.update(getData(), newData, objectMapper));
+    }
+
+    public Map<String,String> getDataMap(ObjectMapper objectMapper) {
+        return JsonDataMapUtils.getDataMap(getData(), objectMapper);
     }
 
     // --------  Migration Code Start --------
