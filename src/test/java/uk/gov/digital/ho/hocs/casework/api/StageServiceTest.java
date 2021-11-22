@@ -115,7 +115,7 @@ public class StageServiceTest {
         verify(infoClient).getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
         verify(infoClient).getStageDeadlineWarning(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
         verify(stageRepository).save(any(Stage.class));
-        verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
+        verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(caseData.getReference()), eq(allocationType));
 
         verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(notifyClient);
@@ -411,14 +411,17 @@ public class StageServiceTest {
         BasicStage stage = new BasicStage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(stage);
+        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
+        when(caseData.getReference()).thenReturn("Anything");
+        when(caseData.getUuid()).thenReturn(caseUUID);
 
         stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, allocationType);
 
         verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
         verify(auditClient).updateStageTeam(stage);
-        verify(caseDataService).getCaseRef(caseUUID);
-        verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
+        verify(caseDataService).getCase(caseUUID);
+        verify(notifyClient).sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, "Anything", allocationType);
 
         checkNoMoreInteraction();
 
@@ -431,14 +434,17 @@ public class StageServiceTest {
         BasicStage stage = new BasicStage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(stage);
+        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
+        when(caseData.getReference()).thenReturn("Anything");
+        when(caseData.getUuid()).thenReturn(caseUUID);
 
         stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, null);
 
         verify(auditClient).updateStageTeam(stage);
         verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
-        verify(notifyClient).sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, null, null);
-        verify(caseDataService).getCaseRef(caseUUID);
+        verify(notifyClient).sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, "Anything", null);
+        verify(caseDataService).getCase(caseUUID);
 
         checkNoMoreInteraction();
 
@@ -451,6 +457,8 @@ public class StageServiceTest {
         BasicStage stage = new BasicStage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(stage);
+        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
+        when(caseData.getUuid()).thenReturn(caseUUID);
 
         stageService.updateStageTeam(caseUUID, stageUUID, null, allocationType);
 
@@ -682,9 +690,9 @@ public class StageServiceTest {
         final Set<GetAuditResponse> auditLines = getAuditLines(stage);
         when(caseData.getReference()).thenReturn("Reference");
         when(auditClient.getAuditLinesForCase(caseUUID, auditType)).thenReturn(auditLines);
-        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
         when(caseDataService.getCaseDataField(caseData, Stage.OFFLINE_QA_USER)).thenReturn(offlineQaUserUUID.toString());
-        stageService.checkSendOfflineQAEmail(stage);
+        stageService.checkSendOfflineQAEmail(stage, caseData);
+
         verify(auditClient).getAuditLinesForCase(caseUUID, auditType);
         verify(notifyClient).sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), UUID.fromString(userID), offlineQaUserUUID, caseData.getReference());
     }
@@ -738,11 +746,13 @@ public class StageServiceTest {
         BasicStage stage2 = new BasicStage(caseUUID, "stageType2", teamUUID, userUUID, transitionNoteUUID);
 
         when(mockedCaseData.getActiveStages()).thenReturn(Sets.newLinkedHashSet(activeStage1, activeStage2));
+
         when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, activeStage1.getUuid())).thenReturn(stage1);
         when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, activeStage2.getUuid())).thenReturn(stage2);
         when(caseDataService.getCase(caseUUID)).thenReturn(mockedCaseData);
+        when(mockedCaseData.getUuid()).thenReturn(caseUUID);
 
-        stageService.withdrawCase(caseUUID, stageUUID, withdrawCaseRequest);
+        stageService.withdrawCase(caseUUID, activeStage1.getUuid(), withdrawCaseRequest);
 
         Map<String, String> expectedData = new HashMap<>();
         expectedData.put("Withdrawn", "True");
@@ -750,7 +760,7 @@ public class StageServiceTest {
         expectedData.put("CurrentStage", "");
 
         verify(caseDataService).getCase(caseUUID);
-        verify(caseDataService).updateCaseData(caseUUID, stageUUID, expectedData);
+        verify(caseDataService).updateCaseData(caseUUID, activeStage1.getUuid(), expectedData);
         verify(caseDataService).completeCase(caseUUID, true);
         verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, activeStage1.getUuid());
         verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, activeStage2.getUuid());

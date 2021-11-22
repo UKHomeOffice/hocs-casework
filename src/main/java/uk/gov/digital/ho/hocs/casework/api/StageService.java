@@ -39,6 +39,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static net.logstash.logback.argument.StructuredArguments.e;
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_WITHDRAWN;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
@@ -176,23 +177,27 @@ public class StageService {
     }
 
     void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID, String emailType) {
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        updateStageTeam(caseData, stageUUID, newTeamUUID, emailType);
+    }
+
+    void updateStageTeam(CaseData caseData, UUID stageUUID, UUID newTeamUUID, String emailType) {
         log.debug("Updating Team: {} for Stage: {}", newTeamUUID, stageUUID);
-        BasicStage stage = stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
+        BasicStage stage = stageRepository.findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(), stageUUID);
         stage.setTeam(newTeamUUID);
-        checkSendOfflineQAEmail(stage);
+        checkSendOfflineQAEmail(stage, caseData);
         stageRepository.save(stage);
         auditClient.updateStageTeam(stage);
         if (newTeamUUID == null) {
-            log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID, value(EVENT, STAGE_COMPLETED));
+            log.info("Completed Stage ({}) for Case {}", stageUUID, caseData.getUuid(), value(EVENT, STAGE_COMPLETED));
         } else {
-            log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, newTeamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
-            notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), newTeamUUID, getCaseRef(caseUUID), emailType);
+            log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, newTeamUUID, caseData.getUuid(), value(EVENT, STAGE_ASSIGNED_TEAM));
+            notifyClient.sendTeamEmail(caseData.getUuid(), stage.getUuid(), newTeamUUID, caseData.getReference(), emailType);
         }
     }
 
-    void checkSendOfflineQAEmail(BaseStage stage) {
+    void checkSendOfflineQAEmail(BaseStage stage, CaseData caseData) {
         if (stage.getStageType().equals(Stage.DCU_DTEN_INITIAL_DRAFT) || stage.getStageType().equals(Stage.DCU_TRO_INITIAL_DRAFT) || stage.getStageType().equals(Stage.DCU_MIN_INITIAL_DRAFT)) {
-            CaseData caseData = caseDataService.getCase(stage.getCaseUUID());
             final String offlineQaUser = caseDataService.getCaseDataField(caseData, Stage.OFFLINE_QA_USER);
             final UUID stageUserUUID = getLastCaseUserUUID(stage.getCaseUUID());
             if (offlineQaUser != null && stageUserUUID != null) {
@@ -450,7 +455,7 @@ public class StageService {
         CaseData caseData = caseDataService.getCase(caseUUID);
 
         for(ActiveStage activeStage : caseData.getActiveStages()){
-            updateStageTeam(caseUUID, activeStage.getUuid(), null, null );
+            updateStageTeam(caseData, activeStage.getUuid(), null, null );
         }
 
         Map<String, String> data = new HashMap<>();
