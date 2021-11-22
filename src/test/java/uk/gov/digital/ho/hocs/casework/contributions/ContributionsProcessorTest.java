@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.SomuItemService;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -60,7 +60,7 @@ public class ContributionsProcessorTest {
 
     @Test
     public void shouldNotReturnDataForNonContribution() {
-        Stage stage = spy(new Stage(caseUuid, "ANY", teamUuid, userUuid, transitionNoteUuid));
+        StageWithCaseData stage = spy(new StageWithCaseData(caseUuid, "ANY", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"TEST\" : \"TEST\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
@@ -75,7 +75,7 @@ public class ContributionsProcessorTest {
 
     @Test
     public void shouldReturnDataWithValidDueContribution() {
-        Stage stage = spy(new Stage(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
+        StageWithCaseData stage = spy(new StageWithCaseData(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-12-31\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
@@ -98,7 +98,7 @@ public class ContributionsProcessorTest {
 
     @Test
     public void shouldReturnDataWithValidOverdueContribution() {
-        Stage stage = spy(new Stage(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
+        StageWithCaseData stage = spy(new StageWithCaseData(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"0000-12-31\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
@@ -121,7 +121,7 @@ public class ContributionsProcessorTest {
 
     @Test
     public void shouldReturnDataWithValidReceivedContribution() {
-        Stage stage = spy(new Stage(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
+        StageWithCaseData stage = spy(new StageWithCaseData(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-12-31\", \"contributionStatus\": \"contributionReceived\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
@@ -144,7 +144,7 @@ public class ContributionsProcessorTest {
 
     @Test
     public void shouldReturnDataWithValidCancelledContribution() {
-        Stage stage = spy(new Stage(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
+        StageWithCaseData stage = spy(new StageWithCaseData(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
         SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-12-31\", \"contributionStatus\": \"contributionCancelled\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));

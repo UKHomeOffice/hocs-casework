@@ -6,8 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.SomuItemService;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -37,15 +38,15 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
     }
 
     @Override
-    public void processContributionsForStages(Set<Stage> stages) {
+    public void processContributionsForStages(Set<StageWithCaseData> stages) {
         Set<SomuItem> allSomuItems =
-                somuItemService.getCaseItemsByCaseUuids(stages.stream().map(Stage::getCaseUUID).collect(Collectors.toSet()));
+                somuItemService.getCaseItemsByCaseUuids(stages.stream().map(BaseStage::getCaseUUID).collect(Collectors.toSet()));
 
         if (allSomuItems.size() == 0) {
             return;
         }
 
-        for (Stage stage :
+        for (StageWithCaseData stage :
                 stages) {
             if (infoClient.getStageContributions(stage.getStageType())) {
                 Set<Contribution> contributions =

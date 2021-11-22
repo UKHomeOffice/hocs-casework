@@ -14,10 +14,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
-import uk.gov.digital.ho.hocs.casework.domain.model.BasicStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseLink;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -113,7 +113,7 @@ public class StageRepositoryTest {
         timings[iteration] = finish - start;
     }
 
-    private BasicStage runFindTeamUuidByCaseAndStageQuery(UUID caseUuid, UUID stageUuid, long[] timings, int iteration) {
+    private Stage runFindTeamUuidByCaseAndStageQuery(UUID caseUuid, UUID stageUuid, long[] timings, int iteration) {
         long start = System.currentTimeMillis();
         var result = stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUuid, stageUuid);
         long finish = System.currentTimeMillis();
@@ -137,7 +137,7 @@ public class StageRepositoryTest {
             // add some stage data to parent case
             for (int y = 0; y < 10; y++) {
                 String stageType = "stage" + y;
-                Stage stage = new Stage(caseData.getUuid(), stageType, y == 5 ? TEAM_UUID : null, null, null);
+                StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType, y == 5 ? TEAM_UUID : null, null, null);
 
                 entityManager.persist(stage);
                 log.debug("Added case: {}, stage: {}", caseData.getUuid(), stageType);
@@ -156,8 +156,8 @@ public class StageRepositoryTest {
         }
     }
 
-    public List<Stage> createCaseWithStages(final int caseAmount) {
-        List<Stage> listAddedStages = new ArrayList<>();
+    public List<StageWithCaseData> createCaseWithStages(final int caseAmount) {
+        List<StageWithCaseData> listAddedStages = new ArrayList<>();
 
         // Add cases
         for (int i = 0; i < caseAmount; i++) {
@@ -168,7 +168,7 @@ public class StageRepositoryTest {
             // add some stage data to parent case
             for (int y = 0; y < 3; y++) {
                 String stageType = "stage" + y;
-                Stage stage = new Stage(caseData.getUuid(), stageType, y == 2 ? TEAM_UUID : null, null, null);
+                StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType, y == 2 ? TEAM_UUID : null, null, null);
 
                 entityManager.persist(stage);
 
