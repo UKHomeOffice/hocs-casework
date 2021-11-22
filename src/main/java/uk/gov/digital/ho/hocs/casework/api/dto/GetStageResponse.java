@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -88,7 +88,7 @@ public class GetStageResponse {
     @JsonProperty
     private String nextCaseStageUUID;
 
-    public static GetStageResponse from(Stage stage) {
+    public static GetStageResponse from(StageWithCaseData stage) {
 
         return new GetStageResponse(
                 stage.getUuid(),

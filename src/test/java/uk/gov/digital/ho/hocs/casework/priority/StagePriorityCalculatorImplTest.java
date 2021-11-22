@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import uk.gov.digital.ho.hocs.casework.priority.policy.StagePriorityPolicy;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class StagePriorityCalculatorImplTest {
     @Mock
     ObjectMapper objectMapper;
     @Mock
-    Stage stage;
+    StageWithCaseData stage;
 
     private String caseType = "Test_Case_Type";
 

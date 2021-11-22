@@ -20,9 +20,9 @@ import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
-import uk.gov.digital.ho.hocs.casework.domain.model.BasicStage;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
@@ -93,7 +93,7 @@ public class StageServiceTest {
     @Mock
     private ContributionsProcessor contributionsProcessor;
     @Mock
-    private Stage stage;
+    private StageWithCaseData stage;
 
     @Before
     public void setUp() {
@@ -113,7 +113,7 @@ public class StageServiceTest {
         verify(caseDataService).getCase(caseUUID);
         verify(infoClient).getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
         verify(infoClient).getStageDeadlineWarning(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
-        verify(stageRepository).save(any(Stage.class));
+        verify(stageRepository).save(any(StageWithCaseData.class));
         verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
 
         verifyNoMoreInteractions(stageRepository);
@@ -129,7 +129,7 @@ public class StageServiceTest {
 
         stageService.createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
 
-        verify(auditClient).createStage(any(Stage.class));
+        verify(auditClient).createStage(any(StageWithCaseData.class));
         verifyNoMoreInteractions(auditClient);
 
     }
@@ -176,7 +176,7 @@ public class StageServiceTest {
 
     @Test
     public void shouldRecreateStage() {
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -193,7 +193,7 @@ public class StageServiceTest {
     public void shouldGetStageByCaseReferenceWithValidParams() {
         String ref = "MIN/0123456/19";
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findByCaseReference(ref)).thenReturn(Collections.singleton(stage));
 
@@ -209,7 +209,7 @@ public class StageServiceTest {
     @Test
     public void shouldGetStageByCaseReferenceWithMissingReference() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findByCaseReference(null)).thenReturn(Collections.singleton(stage));
 
@@ -225,7 +225,7 @@ public class StageServiceTest {
     @Test
     public void shouldGetStageWithValidParams() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -341,7 +341,7 @@ public class StageServiceTest {
         Set<UUID> teams = new HashSet<>();
         Set<String> caseTypes = Set.of("CASE_TYPE1", "CASE_TYPE2");
         teams.add(UUID.randomUUID());
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
         when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
@@ -375,7 +375,7 @@ public class StageServiceTest {
     @Test
     public void shouldUpdateStageTransitionNote() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -391,7 +391,7 @@ public class StageServiceTest {
     @Test
     public void shouldUpdateStageTransitionNoteNull() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -407,7 +407,7 @@ public class StageServiceTest {
     @Test
     public void shouldUpdateStageTeam() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -427,7 +427,7 @@ public class StageServiceTest {
     @Test
     public void shouldAuditUpdateStageTeam() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -447,7 +447,7 @@ public class StageServiceTest {
     @Test
     public void shouldUpdateStageTeamNull() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -465,7 +465,7 @@ public class StageServiceTest {
     public void shouldUpdateStageUser() {
 
         UUID newUserUUID = UUID.randomUUID();
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -483,7 +483,7 @@ public class StageServiceTest {
     @Test
     public void shouldAuditUpdateStageUser() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -497,7 +497,7 @@ public class StageServiceTest {
     @Test
     public void shouldUpdateStageUserNull() {
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, null, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, null, transitionNoteUUID);
 
         when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -515,8 +515,8 @@ public class StageServiceTest {
     @Test
     public void shouldGetActiveStageCaseUUIDsForUserAndTeam() {
 
-        BasicStage stage = new BasicStage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        Set<BasicStage> stages = new HashSet<>();
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        Set<Stage> stages = new HashSet<>();
         stages.add(stage);
 
         when(stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(userUUID, teamUUID)).thenReturn(stages);
@@ -534,8 +534,8 @@ public class StageServiceTest {
         Set<UUID> caseUUIDS = new HashSet<>();
         caseUUIDS.add(caseUUID);
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        Set<Stage> stages = new HashSet<>();
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        Set<StageWithCaseData> stages = new HashSet<>();
         stages.add(stage);
 
 
@@ -544,7 +544,7 @@ public class StageServiceTest {
         when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
         when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
 
-        Set<Stage> stageResults = stageService.search(searchRequest);
+        Set<StageWithCaseData> stageResults = stageService.search(searchRequest);
 
         verify(searchClient).search(searchRequest);
         verify(stageRepository).findAllByCaseUUIDIn(caseUUIDS);
@@ -557,21 +557,21 @@ public class StageServiceTest {
 
     @Test
     public void shouldSearchCaseAndNextCaseTypesPresent() {
-        Stage stageFound = testCaseWithNextCaseType(Boolean.TRUE);
+        StageWithCaseData stageFound = testCaseWithNextCaseType(Boolean.TRUE);
         assertThat(stageFound.getNextCaseType()).isNotBlank();
     }
 
     @Test
     public void shouldSearchIncompleteCaseAndNextCaseTypesPresent() {
-        Stage stageFound = testCaseWithNextCaseType(Boolean.FALSE);
+        StageWithCaseData stageFound = testCaseWithNextCaseType(Boolean.FALSE);
         assertThat(stageFound.getNextCaseType()).isNull();
     }
 
-    private Stage testCaseWithNextCaseType(Boolean completeCase) {
+    private StageWithCaseData testCaseWithNextCaseType(Boolean completeCase) {
 
         // given
         Set<UUID> caseUUIDS = Set.of(caseUUID);
-        Stage repositoryStage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData repositoryStage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
         repositoryStage.setCompleted(completeCase);
         repositoryStage.setCaseDataType("MIN");
 
@@ -583,7 +583,7 @@ public class StageServiceTest {
         when(infoClient.getAllCaseTypes()).thenReturn(caseDataTypes);
 
         // when
-        Set<Stage> stageResults = stageService.search(searchRequest);
+        Set<StageWithCaseData> stageResults = stageService.search(searchRequest);
 
         // then
         verify(searchClient).search(searchRequest);
@@ -603,9 +603,9 @@ public class StageServiceTest {
         Set<UUID> caseUUIDS = new HashSet<>();
         caseUUIDS.add(caseUUID);
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        Stage stage_old = new Stage(caseUUID, "DCU_MIN_MARKUP", null, null, transitionNoteUUID);
-        Set<Stage> stages = new HashSet<>();
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage_old = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", null, null, transitionNoteUUID);
+        Set<StageWithCaseData> stages = new HashSet<>();
         stages.add(stage);
         stages.add(stage_old);
 
@@ -615,7 +615,7 @@ public class StageServiceTest {
         when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
         when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
 
-        Set<Stage> stageResults = stageService.search(searchRequest);
+        Set<StageWithCaseData> stageResults = stageService.search(searchRequest);
 
         verify(searchClient).search(searchRequest);
         verify(stageRepository).findAllByCaseUUIDIn(caseUUIDS);
@@ -632,9 +632,9 @@ public class StageServiceTest {
         Set<UUID> caseUUIDS = new HashSet<>();
         caseUUIDS.add(caseUUID);
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        Stage stage_old = new Stage(UUID.randomUUID(), "DCU_MIN_MARKUP", null, null, transitionNoteUUID);
-        Set<Stage> stages = new HashSet<>();
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage_old = new StageWithCaseData(UUID.randomUUID(), "DCU_MIN_MARKUP", null, null, transitionNoteUUID);
+        Set<StageWithCaseData> stages = new HashSet<>();
         stages.add(stage);
         stages.add(stage_old);
 
@@ -644,7 +644,7 @@ public class StageServiceTest {
         when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
         when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
 
-        Set<Stage> stageResults = stageService.search(searchRequest);
+        Set<StageWithCaseData> stageResults = stageService.search(searchRequest);
 
         verify(searchClient).search(searchRequest);
         verify(stageRepository).findAllByCaseUUIDIn(caseUUIDS);
@@ -676,7 +676,7 @@ public class StageServiceTest {
     public void shouldGetOfflineQaUser() {
         UUID offlineQaUserUUID = UUID.randomUUID();
         Map dataMap = new HashMap();
-        dataMap.put(Stage.OFFLINE_QA_USER, offlineQaUserUUID.toString());
+        dataMap.put(StageWithCaseData.OFFLINE_QA_USER, offlineQaUserUUID.toString());
         final String offlineQaUser = stageService.getOfflineQaUser(Jackson.toJsonString(dataMap));
         assertThat(offlineQaUser).isEqualTo(offlineQaUserUUID.toString());
     }
@@ -684,7 +684,7 @@ public class StageServiceTest {
     @Test
     public void shouldCheckSendOfflineQAEmail() {
         UUID offlineQaUserUUID = UUID.randomUUID();
-        Stage stage = createStageOfflineQaData(offlineQaUserUUID);
+        StageWithCaseData stage = createStageOfflineQaData(offlineQaUserUUID);
         List<String> auditType = new ArrayList<>();
         auditType.add(STAGE_ALLOCATED_TO_USER.name());
         final Set<GetAuditResponse> auditLines = getAuditLines(stage);
@@ -698,19 +698,19 @@ public class StageServiceTest {
     @Test
     public void getAllStagesForCaseByUUID() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
-        Set<Stage> stages = Set.of(stage);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        Set<StageWithCaseData> stages = Set.of(stage);
 
         when(stageRepository.findAllByCaseUUID(caseUUID)).thenReturn(stages);
 
-        Set<Stage> result = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
+        Set<StageWithCaseData> result = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
         Assert.assertEquals(stages, result);
     }
 
     @Test
     public void shouldGetStageTypeFromStageData() {
         String stageType = "a-stage-type";
-        BasicStage stage = new BasicStage(UUID.randomUUID(), stageType, teamUUID, null, null);
+        Stage stage = new Stage(UUID.randomUUID(), stageType, teamUUID, null, null);
 
         when(stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -721,7 +721,7 @@ public class StageServiceTest {
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void getAllStagesForCaseByUuidThrowsExceptionIfEmpty() {
-        Set<Stage> stages = Set.of();
+        Set<StageWithCaseData> stages = Set.of();
 
         when(stageRepository.findAllByCaseUUID(caseUUID)).thenReturn(stages);
 
@@ -740,8 +740,8 @@ public class StageServiceTest {
         ActiveStage activeStage2 = new ActiveStage(2L,
                 UUID.randomUUID(), LocalDateTime.now(), "MPAM", LocalDate.now(), LocalDate.now(),
                 UUID.randomUUID(), caseUUID, teamUUID, UUID.randomUUID());
-        Stage stage1 = new Stage(caseUUID, "stageType1", teamUUID, userUUID, transitionNoteUUID);
-        Stage stage2 = new Stage(caseUUID, "stageType2", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage1 = new StageWithCaseData(caseUUID, "stageType1", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage2 = new StageWithCaseData(caseUUID, "stageType2", teamUUID, userUUID, transitionNoteUUID);
 
         when(mockedCaseData.getActiveStages()).thenReturn(Sets.newLinkedHashSet(activeStage1, activeStage2));
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, activeStage1.getUuid())).thenReturn(stage1);
@@ -780,9 +780,9 @@ public class StageServiceTest {
 
     @Test
     public void shouldGetActiveStagesByTeamUuids() {
-        Stage stage1 = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        Stage stage2 = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        Set<Stage> stages = Set.of(stage1, stage2);
+        StageWithCaseData stage1 = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage2 = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        Set<StageWithCaseData> stages = Set.of(stage1, stage2);
 
         when(stageRepository.findAllActiveByTeamUUID(teamUUID)).thenReturn(stages);
         stageService.getActiveStagesByTeamUUID(teamUUID);
@@ -794,7 +794,7 @@ public class StageServiceTest {
         Set<UUID> teams = new HashSet<>();
         Set<String> caseTypes = Set.of("CASE_TYPE1", "CASE_TYPE2");
         teams.add(UUID.randomUUID());
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
         when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
@@ -842,7 +842,7 @@ public class StageServiceTest {
         var caseUuid = UUID.randomUUID();
         var stageUuid = UUID.randomUUID();
         var teamUUID = UUID.randomUUID();
-        BasicStage stage = new BasicStage(caseUuid, "A Type", teamUUID, null, null);
+        Stage stage = new Stage(caseUuid, "A Type", teamUUID, null, null);
 
         when(stageRepository.findBasicStageByCaseUuidAndStageUuid(any(), any())).thenReturn(stage);
 
@@ -876,19 +876,19 @@ public class StageServiceTest {
      *
      * @return Mocked Stage for setting and exposing the DATA with offline QA user.
      */
-    private Stage createStageOfflineQaData(UUID offlineQaUserUUID) {
+    private StageWithCaseData createStageOfflineQaData(UUID offlineQaUserUUID) {
         Map dataMap = new HashMap();
-        dataMap.put(Stage.OFFLINE_QA_USER, offlineQaUserUUID.toString());
-        Stage mockStage = mock(Stage.class);
+        dataMap.put(StageWithCaseData.OFFLINE_QA_USER, offlineQaUserUUID.toString());
+        StageWithCaseData mockStage = mock(StageWithCaseData.class);
         when(mockStage.getUuid()).thenReturn(stageUUID);
         when(mockStage.getCaseUUID()).thenReturn(caseUUID);
-        when(mockStage.getStageType()).thenReturn(Stage.DCU_DTEN_INITIAL_DRAFT);
+        when(mockStage.getStageType()).thenReturn(StageWithCaseData.DCU_DTEN_INITIAL_DRAFT);
         when(mockStage.getCaseReference()).thenReturn("MIN/1234567/19");
         when(mockStage.getData()).thenReturn(Jackson.toJsonString(dataMap));
         return mockStage;
     }
 
-    private Set<GetAuditResponse> getAuditLines(Stage stage) {
+    private Set<GetAuditResponse> getAuditLines(StageWithCaseData stage) {
         Set<GetAuditResponse> linesForCase = new HashSet<>();
         linesForCase.add(new GetAuditResponse(UUID.randomUUID(), caseUUID, stage.getUuid(), UUID.randomUUID().toString(), "",
                 "{}", "", ZonedDateTime.now(), STAGE_ALLOCATED_TO_USER.name(), userID));

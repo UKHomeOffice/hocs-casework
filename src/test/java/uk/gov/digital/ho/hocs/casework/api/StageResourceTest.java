@@ -21,7 +21,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageUserRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -69,7 +69,7 @@ public class StageResourceTest {
     @Test
     public void shouldCreateStage() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, transitionNoteUUID, userUUID);
 
         when(stageService.createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, transitionNoteUUID)).thenReturn(stage);
@@ -87,7 +87,7 @@ public class StageResourceTest {
     @Test
     public void shouldCreateStageNoTransitionNote() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, null);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, null);
         CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, null, userUUID);
 
         when(stageService.createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, null)).thenReturn(stage);
@@ -117,7 +117,7 @@ public class StageResourceTest {
     @Test
     public void shouldGetStage() {
 
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
 
         when(stageService.getActiveStage(caseUUID, stageUUID)).thenReturn(stage);
 
@@ -167,7 +167,7 @@ public class StageResourceTest {
 
     @Test
     public void shouldGetActiveStagesCaseUUID() {
-        Set<Stage> stages = new HashSet<>();
+        Set<StageWithCaseData> stages = new HashSet<>();
         UUID caseUUID = UUID.randomUUID();
 
         when(stageService.getActiveStagesByCaseUUID(caseUUID)).thenReturn(stages);
@@ -185,7 +185,7 @@ public class StageResourceTest {
     @Test
     public void shouldGetActiveStages() {
 
-        Set<Stage> stages = new HashSet<>();
+        Set<StageWithCaseData> stages = new HashSet<>();
 
         when(stageService.getActiveStagesForUsersTeamsAndCaseType()).thenReturn(stages);
 
@@ -201,7 +201,7 @@ public class StageResourceTest {
 
     @Test
     public void shouldGetActiveStagesForUser() {
-        Set<Stage> stages = new HashSet<>();
+        Set<StageWithCaseData> stages = new HashSet<>();
 
         when(stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID)).thenReturn(stages);
 
@@ -219,7 +219,7 @@ public class StageResourceTest {
     public void shouldGetActiveStagesCaseRef() throws UnsupportedEncodingException {
         String ref = "MIN/0123456/19";
 
-        Set<Stage> stages = new HashSet<>();
+        Set<StageWithCaseData> stages = new HashSet<>();
 
         when(stageService.getActiveStagesByCaseReference(ref)).thenReturn(stages);
 
@@ -280,7 +280,7 @@ public class StageResourceTest {
     @Test
     public void shouldSearch() {
 
-        Set<Stage> stages = new HashSet<>();
+        Set<StageWithCaseData> stages = new HashSet<>();
         SearchRequest searchRequest = new SearchRequest();
 
         when(stageService.search(searchRequest)).thenReturn(stages);
@@ -358,7 +358,7 @@ public class StageResourceTest {
 
     @Test
     public void allocateStageUser() {
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         when(stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID)).thenReturn(stage);
 
         ResponseEntity<GetStageResponse> response = stageResource.allocateStageUser(teamUUID, userUUID);
@@ -369,7 +369,7 @@ public class StageResourceTest {
 
     @Test
     public void allocateStageUser_withNoStage() {
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         when(stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID)).thenReturn(null);
 
         ResponseEntity<GetStageResponse> response = stageResource.allocateStageUser(teamUUID, userUUID);

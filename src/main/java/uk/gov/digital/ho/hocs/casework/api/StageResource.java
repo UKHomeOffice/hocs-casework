@@ -23,7 +23,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
@@ -53,7 +53,7 @@ class StageResource {
     @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/case/{caseUUID}/stage")
     ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
-        Stage stage = stageService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getUserUUID(), request.getAllocationType(), request.getTransitionNoteUUID());
+        StageWithCaseData stage = stageService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getUserUUID(), request.getAllocationType(), request.getTransitionNoteUUID());
         return ResponseEntity.ok(CreateStageResponse.from(stage));
     }
 
@@ -67,7 +67,7 @@ class StageResource {
     @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
     ResponseEntity<GetStageResponse> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
-        Stage stage = stageService.getActiveStage(caseUUID, stageUUID);
+        StageWithCaseData stage = stageService.getActiveStage(caseUUID, stageUUID);
         return ResponseEntity.ok(GetStageResponse.from(stage));
     }
 
@@ -80,7 +80,7 @@ class StageResource {
 
     @PutMapping(value = "/case/team/{teamUUID}/allocate/user/next")
     ResponseEntity allocateStageUser(@PathVariable UUID teamUUID, @RequestHeader(RequestData.USER_ID_HEADER) UUID userUUID) {
-        Stage stage = stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID);
+        StageWithCaseData stage = stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID);
         if (stage == null) {
             return ResponseEntity.ok(stage);
         }
@@ -133,26 +133,26 @@ class StageResource {
 
     @GetMapping(value = "/stage/team/{teamUUID}")
     ResponseEntity<GetStagesResponse> getActiveStagesByTeamUUID(@PathVariable UUID teamUUID) {
-        Set<Stage> activeStages = stageService.getActiveStagesByTeamUUID(teamUUID);
+        Set<StageWithCaseData> activeStages = stageService.getActiveStagesByTeamUUID(teamUUID);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
     @GetMapping(value = "/stage")
     ResponseEntity<GetStagesResponse> getActiveStages() {
-        Set<Stage> activeStages = stageService.getActiveStagesForUsersTeamsAndCaseType();
+        Set<StageWithCaseData> activeStages = stageService.getActiveStagesForUsersTeamsAndCaseType();
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
     @GetMapping(value = "/stage/user/{userUuid}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<GetStagesResponse> getActiveStagesForUser(@PathVariable UUID userUuid) {
-        Set<Stage> activeStages = stageService.getActiveUserStagesWithTeamsAndCaseType(userUuid);
+        Set<StageWithCaseData> activeStages = stageService.getActiveUserStagesWithTeamsAndCaseType(userUuid);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
     @GetMapping(value = "/case/{reference:[a-zA-Z0-9]{2,}%2F[0-9]{7}%2F[0-9]{2}}/stage")
     ResponseEntity<GetStagesResponse> getActiveStagesForCase(@PathVariable String reference) throws UnsupportedEncodingException {
         String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8.name());
-        Set<Stage> activeStages = stageService.getActiveStagesByCaseReference(decodedRef);
+        Set<StageWithCaseData> activeStages = stageService.getActiveStagesByCaseReference(decodedRef);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
@@ -164,19 +164,19 @@ class StageResource {
 
     @PostMapping(value = "/search")
     ResponseEntity<GetStagesResponse> search(@Valid @RequestBody SearchRequest request) {
-        Set<Stage> stages = stageService.search(request);
+        Set<StageWithCaseData> stages = stageService.search(request);
         return ResponseEntity.ok(GetStagesResponse.from(stages));
     }
 
     @GetMapping(value = "/stage/case/{caseUUID}")
     ResponseEntity<GetStagesResponse> getAllStagesByCase(@PathVariable UUID caseUUID) {
-        Set<Stage> stages = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
+        Set<StageWithCaseData> stages = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
         return ResponseEntity.ok(GetStagesResponse.from(stages));
     }
 
     @GetMapping(value = "/active-stage/case/{caseUUID}")
     ResponseEntity<GetStagesResponse> getActiveStagesByCase(@PathVariable UUID caseUUID) {
-        Set<Stage> stages = stageService.getActiveStagesByCaseUUID(caseUUID);
+        Set<StageWithCaseData> stages = stageService.getActiveStagesByCaseUUID(caseUUID);
         return ResponseEntity.ok(GetStagesResponse.from(stages));
     }
 
