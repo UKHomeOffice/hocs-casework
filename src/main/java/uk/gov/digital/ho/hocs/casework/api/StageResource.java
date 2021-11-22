@@ -127,7 +127,7 @@ class StageResource {
 
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/type")
     ResponseEntity<String> getStageTypeFromStageData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
-        String stageType = stageService.getStageTypeFromStageData(caseUUID, stageUUID);
+        String stageType = stageService.getStageType(caseUUID, stageUUID);
         return ResponseEntity.ok(stageType);
     }
 

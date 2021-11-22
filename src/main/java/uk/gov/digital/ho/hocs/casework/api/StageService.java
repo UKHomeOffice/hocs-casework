@@ -96,7 +96,7 @@ public class StageService {
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting User for Stage: {}", stageUUID);
-        BasicStage stage = getBasicStage(caseUUID, stageUUID);
+        BasicStage stage = getActiveBasicStage(caseUUID, stageUUID);
         log.debug("Got User: {} for Stage: {}", stage.getUserUUID(), stageUUID);
         return stage.getUserUUID();
     }
@@ -114,9 +114,9 @@ public class StageService {
         return stage.getTeamUUID();
     }
 
-    public String getStageTypeFromStageData(UUID caseUUID, UUID stageUUID) {
+    public String getStageType(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting Type for Stage: {}", stageUUID);
-        String stageType = getBasicStage(caseUUID, stageUUID).getStageType();
+        String stageType = getActiveBasicStage(caseUUID, stageUUID).getStageType();
         log.debug("Got Type: {} for Stage: {}", stageType, stageUUID);
         return stageType;
     }
@@ -177,7 +177,7 @@ public class StageService {
 
     void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID, String emailType) {
         log.debug("Updating Team: {} for Stage: {}", newTeamUUID, stageUUID);
-        Stage stage = getStage(caseUUID, stageUUID);
+        Stage stage = getStageWithCaseData(caseUUID, stageUUID);
         stage.setTeam(newTeamUUID);
         checkSendOfflineQAEmail(stage);
         stageRepository.save(stage);
@@ -344,7 +344,7 @@ public class StageService {
         }
     }
 
-    private Stage getStage(UUID caseUUID, UUID stageUUID) {
+    private Stage getStageWithCaseData(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting Stage: {} for Case: {}", stageUUID, caseUUID);
         Stage stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
         if (stage != null) {
@@ -355,7 +355,7 @@ public class StageService {
         }
     }
 
-    private BasicStage getBasicStage(UUID caseUUID, UUID stageUUID) {
+    private BasicStage getActiveBasicStage(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting Base Stage: {} for Case: {}", stageUUID, caseUUID);
         BasicStage stage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID);
         if (stage != null) {

@@ -302,7 +302,7 @@ public class StageResourceTest {
 
         ResponseEntity<String> response = stageResource.getStageTypeFromStageData(userUUID, teamUUID);
 
-        verify(stageService).getStageTypeFromStageData(userUUID, teamUUID);
+        verify(stageService).getStageType(userUUID, teamUUID);
         checkNoMoreInteractions();
 
         assertThat(response).isInstanceOf(ResponseEntity.class);

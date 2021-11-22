@@ -714,7 +714,7 @@ public class StageServiceTest {
 
         when(stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        String result = stageService.getStageTypeFromStageData(caseUUID, stageUUID);
+        String result = stageService.getStageType(caseUUID, stageUUID);
 
         Assert.assertEquals(stageType, result);
     }
