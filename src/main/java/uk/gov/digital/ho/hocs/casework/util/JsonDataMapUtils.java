@@ -21,7 +21,7 @@ public class JsonDataMapUtils {
         return dataMap;
     }
 
-    private static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {
+    public static String getDataString(Map<String, String> dataMap, ObjectMapper objectMapper) {
         String dataString;
         try {
             dataString = objectMapper.writeValueAsString(dataMap);
@@ -31,14 +31,11 @@ public class JsonDataMapUtils {
         return dataString;
     }
 
-    public static String update(String originalValue, Map<String, String> newData, ObjectMapper objectMapper) {
+    public static String update(String originalData, Map<String, String> newData, ObjectMapper objectMapper) {
+        var dataMap = getDataMap(originalData, objectMapper);
         if (newData != null && newData.size() > 0) {
-            Map<String, String> dataMap = getDataMap(originalValue, objectMapper);
-
             dataMap.putAll(newData);
-
-            return getDataString(dataMap, objectMapper);
         }
-        return originalValue;
+        return getDataString(dataMap, objectMapper);
     }
 }
