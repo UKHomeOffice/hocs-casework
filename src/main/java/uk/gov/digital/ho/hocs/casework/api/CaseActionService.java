@@ -38,9 +38,10 @@ public class CaseActionService {
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseId);
         List<CaseTypeActionDto> caseTypeActionDtoList =  infoClient.getCaseTypeActionForCaseType(caseData.getType());
+        int remainingDays = infoClient.getRemainingDaysToDeadline(caseData.getType(), caseData.getCaseDeadline());
 
         log.info("Returning case action data for caseId: {}", caseId);
-        return CaseActionDataResponseDto.from(actions, caseTypeActionDtoList, caseData.getCaseDeadline());
+        return CaseActionDataResponseDto.from(actions, caseTypeActionDtoList, caseData.getCaseDeadline(), remainingDays);
     }
 
     public void getAllActionsForCaseById(UUID caseId, Map<String, List<ActionDataDto>> caseActionDataMap) {
