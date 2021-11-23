@@ -179,6 +179,6 @@ public class ActionDataDeadlineExtensionService implements ActionService {
 
     enum ExtendFrom {
         TODAY,
-        DATE_RECEIVED;
+        CURRENT_DEADLINE;
     }
 }
