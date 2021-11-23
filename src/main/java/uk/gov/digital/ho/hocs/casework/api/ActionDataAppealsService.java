@@ -1,5 +1,11 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -8,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataAppealDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.AppealOfficerDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -18,6 +25,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.ActionDataAppealsReposi
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -47,20 +55,13 @@ public class ActionDataAppealsService implements ActionService {
     }
 
     @Override
-    public String getServiceDtoTypeKey() {
-        return ActionDataAppealDto.class.getSimpleName();
-    }
-
-    @Override
     public String getServiceMapKey() {
         return "appeals";
     }
 
-    @Override
-    public void create(UUID caseUuid, UUID stageUuid, ActionDataDto actionData) {
+    public UUID createAppeal(UUID caseUuid, UUID stageUuid, ActionDataAppealDto appealDto) {
 
-        ActionDataAppealDto appealDto = (ActionDataAppealDto) actionData;
-        log.debug("Received request to create action: {} for case: {}, stage: {}", appealDto, caseUuid, stageUuid);
+        log.debug("Received request to create Appeal: {} for case: {}, stage: {}", appealDto, caseUuid, stageUuid);
         UUID appealUuid = appealDto.getCaseTypeActionUuid();
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUuid);
@@ -95,17 +96,15 @@ public class ActionDataAppealsService implements ActionService {
 
         ActionDataAppeal createdAppealEntity = appealsRepository.save(appealEntity);
         caseNoteService.createCaseNote(caseUuid, CREATE_CASE_NOTE_KEY, appealEntity.getCaseTypeActionLabel());
-        auditClient.createAppealAudit(createdAppealEntity);
+        auditClient.createAppealAudit(createdAppealEntity, caseTypeActionDto);
         log.info("Created Action: {}  for Case: {}", createdAppealEntity, caseData.getUuid(), value(EVENT, ACTION_DATA_CREATE_SUCCESS) );
+
+        return createdAppealEntity.getUuid();
     }
 
-    @Override
-    public void update(UUID caseUuid, UUID stageUuid, UUID actionEntityId, ActionDataDto updatedActionData) {
+    public void updateAppeal(UUID caseUuid, UUID actionEntityId, ActionDataAppealDto appealDto) {
 
-        ActionDataAppealDto appealDto = (ActionDataAppealDto) updatedActionData;
-        log.debug("Received request to update action: {} for case: {}, stage: {}, caseDataType: {}", appealDto, caseUuid, stageUuid);
-
-        UUID appealUuid = updatedActionData.getUuid();
+        log.debug("Received request to update Appeal: {} for case: {}", appealDto, caseUuid);
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUuid);
         if (caseData == null) {
@@ -115,12 +114,12 @@ public class ActionDataAppealsService implements ActionService {
 
         CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(), appealDto.getCaseTypeActionUuid());
         if (caseTypeActionDto == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", appealUuid), ACTION_DATA_UPDATE_FAILURE);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", actionEntityId), ACTION_DATA_UPDATE_FAILURE);
         }
 
-        ActionDataAppeal existingAppealData = appealsRepository.findByUuidAndCaseDataUuid(appealUuid, caseUuid);
+        ActionDataAppeal existingAppealData = appealsRepository.findByUuidAndCaseDataUuid(actionEntityId, caseUuid);
         if (existingAppealData == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Action with id:  %s does not exist.", appealUuid), ACTION_DATA_UPDATE_FAILURE);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Action with id:  %s does not exist.", actionEntityId), ACTION_DATA_UPDATE_FAILURE);
         }
 
         existingAppealData.setStatus(appealDto.getStatus());
@@ -133,8 +132,8 @@ public class ActionDataAppealsService implements ActionService {
         ActionDataAppeal updatedAppealEntity = appealsRepository.save(existingAppealData);
 
         caseNoteService.createCaseNote(caseUuid, UPDATE_CASE_NOTE_KEY, updatedAppealEntity.getCaseTypeActionLabel());
-        auditClient.updateAppealAudit(updatedAppealEntity);
-        log.info("Updated Action: {}  for Case: {}", updatedActionData, caseData.getUuid(), value(EVENT, ACTION_DATA_UPDATE_SUCCESS) );
+        auditClient.updateAppealAudit(updatedAppealEntity, caseTypeActionDto);
+        log.info("Updated Action: {}  for Case: {}", appealDto, caseData.getUuid(), value(EVENT, ACTION_DATA_UPDATE_SUCCESS) );
 
     }
 

@@ -16,6 +16,7 @@ import uk.gov.digital.ho.hocs.casework.security.Authorised;
 import java.util.UUID;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
 @RestController
@@ -75,6 +76,16 @@ public class CaseDocumentResource {
                 .contentType(mediaType)
                 .contentLength(document.getData().length)
                 .body(resource);
+    }
+
+    @Authorised(accessLevel = AccessLevel.READ)
+    @GetMapping(value = "/case/document/reference/{caseUUID}/action/{actionDataUuid}/document_type/{documentType}",
+            produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<GetDocumentsResponse> getDocumentsForAction
+            (@PathVariable UUID caseUUID, @PathVariable UUID actionDataUuid, @PathVariable String documentType) {
+        return ResponseEntity.ok(caseDocumentService.getDocumentsForAction(caseUUID,
+                actionDataUuid,
+                documentType));
     }
 
 }

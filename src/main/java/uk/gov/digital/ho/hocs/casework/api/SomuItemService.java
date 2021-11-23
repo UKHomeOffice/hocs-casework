@@ -32,8 +32,9 @@ public class SomuItemService {
 
     public Set<SomuItem> getCaseItemsByCaseUuids(Set<UUID> caseUuids) {
         log.debug("Getting all Somu Items for Case: {}", caseUuids);
+
         Set<SomuItem> somuItems = somuItemRepository.findAllByCaseUuidIn(caseUuids);
-        log.info("Got {} Somu Item for Case: {}, Event {}", somuItems.size(), caseUuids, value(EVENT, SOMU_ITEM_RETRIEVED));
+        log.info("Got {} Somu Item for {} cases, Event {}", somuItems.size(), caseUuids.size(), value(EVENT, SOMU_ITEM_RETRIEVED));
 
         auditClient.viewAllSomuItemsForCasesAudit(caseUuids);
 

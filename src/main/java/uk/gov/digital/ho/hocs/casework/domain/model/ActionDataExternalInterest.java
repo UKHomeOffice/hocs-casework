@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,18 +11,15 @@ import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import java.io.Serializable;
-import java.time.LocalDate;
-
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "action_data_extensions")
+@Table(name = "action_data_external_interest")
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
-public class ActionDataDeadlineExtension implements Serializable {
+public class ActionDataExternalInterest implements Serializable {
 
     @Id
     @Column(name = "uuid")
@@ -41,15 +37,11 @@ public class ActionDataDeadlineExtension implements Serializable {
     @Column(name = "case_data_uuid")
     private UUID caseDataUuid;
 
-    @Column(name = "original_deadline")
-    private LocalDate originalDeadline;
+    @Column(name = "party_type")
+    private String partyType;
 
-    @Column(name = "updated_deadline")
-    private LocalDate updatedDeadline;
-
-    @Column(name = "note")
-    private String note;
-
+    @Column(name = "details_of_interest")
+    private String detailsOfInterest;
 
     @Column(name = "created_timestamp")
     private LocalDateTime createTimestamp;
@@ -57,20 +49,23 @@ public class ActionDataDeadlineExtension implements Serializable {
     @Column(name = "last_updated_timestamp")
     private LocalDateTime lastUpdateTimestamp;
 
-    public ActionDataDeadlineExtension(UUID caseTypeActionUuid,
-                                       String caseTypeActionLabel,
-                                       String caseDataType, UUID caseDataUuid,
-                                       LocalDate originalDeadline, LocalDate updatedDeadline,
-                                       String note) {
+    public ActionDataExternalInterest(UUID caseTypeActionUuid,
+                                      String caseTypeActionLabel,
+                                      String caseDataType,
+                                      UUID caseDataUuid,
+                                      String partyType,
+                                      String detailsOfInterest) {
         this.uuid = UUID.randomUUID();
+
         this.caseTypeActionUuid = caseTypeActionUuid;
         this.caseTypeActionLabel = caseTypeActionLabel;
         this.caseDataType = caseDataType;
+
         this.caseDataUuid = caseDataUuid;
-        this.originalDeadline = originalDeadline;
-        this.updatedDeadline = updatedDeadline;
-        this.note = note;
+        this.partyType = partyType;
+        this.detailsOfInterest = detailsOfInterest;
     }
+
 
     @PrePersist
     private void setCreatedAndLastUpdatedTimestamps() {

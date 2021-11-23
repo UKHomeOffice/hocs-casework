@@ -17,9 +17,9 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.SomuTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
+import static org.springframework.test.web.client.ExpectedCount.manyTimes;
 import static org.springframework.test.web.client.MockRestServiceServer.bindTo;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -60,12 +61,40 @@ public class CaseDataGetCaseSummaryIntegrationTest {
 
     private static final CaseDataType CASE_DATA_TYPE = CaseDataTypeFactory.from("TEST", "a1");
 
+    private static final UUID EXTENSION_CASE_TYPE_ACTION_ID = UUID.fromString("a68b0ff2-a9fc-4312-8b28-504523d04026");
+    private static final UUID APPEAL_CASE_TYPE_ACTION_ID = UUID.fromString("326eddb3-ba64-4253-ad39-916ccbb59f4e");
+
+
     private final Map<String, Object> somuType = Map.of(
             "uuid", "b124e71a-37be-410a-87a0-737be996d07e",
             "caseType", "CaseType",
             "type", "SomuType1",
             "active", true,
             "schema", "{\"showInSummary\": true}");
+
+    private static final CaseTypeActionDto MOCK_CASE_TYPE_ACTION_EXTENSION_DTO = new CaseTypeActionDto(
+            EXTENSION_CASE_TYPE_ACTION_ID,
+            UUID.randomUUID(),
+            "CASE_TYPE",
+            "EXTENSION",
+            "PIT Extension",
+            1,
+            10,
+            true,
+            "{}"
+    );
+
+    private static final CaseTypeActionDto MOCK_CASE_TYPE_ACTION_APPEAL_DTO = new CaseTypeActionDto(
+            APPEAL_CASE_TYPE_ACTION_ID,
+            UUID.randomUUID(),
+            "CASE_TYPE",
+            "APPEAL",
+            "APPEAL 1",
+            1,
+            10,
+            true,
+            "{}"
+    );
 
     @Before
     public void setup() throws IOException {
@@ -94,6 +123,11 @@ public class CaseDataGetCaseSummaryIntegrationTest {
                 .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(manyTimes(),requestTo("http://localhost:8085/caseType/TEST/actions"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(List.of(MOCK_CASE_TYPE_ACTION_EXTENSION_DTO,MOCK_CASE_TYPE_ACTION_APPEAL_DTO)), MediaType.APPLICATION_JSON));
+
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
@@ -105,18 +139,15 @@ public class CaseDataGetCaseSummaryIntegrationTest {
     @Test
     public void shouldReturnCaseSummaryWithActionData() throws JsonProcessingException {
         setupMockTeams("TEST", 5);
-        ResponseEntity<String> result = testRestTemplate.exchange(
+        ResponseEntity<GetCaseSummaryResponse> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/summary", GET,
                 new HttpEntity<>(createValidAuthHeaders()),
-                String.class);
-
-        final Map<String, Object> deserialisedResponse  = mapper.readValue(result.getBody(), Map.class);
-        System.out.println(deserialisedResponse.get("actions"));
+                GetCaseSummaryResponse.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(deserialisedResponse).hasFieldOrProperty("actions");
-        assertThat(deserialisedResponse.get("actions")).hasFieldOrProperty("appeals");
-        assertThat(deserialisedResponse.get("actions")).hasFieldOrProperty("extensions");
+        assertThat(result.getBody().getActions()).isNotNull();
+        assertThat(result.getBody().getActions().getCaseActionData().containsKey("appeals")).isTrue();
+        assertThat(result.getBody().getActions().getCaseActionData().containsKey("extensions")).isTrue();
 
     }
 

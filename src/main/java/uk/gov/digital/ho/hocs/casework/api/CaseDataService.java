@@ -495,11 +495,9 @@ public class CaseDataService {
         Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
         Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
 
-        Map<String, List<ActionDataDto>> rawActions = new HashMap<>();
+        CaseActionDataResponseDto caseActionData = caseActionService.getAllCaseActionDataForCase(caseUUID);
 
-        caseActionService.getAllActionsForCaseById(caseUUID, rawActions);
-
-        summaryBuilder.withActions(rawActions);
+        summaryBuilder.withActions(caseActionData);
 
         summaryBuilder.withAdditionalFields(getAdditionalFieldsForSummary(summaryFields, caseDataMap));
         summaryBuilder.withStageDeadlines(getStageDeadlines(caseData, caseDataMap));

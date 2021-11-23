@@ -52,8 +52,10 @@ public class CaseActionServiceIntegrationTest {
     private static final UUID CASE_ID = UUID.fromString("14915b78-6977-42db-b343-0915a7f412a1");
     private static final UUID CASE_ID_NON_EXISTING = UUID.fromString("14915b78-6977-42db-b343-0915a7f412a2");
     private static final UUID ACTION_ENTITY_ID = UUID.fromString("d159c936-b727-464e-a0ed-b63134fe0b37");
+    private static final UUID ACTION_ENTITY_EXTERNAL_INTEREST_ID = UUID.fromString("7a4ce582-e698-462f-9024-d33de6b85983");
     private static final UUID ACTION_ENTITY_ID_NON_EXISTING = UUID.fromString("2a533f69-a70e-4954-9a2f-af674e05be0d");
     private static final UUID EXTENSION_CASE_TYPE_ACTION_ID = UUID.fromString("a68b0ff2-a9fc-4312-8b28-504523d04026");
+    private static final UUID EXTERNAL_INTEREST_CASE_TYPE_ACTION_ID = UUID.fromString("1e549055-9115-438a-9c21-29c191bcc58b");
     private static final UUID APPEAL_CASE_TYPE_ACTION_ID = UUID.fromString("326eddb3-ba64-4253-ad39-916ccbb59f4e");
     private static final UUID APPEAL_CASE_TYPE_ACTION_ID_ALT_ID = UUID.fromString("426eddb3-ba64-4253-ad39-916ccbb59f4e");
     private static final UUID NON_EXISTENT_CASE_TYPE_ACTION_ID = UUID.fromString("c3d53309-3be8-4bad-8d9b-b2f7107f6923");
@@ -69,6 +71,19 @@ public class CaseActionServiceIntegrationTest {
             true,
             "{}"
     );
+
+    private static final CaseTypeActionDto MOCK_CASE_TYPE_ACTION_EXTERNAL_INTEREST_DTO = new CaseTypeActionDto(
+            EXTENSION_CASE_TYPE_ACTION_ID,
+            UUID.randomUUID(),
+            "CASE_TYPE",
+            "EXTERNAL_INTEREST",
+            "External Interest",
+            1,
+            10,
+            true,
+            "{}"
+    );
+
 
     private static final CaseTypeActionDto MOCK_CASE_TYPE_ACTION_APPEAL_DTO = new CaseTypeActionDto(
             APPEAL_CASE_TYPE_ACTION_ID,
@@ -101,6 +116,10 @@ public class CaseActionServiceIntegrationTest {
                 .expect(requestTo("http://localhost:8085/caseType/FOI/actions/" + EXTENSION_CASE_TYPE_ACTION_ID))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(MOCK_CASE_TYPE_ACTION_EXTENSION_DTO), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/FOI/actions/" + EXTERNAL_INTEREST_CASE_TYPE_ACTION_ID))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(MOCK_CASE_TYPE_ACTION_EXTERNAL_INTEREST_DTO), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(manyTimes(),requestTo("http://localhost:8085/caseType/FOI/actions/" + NON_EXISTENT_CASE_TYPE_ACTION_ID))
                 .andExpect(method(GET))
@@ -136,7 +155,8 @@ public class CaseActionServiceIntegrationTest {
         mockInfoService
                 .expect(manyTimes(),requestTo("http://localhost:8085/caseType/TEST/actions"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(List.of(MOCK_CASE_TYPE_ACTION_EXTENSION_DTO,MOCK_CASE_TYPE_ACTION_APPEAL_DTO)), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(List.of(
+                        MOCK_CASE_TYPE_ACTION_EXTENSION_DTO,MOCK_CASE_TYPE_ACTION_APPEAL_DTO, MOCK_CASE_TYPE_ACTION_EXTERNAL_INTEREST_DTO)), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions/326eddb3-ba64-4253-ad39-916ccbb59f4e"))
                 .andExpect(method(GET))
@@ -149,6 +169,26 @@ public class CaseActionServiceIntegrationTest {
                 .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions/a68b0ff2-a9fc-4312-8b28-504523d04026"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(MOCK_CASE_TYPE_ACTION_EXTENSION_DTO), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions/1e549055-9115-438a-9c21-29c191bcc58b"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(MOCK_CASE_TYPE_ACTION_EXTERNAL_INTEREST_DTO), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions/c3d53309-3be8-4bad-8d9b-b2f7107f6923"))
+                .andExpect(method(GET))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND));
+
+        final EntityDto test_interested_party = new EntityDto(
+                "TEST_INTERESTED_PARTY",
+                UUID.randomUUID().toString(),
+                "{}"
+        );
+
+        mockInfoService.expect(manyTimes(), requestTo(
+                "http://localhost:8085/entity/simpleName/TEST_INTERESTED_PARTY"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(
+                        test_interested_party), MediaType.APPLICATION_JSON));
     }
 
     // EXTENSIONS - CREATE
@@ -157,14 +197,13 @@ public class CaseActionServiceIntegrationTest {
     public void extensionCreate_shouldCreateDeadlineExtension() throws JsonProcessingException {
 
         UUID stageUUID = UUID.randomUUID();
-        String caseType = "FOI";
         String caseTypeActionLabel = "PIT Extension";
 
         ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(null, EXTENSION_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "TODAY", 8, "NOTE");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<GetCaseReferenceResponse> response = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/action",
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/actions/extension",
                 POST,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 GetCaseReferenceResponse.class
@@ -177,14 +216,13 @@ public class CaseActionServiceIntegrationTest {
     public void extensionCreate_shouldReturn404whenNoActionWithID() throws JsonProcessingException {
 
         UUID stageUUID = UUID.randomUUID();
-        String caseType = "FOI";
         String caseTypeActionLabel = "PIT Extension";
 
-        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(null, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "today", 8, "NOTE");
+        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(null, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "TODAY", 8, "NOTE");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/caseType/" + caseType + "/action",
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/actions/extension",
                 POST,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 Void.class
@@ -197,14 +235,13 @@ public class CaseActionServiceIntegrationTest {
     public void extensionCreate_shouldReturn404whenNoCaseData() throws JsonProcessingException {
 
         UUID stageUUID = UUID.randomUUID();
-        String caseType = "FOI";
         String caseTypeActionLabel = "PIT Extension";
 
-        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(null, EXTENSION_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "today", 8, "NOTE");
+        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(null, EXTENSION_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "TODAY", 8, "NOTE");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_ID_NON_EXISTING + "/stage/" + stageUUID + "/caseType/" + caseType + "/action",
+                getBasePath() + "/case/" + CASE_ID_NON_EXISTING + "/stage/" + stageUUID + "/actions/extension",
                 POST,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 Void.class
@@ -213,25 +250,108 @@ public class CaseActionServiceIntegrationTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    // EXTENSIONS - UPDATE - NOT SUPPORTED FEATURE.
+    // EXTERNAL INTEREST - CREATE
+    @Test
+    public void createExternalInterest_shouldCreateExternalInterest() throws JsonProcessingException {
+
+        UUID stageUUID = UUID.randomUUID();
+        String caseTypeActionLabel = "External Interest";
+
+        ActionDataDto actionDataDto = new ActionDataExternalInterestInboundDto(
+                null,
+                EXTERNAL_INTEREST_CASE_TYPE_ACTION_ID,
+                caseTypeActionLabel, "TEST_INTERESTED_PARTY",
+                "interest details");
+
+        String requestBody = mapper.writeValueAsString(actionDataDto);
+        ResponseEntity<GetCaseReferenceResponse> response = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/actions/interest",
+                POST,
+                new HttpEntity<>(requestBody, createValidAuthHeaders()),
+                GetCaseReferenceResponse.class
+        );
+
+        ResponseEntity<CaseActionDataResponseDto> allActionsResponse = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID + "/actions",
+                GET,
+                new HttpEntity<>(createValidAuthHeaders()),
+                CaseActionDataResponseDto.class
+        );
+
+        assertThat(allActionsResponse
+                .getBody()
+                .getCaseActionData().get("recordInterest").size()).isEqualTo(2);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
 
     @Test
-    public void extensionUpdate_shouldReturn405whenAttemptToUpdateExtension() throws JsonProcessingException {
-        UUID stageUUID = UUID.randomUUID();
-        String caseType = "FOI";
-        String caseTypeActionLabel = "PIT Extension";
+    public void createExternalInterest_shouldReturn404whenNoCaseData() throws JsonProcessingException {
 
-        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(UUID.randomUUID(), EXTENSION_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "today", 8, "NOTE");
+        UUID stageUUID = UUID.randomUUID();
+        String caseTypeActionLabel = "External Interest";
+
+        ActionDataDto actionDataDto = new ActionDataExternalInterestInboundDto(
+                ACTION_ENTITY_EXTERNAL_INTEREST_ID,
+                EXTERNAL_INTEREST_CASE_TYPE_ACTION_ID,
+                caseTypeActionLabel, "TEST_INTERESTED_PARTY",
+                "interest details");
+        String requestBody = mapper.writeValueAsString(actionDataDto);
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID_NON_EXISTING + "/stage/" + stageUUID + "/actions/interest",
+                POST,
+                new HttpEntity<>(requestBody, createValidAuthHeaders()),
+                Void.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void updateExternalInterest_shouldReturn200WhenExternalInterestUpdated() throws JsonProcessingException {
+        UUID stageUUID = UUID.randomUUID();
+        String caseTypeActionLabel = "External Interest";
+
+        ActionDataDto actionDataDto = new ActionDataExternalInterestInboundDto(
+                ACTION_ENTITY_EXTERNAL_INTEREST_ID,
+                EXTERNAL_INTEREST_CASE_TYPE_ACTION_ID,
+                caseTypeActionLabel, "TEST_INTERESTED_PARTY",
+                "interest details");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/action/" + actionDataDto.getUuid(),
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/actions/interest/"
+                        + ACTION_ENTITY_EXTERNAL_INTEREST_ID,
                 PUT,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 Void.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+
+    @Test
+    public void updateExternalInterestUpdate_shouldReturn404WhenExternalInterestEntityDoesNotExist()
+            throws JsonProcessingException {
+        UUID stageUUID = UUID.randomUUID();
+        String caseTypeActionLabel = "External Interest";
+
+        ActionDataDto actionDataDto = new ActionDataExternalInterestInboundDto(
+                null,
+                EXTERNAL_INTEREST_CASE_TYPE_ACTION_ID,
+                caseTypeActionLabel, "TEST_INTERESTED_PARTY",
+                "interest details");
+
+        String requestBody = mapper.writeValueAsString(actionDataDto);
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/actions/interest/" + ACTION_ENTITY_ID_NON_EXISTING,
+                PUT,
+                new HttpEntity<>(requestBody, createValidAuthHeaders()),
+                Void.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     // APPEALS - CREATE
@@ -239,14 +359,13 @@ public class CaseActionServiceIntegrationTest {
     @Test
     public void appealCreate_shouldReturn404WhenActionDoesNotExist() throws JsonProcessingException {
         UUID stageUUID = UUID.randomUUID();
-        String caseType = "FOI";
         String caseTypeActionLabel = "IR Appeal";
 
         ActionDataDto actionDataDto = new ActionDataAppealDto(null, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel,null,null,null, null,null, "{}");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/caseType/" + caseType + "/action",
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/actions/appeal",
                 POST,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 Void.class
@@ -258,14 +377,13 @@ public class CaseActionServiceIntegrationTest {
     @Test
     public void appealCreate_shouldReturn404WhenCaseIdDoesNotExist() throws JsonProcessingException {
         UUID stageUUID = UUID.randomUUID();
-        String caseType = "FOI";
         String caseTypeActionLabel = "IR Appeal";
 
         ActionDataDto actionDataDto = new ActionDataAppealDto(null, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel,null,null,null, null,null, "{}");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_ID_NON_EXISTING + "/stage/" + stageUUID + "/caseType/" + caseType + "/action",
+                getBasePath() + "/case/" + CASE_ID_NON_EXISTING + "/stage/" + stageUUID + "/actions/appeal",
                 POST,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 Void.class
@@ -283,7 +401,7 @@ public class CaseActionServiceIntegrationTest {
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/action",
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/actions/appeal",
                 POST,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 Void.class
@@ -302,14 +420,14 @@ public class CaseActionServiceIntegrationTest {
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response1 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID1 + "/action",
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID1 + "/actions/appeal",
                 POST,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 Void.class
         );
 
         ResponseEntity<Void> response2 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + caseUUID2 + "/stage/" + stageUUID1 + "/action",
+                getBasePath() + "/case/" + caseUUID2 + "/stage/" + stageUUID1 + "/actions/appeal",
                 POST,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 Void.class
@@ -330,7 +448,7 @@ public class CaseActionServiceIntegrationTest {
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/action/" + ACTION_ENTITY_ID_NON_EXISTING,
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/actions/appeal/" + ACTION_ENTITY_ID_NON_EXISTING,
                 PUT,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 Void.class
@@ -349,7 +467,7 @@ public class CaseActionServiceIntegrationTest {
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_ID_NON_EXISTING + "/stage/" + stageUUID + "/action/" + ACTION_ENTITY_ID,
+                getBasePath() + "/case/" + CASE_ID_NON_EXISTING + "/stage/" + stageUUID + "/actions/appeal/" + ACTION_ENTITY_ID,
                 PUT,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 Void.class
@@ -359,22 +477,21 @@ public class CaseActionServiceIntegrationTest {
     }
 
     @Test
-    public void appealUpdate_shouldReturn500WhenAppealCaseTypeDoesNotExist() throws JsonProcessingException {
+    public void appealUpdate_shouldReturn404WhenAppealCaseActionTypeDoesNotExist() throws JsonProcessingException {
         UUID stageUUID = UUID.randomUUID();
-        String caseType = "FOI";
         String caseTypeActionLabel = "IR Appeal";
 
         ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel,null,null,null, null,null, "{}");
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/action/" + ACTION_ENTITY_ID,
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/actions/appeal/" + ACTION_ENTITY_ID,
                 PUT,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 Void.class
         );
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
     @Test
@@ -386,7 +503,7 @@ public class CaseActionServiceIntegrationTest {
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/action/" + ACTION_ENTITY_ID,
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + stageUUID + "/actions/appeal/" + ACTION_ENTITY_ID,
                 PUT,
                 new HttpEntity<>(requestBody, createValidAuthHeaders()),
                 Void.class

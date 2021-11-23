@@ -24,7 +24,9 @@ VALUES ('2c9e1eb9-ee78-4f57-a626-b8b75cf3b937', '2018-12-14 12:00:00', 'Member',
         'Bob Someone', 'S1 1DJ', '1 SomeWhere Close', 'Sheffield', 'South Yorkshire', 'England', '01142595959',
         'a@a.com', '1', false)ON CONFLICT DO NOTHING;
 
-INSERT INTO action_data_appeals (uuid, action_uuid, action_label, case_data_type, case_data_uuid, status, date_sent_rms,outcome,complex_case, note,appeal_officer_data)
+INSERT INTO action_data_appeals (uuid, action_uuid, action_label, case_data_type, case_data_uuid,
+                                 status, date_sent_rms,outcome,complex_case, note,appeal_officer_data,
+                                 created_timestamp, last_updated_timestamp)
 VALUES (
         'd159c936-b727-464e-a0ed-b63134fe0b37',
         '326eddb3-ba64-4253-ad39-916ccbb59f4e',
@@ -36,5 +38,23 @@ VALUES (
         null,
         null,
         null,
-        '{}'::jsonb
+        '{}'::jsonb,
+        now(),
+        now()
+       ) ON CONFLICT DO NOTHING;
+
+INSERT INTO action_data_external_interest
+    (uuid, action_uuid, action_label, case_data_type, case_data_uuid,
+     party_type,
+     details_of_interest, created_timestamp, last_updated_timestamp)
+VALUES (
+        '7a4ce582-e698-462f-9024-d33de6b85983',
+        '1e549055-9115-438a-9c21-29c191bcc58b',
+        'External Interest',
+        'FOI',
+        '14915b78-6977-42db-b343-0915a7f412a1',
+        'TEST_INTERESTED_PARTY',
+        'details of interests',
+        now(),
+        now()
        ) ON CONFLICT DO NOTHING;

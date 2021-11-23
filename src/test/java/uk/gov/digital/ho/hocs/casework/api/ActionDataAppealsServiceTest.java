@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,9 @@ public class ActionDataAppealsServiceTest {
 
     @Mock
     private CaseNoteService mockCaseNoteService;
+
+    @Mock
+    private ObjectMapper mockObjectMapper;
 
     @Captor
     private ArgumentCaptor<ActionDataAppeal> appealArgumentCaptor = ArgumentCaptor.forClass(ActionDataAppeal.class);
@@ -108,7 +112,7 @@ public class ActionDataAppealsServiceTest {
         );
 
         // WHEN
-        actionDataAppealsService.create(caseUUID, stageUUID, appealDto);
+        actionDataAppealsService.createAppeal(caseUUID, stageUUID, appealDto);
 
         // THEN Throws
 
@@ -136,7 +140,7 @@ public class ActionDataAppealsServiceTest {
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
 
         // WHEN
-        actionDataAppealsService.create(caseUUID, stageUUID, appealDto);
+        actionDataAppealsService.createAppeal(caseUUID, stageUUID, appealDto);
 
         // THEN Throws
     }
@@ -199,20 +203,25 @@ public class ActionDataAppealsServiceTest {
                 null, caseType, null, appealDto.getCaseTypeActionLabel(), 1,10, true, null
         );
 
+        ActionDataAppeal createdActionDataAppeal = new ActionDataAppeal();
+        createdActionDataAppeal.setUuid(UUID.randomUUID());
+
         when(mockInfoClient.getCaseTypeActionByUuid(caseData.getType(), appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+        when(mockAppealRepository.save((any()))).thenReturn(createdActionDataAppeal);
 
         // WHEN
-        actionDataAppealsService.create(caseUUID, stageUUID, appealDto);
+        final UUID appealUuid = actionDataAppealsService.createAppeal(caseUUID, stageUUID, appealDto);
 
         // THEN
         verify(mockAppealRepository, times(1)).save(appealArgumentCaptor.capture());
 
         assertThat(appealArgumentCaptor.getValue().getCaseTypeActionUuid()).isEqualTo(actionTypeUuid);
+        assertThat(appealUuid).isEqualTo(createdActionDataAppeal.getUuid());
 
         verify(mockCaseDataRepository, times(1)).findActiveByUuid(caseUUID);
         verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("APPEAL_CREATED"), anyString());
-        verify(mockAuditClient, times(1)).createAppealAudit(any());
+        verify(mockAuditClient, times(1)).createAppealAudit(any(), any());
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
@@ -236,7 +245,7 @@ public class ActionDataAppealsServiceTest {
         );
 
         // WHEN
-        actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
+        actionDataAppealsService.updateAppeal(caseUUID, actionEntityId, appealDto);
 
         // THEN Throws
     }
@@ -264,7 +273,7 @@ public class ActionDataAppealsServiceTest {
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
 
         // WHEN
-        actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
+        actionDataAppealsService.updateAppeal(caseUUID, actionEntityId, appealDto);
 
         // THEN Throws
     }
@@ -331,7 +340,7 @@ public class ActionDataAppealsServiceTest {
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
         // WHEN
-        actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
+        actionDataAppealsService.updateAppeal(caseUUID, actionEntityId, appealDto);
 
         // THEN Throws
     }
@@ -437,14 +446,14 @@ public class ActionDataAppealsServiceTest {
         when(mockAppealRepository.save(any(ActionDataAppeal.class))).thenReturn(updatedAppealEntity);
 
         // WHEN
-        actionDataAppealsService.update(caseUUID, stageUUID, actionEntityId, appealDto);
+        actionDataAppealsService.updateAppeal(caseUUID, actionEntityId, appealDto);
 
         verify(mockAppealRepository, times(1)).save(appealArgumentCaptor.capture());
 
         assertThat(appealArgumentCaptor.getValue().getAppealOfficerData()).isEqualTo(updatedDataField);
 
         verify(mockInfoClient, times(1)).getCaseTypeActionByUuid(eq(caseData.getType()), eq(actionTypeUuid));
-        verify(mockAuditClient, times(1)).updateAppealAudit(any());
+        verify(mockAuditClient, times(1)).updateAppealAudit(any(), any());
         verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("APPEAL_UPDATED"), eq(actionTypeLabel));
 
     }
