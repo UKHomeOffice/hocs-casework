@@ -177,6 +177,10 @@ public class CaseActionServiceIntegrationTest {
                 .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions/c3d53309-3be8-4bad-8d9b-b2f7107f6923"))
                 .andExpect(method(GET))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
+        mockInfoService
+                .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/deadline/2018-01-29/remainingDays"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(10), MediaType.APPLICATION_JSON));
 
         final EntityDto test_interested_party = new EntityDto(
                 "TEST_INTERESTED_PARTY",
