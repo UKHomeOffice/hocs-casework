@@ -45,7 +45,7 @@ public class GetCaseSummaryResponseTest {
 
         Map<String, List<ActionDataDto>> actionData = new HashMap<>();
 
-        CaseActionDataResponseDto actions = CaseActionDataResponseDto.from(actionData, List.of(), caseDeadline);
+        CaseActionDataResponseDto actions = CaseActionDataResponseDto.from(actionData, List.of(), caseDeadline, 10);
 
 
         CaseSummary caseSummary = new CaseSummary(
