@@ -18,12 +18,13 @@ public class CaseActionDataResponseDto {
     private Map<String, List<ActionDataDto>> caseActionData;
     private List<CaseTypeActionDto> caseTypeActionData;
     private LocalDate currentCaseDeadline;
+    private int remainingDaysUntilDeadline;
 
-    public static CaseActionDataResponseDto from(Map<String, List<ActionDataDto>> caseActionData, List<CaseTypeActionDto> caseTypeActionData, LocalDate currentCaseDeadline) {
+    public static CaseActionDataResponseDto from(Map<String, List<ActionDataDto>> caseActionData, List<CaseTypeActionDto> caseTypeActionData, LocalDate currentCaseDeadline, int remainingDays) {
 
         Map<String, List<ActionDataDto>> caseActionDataMap = new HashMap<>(caseActionData);
         List<CaseTypeActionDto> caseTypeActionDataList = new ArrayList<>(caseTypeActionData);
 
-        return new CaseActionDataResponseDto(caseActionDataMap, caseTypeActionDataList, currentCaseDeadline);
+        return new CaseActionDataResponseDto(caseActionDataMap, caseTypeActionDataList, currentCaseDeadline, remainingDays);
     }
 }
