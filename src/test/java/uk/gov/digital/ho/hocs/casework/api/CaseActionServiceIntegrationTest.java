@@ -65,6 +65,7 @@ public class CaseActionServiceIntegrationTest {
             UUID.randomUUID(),
             "CASE_TYPE",
             "EXTENSION",
+            "PIT_EXTENSION",
             "PIT Extension",
             1,
             10,
@@ -77,6 +78,7 @@ public class CaseActionServiceIntegrationTest {
             UUID.randomUUID(),
             "CASE_TYPE",
             "EXTERNAL_INTEREST",
+            "PIT_EXTENSION",
             "External Interest",
             1,
             10,
@@ -90,6 +92,7 @@ public class CaseActionServiceIntegrationTest {
             UUID.randomUUID(),
             "CASE_TYPE",
             "APPEAL",
+            "PIT_EXTENSION",
             "APPEAL 1",
             1,
             10,
@@ -102,6 +105,7 @@ public class CaseActionServiceIntegrationTest {
             UUID.randomUUID(),
             "CASE_TYPE",
             "APPEAL",
+            "PIT_EXTENSION",
             "APPEAL 1",
             1,
             10,
@@ -199,7 +203,16 @@ public class CaseActionServiceIntegrationTest {
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "PIT Extension";
 
-        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(null, EXTENSION_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "TODAY", 8, "NOTE");
+        ActionDataDto actionDataDto =
+                new ActionDataDeadlineExtensionInboundDto(
+                        null,
+                        EXTENSION_CASE_TYPE_ACTION_ID,
+                        "PIT_EXTENSION",
+                        caseTypeActionLabel,
+                        "TODAY",
+                        8,
+                        "NOTE"
+                );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<GetCaseReferenceResponse> response = testRestTemplate.exchange(
@@ -218,7 +231,16 @@ public class CaseActionServiceIntegrationTest {
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "PIT Extension";
 
-        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(null, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "TODAY", 8, "NOTE");
+        ActionDataDto actionDataDto =
+                new ActionDataDeadlineExtensionInboundDto(
+                        null,
+                        NON_EXISTENT_CASE_TYPE_ACTION_ID,
+                        "PIT_EXTENSION",
+                        caseTypeActionLabel,
+                        "TODAY",
+                        8,
+                        "NOTE"
+                );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -237,7 +259,15 @@ public class CaseActionServiceIntegrationTest {
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "PIT Extension";
 
-        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(null, EXTENSION_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "TODAY", 8, "NOTE");
+        ActionDataDto actionDataDto = new ActionDataDeadlineExtensionInboundDto(
+                null,
+                EXTENSION_CASE_TYPE_ACTION_ID,
+                "PIT_EXTENSION",
+                caseTypeActionLabel,
+                "TODAY",
+                8,
+                "NOTE"
+        );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -260,6 +290,7 @@ public class CaseActionServiceIntegrationTest {
         ActionDataDto actionDataDto = new ActionDataExternalInterestInboundDto(
                 null,
                 EXTERNAL_INTEREST_CASE_TYPE_ACTION_ID,
+                "TEST_EXTERNAL_INTEREST",
                 caseTypeActionLabel, "TEST_INTERESTED_PARTY",
                 "interest details");
 
@@ -294,6 +325,7 @@ public class CaseActionServiceIntegrationTest {
         ActionDataDto actionDataDto = new ActionDataExternalInterestInboundDto(
                 ACTION_ENTITY_EXTERNAL_INTEREST_ID,
                 EXTERNAL_INTEREST_CASE_TYPE_ACTION_ID,
+                "TEST_EXTERNAL_INTEREST",
                 caseTypeActionLabel, "TEST_INTERESTED_PARTY",
                 "interest details");
         String requestBody = mapper.writeValueAsString(actionDataDto);
@@ -315,6 +347,7 @@ public class CaseActionServiceIntegrationTest {
         ActionDataDto actionDataDto = new ActionDataExternalInterestInboundDto(
                 ACTION_ENTITY_EXTERNAL_INTEREST_ID,
                 EXTERNAL_INTEREST_CASE_TYPE_ACTION_ID,
+                "TEST_EXTERNAL_INTEREST",
                 caseTypeActionLabel, "TEST_INTERESTED_PARTY",
                 "interest details");
 
@@ -340,6 +373,7 @@ public class CaseActionServiceIntegrationTest {
         ActionDataDto actionDataDto = new ActionDataExternalInterestInboundDto(
                 null,
                 EXTERNAL_INTEREST_CASE_TYPE_ACTION_ID,
+                "TEST_EXTERNAL_INTEREST",
                 caseTypeActionLabel, "TEST_INTERESTED_PARTY",
                 "interest details");
 
@@ -361,7 +395,18 @@ public class CaseActionServiceIntegrationTest {
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(null, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel,null,null,null, null,null, "{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(
+                null,
+                NON_EXISTENT_CASE_TYPE_ACTION_ID,
+                "TEST_APPEAL",
+                caseTypeActionLabel,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "{}"
+        );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -379,7 +424,18 @@ public class CaseActionServiceIntegrationTest {
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(null, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel,null,null,null, null,null, "{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(
+                null,
+                APPEAL_CASE_TYPE_ACTION_ID,
+                caseTypeActionLabel,
+                "TEST_APPEAL",
+                null,
+                null,
+                null,
+                null,
+                null,
+                "{}"
+        );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -397,7 +453,18 @@ public class CaseActionServiceIntegrationTest {
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(null, APPEAL_CASE_TYPE_ACTION_ID_ALT_ID, caseTypeActionLabel,"Pending",null,null, null,null, "{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(
+                null,
+                APPEAL_CASE_TYPE_ACTION_ID_ALT_ID,
+                caseTypeActionLabel,
+                "TEST_APPEAL",
+                "Pending",
+                null,
+                null,
+                null,
+                null,
+                "{}"
+        );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -416,7 +483,16 @@ public class CaseActionServiceIntegrationTest {
         String caseTypeActionLabel = "IR Appeal";
         UUID caseUUID2 = UUID.fromString("bb915b78-6977-42db-b343-0915a7f412a1");
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(null, APPEAL_CASE_TYPE_ACTION_ID_ALT_ID, caseTypeActionLabel,"Pending",null,null, null,null, "{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(
+                null, APPEAL_CASE_TYPE_ACTION_ID_ALT_ID,
+                "TEST_APPEAL",
+                caseTypeActionLabel,
+                "Pending",
+                null,
+                null, null,
+                null,
+                "{}"
+        );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response1 = testRestTemplate.exchange(
@@ -444,7 +520,18 @@ public class CaseActionServiceIntegrationTest {
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID_NON_EXISTING, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel, null,null,null, null,null,"{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(
+                ACTION_ENTITY_ID_NON_EXISTING,
+                APPEAL_CASE_TYPE_ACTION_ID,
+                "TEST_APPEAL",
+                caseTypeActionLabel,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "{}"
+        );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -463,7 +550,18 @@ public class CaseActionServiceIntegrationTest {
         String caseType = "FOI";
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel, null,null,null, null,null,"{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(
+                ACTION_ENTITY_ID,
+                APPEAL_CASE_TYPE_ACTION_ID,
+                "TEST_APPEAL",
+                caseTypeActionLabel,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "{}"
+        );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -481,7 +579,18 @@ public class CaseActionServiceIntegrationTest {
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID, NON_EXISTENT_CASE_TYPE_ACTION_ID, caseTypeActionLabel,null,null,null, null,null, "{}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(
+                ACTION_ENTITY_ID,
+                NON_EXISTENT_CASE_TYPE_ACTION_ID,
+                "TEST_APPEAL",
+                caseTypeActionLabel,
+                null,
+                null,
+                null,
+                null,
+                null,
+                "{}"
+        );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(
@@ -499,7 +608,18 @@ public class CaseActionServiceIntegrationTest {
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
-        ActionDataDto actionDataDto = new ActionDataAppealDto(ACTION_ENTITY_ID, APPEAL_CASE_TYPE_ACTION_ID, caseTypeActionLabel, "Complete",null,null, null,null, "{\"updated\":\"true\"}");
+        ActionDataDto actionDataDto = new ActionDataAppealDto(
+                ACTION_ENTITY_ID,
+                APPEAL_CASE_TYPE_ACTION_ID,
+                "TEST_APPEAL",
+                caseTypeActionLabel,
+                "Complete",
+                null,
+                null,
+                null,
+                null,
+                "{\"updated\":\"true\"}"
+        );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
         ResponseEntity<Void> response = testRestTemplate.exchange(

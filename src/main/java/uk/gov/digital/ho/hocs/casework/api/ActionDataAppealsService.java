@@ -145,8 +145,8 @@ public class ActionDataAppealsService implements ActionService {
         return appeals.stream().map(appeal -> new ActionDataAppealDto(
                 appeal.getUuid(),
                 appeal.getCaseTypeActionUuid(),
-                appeal.getCaseTypeActionLabel(),
                 appeal.getActionSubtype(),
+                appeal.getCaseTypeActionLabel(),
                 appeal.getStatus(),
                 appeal.getDateSentRMS(),
                 appeal.getOutcome(),

@@ -102,6 +102,7 @@ public class ActionDataAppealsServiceTest {
         ActionDataAppealDto appealDto = new ActionDataAppealDto(
                 null,
                 actionTypeUuid,
+                "TEST_APPEAL",
                 "ACTION_LABEL",
                 null,
                 LocalDate.MAX,
@@ -128,6 +129,7 @@ public class ActionDataAppealsServiceTest {
         ActionDataAppealDto appealDto = new ActionDataAppealDto(
                 null,
                 actionTypeUuid,
+                "TEST_APPEAL",
                 "ACTION_LABEL",
                 null,
                 LocalDate.MAX,
@@ -158,6 +160,7 @@ public class ActionDataAppealsServiceTest {
         ActionDataAppealDto appealDto = new ActionDataAppealDto(
                 null,
                 actionTypeUuid,
+                "TEST_APPEAL",
                 "ACTION_LABEL",
                 null,
                 LocalDate.MAX,
@@ -200,7 +203,15 @@ public class ActionDataAppealsServiceTest {
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, appealDto.getCaseTypeActionLabel(), 1,10, true, null
+                null,
+                caseType,
+                null,
+                "TEST_APPEAL",
+                appealDto.getCaseTypeActionLabel(),
+                1,
+                10,
+                true,
+                null
         );
 
         ActionDataAppeal createdActionDataAppeal = new ActionDataAppeal();
@@ -236,6 +247,7 @@ public class ActionDataAppealsServiceTest {
                 actionEntityId,
                 actionTypeUuid,
                 "ACTION_LABEL",
+                "TEST_APPEAL",
                 null,
                 LocalDate.MAX,
                 null,
@@ -262,6 +274,7 @@ public class ActionDataAppealsServiceTest {
                 actionEntityId,
                 actionTypeUuid,
                 "ACTION_LABEL",
+                "TEST_APPEAL",
                 null,
                 LocalDate.MAX,
                 null,
@@ -293,6 +306,7 @@ public class ActionDataAppealsServiceTest {
                 actionEntityId,
                 actionTypeUuid,
                 "ACTION_LABEL",
+                "TEST_APPEAL",
                 null,
                 LocalDate.MAX,
                 null,
@@ -334,7 +348,15 @@ public class ActionDataAppealsServiceTest {
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, null, 1,10, true, null
+                null,
+                caseType,
+                null,
+                "TEST_APPEAL",
+                null,
+                1,
+                10,
+                true,
+                null
         );
 
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
@@ -362,6 +384,7 @@ public class ActionDataAppealsServiceTest {
                 actionEntityId,
                 actionTypeUuid,
                 "ACTION_LABEL",
+                "TEST_APPEAL",
                 null,
                 LocalDate.MAX,
                 null,
@@ -403,12 +426,21 @@ public class ActionDataAppealsServiceTest {
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, null, 1,10, true, null
+                null,
+                caseType,
+                null,
+                "TEST_APPEAL",
+                null,
+                1,
+                10,
+                true,
+                null
         );
 
         ActionDataAppeal existingAppealEntity = new ActionDataAppeal(
                 actionEntityId,
                 actionTypeUuid,
+                "TEST_APPEAL",
                 actionTypeLabel,
                 caseType,
                 null,
@@ -425,6 +457,7 @@ public class ActionDataAppealsServiceTest {
         ActionDataAppeal updatedAppealEntity = new ActionDataAppeal(
                 actionEntityId,
                 actionTypeUuid,
+                "TEST_APPEAL",
                 actionTypeLabel,
                 caseType,
                 null,
@@ -448,6 +481,7 @@ public class ActionDataAppealsServiceTest {
         // WHEN
         actionDataAppealsService.updateAppeal(caseUUID, actionEntityId, appealDto);
 
+        // THEN
         verify(mockAppealRepository, times(1)).save(appealArgumentCaptor.capture());
 
         assertThat(appealArgumentCaptor.getValue().getAppealOfficerData()).isEqualTo(updatedDataField);
