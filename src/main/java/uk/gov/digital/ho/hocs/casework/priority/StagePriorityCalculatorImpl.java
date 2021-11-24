@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.priority;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import uk.gov.digital.ho.hocs.casework.priority.policy.StagePriorityPolicy;
 
 import java.util.HashMap;
@@ -22,7 +22,7 @@ public class StagePriorityCalculatorImpl implements StagePriorityCalculator {
     }
 
     @Override
-    public void updatePriority(Stage stage) {
+    public void updatePriority(StageWithCaseData stage) {
 
         String caseType = stage.getCaseDataType();
         Map<String, String> data = new HashMap<>(stage.getDataMap(objectMapper));

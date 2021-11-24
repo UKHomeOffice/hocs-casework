@@ -124,7 +124,9 @@ public enum LogEvent {
     ACTION_DATA_CREATE_SUCCESS,
     ACTION_DATA_CREATE_FAILURE,
     ACTION_DATA_UPDATE_SUCCESS,
-    ACTION_DATA_UPDATE_FAILURE;
+    ACTION_DATA_UPDATE_FAILURE,
+    INFO_CLIENT_REMAINING_DAYS_FOR_CASE_TYPE_AND_DEADLINE_SUCCESS;
+
     public static final String EVENT = "event_id";
     public static final String EXCEPTION = "exception";
     public static final String STACKTRACE = "stacktrace";

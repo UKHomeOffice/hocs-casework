@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
-import uk.gov.digital.ho.hocs.casework.api.dto.AppealOfficerDto;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RequestDataDto;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
@@ -515,7 +514,7 @@ public class AuditClient {
         });
     }
 
-    public void updateStageUser(Stage stage) {
+    public void updateStageUser(BaseStage stage) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
@@ -535,7 +534,7 @@ public class AuditClient {
         });
     }
 
-    public void createStage(Stage stage) {
+    public void createStage(BaseStage stage) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
@@ -549,7 +548,7 @@ public class AuditClient {
         });
     }
 
-    public void recreateStage(Stage stage) {
+    public void recreateStage(BaseStage stage) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
         executorService.execute(() -> {
@@ -563,7 +562,7 @@ public class AuditClient {
         });
     }
 
-    public void updateStageTeam(Stage stage) {
+    public void updateStageTeam(BaseStage stage) {
         RequestDataDto requestDataDto = RequestDataDto.from(requestData);
         LocalDateTime localDateTime = LocalDateTime.now();
 

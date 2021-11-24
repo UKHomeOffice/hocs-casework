@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,7 +28,7 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
     }
 
     @Override
-    public void decorateTags(Stage stage) {
+    public void decorateTags(StageWithCaseData stage) {
         ArrayList<String> tags = new ArrayList<>();
         if (this.addHomeSecReplyTag(stage)) {
             tags.add(StageTags.HOME_SEC_REPLY_TAG);
@@ -36,7 +36,7 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
         stage.setTag(tags);
     }
 
-    private Boolean hasDataFieldAndValue(Stage stage, String field, String value) {
+    private Boolean hasDataFieldAndValue(StageWithCaseData stage, String field, String value) {
         Map<String, String> data = new HashMap<>(stage.getDataMap(objectMapper));
 
         if (data.get(field) != null) {
@@ -46,7 +46,7 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
         return false;
     }
 
-    private Boolean addHomeSecReplyTag(Stage stage) {
+    private Boolean addHomeSecReplyTag(StageWithCaseData stage) {
         if(hasDataFieldAndValue(stage, HOME_SEC_REPLY_FIELD_NAME, "TRUE") || hasDataFieldAndValue(stage, OVERRIDE_PO_TEAM_NAME, "Home Secretary") || hasDataFieldAndValue(stage, PO_TEAM_NAME, "Home Secretary")) {
             return  isAtDcuMarkup(stage) ||
                     isHomeSecReplyNoPoTeam(stage) ||
@@ -56,11 +56,11 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
         return false;
     }
 
-    private Boolean isAtDcuMarkup(Stage stage) {
+    private Boolean isAtDcuMarkup(StageWithCaseData stage) {
         return stage.getStageType().equals("DCU_MIN_MARKUP");
     }
 
-    private Boolean isHomeSecReplyNoPoTeam(Stage stage) {
+    private Boolean isHomeSecReplyNoPoTeam(StageWithCaseData stage) {
         Map<String, String> data = new HashMap<>(stage.getDataMap(objectMapper));
 
         if (data.get(PRIVATE_OFFICE_OVERRIDE_PO_TEAM_UUID_FIELD_NAME) != null) {
@@ -73,13 +73,13 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
         );
     }
 
-    private Boolean hasHomeSecPoTeam(Stage stage) {
+    private Boolean hasHomeSecPoTeam(StageWithCaseData stage) {
         String poTeamUuid = this.highestPrecedentPrivateOfficeTeamUuid(stage);
 
         return poTeamUuid.equals(HOME_SEC_PO_TEAM_UUID);
     }
 
-    private String highestPrecedentPrivateOfficeTeamUuid(Stage stage) {
+    private String highestPrecedentPrivateOfficeTeamUuid(StageWithCaseData stage) {
         Map<String, String> data = new HashMap<>(stage.getDataMap(objectMapper));
 
         String[] homeSecReplyCasePoTeamPrecedence = {
