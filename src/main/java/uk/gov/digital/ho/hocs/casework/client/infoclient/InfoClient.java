@@ -229,6 +229,14 @@ public class InfoClient {
         return elapsedWorkingDays;
     }
 
+    public Integer getRemainingDaysToDeadline(String caseType, LocalDate deadlineDate) {
+        String dateString = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(deadlineDate);
+        Integer remainingDays = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline/%s/remainingDays", caseType, dateString), new ParameterizedTypeReference<Integer>() {
+        });
+        log.info("Got remaining days for caseType {} with deadline {} as {} days remaining, event {}", caseType, dateString, remainingDays, value(EVENT, INFO_CLIENT_REMAINING_DAYS_FOR_CASE_TYPE_AND_DEADLINE_SUCCESS));
+        return remainingDays;
+    }
+
     @Cacheable(value = "InfoGetProfileByCaseType", unless = "#result == null")
     public ProfileDto getProfileByCaseType(String caseType) {
         ProfileDto response = restHelper.get(serviceBaseURL, String.format("/profile/forcasetype/%s", caseType), ProfileDto.class);

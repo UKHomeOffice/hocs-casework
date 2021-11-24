@@ -127,7 +127,10 @@ public class CaseDataGetCaseSummaryIntegrationTest {
                 .expect(manyTimes(),requestTo("http://localhost:8085/caseType/TEST/actions"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(List.of(MOCK_CASE_TYPE_ACTION_EXTENSION_DTO,MOCK_CASE_TYPE_ACTION_APPEAL_DTO)), MediaType.APPLICATION_JSON));
-
+        mockInfoService
+                .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/deadline/2018-01-29/remainingDays"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(10), MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
