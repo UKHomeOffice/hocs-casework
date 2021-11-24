@@ -15,6 +15,7 @@ public class CaseTypeActionDto {
     private UUID caseTypeUuid;
     private String caseType;
     private String actionType;
+    private String actionSubtype;
     private String actionLabel;
     private int maxConcurrentEvents;
     private int sortOrder;

@@ -138,6 +138,7 @@ public class ActionDataExternalInterestService implements ActionService {
                     return new ActionDataExternalInterestOutboundDto(
                             interest.getUuid(),
                             interest.getCaseTypeActionUuid(),
+                            interest.getAction_subtype(),
                             interest.getCaseTypeActionLabel(),
                             interest.getPartyType(),
                             interestedPartyEntity,
