@@ -33,6 +33,9 @@ public class ActionDataAppeal implements Serializable {
     @Column(name = "action_uuid")
     private UUID caseTypeActionUuid;
 
+    @Column(name = "action_subtype")
+    private String actionSubtype;
+
     @Column(name = "action_label")
     private String caseTypeActionLabel;
 
@@ -68,7 +71,9 @@ public class ActionDataAppeal implements Serializable {
 
     public ActionDataAppeal(UUID caseTypeActionUuid,
                             String caseTypeActionLabel,
-                            String caseDataType, UUID caseDataUuid,
+                            String actionSubtype,
+                            String caseDataType,
+                            UUID caseDataUuid,
                             String status,
                             LocalDate dateSentRMS,
                             String outcome,
@@ -77,6 +82,7 @@ public class ActionDataAppeal implements Serializable {
                             String appealOfficerData) {
         this.uuid = UUID.randomUUID();
         this.caseTypeActionUuid = caseTypeActionUuid;
+        this.actionSubtype = actionSubtype;
         this.caseTypeActionLabel = caseTypeActionLabel;
         this.caseDataType = caseDataType;
         this.caseDataUuid = caseDataUuid;

@@ -106,6 +106,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
+                "TEST_EXTENSION",
                 "TODAY",
                 extendByDays,
                 "ANY NOTE HERE"
@@ -147,7 +148,15 @@ public class ActionDataDeadlineExtensionServiceTest {
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, null,1, 10, true, null
+                null,
+                caseType,
+                null,
+                null,
+                "TEST_EXTENSION",
+                1,
+                10,
+                true,
+                null
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(previousCaseData.getType(), extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
@@ -188,6 +197,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
+                "TEST_EXTENSION",
                 "TODAY",
                 extendByDays,
                 "ANY NOTE HERE"
@@ -212,12 +222,22 @@ public class ActionDataDeadlineExtensionServiceTest {
                 null,
                 actionTypeUuid,
                 "ANY_STRING",
+                "TEST_EXTENSION",
                 "TODAY",
                 extendByDays,
                 "ANY NOTE HERE"
         );
         CaseTypeActionDto caseTypeActionDto = new CaseTypeActionDto(
-                actionTypeUuid, null, caseType, null, null, 1,10, true, null
+                actionTypeUuid,
+                null,
+                caseType,
+                null,
+                "TEST_EXTENSION",
+                null,
+                1,
+                10,
+                true,
+                null
         );
 
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
@@ -238,6 +258,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         ActionDataDeadlineExtensionInboundDto extensionDto = new ActionDataDeadlineExtensionInboundDto(
                 null,
                 actionTypeUuid,
+                "TEST_EXTENSION",
                 "ANY_STRING",
                 "TODAY",
                 extendByDays,
@@ -290,7 +311,15 @@ public class ActionDataDeadlineExtensionServiceTest {
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, null,1, 10, true, null
+                null,
+                caseType,
+                null,
+                "TEST_EXTENSION",
+                null,
+                1,
+                10,
+                true,
+                null
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(previousCaseData.getType(), extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);

@@ -22,10 +22,11 @@ public class ActionDataExternalInterestInboundDto extends ActionDataDto {
 
     public ActionDataExternalInterestInboundDto(UUID uuid,
                                                 UUID caseTypeActionUuid,
+                                                String caseSubtype,
                                                 String caseTypeActionLabel,
                                                 String interestedPartyType,
                                                 String detailsOfInterest) {
-        super(uuid, caseTypeActionUuid, caseTypeActionLabel);
+        super(uuid, caseTypeActionUuid, caseSubtype, caseTypeActionLabel);
 
         this.interestedPartyType = interestedPartyType;
         this.detailsOfInterest = detailsOfInterest;

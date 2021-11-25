@@ -30,5 +30,6 @@ public abstract class ActionDataDto {
 
     private UUID uuid;
     private UUID caseTypeActionUuid;
+    private String caseSubtype;
     private String caseTypeActionLabel;
 }
