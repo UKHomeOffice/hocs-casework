@@ -21,7 +21,7 @@ public class SummaryRepository {
     private EntityManager entityManager;
 
     public List<Summary> findTeamsAndCaseCountByTeamUuidandCaseTypes(Set<UUID> teamUuidSet, Set<String> caseTypeSet) {
-        Query query = entityManager.createNativeQuery("SELECT st.team_uuid as teamUuid, count(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE NOT cd.deleted AND st.team_uuid IS NOT NULL AND (st.team_uuid IN ?1 OR cd.type IN ?2) AND NOT cd.data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) GROUP BY st.team_uuid");
+        Query query = entityManager.createNativeQuery("SELECT st.team_uuid as teamUuid, count(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE NOT cd.deleted AND st.team_uuid IS NOT NULL AND (st.team_uuid IN ?1 OR cd.type IN ?2) AND cd.data->>'Unworkable' != 'True' GROUP BY st.team_uuid");
         query.setParameter(1, teamUuidSet);
         query.setParameter(2, caseTypeSet);
 
@@ -35,7 +35,7 @@ public class SummaryRepository {
     };
 
     public List<Summary> findUnallocatedCasesByTeam(Set<UUID> teamUuidSet) {
-        Query query = entityManager.createNativeQuery("SELECT st.team_uuid as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid in ?1 AND st.user_uuid IS NULL AND NOT cd.data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) GROUP BY st.team_uuid");
+        Query query = entityManager.createNativeQuery("SELECT st.team_uuid as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid in ?1 AND st.user_uuid IS NULL AND cd.data->>'Unworkable' != 'True' GROUP BY st.team_uuid");
         query.setParameter(1, teamUuidSet);
 
         query.unwrap(NativeQuery.class)
@@ -48,7 +48,7 @@ public class SummaryRepository {
     }
 
     public List<Summary> findOverdueCasesByTeam(Set<UUID> teamUuidSet) {
-        Query query = entityManager.createNativeQuery("SELECT st.team_uuid as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid IN ?1 AND st.deadline < CURRENT_DATE AND NOT cd.data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) GROUP BY st.team_uuid");
+        Query query = entityManager.createNativeQuery("SELECT st.team_uuid as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid IN ?1 AND st.deadline < CURRENT_DATE AND cd.data->>'Unworkable' != 'True' GROUP BY st.team_uuid");
         query.setParameter(1, teamUuidSet);
 
         query.unwrap(NativeQuery.class)
@@ -61,7 +61,7 @@ public class SummaryRepository {
     }
 
     public List<Summary> findOverdueUserCasesInTeams(Set<UUID> teamUuidSet, String userUuid) {
-        Query query = entityManager.createNativeQuery("SELECT st.team_uuid as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid in ?1 AND st.user_uuid = ?2 AND st.deadline < CURRENT_DATE AND NOT cd.data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) GROUP BY st.team_uuid");
+        Query query = entityManager.createNativeQuery("SELECT st.team_uuid as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid in ?1 AND st.user_uuid = ?2 AND st.deadline < CURRENT_DATE AND cd.data->>'Unworkable' != 'True' GROUP BY st.team_uuid");
         query.setParameter(1, teamUuidSet);
         query.setParameter(2, userUuid);
 
@@ -76,7 +76,7 @@ public class SummaryRepository {
     }
 
     public List<Summary> findUserCasesInTeams(Set<UUID> teamUuidSet, String userUuid) {
-        Query query = entityManager.createNativeQuery("SELECT CAST(st.team_uuid as varchar) as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid in ?1 AND st.user_uuid = ?2 AND NOT cd.data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) GROUP BY st.team_uuid");
+        Query query = entityManager.createNativeQuery("SELECT CAST(st.team_uuid as varchar) as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid in ?1 AND st.user_uuid = ?2 AND cd.data->>'Unworkable' != 'True' GROUP BY st.team_uuid");
         query.setParameter(1, teamUuidSet);
         query.setParameter(2, userUuid);
 
