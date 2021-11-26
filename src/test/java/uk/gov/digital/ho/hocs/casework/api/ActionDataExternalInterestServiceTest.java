@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataExternalInterestInboundDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -20,6 +21,8 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -185,9 +188,14 @@ public class ActionDataExternalInterestServiceTest {
                 true, null
         );
 
+        Map<String, String> simpleNameEntity = new HashMap<>();
+        simpleNameEntity.put("title", "Test Part Type");
+        EntityDto<Map<String, String>>  mockSimpleNameResponse = new EntityDto<>("TEST_PARTY_TYPE", simpleNameEntity);
+
         when(mockInfoClient.getCaseTypeActionByUuid(caseData.getType(),
                 externalInterestDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+        when(mockInfoClient.getEntityBySimpleName(anyString())).thenReturn(mockSimpleNameResponse);
 
         // WHEN
         actionDataExternalInterestService.createExternalInterest(caseUUID, stageUUID, externalInterestDto);
@@ -285,7 +293,9 @@ public class ActionDataExternalInterestServiceTest {
                 "TEST_DETAILS_CHANGED"
         );
 
-
+        Map<String, String> simpleNameEntity = new HashMap<>();
+        simpleNameEntity.put("title", "Test Part Type Changed");
+        EntityDto<Map<String, String>>  mockSimpleNameResponse = new EntityDto<>("TEST_PARTY_TYPE_CHANGED", simpleNameEntity);
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseData.getType(), actionDataExternalInterestDto.getCaseTypeActionUuid()))
                 .thenReturn(mockCaseTypeActionDto);
@@ -294,6 +304,7 @@ public class ActionDataExternalInterestServiceTest {
                 .thenReturn(existingExternalInterestEntity);
         when(mockExternalInterestRepository.save(any(ActionDataExternalInterest.class)))
                 .thenReturn(updatedExternalInterest);
+        when(mockInfoClient.getEntityBySimpleName(anyString())).thenReturn(mockSimpleNameResponse);
 
         // WHEN
         actionDataExternalInterestService.updateExternalInterest(caseUUID, actionEntityId, actionDataExternalInterestDto);
@@ -305,7 +316,7 @@ public class ActionDataExternalInterestServiceTest {
 
         verify(mockInfoClient, times(1)).getCaseTypeActionByUuid(eq(caseData.getType()), eq(actionTypeUuid));
         verify(mockAuditClient, times(1)).updateExternalInterestAudit(any());
-        verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("UPDATE_INTEREST"), eq(actionTypeLabel));
+        verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("UPDATE_INTEREST"), eq("Test Part Type Changed: TEST_DETAILS_CHANGED"));
 
     }
 }
