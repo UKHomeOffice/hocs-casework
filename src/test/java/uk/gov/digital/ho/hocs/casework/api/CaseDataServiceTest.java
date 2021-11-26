@@ -11,11 +11,13 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.SomuTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
+import uk.gov.digital.ho.hocs.casework.api.factory.CaseSummaryAdditionalFieldProviderFactory;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
@@ -136,6 +138,9 @@ public class CaseDataServiceTest {
     public void setUp() {
         configuration = new SpringConfiguration();
         objectMapper = configuration.initialiseObjectMapper();
+        CaseSummaryAdditionalFieldProviderFactory caseSummaryAdditionalFieldProviderFactory
+                = new CaseSummaryAdditionalFieldProviderFactory();
+
         this.caseDataService = new CaseDataService(caseDataRepository,
                 activeCaseViewDataRepository,
                 caseLinkRepository,
@@ -143,7 +148,8 @@ public class CaseDataServiceTest {
                 objectMapper,
                 auditClient,
                 caseCopyFactory,
-                caseActionService
+                caseActionService,
+                caseSummaryAdditionalFieldProviderFactory
         );
     }
 

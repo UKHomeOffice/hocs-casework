@@ -10,6 +10,7 @@ import uk.gov.digital.ho.hocs.casework.api.CaseActionService;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
+import uk.gov.digital.ho.hocs.casework.api.factory.CaseSummaryAdditionalFieldProviderFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -39,7 +40,8 @@ public class MigrationCaseDataService extends CaseDataService {
     public MigrationCaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
                                     MigrationStageRepository migrationStageRepository, InfoClient infoClient,
                                     ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory,
-                                    CaseActionService caseActionService) {
+                                    CaseActionService caseActionService,
+                                    CaseSummaryAdditionalFieldProviderFactory caseSummaryAdditionalFieldProviderFactory) {
         super(caseDataRepository,
                 activeCaseViewDataRepository,
                 null,
@@ -47,7 +49,10 @@ public class MigrationCaseDataService extends CaseDataService {
                 objectMapper,
                 auditClient,
                 caseCopyFactory,
-                caseActionService);
+                caseActionService,
+                caseSummaryAdditionalFieldProviderFactory
+        );
+
         this.migrationStageRepository = migrationStageRepository;
     }
 

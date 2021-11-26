@@ -1,9 +1,11 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @AllArgsConstructor
+@Builder
 public class AdditionalField {
 
     @Getter

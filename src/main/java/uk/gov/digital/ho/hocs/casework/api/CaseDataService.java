@@ -11,6 +11,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
+import uk.gov.digital.ho.hocs.casework.api.factory.CaseSummaryAdditionalFieldProvider;
+import uk.gov.digital.ho.hocs.casework.api.factory.CaseSummaryAdditionalFieldProviderFactory;
 import uk.gov.digital.ho.hocs.casework.api.factory.strategies.CaseCopyStrategy;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
@@ -80,12 +82,19 @@ public class CaseDataService {
     private final CaseCopyFactory caseCopyFactory;
     private final CaseLinkRepository caseLinkRepository;
     private final CaseActionService caseActionService;
+    private final CaseSummaryAdditionalFieldProviderFactory caseSummaryAdditionalFieldProviderFactory;
     public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
 
     @Autowired
-    public CaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
-                           CaseLinkRepository caseLinkRepository, InfoClient infoClient,
-                           ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory, CaseActionService caseActionService) {
+    public CaseDataService(CaseDataRepository caseDataRepository,
+                           ActiveCaseViewDataRepository activeCaseViewDataRepository,
+                           CaseLinkRepository caseLinkRepository,
+                           InfoClient infoClient,
+                           ObjectMapper objectMapper,
+                           AuditClient auditClient,
+                           CaseCopyFactory caseCopyFactory,
+                           CaseActionService caseActionService,
+                           CaseSummaryAdditionalFieldProviderFactory caseSummaryAdditionalFieldProviderFactory) {
 
         this.caseDataRepository = caseDataRepository;
         this.activeCaseViewDataRepository = activeCaseViewDataRepository;
@@ -95,6 +104,7 @@ public class CaseDataService {
         this.objectMapper = objectMapper;
         this.caseCopyFactory = caseCopyFactory;
         this.caseActionService = caseActionService;
+        this.caseSummaryAdditionalFieldProviderFactory = caseSummaryAdditionalFieldProviderFactory;
     }
 
     public static final List<String> TIMELINE_EVENTS = List.of(
@@ -499,9 +509,13 @@ public class CaseDataService {
 
         summaryBuilder.withActions(caseActionData);
 
-        summaryBuilder.withAdditionalFields(getAdditionalFieldsForSummary(summaryFields, caseDataMap));
-        summaryBuilder.withStageDeadlines(getStageDeadlines(caseData, caseDataMap));
+        final CaseSummaryAdditionalFieldProvider caseSummaryAdditionalFieldProvider
+                = caseSummaryAdditionalFieldProviderFactory.getCaseSummaryAdditionalFieldProvider(caseData.getType());
 
+        summaryBuilder.withAdditionalFields(
+                caseSummaryAdditionalFieldProvider.getAdditionalFieldsForSummary(summaryFields, caseDataMap));
+
+        summaryBuilder.withStageDeadlines(getStageDeadlines(caseData, caseDataMap));
 
         auditClient.viewCaseSummaryAudit(caseData);
 
@@ -533,22 +547,6 @@ public class CaseDataService {
             }
         }
         return stageDeadlines;
-    }
-
-    private Set<AdditionalField> getAdditionalFieldsForSummary(Set<FieldDto> summaryFields, Map<String, String> caseDataMap) {
-        Set<AdditionalField> additionalFields = summaryFields.stream()
-                .map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent(), extractChoices(field)))
-                .collect(Collectors.toSet());
-        return additionalFields;
-    }
-
-    private Object extractChoices(FieldDto fieldDto) {
-        if (fieldDto != null && fieldDto.getProps() != null && fieldDto.getProps() instanceof Map) {
-            Map propMap = (Map) fieldDto.getProps();
-            return propMap.get("choices");
-        }
-
-        return null;
     }
 
     List<String> getDocumentTags(UUID caseUUID) {
