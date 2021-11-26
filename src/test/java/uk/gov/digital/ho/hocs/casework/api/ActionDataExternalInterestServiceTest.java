@@ -98,12 +98,22 @@ public class ActionDataExternalInterestServiceTest {
         ActionDataExternalInterestInboundDto extensionDto = new ActionDataExternalInterestInboundDto(
                 null,
                 actionTypeUuid,
+                "TEST_EXTERNAL_INTEREST",
                 "ANY_STRING",
                 "ANY_PARTY",
                 "ANY NOTE HERE"
         );
         CaseTypeActionDto caseTypeActionDto = new CaseTypeActionDto(
-                actionTypeUuid, null, caseType, null, null, 1,10, true, null
+                actionTypeUuid,
+                null,
+                caseType,
+                null,
+                null,
+                "TEST_EXTERNAL_INTEREST",
+                1,
+                10,
+                true,
+                null
         );
 
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
@@ -126,6 +136,7 @@ public class ActionDataExternalInterestServiceTest {
         ActionDataExternalInterestInboundDto externalInterestDto = new ActionDataExternalInterestInboundDto(
                 null,
                 actionTypeUuid,
+                "TEST_EXTERNAL_INTEREST",
                 "External Interest",
                 "TEST_PARTY_TYPE",
                 "TEST_DETAILS"
@@ -164,7 +175,14 @@ public class ActionDataExternalInterestServiceTest {
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, externalInterestDto.getCaseTypeActionLabel(), 1,10, true, null
+                null,
+                "TEST_EXTERNAL_INTEREST",
+                caseType,
+                null,
+                externalInterestDto.getCaseTypeActionLabel(),
+                1,
+                10,
+                true, null
         );
 
         when(mockInfoClient.getCaseTypeActionByUuid(caseData.getType(),
@@ -199,6 +217,7 @@ public class ActionDataExternalInterestServiceTest {
         ActionDataExternalInterestInboundDto actionDataExternalInterestDto = new ActionDataExternalInterestInboundDto(
                 actionEntityId,
                 actionTypeUuid,
+                "TEST_EXTERNAL_INTEREST",
                 "ACTION_LABEL",
                 "TEST_PARTY_TYPE_CHANGED",
                 "TEST_DETAILS_CHANGED"
@@ -237,7 +256,15 @@ public class ActionDataExternalInterestServiceTest {
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
-                null, caseType, null, null, 1,10, true, null
+                null,
+                caseType,
+                "TEST_EXTERNAL_INTEREST",
+                null,
+                null,
+                1,
+                10,
+                true,
+                null
         );
 
         ActionDataExternalInterest existingExternalInterestEntity = new ActionDataExternalInterest(

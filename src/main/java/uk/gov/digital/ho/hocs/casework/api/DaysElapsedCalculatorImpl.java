@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,7 +27,7 @@ public class DaysElapsedCalculatorImpl implements DaysElapsedCalculator {
     }
 
     @Override
-    public void updateDaysElapsed(Stage stage) {
+    public void updateDaysElapsed(StageWithCaseData stage) {
         Map<String, String> data = new HashMap<>(stage.getDataMap(objectMapper));
         int daysElapsed = 0;
         String dateString = data.get(DATE_RECEIVED_FIELD_NAME);

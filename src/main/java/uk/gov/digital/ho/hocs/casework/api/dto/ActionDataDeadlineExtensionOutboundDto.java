@@ -22,8 +22,16 @@ public class ActionDataDeadlineExtensionOutboundDto extends ActionDataDto {
     private LocalDate updatedDeadline;
     private String note;
 
-    public ActionDataDeadlineExtensionOutboundDto(UUID uuid, UUID caseTypeActionUuid, String caseTypeActionLabel, LocalDate originalDeadline, LocalDate updatedDeadline, String note) {
-        super(uuid, caseTypeActionUuid, caseTypeActionLabel);
+    public ActionDataDeadlineExtensionOutboundDto(
+            UUID uuid,
+            UUID caseTypeActionUuid,
+            String caseSubtype,
+            String caseTypeActionLabel,
+            LocalDate originalDeadline,
+            LocalDate updatedDeadline,
+            String note
+    ) {
+        super(uuid, caseTypeActionUuid, caseSubtype, caseTypeActionLabel);
         this.originalDeadline = originalDeadline;
         this.updatedDeadline = updatedDeadline;
         this.note = note;

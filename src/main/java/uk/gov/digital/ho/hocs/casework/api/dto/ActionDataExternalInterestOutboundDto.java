@@ -25,11 +25,12 @@ public class ActionDataExternalInterestOutboundDto extends ActionDataDto {
 
     public ActionDataExternalInterestOutboundDto(UUID uuid,
                                                  UUID caseTypeActionUuid,
+                                                 String caseSubtype,
                                                  String caseTypeActionLabel,
                                                  String interestedPartyType,
                                                  Map<String, String> interestedPartyEntity,
                                                  String detailsOfInterest) {
-        super(uuid, caseTypeActionUuid, caseTypeActionLabel);
+        super(uuid, caseTypeActionUuid, caseSubtype, caseTypeActionLabel);
 
         this.interestedPartyType = interestedPartyType;
         this.interestedPartyEntity = interestedPartyEntity;

@@ -139,6 +139,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
             new ActionDataDeadlineExtensionOutboundDto(
                     extension.getUuid(),
                     extension.getCaseTypeActionUuid(),
+                    extension.getActionSubtype(),
                     extension.getCaseTypeActionLabel(),
                     extension.getOriginalDeadline(),
                     extension.getUpdatedDeadline(),

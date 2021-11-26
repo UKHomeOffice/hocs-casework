@@ -28,6 +28,9 @@ public class ActionDataExternalInterest implements Serializable {
     @Column(name = "action_uuid")
     private UUID caseTypeActionUuid;
 
+    @Column(name = "action_subtype")
+    private String action_subtype;
+
     @Column(name = "action_label")
     private String caseTypeActionLabel;
 
