@@ -10,6 +10,7 @@ import java.util.UUID;
 @Repository
 public interface ActiveCaseViewDataRepository extends CrudRepository<ActiveCaseViewData, Long> {
 
+    // <2ms
     @Query(value = "SELECT ac.* FROM active_case ac where ac.uuid = ?1", nativeQuery = true)
     ActiveCaseViewData findByUuid(UUID uuid);
 }

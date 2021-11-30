@@ -32,7 +32,16 @@ public class SummaryRepositoryTest {
     @Test
     public void findTeamsAndCaseCountByTeamUuidandCaseTypes_whereNoTeam() {
         var summary =
-                summaryRepository.findTeamsAndCaseCountByTeamUuidandCaseTypes(Collections.emptySet(), Set.of(""));
+                summaryRepository.findTeamsAndCaseCountByTeamUuid(Collections.emptySet());
+
+        assertThat(summary).isNotNull();
+        assertThat(summary.size()).isEqualTo(0);
+    }
+
+    @Test
+    public void findTeamsAndCaseCountByTeamUuidandCaseTypes_whereNoTypes() {
+        var summary =
+                summaryRepository.findTeamsAndCaseCountByCaseTypes(Collections.emptySet());
 
         assertThat(summary).isNotNull();
         assertThat(summary.size()).isEqualTo(0);
@@ -41,7 +50,7 @@ public class SummaryRepositoryTest {
     @Test
     public void findTeamsAndCaseCountByTeamUuidandCaseTypes_whereTeamMatchesCase() {
         var summary =
-                summaryRepository.findTeamsAndCaseCountByTeamUuidandCaseTypes(Set.of(UUID.fromString("20000000-0000-0000-0000-000000000001")), Set.of(""));
+                summaryRepository.findTeamsAndCaseCountByTeamUuid(Set.of(UUID.fromString("20000000-0000-0000-0000-000000000001")));
 
         assertThat(summary).isNotNull();
         assertThat(summary.size()).isEqualTo(1);
@@ -51,7 +60,12 @@ public class SummaryRepositoryTest {
     @Test
     public void findTeamsAndCaseCountByTeamUuidandCaseTypes_whereTeamMatchesCaseAndCaseTypeAdmin() {
         var summary =
-                summaryRepository.findTeamsAndCaseCountByTeamUuidandCaseTypes(Set.of(UUID.fromString("20000000-0000-0000-0000-000000000001")), Set.of("TEST2"));
+                summaryRepository.findTeamsAndCaseCountByTeamUuid(Set.of(UUID.fromString("20000000-0000-0000-0000-000000000001")));
+
+        var summary_types =
+                summaryRepository.findTeamsAndCaseCountByCaseTypes(Set.of("TEST2"));
+
+        summary.addAll(summary_types);
 
         assertThat(summary).isNotNull();
         assertThat(summary.size()).isEqualTo(2);
@@ -61,8 +75,14 @@ public class SummaryRepositoryTest {
 
     @Test
     public void findTeamsAndCaseCountByTeamUuidandCaseTypes_whereTeamNoMatchesCaseAndCaseTypeAdmin() {
+
         var summary =
-                summaryRepository.findTeamsAndCaseCountByTeamUuidandCaseTypes(Set.of(UUID.fromString("11111111-0000-0000-0000-000000000001")), Set.of("TEST2"));
+                summaryRepository.findTeamsAndCaseCountByTeamUuid(Set.of(UUID.fromString("11111111-0000-0000-0000-000000000001")));
+
+        var summary_types =
+                summaryRepository.findTeamsAndCaseCountByCaseTypes(Set.of("TEST2"));
+
+        summary.addAll(summary_types);
 
         assertThat(summary).isNotNull();
         assertThat(summary.size()).isEqualTo(1);
