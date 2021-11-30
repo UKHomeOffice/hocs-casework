@@ -55,7 +55,6 @@ public class DashboardServiceTest {
         when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
 
         when(requestData.userId()).thenReturn(UUID.randomUUID().toString());
-        when(summaryRepository.findTeamsAndCaseCountByCaseTypes(caseTypes)).thenReturn(teamWithCaseCountCaseTypes);
         when(summaryRepository.findTeamsAndCaseCountByTeamUuid(setUserTeams)).thenReturn(teamWithCaseCount);
         when(summaryRepository.findOverdueCasesByTeam(collatedUserTeams)).thenReturn(teamWithOverdueCaseCount);
         when(summaryRepository.findUnallocatedCasesByTeam(collatedUserTeams)).thenReturn(teamWithUnallocatedCaseCount);

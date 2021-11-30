@@ -97,8 +97,8 @@ FROM casework.case_data
                             LEFT JOIN case_data c ON cl.primary_case_uuid = c.uuid
                             LEFT JOIN stage s on s.case_uuid = c.uuid
                             WHERE cl.secondary_case_uuid = case_data.uuid
-                            ORDER BY s.team_uuid DESC NULLS LAST, s.created DESC limit 1) primary_case ON TRUE;
-WHERE NOT c.deleted;
+                            ORDER BY s.team_uuid DESC NULLS LAST, s.created DESC limit 1) primary_case ON TRUE
+WHERE NOT case_data.deleted;
 
 create index if not exists idx_case_type ON case_data USING btree (type);
 create index if not exists ixd_case_data_unworkable on case_data ((data->>'Unworkable'));
