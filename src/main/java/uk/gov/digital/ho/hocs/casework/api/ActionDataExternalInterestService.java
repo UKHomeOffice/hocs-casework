@@ -8,6 +8,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataExternalInterestInbound
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataExternalInterestOutboundDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -82,8 +83,11 @@ public class ActionDataExternalInterestService implements ActionService {
                 interestDto.getDetailsOfInterest()
         );
 
+        EntityDto<Map<String, String>> partyType = infoClient.getEntityBySimpleName(actionDataExternalInterest.getPartyType());
+        String partyTitle = partyType.getData().get("title");
+
         caseNoteService.createCaseNote(caseUuid, CREATE_CASE_NOTE_KEY,
-                actionDataExternalInterest.getDetailsOfInterest());
+                partyTitle + ": " + actionDataExternalInterest.getDetailsOfInterest());
         actionDataExternalInterestRepository.save(actionDataExternalInterest);
 
         auditClient.createExternalInterestAudit(actionDataExternalInterest);
@@ -117,8 +121,11 @@ public class ActionDataExternalInterestService implements ActionService {
         existingExternalInterestData.setDetailsOfInterest(updateExternalInterestDto.getDetailsOfInterest());
         existingExternalInterestData.setPartyType(updateExternalInterestDto.getInterestedPartyType());
 
+        EntityDto<Map<String, String>> partyType = infoClient.getEntityBySimpleName(existingExternalInterestData.getPartyType());
+        String partyTitle = partyType.getData().get("title");
+
         caseNoteService.createCaseNote(caseUuid, UPDATE_CASE_NOTE_KEY,
-                existingExternalInterestData.getDetailsOfInterest());
+                partyTitle + ": " + existingExternalInterestData.getDetailsOfInterest());
         actionDataExternalInterestRepository.save(existingExternalInterestData);
 
         auditClient.updateExternalInterestAudit(existingExternalInterestData);
@@ -138,6 +145,7 @@ public class ActionDataExternalInterestService implements ActionService {
                     return new ActionDataExternalInterestOutboundDto(
                             interest.getUuid(),
                             interest.getCaseTypeActionUuid(),
+                            interest.getAction_subtype(),
                             interest.getCaseTypeActionLabel(),
                             interest.getPartyType(),
                             interestedPartyEntity,

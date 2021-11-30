@@ -32,6 +32,9 @@ public class ActionDataDeadlineExtension implements Serializable {
     @Column(name = "action_uuid")
     private UUID caseTypeActionUuid;
 
+    @Column(name = "action_subtype")
+    private String actionSubtype;
+
     @Column(name = "action_label")
     private String caseTypeActionLabel;
 

@@ -59,7 +59,7 @@ public class AllocatedAspectTest {
     public void shouldCallCollaboratorsForUser() throws Throwable {
 
         Stage stage = new Stage(UUID.randomUUID(), "DCU_DTEN_DATA_INPUT", teamId, null, transitionNoteUUID);
-        stage.setUser(userId);
+        stage.setUserUUID(userId);
 
         Object[] args = new Object[2];
         args[1] = stageUUID;
@@ -101,7 +101,7 @@ public class AllocatedAspectTest {
     public void shouldProceedIfUserIsAllocatedToCase() throws Throwable {
 
         Stage stage = new Stage(UUID.randomUUID(), "DCU_DTEN_DATA_INPUT", teamId, null, transitionNoteUUID);
-        stage.setUser(userId);
+        stage.setUuid(userId);
 
         Object[] args = new Object[2];
         args[1] = stageUUID;

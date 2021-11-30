@@ -25,7 +25,10 @@ public class ActionDataAppealDto extends ActionDataDto {
     private String note;
     private String appealOfficerData;
 
-    public ActionDataAppealDto(UUID uuid, UUID caseTypeActionUuid, String caseTypeActionLabel,
+    public ActionDataAppealDto(UUID uuid,
+                               UUID caseTypeActionUuid,
+                               String caseSubtype,
+                               String caseTypeActionLabel,
                                String status,
                                LocalDate dateSentRMS,
                                String outcome,
@@ -33,7 +36,7 @@ public class ActionDataAppealDto extends ActionDataDto {
                                String note,
                                String appealOfficerData) {
 
-        super(uuid, caseTypeActionUuid, caseTypeActionLabel);
+        super(uuid, caseTypeActionUuid, caseSubtype, caseTypeActionLabel);
         this.status = status;
         this.dateSentRMS = dateSentRMS;
         this.outcome = outcome;

@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class DaysElapsedCalculatorImplTest {
     ObjectMapper objectMapper;
 
     @Mock
-    Stage stage;
+    StageWithCaseData stage;
 
     private DaysElapsedCalculatorImpl daysElapsedCalculator;
 

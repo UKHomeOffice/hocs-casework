@@ -84,6 +84,7 @@ public class ActionDataAppealsService implements ActionService {
         ActionDataAppeal appealEntity = new ActionDataAppeal(
                 appealDto.getCaseTypeActionUuid(),
                 caseTypeActionDto.getActionLabel(),
+                caseTypeActionDto.getActionSubtype(),
                 caseData.getType(),
                 caseUuid,
                 appealDto.getStatus(),
@@ -144,6 +145,7 @@ public class ActionDataAppealsService implements ActionService {
         return appeals.stream().map(appeal -> new ActionDataAppealDto(
                 appeal.getUuid(),
                 appeal.getCaseTypeActionUuid(),
+                appeal.getActionSubtype(),
                 appeal.getCaseTypeActionLabel(),
                 appeal.getStatus(),
                 appeal.getDateSentRMS(),

@@ -6,7 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -20,7 +20,7 @@ public class StageTagsDecoratorImplTest {
     ObjectMapper objectMapper;
 
     @Mock
-    Stage stage;
+    StageWithCaseData stage;
 
     private static final String HOME_SEC_REPLY_FIELD_NAME = "HomeSecReply";
     private static final String PRIVATE_OFFICE_OVERRIDE_PO_TEAM_UUID_FIELD_NAME = "PrivateOfficeOverridePOTeamUUID";

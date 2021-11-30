@@ -1,7 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -18,7 +18,7 @@ public class GetStageResponseTest {
         UUID userUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
         UUID transitionNoteUUID = UUID.randomUUID();
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
         stage.setDeadline(deadline);
         stage.setDeadlineWarning(LocalDate.now());
         stage.setAssignedTopic("Mock assigned topic");
@@ -46,7 +46,7 @@ public class GetStageResponseTest {
 
         UUID caseUUID = UUID.randomUUID();
 
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", null, null, null);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", null, null, null);
 
         GetStageResponse getStageResponse = GetStageResponse.from(stage);
 
