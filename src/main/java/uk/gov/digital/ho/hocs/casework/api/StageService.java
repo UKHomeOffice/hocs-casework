@@ -375,8 +375,12 @@ public class StageService {
 
     Set<StageWithCaseData> getActiveStagesByCaseReference(String reference) {
         log.debug("Getting Active Stages for reference: {}", reference);
+        log.info("Live Incident: STARTING database call findByCaseReference {}", reference);
         Set<StageWithCaseData> stages = stageRepository.findByCaseReference(reference);
-        return reduceToMostActive(stages).collect(Collectors.toSet());
+        log.info("Live Incident: COMPLETED database call findByCaseReference {}", reference);
+        var result = reduceToMostActive(stages).collect(Collectors.toSet());
+        log.info("Live Incident: COMPLETED reduceToMostActive call findByCaseReference {}", reference);
+        return result;
     }
 
     Set<StageWithCaseData> search(SearchRequest searchRequest) {
@@ -436,12 +440,15 @@ public class StageService {
     private static Stream<StageWithCaseData> reduceToMostActive(List<StageWithCaseData> stages) {
         Supplier<Stream<StageWithCaseData>> stageSupplier = stages::stream;
 
+        log.info("Live Incident: STARTING reduceToMostActive");
         // If any stages are active
         if (stageSupplier.get().anyMatch(StageWithCaseData::isActive)) {
+            log.info("Live Incident: Returning Active Stage");
             return stageSupplier.get().filter(StageWithCaseData::isActive);
         } else {
             // return the most recent stage.
             Optional<StageWithCaseData> maxDatedStage = stageSupplier.get().max(CREATED_COMPARATOR);
+            log.info("Live Incident: Returning Most Recent Active Stage");
             return maxDatedStage.stream();
         }
     }

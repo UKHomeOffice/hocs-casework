@@ -151,8 +151,11 @@ class StageResource {
 
     @GetMapping(value = "/case/{reference:[a-zA-Z0-9]{2,}%2F[0-9]{7}%2F[0-9]{2}}/stage")
     ResponseEntity<GetStagesResponse> getActiveStagesForCase(@PathVariable String reference) throws UnsupportedEncodingException {
+        log.info("Live Incident: Received getActiveStagesForCase {}", reference);
         String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8.name());
+        log.info("Live Incident: Decoded getActiveStagesForCase {}", reference);
         Set<StageWithCaseData> activeStages = stageService.getActiveStagesByCaseReference(decodedRef);
+        log.info("Live Incident: Completed getActiveStagesForCase {}", reference);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
