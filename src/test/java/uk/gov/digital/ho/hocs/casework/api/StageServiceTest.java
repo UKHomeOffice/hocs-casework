@@ -172,7 +172,6 @@ public class StageServiceTest {
         caseData.setCaseDeadlineWarning(caseDeadlineWarning);
 
         when(caseDataService.getCaseDataField(caseUUID,overrideKey)).thenReturn(overrideDeadline.toString());
-        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
         when(extensionService.hasExtensions(caseUUID)).thenReturn(false);
 
         // WHEN
