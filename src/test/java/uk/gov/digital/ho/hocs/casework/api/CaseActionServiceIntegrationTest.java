@@ -149,11 +149,11 @@ public class CaseActionServiceIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(6).toString()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadline?received=2018-01-01&caseDeadline=" + LocalDate.now().plusDays(8)))
+                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadline?received=2018-01-01&caseDeadline=" + LocalDate.now().plusDays(8) + "&overrideSla=true"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(8).toString()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadlineWarning?received=2018-01-01&caseDeadlineWarning=" + LocalDate.now().plusDays(6)))
+                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadlineWarning?received=2018-01-01&caseDeadlineWarning=" + LocalDate.now().plusDays(6) + "&overrideSla=true"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(6).toString()), MediaType.APPLICATION_JSON));
         mockInfoService

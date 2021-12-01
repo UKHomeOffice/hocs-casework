@@ -6,9 +6,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -16,10 +14,7 @@ import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
@@ -73,13 +68,14 @@ public class StageService {
     private final StageTagsDecorator stageTagsDecorator;
     private final CaseNoteService caseNoteService;
     private final ContributionsProcessor contributionsProcessor;
+    private final ActionDataDeadlineExtensionService extensionService;
 
     private static final Comparator<StageWithCaseData> CREATED_COMPARATOR = Comparator.comparing(StageWithCaseData::getCreated);
 
     @Autowired
     public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient,
                         @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator,
-                        DaysElapsedCalculator daysElapsedCalculator, StageTagsDecorator stageTagsDecorator, CaseNoteService caseNoteService, ContributionsProcessor contributionsProcessor) {
+                        DaysElapsedCalculator daysElapsedCalculator, StageTagsDecorator stageTagsDecorator, CaseNoteService caseNoteService, ContributionsProcessor contributionsProcessor, ActionDataDeadlineExtensionService extensionService) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -92,6 +88,7 @@ public class StageService {
         this.stageTagsDecorator = stageTagsDecorator;
         this.caseNoteService = caseNoteService;
         this.contributionsProcessor = contributionsProcessor;
+        this.extensionService = extensionService;
     }
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
@@ -137,6 +134,8 @@ public class StageService {
         StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         // Try and overwrite the deadline with inputted values from the data map.
         String overrideDeadline = caseDataService.getCaseDataField(caseUUID, String.format("%s_DEADLINE", stageType));
+        boolean isExtended = extensionService.hasExtensions(caseUUID);
+
         if (overrideDeadline == null) {
             CaseData caseData = caseDataService.getCase(caseUUID);
             LocalDate deadline = infoClient.getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
@@ -145,11 +144,26 @@ public class StageService {
                 LocalDate deadlineWarning = infoClient.getStageDeadlineWarning(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
                 stage.setDeadlineWarning(deadlineWarning);
             }
-        } else {
-            LocalDate deadline = LocalDate.parse(overrideDeadline);
-            stage.setDeadline(deadline);
-            stage.setDeadlineWarning(null);
         }
+
+        if (isExtended) {
+            CaseData caseData = caseDataService.getCase(caseUUID);
+            LocalDate deadline = infoClient.getStageDeadlineOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
+            stage.setDeadline(deadline);
+            if (caseData.getCaseDeadlineWarning() != null) {
+                LocalDate deadlineWarning = infoClient.getStageDeadlineWarningOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
+                stage.setDeadlineWarning(deadlineWarning);
+            }
+        }
+
+        if (overrideDeadline != null) {
+            LocalDate deadline = LocalDate.parse(overrideDeadline);
+            if (stage.getDeadline() == null || stage.getDeadline().isBefore(deadline)) {
+                stage.setDeadline(deadline);
+                stage.setDeadlineWarning(null);
+            }
+        }
+
         stage.setUser(userUUID);
         stageRepository.save(stage);
         auditClient.createStage(stage);
