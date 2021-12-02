@@ -13,21 +13,12 @@ import java.util.UUID;
 @Repository
 public interface CorrespondentRepository extends CrudRepository<BaseCorrespondent, Long> {
 
-    @Query(value = "SELECT aco.* FROM active_correspondent aco WHERE aco.case_uuid = ?1 AND aco.uuid = ?2", nativeQuery = true)
+    @Query(value = "SELECT c.* FROM correspondent c JOIN case_data cd ON c.case_uuid = cd.uuid WHERE c.case_uuid = ?1 AND c.uuid = ?2 AND NOT c.deleted AND NOT cd.deleted", nativeQuery = true)
     Correspondent findByUUID(UUID caseUUID, UUID correspondentUUID);
 
-    @Query(value =
-                    "SELECT aco.*, " +
-                    "CASE " +
-                        "WHEN aco.uuid = pc.uuid THEN 1 " +
-                        "ELSE 0 " +
-                    "END as is_primary " +
-                    "FROM active_correspondent aco " +
-                    "LEFT JOIN primary_correspondent pc ON aco.case_uuid = pc.case_uuid " +
-                    "WHERE aco.case_uuid = ?1", nativeQuery = true
-    )
+    @Query(value = "SELECT c.*, CASE WHEN c.uuid = cd.primary_correspondent_uuid THEN 1 ELSE 0 END as is_primary FROM correspondent c JOIN case_data cd ON c.case_uuid = cd.uuid WHERE c.case_uuid = ?1 AND NOT c.deleted AND NOT cd.deleted", nativeQuery = true)
     Set<CorrespondentWithPrimaryFlag> findAllByCaseUUID(UUID caseUUID);
 
-    @Query(value = "SELECT aco.* FROM active_correspondent aco", nativeQuery = true)
+    @Query(value = "SELECT c.* FROM correspondent c JOIN case_data cd on c.case_uuid = cd.uuid AND NOT c.deleted AND NOT cd.deleted", nativeQuery = true)
     Set<Correspondent> findAllActive();
 }

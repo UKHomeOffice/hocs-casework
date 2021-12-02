@@ -65,6 +65,9 @@ public class GetCaseResponse {
     @JsonProperty("stages")
     private List<SimpleStageDto> stages;
 
+    @JsonProperty("completed")
+    private Boolean completed;
+
     public static GetCaseResponse from(CaseData caseData, boolean full) {
 
         List<SimpleStageDto> stages = new ArrayList<>();
@@ -87,7 +90,8 @@ public class GetCaseResponse {
                 caseData.getCaseDeadline(),
                 caseData.getCaseDeadlineWarning(),
                 caseData.getDateReceived(),
-                stages);
+                stages,
+                caseData.isCompleted());
     }
 
     private static GetTopicResponse populateTopic(Topic topic, boolean full) {
