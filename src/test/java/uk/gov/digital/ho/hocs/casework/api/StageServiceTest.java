@@ -712,11 +712,33 @@ public class StageServiceTest {
         String stageType = "a-stage-type";
         Stage stage = new Stage(UUID.randomUUID(), stageType, teamUUID, null, null);
 
-        when(stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(stage);
 
         String result = stageService.getStageType(caseUUID, stageUUID);
 
         Assert.assertEquals(stageType, result);
+    }
+
+    @Test
+    public void shouldGetStageTypeFromStageData_Inactive() {
+        String stageType = "a-stage-type";
+        Stage stage = new Stage(UUID.randomUUID(), stageType, null, null, null);
+
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(stage);
+
+        String result = stageService.getStageType(caseUUID, stageUUID);
+
+        Assert.assertEquals(stageType, result);
+    }
+
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
+    public void shouldGetStageTypeFromStageData_Null() {
+
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(null);
+
+        stageService.getStageType(caseUUID, stageUUID);
+
+        verify(stageRepository).findAllByCaseUUID(caseUUID);
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)

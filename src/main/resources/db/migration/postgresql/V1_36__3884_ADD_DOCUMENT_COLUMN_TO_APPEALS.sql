@@ -1,0 +1,1 @@
+ALTER TABLE action_data_appeals ADD COLUMN document UUID;

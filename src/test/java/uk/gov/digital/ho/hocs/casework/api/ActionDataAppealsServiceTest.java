@@ -109,7 +109,8 @@ public class ActionDataAppealsServiceTest {
                 null,
                 null,
                 "TEST NOTE",
-                "{}"
+                "{}",
+                null
         );
 
         // WHEN
@@ -136,7 +137,8 @@ public class ActionDataAppealsServiceTest {
                 null,
                 null,
                 "TEST NOTE",
-                "{}"
+                "{}",
+                null
         );
 
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
@@ -167,7 +169,8 @@ public class ActionDataAppealsServiceTest {
                 null,
                 null,
                 "TEST NOTE",
-                "{}"
+                "{}",
+                null
         );
 
         CaseData caseData = new CaseData(
@@ -253,7 +256,8 @@ public class ActionDataAppealsServiceTest {
                 null,
                 null,
                 "TEST NOTE",
-                "{}"
+                "{}",
+                null
         );
 
         // WHEN
@@ -280,7 +284,8 @@ public class ActionDataAppealsServiceTest {
                 null,
                 null,
                 "TEST NOTE",
-                "{}"
+                "{}",
+                null
         );
 
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
@@ -312,7 +317,8 @@ public class ActionDataAppealsServiceTest {
                 null,
                 null,
                 "TEST NOTE",
-                "{}"
+                "{}",
+                null
         );
 
         CaseData caseData = new CaseData(
@@ -390,7 +396,8 @@ public class ActionDataAppealsServiceTest {
                 null,
                 null,
                 "TEST NOTE",
-                updatedDataField
+                updatedDataField,
+                null
         );
 
         CaseData caseData = new CaseData(
@@ -451,7 +458,8 @@ public class ActionDataAppealsServiceTest {
                 null,
                 "{}",
                 LocalDateTime.MIN,
-                LocalDateTime.MIN
+                LocalDateTime.MIN,
+                null
         );
 
         ActionDataAppeal updatedAppealEntity = new ActionDataAppeal(
@@ -468,7 +476,8 @@ public class ActionDataAppealsServiceTest {
                 null,
                 updatedDataField,
                 LocalDateTime.MIN,
-                LocalDateTime.MIN
+                LocalDateTime.MIN,
+                null
         );
 
 
