@@ -69,6 +69,9 @@ public class ActionDataAppeal implements Serializable {
     @Column(name = "last_updated_timestamp")
     private LocalDateTime lastUpdateTimestamp;
 
+    @Column(name = "document")
+    private UUID document;
+
     public ActionDataAppeal(UUID caseTypeActionUuid,
                             String caseTypeActionLabel,
                             String actionSubtype,
@@ -79,7 +82,8 @@ public class ActionDataAppeal implements Serializable {
                             String outcome,
                             String complexCase,
                             String note,
-                            String appealOfficerData) {
+                            String appealOfficerData,
+                            UUID document) {
         this.uuid = UUID.randomUUID();
         this.caseTypeActionUuid = caseTypeActionUuid;
         this.actionSubtype = actionSubtype;
@@ -92,6 +96,7 @@ public class ActionDataAppeal implements Serializable {
         this.complexCase = complexCase;
         this.note = note;
         this.appealOfficerData = appealOfficerData;
+        this.document = document;
     }
 
 
