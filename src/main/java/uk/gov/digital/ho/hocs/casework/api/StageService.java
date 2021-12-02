@@ -345,10 +345,10 @@ public class StageService {
     }
 
     private StageWithCaseData getStageWithCaseData(UUID caseUUID, UUID stageUUID) {
-        log.debug("Getting Stage: {} for Case: {}", stageUUID, caseUUID);
+        log.debug("Getting Stage With Case Data: {} for Case: {}", stageUUID, caseUUID);
         StageWithCaseData stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
         if (stage != null) {
-            log.info("Got Stage: {} for Case: {}", stageUUID, caseUUID);
+            log.info("Got Stage With Case Data: {} for Case: {}", stageUUID, caseUUID);
             return stage;
         } else {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Stage UUID: %s not found!", stageUUID), STAGE_NOT_FOUND);
@@ -367,10 +367,10 @@ public class StageService {
     }
 
     private Stage getActiveBasicStage(UUID caseUUID, UUID stageUUID) {
-        log.debug("Getting Stage: {} for Case: {}", stageUUID, caseUUID);
+        log.debug("Getting Active Stage: {} for Case: {}", stageUUID, caseUUID);
         Stage stage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID);
         if (stage != null) {
-            log.info("Got Stage: {} for Case: {}", stageUUID, caseUUID);
+            log.info("Got Active Stage: {} for Case: {}", stageUUID, caseUUID);
             return stage;
         } else {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Stage UUID: %s not found!", stageUUID), STAGE_NOT_FOUND);
