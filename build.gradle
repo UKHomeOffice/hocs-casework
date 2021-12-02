@@ -47,6 +47,8 @@ jacocoTestReport {
         xml.required = true
         html.required = false
         csv.required = false
+        //for XML
+        xml.destination file("${buildDir}/reports/jacoco.xml")
     }
 }
 
