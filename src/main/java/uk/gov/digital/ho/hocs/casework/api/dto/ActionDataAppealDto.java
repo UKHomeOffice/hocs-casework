@@ -24,6 +24,7 @@ public class ActionDataAppealDto extends ActionDataDto {
     private String complexCase;
     private String note;
     private String appealOfficerData;
+    private UUID document;
 
     public ActionDataAppealDto(UUID uuid,
                                UUID caseTypeActionUuid,
@@ -34,7 +35,8 @@ public class ActionDataAppealDto extends ActionDataDto {
                                String outcome,
                                String complexCase,
                                String note,
-                               String appealOfficerData) {
+                               String appealOfficerData,
+                               UUID document) {
 
         super(uuid, caseTypeActionUuid, caseSubtype, caseTypeActionLabel);
         this.status = status;
@@ -43,6 +45,7 @@ public class ActionDataAppealDto extends ActionDataDto {
         this.complexCase = complexCase;
         this.note = note;
         this.appealOfficerData = appealOfficerData;
+        this.document = document;
 
     }
 }
