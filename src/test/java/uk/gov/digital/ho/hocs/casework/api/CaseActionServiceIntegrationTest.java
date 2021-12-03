@@ -409,7 +409,8 @@ public class CaseActionServiceIntegrationTest {
                 null,
                 null,
                 null,
-                "{}"
+                "{}",
+                null
         );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
@@ -438,7 +439,8 @@ public class CaseActionServiceIntegrationTest {
                 null,
                 null,
                 null,
-                "{}"
+                "{}",
+                null
         );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
@@ -467,7 +469,8 @@ public class CaseActionServiceIntegrationTest {
                 null,
                 null,
                 null,
-                "{}"
+                "{}",
+                null
         );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
@@ -495,7 +498,8 @@ public class CaseActionServiceIntegrationTest {
                 null,
                 null, null,
                 null,
-                "{}"
+                "{}",
+                null
         );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
@@ -534,7 +538,8 @@ public class CaseActionServiceIntegrationTest {
                 null,
                 null,
                 null,
-                "{}"
+                "{}",
+                null
         );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
@@ -564,7 +569,8 @@ public class CaseActionServiceIntegrationTest {
                 null,
                 null,
                 null,
-                "{}"
+                "{}",
+                null
         );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
@@ -593,7 +599,8 @@ public class CaseActionServiceIntegrationTest {
                 null,
                 null,
                 null,
-                "{}"
+                "{}",
+                null
         );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
@@ -622,7 +629,8 @@ public class CaseActionServiceIntegrationTest {
                 null,
                 null,
                 null,
-                "{\"updated\":\"true\"}"
+                "{\"updated\":\"true\"}",
+                null
         );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);

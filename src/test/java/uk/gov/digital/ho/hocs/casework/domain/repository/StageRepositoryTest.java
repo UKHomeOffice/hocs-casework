@@ -1,183 +1,550 @@
 package uk.gov.digital.ho.hocs.casework.domain.repository;
 
-import lombok.extern.slf4j.Slf4j;
-import org.junit.After;
-import org.junit.Ignore;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseLink;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 
-@Ignore
-@Slf4j
 @RunWith(SpringRunner.class)
-@DataJpaTest(showSql = false)
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@DataJpaTest
+@AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 @Sql(scripts = "classpath:stage/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
 @ActiveProfiles("test")
 public class StageRepositoryTest {
-
-    private static final long TEN_SECONDS = 10000L;
-    private static final UUID TEAM_UUID = UUID.randomUUID();
 
     @Autowired
     private StageRepository stageRepository;
 
     @Autowired
-    private TestEntityManager entityManager;
+    private CaseDataRepository caseDataRepository;
 
-    @After
-    public void teardown() {
-        entityManager.clear();
+    @Test
+    public void findActiveBasicStageByCaseUuidStageUUID() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+
+        assertNotNull(returnedStage);
+        assertEquals(returnedStage, stage);
+    }
+
+    @Test
+    public void findActiveBasicStageByCaseUuidStageUUID_InactiveStage() {
+        Stage stage = createInactiveStageWithActiveCase();
+
+        var returnedStage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+
+        assertNull(returnedStage);
+    }
+
+    @Test
+    public void findActiveBasicStageByCaseUuidStageUUID_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+
+        var returnedStage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+
+        assertNull(returnedStage);
+    }
+
+    @Test
+    public void findBasicStageByCaseUuidStageUUID() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStage = stageRepository.findBasicStageByCaseUuidAndStageUuid(stage.getCaseUUID(),stage.getUuid());
+
+        assertNotNull(returnedStage);
+        assertEquals(returnedStage, stage);
+    }
+
+    @Test
+    public void findBasicStageByCaseUuidStageUUID_InactiveStage() {
+        Stage stage = createInactiveStageWithActiveCase();
+
+        var returnedStage = stageRepository.findBasicStageByCaseUuidAndStageUuid(stage.getCaseUUID(),stage.getUuid());
+
+        assertNotNull(returnedStage);
+        assertEquals(returnedStage, stage);
+    }
+
+    @Test
+    public void findBasicStageByCaseUuidStageUUID_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+
+        var returnedStage = stageRepository.findBasicStageByCaseUuidAndStageUuid(stage.getCaseUUID(),stage.getUuid());
+
+        assertNotNull(returnedStage);
+        assertEquals(returnedStage, stage);
+    }
+
+    @Test
+    public void findActiveByCaseUuidStageUUID() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStage = stageRepository.findActiveByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+
+        assertNotNull(returnedStage);
+        assertEquals(stage.getUuid(), returnedStage.getUuid());
+    }
+
+    @Test
+    public void findActiveByCaseUuidStageUUID_InactiveStage() {
+        Stage stage = createInactiveStageWithActiveCase();
+
+        var returnedStage = stageRepository.findActiveByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+
+        assertNull(returnedStage);
+    }
+
+    @Test
+    public void findActiveByCaseUuidStageUUID_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+
+        var returnedStage = stageRepository.findActiveByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+
+        assertNull(returnedStage);
+    }
+
+    @Test
+    public void findByCaseUuidStageUUID() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStage = stageRepository.findByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+
+        assertNotNull(returnedStage);
+        assertEquals(stage.getUuid(), returnedStage.getUuid());
+    }
+
+    @Test
+    public void findByCaseUuidStageUUID_InactiveStage() {
+        Stage stage = createInactiveStageWithActiveCase();
+
+        var returnedStage = stageRepository.findByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+
+        assertNotNull(returnedStage);
+        assertEquals(stage.getUuid(), returnedStage.getUuid());
+    }
+
+    @Test
+    public void findByCaseUuidStageUUID_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+
+        var returnedStage = stageRepository.findByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+
+        assertNull(returnedStage);
+    }
+
+    @Test
+    public void findAllActiveByCaseUUID() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStage = stageRepository.findAllActiveByCaseUUID(stage.getCaseUUID());
+
+        assertNotNull(returnedStage);
+        assertEquals(stage.getUuid(), returnedStage.stream().findFirst().get().getUuid());
+    }
+
+    @Test
+    public void findAllActiveByCaseUUID_InactiveStage() {
+        Stage stage = createInactiveStageWithActiveCase();
+
+        var returnedStages = stageRepository.findAllActiveByCaseUUID(stage.getCaseUUID());
+
+        assertEquals(0, returnedStages.size());
+    }
+
+    @Test
+    public void findAllActiveByCaseUUID_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+
+        var returnedStages = stageRepository.findAllActiveByCaseUUID(stage.getCaseUUID());
+
+        assertEquals(0, returnedStages.size());
+    }
+
+    @Test
+    public void findAllByCaseUUID() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStage = stageRepository.findAllByCaseUUID(stage.getCaseUUID());
+
+        assertNotNull(returnedStage);
+        assertEquals(stage.getUuid(), returnedStage.stream().findFirst().get().getUuid());
+    }
+
+    @Test
+    public void findAllByCaseUUID_InactiveStage() {
+        Stage stage = createInactiveStageWithActiveCase();
+
+        var returnedStage = stageRepository.findAllByCaseUUID(stage.getCaseUUID());
+
+        assertNotNull(returnedStage);
+        assertEquals(stage.getUuid(), returnedStage.stream().findFirst().get().getUuid());
+    }
+
+    @Test
+    public void findAllByCaseUUID_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+
+        var returnedStages = stageRepository.findAllByCaseUUID(stage.getCaseUUID());
+
+        assertEquals(0, returnedStages.size());
+    }
+
+    @Test
+    public void findAllByCaseUUIDIn() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStages = stageRepository.findAllByCaseUUIDIn(Set.of(stage.getCaseUUID()));
+
+        assertEquals(1, returnedStages.size());
+        assertEquals(stage.getUuid(), returnedStages.stream().findFirst().get().getUuid());
+    }
+
+    @Test
+    public void findAllByCaseUUIDIn_InactiveStage() {
+        Stage stage = createInactiveStageWithActiveCase();
+
+        var returnedStages = stageRepository.findAllByCaseUUIDIn(Set.of(stage.getCaseUUID()));
+
+        assertEquals(1, returnedStages.size());
+        assertEquals(stage.getUuid(), returnedStages.stream().findFirst().get().getUuid());
+    }
+
+    @Test
+    public void findAllByCaseUUIDIn_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+
+        var returnedStages = stageRepository.findAllByCaseUUIDIn(Set.of(stage.getCaseUUID()));
+
+        assertEquals(0, returnedStages.size());
+    }
+
+    @Test
+    public void findAllByCaseUUIDIn_EmptyCase() {
+        createActiveStageWithDeletedCase();
+
+        var returnedStages = stageRepository.findAllByCaseUUIDIn(Set.of());
+
+        assertEquals(0, returnedStages.size());
     }
 
     @Test
     public void findAllActiveByTeamUUID() {
-        final int QUERY_RUNS = 10;
+        Stage stage = createActiveStageWithActiveCase();
 
-        long[] timings = new long[QUERY_RUNS];
-        long[] timingsWithValidTeam = new long[QUERY_RUNS];
+        var returnedStages = stageRepository.findAllActiveByTeamUUID(stage.getTeamUUID());
 
-        // gi
-        createLargeDataSet(10000);
-
-        // when
-        for (int i = 0; i < QUERY_RUNS; i++) {
-            runFindAllActiveByTeamUuidQuery(UUID.randomUUID(), timings, i);
-            runFindAllActiveByTeamUuidQuery(TEAM_UUID, timingsWithValidTeam, i);
-        }
-
-        // then
-        log.info("Execution millis searching random team:{}, ", timings);
-        log.info("Execution millis searching known team:{}, ", timingsWithValidTeam);
-
-        for (int i = 0; i < QUERY_RUNS; i++) {
-            assertThat("Duration must be less than 10 seconds", timings[i] <= TEN_SECONDS);
-            assertThat("Duration must be less than 10 seconds", timingsWithValidTeam[i] <= TEN_SECONDS);
-        }
+        assertEquals(1, returnedStages.size());
+        assertEquals(stage.getUuid(), returnedStages.stream().findFirst().get().getUuid());
     }
 
     @Test
-    public void findTeamUuidByCaseUuidAndStageUuid() {
-        final int QUERY_AMOUNT = 100;
-        long[] timings = new long[QUERY_AMOUNT];
+    public void findAllActiveByTeamUUID_InactiveStage() {
+        createInactiveStageWithActiveCase();
 
-        var stages = createCaseWithStages(10000);
+        var returnedStages = stageRepository.findAllActiveByTeamUUID(UUID.randomUUID());
 
-        for (int i = 0; i < QUERY_AMOUNT; i++) {
-            var stage = stages.get(i);
-            var basicStage = runFindTeamUuidByCaseAndStageQuery(stage.getCaseUUID(), stage.getUuid(), timings, i);
-
-            if (stage.getTeamUUID() == null) {
-                assertThat("No team uuid should return null", basicStage.getTeamUUID() == null);
-            } else {
-                assertThat("Uuid should match the projection", stage.getTeamUUID().equals(basicStage.getTeamUUID()));
-            }
-        }
-
-        for (int i = 0; i < QUERY_AMOUNT; i++) {
-            /*
-             * This is still not overly representative of current systems,
-             * QA with >70k stages, runs these queries at around 1ms.
-             * But this should show degradation if the query is changed.
-             */
-            assertThat("Duration must be less than 2 seconds", timings[i] <= 2000L);
-        }
+        assertEquals(0, returnedStages.size());
     }
 
-    private void runFindAllActiveByTeamUuidQuery(UUID team, long[] timings, int iteration) {
-        log.info("runFindAllActiveByTeamUuidQuery: " +iteration);
-        long start = System.currentTimeMillis();
-        stageRepository.findAllActiveByTeamUUID(team);
-        long finish = System.currentTimeMillis();
-        timings[iteration] = finish - start;
+    @Test
+    public void findAllActiveByTeamUUID_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+
+        var returnedStages = stageRepository.findAllActiveByTeamUUID(stage.getTeamUUID());
+
+        assertEquals(0, returnedStages.size());
     }
 
-    private Stage runFindTeamUuidByCaseAndStageQuery(UUID caseUuid, UUID stageUuid, long[] timings, int iteration) {
-        long start = System.currentTimeMillis();
-        var result = stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUuid, stageUuid);
-        long finish = System.currentTimeMillis();
-        timings[iteration] = finish - start;
-        return result;
+    @Test
+    public void findAllUnassignedAndActiveByTeamUUID() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStages = stageRepository.findAllUnassignedAndActiveByTeamUUID(stage.getTeamUUID());
+
+        assertEquals(1, returnedStages.size());
+        assertEquals(stage.getUuid(), returnedStages.stream().findFirst().get().getUuid());
     }
 
-    private void createLargeDataSet(int howManyCases) {
-        UUID prevCaseUuid = null;
+    @Test
+    public void findAllUnassignedAndActiveByTeamUUID_InactiveStage() {
+        createInactiveStageWithActiveCase();
 
-        // Add cases
-        for (int i = 0; i < howManyCases; i++) {
-            CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), (long) i, LocalDate.of(2000, 12, 31));
-            caseData.setCaseDeadline(LocalDate.of(9999, 12, 31));
-            entityManager.persist(caseData);
+        var returnedStages = stageRepository.findAllUnassignedAndActiveByTeamUUID(UUID.randomUUID());
 
-            if (i % 500 == 0) {
-                log.info("Added case:{}", i);
-            }
-
-            // add some stage data to parent case
-            for (int y = 0; y < 10; y++) {
-                String stageType = "stage" + y;
-                StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType, y == 5 ? TEAM_UUID : null, null, null);
-
-                entityManager.persist(stage);
-                log.debug("Added case: {}, stage: {}", caseData.getUuid(), stageType);
-            }
-
-            // add link if needs be
-            if (i % 9 == 0) {
-                prevCaseUuid = caseData.getUuid();
-            }
-
-            if (i % 10 == 0) {
-                entityManager.persist(new CaseLink(prevCaseUuid, caseData.getUuid()));
-                log.debug("Added link from:{} to:{}", prevCaseUuid, caseData.getUuid());
-            }
-
-        }
+        assertEquals(0, returnedStages.size());
     }
 
-    public List<StageWithCaseData> createCaseWithStages(final int caseAmount) {
-        List<StageWithCaseData> listAddedStages = new ArrayList<>();
+    @Test
+    public void findAllUnassignedAndActiveByTeamUUID_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
 
-        // Add cases
-        for (int i = 0; i < caseAmount; i++) {
-            CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), (long) i, LocalDate.of(2000, 12, 31));
-            caseData.setCaseDeadline(LocalDate.of(9999, 12, 31));
-            entityManager.persist(caseData);
+        var returnedStages = stageRepository.findAllUnassignedAndActiveByTeamUUID(stage.getTeamUUID());
 
-            // add some stage data to parent case
-            for (int y = 0; y < 3; y++) {
-                String stageType = "stage" + y;
-                StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType, y == 2 ? TEAM_UUID : null, null, null);
-
-                entityManager.persist(stage);
-
-                listAddedStages.add(stage);
-
-                log.debug("Added case: {}, stage: {}", caseData.getUuid(), stageType);
-            }
-        }
-
-        return listAddedStages;
+        assertEquals(0, returnedStages.size());
     }
+
+    @Test
+    public void findAllUnassignedAndActiveByTeamUUID_AssignedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+        stage.setUserUUID(UUID.randomUUID());
+        stageRepository.save(stage);
+
+        var returnedStages = stageRepository.findAllUnassignedAndActiveByTeamUUID(stage.getTeamUUID());
+
+        assertEquals(0, returnedStages.size());
+    }
+
+    @Test
+    public void findAllActiveByTeamUUIDAndCaseType() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStages = stageRepository.findAllActiveByTeamUUIDAndCaseType(Set.of(stage.getTeamUUID()), Set.of("MIN"));
+
+        assertEquals(1, returnedStages.size());
+        assertEquals(stage.getUuid(), returnedStages.stream().findFirst().get().getUuid());
+    }
+
+    @Test
+    public void findAllActiveByTeamUUIDAndCaseType_WrongTeam_RightType() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStages = stageRepository.findAllActiveByTeamUUIDAndCaseType(Set.of(UUID.randomUUID()), Set.of("MIN"));
+
+        assertEquals(1, returnedStages.size());
+        assertEquals(stage.getUuid(), returnedStages.stream().findFirst().get().getUuid());
+    }
+
+    @Test
+    public void findAllActiveByTeamUUIDAndCaseType_RightTeam_WrongType() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStages = stageRepository.findAllActiveByTeamUUIDAndCaseType(Set.of(stage.getTeamUUID()), Set.of("NotMIN"));
+
+        assertEquals(1, returnedStages.size());
+        assertEquals(stage.getUuid(), returnedStages.stream().findFirst().get().getUuid());
+    }
+
+    @Test
+    public void findAllActiveByTeamUUIDAndCaseType_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+
+        var returnedStages = stageRepository.findAllActiveByTeamUUIDAndCaseType(Set.of(stage.getTeamUUID()), Set.of("MIN"));
+
+        assertEquals(0, returnedStages.size());
+    }
+
+    @Test
+    public void findAllActiveByUserUuidAndTeamUuidAndCaseType() {
+        Stage stage = createActiveStageWithActiveCase();
+        stage.setUserUUID(UUID.randomUUID());
+        stageRepository.save(stage);
+
+        var returnedStages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(stage.getUserUUID(), Set.of(stage.getTeamUUID()), Set.of("MIN"));
+
+        assertEquals(1, returnedStages.size());
+        assertEquals(stage.getUuid(), returnedStages.stream().findFirst().get().getUuid());
+    }
+
+    @Test
+    public void findAllActiveByUserUuidAndTeamUuidAndCaseType_WrongUser() {
+        Stage stage = createActiveStageWithActiveCase();
+        stage.setUserUUID(UUID.randomUUID());
+        stageRepository.save(stage);
+
+        var returnedStages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(UUID.randomUUID(), Set.of(stage.getTeamUUID()), Set.of("MIN"));
+
+        assertEquals(0, returnedStages.size());
+
+    }
+
+    @Test
+    public void findAllActiveByUserUuidAndTeamUuidAndCaseType_WrongTeam_RightType() {
+        Stage stage = createActiveStageWithActiveCase();
+        stage.setUserUUID(UUID.randomUUID());
+        stageRepository.save(stage);
+
+        var returnedStages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(stage.getUserUUID(), Set.of(UUID.randomUUID()), Set.of("MIN"));
+
+        assertEquals(1, returnedStages.size());
+        assertEquals(stage.getUuid(), returnedStages.stream().findFirst().get().getUuid());
+    }
+
+    @Test
+    public void findAllActiveByUserUuidAndTeamUuidAndCaseType_RightTeam_WrongType() {
+        Stage stage = createActiveStageWithActiveCase();
+        stage.setUserUUID(UUID.randomUUID());
+        stageRepository.save(stage);
+
+        var returnedStages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(stage.getUserUUID(), Set.of(stage.getTeamUUID()), Set.of("NotMIN"));
+
+        assertEquals(1, returnedStages.size());
+        assertEquals(stage.getUuid(), returnedStages.stream().findFirst().get().getUuid());
+    }
+
+    @Test
+    public void findAllActiveByUserUuidAndTeamUuidAndCaseType_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+        stage.setUserUUID(UUID.randomUUID());
+        stageRepository.save(stage);
+
+        var returnedStages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(stage.getUserUUID(), Set.of(stage.getTeamUUID()), Set.of("MIN"));
+
+        assertEquals(0, returnedStages.size());
+    }
+
+    @Test
+    public void findStageCaseUUIDsByUserUUIDTeamUUID() {
+        Stage stage = createActiveStageWithActiveCase();
+        stage.setUserUUID(UUID.randomUUID());
+        stageRepository.save(stage);
+        
+        var returnedStages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(stage.getUserUUID(), stage.getTeamUUID());
+
+        assertEquals(1, returnedStages.size());
+        assertEquals(stage.getUuid(), returnedStages.stream().findFirst().get().getUuid());
+    }
+
+    @Test
+    public void findStageCaseUUIDsByUserUUIDTeamUUID_InactiveStage() {
+        createInactiveStageWithActiveCase();
+
+
+        var returnedStages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(UUID.randomUUID(), UUID.randomUUID());
+
+        assertEquals(0, returnedStages.size());
+    }
+
+    @Test
+    public void findStageCaseUUIDsByUserUUIDTeamUUID_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+        stage.setUserUUID(UUID.randomUUID());
+        stageRepository.save(stage);
+
+        var returnedStages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(stage.getUserUUID(), stage.getTeamUUID());
+
+        assertEquals(0, returnedStages.size());
+    }
+
+    @Test
+    public void findByCaseReference() {
+        Stage stage = createActiveStageWithActiveCase();
+        String caseDataRef = caseDataRepository.getCaseRef(stage.getCaseUUID());
+
+        var returnedStages = stageRepository.findByCaseReference(caseDataRef);
+
+        assertEquals(1, returnedStages.size());
+        assertEquals(returnedStages.stream().findFirst().get().getUuid(), stage.getUuid());
+    }
+
+    @Test
+    public void findByCaseReference_InactiveStage() {
+        Stage stage = createInactiveStageWithActiveCase();
+        String caseDataRef = caseDataRepository.getCaseRef(stage.getCaseUUID());
+
+        var returnedStages = stageRepository.findByCaseReference(caseDataRef);
+
+        assertEquals(1, returnedStages.size());
+        assertEquals(returnedStages.stream().findFirst().get().getUuid(), stage.getUuid());
+
+    }
+
+    @Test
+    public void findByCaseReference_DeletedCase() {
+        Stage stage = createActiveStageWithDeletedCase();
+        String caseDataRef = caseDataRepository.getCaseRef(stage.getCaseUUID());
+
+        var returnedStages = stageRepository.findByCaseReference(caseDataRef);
+
+        assertEquals(0, returnedStages.size());
+    }
+
+    @Test
+    public void findByCaseReference_EmptyReference() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStages = stageRepository.findByCaseReference("");
+
+        assertEquals(0, returnedStages.size());
+    }
+
+    @Test
+    public void findByCaseReference_WrongReference() {
+        Stage stage = createActiveStageWithActiveCase();
+
+        var returnedStages = stageRepository.findByCaseReference(UUID.randomUUID().toString());
+
+        assertEquals(0, returnedStages.size());
+    }
+
+    private Stage createActiveStageWithActiveCase() {
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
+        Long caseNumber = 1234L;
+        Map<String, String> data = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseReceived);
+        caseData.setCaseDeadline(LocalDate.now().plusDays(2));
+
+        String stageType = "TEST";
+        UUID teamUUID = UUID.randomUUID();
+        var stage = new Stage(caseData.getUuid(), stageType, teamUUID, null, null );
+        caseDataRepository.save(caseData);
+        return stageRepository.save(stage);
+    }
+
+    private Stage createInactiveStageWithActiveCase() {
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
+        Long caseNumber = 1234L;
+        Map<String, String> data = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseReceived);
+        caseData.setCaseDeadline(LocalDate.now().plusDays(2));
+
+        String stageType = "TEST";
+        var stage = new Stage(caseData.getUuid(), stageType, null, null, null );
+        caseDataRepository.save(caseData);
+        return stageRepository.save(stage);
+    }
+
+    private Stage createActiveStageWithDeletedCase() {
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
+        Long caseNumber = 1234L;
+        Map<String, String> data = new HashMap<>();
+        ObjectMapper objectMapper = new ObjectMapper();
+        LocalDate caseReceived = LocalDate.now();
+        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseReceived);
+        caseData.setCaseDeadline(LocalDate.now().plusDays(2));
+        caseData.setDeleted(true);
+
+        String stageType = "TEST";
+        UUID teamUUID = UUID.randomUUID();
+        var stage = new Stage(caseData.getUuid(), stageType, teamUUID, null, null );
+        caseDataRepository.save(caseData);
+        return stageRepository.save(stage);
+    }
+
 }

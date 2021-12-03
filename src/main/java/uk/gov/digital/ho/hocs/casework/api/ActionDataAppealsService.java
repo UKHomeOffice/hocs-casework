@@ -92,7 +92,8 @@ public class ActionDataAppealsService implements ActionService {
                 appealDto.getOutcome(),
                 appealDto.getComplexCase(),
                 appealDto.getNote(),
-                appealDto.getAppealOfficerData()
+                appealDto.getAppealOfficerData(),
+                appealDto.getDocument()
         );
 
         ActionDataAppeal createdAppealEntity = appealsRepository.save(appealEntity);
@@ -129,6 +130,7 @@ public class ActionDataAppealsService implements ActionService {
         existingAppealData.setComplexCase(appealDto.getComplexCase());
         existingAppealData.setNote(appealDto.getNote());
         existingAppealData.setAppealOfficerData(appealDto.getAppealOfficerData());
+        existingAppealData.setDocument(appealDto.getDocument());
 
         ActionDataAppeal updatedAppealEntity = appealsRepository.save(existingAppealData);
 
@@ -138,6 +140,10 @@ public class ActionDataAppealsService implements ActionService {
 
     }
 
+    /**
+     * @param caseUUID
+     * @return
+     */
     @Override
     public List<ActionDataDto> getAllActionsForCase(UUID caseUUID) {
         List<ActionDataAppeal> appeals = appealsRepository.findAllByCaseDataUuid(caseUUID);
@@ -152,7 +158,8 @@ public class ActionDataAppealsService implements ActionService {
                 appeal.getOutcome(),
                 appeal.getComplexCase(),
                 appeal.getNote(),
-                appeal.getAppealOfficerData()
+                appeal.getAppealOfficerData(),
+                appeal.getDocument()
         )).collect(Collectors.toList());
     }
 
