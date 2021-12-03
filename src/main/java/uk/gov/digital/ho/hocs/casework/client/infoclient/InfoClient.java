@@ -166,10 +166,22 @@ public class InfoClient {
         return response;
     }
 
+    public LocalDate getStageDeadlineOverridingSLA(String stageType, LocalDate received, LocalDate caseDeadline) {
+        LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadline?received=%s&caseDeadline=%s&overrideSla=true", stageType, received, caseDeadline), LocalDate.class);
+        log.info("Got {} as deadline for StageType {} and Date {} and Case Deadline {} (SLA overridden)", response.toString(), stageType, received, caseDeadline, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS));
+        return response;
+    }
+
     @Cacheable(value = "InfoClientGetStageDeadlineWarning", unless = "#result == null", key = "{#stageType, #received.toString(), #caseDeadlineWarning.toString() }")
     public LocalDate getStageDeadlineWarning(String stageType, LocalDate received, LocalDate caseDeadlineWarning) {
         LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadlineWarning?received=%s&caseDeadlineWarning=%s", stageType, received, caseDeadlineWarning), LocalDate.class);
         log.info("Got {} as deadline warning for StageType {} and Date {} and Case Deadline Warning {}", response.toString(), stageType, received, caseDeadlineWarning, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_WARNING_SUCCESS));
+        return response;
+    }
+
+    public LocalDate getStageDeadlineWarningOverridingSLA(String stageType, LocalDate received, LocalDate caseDeadlineWarning) {
+        LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadlineWarning?received=%s&caseDeadlineWarning=%s&overrideSla=true", stageType, received, caseDeadlineWarning), LocalDate.class);
+        log.info("Got {} as deadline warning for StageType {} and Date {} and Case Deadline Warning {} (SLA overridden)", response.toString(), stageType, received, caseDeadlineWarning, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_WARNING_SUCCESS));
         return response;
     }
 
