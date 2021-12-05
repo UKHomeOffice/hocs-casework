@@ -92,44 +92,34 @@ public class StageService {
     }
 
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
-        log.debug("Getting User for Stage: {}", stageUUID);
+        // Should call Active stage because to have a user assigned there should also be a team assigned.
         Stage stage = getActiveBasicStage(caseUUID, stageUUID);
         log.debug("Got User: {} for Stage: {}", stage.getUserUUID(), stageUUID);
         return stage.getUserUUID();
     }
 
     public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
-        log.debug("Getting Team for Stage: {}", stageUUID);
-        Stage stage = stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
-
-        if (stage == null) {
-            log.warn("No team exists is linked to stage: {} and case: {}", stageUUID, caseUUID);
-            return null;
-        }
-
-        log.info("Team: {} exists is linked to stage: {} and case: {}", stage.getTeamUUID(), stageUUID, caseUUID, stageUUID);
+        Stage stage = getBasicStage(caseUUID, stageUUID);
+        log.debug("Got Team: {} for Stage: {}", stage.getTeamUUID(), stageUUID);
         return stage.getTeamUUID();
     }
 
     public String getStageType(UUID caseUUID, UUID stageUUID) {
-        log.debug("Getting Type for Stage: {}", stageUUID);
         String stageType = getBasicStage(caseUUID, stageUUID).getStageType();
         log.debug("Got Type: {} for Stage: {}", stageType, stageUUID);
         return stageType;
     }
 
-    StageWithCaseData getActiveStage(UUID caseUUID, UUID stageUUID) {
-        log.debug("Getting Active Stage: {} for Case: {}", stageUUID, caseUUID);
+    public StageWithCaseData getActiveStage(UUID caseUUID, UUID stageUUID) {
         StageWithCaseData stage = stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
-        if (stage != null) {
-            log.info("Got Active Stage: {} for Case: {}", stageUUID, caseUUID);
-            return stage;
-        } else {
+        if (stage == null) {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Stage UUID: %s not found!", stageUUID), STAGE_NOT_FOUND);
         }
+        log.info("Got Active Stage: {} for Case: {}", stageUUID, caseUUID);
+        return stage;
     }
 
-    StageWithCaseData createStage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, String emailType, UUID transitionNoteUUID) {
+    public StageWithCaseData createStage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, String emailType, UUID transitionNoteUUID) {
         log.debug("Creating Stage of type: {}", stageType);
         StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         // Try and overwrite the deadline with inputted values from the data map.
@@ -359,36 +349,30 @@ public class StageService {
     }
 
     private StageWithCaseData getStageWithCaseData(UUID caseUUID, UUID stageUUID) {
-        log.debug("Getting Stage With Case Data: {} for Case: {}", stageUUID, caseUUID);
         StageWithCaseData stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
-        if (stage != null) {
-            log.info("Got Stage With Case Data: {} for Case: {}", stageUUID, caseUUID);
-            return stage;
-        } else {
+        if (stage == null) {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Stage UUID: %s not found!", stageUUID), STAGE_NOT_FOUND);
         }
+        log.info("Got Stage With Case Data: {} for Case: {}", stageUUID, caseUUID);
+        return stage;
     }
 
     private Stage getBasicStage(UUID caseUUID, UUID stageUUID) {
-        log.debug("Getting Stage: {} for Case: {}", stageUUID, caseUUID);
         Stage stage = stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
-        if (stage != null) {
-            log.info("Got Stage: {} for Case: {}", stageUUID, caseUUID);
-            return stage;
-        } else {
+        if (stage == null) {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Stage UUID: %s not found!", stageUUID), STAGE_NOT_FOUND);
         }
+        log.debug("Got Stage: {} for Case: {}", stageUUID, caseUUID);
+        return stage;
     }
 
     private Stage getActiveBasicStage(UUID caseUUID, UUID stageUUID) {
-        log.debug("Getting Active Stage: {} for Case: {}", stageUUID, caseUUID);
         Stage stage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID);
-        if (stage != null) {
-            log.info("Got Active Stage: {} for Case: {}", stageUUID, caseUUID);
-            return stage;
-        } else {
+        if (stage == null) {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Stage UUID: %s not found!", stageUUID), STAGE_NOT_FOUND);
         }
+        log.info("Got Active Stage: {} for Case: {}", stageUUID, caseUUID);
+        return stage;
     }
 
     Set<UUID> getActiveStageCaseUUIDsForUserAndTeam(UUID userUUID, UUID teamUUID) {
