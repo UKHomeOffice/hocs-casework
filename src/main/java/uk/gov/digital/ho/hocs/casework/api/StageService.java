@@ -134,37 +134,6 @@ public class StageService {
         return stage;
     }
 
-    private void calculateDeadlines(Stage stage, CaseData caseData) {
-        // Try and overwrite the deadline with inputted values from the data map.
-        String overrideDeadline = caseDataService.getCaseDataField(caseData, String.format("%s_DEADLINE", stage.getStageType()));
-
-        if (overrideDeadline == null) {
-            LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadline());
-            stage.setDeadline(deadline);
-            if (caseData.getCaseDeadlineWarning() != null) {
-                LocalDate deadlineWarning = infoClient.getStageDeadlineWarning(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
-                stage.setDeadlineWarning(deadlineWarning);
-            }
-        }
-
-        if (extensionService.hasExtensions(caseData.getUuid())) {
-            LocalDate deadline = infoClient.getStageDeadlineOverridingSLA(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadline());
-            stage.setDeadline(deadline);
-            if (caseData.getCaseDeadlineWarning() != null) {
-                LocalDate deadlineWarning = infoClient.getStageDeadlineWarningOverridingSLA(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
-                stage.setDeadlineWarning(deadlineWarning);
-            }
-        }
-
-        if (overrideDeadline != null) {
-            LocalDate deadline = LocalDate.parse(overrideDeadline);
-            if (stage.getDeadline() == null || stage.getDeadline().isBefore(deadline)) {
-                stage.setDeadline(deadline);
-                stage.setDeadlineWarning(null);
-            }
-        }
-    }
-
     public void recreateStage(UUID caseUUID, UUID stageUUID, String stageType) {
         StageWithCaseData stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
         auditClient.recreateStage(stage);
@@ -337,6 +306,37 @@ public class StageService {
 
         log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
         return stages;
+    }
+
+    private void calculateDeadlines(Stage stage, CaseData caseData) {
+        // Try and overwrite the deadline with inputted values from the data map.
+        String overrideDeadline = caseDataService.getCaseDataField(caseData, String.format("%s_DEADLINE", stage.getStageType()));
+
+        if (overrideDeadline == null) {
+            LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadline());
+            stage.setDeadline(deadline);
+            if (caseData.getCaseDeadlineWarning() != null) {
+                LocalDate deadlineWarning = infoClient.getStageDeadlineWarning(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
+                stage.setDeadlineWarning(deadlineWarning);
+            }
+        }
+
+        if (extensionService.hasExtensions(caseData.getUuid())) {
+            LocalDate deadline = infoClient.getStageDeadlineOverridingSLA(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadline());
+            stage.setDeadline(deadline);
+            if (caseData.getCaseDeadlineWarning() != null) {
+                LocalDate deadlineWarning = infoClient.getStageDeadlineWarningOverridingSLA(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
+                stage.setDeadlineWarning(deadlineWarning);
+            }
+        }
+
+        if (overrideDeadline != null) {
+            LocalDate deadline = LocalDate.parse(overrideDeadline);
+            if (stage.getDeadline() == null || stage.getDeadline().isBefore(deadline)) {
+                stage.setDeadline(deadline);
+                stage.setDeadlineWarning(null);
+            }
+        }
     }
 
     private void updateStages(Set<StageWithCaseData> stages) {
