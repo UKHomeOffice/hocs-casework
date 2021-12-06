@@ -443,7 +443,7 @@ public class StageServiceTest {
     public void shouldGetActiveStages_blankResult() {
         Set<UUID> teams = new HashSet<>();
         teams.add(UUID.randomUUID());
-        Set<String> caseTypes = Set.of("");
+        Set<String> caseTypes = Set.of();
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
 
@@ -967,7 +967,7 @@ public class StageServiceTest {
     @Test
     public void getActiveUserStagesWithTeamsAndCaseType_blankResult() {
         Set<UUID> teams = Set.of(UUID.randomUUID());
-        Set<String> caseTypes = Set.of("");
+        Set<String> caseTypes = Set.of();
 
         when(userPermissionsService.getUserTeams()).thenReturn(teams);
 

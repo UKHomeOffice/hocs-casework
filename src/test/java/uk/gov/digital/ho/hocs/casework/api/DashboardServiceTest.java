@@ -44,6 +44,7 @@ public class DashboardServiceTest {
 
     @Test
     public void getDashboard_returnsListOfResults() {
+        List<Summary> teamWithCaseCountCaseTypes = List.of(new Summary(userTeamUuid, 1));
         List<Summary> teamWithCaseCount = List.of(new Summary(userTeamUuid, 1));
         List<Summary> teamWithOverdueCaseCount = List.of(new Summary(userTeamUuid, 1));
         List<Summary> teamWithUnallocatedCaseCount = List.of(new Summary(userTeamUuid, 2));
@@ -54,7 +55,7 @@ public class DashboardServiceTest {
         when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
 
         when(requestData.userId()).thenReturn(UUID.randomUUID().toString());
-        when(summaryRepository.findTeamsAndCaseCountByTeamUuidandCaseTypes(setUserTeams, caseTypes)).thenReturn(teamWithCaseCount);
+        when(summaryRepository.findTeamsAndCaseCountByTeamUuid(setUserTeams)).thenReturn(teamWithCaseCount);
         when(summaryRepository.findOverdueCasesByTeam(collatedUserTeams)).thenReturn(teamWithOverdueCaseCount);
         when(summaryRepository.findUnallocatedCasesByTeam(collatedUserTeams)).thenReturn(teamWithUnallocatedCaseCount);
         when(requestData.userId()).thenReturn(userUuid.toString());
@@ -68,8 +69,7 @@ public class DashboardServiceTest {
                         USERS_OVERDUE_TEAM_CASES, teamWithUserOverdueCaseCount);
 
         Map<UUID, Map<String, Integer>> returnedMap = Map.of(teamWithCaseCount.get(0).getTeamUuid(),
-                Map.of(TEAM_CASES.toString(), teamWithCaseCount.get(0).getCount(),
-                        UNALLOCATED_TEAM_CASES.toString(), teamWithUnallocatedCaseCount.get(0).getCount(),
+                Map.of(TEAM_CASES.toString(), teamWithCaseCount.get(0).getCount() + teamWithCaseCountCaseTypes.get(0).getCount(),                        UNALLOCATED_TEAM_CASES.toString(), teamWithUnallocatedCaseCount.get(0).getCount(),
                         OVERDUE_TEAM_CASES.toString(), teamWithOverdueCaseCount.get(0).getCount(),
                         USERS_TEAM_CASES.toString(), teamWithUserCaseCount.get(0).getCount(),
                         USERS_OVERDUE_TEAM_CASES.toString(), teamWithUserOverdueCaseCount.get(0).getCount()));
