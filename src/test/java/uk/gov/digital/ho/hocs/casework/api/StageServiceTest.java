@@ -43,7 +43,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -295,13 +294,13 @@ public class StageServiceTest {
 
     @Test
     public void shouldRecreateStage() {
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
-        when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(stage);
 
         stageService.recreateStage(caseUUID, stageUUID, stageType);
 
-        verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
+        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
         verify(auditClient).recreateStage(stage);
 
         verifyNoMoreInteractions(auditClient, stageRepository, notifyClient);
