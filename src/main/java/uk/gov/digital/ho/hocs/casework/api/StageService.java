@@ -315,9 +315,6 @@ public class StageService {
         }
 
         Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
-        if (caseTypes.isEmpty()) {
-            caseTypes.add("");
-        }
 
         Set<StageWithCaseData> stages = stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
 
@@ -336,9 +333,6 @@ public class StageService {
         }
 
         Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
-        if (caseTypes.isEmpty()) {
-            caseTypes.add("");
-        }
 
         Set<StageWithCaseData> stages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUuid, teams, caseTypes);
 

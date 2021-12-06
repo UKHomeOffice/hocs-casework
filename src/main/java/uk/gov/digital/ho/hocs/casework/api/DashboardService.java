@@ -48,7 +48,7 @@ public class DashboardService {
         }
 
         Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
-        if(!caseTypes.isEmpty() && (caseTypes.size() == 1 && !caseTypes.contains(""))) {
+        if(caseTypes.size() > 0) {
             casesSummaries.addAll(summaryRepository.findTeamsAndCaseCountByCaseTypes(caseTypes));
         }
 
