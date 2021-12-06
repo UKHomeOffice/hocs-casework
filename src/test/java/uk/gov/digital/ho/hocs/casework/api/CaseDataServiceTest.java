@@ -732,14 +732,14 @@ public class CaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotUpdateCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
 
-        caseDataService.updateCaseData(null, stageUUID, new HashMap<>());
+        caseDataService.updateCaseData((UUID)null, stageUUID, new HashMap<>());
     }
 
     @Test()
     public void shouldNotUpdateCaseMissingCaseUUID() throws JsonProcessingException {
 
         try {
-            caseDataService.updateCaseData(null, stageUUID, new HashMap<>());
+            caseDataService.updateCaseData((UUID)null, stageUUID, new HashMap<>());
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }

@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
@@ -119,14 +120,15 @@ public class StageService {
         return stage;
     }
 
+    @Transactional
     public Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, String emailType, UUID transitionNoteUUID) {
         Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         CaseData caseData = caseDataService.getCase(caseUUID);
         stage.setUser(userUUID);
         calculateDeadlines(stage, caseData);
         stageRepository.save(stage);
+        caseDataService.updateCaseData(caseData, stage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
         auditClient.createStage(stage);
-        updateCurrentStageForCase(caseUUID, stage.getUuid(), stageType);
         log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
         notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, getCaseRef(caseUUID), emailType);
         return stage;
@@ -166,9 +168,8 @@ public class StageService {
     public void recreateStage(UUID caseUUID, UUID stageUUID, String stageType) {
         StageWithCaseData stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
         auditClient.recreateStage(stage);
-        updateCurrentStageForCase(caseUUID, stageUUID, stageType);
+        caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
         log.debug("Recreated Stage {} for Case: {}, event: {}", stageUUID, caseUUID, value(EVENT, STAGE_RECREATED));
-
     }
 
     void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
@@ -459,10 +460,6 @@ public class StageService {
         return caseDataService.getCaseRef(caseUUID);
     }
 
-    private void updateCurrentStageForCase(UUID caseUUID, UUID stageUUID, String stageType) {
-        caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
-    }
-
     private void updatePriority(StageWithCaseData stage) {
         log.info("Updating priority for stage : {}", stage.getCaseUUID());
         stagePriorityCalculator.updatePriority(stage);
@@ -492,6 +489,7 @@ public class StageService {
         data.put(CaseworkConstants.CURRENT_STAGE, "");
 
         caseDataService.updateCaseData(caseUUID, stageUUID, data);
+
         caseDataService.completeCase(caseUUID, true);
 
         caseNoteService.createCaseNote(caseUUID,"WITHDRAW", request.getNotes());

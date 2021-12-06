@@ -305,16 +305,21 @@ public class CaseDataService {
     }
 
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
-        log.debug("Updating data for Case: {}", caseUUID);
         if (data != null) {
-            log.debug("Data size {}", data.size());
             CaseData caseData = getCaseData(caseUUID);
+            updateCaseData(caseData, stageUUID, data);
+        }
+    }
+
+    public void updateCaseData(CaseData caseData, UUID stageUUID, Map<String, String> data) {
+        if (data != null) {
+            log.debug("Updating data for Case: {}", caseData.getUuid());
             caseData.update(data, objectMapper);
             caseDataRepository.save(caseData);
             auditClient.updateCaseAudit(caseData, stageUUID);
-            log.info("Updated Case Data for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_UPDATED));
+            log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
         } else {
-            log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
+            log.warn("Data was null for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
         }
     }
 
