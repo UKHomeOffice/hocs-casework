@@ -72,6 +72,14 @@ public abstract class BaseStage implements Serializable {
         this.userUUID = null;
     }
 
+    public void setUser(UUID userUUID) {
+        this.setUserUUID(userUUID);
+    }
+
+    public void setTransitionNote(UUID transitionNoteUUID) {
+        this.transitionNoteUUID = transitionNoteUUID;
+    }
+
     public boolean isActive() {
         return this.teamUUID != null;
     }

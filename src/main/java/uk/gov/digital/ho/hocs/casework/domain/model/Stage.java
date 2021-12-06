@@ -29,8 +29,4 @@ public class Stage extends BaseStage {
         this.userUUID = userUUID;
     }
 
-    public void setUser(UUID userUUID) {
-        this.setUserUUID(userUUID);
-    }
-
 }
