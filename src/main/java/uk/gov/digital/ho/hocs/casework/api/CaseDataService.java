@@ -189,10 +189,14 @@ public class CaseDataService {
     }
 
     public String getCaseDataField(UUID caseUUID, String key) {
-        log.debug("Looking up key {} for Case: {}", key, caseUUID);
-        Map<String, String> dataMap = getCaseData(caseUUID).getDataMap(objectMapper);
+        return getCaseDataField(getCaseData(caseUUID), key);
+    }
+
+    public String getCaseDataField(CaseData caseData, String key) {
+        log.debug("Looking up key {} for Case: {}", key, caseData.getUuid());
+        Map<String, String> dataMap = caseData.getDataMap(objectMapper);
         String value = dataMap.getOrDefault(key, null);
-        log.debug("returning {} found value for Case: {}", value, caseUUID);
+        log.debug("returning {} found value for Case: {}", value, caseData.getUuid());
         return value;
     }
 
@@ -302,16 +306,21 @@ public class CaseDataService {
     }
 
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
-        log.debug("Updating data for Case: {}", caseUUID);
+        if (data != null) {
+            updateCaseData(getCaseData(caseUUID), stageUUID, data);
+        }
+    }
+
+    public void updateCaseData(CaseData caseData, UUID stageUUID, Map<String, String> data) {
+        log.debug("Updating data for Case: {}", caseData.getUuid());
         if (data != null) {
             log.debug("Data size {}", data.size());
-            CaseData caseData = getCaseData(caseUUID);
             caseData.update(data, objectMapper);
             caseDataRepository.save(caseData);
             auditClient.updateCaseAudit(caseData, stageUUID);
-            log.info("Updated Case Data for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_UPDATED));
+            log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
         } else {
-            log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
+            log.warn("Data was null for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
         }
     }
 

@@ -146,10 +146,6 @@ public class StageWithCaseData extends BaseStage {
         this.userUUID = null;
     }
 
-    public void setUser(UUID userUUID) {
-        this.userUUID = userUUID;
-    }
-
     public void setAssignedTopic(String assignedTopic) {
         this.assignedTopic = assignedTopic;
     }

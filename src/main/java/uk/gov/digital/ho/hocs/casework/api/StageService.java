@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
@@ -129,29 +130,39 @@ public class StageService {
         }
     }
 
-    StageWithCaseData createStage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, String emailType, UUID transitionNoteUUID) {
+    @Transactional
+    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, String emailType, UUID transitionNoteUUID) {
         log.debug("Creating Stage of type: {}", stageType);
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
-        // Try and overwrite the deadline with inputted values from the data map.
-        String overrideDeadline = caseDataService.getCaseDataField(caseUUID, String.format("%s_DEADLINE", stageType));
-        boolean isExtended = extensionService.hasExtensions(caseUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        calculateDeadlines(stage, caseData);
+        stage.setUser(userUUID);
+        stageRepository.save(stage);
+        caseDataService.updateCaseData(caseData, stage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
+        auditClient.createStage(stage);
+        log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
+        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, getCaseRef(caseUUID), emailType);
+        return stage;
+    }
 
+    private void calculateDeadlines(Stage stage, CaseData caseData) {
+        // Try and overwrite the deadline with inputted values from the data map.
+        String overrideDeadline = caseDataService.getCaseDataField(caseData, String.format("%s_DEADLINE", stage.getStageType()));
         if (overrideDeadline == null) {
-            CaseData caseData = caseDataService.getCase(caseUUID);
-            LocalDate deadline = infoClient.getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
+            LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadline());
             stage.setDeadline(deadline);
             if (caseData.getCaseDeadlineWarning() != null) {
-                LocalDate deadlineWarning = infoClient.getStageDeadlineWarning(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
+                LocalDate deadlineWarning = infoClient.getStageDeadlineWarning(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
                 stage.setDeadlineWarning(deadlineWarning);
             }
         }
 
+        boolean isExtended = extensionService.hasExtensions(caseData.getUuid());
         if (isExtended) {
-            CaseData caseData = caseDataService.getCase(caseUUID);
-            LocalDate deadline = infoClient.getStageDeadlineOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
+            LocalDate deadline = infoClient.getStageDeadlineOverridingSLA(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadline());
             stage.setDeadline(deadline);
             if (caseData.getCaseDeadlineWarning() != null) {
-                LocalDate deadlineWarning = infoClient.getStageDeadlineWarningOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
+                LocalDate deadlineWarning = infoClient.getStageDeadlineWarningOverridingSLA(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
                 stage.setDeadlineWarning(deadlineWarning);
             }
         }
@@ -163,20 +174,12 @@ public class StageService {
                 stage.setDeadlineWarning(null);
             }
         }
-
-        stage.setUser(userUUID);
-        stageRepository.save(stage);
-        auditClient.createStage(stage);
-        updateCurrentStageForCase(caseUUID, stage.getUuid(), stageType);
-        log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
-        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, getCaseRef(caseUUID), emailType);
-        return stage;
     }
 
     public void recreateStage(UUID caseUUID, UUID stageUUID, String stageType) {
         StageWithCaseData stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
         auditClient.recreateStage(stage);
-        updateCurrentStageForCase(caseUUID, stageUUID, stageType);
+        caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
         log.debug("Recreated Stage {} for Case: {}, event: {}", stageUUID, caseUUID, value(EVENT, STAGE_RECREATED));
 
     }
@@ -467,10 +470,6 @@ public class StageService {
 
     private String getCaseRef(UUID caseUUID) {
         return caseDataService.getCaseRef(caseUUID);
-    }
-
-    private void updateCurrentStageForCase(UUID caseUUID, UUID stageUUID, String stageType) {
-        caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
     }
 
     private void updatePriority(StageWithCaseData stage) {
