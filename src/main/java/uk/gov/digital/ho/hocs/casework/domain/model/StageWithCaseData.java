@@ -137,19 +137,6 @@ public class StageWithCaseData extends BaseStage {
         this.deadlineWarning = deadlineWarning;
     }
 
-    public void setTransitionNote(UUID transitionNoteUUID) {
-        this.transitionNoteUUID = transitionNoteUUID;
-    }
-
-    public void setTeam(UUID teamUUID) {
-        this.teamUUID = teamUUID;
-        this.userUUID = null;
-    }
-
-    public void setUser(UUID userUUID) {
-        this.userUUID = userUUID;
-    }
-
     public void setAssignedTopic(String assignedTopic) {
         this.assignedTopic = assignedTopic;
     }
