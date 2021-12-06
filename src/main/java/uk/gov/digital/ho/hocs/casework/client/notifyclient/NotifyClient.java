@@ -5,9 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.ProducerTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.NotifyCommand;
@@ -41,22 +38,18 @@ public class NotifyClient {
         this.requestData = requestData;
     }
 
-    @Async
     public void sendTeamEmail(UUID caseUUID, UUID stageUUID, UUID teamUUID, String caseReference, String emailType)  {
         sendTeamEmailCommand(new TeamAssignChangeCommand(caseUUID, stageUUID, caseReference, teamUUID, emailType));
     }
 
-    @Async
     public void sendUserEmail(UUID caseUUID, UUID stageUUID, UUID currentUserUUID, UUID newUserUUID, String caseReference)  {
         sendUserEmailCommand(new UserAssignChangeCommand(caseUUID, stageUUID, caseReference, currentUserUUID, newUserUUID));
     }
 
-    @Async
     public void sendOfflineQaEmail(UUID caseUUID, UUID stageUUID, UUID currentUserUUID, UUID offlineUserUUID, String caseReference)  {
         sendOfflineQaUserCommand(new OfflineQaUserCommand(caseUUID, stageUUID, caseReference, offlineUserUUID, currentUserUUID));
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     private void sendTeamEmailCommand(TeamAssignChangeCommand command){
         try {
             Map<String, Object> queueHeaders = getQueueHeaders();
@@ -67,7 +60,6 @@ public class NotifyClient {
         }
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     private void sendUserEmailCommand(UserAssignChangeCommand command){
         try {
             Map<String, Object> queueHeaders = getQueueHeaders();
@@ -78,7 +70,6 @@ public class NotifyClient {
         }
     }
 
-    @Retryable(maxAttemptsExpression = "${retry.maxAttempts}", backoff = @Backoff(delayExpression = "${retry.delay}"))
     private void sendOfflineQaUserCommand(OfflineQaUserCommand command){
         try {
             Map<String, Object> queueHeaders = getQueueHeaders();
