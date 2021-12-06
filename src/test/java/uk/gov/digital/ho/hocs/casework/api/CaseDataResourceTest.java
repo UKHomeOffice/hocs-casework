@@ -371,20 +371,4 @@ public class CaseDataResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
-    @Test
-    public void getCaseReferenceValue() {
-        String reference = "CASE/123456/789";
-
-        when(caseDataService.getCaseDataCaseRef(uuid)).thenReturn(reference);
-
-        final ResponseEntity<GetCaseReferenceResponse> caseReferenceResponse = caseDataResource.getCaseReference(uuid);
-
-        assertThat(caseReferenceResponse).isNotNull();
-        assertThat(caseReferenceResponse.getBody()).isNotNull();
-        assertThat(caseReferenceResponse.getBody().getReference()).isEqualTo(reference);
-        verify(caseDataService).getCaseDataCaseRef(uuid);
-        verifyNoMoreInteractions(caseDataService);
-
-    }
 }
-

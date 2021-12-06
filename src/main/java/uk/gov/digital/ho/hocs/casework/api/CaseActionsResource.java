@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataAppeal;
 
 import java.util.UUID;
 
@@ -19,17 +20,14 @@ public class CaseActionsResource {
     private final ActionDataDeadlineExtensionService extensionService;
     private final ActionDataAppealsService appealsService;
     private final ActionDataExternalInterestService externalInterestService;
-    private final CaseDataService caseDataService;
 
     @Autowired
     public CaseActionsResource(CaseActionService caseActionService, ActionDataDeadlineExtensionService extensionService,
-                               ActionDataAppealsService appealsService, ActionDataExternalInterestService externalInterestService,
-                               CaseDataService caseDataService) {
+                               ActionDataAppealsService appealsService, ActionDataExternalInterestService externalInterestService) {
         this.caseActionService = caseActionService;
         this.extensionService = extensionService;
         this.appealsService = appealsService;
         this.externalInterestService = externalInterestService;
-        this.caseDataService = caseDataService;
     }
 
     @GetMapping(path = "/case/{caseId}/actions")
@@ -44,8 +42,8 @@ public class CaseActionsResource {
                                                                     @PathVariable UUID stageUUID,
                                                                     @RequestBody ActionDataDeadlineExtensionInboundDto extensionData) {
 
-        extensionService.createExtension(caseUUID, stageUUID, extensionData);
-        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
+        String caseRef = extensionService.createExtension(caseUUID, stageUUID, extensionData);
+        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseRef));
     }
 
     // ---- Case Appeals ----
@@ -54,8 +52,8 @@ public class CaseActionsResource {
                                                                  @PathVariable UUID stageUUID,
                                                                  @RequestBody ActionDataAppealDto appealData) {
 
-        final UUID actionUUID = appealsService.createAppeal(caseUUID, stageUUID, appealData);
-        return ResponseEntity.ok(new CreateActionDataResponse(actionUUID, caseUUID, caseDataService.getCaseRef(caseUUID)));
+        ActionDataAppeal appeal = appealsService.createAppeal(caseUUID, stageUUID, appealData);
+        return ResponseEntity.ok(new CreateActionDataResponse(appeal.getUuid(), caseUUID, appeal.getCaseReference()));
     }
 
     @PutMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/appeal/{appealUUID}")
@@ -64,8 +62,8 @@ public class CaseActionsResource {
                                                                  @PathVariable UUID appealUUID,
                                                                  @RequestBody ActionDataAppealDto extensionData) {
 
-        appealsService.updateAppeal(caseUUID, appealUUID, extensionData);
-        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
+        String caseRef = appealsService.updateAppeal(caseUUID, appealUUID, extensionData);
+        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseRef));
     }
 
     // ---- Register External Interest ----
@@ -74,8 +72,8 @@ public class CaseActionsResource {
                                                                            @PathVariable UUID stageUUID,
                                                                            @RequestBody ActionDataExternalInterestInboundDto interestData) {
 
-        externalInterestService.createExternalInterest(caseUUID, stageUUID, interestData);
-        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
+        String caseRef = externalInterestService.createExternalInterest(caseUUID, stageUUID, interestData);
+        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseRef));
     }
 
     @PutMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/interest/{interestUUID}")
@@ -84,7 +82,7 @@ public class CaseActionsResource {
                                                                     @PathVariable UUID interestUUID,
                                                                     @RequestBody ActionDataExternalInterestInboundDto extensionData) {
 
-        externalInterestService.updateExternalInterest(caseUUID, interestUUID, extensionData);
-        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
+        String caseRef = externalInterestService.updateExternalInterest(caseUUID, interestUUID, extensionData);
+        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseRef));
     }
 }

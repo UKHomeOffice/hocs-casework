@@ -1,11 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataAppealDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.AppealOfficerDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -25,7 +18,6 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.ActionDataAppealsReposi
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -59,7 +51,7 @@ public class ActionDataAppealsService implements ActionService {
         return "appeals";
     }
 
-    public UUID createAppeal(UUID caseUuid, UUID stageUuid, ActionDataAppealDto appealDto) {
+    public ActionDataAppeal createAppeal(UUID caseUuid, UUID stageUuid, ActionDataAppealDto appealDto) {
 
         log.debug("Received request to create Appeal: {} for case: {}, stage: {}", appealDto, caseUuid, stageUuid);
         UUID appealUuid = appealDto.getCaseTypeActionUuid();
@@ -101,10 +93,10 @@ public class ActionDataAppealsService implements ActionService {
         auditClient.createAppealAudit(createdAppealEntity, caseTypeActionDto);
         log.info("Created Action: {}  for Case: {}", createdAppealEntity, caseData.getUuid(), value(EVENT, ACTION_DATA_CREATE_SUCCESS) );
 
-        return createdAppealEntity.getUuid();
+        return createdAppealEntity;
     }
 
-    public void updateAppeal(UUID caseUuid, UUID actionEntityId, ActionDataAppealDto appealDto) {
+    public String updateAppeal(UUID caseUuid, UUID actionEntityId, ActionDataAppealDto appealDto) {
 
         log.debug("Received request to update Appeal: {} for case: {}", appealDto, caseUuid);
 
@@ -138,6 +130,7 @@ public class ActionDataAppealsService implements ActionService {
         auditClient.updateAppealAudit(updatedAppealEntity, caseTypeActionDto);
         log.info("Updated Action: {}  for Case: {}", appealDto, caseData.getUuid(), value(EVENT, ACTION_DATA_UPDATE_SUCCESS) );
 
+        return caseData.getReference();
     }
 
     /**

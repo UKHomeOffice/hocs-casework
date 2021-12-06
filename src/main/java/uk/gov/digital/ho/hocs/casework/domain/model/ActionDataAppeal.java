@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -71,6 +72,9 @@ public class ActionDataAppeal implements Serializable {
 
     @Column(name = "document")
     private UUID document;
+
+    @Transient
+    private String caseReference;
 
     public ActionDataAppeal(UUID caseTypeActionUuid,
                             String caseTypeActionLabel,

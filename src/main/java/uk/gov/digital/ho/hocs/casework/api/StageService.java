@@ -132,12 +132,13 @@ public class StageService {
     StageWithCaseData createStage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, String emailType, UUID transitionNoteUUID) {
         log.debug("Creating Stage of type: {}", stageType);
         StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        CaseData caseData = caseDataService.getCase(caseUUID);
+
         // Try and overwrite the deadline with inputted values from the data map.
         String overrideDeadline = caseDataService.getCaseDataField(caseUUID, String.format("%s_DEADLINE", stageType));
         boolean isExtended = extensionService.hasExtensions(caseUUID);
 
         if (overrideDeadline == null) {
-            CaseData caseData = caseDataService.getCase(caseUUID);
             LocalDate deadline = infoClient.getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
             stage.setDeadline(deadline);
             if (caseData.getCaseDeadlineWarning() != null) {
@@ -147,7 +148,6 @@ public class StageService {
         }
 
         if (isExtended) {
-            CaseData caseData = caseDataService.getCase(caseUUID);
             LocalDate deadline = infoClient.getStageDeadlineOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
             stage.setDeadline(deadline);
             if (caseData.getCaseDeadlineWarning() != null) {
@@ -169,7 +169,7 @@ public class StageService {
         auditClient.createStage(stage);
         updateCurrentStageForCase(caseUUID, stage.getUuid(), stageType);
         log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
-        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, getCaseRef(caseUUID), emailType);
+        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, caseData.getReference(), emailType);
         return stage;
     }
 
@@ -200,7 +200,7 @@ public class StageService {
             log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID, value(EVENT, STAGE_COMPLETED));
         } else {
             log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, newTeamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
-            notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), newTeamUUID, getCaseRef(caseUUID), emailType);
+            notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), newTeamUUID, stage.getCaseReference(), emailType);
         }
     }
 
@@ -210,7 +210,7 @@ public class StageService {
             final UUID stageUserUUID = getLastCaseUserUUID(stage.getCaseUUID());
             if (offlineQaUser != null && stageUserUUID != null) {
                 UUID offlineQaUserUUID = UUID.fromString(offlineQaUser);
-                notifyClient.sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), stageUserUUID, offlineQaUserUUID, getCaseRef(stage.getCaseUUID()));
+                notifyClient.sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), stageUserUUID, offlineQaUserUUID, stage.getCaseReference());
             }
         }
     }
@@ -252,7 +252,7 @@ public class StageService {
         stageRepository.save(stage);
         auditClient.updateStageUser(stage);
         log.info("Updated User: {} for Stage {}", newUserUUID, stageUUID, value(EVENT, STAGE_ASSIGNED_USER));
-        notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, getCaseRef(caseUUID));
+        notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, stage.getCaseReference());
     }
 
     Set<StageWithCaseData> getActiveStagesByCaseUUID(UUID caseUUID) {
@@ -463,10 +463,6 @@ public class StageService {
             Optional<StageWithCaseData> maxDatedStage = stageSupplier.get().max(CREATED_COMPARATOR);
             return maxDatedStage.stream();
         }
-    }
-
-    private String getCaseRef(UUID caseUUID) {
-        return caseDataService.getCaseRef(caseUUID);
     }
 
     private void updateCurrentStageForCase(UUID caseUUID, UUID stageUUID, String stageType) {

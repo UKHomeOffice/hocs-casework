@@ -61,7 +61,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         return extensionRepository.existsDistinctByCaseDataUuid(caseUUID);
     }
 
-    public void createExtension(UUID caseUuid, UUID stageUuid, ActionDataDeadlineExtensionInboundDto extensionDto) {
+    public String createExtension(UUID caseUuid, UUID stageUuid, ActionDataDeadlineExtensionInboundDto extensionDto) {
 
         log.debug("Received request to create extension: {} for case: {}, stage: {}", extensionDto, caseUuid, stageUuid);
 
@@ -128,6 +128,8 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         auditClient.createExtensionAudit(createdExtension);
 
         log.info("Created action:  {} for case: {}", createdExtension, caseUuid);
+
+        return caseData.getReference();
     }
 
     private boolean hasMaxRequests(CaseTypeActionDto caseTypeActionDto, UUID caseUUID) {

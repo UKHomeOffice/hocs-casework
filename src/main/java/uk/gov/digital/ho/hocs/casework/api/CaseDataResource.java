@@ -198,10 +198,9 @@ class CaseDataResource {
         return ResponseEntity.ok(GetCaseResponse.from(caseData, true));
     }
 
-    @Cacheable (value = "UUIDToCaseReference")
     @GetMapping(value = "/case/reference/{caseUUID}")
     public ResponseEntity<GetCaseReferenceResponse> getCaseReference(@PathVariable UUID caseUUID) {
-        final String caseRef = caseDataService.getCaseDataCaseRef(caseUUID);
-        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseRef));
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        return ResponseEntity.ok(GetCaseReferenceResponse.from(caseData.getUuid(), caseData.getReference()));
     }
 }

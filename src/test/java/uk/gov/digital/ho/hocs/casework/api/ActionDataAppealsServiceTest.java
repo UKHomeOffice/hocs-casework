@@ -225,13 +225,13 @@ public class ActionDataAppealsServiceTest {
         when(mockAppealRepository.save((any()))).thenReturn(createdActionDataAppeal);
 
         // WHEN
-        final UUID appealUuid = actionDataAppealsService.createAppeal(caseUUID, stageUUID, appealDto);
+        final ActionDataAppeal appeal = actionDataAppealsService.createAppeal(caseUUID, stageUUID, appealDto);
 
         // THEN
         verify(mockAppealRepository, times(1)).save(appealArgumentCaptor.capture());
 
         assertThat(appealArgumentCaptor.getValue().getCaseTypeActionUuid()).isEqualTo(actionTypeUuid);
-        assertThat(appealUuid).isEqualTo(createdActionDataAppeal.getUuid());
+        assertThat(appeal.getUuid()).isEqualTo(createdActionDataAppeal.getUuid());
 
         verify(mockCaseDataRepository, times(1)).findActiveByUuid(caseUUID);
         verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("APPEAL_CREATED"), anyString());
@@ -459,6 +459,7 @@ public class ActionDataAppealsServiceTest {
                 "{}",
                 LocalDateTime.MIN,
                 LocalDateTime.MIN,
+                null,
                 null
         );
 
@@ -477,6 +478,7 @@ public class ActionDataAppealsServiceTest {
                 updatedDataField,
                 LocalDateTime.MIN,
                 LocalDateTime.MIN,
+                null,
                 null
         );
 

@@ -53,7 +53,7 @@ public class ActionDataExternalInterestService implements ActionService {
         return "recordInterest";
     }
 
-    public void createExternalInterest(UUID caseUuid, UUID stageUuid, ActionDataExternalInterestInboundDto interestDto) {
+    public String createExternalInterest(UUID caseUuid, UUID stageUuid, ActionDataExternalInterestInboundDto interestDto) {
 
         log.debug("Received request to create external " +
                 "interest: {} for case: {}, stage: {}", interestDto, caseUuid, stageUuid);
@@ -93,9 +93,11 @@ public class ActionDataExternalInterestService implements ActionService {
         auditClient.createExternalInterestAudit(actionDataExternalInterest);
 
         log.info("Created action:  {} for case: {}", interestDto, caseUuid);
+
+        return caseData.getReference();
     }
 
-    public void updateExternalInterest(UUID caseUuid, UUID actionEntityId, ActionDataExternalInterestInboundDto updateExternalInterestDto) {
+    public String updateExternalInterest(UUID caseUuid, UUID actionEntityId, ActionDataExternalInterestInboundDto updateExternalInterestDto) {
         log.debug("Received request to update external interest: {} for case: {}", updateExternalInterestDto, caseUuid);
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUuid);
@@ -129,6 +131,8 @@ public class ActionDataExternalInterestService implements ActionService {
         actionDataExternalInterestRepository.save(existingExternalInterestData);
 
         auditClient.updateExternalInterestAudit(existingExternalInterestData);
+
+        return caseData.getReference();
     }
 
     @Override
