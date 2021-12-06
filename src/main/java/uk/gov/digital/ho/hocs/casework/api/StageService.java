@@ -119,29 +119,37 @@ public class StageService {
         return stage;
     }
 
-    public StageWithCaseData createStage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, String emailType, UUID transitionNoteUUID) {
-        log.debug("Creating Stage of type: {}", stageType);
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+    public Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, String emailType, UUID transitionNoteUUID) {
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        stage.setUser(userUUID);
+        calculateDeadlines(stage, caseData);
+        stageRepository.save(stage);
+        auditClient.createStage(stage);
+        updateCurrentStageForCase(caseUUID, stage.getUuid(), stageType);
+        log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
+        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, getCaseRef(caseUUID), emailType);
+        return stage;
+    }
+
+    private void calculateDeadlines(Stage stage, CaseData caseData) {
         // Try and overwrite the deadline with inputted values from the data map.
-        String overrideDeadline = caseDataService.getCaseDataField(caseUUID, String.format("%s_DEADLINE", stageType));
-        boolean isExtended = extensionService.hasExtensions(caseUUID);
+        String overrideDeadline = caseDataService.getCaseDataField(caseData, String.format("%s_DEADLINE", stage.getStageType()));
 
         if (overrideDeadline == null) {
-            CaseData caseData = caseDataService.getCase(caseUUID);
-            LocalDate deadline = infoClient.getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
+            LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadline());
             stage.setDeadline(deadline);
             if (caseData.getCaseDeadlineWarning() != null) {
-                LocalDate deadlineWarning = infoClient.getStageDeadlineWarning(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
+                LocalDate deadlineWarning = infoClient.getStageDeadlineWarning(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
                 stage.setDeadlineWarning(deadlineWarning);
             }
         }
 
-        if (isExtended) {
-            CaseData caseData = caseDataService.getCase(caseUUID);
-            LocalDate deadline = infoClient.getStageDeadlineOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
+        if (extensionService.hasExtensions(caseData.getUuid())) {
+            LocalDate deadline = infoClient.getStageDeadlineOverridingSLA(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadline());
             stage.setDeadline(deadline);
             if (caseData.getCaseDeadlineWarning() != null) {
-                LocalDate deadlineWarning = infoClient.getStageDeadlineWarningOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
+                LocalDate deadlineWarning = infoClient.getStageDeadlineWarningOverridingSLA(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
                 stage.setDeadlineWarning(deadlineWarning);
             }
         }
@@ -153,14 +161,6 @@ public class StageService {
                 stage.setDeadlineWarning(null);
             }
         }
-
-        stage.setUser(userUUID);
-        stageRepository.save(stage);
-        auditClient.createStage(stage);
-        updateCurrentStageForCase(caseUUID, stage.getUuid(), stageType);
-        log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
-        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, getCaseRef(caseUUID), emailType);
-        return stage;
     }
 
     public void recreateStage(UUID caseUUID, UUID stageUUID, String stageType) {

@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import org.junit.Test;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.util.UUID;
@@ -19,7 +20,7 @@ public class CreateStageTest {
         UUID userUUID = UUID.randomUUID();
         UUID transitionNoteUUID = UUID.randomUUID();
 
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID,transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID,transitionNoteUUID);
 
         CreateStageResponse createStageResponse = CreateStageResponse.from(stage);
 
