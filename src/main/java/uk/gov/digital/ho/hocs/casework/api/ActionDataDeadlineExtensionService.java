@@ -57,6 +57,10 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         return "extensions";
     }
 
+    public boolean hasExtensions(UUID caseUUID) {
+        return extensionRepository.existsDistinctByCaseDataUuid(caseUUID);
+    }
+
     public void createExtension(UUID caseUuid, UUID stageUuid, ActionDataDeadlineExtensionInboundDto extensionDto) {
 
         log.debug("Received request to create extension: {} for case: {}, stage: {}", extensionDto, caseUuid, stageUuid);
@@ -164,10 +168,10 @@ public class ActionDataDeadlineExtensionService implements ActionService {
                 LocalDate dateReceived = caseData.getDateReceived();
                 LocalDate caseDeadline = caseData.getCaseDeadline();
                 LocalDate caseDeadlineWarning = caseData.getCaseDeadlineWarning();
-                LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), dateReceived, caseDeadline);
+                LocalDate deadline = infoClient.getStageDeadlineOverridingSLA(stage.getStageType(), dateReceived, caseDeadline);
                 stage.setDeadline(deadline);
                 if (caseDeadlineWarning != null) {
-                    LocalDate deadlineWarning = infoClient.getStageDeadlineWarning(stage.getStageType(), dateReceived, caseDeadlineWarning);
+                    LocalDate deadlineWarning = infoClient.getStageDeadlineWarningOverridingSLA(stage.getStageType(), dateReceived, caseDeadlineWarning);
                     stage.setDeadlineWarning(deadlineWarning);
                 }
             } else {
