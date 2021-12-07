@@ -62,6 +62,7 @@ public class StageWithCaseData extends BaseStage {
     private String correspondents;
 
     @Getter
+    @Setter
     @Column(name = "case_assigned_topic", insertable = false, updatable = false)
     private String assignedTopic;
 
@@ -124,25 +125,9 @@ public class StageWithCaseData extends BaseStage {
         this.caseUUID = caseUUID;
         this.stageType = stageType;
         this.transitionNoteUUID = transitionNoteUUID;
-        completed = Boolean.FALSE;
+        this.completed = Boolean.FALSE;
         setTeam(teamUUID);
-        setUser(userUUID);
-    }
-
-    public void setDeadline(LocalDate deadline) {
-        this.deadline = deadline;
-    }
-
-    public void setDeadlineWarning(LocalDate deadlineWarning){
-        this.deadlineWarning = deadlineWarning;
-    }
-
-    public void setAssignedTopic(String assignedTopic) {
-        this.assignedTopic = assignedTopic;
-    }
-
-    public boolean isActive() {
-        return this.teamUUID != null;
+        this.userUUID = userUUID;
     }
 
     public void update(Map<String, String> newData, ObjectMapper objectMapper) {
