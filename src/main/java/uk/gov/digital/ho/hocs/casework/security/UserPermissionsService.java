@@ -71,7 +71,7 @@ public class UserPermissionsService {
                 .map(PermissionDto::getCaseTypeCode)
                 .collect(Collectors.toSet());
 
-        return caseTypes.isEmpty() ? Set.of("") : caseTypes;
+        return caseTypes;
     }
 
     private UUID getUUIDFromBase64(String uuid) {
