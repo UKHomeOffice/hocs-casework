@@ -126,50 +126,45 @@ public class CaseDataService {
     private CaseData getCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
-        if (caseData != null) {
-            log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
-            return caseData;
-        } else {
+        if (caseData == null) {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
         }
+        log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+        return caseData;
     }
 
     private ActiveCaseViewData getActiveCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         ActiveCaseViewData caseData = activeCaseViewDataRepository.findByUuid(caseUUID);
-        if (caseData != null) {
-            log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
-            return caseData;
-        } else {
+        if (caseData == null) {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
         }
+        log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+        return caseData;
     }
-
 
     public CaseData getCaseDataByReference(String reference) {
         log.debug("Getting Case by reference: {}", reference);
         CaseData caseData = caseDataRepository.findByReference(reference);
-        if (caseData != null) {
-            log.info("Got Case by reference: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
-            return caseData;
-        } else {
+        if (caseData == null) {
             log.error("Case: {}, not found!", reference, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", reference), CASE_NOT_FOUND);
         }
+        log.info("Got Case by reference: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+        return caseData;
     }
 
     private CaseData getAnyCaseData(UUID caseUUID) {
         log.debug("Getting any Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
         if (caseData != null) {
-            log.info("Got any Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
-            return caseData;
-        } else {
             log.error("Any Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Any Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
         }
+        log.info("Got any Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+        return caseData;
     }
 
     public String getCaseRef(UUID caseUUID) {
