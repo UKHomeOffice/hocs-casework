@@ -303,22 +303,24 @@ public class CaseDataService {
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         if (data == null) {
             log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
-        } else {
-            updateCaseData(getCaseData(caseUUID), stageUUID, data);
+            return;
         }
+
+        updateCaseData(getCaseData(caseUUID), stageUUID, data);
     }
 
     public void updateCaseData(CaseData caseData, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseData.getUuid());
         if (data == null) {
             log.warn("Data was null for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
-        } else {
-            log.debug("Data size {}", data.size());
-            caseData.update(data, objectMapper);
-            caseDataRepository.save(caseData);
-            auditClient.updateCaseAudit(caseData, stageUUID);
-            log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
+            return;
         }
+
+        log.debug("Data size {}", data.size());
+        caseData.update(data, objectMapper);
+        caseDataRepository.save(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
+        log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
     }
 
     void updateDateReceived(UUID caseUUID, UUID stageUUID, LocalDate dateReceived, int days) {
