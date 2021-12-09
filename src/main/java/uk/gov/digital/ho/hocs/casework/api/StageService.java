@@ -91,8 +91,10 @@ public class StageService {
         this.extensionService = extensionService;
     }
 
+    /**
+     * This method should call Active basic stage because to have a user assigned there should also be a team assigned.
+     */
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
-        // Should call Active stage because to have a user assigned there should also be a team assigned.
         log.debug("Getting User for Stage: {}", stageUUID);
         Stage stage = getActiveBasicStage(caseUUID, stageUUID);
         log.debug("Got User: {} for Stage: {}", stage.getUserUUID(), stageUUID);
