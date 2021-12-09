@@ -174,7 +174,7 @@ public class StageService {
     }
 
     public void recreateStage(UUID caseUUID, UUID stageUUID, String stageType) {
-        StageWithCaseData stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
+        Stage stage = getBasicStage(caseUUID, stageUUID);
         auditClient.recreateStage(stage);
         updateCurrentStageForCase(caseUUID, stageUUID, stageType);
         log.debug("Recreated Stage {} for Case: {}, event: {}", stageUUID, caseUUID, value(EVENT, STAGE_RECREATED));
