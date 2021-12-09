@@ -86,9 +86,9 @@ public class RestResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity handle(Exception e) {
         Writer stackTraceWriter = new StringWriter();
-        e.printStackTrace(new PrintWriter(stackTraceWriter));
-        log.error("Exception: {}, Event: {}, Stack: {}", e.getMessage(), value(EVENT, UNCAUGHT_EXCEPTION),
-                value(STACKTRACE, stackTraceWriter.toString()));
+        PrintWriter printWriter = new PrintWriter(stackTraceWriter);
+        e.printStackTrace(printWriter);
+        log.error("Exception: {}, Event: {}, Stack: {}", e.getMessage(), value(EVENT, UNCAUGHT_EXCEPTION), stackTraceWriter);
         return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
     }
 

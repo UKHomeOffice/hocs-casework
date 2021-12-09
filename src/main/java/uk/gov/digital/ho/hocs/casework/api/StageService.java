@@ -136,7 +136,7 @@ public class StageService {
         Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         CaseData caseData = caseDataService.getCase(caseUUID);
         calculateDeadlines(stage, caseData);
-        stage.setUser(userUUID);
+        stage.setUserUUID(userUUID);
         stageRepository.save(stage);
         caseDataService.updateCaseData(caseData, stage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
         auditClient.createStage(stage);
@@ -177,7 +177,7 @@ public class StageService {
     }
 
     public void recreateStage(UUID caseUUID, UUID stageUUID, String stageType) {
-        StageWithCaseData stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
+        Stage stage = getBasicStage(caseUUID, stageUUID);
         auditClient.recreateStage(stage);
         caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
         log.debug("Recreated Stage {} for Case: {}, event: {}", stageUUID, caseUUID, value(EVENT, STAGE_RECREATED));
@@ -186,8 +186,8 @@ public class StageService {
 
     void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
         log.debug("Updating Transition Note for Stage: {}", stageUUID);
-        StageWithCaseData stage = getActiveStage(caseUUID, stageUUID);
-        stage.setTransitionNote(transitionNoteUUID);
+        Stage stage = getActiveBasicStage(caseUUID, stageUUID);
+        stage.setTransitionNoteUUID(transitionNoteUUID);
         stageRepository.save(stage);
         log.info("Set Stage Transition Note: {} ({}) for Case {}", stageUUID, transitionNoteUUID, caseUUID, value(EVENT, STAGE_TRANSITION_NOTE_UPDATED));
     }
@@ -251,7 +251,7 @@ public class StageService {
         log.debug("Updating User: {} for Stage: {}", newUserUUID, stageUUID);
         StageWithCaseData stage = getActiveStage(caseUUID, stageUUID);
         UUID currentUserUUID = stage.getUserUUID();
-        stage.setUser(newUserUUID);
+        stage.setUserUUID(newUserUUID);
         stageRepository.save(stage);
         auditClient.updateStageUser(stage);
         log.info("Updated User: {} for Stage {}", newUserUUID, stageUUID, value(EVENT, STAGE_ASSIGNED_USER));
