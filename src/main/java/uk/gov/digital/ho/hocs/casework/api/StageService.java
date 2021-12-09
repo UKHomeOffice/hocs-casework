@@ -91,6 +91,9 @@ public class StageService {
         this.extensionService = extensionService;
     }
 
+    /**
+     * This method should call Active basic stage because to have a user assigned there should also be a team assigned.
+     */
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting User for Stage: {}", stageUUID);
         Stage stage = getActiveBasicStage(caseUUID, stageUUID);
@@ -100,13 +103,7 @@ public class StageService {
 
     public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting Team for Stage: {}", stageUUID);
-        Stage stage = stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
-
-        if (stage == null) {
-            log.warn("No team exists is linked to stage: {} and case: {}", stageUUID, caseUUID);
-            return null;
-        }
-
+        Stage stage = getBasicStage(caseUUID, stageUUID);
         log.info("Team: {} exists is linked to stage: {} and case: {}", stage.getTeamUUID(), stageUUID, caseUUID, stageUUID);
         return stage.getTeamUUID();
     }
