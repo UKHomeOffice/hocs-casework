@@ -144,7 +144,7 @@ public class StageWithCaseDataTest {
         assertThat(stage.getCaseDataType()).isEqualTo(null);
         assertThat(stage.getData()).isEqualTo(null);
 
-        stage.setUser(newuserUUID);
+        stage.setUserUUID(newuserUUID);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -184,7 +184,7 @@ public class StageWithCaseDataTest {
         assertThat(stage.getCaseDataType()).isEqualTo(null);
         assertThat(stage.getData()).isEqualTo(null);
 
-        stage.setUser(null);
+        stage.setUserUUID(null);
 
         assertThat(stage.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(stage.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());

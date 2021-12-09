@@ -296,13 +296,13 @@ public class StageServiceTest {
 
     @Test
     public void shouldRecreateStage() {
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
-        when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(stage);
 
         stageService.recreateStage(caseUUID, stageUUID, stageType);
 
-        verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
+        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
         verify(auditClient).recreateStage(stage);
 
         verifyNoMoreInteractions(auditClient, stageRepository, notifyClient);
@@ -495,13 +495,13 @@ public class StageServiceTest {
     @Test
     public void shouldUpdateStageTransitionNote() {
 
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
-        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
         stageService.updateStageCurrentTransitionNote(caseUUID, stageUUID, transitionNoteUUID);
 
-        verify(stageRepository).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
+        verify(stageRepository).findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
 
         checkNoMoreInteraction();
@@ -511,13 +511,13 @@ public class StageServiceTest {
     @Test
     public void shouldUpdateStageTransitionNoteNull() {
 
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
-        when(stageRepository.findActiveByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+        when(stageRepository.findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
         stageService.updateStageCurrentTransitionNote(caseUUID, stageUUID, null);
 
-        verify(stageRepository).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
+        verify(stageRepository).findActiveBasicStageByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
 
         checkNoMoreInteraction();
@@ -994,19 +994,14 @@ public class StageServiceTest {
         verifyNoMoreInteractions(stageRepository);
     }
 
-    @Test
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void getStageTeam_nullResult() {
         var caseUuid = UUID.randomUUID();
         var stageUuid = UUID.randomUUID();
 
         when(stageRepository.findBasicStageByCaseUuidAndStageUuid(any(), any())).thenReturn(null);
 
-        var result = stageService.getStageTeam(caseUuid, stageUuid);
-        assertThat(result).isNull();
-
-        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUuid, stageUuid);
-
-        verifyNoMoreInteractions(stageRepository);
+        stageService.getStageTeam(caseUuid, stageUuid);
     }
 
     /**

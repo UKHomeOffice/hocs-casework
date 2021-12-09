@@ -91,6 +91,9 @@ public class StageService {
         this.extensionService = extensionService;
     }
 
+    /**
+     * This method should call Active basic stage because to have a user assigned there should also be a team assigned.
+     */
     public UUID getStageUser(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting User for Stage: {}", stageUUID);
         Stage stage = getActiveBasicStage(caseUUID, stageUUID);
@@ -100,13 +103,7 @@ public class StageService {
 
     public UUID getStageTeam(UUID caseUUID, UUID stageUUID) {
         log.debug("Getting Team for Stage: {}", stageUUID);
-        Stage stage = stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
-
-        if (stage == null) {
-            log.warn("No team exists is linked to stage: {} and case: {}", stageUUID, caseUUID);
-            return null;
-        }
-
+        Stage stage = getBasicStage(caseUUID, stageUUID);
         log.info("Team: {} exists is linked to stage: {} and case: {}", stage.getTeamUUID(), stageUUID, caseUUID, stageUUID);
         return stage.getTeamUUID();
     }
@@ -164,7 +161,7 @@ public class StageService {
             }
         }
 
-        stage.setUser(userUUID);
+        stage.setUserUUID(userUUID);
         stageRepository.save(stage);
         auditClient.createStage(stage);
         updateCurrentStageForCase(caseUUID, stage.getUuid(), stageType);
@@ -174,7 +171,7 @@ public class StageService {
     }
 
     public void recreateStage(UUID caseUUID, UUID stageUUID, String stageType) {
-        StageWithCaseData stage = stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID);
+        Stage stage = getBasicStage(caseUUID, stageUUID);
         auditClient.recreateStage(stage);
         updateCurrentStageForCase(caseUUID, stageUUID, stageType);
         log.debug("Recreated Stage {} for Case: {}, event: {}", stageUUID, caseUUID, value(EVENT, STAGE_RECREATED));
@@ -183,8 +180,8 @@ public class StageService {
 
     void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
         log.debug("Updating Transition Note for Stage: {}", stageUUID);
-        StageWithCaseData stage = getActiveStage(caseUUID, stageUUID);
-        stage.setTransitionNote(transitionNoteUUID);
+        Stage stage = getActiveBasicStage(caseUUID, stageUUID);
+        stage.setTransitionNoteUUID(transitionNoteUUID);
         stageRepository.save(stage);
         log.info("Set Stage Transition Note: {} ({}) for Case {}", stageUUID, transitionNoteUUID, caseUUID, value(EVENT, STAGE_TRANSITION_NOTE_UPDATED));
     }
@@ -248,7 +245,7 @@ public class StageService {
         log.debug("Updating User: {} for Stage: {}", newUserUUID, stageUUID);
         StageWithCaseData stage = getActiveStage(caseUUID, stageUUID);
         UUID currentUserUUID = stage.getUserUUID();
-        stage.setUser(newUserUUID);
+        stage.setUserUUID(newUserUUID);
         stageRepository.save(stage);
         auditClient.updateStageUser(stage);
         log.info("Updated User: {} for Stage {}", newUserUUID, stageUUID, value(EVENT, STAGE_ASSIGNED_USER));
