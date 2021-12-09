@@ -126,50 +126,45 @@ public class CaseDataService {
     private CaseData getCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
-        if (caseData != null) {
-            log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
-            return caseData;
-        } else {
+        if (caseData == null) {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
         }
+        log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+        return caseData;
     }
 
     private ActiveCaseViewData getActiveCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         ActiveCaseViewData caseData = activeCaseViewDataRepository.findByUuid(caseUUID);
-        if (caseData != null) {
-            log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
-            return caseData;
-        } else {
+        if (caseData == null) {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
         }
+        log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+        return caseData;
     }
-
 
     public CaseData getCaseDataByReference(String reference) {
         log.debug("Getting Case by reference: {}", reference);
         CaseData caseData = caseDataRepository.findByReference(reference);
-        if (caseData != null) {
-            log.info("Got Case by reference: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
-            return caseData;
-        } else {
+        if (caseData == null) {
             log.error("Case: {}, not found!", reference, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", reference), CASE_NOT_FOUND);
         }
+        log.info("Got Case by reference: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+        return caseData;
     }
 
     private CaseData getAnyCaseData(UUID caseUUID) {
         log.debug("Getting any Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
-        if (caseData != null) {
-            log.info("Got any Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
-            return caseData;
-        } else {
+        if (caseData == null) {
             log.error("Any Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Any Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
         }
+        log.info("Got any Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+        return caseData;
     }
 
     public String getCaseRef(UUID caseUUID) {
@@ -189,10 +184,14 @@ public class CaseDataService {
     }
 
     public String getCaseDataField(UUID caseUUID, String key) {
-        log.debug("Looking up key {} for Case: {}", key, caseUUID);
-        Map<String, String> dataMap = getCaseData(caseUUID).getDataMap(objectMapper);
+        return getCaseDataField(getCaseData(caseUUID), key);
+    }
+
+    public String getCaseDataField(CaseData caseData, String key) {
+        log.debug("Looking up key {} for Case: {}", key, caseData.getUuid());
+        Map<String, String> dataMap = caseData.getDataMap(objectMapper);
         String value = dataMap.getOrDefault(key, null);
-        log.debug("returning {} found value for Case: {}", value, caseUUID);
+        log.debug("returning {} found value for Case: {}", value, caseData.getUuid());
         return value;
     }
 
@@ -302,17 +301,26 @@ public class CaseDataService {
     }
 
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
-        log.debug("Updating data for Case: {}", caseUUID);
-        if (data != null) {
-            log.debug("Data size {}", data.size());
-            CaseData caseData = getCaseData(caseUUID);
-            caseData.update(data, objectMapper);
-            caseDataRepository.save(caseData);
-            auditClient.updateCaseAudit(caseData, stageUUID);
-            log.info("Updated Case Data for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_UPDATED));
-        } else {
+        if (data == null) {
             log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
+            return;
         }
+
+        updateCaseData(getCaseData(caseUUID), stageUUID, data);
+    }
+
+    public void updateCaseData(CaseData caseData, UUID stageUUID, Map<String, String> data) {
+        log.debug("Updating data for Case: {}", caseData.getUuid());
+        if (data == null) {
+            log.warn("Data was null for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
+            return;
+        }
+
+        log.debug("Data size {}", data.size());
+        caseData.update(data, objectMapper);
+        caseDataRepository.save(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
+        log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
     }
 
     void updateDateReceived(UUID caseUUID, UUID stageUUID, LocalDate dateReceived, int days) {

@@ -21,6 +21,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageUserRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.io.UnsupportedEncodingException;
@@ -69,7 +70,7 @@ public class StageResourceTest {
     @Test
     public void shouldCreateStage() {
 
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, transitionNoteUUID, userUUID);
 
         when(stageService.createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, transitionNoteUUID)).thenReturn(stage);
@@ -87,7 +88,7 @@ public class StageResourceTest {
     @Test
     public void shouldCreateStageNoTransitionNote() {
 
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, null);
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, null);
         CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, null, userUUID);
 
         when(stageService.createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, null)).thenReturn(stage);
