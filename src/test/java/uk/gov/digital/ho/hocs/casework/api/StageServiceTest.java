@@ -999,19 +999,14 @@ public class StageServiceTest {
         verifyNoMoreInteractions(stageRepository);
     }
 
-    @Test
+    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void getStageTeam_nullResult() {
         var caseUuid = UUID.randomUUID();
         var stageUuid = UUID.randomUUID();
 
         when(stageRepository.findBasicStageByCaseUuidAndStageUuid(any(), any())).thenReturn(null);
 
-        var result = stageService.getStageTeam(caseUuid, stageUuid);
-        assertThat(result).isNull();
-
-        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUuid, stageUuid);
-
-        verifyNoMoreInteractions(stageRepository);
+        stageService.getStageTeam(caseUuid, stageUuid);
     }
 
     /**
