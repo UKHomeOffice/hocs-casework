@@ -303,6 +303,8 @@ public class CaseDataService {
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         if (data != null) {
             updateCaseData(getCaseData(caseUUID), stageUUID, data);
+        } else {
+            log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
         }
     }
 
