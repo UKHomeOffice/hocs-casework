@@ -159,7 +159,7 @@ public class CaseDataService {
     private CaseData getAnyCaseData(UUID caseUUID) {
         log.debug("Getting any Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
-        if (caseData != null) {
+        if (caseData == null) {
             log.error("Any Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Any Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
         }
