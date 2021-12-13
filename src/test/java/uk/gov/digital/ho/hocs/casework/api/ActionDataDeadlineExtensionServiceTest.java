@@ -272,7 +272,8 @@ public class ActionDataDeadlineExtensionServiceTest {
                 caseUUID,
                 null,
                 null,
-                null
+                null,
+                "one, two, three"
         );
 
         LocalDate originalCaseDeadline = LocalDate.of(2021, Month.APRIL,30);

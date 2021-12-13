@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +43,7 @@ public class CaseActionsResource {
     @PostMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/extension")
     public ResponseEntity<GetCaseReferenceResponse> createExtension(@PathVariable UUID caseUUID,
                                                                     @PathVariable UUID stageUUID,
-                                                                    @RequestBody ActionDataDeadlineExtensionInboundDto extensionData) {
+                                                                    @RequestBody ActionDataDeadlineExtensionInboundDto extensionData) throws JsonProcessingException {
 
         extensionService.createExtension(caseUUID, stageUUID, extensionData);
         return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
