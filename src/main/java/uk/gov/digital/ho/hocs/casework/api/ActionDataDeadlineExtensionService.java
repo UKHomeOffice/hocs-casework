@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +84,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
 
         CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(), extensionTypeUuid);
 
-        String hydrateReasonList = Arrays.stream(extensionDto.getReasons().split(","))
+        String hydratedReasonList = Arrays.stream(extensionDto.getReasons().split(","))
                 .map(reasonSimpleName -> infoClient.getEntityBySimpleName(reasonSimpleName).getData().get("title"))
                 .collect(Collectors.joining(", "));
 
@@ -121,7 +120,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
                 caseUuid,
                 caseData.getCaseDeadline(),
                 updatedDeadline,
-                extensionDto.getNote() + "\nReason: " + hydrateReasonList,
+                extensionDto.getNote() + "\nReason: " + hydratedReasonList,
                 extensionDto.getReasons()
         );
 

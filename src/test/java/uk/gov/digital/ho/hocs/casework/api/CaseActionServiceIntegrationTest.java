@@ -20,6 +20,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,6 +60,13 @@ public class CaseActionServiceIntegrationTest {
     private static final UUID APPEAL_CASE_TYPE_ACTION_ID = UUID.fromString("326eddb3-ba64-4253-ad39-916ccbb59f4e");
     private static final UUID APPEAL_CASE_TYPE_ACTION_ID_ALT_ID = UUID.fromString("426eddb3-ba64-4253-ad39-916ccbb59f4e");
     private static final UUID NON_EXISTENT_CASE_TYPE_ACTION_ID = UUID.fromString("c3d53309-3be8-4bad-8d9b-b2f7107f6923");
+    public static final String EXTENSION_REASON_1_SIMPLE_NAME = "EXTENSION_REASON_1_SIMPLE_NAME";
+    public static final String EXTENSION_REASON_2_SIMPLE_NAME = "EXTENSION_REASON_2_SIMPLE_NAME";
+
+    public static final uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto EXTENSION_REASON_1 = new uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto(EXTENSION_REASON_1_SIMPLE_NAME,
+            Map.of("title", "Extension Reason 1"));
+    public static final uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto EXTENSION_REASON_2 = new uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto(EXTENSION_REASON_1_SIMPLE_NAME,
+            Map.of("title", "Extension Reason 2"));
 
     private static final CaseTypeActionDto MOCK_CASE_TYPE_ACTION_EXTENSION_DTO = new CaseTypeActionDto(
             EXTENSION_CASE_TYPE_ACTION_ID,
@@ -197,6 +205,18 @@ public class CaseActionServiceIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(
                         test_interested_party), MediaType.APPLICATION_JSON));
+
+        mockInfoService
+                .expect(manyTimes(), requestTo(
+                        "http://localhost:8085/entity/simpleName/EXTENSION_REASON_1_SIMPLE_NAME"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(EXTENSION_REASON_1), MediaType.APPLICATION_JSON));
+
+        mockInfoService
+                .expect(manyTimes(), requestTo(
+                        "http://localhost:8085/entity/simpleName/EXTENSION_REASON_2_SIMPLE_NAME"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(EXTENSION_REASON_2), MediaType.APPLICATION_JSON));
     }
 
     // EXTENSIONS - CREATE
@@ -215,7 +235,8 @@ public class CaseActionServiceIntegrationTest {
                         caseTypeActionLabel,
                         "TODAY",
                         8,
-                        "NOTE"
+                        "NOTE",
+                        EXTENSION_REASON_1_SIMPLE_NAME + "," + EXTENSION_REASON_2_SIMPLE_NAME
                 );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
@@ -243,7 +264,8 @@ public class CaseActionServiceIntegrationTest {
                         caseTypeActionLabel,
                         "TODAY",
                         8,
-                        "NOTE"
+                        "NOTE",
+                        EXTENSION_REASON_1_SIMPLE_NAME + "," + EXTENSION_REASON_2_SIMPLE_NAME
                 );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
@@ -270,7 +292,8 @@ public class CaseActionServiceIntegrationTest {
                 caseTypeActionLabel,
                 "TODAY",
                 8,
-                "NOTE"
+                "NOTE",
+                EXTENSION_REASON_1_SIMPLE_NAME + "," + EXTENSION_REASON_2_SIMPLE_NAME
         );
 
         String requestBody = mapper.writeValueAsString(actionDataDto);
