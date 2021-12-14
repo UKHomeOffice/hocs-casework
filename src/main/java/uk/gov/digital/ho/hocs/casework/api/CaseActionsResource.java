@@ -43,7 +43,7 @@ public class CaseActionsResource {
     @PostMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/extension")
     public ResponseEntity<GetCaseReferenceResponse> createExtension(@PathVariable UUID caseUUID,
                                                                     @PathVariable UUID stageUUID,
-                                                                    @RequestBody ActionDataDeadlineExtensionInboundDto extensionData) throws JsonProcessingException {
+                                                                    @RequestBody ActionDataDeadlineExtensionInboundDto extensionData) {
 
         extensionService.createExtension(caseUUID, stageUUID, extensionData);
         return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
