@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -98,7 +99,7 @@ public class CopyCompToComp2Test {
                 null,
                 null,
                 false,
-                Map.of(),
+                new HashMap<>(Map.of()),
                 null,
                 null,
                 null,

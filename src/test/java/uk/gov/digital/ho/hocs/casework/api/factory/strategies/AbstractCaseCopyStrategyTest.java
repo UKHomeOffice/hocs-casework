@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -14,8 +15,8 @@ public class AbstractCaseCopyStrategyTest {
     private static final Map<String, String> EXISTING_CLOB;
 
     static {
-        Map<String, String> fromCaseValues = Map.of("key1", "value1", "key2", "value2", "key3", "value3", "key4", "value4");
-        Map<String, String> existingTargetValues = Map.of("exkey1", "exvalue1", "exkey2", "exvalue2");
+        Map<String, String> fromCaseValues = new HashMap<>(Map.of("key1", "value1", "key2", "value2", "key3", "value3", "key4", "value4"));
+        Map<String, String> existingTargetValues = new HashMap<>(Map.of("exkey1", "exvalue1", "exkey2", "exvalue2"));
         FROM_CLOB = fromCaseValues;
         EXISTING_CLOB = existingTargetValues;
     }
