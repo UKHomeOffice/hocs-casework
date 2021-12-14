@@ -54,7 +54,6 @@ public class AuditClient {
     @Setter
     private ExecutorService executorService;
 
-
     @Autowired
     public AuditClient(ProducerTemplate producerTemplate,
                        @Value("${audit.sns}") String auditQueue,
