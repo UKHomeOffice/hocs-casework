@@ -39,7 +39,6 @@ public class CaseDataResourceTest {
     public static final String PREVIOUS_CASE_REFERENCE = "COMP/1234567/21";
     public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
     public static final UUID PREVIOUS_STAGE_UUID = UUID.randomUUID();
-    public static final UUID RANDOM_UUID = UUID.randomUUID();
     public static final UUID FROM_CASE_UUID = UUID.randomUUID();
     private final CaseDataType caseDataType = CaseDataTypeFactory.from("MIN", "a1");
     private final HashMap<String, String> data = new HashMap<>();
@@ -370,21 +369,4 @@ public class CaseDataResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
-
-    @Test
-    public void getCaseReferenceValue() {
-        String reference = "CASE/123456/789";
-
-        when(caseDataService.getCaseDataCaseRef(uuid)).thenReturn(reference);
-
-        final ResponseEntity<GetCaseReferenceResponse> caseReferenceResponse = caseDataResource.getCaseReference(uuid);
-
-        assertThat(caseReferenceResponse).isNotNull();
-        assertThat(caseReferenceResponse.getBody()).isNotNull();
-        assertThat(caseReferenceResponse.getBody().getReference()).isEqualTo(reference);
-        verify(caseDataService).getCaseDataCaseRef(uuid);
-        verifyNoMoreInteractions(caseDataService);
-
-    }
 }
-

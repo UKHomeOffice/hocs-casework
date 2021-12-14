@@ -945,19 +945,6 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void getCaseRef() {
-
-        when(caseDataRepository.getCaseRef(caseUUID)).thenReturn(caseRef);
-
-        String result = caseDataService.getCaseRef(caseUUID);
-
-        assertThat(result).isEqualTo(caseRef);
-        verify(caseDataRepository).getCaseRef(caseUUID);
-        verifyNoMoreInteractions(infoClient, caseDataRepository, auditClient);
-
-    }
-
-    @Test
     public void updateDeadlineForStages() {
 
         Map<String, Integer> stageTypeAndDaysMap = Map.ofEntries(Map.entry("type1", 5),

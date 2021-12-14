@@ -138,7 +138,7 @@ public class StageService {
         caseDataService.updateCaseData(caseData, stage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
         auditClient.createStage(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
-        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, getCaseRef(caseUUID), emailType);
+        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, caseData.getReference(), emailType);
         return stage;
     }
 
@@ -200,7 +200,7 @@ public class StageService {
             log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID, value(EVENT, STAGE_COMPLETED));
         } else {
             log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, newTeamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
-            notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), newTeamUUID, getCaseRef(caseUUID), emailType);
+            notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), newTeamUUID, stage.getCaseReference(), emailType);
         }
     }
 
@@ -210,7 +210,7 @@ public class StageService {
             final UUID stageUserUUID = getLastCaseUserUUID(stage.getCaseUUID());
             if (offlineQaUser != null && stageUserUUID != null) {
                 UUID offlineQaUserUUID = UUID.fromString(offlineQaUser);
-                notifyClient.sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), stageUserUUID, offlineQaUserUUID, getCaseRef(stage.getCaseUUID()));
+                notifyClient.sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), stageUserUUID, offlineQaUserUUID, stage.getCaseReference());
             }
         }
     }
@@ -252,7 +252,7 @@ public class StageService {
         stageRepository.save(stage);
         auditClient.updateStageUser(stage);
         log.info("Updated User: {} for Stage {}", newUserUUID, stageUUID, value(EVENT, STAGE_ASSIGNED_USER));
-        notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, getCaseRef(caseUUID));
+        notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, stage.getCaseReference());
     }
 
     Set<StageWithCaseData> getActiveStagesByCaseUUID(UUID caseUUID) {
@@ -463,10 +463,6 @@ public class StageService {
             Optional<StageWithCaseData> maxDatedStage = stageSupplier.get().max(CREATED_COMPARATOR);
             return maxDatedStage.stream();
         }
-    }
-
-    private String getCaseRef(UUID caseUUID) {
-        return caseDataService.getCaseRef(caseUUID);
     }
 
     private void updatePriority(StageWithCaseData stage) {
