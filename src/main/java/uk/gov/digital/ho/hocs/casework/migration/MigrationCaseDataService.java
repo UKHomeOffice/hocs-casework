@@ -17,8 +17,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseReferenceGenerator;
 import uk.gov.digital.ho.hocs.casework.domain.repository.ActiveCaseViewDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
-import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDeadlineExtensionTypeRepository;
-import uk.gov.digital.ho.hocs.casework.domain.repository.SomuItemRepository;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -36,9 +34,13 @@ public class MigrationCaseDataService extends CaseDataService {
     private final MigrationStageRepository migrationStageRepository;
 
     @Autowired
-    public MigrationCaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
-                                    MigrationStageRepository migrationStageRepository, InfoClient infoClient,
-                                    ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory,
+    public MigrationCaseDataService(CaseDataRepository caseDataRepository,
+                                    ActiveCaseViewDataRepository activeCaseViewDataRepository,
+                                    MigrationStageRepository migrationStageRepository,
+                                    InfoClient infoClient,
+                                    ObjectMapper objectMapper,
+                                    AuditClient auditClient,
+                                    CaseCopyFactory caseCopyFactory,
                                     CaseActionService caseActionService) {
         super(caseDataRepository,
                 activeCaseViewDataRepository,
@@ -64,7 +66,7 @@ public class MigrationCaseDataService extends CaseDataService {
             newCaseReference = CaseReferenceGenerator.generateCaseReference(caseType, caseDataRepository.getNextSeriesId(), caseCreated);
         }
 
-        CaseData caseData = new CaseData(caseDataType, newCaseReference, request.getData(), objectMapper, request.getCaseDeadline(), request.getDateReceived(), caseCreated);
+        CaseData caseData = new CaseData();
         caseDataRepository.save(caseData);
 
         if (!StringUtils.isNullOrEmpty(totalsListName)) {
@@ -87,7 +89,7 @@ public class MigrationCaseDataService extends CaseDataService {
         if (data != null) {
             log.debug("Data size {}", data.size());
             CaseData caseData = getCase(caseUUID);
-            caseData.update(data, objectMapper);
+            //caseData.update(data, objectMapper);
             caseDataRepository.save(caseData);
             log.info("Updated Case Data for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_UPDATED));
         } else {

@@ -1,18 +1,13 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.Map;
 
 @Service
 public class StageTagsDecoratorImpl implements StageTagsDecorator {
-
-    private ObjectMapper objectMapper;
 
     private static final String HOME_SEC_REPLY_FIELD_NAME = "HomeSecReply";
     private static final String PRIVATE_OFFICE_OVERRIDE_PO_TEAM_UUID_FIELD_NAME = "PrivateOfficeOverridePOTeamUUID";
@@ -22,66 +17,58 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
     private static final String OVERRIDE_PO_TEAM_NAME = "OverridePOTeamName";
     private static final String PO_TEAM_NAME = "POTeamName";
 
-    @Autowired
-    public StageTagsDecoratorImpl(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
 
     @Override
-    public void decorateTags(StageWithCaseData stage) {
+    public Collection<String> decorateTags(Map<String,String> data, String stageType) {
         ArrayList<String> tags = new ArrayList<>();
-        if (this.addHomeSecReplyTag(stage)) {
+        if (this.addHomeSecReplyTag(data, stageType)) {
             tags.add(StageTags.HOME_SEC_REPLY_TAG);
         }
-        stage.setTag(tags);
+        return tags;
     }
 
-    private Boolean hasDataFieldAndValue(StageWithCaseData stage, String field, String value) {
-        Map<String, String> data = new HashMap<>(stage.getDataMap(objectMapper));
-
-        if (data.get(field) != null) {
+    private Boolean hasDataFieldAndValue(Map<String,String> data, String field, String value) {
+        if (data.containsKey(field)) {
             return data.get(field).equals(value);
         }
 
         return false;
     }
 
-    private Boolean addHomeSecReplyTag(StageWithCaseData stage) {
-        if(hasDataFieldAndValue(stage, HOME_SEC_REPLY_FIELD_NAME, "TRUE") || hasDataFieldAndValue(stage, OVERRIDE_PO_TEAM_NAME, "Home Secretary") || hasDataFieldAndValue(stage, PO_TEAM_NAME, "Home Secretary")) {
-            return  isAtDcuMarkup(stage) ||
-                    isHomeSecReplyNoPoTeam(stage) ||
-                    hasHomeSecPoTeam(stage);
+    private Boolean addHomeSecReplyTag(Map<String,String> data, String stageType) {
+        if(hasDataFieldAndValue(data, HOME_SEC_REPLY_FIELD_NAME, "TRUE") ||
+                hasDataFieldAndValue(data, OVERRIDE_PO_TEAM_NAME, "Home Secretary") ||
+                hasDataFieldAndValue(data, PO_TEAM_NAME, "Home Secretary")) {
+            return  isAtDcuMarkup(stageType) ||
+                    isHomeSecReplyNoPoTeam(data) ||
+                    hasHomeSecPoTeam(data);
         }
 
         return false;
     }
 
-    private Boolean isAtDcuMarkup(StageWithCaseData stage) {
-        return stage.getStageType().equals("DCU_MIN_MARKUP");
+    private Boolean isAtDcuMarkup(String stageType) {
+        return stageType.equals("DCU_MIN_MARKUP");
     }
 
-    private Boolean isHomeSecReplyNoPoTeam(StageWithCaseData stage) {
-        Map<String, String> data = new HashMap<>(stage.getDataMap(objectMapper));
+    private Boolean isHomeSecReplyNoPoTeam(Map<String,String> data) {
 
         if (data.get(PRIVATE_OFFICE_OVERRIDE_PO_TEAM_UUID_FIELD_NAME) != null) {
             return false;
         }
 
         return (
-                hasDataFieldAndValue(stage, PO_TEAM_UUID_FIELD_NAME, "") &&
-                hasDataFieldAndValue(stage, OVERRIDE_PO_TEAM_UUID_FIELD_NAME, "")
+                hasDataFieldAndValue(data, PO_TEAM_UUID_FIELD_NAME, "") &&
+                hasDataFieldAndValue(data, OVERRIDE_PO_TEAM_UUID_FIELD_NAME, "")
         );
     }
 
-    private Boolean hasHomeSecPoTeam(StageWithCaseData stage) {
-        String poTeamUuid = this.highestPrecedentPrivateOfficeTeamUuid(stage);
-
+    private Boolean hasHomeSecPoTeam(Map<String,String> data) {
+        String poTeamUuid = this.highestPrecedentPrivateOfficeTeamUuid(data);
         return poTeamUuid.equals(HOME_SEC_PO_TEAM_UUID);
     }
 
-    private String highestPrecedentPrivateOfficeTeamUuid(StageWithCaseData stage) {
-        Map<String, String> data = new HashMap<>(stage.getDataMap(objectMapper));
-
+    private String highestPrecedentPrivateOfficeTeamUuid(Map<String,String> data) {
         String[] homeSecReplyCasePoTeamPrecedence = {
                 PRIVATE_OFFICE_OVERRIDE_PO_TEAM_UUID_FIELD_NAME,
                 OVERRIDE_PO_TEAM_UUID_FIELD_NAME,

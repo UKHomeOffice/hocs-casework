@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +25,8 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -55,9 +56,6 @@ public class ActionDataAppealsServiceTest {
     @Mock
     private CaseNoteService mockCaseNoteService;
 
-    @Mock
-    private ObjectMapper mockObjectMapper;
-
     @Captor
     private ArgumentCaptor<ActionDataAppeal> appealArgumentCaptor = ArgumentCaptor.forClass(ActionDataAppeal.class);
 
@@ -78,7 +76,10 @@ public class ActionDataAppealsServiceTest {
     public static final String PREV_EMAIL = "string 2";
     public static final String PREV_REFERENCE = "string 3";
     public static final String PREV_EXTERNAL_KEY = "string 4";
-    public static final String PREV_DATA_CLOB = "{\"key1\" : \"value1\", \"key2\" : \"value2\"}";
+    public static final Map<String, String> PREV_DATA_CLOB = new HashMap<>() {{
+        put("key1", "value1");
+        put("key2", "value2");
+    }};
 
     @Before
     public void setUp() throws Exception {
@@ -97,7 +98,6 @@ public class ActionDataAppealsServiceTest {
         UUID caseUUID = UUID.randomUUID();
         UUID actionTypeUuid = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
-        String caseType = "TEST_CASE_TYPE";
 
         ActionDataAppealDto appealDto = new ActionDataAppealDto(
                 null,
@@ -125,7 +125,6 @@ public class ActionDataAppealsServiceTest {
         UUID caseUUID = UUID.randomUUID();
         UUID actionTypeUuid = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
-        String caseType = "TEST_CASE_TYPE";
 
         ActionDataAppealDto appealDto = new ActionDataAppealDto(
                 null,
@@ -243,8 +242,6 @@ public class ActionDataAppealsServiceTest {
         UUID caseUUID = UUID.randomUUID();
         UUID actionTypeUuid = UUID.randomUUID();
         UUID actionEntityId = UUID.randomUUID();
-        UUID stageUUID = UUID.randomUUID();
-        String caseType = "TEST_CASE_TYPE";
 
         ActionDataAppealDto appealDto = new ActionDataAppealDto(
                 actionEntityId,
@@ -271,8 +268,6 @@ public class ActionDataAppealsServiceTest {
         UUID caseUUID = UUID.randomUUID();
         UUID actionTypeUuid = UUID.randomUUID();
         UUID actionEntityId = UUID.randomUUID();
-        UUID stageUUID = UUID.randomUUID();
-        String caseType = "TEST_CASE_TYPE";
 
         ActionDataAppealDto appealDto = new ActionDataAppealDto(
                 actionEntityId,
@@ -301,8 +296,6 @@ public class ActionDataAppealsServiceTest {
         UUID caseUUID = UUID.randomUUID();
         UUID actionTypeUuid = UUID.randomUUID();
         UUID actionEntityId = UUID.randomUUID();
-        UUID stageUUID = UUID.randomUUID();
-        String caseType = "TEST_CASE_TYPE";
 
         LocalDate originalCaseDeadline = LocalDate.of(2021, Month.APRIL,30);
         LocalDate originalDeadlineWarning = LocalDate.of(2021, Month.APRIL,28);
@@ -352,19 +345,6 @@ public class ActionDataAppealsServiceTest {
                 Set.of(new ActiveStage(), new ActiveStage()),
                 Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
 
-        CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
-                actionTypeUuid,
-                null,
-                caseType,
-                null,
-                "TEST_APPEAL",
-                null,
-                1,
-                10,
-                true,
-                null
-        );
-
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
         // WHEN
@@ -378,7 +358,6 @@ public class ActionDataAppealsServiceTest {
         UUID caseUUID = UUID.randomUUID();
         UUID actionTypeUuid = UUID.randomUUID();
         UUID actionEntityId = UUID.randomUUID();
-        UUID stageUUID = UUID.randomUUID();
         String caseType = "TEST_CASE_TYPE";
         String actionTypeLabel = "A LABEL";
         String updatedDataField = "{\"update\": \"true\"}";

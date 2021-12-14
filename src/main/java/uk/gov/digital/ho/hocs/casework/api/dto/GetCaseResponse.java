@@ -2,12 +2,9 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRawValue;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
@@ -18,8 +15,8 @@ import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static uk.gov.digital.ho.hocs.casework.api.CaseDataService.CASE_UUID_PATTERN;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
@@ -38,8 +35,8 @@ public class GetCaseResponse {
     @JsonProperty("reference")
     private String reference;
 
-    @JsonRawValue
-    private String data;
+    @JsonProperty("data")
+    private Map<String, String> data;
 
     @JsonProperty("primaryTopicUUID")
     private UUID primaryTopicUUID;
@@ -108,38 +105,24 @@ public class GetCaseResponse {
         return null;
     }
 
-    private static Pattern uuidPattern = Pattern.compile("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b", Pattern.CASE_INSENSITIVE);
-
-    private static String populateFields(CaseData caseData, boolean full) {
+    private static Map<String,String> populateFields(CaseData caseData, boolean full) {
         if (full) {
-            List<String> keys = new ArrayList<>(2);
-            List<String> values = new ArrayList<>(2);
+            Map<String, String> replacementValues = new HashMap<>();
 
             if (caseData.getPrimaryTopic() != null) {
-                keys.add(caseData.getPrimaryTopic().getUuid().toString());
-                values.add(caseData.getPrimaryTopic().getText());
+                replacementValues.put(caseData.getPrimaryTopic().getUuid().toString(), caseData.getPrimaryTopic().getText());
             }
             if (caseData.getPrimaryCorrespondent() != null) {
-                keys.add(caseData.getPrimaryCorrespondent().getUuid().toString());
-                values.add(caseData.getPrimaryCorrespondent().getFullName());
+                replacementValues.put(caseData.getPrimaryCorrespondent().getUuid().toString(), caseData.getPrimaryCorrespondent().getFullName());
             }
-            // substitute the UUID key values into the value UUIDs
-            final Map<String, String> dataMap = caseData.getDataMap(new ObjectMapper());
-            final Set<String> dataKeys = new LinkedHashSet<>(dataMap.keySet());
-            final Collection<String> dataValues = new LinkedList<>(dataMap.values());
-            dataKeys.retainAll(dataValues);
-            for (String uuid : dataKeys) {
-                Matcher uuidMatcher = uuidPattern.matcher(uuid);
-                if (uuidMatcher.matches()) {
-                    keys.add(uuid);
-                    values.add(dataMap.get(uuid));
-                }
-            }
-            return StringUtils.replaceEach(caseData.getData(),
-                    keys.toArray(new String[0]),
-                    values.toArray(new String[0]));
+
+            final Map<String, String> dataMap = caseData.getDataMap();
+            dataMap.keySet().stream().filter(uuid -> CASE_UUID_PATTERN.matcher(uuid).matches()).forEach(uuid -> replacementValues.put(uuid, dataMap.get(uuid)));
+            replacementValues.forEach((key, value) -> dataMap.entrySet().stream().filter(it -> it.getValue().equals(key)).forEach(it -> it.setValue(value)));
+
+            return dataMap;
         }
-        return caseData.getData();
+        return caseData.getDataMap();
     }
 
 

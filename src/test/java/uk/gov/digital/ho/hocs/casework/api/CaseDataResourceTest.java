@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,10 +38,9 @@ public class CaseDataResourceTest {
     public static final String PREVIOUS_CASE_REFERENCE = "COMP/1234567/21";
     public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
     public static final UUID PREVIOUS_STAGE_UUID = UUID.randomUUID();
-    public static final UUID RANDOM_UUID = UUID.randomUUID();
     public static final UUID FROM_CASE_UUID = UUID.randomUUID();
     private final CaseDataType caseDataType = CaseDataTypeFactory.from("MIN", "a1");
-    private final HashMap<String, String> data = new HashMap<>();
+    private final Map<String, String> data = new HashMap<>(0);
     private final UUID uuid = UUID.randomUUID();
     @Mock
     private CaseDataService caseDataService;
@@ -50,7 +48,6 @@ public class CaseDataResourceTest {
     private final LocalDate dateArg = LocalDate.now();
 
     private CaseDataResource caseDataResource;
-    private ObjectMapper objectMapper = new ObjectMapper();
 
     @Before
     public void setUp() {
@@ -61,7 +58,7 @@ public class CaseDataResourceTest {
     public void shouldCreateCase() {
 
         //given
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, dateArg);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
         CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID);
 
         when(caseDataService.createCase(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID)).thenReturn(caseData);
@@ -79,7 +76,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCase() {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, dateArg);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
@@ -96,7 +93,7 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCaseNull() {
 
-        CaseData caseData = new CaseData(caseDataType, caseID, data, objectMapper, dateArg);
+        CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
 
         when(caseDataService.getCase(uuid)).thenReturn(caseData);
 
@@ -387,4 +384,3 @@ public class CaseDataResourceTest {
 
     }
 }
-
