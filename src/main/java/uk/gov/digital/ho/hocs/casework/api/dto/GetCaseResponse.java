@@ -117,8 +117,16 @@ public class GetCaseResponse {
             }
 
             final Map<String, String> dataMap = caseData.getDataMap();
-            dataMap.keySet().stream().filter(uuid -> CASE_UUID_PATTERN.matcher(uuid).matches()).forEach(uuid -> replacementValues.put(uuid, dataMap.get(uuid)));
-            replacementValues.forEach((key, value) -> dataMap.entrySet().stream().filter(it -> it.getValue().equals(key)).forEach(it -> it.setValue(value)));
+            for (String s : dataMap.keySet()) {
+                if (CASE_UUID_PATTERN.matcher(s).matches()) {
+                    replacementValues.put(s, dataMap.get(s));
+                }
+            }
+            for (Map.Entry<String, String> entry : replacementValues.entrySet()) {
+                String key = entry.getKey();
+                String value = entry.getValue();
+                dataMap.entrySet().stream().filter(it -> it.getValue().equals(key)).forEach(it -> it.setValue(value));
+            }
 
             return dataMap;
         }
