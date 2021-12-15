@@ -1,35 +1,18 @@
-buildscript {
-	ext {
-		springBootVersion = '2.5.1'
-		camelVersion = '2.25.4'
-	}
-	repositories {
-		mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+plugins {
+    id 'java'
+    id 'jacoco'
+    id 'org.springframework.boot' version '2.5.6'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
-apply plugin: 'java'
-apply plugin: 'idea'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'jacoco'
+def camelVersion = '2.25.4'
 
-task copyLombok(type: Copy) {
-	outputs.upToDateWhen { false }
-	into "${buildDir}/libs"
-	include "lombok*.jar"
-	from configurations.compileClasspath
-}
+group = 'uk.gov.digital.ho.hocs'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
 
-tasks.withType(JavaCompile) {
-    options.fork = true  // Fork your compilation into a child process
-    options.forkOptions.setMemoryMaximumSize("256m")
+repositories {
+    mavenCentral()
 }
 
 plugins.withType(JacocoPlugin) {
@@ -37,7 +20,6 @@ plugins.withType(JacocoPlugin) {
 }
 
 test {
-    maxHeapSize = "256m"
     finalizedBy jacocoTestReport // report is always generated after tests run
 }
 
@@ -52,56 +34,40 @@ jacocoTestReport {
     }
 }
 
-build.dependsOn(copyLombok)
-
-group = 'uk.gov.digital.ho.hocs'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
-targetCompatibility = '11'
-
-repositories {
-	mavenCentral()
-	jcenter()
-}
 
 dependencies {
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.12.5'
-    implementation group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: '2.12.5'
-
     implementation('org.springframework.boot:spring-boot-starter-web') {
         exclude(module: 'spring-boot-starter-tomcat')
     }
+
     implementation('org.springframework.boot:spring-boot-starter-undertow')
     implementation('org.springframework.boot:spring-boot-starter-actuator')
     implementation('org.springframework.boot:spring-boot-starter-data-jpa')
     implementation('org.springframework.boot:spring-boot-starter-json')
     implementation('org.springframework.boot:spring-boot-starter-cache')
     implementation('org.springframework.boot:spring-boot-starter-validation')
-    implementation("org.apache.camel:camel-spring-boot-starter:${camelVersion}")
-    implementation("org.apache.camel:camel-aws:${camelVersion}")
 
-    implementation('com.github.ben-manes.caffeine:caffeine')
-    implementation('com.amazonaws:aws-java-sdk:1.11.470')
-
-    implementation('org.flywaydb:flyway-core')
-    implementation('net.logstash.logback:logstash-logback-encoder:5.3')
-    implementation 'org.json:json:20210307'
-
+    implementation('net.logstash.logback:logstash-logback-encoder:6.6')
     implementation('org.springdoc:springdoc-openapi-ui:1.5.12')
 
-    implementation 'org.projectlombok:lombok:1.18.18'
+    implementation('com.github.ben-manes.caffeine:caffeine:3.0.4')
+    implementation("org.apache.camel:camel-spring-boot-starter:${camelVersion}")
+    implementation("org.apache.camel:camel-aws:${camelVersion}")
+    implementation('com.amazonaws:aws-java-sdk:1.11.470')
+    implementation 'org.json:json:20210307'
 
-    runtimeOnly('org.postgresql:postgresql')
-    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
-    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
-    annotationProcessor "org.springframework:spring-context-indexer:5.3.12"
+    implementation'org.flywaydb:flyway-core'
+    runtimeOnly 'org.postgresql:postgresql:42.3.1'
+
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.springframework:spring-context-indexer:5.3.13'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation("org.apache.camel:camel-test-spring:${camelVersion}")
     testImplementation('org.assertj:assertj-core')
     testImplementation group: 'com.google.guava', name: 'guava', version: '28.2-jre'
-    testImplementation group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
-    testAnnotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.20'
 }
 
 jar {
