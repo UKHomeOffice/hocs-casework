@@ -42,7 +42,10 @@ public class ActionDataAppealsService implements ActionService {
     private final AuditClient auditClient;
 
     @Autowired
-    public ActionDataAppealsService(ActionDataAppealsRepository appealsRepository, CaseDataRepository caseDataRepository, InfoClient infoClient, AuditClient auditClient, CaseNoteService caseNoteService) {
+    public ActionDataAppealsService(ActionDataAppealsRepository appealsRepository,
+                                    CaseDataRepository caseDataRepository,
+                                    InfoClient infoClient,
+                                    AuditClient auditClient) {
         this.appealsRepository = appealsRepository;
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
