@@ -67,7 +67,7 @@ dependencies {
     testImplementation('org.springframework.boot:spring-boot-starter-test')
     testImplementation("org.apache.camel:camel-test-spring:${camelVersion}")
     testImplementation('org.assertj:assertj-core')
-    testImplementation group: 'com.google.guava', name: 'guava', version: '28.2-jre'
+    testImplementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
 }
 
 jar {
