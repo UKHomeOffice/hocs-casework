@@ -20,6 +20,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.ActionDataDeadlineExten
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -37,8 +38,6 @@ public class ActionDataDeadlineExtensionService implements ActionService {
     private final InfoClient infoClient;
     private final AuditClient auditClient;
     private final CaseNoteService caseNoteService;
-
-    private static final String CREATE_CASE_NOTE_KEY = "EXTENSION";
 
     @Autowired
     public ActionDataDeadlineExtensionService(ActionDataDeadlineExtensionRepository extensionRepository, CaseDataRepository caseDataRepository, InfoClient infoClient, AuditClient auditClient, CaseNoteService caseNoteService) {
@@ -81,6 +80,12 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         }
 
         CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(), extensionTypeUuid);
+
+        String hydratedReasonList = Arrays.stream(extensionDto.getReasons().split(","))
+                .map(reasonSimpleName -> infoClient.getEntityBySimpleName(reasonSimpleName).getData().get("title"))
+                .collect(Collectors.joining(", "));
+
+
         if (caseTypeActionDto == null) {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action exists for actionId: %s", extensionTypeUuid), ACTION_DATA_CREATE_FAILURE);
         }
@@ -104,6 +109,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, msg);
         }
 
+
         ActionDataDeadlineExtension extensionEntity = new ActionDataDeadlineExtension(
                 extensionDto.getCaseTypeActionUuid(),
                 caseTypeActionDto.getActionLabel(),
@@ -111,7 +117,8 @@ public class ActionDataDeadlineExtensionService implements ActionService {
                 caseUuid,
                 caseData.getCaseDeadline(),
                 updatedDeadline,
-                extensionDto.getNote()
+                extensionDto.getNote() + "\nReason: " + hydratedReasonList,
+                extensionDto.getReasons()
         );
 
         caseData.setCaseDeadline(updatedDeadline);
@@ -120,7 +127,6 @@ public class ActionDataDeadlineExtensionService implements ActionService {
 
         ActionDataDeadlineExtension createdExtension = extensionRepository.save(extensionEntity);
         caseDataRepository.save(caseData);
-        caseNoteService.createCaseNote(caseUuid, CREATE_CASE_NOTE_KEY, extensionDto.getNote());
         auditClient.updateCaseAudit(caseData, stageUuid);
         auditClient.createExtensionAudit(createdExtension);
 

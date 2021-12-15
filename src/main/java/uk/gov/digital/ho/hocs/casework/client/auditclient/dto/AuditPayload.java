@@ -192,6 +192,7 @@ public interface AuditPayload {
         private LocalDate updatedDeadline;
         private String note;
         private LocalDateTime createTimestamp;
+        private String reasons;
 
         public static AuditPayload.CreateExtensionRequest from(ActionDataDeadlineExtension actionDataDeadlineExtension) {
             return new AuditPayload.CreateExtensionRequest(
@@ -200,7 +201,8 @@ public interface AuditPayload {
                     actionDataDeadlineExtension.getOriginalDeadline(),
                     actionDataDeadlineExtension.getUpdatedDeadline(),
                     actionDataDeadlineExtension.getNote(),
-                    actionDataDeadlineExtension.getCreateTimestamp()
+                    actionDataDeadlineExtension.getCreateTimestamp(),
+                    actionDataDeadlineExtension.getReasons()
             );
         }
     }
