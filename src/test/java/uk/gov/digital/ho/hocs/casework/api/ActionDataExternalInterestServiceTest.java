@@ -84,8 +84,7 @@ public class ActionDataExternalInterestServiceTest {
                 mockExternalInterestRepository,
                 mockCaseDataRepository,
                 mockInfoClient,
-                mockAuditClient,
-                mockCaseNoteService
+                mockAuditClient
         );
     }
 
