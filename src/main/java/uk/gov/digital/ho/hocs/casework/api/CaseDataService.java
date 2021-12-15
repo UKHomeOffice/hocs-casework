@@ -49,23 +49,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRE
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_TOPIC_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.UNCAUGHT_EXCEPTION;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.APPEAL_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.APPEAL_CREATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.EXTENSION_APPLIED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_CREATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_DELETED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.DOCUMENT_CREATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.DOCUMENT_DELETED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_COMPLETED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_CREATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_RECREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 
 @Service
 @Slf4j
@@ -114,7 +98,10 @@ public class CaseDataService {
             DOCUMENT_DELETED.toString(),
             APPEAL_UPDATED.toString(),
             APPEAL_CREATED.toString(),
-            EXTENSION_APPLIED.toString()
+            EXTENSION_APPLIED.toString(),
+            EXTERNAL_INTEREST_CREATED.toString(),
+            EXTERNAL_INTEREST_UPDATED.toString()
+
     );
 
     public CaseData getCase(UUID caseUUID) {

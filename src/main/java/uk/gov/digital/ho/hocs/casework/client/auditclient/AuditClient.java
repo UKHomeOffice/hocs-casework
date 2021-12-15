@@ -393,6 +393,7 @@ public class AuditClient {
                 actionDataExternalInterest.getCaseDataUuid(),
                 actionDataExternalInterest.getCaseDataType(),
                 actionDataExternalInterest.getDetailsOfInterest(),
+                actionDataExternalInterest.getPartyType(),
                 EventType.EXTERNAL_INTEREST_UPDATED
         ));
     }
@@ -403,6 +404,7 @@ public class AuditClient {
                 actionDataExternalInterest.getCaseDataUuid(),
                 actionDataExternalInterest.getCaseDataType(),
                 actionDataExternalInterest.getDetailsOfInterest(),
+                actionDataExternalInterest.getPartyType(),
                 EventType.EXTERNAL_INTEREST_CREATED
         ));
     }

@@ -297,6 +297,7 @@ public interface AuditPayload {
         private UUID caseDataUuid;
         private String caseType;
         private String interestDetails;
+        private String partyType;
         private EventType eventType;
     }
 }
