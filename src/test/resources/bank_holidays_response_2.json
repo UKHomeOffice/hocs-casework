@@ -1,0 +1,41 @@
+{
+  "england-and-wales": {
+    "division": "england-and-wales",
+    "events": [
+      {
+        "title": "New Year’s Day",
+        "date": "2017-01-02",
+        "notes": "Substitute day",
+        "bunting": true
+      },
+      {
+        "title": "Good Friday",
+        "date": "2017-04-14",
+        "notes": "",
+        "bunting": false
+      }
+    ]
+  },
+  "scotland": {
+    "division": "england-and-wales",
+    "events": [
+      {
+        "title": "New Year’s Day",
+        "date": "2017-01-02",
+        "notes": "Substitute day",
+        "bunting": true
+      }
+    ]
+  },
+  "northern-ireland": {
+    "division": "england-and-wales",
+    "events": [
+      {
+        "title": "New Year’s Day",
+        "date": "2017-01-02",
+        "notes": "Substitute day",
+        "bunting": true
+      }
+    ]
+  }
+}
