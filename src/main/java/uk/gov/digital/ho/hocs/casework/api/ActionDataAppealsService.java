@@ -40,18 +40,16 @@ public class ActionDataAppealsService implements ActionService {
     private final CaseDataRepository caseDataRepository;
     private final InfoClient infoClient;
     private final AuditClient auditClient;
-    private final CaseNoteService caseNoteService;
-
-    private static final String CREATE_CASE_NOTE_KEY = "APPEAL_CREATED";
-    private static final String UPDATE_CASE_NOTE_KEY = "APPEAL_UPDATED";
 
     @Autowired
-    public ActionDataAppealsService(ActionDataAppealsRepository appealsRepository, CaseDataRepository caseDataRepository, InfoClient infoClient, AuditClient auditClient, CaseNoteService caseNoteService) {
+    public ActionDataAppealsService(ActionDataAppealsRepository appealsRepository,
+                                    CaseDataRepository caseDataRepository,
+                                    InfoClient infoClient,
+                                    AuditClient auditClient) {
         this.appealsRepository = appealsRepository;
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
-        this.caseNoteService = caseNoteService;
     }
 
     @Override
@@ -97,7 +95,6 @@ public class ActionDataAppealsService implements ActionService {
         );
 
         ActionDataAppeal createdAppealEntity = appealsRepository.save(appealEntity);
-        caseNoteService.createCaseNote(caseUuid, CREATE_CASE_NOTE_KEY, appealEntity.getCaseTypeActionLabel());
         auditClient.createAppealAudit(createdAppealEntity, caseTypeActionDto);
         log.info("Created Action: {}  for Case: {}", createdAppealEntity, caseData.getUuid(), value(EVENT, ACTION_DATA_CREATE_SUCCESS) );
 
@@ -134,7 +131,6 @@ public class ActionDataAppealsService implements ActionService {
 
         ActionDataAppeal updatedAppealEntity = appealsRepository.save(existingAppealData);
 
-        caseNoteService.createCaseNote(caseUuid, UPDATE_CASE_NOTE_KEY, updatedAppealEntity.getCaseTypeActionLabel());
         auditClient.updateAppealAudit(updatedAppealEntity, caseTypeActionDto);
         log.info("Updated Action: {}  for Case: {}", appealDto, caseData.getUuid(), value(EVENT, ACTION_DATA_UPDATE_SUCCESS) );
 
