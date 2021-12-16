@@ -1,0 +1,13 @@
+{
+  "england-and-wales": {
+    "division": "england-and-wales",
+    "events": [
+      {
+        "title": "New Year’s Day",
+        "date": "2017-01-02",
+        "notes": "Substitute day",
+        "bunting": true
+      }
+    ]
+  }
+}

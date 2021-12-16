@@ -89,28 +89,6 @@ public class InfoClientTest {
     }
 
     @Test
-    public void getCaseDeadlineWarning() {
-        LocalDate expected = LocalDate.of(2020, 5, 13);
-        when(restHelper.get("infoService", "/caseType/TEST/deadlineWarning?received=2020-05-08&days=0", LocalDate.class)).thenReturn(expected);
-
-        LocalDate response = infoClient.getCaseDeadlineWarning("TEST", LocalDate.of(2020, 5, 8), 0);
-
-        assertThat(response).isNotNull();
-        assertThat(response).isEqualTo(expected);
-    }
-
-    @Test
-    public void getStageDeadlineWarning() {
-        LocalDate expected = LocalDate.of(2020, 5, 13);
-        when(restHelper.get("infoService", "/stageType/TEST/deadlineWarning?received=2020-05-08&caseDeadlineWarning=2020-05-09", LocalDate.class)).thenReturn(expected);
-
-        LocalDate response = infoClient.getStageDeadlineWarning("TEST", LocalDate.of(2020, 5, 8), LocalDate.of(2020, 5, 9));
-
-        assertThat(response).isNotNull();
-        assertThat(response).isEqualTo(expected);
-    }
-
-    @Test
     public void getEntityListTotalsReturnsEntityList() {
         EntityTotalDto entityTotalDto = new EntityTotalDto(new HashMap(), new HashMap());
         EntityDto<EntityTotalDto> entityDto = new EntityDto<EntityTotalDto>("simpleName", entityTotalDto);
@@ -152,23 +130,6 @@ public class InfoClientTest {
         verifyNoMoreInteractions(restHelper);
 
     }
-
-    @Test
-    public void getWorkingDaysElapsedForCaseType() {
-        String caseType = "CASE_TYPE_A";
-        LocalDate fromDate = LocalDate.parse("2020-05-11");
-        when(restHelper.get("infoService", "/caseType/CASE_TYPE_A/workingDays/2020-05-11", new ParameterizedTypeReference<Integer>() {
-        })).thenReturn(12);
-
-        Integer result = infoClient.getWorkingDaysElapsedForCaseType(caseType, fromDate);
-        assertThat(result).isNotNull();
-        assertThat(result).isEqualTo(12);
-
-        verify(restHelper).get("infoService", "/caseType/CASE_TYPE_A/workingDays/2020-05-11", new ParameterizedTypeReference<Integer>() {
-        });
-        verifyNoMoreInteractions(restHelper);
-    }
-
 
     @Test
     public void getProfileByCaseType() {

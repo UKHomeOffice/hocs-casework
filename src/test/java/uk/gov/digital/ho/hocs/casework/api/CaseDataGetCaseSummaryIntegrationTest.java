@@ -112,9 +112,13 @@ public class CaseDataGetCaseSummaryIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/TEST/stageType/deadline?received=2018-01-01"))
+                .expect(requestTo("http://localhost:8085/stages/caseType/TEST"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new HashMap<>()), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))

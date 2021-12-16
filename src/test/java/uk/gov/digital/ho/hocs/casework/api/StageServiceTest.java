@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
@@ -63,7 +64,14 @@ public class StageServiceTest {
     private final String stageType = "DCU_MIN_MARKUP";
     private final String allocationType = "anyAllocate";
     private final UUID transitionNoteUUID = UUID.randomUUID();
-    private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN", null);
+    private final CaseDataType caseDataType = new CaseDataType(
+            "MIN",
+            "1a",
+            "MIN",
+            null,
+            20,
+            15
+    );
     private final List<CaseDataType> caseDataTypes = List.of(
             CaseDataTypeFactory.from("NXT", "a5", "MIN"), // NXT can be reached through MIN
                 caseDataType);
@@ -71,6 +79,14 @@ public class StageServiceTest {
     private final String userID = UUID.randomUUID().toString();
 
     private StageService stageService;
+    private final StageTypeDto stageTypeDto = new StageTypeDto(
+            "DCU_MIN_MARKUP",
+            null,
+            "DCU_MIN_MARKUP",
+            20,
+            15,
+            1
+    );
 
     @Mock
     private StageRepository stageRepository;
@@ -96,29 +112,39 @@ public class StageServiceTest {
     private CaseNoteService caseNoteService;
     @Mock
     private ContributionsProcessor contributionsProcessor;
+    @Mock
+    private DeadlineService deadlineService;
 
     @Mock
     private ActionDataDeadlineExtensionService extensionService;
 
     @Before
     public void setUp() {
+        when(infoClient.getAllStagesForCaseType(caseDataType.getDisplayName()))
+                .thenReturn(
+                        Set.of(stageTypeDto)
+                );
+
         this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient,
-                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, stageTagsDecorator, caseNoteService, contributionsProcessor, extensionService);
+                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator,
+                stageTagsDecorator, caseNoteService, contributionsProcessor, extensionService, deadlineService);
     }
 
     @Test
     public void shouldCreateStage() {
-
-        CaseData caseData = new CaseData(caseDataType, 12344567L, LocalDate.now());
-        caseData.setCaseDeadlineWarning(LocalDate.now());
+        LocalDate received = LocalDate.parse("2021-01-04");
+        LocalDate deadline = LocalDate.parse("2021-02-01");
+        LocalDate deadlineWarning = LocalDate.parse("2021-01-25");
+        CaseData caseData = new CaseData(caseDataType, 12344567L, received);
+        caseData.setCaseDeadline(deadline);
+        caseData.setCaseDeadlineWarning(deadlineWarning);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
 
         stageService.createStage(caseData.getUuid(), stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
 
         verify(caseDataService).getCase(caseData.getUuid());
-        verify(infoClient).getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
-        verify(infoClient).getStageDeadlineWarning(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
+        verify(deadlineService).calculateWorkingDaysForStage("MIN", received, deadline, stageTypeDto.getSla());
         verify(stageRepository).save(any(Stage.class));
         verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), eq(caseData.getReference()), eq(allocationType));
 
@@ -142,8 +168,7 @@ public class StageServiceTest {
 
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
-        when(infoClient.getStageDeadlineOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadline())).thenReturn(caseData.getCaseDeadline());
-        when(infoClient.getStageDeadlineWarningOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning())).thenReturn(caseData.getCaseDeadlineWarning());
+//        when(infoClient.getStageDeadlineWarningOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning())).thenReturn(caseData.getCaseDeadlineWarning());
 
         // WHEN
         Stage stage = stageService.createStage(caseData.getUuid(), stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
@@ -197,8 +222,7 @@ public class StageServiceTest {
 
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
-        when(infoClient.getStageDeadlineOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadline())).thenReturn(caseData.getCaseDeadline());
-        when(infoClient.getStageDeadlineWarningOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning())).thenReturn(caseData.getCaseDeadlineWarning());
+//        when(infoClient.getStageDeadlineWarningOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning())).thenReturn(caseData.getCaseDeadlineWarning());
 
         // WHEN
         Stage stage = stageService.createStage(caseData.getUuid(), stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
@@ -225,8 +249,6 @@ public class StageServiceTest {
 
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
-        when(infoClient.getStageDeadlineOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadline())).thenReturn(caseData.getCaseDeadline());
-        when(infoClient.getStageDeadlineWarningOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning())).thenReturn(caseData.getCaseDeadlineWarning());
 
         // WHEN
         Stage stage = stageService.createStage(caseData.getUuid(), stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);

@@ -29,6 +29,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -44,6 +45,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = "classpath:case/beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
 @Sql(scripts = "classpath:case/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
 @ActiveProfiles({ "local", "integration" })
 public class CaseDataCreateCaseIntegrationTest {
@@ -194,10 +196,19 @@ public class CaseDataCreateCaseIntegrationTest {
 
     @Test
     public void shouldCreateAValidCaseWithNullData() throws JsonProcessingException {
+        // given
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", 5);
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST",null), "TEST", "5");
 
+        // when
+        ResponseEntity<CreateCaseResponse> result =
+                getCreateCaseResponse(
+                        createBodyData("TEST",null),
+                        "TEST",
+                        "5");
+
+
+        // then
         CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -301,19 +312,26 @@ public class CaseDataCreateCaseIntegrationTest {
                 .expect(requestTo("http://localhost:8085/caseType/type/TEST"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CaseDataTypeFactory.from("TEST", "a1")), MediaType.APPLICATION_JSON));
+
         mockInfoService
                 .expect(requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/TEST/deadline?received=2018-01-01&days=0"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON_UTF8));
-        mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType/TEST/deadlineWarning?received=2018-01-01&days=0"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON_UTF8));
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {

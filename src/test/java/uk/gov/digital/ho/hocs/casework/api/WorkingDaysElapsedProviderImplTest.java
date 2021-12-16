@@ -16,7 +16,7 @@ import static org.mockito.Mockito.*;
 public class WorkingDaysElapsedProviderImplTest {
 
     @Mock
-    InfoClient infoClient;
+    DeadlineService deadlineService;
 
     private WorkingDaysElapsedProviderImpl workingDaysElapsedProvider;
 
@@ -25,18 +25,19 @@ public class WorkingDaysElapsedProviderImplTest {
 
     @Before
     public void before(){
-        workingDaysElapsedProvider = new WorkingDaysElapsedProviderImpl(infoClient);
+        workingDaysElapsedProvider = new WorkingDaysElapsedProviderImpl(deadlineService);
     }
 
-     @Test
+    @Test
     public void getWorkingDaysSince(){
         LocalDate fromDate = LocalDate.parse("2020-05-11");
-        when(infoClient.getWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate)).thenReturn(25);
+        LocalDate today = LocalDate.now();
+        when(deadlineService.calculateWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate, today)).thenReturn(25);
 
         Integer results = workingDaysElapsedProvider.getWorkingDaysSince(CASE_TYPE, fromDate);
         assertThat(results).isEqualTo(25);
 
-        verify(infoClient).getWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate);
-        verifyNoMoreInteractions(infoClient);
+        verify(deadlineService).calculateWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate, today);
+        verifyNoMoreInteractions(deadlineService);
     }
 }

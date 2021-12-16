@@ -17,14 +17,17 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.utils.DateUtils;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.matchesPattern;
 import static org.springframework.http.HttpMethod.*;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
@@ -159,11 +162,11 @@ public class CaseActionServiceIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(6).toString()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadline?received=2018-01-01&caseDeadline=" + LocalDate.now().plusDays(8) + "&overrideSla=true"))
+                .expect(requestTo(matchesPattern("http:\\/\\/localhost:8085\\/stageType\\/INITIAL_DRAFT\\/deadline\\?received=2018-01-01&caseDeadline=\\d{4}-\\d{2}-\\d{2}&overrideSla=true")))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(8).toString()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadlineWarning?received=2018-01-01&caseDeadlineWarning=" + LocalDate.now().plusDays(6) + "&overrideSla=true"))
+                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadlineWarning?received=2018-01-01&caseDeadlineWarning=" + DateUtils.addWorkingDays(LocalDate.now(), 3, Set.of()) + "&overrideSla=true"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(6).toString()), MediaType.APPLICATION_JSON));
         mockInfoService
@@ -195,7 +198,14 @@ public class CaseActionServiceIntegrationTest {
                 .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/deadline/2018-01-29/remainingDays"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(10), MediaType.APPLICATION_JSON));
-
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
         final EntityDto test_interested_party = new EntityDto(
                 "TEST_INTERESTED_PARTY",
                 UUID.randomUUID().toString(),
@@ -219,6 +229,19 @@ public class CaseActionServiceIntegrationTest {
                         "http://localhost:8085/entity/simpleName/EXTENSION_REASON_2_SIMPLE_NAME"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(EXTENSION_REASON_2), MediaType.APPLICATION_JSON));
+
+        mockInfoService
+                .expect(manyTimes(), requestTo(
+                        "http://localhost:8085/caseType/type/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(new CaseDataType(
+                        null,
+                        null,
+                        null,
+                        null,
+                        20,
+                        15
+                )), MediaType.APPLICATION_JSON));
     }
 
     // EXTENSIONS - CREATE

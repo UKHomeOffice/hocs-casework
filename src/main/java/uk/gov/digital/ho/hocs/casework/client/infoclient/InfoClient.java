@@ -9,8 +9,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -124,31 +122,12 @@ public class InfoClient {
         return response;
     }
 
-    public LocalDate getCaseDeadline(String caseType, LocalDate received, int days) {
-        LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s&days=%s", caseType, received, days), LocalDate.class);
-        log.info("Got {} as deadline for CaseType {} and Date {} and Days {}", response.toString(), caseType, received, days, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
-        return response;
-    }
-
-    public LocalDate getCaseDeadline(String caseType, LocalDate received, int days, int extensionDays) {
-        LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s&days=%s&extensionDays=%s", caseType, received, days, extensionDays), LocalDate.class);
-        log.info("Got {} as deadline for CaseType {} and Date {} and Days {}", response.toString(), caseType, received, days, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
-        return response;
-    }
-
-    @Cacheable(value = "InfoClientGetCaseDeadlineWarning", unless = "#result == null", key = "{#caseType, #received.toString(), #days.toString() }")
-    public LocalDate getCaseDeadlineWarning(String caseType, LocalDate received, int days) {
-        LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadlineWarning?received=%s&days=%s", caseType, received, days), LocalDate.class);
-        log.info("Got {} as deadline warning for CaseType {} and Date {} and Days {}", response.toString(), caseType, received, days, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
-        return response;
-    }
-
-
-    @Cacheable(value = "InfoClientGetStageDeadlines", unless = "#result.size() == 0", key = "{#caseType, #received.toString() }")
-    public Map<String, LocalDate> getStageDeadlines(String caseType, LocalDate received) {
-        Map<String, LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, received), new ParameterizedTypeReference<Map<String, LocalDate>>() {
+    @Cacheable(value = "InfoClientGetAllStagesForCaseType", unless = "#result.size() == 0", key = "{#caseType}")
+    public Set<StageTypeDto> getAllStagesForCaseType(String caseType) {
+        Set<StageTypeDto> response = restHelper.get(serviceBaseURL, String.format("/stages/caseType/%s", caseType), new ParameterizedTypeReference<>() {
         });
-        log.info("Got {} stage deadlines for CaseType {} and Date {}", response.size(), caseType, received, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
+
+        log.info("Got {} stage types for CaseType {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
         return response;
     }
 
@@ -156,32 +135,6 @@ public class InfoClient {
     public Boolean getStageContributions(String stageType) {
         Boolean response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/contributions", stageType), new ParameterizedTypeReference<Boolean>() {});
         log.info("Got {} as contributions for StageType {}", response.toString(), stageType, value(EVENT, INFO_CLIENT_GET_CONTRIBUTIONS_SUCCESS));
-        return response;
-    }
-
-    @Cacheable(value = "InfoClientGetStageDeadline", unless = "#result == null", key = "{#stageType, #received.toString(), #caseDeadline.toString() }")
-    public LocalDate getStageDeadline(String stageType, LocalDate received, LocalDate caseDeadline) {
-        LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadline?received=%s&caseDeadline=%s", stageType, received, caseDeadline), LocalDate.class);
-        log.info("Got {} as deadline for StageType {} and Date {} and Case Deadline {}", response.toString(), stageType, received, caseDeadline, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS));
-        return response;
-    }
-
-    public LocalDate getStageDeadlineOverridingSLA(String stageType, LocalDate received, LocalDate caseDeadline) {
-        LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadline?received=%s&caseDeadline=%s&overrideSla=true", stageType, received, caseDeadline), LocalDate.class);
-        log.info("Got {} as deadline for StageType {} and Date {} and Case Deadline {} (SLA overridden)", response.toString(), stageType, received, caseDeadline, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_SUCCESS));
-        return response;
-    }
-
-    @Cacheable(value = "InfoClientGetStageDeadlineWarning", unless = "#result == null", key = "{#stageType, #received.toString(), #caseDeadlineWarning.toString() }")
-    public LocalDate getStageDeadlineWarning(String stageType, LocalDate received, LocalDate caseDeadlineWarning) {
-        LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadlineWarning?received=%s&caseDeadlineWarning=%s", stageType, received, caseDeadlineWarning), LocalDate.class);
-        log.info("Got {} as deadline warning for StageType {} and Date {} and Case Deadline Warning {}", response.toString(), stageType, received, caseDeadlineWarning, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_WARNING_SUCCESS));
-        return response;
-    }
-
-    public LocalDate getStageDeadlineWarningOverridingSLA(String stageType, LocalDate received, LocalDate caseDeadlineWarning) {
-        LocalDate response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/deadlineWarning?received=%s&caseDeadlineWarning=%s&overrideSla=true", stageType, received, caseDeadlineWarning), LocalDate.class);
-        log.info("Got {} as deadline warning for StageType {} and Date {} and Case Deadline Warning {} (SLA overridden)", response.toString(), stageType, received, caseDeadlineWarning, value(EVENT, INFO_CLIENT_GET_STAGE_DEADLINE_WARNING_SUCCESS));
         return response;
     }
 
@@ -232,27 +185,17 @@ public class InfoClient {
         return policies;
     }
 
-    @Cacheable(value = "InfoClientGetWorkingDaysElapsedForCaseType")
-    public Integer getWorkingDaysElapsedForCaseType(String caseType, LocalDate fromDate) {
-        String dateString = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(fromDate);
-        Integer elapsedWorkingDays = restHelper.get(serviceBaseURL, String.format("/caseType/%s/workingDays/%s", caseType, dateString), new ParameterizedTypeReference<Integer>() {
-        });
-        log.info("Got working days elapsed for case type: {} fromDate: {}, event {}", caseType, dateString, value(EVENT, INFO_CLIENT_GET_WORKING_DAYS_FOR_CASE_TYPE_SUCCESS));
-        return elapsedWorkingDays;
-    }
-
-    public Integer getRemainingDaysToDeadline(String caseType, LocalDate deadlineDate) {
-        String dateString = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(deadlineDate);
-        Integer remainingDays = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline/%s/remainingDays", caseType, dateString), new ParameterizedTypeReference<Integer>() {
-        });
-        log.info("Got remaining days for caseType {} with deadline {} as {} days remaining, event {}", caseType, dateString, remainingDays, value(EVENT, INFO_CLIENT_REMAINING_DAYS_FOR_CASE_TYPE_AND_DEADLINE_SUCCESS));
-        return remainingDays;
-    }
-
     @Cacheable(value = "InfoGetProfileByCaseType", unless = "#result == null")
     public ProfileDto getProfileByCaseType(String caseType) {
         ProfileDto response = restHelper.get(serviceBaseURL, String.format("/profile/forcasetype/%s", caseType), ProfileDto.class);
         log.info("Got profile {} for case type {}, event {}", response.getProfileName(), caseType, value(EVENT, INFO_CLIENT_GET_PROFILE_BY_CASE_TYPE_SUCCESS));
+        return response;
+    }
+
+    @Cacheable(value = "InfoGetBankHolidaysByCaseType", unless = "#result == null")
+    public List<String> getBankHolidayRegionsByCaseType(String caseType) {
+        List<String> response = restHelper.get(serviceBaseURL, String.format("/bankHolidayRegion/caseType/%s", caseType), new ParameterizedTypeReference<>() {});
+        log.info("Got {} bank holidays for case type {}, event {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_BANK_HOLIDAYS_BY_CASE_TYPE_SUCCESS));
         return response;
     }
 

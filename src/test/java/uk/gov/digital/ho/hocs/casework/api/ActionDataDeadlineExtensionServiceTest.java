@@ -10,6 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboundDto;
 
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto;
@@ -19,9 +20,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.ActionDataDeadlineExtensionRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.Month;
+import java.time.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
@@ -54,13 +54,24 @@ public class ActionDataDeadlineExtensionServiceTest {
     private AuditClient mockAuditClient;
 
     @Mock
-    private CaseNoteService caseNoteService;
+    private DeadlineService deadlineService;
 
     @Captor
     private ArgumentCaptor<CaseData> caseDataArgCapture = ArgumentCaptor.forClass(CaseData.class);
 
     @Captor
     private ArgumentCaptor<ActionDataDeadlineExtension> extensionArgumentCaptor = ArgumentCaptor.forClass(ActionDataDeadlineExtension.class);
+
+    Set<LocalDate> englandAndWalesBankHolidays2020 = Set.of(
+            LocalDate.parse("2020-01-01"),
+            LocalDate.parse("2020-04-10"),
+            LocalDate.parse("2020-04-13"),
+            LocalDate.parse("2020-05-08"),
+            LocalDate.parse("2020-05-25"),
+            LocalDate.parse("2020-08-31"),
+            LocalDate.parse("2020-12-25"),
+            LocalDate.parse("2020-12-28")
+    );
 
     public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
     public static final String TOPIC_NAME = "topic_name";
@@ -90,15 +101,20 @@ public class ActionDataDeadlineExtensionServiceTest {
     public static final EntityDto EXTENSION_REASON_2 = new EntityDto(EXTENSION_REASON_1_SIMPLE_NAME,
             Map.of("title", "Extension Reason 2"));
 
+    public final LocalDate mockedNow = LocalDate.of(2020, 4, 27);
 
     @Before
     public void setUp() {
+        Clock fixedClock =
+                Clock.fixed(mockedNow.atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
+
         actionDataDeadlineExtensionService = new ActionDataDeadlineExtensionService(
                 mockExtensionRepository,
                 mockCaseDataRepository,
                 mockInfoClient,
                 mockAuditClient,
-                caseNoteService
+                deadlineService,
+                fixedClock
         );
 
         when(mockInfoClient.getEntityBySimpleName(EXTENSION_REASON_1_SIMPLE_NAME))
@@ -115,7 +131,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         UUID actionTypeUuid = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
         String caseType = "TEST_CASE_TYPE";
-        int extendByDays = 8;
+        int extendByDays = 9;
         ActionDataDeadlineExtensionInboundDto extensionDto = new ActionDataDeadlineExtensionInboundDto(
                 null,
                 actionTypeUuid,
@@ -127,8 +143,8 @@ public class ActionDataDeadlineExtensionServiceTest {
                 EXTENSION_REASON_1_SIMPLE_NAME + "," + EXTENSION_REASON_2_SIMPLE_NAME
         );
 
-        LocalDate originalCaseDeadline = LocalDate.of(2021, Month.APRIL,30);
-        LocalDate originalDeadlineWarning = LocalDate.of(2021, Month.APRIL,28);
+        LocalDate originalCaseDeadline = LocalDate.of(2020, Month.APRIL,30);
+        LocalDate originalDeadlineWarning = LocalDate.of(2020, Month.APRIL,28);
 
         CaseData previousCaseData = new CaseData(
                 1L,
@@ -156,7 +172,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                         PREV_EXTERNAL_KEY),
                 originalCaseDeadline,
                 originalDeadlineWarning,
-                LocalDate.now().minusDays(10),
+                mockedNow.minusDays(10),
                 false,
                 Set.of(new ActiveStage(), new ActiveStage()),
                 Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
@@ -176,22 +192,33 @@ public class ActionDataDeadlineExtensionServiceTest {
 
         when(mockInfoClient.getCaseTypeActionByUuid(previousCaseData.getType(), extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(previousCaseData);
-        when(mockInfoClient.getCaseDeadline(anyString(), any(LocalDate.class), anyInt())).thenReturn(LocalDate.now().plusDays(extendByDays));
-        when(mockInfoClient.getCaseDeadlineWarning(anyString(), any(LocalDate.class), anyInt())).thenReturn(LocalDate.now().plusDays(extendByDays - 2));
+        when(mockInfoClient.getCaseType(any())).thenReturn(new CaseDataType(
+                null,
+                null,
+                null,
+                null,
+                20,
+                15
+        ));
+        when(deadlineService.calculateWorkingDaysForCaseType(any(), any(), eq(9)))
+                .thenReturn(LocalDate.parse("2020-05-11"));
 
-       // WHEN
+        when(deadlineService.calculateWorkingDaysForCaseType(any(), any(), eq(4)))
+                .thenReturn(LocalDate.parse("2020-05-01"));
+
+        // WHEN
         actionDataDeadlineExtensionService.createExtension(caseUUID,stageUUID, extensionDto);
 
         // THEN
         verify(mockExtensionRepository, times(1)).save(extensionArgumentCaptor.capture());
 
-        assertThat(extensionArgumentCaptor.getValue().getUpdatedDeadline()).isEqualTo(LocalDate.now().plusDays(8));
+        assertThat(extensionArgumentCaptor.getValue().getUpdatedDeadline()).isEqualTo(LocalDate.parse("2020-05-11"));
         assertThat(extensionArgumentCaptor.getValue().getOriginalDeadline()).isEqualTo(originalCaseDeadline);
 
         verify(mockCaseDataRepository, times(1)).save(caseDataArgCapture.capture());
 
-        assertThat(caseDataArgCapture.getValue().getCaseDeadline()).isEqualTo(LocalDate.now().plusDays(8));
-        assertThat(caseDataArgCapture.getValue().getCaseDeadlineWarning()).isEqualTo(LocalDate.now().plusDays(6));
+        assertThat(caseDataArgCapture.getValue().getCaseDeadline()).isEqualTo(LocalDate.parse("2020-05-11"));
+        assertThat(caseDataArgCapture.getValue().getCaseDeadlineWarning()).isEqualTo(LocalDate.parse("2020-05-01"));
 
         verify(mockAuditClient, times(1)).updateCaseAudit(any(), any());
 
@@ -258,7 +285,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         UUID actionTypeUuid = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
         String caseType = "TEST_CASE_TYPE";
-        int extendByDays = 8;
+        int extendByDays = 9;
         ActionDataDeadlineExtensionInboundDto extensionDto = new ActionDataDeadlineExtensionInboundDto(
                 null,
                 actionTypeUuid,
@@ -311,7 +338,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                         PREV_EXTERNAL_KEY),
                 originalCaseDeadline,
                 originalDeadlineWarning,
-                LocalDate.now().minusDays(10),
+                mockedNow.minusDays(10),
                 false,
                 Set.of(new ActiveStage(), new ActiveStage()),
                 Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
