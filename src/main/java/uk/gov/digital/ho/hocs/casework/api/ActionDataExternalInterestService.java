@@ -30,22 +30,16 @@ public class ActionDataExternalInterestService implements ActionService {
     private final CaseDataRepository caseDataRepository;
     private final InfoClient infoClient;
     private final AuditClient auditClient;
-    private final CaseNoteService caseNoteService;
-
-    private static final String CREATE_CASE_NOTE_KEY = "RECORD_INTEREST";
-    private static final String UPDATE_CASE_NOTE_KEY = "UPDATE_INTEREST";
 
     @Autowired
     public ActionDataExternalInterestService(ActionDataExternalInterestRepository actionDataExternalInterestRepository,
                                              CaseDataRepository caseDataRepository,
                                              InfoClient infoClient,
-                                             AuditClient auditClient,
-                                             CaseNoteService caseNoteService) {
+                                             AuditClient auditClient) {
         this.actionDataExternalInterestRepository = actionDataExternalInterestRepository;
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
-        this.caseNoteService = caseNoteService;
     }
 
     @Override
@@ -86,8 +80,6 @@ public class ActionDataExternalInterestService implements ActionService {
         EntityDto<Map<String, String>> partyType = infoClient.getEntityBySimpleName(actionDataExternalInterest.getPartyType());
         String partyTitle = partyType.getData().get("title");
 
-        caseNoteService.createCaseNote(caseUuid, CREATE_CASE_NOTE_KEY,
-                partyTitle + ": " + actionDataExternalInterest.getDetailsOfInterest());
         actionDataExternalInterestRepository.save(actionDataExternalInterest);
 
         auditClient.createExternalInterestAudit(actionDataExternalInterest);
@@ -124,8 +116,6 @@ public class ActionDataExternalInterestService implements ActionService {
         EntityDto<Map<String, String>> partyType = infoClient.getEntityBySimpleName(existingExternalInterestData.getPartyType());
         String partyTitle = partyType.getData().get("title");
 
-        caseNoteService.createCaseNote(caseUuid, UPDATE_CASE_NOTE_KEY,
-                partyTitle + ": " + existingExternalInterestData.getDetailsOfInterest());
         actionDataExternalInterestRepository.save(existingExternalInterestData);
 
         auditClient.updateExternalInterestAudit(existingExternalInterestData);

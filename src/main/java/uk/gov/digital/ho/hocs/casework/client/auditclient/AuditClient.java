@@ -54,7 +54,6 @@ public class AuditClient {
     @Setter
     private ExecutorService executorService;
 
-
     @Autowired
     public AuditClient(ProducerTemplate producerTemplate,
                        @Value("${audit.sns}") String auditQueue,
@@ -394,6 +393,7 @@ public class AuditClient {
                 actionDataExternalInterest.getCaseDataUuid(),
                 actionDataExternalInterest.getCaseDataType(),
                 actionDataExternalInterest.getDetailsOfInterest(),
+                actionDataExternalInterest.getPartyType(),
                 EventType.EXTERNAL_INTEREST_UPDATED
         ));
     }
@@ -404,6 +404,7 @@ public class AuditClient {
                 actionDataExternalInterest.getCaseDataUuid(),
                 actionDataExternalInterest.getCaseDataType(),
                 actionDataExternalInterest.getDetailsOfInterest(),
+                actionDataExternalInterest.getPartyType(),
                 EventType.EXTERNAL_INTEREST_CREATED
         ));
     }

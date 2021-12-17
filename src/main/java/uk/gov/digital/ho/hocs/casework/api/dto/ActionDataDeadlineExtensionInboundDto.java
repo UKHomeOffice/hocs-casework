@@ -20,6 +20,7 @@ public class ActionDataDeadlineExtensionInboundDto extends ActionDataDto {
     private String extendFrom;
     private int extendBy;
     private String note;
+    private String reasons;
 
     public ActionDataDeadlineExtensionInboundDto(
             UUID uuid,
@@ -28,11 +29,14 @@ public class ActionDataDeadlineExtensionInboundDto extends ActionDataDto {
             String caseTypeActionLabel,
             String extendFrom,
             int extendBy,
-            String note)
+            String note,
+            String reasons
+            )
     {
         super(uuid, caseTypeActionUuid, caseSubtype, caseTypeActionLabel);
         this.extendFrom = extendFrom;
         this.extendBy = extendBy;
         this.note = note;
+        this.reasons = reasons;
     }
 }

@@ -53,6 +53,9 @@ public class ActionDataDeadlineExtension implements Serializable {
     @Column(name = "note")
     private String note;
 
+    @Column(name = "reasons")
+    private String reasons;
+
 
     @Column(name = "created_timestamp")
     private LocalDateTime createTimestamp;
@@ -64,7 +67,8 @@ public class ActionDataDeadlineExtension implements Serializable {
                                        String caseTypeActionLabel,
                                        String caseDataType, UUID caseDataUuid,
                                        LocalDate originalDeadline, LocalDate updatedDeadline,
-                                       String note) {
+                                       String note,
+                                       String reasons) {
         this.uuid = UUID.randomUUID();
         this.caseTypeActionUuid = caseTypeActionUuid;
         this.caseTypeActionLabel = caseTypeActionLabel;
@@ -73,6 +77,7 @@ public class ActionDataDeadlineExtension implements Serializable {
         this.originalDeadline = originalDeadline;
         this.updatedDeadline = updatedDeadline;
         this.note = note;
+        this.reasons = reasons;
     }
 
     @PrePersist

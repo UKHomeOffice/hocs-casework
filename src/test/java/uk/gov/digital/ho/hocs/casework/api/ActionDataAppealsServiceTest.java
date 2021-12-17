@@ -53,9 +53,6 @@ public class ActionDataAppealsServiceTest {
     private AuditClient mockAuditClient;
 
     @Mock
-    private CaseNoteService mockCaseNoteService;
-
-    @Mock
     private ObjectMapper mockObjectMapper;
 
     @Captor
@@ -87,8 +84,7 @@ public class ActionDataAppealsServiceTest {
                 mockAppealRepository,
                 mockCaseDataRepository,
                 mockInfoClient,
-                mockAuditClient,
-                mockCaseNoteService
+                mockAuditClient
         );
     }
 
@@ -234,7 +230,6 @@ public class ActionDataAppealsServiceTest {
         assertThat(appealUuid).isEqualTo(createdActionDataAppeal.getUuid());
 
         verify(mockCaseDataRepository, times(1)).findActiveByUuid(caseUUID);
-        verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("APPEAL_CREATED"), anyString());
         verify(mockAuditClient, times(1)).createAppealAudit(any(), any());
     }
 
@@ -497,7 +492,6 @@ public class ActionDataAppealsServiceTest {
 
         verify(mockInfoClient, times(1)).getCaseTypeActionByUuid(eq(caseData.getType()), eq(actionTypeUuid));
         verify(mockAuditClient, times(1)).updateAppealAudit(any(), any());
-        verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("APPEAL_UPDATED"), eq(actionTypeLabel));
 
     }
 }

@@ -149,7 +149,7 @@ public class CaseNoteServiceTest {
             // Do nothing.
         }
 
-        verifyZeroInteractions(caseNoteRepository);
+         verifyNoInteractions(caseNoteRepository);
 
     }
 
@@ -167,7 +167,7 @@ public class CaseNoteServiceTest {
             // Do nothing.
         }
 
-        verifyZeroInteractions(caseNoteRepository);
+         verifyNoInteractions(caseNoteRepository);
 
     }
 
@@ -185,7 +185,7 @@ public class CaseNoteServiceTest {
             // Do nothing.
         }
 
-        verifyZeroInteractions(caseNoteRepository);
+         verifyNoInteractions(caseNoteRepository);
 
     }
 

@@ -13,6 +13,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboun
 
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -80,6 +82,13 @@ public class ActionDataDeadlineExtensionServiceTest {
     public static final String PREV_REFERENCE = "string 3";
     public static final String PREV_EXTERNAL_KEY = "string 4";
     public static final String PREV_DATA_CLOB = "{\"key1\" : \"value1\", \"key2\" : \"value2\"}";
+    public static final String EXTENSION_REASON_1_SIMPLE_NAME = "EXTENSION_REASON_1_SIMPLE_NAME";
+    public static final String EXTENSION_REASON_2_SIMPLE_NAME = "EXTENSION_REASON_2_SIMPLE_NAME";
+
+    public static final EntityDto EXTENSION_REASON_1 = new EntityDto(EXTENSION_REASON_1_SIMPLE_NAME,
+            Map.of("title", "Extension Reason 1"));
+    public static final EntityDto EXTENSION_REASON_2 = new EntityDto(EXTENSION_REASON_1_SIMPLE_NAME,
+            Map.of("title", "Extension Reason 2"));
 
     @Before
     public void setUp() {
@@ -91,6 +100,11 @@ public class ActionDataDeadlineExtensionServiceTest {
                 caseNoteService,
                 objectMapper
         );
+
+        when(mockInfoClient.getEntityBySimpleName(EXTENSION_REASON_1_SIMPLE_NAME))
+                .thenReturn(EXTENSION_REASON_1);
+        when(mockInfoClient.getEntityBySimpleName(EXTENSION_REASON_2_SIMPLE_NAME))
+                .thenReturn(EXTENSION_REASON_2);
     }
 
     @Test
@@ -109,7 +123,8 @@ public class ActionDataDeadlineExtensionServiceTest {
                 "TEST_EXTENSION",
                 "TODAY",
                 extendByDays,
-                "ANY NOTE HERE"
+                "ANY NOTE HERE",
+                EXTENSION_REASON_1_SIMPLE_NAME + "," + EXTENSION_REASON_2_SIMPLE_NAME
         );
 
         LocalDate originalCaseDeadline = LocalDate.of(2021, Month.APRIL,30);
@@ -178,10 +193,10 @@ public class ActionDataDeadlineExtensionServiceTest {
         assertThat(caseDataArgCapture.getValue().getCaseDeadline()).isEqualTo(LocalDate.now().plusDays(8));
         assertThat(caseDataArgCapture.getValue().getCaseDeadlineWarning()).isEqualTo(LocalDate.now().plusDays(6));
 
-        verify(caseNoteService, times(1)).createCaseNote(any(), any(), any());
-
         verify(mockAuditClient, times(1)).updateCaseAudit(any(), any());
-        verify(mockAuditClient, times(1)).createExtensionAudit(any());
+
+        assertThat(extensionArgumentCaptor
+                .getValue().getNote()).isEqualTo("ANY NOTE HERE\nReason: Extension Reason 1, Extension Reason 2");
 
     }
 
@@ -200,7 +215,8 @@ public class ActionDataDeadlineExtensionServiceTest {
                 "TEST_EXTENSION",
                 "TODAY",
                 extendByDays,
-                "ANY NOTE HERE"
+                "ANY NOTE HERE",
+                "Reason 1, Reason 2"
         );
 
         // WHEN
@@ -225,7 +241,8 @@ public class ActionDataDeadlineExtensionServiceTest {
                 "TEST_EXTENSION",
                 "TODAY",
                 extendByDays,
-                "ANY NOTE HERE"
+                "ANY NOTE HERE",
+                "Reason 1, Reason 2"
         );
         CaseTypeActionDto caseTypeActionDto = new CaseTypeActionDto(
                 actionTypeUuid,
@@ -262,7 +279,8 @@ public class ActionDataDeadlineExtensionServiceTest {
                 "ANY_STRING",
                 "TODAY",
                 extendByDays,
-                "ANY NOTE HERE"
+                "ANY NOTE HERE",
+                EXTENSION_REASON_1_SIMPLE_NAME + "," + EXTENSION_REASON_2_SIMPLE_NAME
         );
 
         ActionDataDeadlineExtension existingExtensionEntity = new ActionDataDeadlineExtension(
@@ -272,11 +290,13 @@ public class ActionDataDeadlineExtensionServiceTest {
                 caseUUID,
                 null,
                 null,
-                null
+                "ANY NOTE HERE",
+                EXTENSION_REASON_1_SIMPLE_NAME + "," + EXTENSION_REASON_2_SIMPLE_NAME
         );
 
         LocalDate originalCaseDeadline = LocalDate.of(2021, Month.APRIL,30);
         LocalDate originalDeadlineWarning = LocalDate.of(2021, Month.APRIL,28);
+
 
         CaseData previousCaseData = new CaseData(
                 1l,
