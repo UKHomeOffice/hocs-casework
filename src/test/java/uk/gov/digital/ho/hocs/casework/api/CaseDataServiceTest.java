@@ -60,7 +60,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito. verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
@@ -726,7 +726,7 @@ public class CaseDataServiceTest {
 
         caseDataService.updateCaseData(caseData.getUuid(), stageUUID, null);
 
-        verifyZeroInteractions(caseDataRepository);
+         verifyNoInteractions(caseDataRepository);
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
