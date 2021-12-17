@@ -464,21 +464,6 @@ public class StageService {
         }
     }
 
-    private void updatePriority(StageWithCaseData stage) {
-        log.info("Updating priority for stage : {}", stage.getCaseUUID());
-        stagePriorityCalculator.updatePriority(stage);
-    }
-
-    private void updateDaysElapsed(StageWithCaseData stage) {
-        log.info("Updating days elapsed for stage : {}", stage.getCaseUUID());
-        daysElapsedCalculator.updateDaysElapsed(stage);
-    }
-
-    private void decorateTags(StageWithCaseData stage) {
-        log.info("Updating tags for stage: {}", stage.getCaseUUID());
-        stageTagsDecorator.decorateTags(stage);
-    }
-
     public void withdrawCase(UUID caseUUID, UUID stageUUID, WithdrawCaseRequest request) {
         log.info("About to withdraw case : {}", caseUUID);
         CaseData caseData = caseDataService.getCase(caseUUID);
