@@ -48,9 +48,6 @@ public class ActionDataExternalInterestServiceTest {
     @Mock
     private AuditClient mockAuditClient;
 
-    @Mock
-    private CaseNoteService mockCaseNoteService;
-
     @Captor
     private ArgumentCaptor<ActionDataExternalInterest> externalInterestArgumentCaptor
             = ArgumentCaptor.forClass(ActionDataExternalInterest.class);
@@ -84,8 +81,7 @@ public class ActionDataExternalInterestServiceTest {
                 mockExternalInterestRepository,
                 mockCaseDataRepository,
                 mockInfoClient,
-                mockAuditClient,
-                mockCaseNoteService
+                mockAuditClient
         );
     }
 
@@ -192,7 +188,6 @@ public class ActionDataExternalInterestServiceTest {
         assertThat(externalInterestArgumentCaptor.getValue().getCaseTypeActionUuid()).isEqualTo(actionTypeUuid);
 
         verify(mockCaseDataRepository, times(1)).findActiveByUuid(caseUUID);
-        verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("RECORD_INTEREST"), anyString());
         verify(mockAuditClient, times(1)).createExternalInterestAudit(any());
     }
 
@@ -301,7 +296,5 @@ public class ActionDataExternalInterestServiceTest {
 
         verify(mockInfoClient, times(1)).getCaseTypeActionByUuid(eq(caseData.getType()), eq(actionTypeUuid));
         verify(mockAuditClient, times(1)).updateExternalInterestAudit(any());
-        verify(mockCaseNoteService, times(1)).createCaseNote(eq(caseUUID), eq("UPDATE_INTEREST"), eq("Test Part Type Changed: TEST_DETAILS_CHANGED"));
-
     }
 }

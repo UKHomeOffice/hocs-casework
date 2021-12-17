@@ -56,7 +56,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito. verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
@@ -716,7 +716,7 @@ public class CaseDataServiceTest {
 
         caseDataService.updateCaseData(caseData.getUuid(), stageUUID, null);
 
-        verifyZeroInteractions(caseDataRepository);
+         verifyNoInteractions(caseDataRepository);
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
@@ -932,19 +932,6 @@ public class CaseDataServiceTest {
 
         verify(infoClient, times(1)).clearCachedTemplateForCaseType(caseType.getDisplayName());
         verifyNoMoreInteractions(infoClient);
-    }
-
-    @Test
-    public void getCaseRef() {
-
-        when(caseDataRepository.getCaseRef(caseUUID)).thenReturn(caseRef);
-
-        String result = caseDataService.getCaseRef(caseUUID);
-
-        assertThat(result).isEqualTo(caseRef);
-        verify(caseDataRepository).getCaseRef(caseUUID);
-        verifyNoMoreInteractions(infoClient, caseDataRepository, auditClient);
-
     }
 
     @Test

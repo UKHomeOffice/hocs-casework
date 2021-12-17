@@ -46,7 +46,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito. verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
@@ -117,7 +117,7 @@ public class StageServiceTest {
         verify(infoClient).getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
         verify(infoClient).getStageDeadlineWarning(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
         verify(stageRepository).save(any(Stage.class));
-        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
+        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), eq(caseData.getReference()), eq(allocationType));
 
         verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(notifyClient);
@@ -261,8 +261,8 @@ public class StageServiceTest {
             // Do nothing.
         }
 
-        verifyZeroInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+         verifyNoInteractions(stageRepository);
+         verifyNoInteractions(notifyClient);
 
     }
 
@@ -281,8 +281,8 @@ public class StageServiceTest {
             // Do nothing.
         }
 
-        verifyZeroInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+         verifyNoInteractions(stageRepository);
+         verifyNoInteractions(notifyClient);
 
     }
 
@@ -314,7 +314,7 @@ public class StageServiceTest {
         verify(stageRepository).findByCaseReference(ref);
 
         verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+         verifyNoInteractions(notifyClient);
 
     }
 
@@ -330,7 +330,7 @@ public class StageServiceTest {
         verify(stageRepository).findByCaseReference(null);
 
         verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+         verifyNoInteractions(notifyClient);
 
     }
 
@@ -346,7 +346,7 @@ public class StageServiceTest {
         verify(stageRepository).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
 
         verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+         verifyNoInteractions(notifyClient);
 
     }
 
@@ -372,7 +372,7 @@ public class StageServiceTest {
         verify(stageRepository).findActiveByCaseUuidStageUUID(caseUUID, stageUUID);
 
         verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+         verifyNoInteractions(notifyClient);
 
     }
 
@@ -394,7 +394,7 @@ public class StageServiceTest {
         verify(stageRepository).findActiveByCaseUuidStageUUID(null, stageUUID);
 
         verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+         verifyNoInteractions(notifyClient);
 
     }
 
@@ -416,7 +416,7 @@ public class StageServiceTest {
         verify(stageRepository).findActiveByCaseUuidStageUUID(caseUUID, null);
 
         verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+         verifyNoInteractions(notifyClient);
 
     }
 
@@ -428,7 +428,7 @@ public class StageServiceTest {
         verify(stageRepository).findAllActiveByCaseUUID(caseUUID);
 
         verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+         verifyNoInteractions(notifyClient);
 
     }
 
@@ -444,8 +444,8 @@ public class StageServiceTest {
 
         verify(stageRepository).findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
 
-        verifyZeroInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+        verifyNoMoreInteractions(stageRepository);
+        verifyNoInteractions(notifyClient);
     }
 
     @Test
@@ -528,7 +528,6 @@ public class StageServiceTest {
         verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
         verify(auditClient).updateStageTeam(stage);
-        verify(caseDataService).getCaseRef(caseUUID);
         verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
 
         checkNoMoreInteraction();
@@ -549,7 +548,6 @@ public class StageServiceTest {
         verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
         verify(notifyClient).sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, null, null);
-        verify(caseDataService).getCaseRef(caseUUID);
 
         checkNoMoreInteraction();
 
@@ -569,7 +567,7 @@ public class StageServiceTest {
         verify(stageRepository).save(stage);
 
         verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+         verifyNoInteractions(notifyClient);
 
     }
 
@@ -780,7 +778,7 @@ public class StageServiceTest {
 
         verify(searchClient).search(searchRequest);
         verifyNoMoreInteractions(searchClient);
-        verifyZeroInteractions(stageRepository);
+         verifyNoInteractions(stageRepository);
 
     }
 
@@ -792,8 +790,6 @@ public class StageServiceTest {
         auditType.add(STAGE_ALLOCATED_TO_USER.name());
         final Set<GetAuditResponse> auditLines = getAuditLines(stage);
         when(auditClient.getAuditLinesForCase(caseUUID, auditType)).thenReturn(auditLines);
-        when(caseDataService.getCaseRef(caseUUID)).thenReturn("MIN/1234567/19");
-
         stageService.checkSendOfflineQAEmail(stage);
 
         verify(auditClient).getAuditLinesForCase(caseUUID, auditType);
@@ -902,7 +898,7 @@ public class StageServiceTest {
         verify(stageRepository).findAllUnassignedAndActiveByTeamUUID(teamUUID);
 
         verifyNoMoreInteractions(stageRepository);
-        verifyZeroInteractions(notifyClient);
+         verifyNoInteractions(notifyClient);
     }
 
     @Test

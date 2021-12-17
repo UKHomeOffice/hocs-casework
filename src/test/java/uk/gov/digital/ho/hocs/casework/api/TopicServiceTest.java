@@ -113,8 +113,8 @@ public class TopicServiceTest {
             // Do nothing.
         }
 
-        verifyZeroInteractions(topicRepository);
-        verifyZeroInteractions(infoClient);
+         verifyNoInteractions(topicRepository);
+         verifyNoInteractions(infoClient);
 
     }
 
@@ -281,4 +281,3 @@ public class TopicServiceTest {
         verifyNoMoreInteractions(topicRepository);
     }
 }
-

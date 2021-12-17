@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.domain.repository;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.After;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,7 +28,6 @@ import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TES
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 
 @Ignore
-@Slf4j
 @RunWith(SpringRunner.class)
 @DataJpaTest(showSql = false)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -68,8 +66,8 @@ public class StageRepositoryPerfTest {
         }
 
         // then
-        log.info("Execution millis searching random team:{}, ", timings);
-        log.info("Execution millis searching known team:{}, ", timingsWithValidTeam);
+        //log.info("Execution millis searching random team:{}, ", timings);
+        //log.info("Execution millis searching known team:{}, ", timingsWithValidTeam);
 
         for (int i = 0; i < QUERY_RUNS; i++) {
             assertThat("Duration must be less than 10 seconds", timings[i] <= TEN_SECONDS);
@@ -106,7 +104,7 @@ public class StageRepositoryPerfTest {
     }
 
     private void runFindAllActiveByTeamUuidQuery(UUID team, long[] timings, int iteration) {
-        log.info("runFindAllActiveByTeamUuidQuery: " +iteration);
+        //log.info("runFindAllActiveByTeamUuidQuery: " +iteration);
         long start = System.currentTimeMillis();
         stageRepository.findAllActiveByTeamUUID(team);
         long finish = System.currentTimeMillis();
@@ -131,7 +129,7 @@ public class StageRepositoryPerfTest {
             entityManager.persist(caseData);
 
             if (i % 500 == 0) {
-                log.info("Added case:{}", i);
+                //log.info("Added case:{}", i);
             }
 
             // add some stage data to parent case
@@ -140,7 +138,7 @@ public class StageRepositoryPerfTest {
                 StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType, y == 5 ? TEAM_UUID : null, null, null);
 
                 entityManager.persist(stage);
-                log.debug("Added case: {}, stage: {}", caseData.getUuid(), stageType);
+                //log.debug("Added case: {}, stage: {}", caseData.getUuid(), stageType);
             }
 
             // add link if needs be
@@ -150,7 +148,7 @@ public class StageRepositoryPerfTest {
 
             if (i % 10 == 0) {
                 entityManager.persist(new CaseLink(prevCaseUuid, caseData.getUuid()));
-                log.debug("Added link from:{} to:{}", prevCaseUuid, caseData.getUuid());
+                //log.debug("Added link from:{} to:{}", prevCaseUuid, caseData.getUuid());
             }
 
         }
@@ -174,7 +172,7 @@ public class StageRepositoryPerfTest {
 
                 listAddedStages.add(stage);
 
-                log.debug("Added case: {}, stage: {}", caseData.getUuid(), stageType);
+                //log.debug("Added case: {}, stage: {}", caseData.getUuid(), stageType);
             }
         }
 
