@@ -451,9 +451,9 @@ public class StageRepositoryTest {
     @Test
     public void findByCaseReference() {
         Stage stage = createActiveStageWithActiveCase();
-        String caseDataRef = caseDataRepository.getCaseRef(stage.getCaseUUID());
+        CaseData caseData = caseDataRepository.findActiveByUuid(stage.getCaseUUID());
 
-        var returnedStages = stageRepository.findByCaseReference(caseDataRef);
+        var returnedStages = stageRepository.findByCaseReference(caseData.getReference());
 
         assertEquals(1, returnedStages.size());
         assertEquals(returnedStages.stream().findFirst().get().getUuid(), stage.getUuid());
@@ -462,9 +462,9 @@ public class StageRepositoryTest {
     @Test
     public void findByCaseReference_InactiveStage() {
         Stage stage = createInactiveStageWithActiveCase();
-        String caseDataRef = caseDataRepository.getCaseRef(stage.getCaseUUID());
+        CaseData caseData = caseDataRepository.findActiveByUuid(stage.getCaseUUID());
 
-        var returnedStages = stageRepository.findByCaseReference(caseDataRef);
+        var returnedStages = stageRepository.findByCaseReference(caseData.getReference());
 
         assertEquals(1, returnedStages.size());
         assertEquals(returnedStages.stream().findFirst().get().getUuid(), stage.getUuid());
@@ -474,9 +474,9 @@ public class StageRepositoryTest {
     @Test
     public void findByCaseReference_DeletedCase() {
         Stage stage = createActiveStageWithDeletedCase();
-        String caseDataRef = caseDataRepository.getCaseRef(stage.getCaseUUID());
+        CaseData caseData = caseDataRepository.findAnyByUuid(stage.getCaseUUID());
 
-        var returnedStages = stageRepository.findByCaseReference(caseDataRef);
+        var returnedStages = stageRepository.findByCaseReference(caseData.getReference());
 
         assertEquals(0, returnedStages.size());
     }

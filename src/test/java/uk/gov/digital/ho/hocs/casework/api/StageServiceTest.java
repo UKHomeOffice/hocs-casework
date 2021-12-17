@@ -123,7 +123,7 @@ public class StageServiceTest {
         verify(infoClient).getStageDeadline(stageType, caseData.getDateReceived(), caseData.getCaseDeadline());
         verify(infoClient).getStageDeadlineWarning(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
         verify(stageRepository).save(any(Stage.class));
-        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
+        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), eq(caseData.getReference()), eq(allocationType));
 
         verifyNoMoreInteractions(stageRepository);
         verifyNoMoreInteractions(notifyClient);
@@ -538,7 +538,6 @@ public class StageServiceTest {
         verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
         verify(auditClient).updateStageTeam(stage);
-        verify(caseDataService).getCaseRef(caseUUID);
         verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
 
         checkNoMoreInteraction();
@@ -559,7 +558,6 @@ public class StageServiceTest {
         verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
         verify(notifyClient).sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, null, null);
-        verify(caseDataService).getCaseRef(caseUUID);
 
         checkNoMoreInteraction();
 
@@ -811,7 +809,6 @@ public class StageServiceTest {
         auditType.add(STAGE_ALLOCATED_TO_USER.name());
         final Set<GetAuditResponse> auditLines = getAuditLines(stage);
         when(auditClient.getAuditLinesForCase(caseUUID, auditType)).thenReturn(auditLines);
-        when(caseDataService.getCaseRef(caseUUID)).thenReturn("MIN/1234567/19");
         stageService.checkSendOfflineQAEmail(stage);
         verify(auditClient).getAuditLinesForCase(caseUUID, auditType);
         verify(notifyClient).sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), UUID.fromString(userID), offlineQaUserUUID, stage.getCaseReference());
