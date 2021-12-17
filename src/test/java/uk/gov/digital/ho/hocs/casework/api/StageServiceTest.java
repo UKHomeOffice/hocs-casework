@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import com.amazonaws.util.json.Jackson;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.Sets;
 import org.junit.Assert;
@@ -446,13 +445,12 @@ public class StageServiceTest {
     public void shouldGetActiveStages_blankResult() {
         Set<UUID> teams = new HashSet<>();
         teams.add(UUID.randomUUID());
-        Set<String> caseTypes = Set.of();
 
-        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
 
-        stageService.getActiveStagesForUsersTeamsAndCaseType();
+        stageService.getActiveStagesForUsersTeams();
 
-        verify(stageRepository).findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
+        verify(stageRepository).findAllActiveByTeamUUID(teams);
 
         verifyNoMoreInteractions(stageRepository);
         verifyNoInteractions(notifyClient);
@@ -461,19 +459,16 @@ public class StageServiceTest {
     @Test
     public void shouldGetActiveStages() {
         Set<UUID> teams = new HashSet<>();
-        Set<String> caseTypes = Set.of("CASE_TYPE1", "CASE_TYPE2");
         teams.add(UUID.randomUUID());
         StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
-        when(userPermissionsService.getUserTeams()).thenReturn(teams);
-        when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
-        when(stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes)).thenReturn(Set.of(stage));
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
+        when(stageRepository.findAllActiveByTeamUUID(teams)).thenReturn(Set.of(stage));
 
-        stageService.getActiveStagesForUsersTeamsAndCaseType();
+        stageService.getActiveStagesForUsersTeams();
 
-        verify(userPermissionsService).getUserTeams();
-        verify(userPermissionsService).getCaseTypesIfUserTeamIsCaseTypeAdmin();
-        verify(stageRepository).findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
+        verify(userPermissionsService).getExpandedUserTeams();
+        verify(stageRepository).findAllActiveByTeamUUID(teams);
         verify(stagePriorityCalculator).updatePriority(stage);
         verify(daysElapsedCalculator).updateDaysElapsed(stage);
 
@@ -484,12 +479,12 @@ public class StageServiceTest {
     public void shouldGetActiveStagesEmpty() {
         Set<UUID> teams = new HashSet<>();
 
-        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
 
-        stageService.getActiveStagesForUsersTeamsAndCaseType();
+        stageService.getActiveStagesForUsersTeams();
 
         // We don't try and get active stages with no teams (empty set) because we're going to get 0 results.
-        verify(userPermissionsService).getUserTeams();
+        verify(userPermissionsService).getExpandedUserTeams();
         checkNoMoreInteraction();
 
     }
@@ -931,21 +926,18 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldGetActiveUserStagesWithTeamsAndCaseType() {
+    public void shouldGetActiveUserStagesWithTeams() {
         Set<UUID> teams = new HashSet<>();
-        Set<String> caseTypes = Set.of("CASE_TYPE1", "CASE_TYPE2");
         teams.add(UUID.randomUUID());
         StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
-        when(userPermissionsService.getUserTeams()).thenReturn(teams);
-        when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
-        when(stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes)).thenReturn(Set.of(stage));
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
+        when(stageRepository.findAllActiveByUserUuidAndTeamUuid(userUUID, teams)).thenReturn(Set.of(stage));
 
-        stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID);
+        stageService.getActiveUserStagesWithTeamsForUser(userUUID);
 
-        verify(userPermissionsService).getUserTeams();
-        verify(userPermissionsService).getCaseTypesIfUserTeamIsCaseTypeAdmin();
-        verify(stageRepository).findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes);
+        verify(userPermissionsService).getExpandedUserTeams();
+        verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
         verify(stagePriorityCalculator).updatePriority(stage);
         verify(daysElapsedCalculator).updateDaysElapsed(stage);
 
@@ -956,24 +948,23 @@ public class StageServiceTest {
     public void shouldGetActiveUserStagesWithTeamsAndCaseType_noTeams() {
         Set<UUID> teams = new HashSet<>();
 
-        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
 
-        stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID);
+        stageService.getActiveUserStagesWithTeamsForUser(userUUID);
 
-        verify(userPermissionsService).getUserTeams();
+        verify(userPermissionsService).getExpandedUserTeams();
         checkNoMoreInteraction();
     }
 
     @Test
     public void getActiveUserStagesWithTeamsAndCaseType_blankResult() {
         Set<UUID> teams = Set.of(UUID.randomUUID());
-        Set<String> caseTypes = Set.of();
 
-        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
 
-        stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID);
+        stageService.getActiveUserStagesWithTeamsForUser(userUUID);
 
-        verify(stageRepository).findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes);
+        verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
 
         verifyNoMoreInteractions(stageRepository, notifyClient);
     }

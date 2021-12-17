@@ -37,20 +37,13 @@ public class DashboardService {
     Map<UUID, Map<String, Integer>> getDashboard() {
         log.debug("Getting dashboard summary for user");
 
-        List<Summary> casesSummaries = new ArrayList<>();
-
-        Set<UUID> allUserTeams = userPermissionsService.getUserTeams();
-        if(!allUserTeams.isEmpty()) {
-            casesSummaries.addAll(summaryRepository.findTeamsAndCaseCountByTeamUuid(allUserTeams));
-        } else {
+        Set<UUID> allUserTeams = userPermissionsService.getExpandedUserTeams();
+        if (allUserTeams.isEmpty()) {
             log.warn("No teams - Returning 0 Stages", value(EVENT, TEAMS_STAGE_LIST_EMPTY));
             return Collections.emptyMap();
         }
 
-        Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
-        if(caseTypes.size() > 0) {
-            casesSummaries.addAll(summaryRepository.findTeamsAndCaseCountByCaseTypes(caseTypes));
-        }
+        List<Summary> casesSummaries = summaryRepository.findTeamsAndCaseCountByTeamUuid(allUserTeams);
 
         // We need the teams returned by the case summary as that's what the user has access to.
         Set<UUID> dashboardTeams = casesSummaries.stream().map(Summary::getTeamUuid).collect(Collectors.toSet());

@@ -32,18 +32,6 @@ public class SummaryRepository {
         return query.getResultList();
     }
 
-    public List<Summary> findTeamsAndCaseCountByCaseTypes(Set<String> caseTypeSet) {
-        Query query = entityManager.createNativeQuery("SELECT st.team_uuid as teamUuid, count(*) FROM stage st INNER JOIN case_data cd ON st.case_uuid = cd.uuid WHERE NOT cd.deleted AND st.team_uuid IS NOT NULL AND cd.type IN ?1 AND NOT cd.data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) GROUP BY st.team_uuid");
-        query.setParameter(1, caseTypeSet);
-
-        query.unwrap(NativeQuery.class)
-                .addScalar("teamUuid", UUIDCharType.INSTANCE)
-                .addScalar("count", IntegerType.INSTANCE)
-                .setResultTransformer(Transformers.aliasToBean(Summary.class));
-
-        return query.getResultList();
-    }
-
     public List<Summary> findUnallocatedCasesByTeam(Set<UUID> teamUuidSet) {
         Query query = entityManager.createNativeQuery("SELECT st.team_uuid as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid in ?1 AND st.user_uuid IS NULL AND NOT cd.data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) GROUP BY st.team_uuid");
         query.setParameter(1, teamUuidSet);

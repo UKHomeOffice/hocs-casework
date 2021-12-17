@@ -306,17 +306,16 @@ public class StageService {
         return nextAvailableStage;
     }
 
-    Set<StageWithCaseData> getActiveStagesForUsersTeamsAndCaseType() {
-        log.debug("Getting Active Stages for User");
-        Set<UUID> teams = userPermissionsService.getUserTeams();
+    Set<StageWithCaseData> getActiveStagesForUsersTeams() {
+        log.debug("Getting active stages for users teams");
+
+        Set<UUID> teams = userPermissionsService.getExpandedUserTeams();
         if (teams.isEmpty()) {
             log.warn("No teams - Returning 0 Stages", value(EVENT, TEAMS_STAGE_LIST_EMPTY));
             return new HashSet<>(0);
         }
 
-        Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
-
-        Set<StageWithCaseData> stages = stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
+        Set<StageWithCaseData> stages = stageRepository.findAllActiveByTeamUUID(teams);
 
         updateStages(stages);
 
@@ -324,17 +323,16 @@ public class StageService {
         return stages;
     }
 
-    Set<StageWithCaseData> getActiveUserStagesWithTeamsAndCaseType(UUID userUuid) {
-        log.debug("Getting users active stage");
-        Set<UUID> teams = userPermissionsService.getUserTeams();
+    Set<StageWithCaseData> getActiveUserStagesWithTeamsForUser(UUID userUuid) {
+        log.debug("Getting active stages for teams a user has and is also assigned to");
+
+        Set<UUID> teams = userPermissionsService.getExpandedUserTeams();
         if (teams.isEmpty()) {
             log.warn("No teams - Returning 0 Stages", value(EVENT, TEAMS_STAGE_LIST_EMPTY));
             return new HashSet<>(0);
         }
 
-        Set<String> caseTypes = userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
-
-        Set<StageWithCaseData> stages = stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUuid, teams, caseTypes);
+        Set<StageWithCaseData> stages = stageRepository.findAllActiveByUserUuidAndTeamUuid(userUuid, teams);
 
         updateStages(stages);
 
