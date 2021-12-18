@@ -30,20 +30,17 @@ public class CaseDataTypeService {
     }
 
     public CaseDataType getCaseDataType(String caseType) {
-        var type = Optional.ofNullable(caseType)
-                .orElseThrow(() -> getNotFoundException("null"));
-        return getCaseDataType(it -> it.getDisplayCode().equals(type)).orElseThrow(() -> getNotFoundException(type));
+        var type = getNonNullValue(caseType);
+        return getAllCaseDataTypes(it -> it.getDisplayCode().equals(type)).findFirst().orElseThrow(() -> getNotFoundException(type));
     }
 
     public CaseDataType getCaseDataType(UUID caseUUID){
-        var shortCode = Optional.ofNullable(caseUUID)
-                .orElseThrow(() -> getNotFoundException("null"))
-                .toString().substring(34);
-        return getCaseDataType(it -> it.getShortCode().equals(shortCode)).orElseThrow(() -> getNotFoundException(shortCode));
+        var shortCode = getNonNullValue(caseUUID).toString().substring(34);
+        return getAllCaseDataTypes(it -> it.getShortCode().equals(shortCode)).findFirst().orElseThrow(() -> getNotFoundException(shortCode));
     }
 
-    private Optional<CaseDataType> getCaseDataType(Predicate<CaseDataType> predicate) {
-        return getAllCaseDataTypes(predicate).findFirst();
+    private static <T> T getNonNullValue(T value) {
+        return Optional.ofNullable(value).orElseThrow(() -> getNotFoundException("null"));
     }
 
     private static ApplicationExceptions.EntityNotFoundException getNotFoundException(String type) {
