@@ -47,7 +47,7 @@ public class MigrationCaseDataService extends CaseDataService {
                 objectMapper,
                 auditClient,
                 caseCopyFactory,
-                caseActionService);
+                caseActionService, null);
         this.migrationStageRepository = migrationStageRepository;
     }
 
@@ -56,7 +56,7 @@ public class MigrationCaseDataService extends CaseDataService {
         String totalsListName = request.getTotalsListName();
 
         log.debug("Creating Case of type: {}", caseType);
-        CaseDataType caseDataType = infoClient.getCaseType(caseType);
+        CaseDataType caseDataType = null;//infoClient.getCaseType(caseType);
 
         String newCaseReference = request.getCaseReference();
         LocalDateTime caseCreated = request.getCaseCreated() != null ? request.getCaseCreated() : LocalDateTime.now();

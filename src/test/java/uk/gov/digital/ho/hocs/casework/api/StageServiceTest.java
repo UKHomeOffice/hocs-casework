@@ -1,8 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
 import com.amazonaws.util.json.Jackson;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.Sets;
 import org.junit.Assert;
@@ -42,9 +40,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -65,7 +63,7 @@ public class StageServiceTest {
     private final String allocationType = "anyAllocate";
     private final UUID transitionNoteUUID = UUID.randomUUID();
     private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN", null);
-    private final List<CaseDataType> caseDataTypes = List.of(
+    private final Stream<CaseDataType> caseDataTypes = Stream.of(
             CaseDataTypeFactory.from("NXT", "a5", "MIN"), // NXT can be reached through MIN
                 caseDataType);
 
@@ -88,6 +86,8 @@ public class StageServiceTest {
     @Mock
     private CaseDataService caseDataService;
     @Mock
+    private CaseDataTypeService caseDataTypeService;
+    @Mock
     private StagePriorityCalculator stagePriorityCalculator;
     @Mock
     private DaysElapsedCalculator daysElapsedCalculator;
@@ -97,16 +97,27 @@ public class StageServiceTest {
     private CaseNoteService caseNoteService;
     @Mock
     private ContributionsProcessor contributionsProcessor;
-    @Mock
-    private StageWithCaseData stage;
 
     @Mock
     private ActionDataDeadlineExtensionService extensionService;
 
     @Before
     public void setUp() {
-        this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient,
-                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, stageTagsDecorator, caseNoteService, contributionsProcessor, extensionService);
+        this.stageService = new StageService(
+                stageRepository,
+                userPermissionsService,
+                notifyClient,
+                auditClient,
+                searchClient,
+                infoClient,
+                caseDataService,
+                stagePriorityCalculator,
+                daysElapsedCalculator,
+                stageTagsDecorator,
+                caseNoteService,
+                contributionsProcessor,
+                extensionService,
+                caseDataTypeService);
     }
 
     @Test
@@ -158,7 +169,7 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldCreateStage_stageOverride() throws JsonProcessingException {
+    public void shouldCreateStage_stageOverride() {
         // GIVEN
         LocalDate overrideDeadline = LocalDate.of(2021, 12, 31);
         Map<String, String> caseDataData = new HashMap<>();
@@ -700,7 +711,7 @@ public class StageServiceTest {
         when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
         when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(Set.of(repositoryStage));
 
-        when(infoClient.getAllCaseTypes()).thenReturn(caseDataTypes);
+        when(caseDataTypeService.getAllCaseDataTypes(any())).thenReturn(caseDataTypes);
 
         // when
         Set<StageWithCaseData> stageResults = stageService.search(searchRequest);
@@ -795,7 +806,7 @@ public class StageServiceTest {
     @Test
     public void shouldGetOfflineQaUser() {
         UUID offlineQaUserUUID = UUID.randomUUID();
-        Map dataMap = new HashMap();
+        Map<String,String> dataMap = new HashMap<>();
         dataMap.put(StageWithCaseData.OFFLINE_QA_USER, offlineQaUserUUID.toString());
         final String offlineQaUser = stageService.getOfflineQaUser(Jackson.toJsonString(dataMap));
         assertThat(offlineQaUser).isEqualTo(offlineQaUserUUID.toString());
@@ -1013,7 +1024,7 @@ public class StageServiceTest {
      * @return Mocked Stage for setting and exposing the DATA with offline QA user.
      */
     private StageWithCaseData createStageOfflineQaData(UUID offlineQaUserUUID) {
-        Map dataMap = new HashMap();
+        Map<String,String> dataMap = new HashMap<>();
         dataMap.put(StageWithCaseData.OFFLINE_QA_USER, offlineQaUserUUID.toString());
         StageWithCaseData mockStage = mock(StageWithCaseData.class);
         when(mockStage.getUuid()).thenReturn(stageUUID);

@@ -1,15 +1,12 @@
 package uk.gov.digital.ho.hocs.casework.security;
 
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.context.annotation.Conditional;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataTypeService;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
-import uk.gov.digital.ho.hocs.casework.application.NonMigrationEnvCondition;
 
 import java.util.Set;
 import java.util.UUID;
@@ -18,14 +15,20 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Aspect
 @Component
-@AllArgsConstructor
-@Slf4j
-@Conditional(value = {NonMigrationEnvCondition.class})
 public class AllocatedAspect {
 
     private final StageService stageService;
     private final UserPermissionsService userService;
-    private final CaseDataService caseDataService;
+    private final CaseDataTypeService caseDataTypeService;
+
+    @Autowired
+    public AllocatedAspect(StageService stageService,
+                           UserPermissionsService userService,
+                           CaseDataTypeService caseDataTypeService) {
+        this.stageService = stageService;
+        this.userService = userService;
+        this.caseDataTypeService = caseDataTypeService;
+    }
 
     @Around("@annotation(allocated)")
     public Object validateUserAccess(ProceedingJoinPoint joinPoint, Allocated allocated) throws Throwable {
@@ -85,8 +88,8 @@ public class AllocatedAspect {
     }
 
     private boolean proceedIfUserTeamIsAdminForCaseType(UUID caseUUID) {
-        String stageType = caseDataService.getCaseType(caseUUID);
+        String caseType = caseDataTypeService.getCaseDataType(caseUUID).getDisplayCode();
         Set<String> caseTypesForCaseTypeAdmin = userService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
-        return caseTypesForCaseTypeAdmin.contains(stageType);
+        return caseTypesForCaseTypeAdmin.contains(caseType);
     }
 }

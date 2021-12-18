@@ -1,17 +1,15 @@
 package uk.gov.digital.ho.hocs.casework.security;
 
-import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataTypeService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
-import uk.gov.digital.ho.hocs.casework.application.NonMigrationEnvCondition;
 
 import java.util.Set;
 import java.util.UUID;
@@ -21,15 +19,15 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAU
 
 @Aspect
 @Component
-@Slf4j
-@Conditional(value = {NonMigrationEnvCondition.class})
 public class AuthorisationAspect {
 
-    private CaseDataService caseService;
-    private UserPermissionsService userService;
+    private final CaseDataService caseService;
+    private final CaseDataTypeService caseDataTypeService;
+    private final UserPermissionsService userService;
 
-    public AuthorisationAspect(@Qualifier("CaseDataService") CaseDataService caseService, UserPermissionsService userService) {
+    public AuthorisationAspect(@Qualifier("CaseDataService") CaseDataService caseService, CaseDataTypeService caseDataTypeService, UserPermissionsService userService) {
         this.caseService = caseService;
+        this.caseDataTypeService = caseDataTypeService;
         this.userService = userService;
     }
 
@@ -74,7 +72,7 @@ public class AuthorisationAspect {
         UUID caseUUID = null;
         if (joinPoint.getArgs()[0] instanceof UUID) {
             caseUUID = (UUID) joinPoint.getArgs()[0];
-            caseType = caseService.getCaseType(caseUUID);
+            caseType = caseDataTypeService.getCaseDataType(caseUUID).getDisplayCode();
         } else if (joinPoint.getArgs()[0] instanceof CreateCaseRequestInterface) {
             CreateCaseRequestInterface createCaseRequest = (CreateCaseRequestInterface) joinPoint.getArgs()[0];
             caseType = createCaseRequest.getType();
@@ -86,7 +84,7 @@ public class AuthorisationAspect {
 
         if (caseUUID != null && accessLevel.equals(AccessLevel.UNSET)) {
             Set<UUID> teams = userService.getUserTeams();
-            if (caseService.getCaseTeams(caseUUID).stream().anyMatch(t -> teams.contains(t))) {
+            if (caseService.getCaseTeams(caseUUID).stream().anyMatch(teams::contains)) {
                 return AccessLevel.READ;
             } else {
                 return AccessLevel.UNSET;

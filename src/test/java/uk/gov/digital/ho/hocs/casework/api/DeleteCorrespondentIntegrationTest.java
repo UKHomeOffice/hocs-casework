@@ -86,17 +86,9 @@ public class DeleteCorrespondentIntegrationTest {
     public void setup() throws IOException {
         mockInfoService = buildMockService(restTemplate);
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType"))
+                .expect(ExpectedCount.times(5), requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(ExpectedCount.times(3), requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(Set.of(CASE_DATA_TYPE)), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(requestTo("http://localhost:8085/correspondentType/TEST"))
                 .andExpect(method(GET))

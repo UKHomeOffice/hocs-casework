@@ -46,7 +46,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @Sql(scripts = "classpath:case/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
 public class CaseDataCreateCaseIntegrationTest {
     private MockRestServiceServer mockInfoService;
-    private TestRestTemplate testRestTemplate = new TestRestTemplate();
+    private final TestRestTemplate testRestTemplate = new TestRestTemplate();
     ObjectMapper mapper = new ObjectMapper();
 
     @LocalServerPort
@@ -70,7 +70,7 @@ public class CaseDataCreateCaseIntegrationTest {
         long numberOfCasesBefore = caseDataRepository.count();
 
         setupMockTeams("TEST", 5);
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
+        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBody("TEST"));
 
         CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
@@ -88,7 +88,7 @@ public class CaseDataCreateCaseIntegrationTest {
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", 3);
 
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "3");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"));
 
         long numberOfCasesAfter = caseDataRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -100,7 +100,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", 2);
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "2");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"));
 
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -113,7 +113,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", 1);
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "1");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"));
 
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -126,7 +126,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", 0);
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "0");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"));
 
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -139,7 +139,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", 5);
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(null, "TEST", "5");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(null);
 
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -152,7 +152,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", 5);
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("WRONG"), "TEST", "5");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("WRONG"));
 
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -165,7 +165,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", 5);
-        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody(null), "TEST", "5");
+        ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody(null));
 
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -178,7 +178,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", 5);
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST","{}"), "TEST", "5");
+        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST","{}"));
 
         CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
@@ -194,7 +194,7 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldCreateAValidCaseWithNullData() throws JsonProcessingException {
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", 5);
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST",null), "TEST", "5");
+        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST",null));
 
         CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
@@ -211,9 +211,9 @@ public class CaseDataCreateCaseIntegrationTest {
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", 5);
         setupMockTeams("TEST", 5);
-        ResponseEntity<CreateCaseResponse> result1 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
+        ResponseEntity<CreateCaseResponse> result1 = getCreateCaseResponse(createBody("TEST"));
 
-        ResponseEntity<CreateCaseResponse> result2 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
+        ResponseEntity<CreateCaseResponse> result2 = getCreateCaseResponse(createBody("TEST"));
 
         CaseData caseData1 = caseDataRepository.findActiveByUuid(result1.getBody().getUuid());
         CaseData caseData2 = caseDataRepository.findActiveByUuid(result2.getBody().getUuid());
@@ -239,9 +239,9 @@ public class CaseDataCreateCaseIntegrationTest {
         setupMockTeams("TEST", 5);
         setupMockTeams("TEST", 2);
         setupMockTeams("TEST", 5);
-        ResponseEntity<CreateCaseResponse> result1 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
-        ResponseEntity<Void> result2 = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "2");
-        ResponseEntity<CreateCaseResponse> result3 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
+        ResponseEntity<CreateCaseResponse> result1 = getCreateCaseResponse(createBody("TEST"));
+        ResponseEntity<Void> result2 = getCreateCaseVoidResponse(createBody("TEST"));
+        ResponseEntity<CreateCaseResponse> result3 = getCreateCaseResponse(createBody("TEST"));
 
         CaseData caseData1 = caseDataRepository.findActiveByUuid(result1.getBody().getUuid());
         CaseData caseData2 = caseDataRepository.findActiveByUuid(result3.getBody().getUuid());
@@ -265,12 +265,12 @@ public class CaseDataCreateCaseIntegrationTest {
         assertThat(r3).isEqualTo(r1 + 1);
     }
 
-    private ResponseEntity<CreateCaseResponse> getCreateCaseResponse(String body, String caseTypePermission, String permissionLevel) {
+    private ResponseEntity<CreateCaseResponse> getCreateCaseResponse(String body) {
         return testRestTemplate.exchange(
                 getBasePath() + "/case", POST, new HttpEntity(body, createValidAuthHeaders()), CreateCaseResponse.class);
     }
 
-    private ResponseEntity<Void> getCreateCaseVoidResponse(String body, String caseTypePermission, String permissionLevel) {
+    private ResponseEntity<Void> getCreateCaseVoidResponse(String body) {
         return testRestTemplate.exchange(
                 getBasePath() + "/case", POST, new HttpEntity(body, createValidAuthHeaders()), Void.class);
     }
@@ -296,9 +296,9 @@ public class CaseDataCreateCaseIntegrationTest {
         teamDtos.add(teamDto);
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/type/TEST"))
+                .expect(requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CaseDataTypeFactory.from("TEST", "a1")), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(Set.of(CaseDataTypeFactory.from("TEST", "a1"))), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
@@ -307,11 +307,11 @@ public class CaseDataCreateCaseIntegrationTest {
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType/TEST/deadline?received=2018-01-01&days=0"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON_UTF8));
+                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType/TEST/deadlineWarning?received=2018-01-01&days=0"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON_UTF8));
+                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {

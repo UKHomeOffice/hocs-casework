@@ -32,6 +32,7 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 import static org.springframework.test.web.client.ExpectedCount.manyTimes;
+import static org.springframework.test.web.client.ExpectedCount.times;
 import static org.springframework.test.web.client.MockRestServiceServer.bindTo;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -104,7 +105,7 @@ public class CaseDataGetCaseSummaryIntegrationTest {
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(Set.of(CASE_DATA_TYPE)), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(requestTo("http://localhost:8085/schema/caseType/TEST/summary"))
                 .andExpect(method(GET))
@@ -114,17 +115,9 @@ public class CaseDataGetCaseSummaryIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(new HashMap<>()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType"))
+                .expect(times(2), requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(Set.of(CASE_DATA_TYPE)), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(manyTimes(),requestTo("http://localhost:8085/caseType/TEST/actions"))
                 .andExpect(method(GET))

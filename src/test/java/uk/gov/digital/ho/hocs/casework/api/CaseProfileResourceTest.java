@@ -7,6 +7,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.ProfileDto;
 
@@ -21,24 +23,24 @@ public class CaseProfileResourceTest {
     private CaseProfileResource caseProfileResource;
 
     @Mock
-    private CaseDataService caseDataService;
+    private CaseDataTypeService caseDataTypeService;
     @Mock
     private InfoClient infoClient;
 
     @Before
     public void before(){
-        caseProfileResource = new CaseProfileResource(caseDataService, infoClient);
+        caseProfileResource = new CaseProfileResource(caseDataTypeService, infoClient);
     }
 
     @Test
     public void getProfileForCase(){
 
         UUID testUUID = UUID.randomUUID();
-        String caseType = "caseTypeA";
+        CaseDataType caseType = CaseDataTypeFactory.from("caseTypeA", "01");
         ProfileDto profileDto = new ProfileDto("profileName1", false, null);
 
-        when(caseDataService.getCaseType(testUUID)).thenReturn(caseType);
-        when(infoClient.getProfileByCaseType(caseType)).thenReturn(profileDto);
+        when(caseDataTypeService.getCaseDataType(testUUID)).thenReturn(caseType);
+        when(infoClient.getProfileByCaseType(caseType.getDisplayCode())).thenReturn(profileDto);
 
         ResponseEntity<ProfileDto> response = caseProfileResource.getProfileForCase(testUUID);
 
@@ -50,9 +52,9 @@ public class CaseProfileResourceTest {
         assertThat(response.getBody().isSummaryDeadlineEnabled()).isFalse();
         assertThat(response.getBody().getSearchFields()).isNull();
 
-        verify(caseDataService).getCaseType(testUUID);
-        verify(infoClient).getProfileByCaseType(caseType);
-        verifyNoMoreInteractions(caseDataService, infoClient);
+        verify(caseDataTypeService).getCaseDataType(testUUID);
+        verify(infoClient).getProfileByCaseType(caseType.getDisplayCode());
+        verifyNoMoreInteractions(caseDataTypeService, infoClient);
 
     }
 }

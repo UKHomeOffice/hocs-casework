@@ -30,24 +30,9 @@ public class InfoClient {
         this.serviceBaseURL = infoService;
     }
 
-    @Cacheable(value = "InfoClientGetCaseTypeByShortCode", unless = "#result == null", key = "#shortCode")
-    public CaseDataType getCaseTypeByShortCode(String shortCode) {
-        CaseDataType caseDataType = restHelper.get(serviceBaseURL, String.format("/caseType/shortCode/%s", shortCode), CaseDataType.class);
-        log.info("Got CaseDataType {} for Short code {}", caseDataType.getDisplayCode(), shortCode, value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SHORT_SUCCESS));
-        return caseDataType;
-    }
-
-    @Cacheable(value = "InfoClientGetCaseType", unless = "#result == null", key = "#type")
-    public CaseDataType getCaseType(String type) {
-        CaseDataType caseDataType = restHelper.get(serviceBaseURL, String.format("/caseType/type/%s", type), CaseDataType.class);
-        log.info("Got CaseDataType {} for Type {}", caseDataType.getDisplayCode(), type, value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
-        return caseDataType;
-    }
-
-    public List<CaseDataType> getAllCaseTypes() {
-        List<CaseDataType> caseDataTypes = restHelper.get(serviceBaseURL, "/caseType?initialCaseType=false", new ParameterizedTypeReference<>() { });
-        log.info("Got all case types", value(EVENT, INFO_CLIENT_GET_CASE_TYPES_SUCCESS));
-        return caseDataTypes;
+    @Cacheable(value = "InfoClientGetAllCaseDataTypes", unless = "#result == null")
+    public Collection<CaseDataType> getAllCaseDataTypes() {
+        return restHelper.get(serviceBaseURL, "/caseType", new ParameterizedTypeReference<>() { });
     }
 
     @Cacheable(value = "InfoClientGetCorrespondentType", unless = "#result == null")
@@ -190,13 +175,6 @@ public class InfoClient {
         InfoTopic infoTopic = restHelper.get(serviceBaseURL, String.format("/topic/%s", topicUUID), InfoTopic.class);
         log.info("Got Topic {} for Topic {}", infoTopic.getLabel(), topicUUID, value(EVENT, INFO_CLIENT_GET_TOPIC_SUCCESS));
         return infoTopic;
-    }
-
-    @Cacheable(value = "InfoClientGetUser", unless = "#result == null", key = "{ #userUUID}")
-    public UserDto getUser(UUID userUUID) {
-        UserDto userDto = restHelper.get(serviceBaseURL, String.format("/user/%s", userUUID), UserDto.class);
-        log.info("Got User UserUUID {}", userUUID, value(EVENT, INFO_CLIENT_GET_USER));
-        return userDto;
     }
 
     @Cacheable(value = "InfoClientGetEntityListDtos", unless = "#result == null", key = "#listName")

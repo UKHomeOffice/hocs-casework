@@ -4,7 +4,6 @@ import com.amazonaws.util.json.Jackson;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
@@ -70,13 +69,25 @@ public class StageService {
     private final CaseNoteService caseNoteService;
     private final ContributionsProcessor contributionsProcessor;
     private final ActionDataDeadlineExtensionService extensionService;
+    private final CaseDataTypeService caseDataTypeService;
 
     private static final Comparator<StageWithCaseData> CREATED_COMPARATOR = Comparator.comparing(StageWithCaseData::getCreated);
 
     @Autowired
-    public StageService(StageRepository stageRepository, UserPermissionsService userPermissionsService, NotifyClient notifyClient, AuditClient auditClient, SearchClient searchClient, InfoClient infoClient,
-                        @Qualifier("CaseDataService") CaseDataService caseDataService, StagePriorityCalculator stagePriorityCalculator,
-                        DaysElapsedCalculator daysElapsedCalculator, StageTagsDecorator stageTagsDecorator, CaseNoteService caseNoteService, ContributionsProcessor contributionsProcessor, ActionDataDeadlineExtensionService extensionService) {
+    public StageService(StageRepository stageRepository,
+                        UserPermissionsService userPermissionsService,
+                        NotifyClient notifyClient,
+                        AuditClient auditClient,
+                        SearchClient searchClient,
+                        InfoClient infoClient,
+                        CaseDataService caseDataService,
+                        StagePriorityCalculator stagePriorityCalculator,
+                        DaysElapsedCalculator daysElapsedCalculator,
+                        StageTagsDecorator stageTagsDecorator,
+                        CaseNoteService caseNoteService,
+                        ContributionsProcessor contributionsProcessor,
+                        ActionDataDeadlineExtensionService extensionService,
+                        CaseDataTypeService caseDataTypeService) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -90,6 +101,7 @@ public class StageService {
         this.caseNoteService = caseNoteService;
         this.contributionsProcessor = contributionsProcessor;
         this.extensionService = extensionService;
+        this.caseDataTypeService = caseDataTypeService;
     }
 
     /**
@@ -411,15 +423,13 @@ public class StageService {
         // done like this because the case relationship is in the info schema
         // get the case types with a previous case type and reduce to
         // Map<K, V>, - K is the previousCaseType, V is the caseType
-        Map<String, String> caseTypes = infoClient.getAllCaseTypes()
-                .stream()
-                .filter( caseType -> Objects.nonNull(caseType.getPreviousCaseType()))
+        Map<String, String> caseTypes = caseDataTypeService.getAllCaseDataTypes(caseType -> Objects.nonNull(caseType.getPreviousCaseType()))
                 .collect(Collectors.toMap(CaseDataType::getPreviousCaseType, CaseDataType::getDisplayCode));
 
         // map the previous case type on to the cases found
         // only stages with completed cases have the next caseType
         stages.stream()
-                .filter(stage -> stage.getCompleted())
+                .filter(StageWithCaseData::getCompleted)
                 .forEach(stage -> stage.setNextCaseType(caseTypes.get(stage.getCaseDataType())));
 
         log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));

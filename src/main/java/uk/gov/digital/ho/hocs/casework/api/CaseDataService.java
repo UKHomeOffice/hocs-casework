@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
 import uk.gov.digital.ho.hocs.casework.api.factory.strategies.CaseCopyStrategy;
@@ -42,7 +41,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUN
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_UPDATED_NULL_DATA;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_SUMMARY_RETRIEVED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_LOOKUP_FAILED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRESPONDENT_UPDATED;
@@ -64,12 +62,14 @@ public class CaseDataService {
     private final CaseCopyFactory caseCopyFactory;
     private final CaseLinkRepository caseLinkRepository;
     private final CaseActionService caseActionService;
+    private final CaseDataTypeService caseDataTypeService;
+
     public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
 
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
                            CaseLinkRepository caseLinkRepository, InfoClient infoClient,
-                           ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory, CaseActionService caseActionService) {
+                           ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory, CaseActionService caseActionService, CaseDataTypeService caseDataTypeService) {
 
         this.caseDataRepository = caseDataRepository;
         this.activeCaseViewDataRepository = activeCaseViewDataRepository;
@@ -79,6 +79,7 @@ public class CaseDataService {
         this.objectMapper = objectMapper;
         this.caseCopyFactory = caseCopyFactory;
         this.caseActionService = caseActionService;
+        this.caseDataTypeService = caseDataTypeService;
     }
 
     public static final List<String> TIMELINE_EVENTS = List.of(
@@ -173,21 +174,6 @@ public class CaseDataService {
         return value;
     }
 
-    public String getCaseType(UUID caseUUID) {
-        String shortCode = caseUUID.toString().substring(34);
-        log.debug("Looking up CaseType for Case: {} Shortcode: {}", caseUUID, shortCode);
-        String caseType;
-        try {
-            CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(shortCode);
-            caseType = caseDataType.getDisplayCode();
-        } catch (RestClientException e) {
-            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED), value(EXCEPTION, e));
-            caseType = getCaseData(caseUUID).getType();
-        }
-        log.debug("CaseType {} found for Case: {}", caseType, caseUUID);
-        return caseType;
-    }
-
     CaseData createCase(String caseType, Map<String, String> data, LocalDate dateReceived, UUID fromCaseUUID) {
         log.debug("Creating Case of type: {}", caseType);
 
@@ -246,7 +232,7 @@ public class CaseDataService {
 
     private CaseData createCaseBaseData(String caseType, Map<String, String> data, LocalDate dateReceived, Long caseNumber) {
         log.debug("Allocating Ref: {}", caseNumber);
-        CaseDataType caseDataType = infoClient.getCaseType(caseType);
+        CaseDataType caseDataType = caseDataTypeService.getCaseDataType(caseType);
         CaseData caseData = new CaseData(caseDataType, caseNumber, data, objectMapper, dateReceived);
         LocalDate deadline = infoClient.getCaseDeadline(caseType, dateReceived, 0);
         caseData.setCaseDeadline(deadline);

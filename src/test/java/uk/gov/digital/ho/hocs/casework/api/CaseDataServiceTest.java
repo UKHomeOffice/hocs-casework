@@ -3,18 +3,13 @@ package uk.gov.digital.ho.hocs.casework.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.SomuTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
@@ -38,7 +33,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.*;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
@@ -88,22 +82,22 @@ public class CaseDataServiceTest {
     public static final String PREV_DATA_CLOB = "{\"key1\" : \"value1\", \"key2\" : \"value2\"}";
     private static final long caseID = 12345L;
 
-    private static final String OFFLINE_QA_USER = "OfflineQaUser";
     private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID stageUUID = UUID.randomUUID();
     private final UUID primaryCorrespondentUUID = UUID.randomUUID();
-    private final String caseRef = "TestRef";
     private final LocalDate caseDeadline = LocalDate.now().plusDays(20);
     private final LocalDate caseDeadlineWarning = LocalDate.now().plusDays(15);
     private final LocalDate deadlineDate = LocalDate.now();
 
     private CaseDataService caseDataService;
     private ObjectMapper objectMapper;
-    private SpringConfiguration configuration;
 
     @Mock
     private CaseDataRepository caseDataRepository;
+
+    @Mock
+    private CaseDataTypeService caseDataTypeService;
 
     @Mock
     private ActiveCaseViewDataRepository activeCaseViewDataRepository;
@@ -117,15 +111,6 @@ public class CaseDataServiceTest {
     @Mock
     private CaseActionService caseActionService;
 
-    private LocalDate caseDeadlineExtended = LocalDate.now().plusDays(45);
-    private LocalDate caseReceived = LocalDate.now();
-
-    @Captor
-    ArgumentCaptor<CaseData> caseDataCaptor;
-
-    @Spy
-    ActiveStage activeStage = new ActiveStage();
-
     @Mock
     private CaseCopyFactory caseCopyFactory;
 
@@ -134,7 +119,7 @@ public class CaseDataServiceTest {
 
     @Before
     public void setUp() {
-        configuration = new SpringConfiguration();
+        SpringConfiguration configuration = new SpringConfiguration();
         objectMapper = configuration.initialiseObjectMapper();
         this.caseDataService = new CaseDataService(caseDataRepository,
                 activeCaseViewDataRepository,
@@ -143,7 +128,8 @@ public class CaseDataServiceTest {
                 objectMapper,
                 auditClient,
                 caseCopyFactory,
-                caseActionService
+                caseActionService,
+                caseDataTypeService
         );
     }
 
@@ -152,7 +138,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
-        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(caseDataTypeService.getCaseDataType(caseType.getDisplayCode())).thenReturn(caseType);
 
         CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, null);
 
@@ -205,7 +191,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findActiveByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);
 
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
-        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(comp2);
+        when(caseDataTypeService.getCaseDataType(caseType.getDisplayCode())).thenReturn(comp2);
         when(caseCopyFactory.getStrategy(any(), any())).thenReturn(Optional.of((fromCase, toCase) -> {}));
 
         // when
@@ -244,7 +230,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
-        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(caseDataTypeService.getCaseDataType(caseType.getDisplayCode())).thenReturn(caseType);
 
         CaseData caseData = caseDataService.createCase(caseType.getDisplayName(), null, deadlineDate, null);
 
@@ -260,7 +246,7 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
         when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
-        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(caseDataTypeService.getCaseDataType(caseType.getDisplayCode())).thenReturn(caseType);
 
         CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, null);
 
@@ -419,7 +405,7 @@ public class CaseDataServiceTest {
 
 
     @Test
-    public void shouldGetCaseSummaryWithValidParams() throws ApplicationExceptions.EntityNotFoundException, IOException {
+    public void shouldGetCaseSummaryWithValidParams() throws ApplicationExceptions.EntityNotFoundException {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         caseData.setCaseDeadline(caseDeadline);
@@ -452,7 +438,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldGetCaseSummaryWithOverride() throws ApplicationExceptions.EntityNotFoundException, IOException {
+    public void shouldGetCaseSummaryWithOverride() throws ApplicationExceptions.EntityNotFoundException {
 
         LocalDate overrideDeadline = LocalDate.now().plusDays(7);
         Map<String, String> data = new HashMap<>();
@@ -500,14 +486,14 @@ public class CaseDataServiceTest {
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
         when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
 
-        CaseSummary caseSummary = caseDataService.getCaseSummary(caseData.getUuid());
+        caseDataService.getCaseSummary(caseData.getUuid());
 
         verify(auditClient, times(1)).viewCaseSummaryAudit(caseData);
         verifyNoMoreInteractions(auditClient);
     }
 
     @Test
-    public void shouldGetCaseSummaryWithValidParamsPrimaryCorrespondentNull() throws ApplicationExceptions.EntityNotFoundException, IOException {
+    public void shouldGetCaseSummaryWithValidParamsPrimaryCorrespondentNull() throws ApplicationExceptions.EntityNotFoundException {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         ActiveCaseViewData activeCaseViewData = new ActiveCaseViewData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
@@ -537,7 +523,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldGetCaseSummaryWithValidParamsPrimaryCorrespondentException() throws ApplicationExceptions.EntityNotFoundException, IOException {
+    public void shouldGetCaseSummaryWithValidParamsPrimaryCorrespondentException() throws ApplicationExceptions.EntityNotFoundException {
 
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         caseData.setCaseDeadline(caseDeadline);
@@ -572,7 +558,7 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldGetCaseOnlyFilteredAdditionalData() throws ApplicationExceptions.EntityNotFoundException, IOException {
+    public void shouldGetCaseOnlyFilteredAdditionalData() throws ApplicationExceptions.EntityNotFoundException {
 
         Set<FieldDto> filterFields = new HashSet<>();
 
@@ -675,12 +661,12 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldCalculateTotals() throws JsonProcessingException {
+    public void shouldCalculateTotals() {
         CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), objectMapper, deadlineDate);
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
-        EntityTotalDto entityTotalDto = new EntityTotalDto(new HashMap(), new HashMap());
-        EntityDto<EntityTotalDto> entityDto = new EntityDto<EntityTotalDto>("simpleName", entityTotalDto);
-        List<EntityDto<EntityTotalDto>> entityListTotals = new ArrayList();
+        EntityTotalDto entityTotalDto = new EntityTotalDto(new HashMap<>(), new HashMap<>());
+        EntityDto<EntityTotalDto> entityDto = new EntityDto<>("simpleName", entityTotalDto);
+        List<EntityDto<EntityTotalDto>> entityListTotals = new ArrayList<>();
         entityListTotals.add(entityDto);
         when(infoClient.getEntityListTotals("list")).thenReturn(entityListTotals);
 
@@ -736,7 +722,7 @@ public class CaseDataServiceTest {
     }
 
     @Test()
-    public void shouldNotUpdateCaseMissingCaseUUID() throws JsonProcessingException {
+    public void shouldNotUpdateCaseMissingCaseUUID() {
 
         try {
             caseDataService.updateCaseData((UUID)null, stageUUID, new HashMap<>());
@@ -897,42 +883,6 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).findAnyByUuid(null);
 
         verifyNoMoreInteractions(caseDataRepository);
-    }
-
-    @Test
-    public void shouldGetCaseType() {
-        String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(CaseDataTypeFactory.from("MIN", "a1", "COMP"));
-
-        caseDataService.getCaseType(caseUUID);
-
-        verify(infoClient, times(1)).getCaseTypeByShortCode(caseTypeShortCode);
-        verifyNoMoreInteractions(infoClient);
-        verifyNoMoreInteractions(caseDataRepository);
-
-    }
-
-    @Test
-    public void shouldReturnCaseTypeWhenNullReturnedFromInfoClientAndButCaseInCaseDataOnGetCaseType() {
-        String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenThrow(RestClientException.class);
-        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(new CaseData(CaseDataTypeFactory.from("", ""), 1L, null));
-
-        caseDataService.getCaseType(caseUUID);
-
-        verify(infoClient, times(1)).getCaseTypeByShortCode(caseTypeShortCode);
-        verifyNoMoreInteractions(infoClient);
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
-        verifyNoMoreInteractions(caseDataRepository);
-    }
-
-    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void shouldThrowEntityNotFoundExceptionWhenNullReturnedFromInfoClientAndNoCaseInCaseDataOnGetCaseType() {
-        String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenThrow(RestClientException.class);
-        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
-
-        caseDataService.getCaseType(caseUUID);
     }
 
     @Test

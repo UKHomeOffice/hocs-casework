@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataTypeService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
@@ -52,6 +53,9 @@ public class SecurityIntegrationTest {
     @Qualifier("CaseDataService")
     CaseDataService caseDataService;
 
+    @MockBean()
+    CaseDataTypeService caseDataTypeService;
+
     @MockBean
     InfoClient infoClient;
 
@@ -70,11 +74,11 @@ public class SecurityIntegrationTest {
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("MIN");
+        when(caseDataTypeService.getCaseDataType(caseData.getUuid())).thenReturn(CaseDataTypeFactory.from("MIN", "01"));
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
-        HttpEntity httpEntity = new HttpEntity(headers);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
         ResponseEntity<String> result = restTemplate.exchange(getBasePath() + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -87,11 +91,11 @@ public class SecurityIntegrationTest {
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("MIN");
+        when(caseDataTypeService.getCaseDataType(caseData.getUuid())).thenReturn(CaseDataTypeFactory.from("MIN", "01"));
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
-        HttpEntity httpEntity = new HttpEntity(headers);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
         ResponseEntity<String> result = restTemplate.exchange(getBasePath() + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -107,11 +111,11 @@ public class SecurityIntegrationTest {
 
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("TRO");
+        when(caseDataTypeService.getCaseDataType(caseData.getUuid())).thenReturn(CaseDataTypeFactory.from("TRO", "01"));
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
-        HttpEntity httpEntity = new HttpEntity(headers);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
         ResponseEntity<String> result = restTemplate.exchange(getBasePath() + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -122,11 +126,11 @@ public class SecurityIntegrationTest {
         UUID caseUUID = UUID.randomUUID();
 
         when(caseDataService.getCaseTeams(caseUUID)).thenReturn(Set.of(UUID.randomUUID()));
-        when(caseDataService.getCaseType(caseUUID)).thenReturn("TRO");
+        when(caseDataTypeService.getCaseDataType(caseUUID)).thenReturn(CaseDataTypeFactory.from("TRO", "01"));
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
-        HttpEntity httpEntity = new HttpEntity(headers);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
         ResponseEntity<String> result = restTemplate.exchange(getBasePath() + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
@@ -136,12 +140,12 @@ public class SecurityIntegrationTest {
         when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
         UUID caseUUID = UUID.randomUUID();
 
-        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
+        when(caseDataTypeService.getCaseDataType(caseUUID)).thenReturn(CaseDataTypeFactory.from("MIN", "01"));
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/MzMzMzMzMzMzMzMzMzMzMw");
-        HttpEntity httpEntity = new HttpEntity(headers);
-        ResponseEntity result = restTemplate.exchange(getBasePath() + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> result = restTemplate.exchange(getBasePath() + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -153,19 +157,17 @@ public class SecurityIntegrationTest {
             put("key", "value");
         }};
 
-        CaseData caseData = new CaseData(
-                CaseDataTypeFactory.from("SOME_OTHER_CASE_TYPE", "a1"),
-                123456L, caseSubData, mapper, LocalDate.now()
-        );
+        CaseDataType caseDataType = CaseDataTypeFactory.from("SOME_OTHER_CASE_TYPE", "a1");
+        CaseData caseData = new CaseData(caseDataType,123456L, caseSubData, mapper, LocalDate.now());
 
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(UUID.randomUUID()));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("SOME_OTHER_CASE_TYPE");
+        when(caseDataTypeService.getCaseDataType(caseData.getUuid())).thenReturn(caseDataType);
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
-        HttpEntity httpEntity = new HttpEntity(headers);
-        ResponseEntity result = restTemplate.exchange(getBasePath() + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> result = restTemplate.exchange(getBasePath() + "/case/" + caseData.getUuid(), HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -175,12 +177,12 @@ public class SecurityIntegrationTest {
         UUID caseUUID = UUID.randomUUID();
 
         when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
-        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
+        when(caseDataTypeService.getCaseDataType(caseUUID)).thenReturn(CaseDataTypeFactory.from("MIN", "01"));
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
-        HttpEntity httpEntity = new HttpEntity(headers);
-        ResponseEntity result = restTemplate.exchange(getBasePath() + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> result = restTemplate.exchange(getBasePath() + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
@@ -190,12 +192,12 @@ public class SecurityIntegrationTest {
 
         when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 6));
         when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
-        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
+        when(caseDataTypeService.getCaseDataType(caseUUID)).thenReturn(CaseDataTypeFactory.from("MIN", "01"));
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
-        HttpEntity httpEntity = new HttpEntity(headers);
-        ResponseEntity result = restTemplate.exchange(getBasePath() + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+        ResponseEntity<String> result = restTemplate.exchange(getBasePath() + "/case/" + caseUUID, HttpMethod.GET, httpEntity, String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
