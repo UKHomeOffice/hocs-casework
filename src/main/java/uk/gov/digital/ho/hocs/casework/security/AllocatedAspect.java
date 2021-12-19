@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
-import uk.gov.digital.ho.hocs.casework.application.NonMigrationEnvCondition;
 
 import java.util.Set;
 import java.util.UUID;
@@ -20,7 +19,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 @Component
 @AllArgsConstructor
 @Slf4j
-@Conditional(value = {NonMigrationEnvCondition.class})
 public class AllocatedAspect {
 
     private final StageService stageService;

@@ -45,19 +45,6 @@ public class CaseData extends AbstractCaseData implements Serializable {
         }
     }
 
-
-    // --------  Migration Code Start --------
-    public CaseData(CaseDataType type, String caseReference, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived, LocalDateTime caseCreated) {
-        this(type, caseReference, caseDeadline, dateReceived, caseCreated);
-        update(data, objectMapper);
-    }
-
-    public CaseData(CaseDataType type, String caseReference, LocalDate caseDeadline, LocalDate dateReceived, LocalDateTime caseCreated) {
-        super(type, caseReference, caseDeadline, dateReceived, caseCreated);
-    }
-
-    // --------  Migration Code End --------
-
     public CaseData(Long id,
                     UUID uuid,
                     LocalDateTime created,

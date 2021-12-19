@@ -143,25 +143,4 @@ public class AbstractCaseData implements Serializable {
     public Map<String,String> getDataMap(ObjectMapper objectMapper) {
         return JsonDataMapUtils.getDataMap(getData(), objectMapper);
     }
-
-    // --------  Migration Code Start --------
-    public AbstractCaseData(CaseDataType type, String caseReference, Map<String, String> data, ObjectMapper objectMapper, LocalDate caseDeadline, LocalDate dateReceived, LocalDateTime caseCreated) {
-        this(type, caseReference, caseDeadline, dateReceived, caseCreated);
-        update(data, objectMapper);
-    }
-
-    public AbstractCaseData(CaseDataType type, String caseReference, LocalDate caseDeadline, LocalDate dateReceived, LocalDateTime caseCreated) {
-        if (type == null || caseReference == null) {
-            throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
-        }
-        this.created = caseCreated;
-        this.type = type.getDisplayCode();
-        this.reference = caseReference;
-        this.uuid = randomUUID(type.getShortCode());
-        this.caseDeadline = caseDeadline;
-        this.dateReceived = dateReceived;
-    }
-
-    // --------  Migration Code End --------
-
 }
