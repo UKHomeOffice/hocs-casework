@@ -1,7 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api.factory.strategies;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +11,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,20 +25,14 @@ import static org.mockito.Mockito.verify;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class CopyCompToComp2Test {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static String FROM_CLOB;
+    private static final Map<String, String> FROM_CLOB;
 
     static {
-        Map<String, String> fromCaseValues = Map.of(
+        FROM_CLOB = Map.of(
                 "CatLost", "CatLostValue",
                 "CatRude","CatRudeValue",
                 "Channel","ChannelValue",
                 "CatCCPhy","CatCCPhyValue");
-        try {
-            FROM_CLOB = MAPPER.writeValueAsString(fromCaseValues);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
     }
 
     private static final UUID TO_CASE_UUID = UUID.randomUUID();
@@ -73,7 +65,7 @@ public class CopyCompToComp2Test {
             REFERENCE,
             EXTERNAL_KEY);
 
-    private static CaseData FROM_CASE = new CaseData(1L,
+    private static final CaseData FROM_CASE = new CaseData(1L,
             FROM_CASE_UUID,
             null,
             null,
@@ -107,7 +99,7 @@ public class CopyCompToComp2Test {
                 null,
                 null,
                 false,
-                "{}", // this is the default
+                new HashMap<>(Map.of()),
                 null,
                 null,
                 null,
@@ -124,7 +116,7 @@ public class CopyCompToComp2Test {
     public void shouldCopyCaseDetails() {
 
         // given
-        var compToComp2 = new CopyCompToComp2(MAPPER, caseDataService, correspondentService);
+        var compToComp2 = new CopyCompToComp2(caseDataService, correspondentService);
 
         // when
         compToComp2.copyCase(FROM_CASE, toCase);
@@ -134,8 +126,8 @@ public class CopyCompToComp2Test {
         verify(correspondentService, times(1)).copyCorrespondents(FROM_CASE.getUuid(), toCase.getUuid());
 
         // clob values were copied - there's a separate test for copying values
-        assertThat(toCase.getData()).isNotNull();
-        assertThat(toCase.getDataMap(MAPPER)).isEqualTo(FROM_CASE.getDataMap(MAPPER));
+        assertThat(toCase.getDataMap()).isNotNull();
+        assertThat(toCase.getDataMap()).isEqualTo(FROM_CASE.getDataMap());
 
     }
 }
