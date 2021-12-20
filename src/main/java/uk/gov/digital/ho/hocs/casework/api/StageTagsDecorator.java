@@ -1,8 +1,8 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import java.util.Collection;
+import java.util.Map;
 
 public interface StageTagsDecorator {
-
-    void decorateTags(StageWithCaseData stage);
+    Collection<String> decorateTags(Map<String,String> data, String stageType);
 }

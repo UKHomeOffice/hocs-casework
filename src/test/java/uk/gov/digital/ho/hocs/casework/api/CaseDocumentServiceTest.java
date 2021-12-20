@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -37,7 +36,6 @@ public class CaseDocumentServiceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID documentUUID = UUID.randomUUID();
-    private final String caseType = "MIN";
     private final String docType = "DRAFT";
     private final String docDisplayName = "document.doc";
     private final String docOriginalName = "documentOriginal.doc";
@@ -58,14 +56,11 @@ public class CaseDocumentServiceTest {
     @Mock
     private InfoClient infoClient;
 
-    private ObjectMapper objectMapper;
-
     private CaseDocumentService caseDocumentService;
 
     @Before
     public void setUp() {
-        objectMapper = new ObjectMapper();
-        caseDocumentService = new CaseDocumentService(caseDataRepository, documentClient, infoClient, objectMapper);
+        caseDocumentService = new CaseDocumentService(caseDataRepository, documentClient, infoClient);
         documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, docDeleted, docLabels);
         s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);
     }
@@ -78,8 +73,9 @@ public class CaseDocumentServiceTest {
         Map<String, String> data = new HashMap<>();
         data.put("DraftDocuments", documentUUID.toString());
         LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseReceived);
+        CaseData caseData = new CaseData(type, caseNumber, data, caseReceived);
         when(caseDataRepository.findAnyByUuid(caseUUID)).thenReturn(caseData);
+        String caseType = "MIN";
         when(documentClient.getDocuments(caseUUID, caseType)).thenReturn(documentsResponse);
         when(infoClient.getDocumentTags("CaseType")).thenReturn(new ArrayList<>(Arrays.asList("ORIGINAL", "DRAFT")));
 
@@ -170,7 +166,7 @@ public class CaseDocumentServiceTest {
         Map<String, String> data = new HashMap<>();
         data.put("DraftDocuments", documentUUID.toString());
         LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseReceived);
+        CaseData caseData = new CaseData(type, caseNumber, data, caseReceived);
         UUID actionDataUuid = UUID.randomUUID();
 
         when(caseDataRepository.findAnyByUuid(caseUUID)).thenReturn(caseData);

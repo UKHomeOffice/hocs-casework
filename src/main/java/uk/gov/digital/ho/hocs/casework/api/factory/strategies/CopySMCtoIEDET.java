@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api.factory.strategies;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
@@ -52,12 +51,12 @@ public class CopySMCtoIEDET extends AbstractCaseCopyStrategy implements CaseCopy
             "ComplainantNationality"
     };
 
-    private CaseDataService caseDataService;
-    private CorrespondentService correspondentService;
+    private final CaseDataService caseDataService;
+    private final CorrespondentService correspondentService;
 
     @Autowired
-    public CopySMCtoIEDET(ObjectMapper mapper, CaseDataService caseDataService, CorrespondentService correspondentService) {
-        super(mapper);
+    public CopySMCtoIEDET(CaseDataService caseDataService, CorrespondentService correspondentService) {
+        super();
         this.caseDataService = caseDataService;
         this.correspondentService = correspondentService;
     }
@@ -67,7 +66,7 @@ public class CopySMCtoIEDET extends AbstractCaseCopyStrategy implements CaseCopy
 
         // copy clob details
         copyClobData(fromCase, toCase, DATA_CLOB_KEYS);
-        caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap(mapper));
+        caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
 
         // Correspondents include the primary_correspondent_uuid
         correspondentService.copyCorrespondents(fromCase.getUuid(), toCase.getUuid());

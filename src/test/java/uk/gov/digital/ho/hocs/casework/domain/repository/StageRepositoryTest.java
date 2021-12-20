@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.domain.repository;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -385,8 +384,6 @@ public class StageRepositoryTest {
 
     @Test
     public void findByCaseReference_EmptyReference() {
-        Stage stage = createActiveStageWithActiveCase();
-
         var returnedStages = stageRepository.findByCaseReference("");
 
         assertEquals(0, returnedStages.size());
@@ -394,8 +391,6 @@ public class StageRepositoryTest {
 
     @Test
     public void findByCaseReference_WrongReference() {
-        Stage stage = createActiveStageWithActiveCase();
-
         var returnedStages = stageRepository.findByCaseReference(UUID.randomUUID().toString());
 
         assertEquals(0, returnedStages.size());
@@ -405,9 +400,8 @@ public class StageRepositoryTest {
         CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseReceived);
+        CaseData caseData = new CaseData(type, caseNumber, data, caseReceived);
         caseData.setCaseDeadline(LocalDate.now().plusDays(2));
 
         String stageType = "TEST";
@@ -421,9 +415,8 @@ public class StageRepositoryTest {
         CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseReceived);
+        CaseData caseData = new CaseData(type, caseNumber, data, caseReceived);
         caseData.setCaseDeadline(LocalDate.now().plusDays(2));
 
         String stageType = "TEST";
@@ -436,9 +429,8 @@ public class StageRepositoryTest {
         CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
         LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper, caseReceived);
+        CaseData caseData = new CaseData(type, caseNumber, data, caseReceived);
         caseData.setCaseDeadline(LocalDate.now().plusDays(2));
         caseData.setDeleted(true);
 

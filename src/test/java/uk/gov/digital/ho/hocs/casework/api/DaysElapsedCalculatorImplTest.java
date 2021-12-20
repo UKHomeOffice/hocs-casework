@@ -1,16 +1,16 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
-import java.util.Map;
+import java.util.HashMap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -19,12 +19,6 @@ public class DaysElapsedCalculatorImplTest {
     @Mock
     WorkingDaysElapsedProvider workingDaysElapsedProvider;
 
-    @Mock
-    ObjectMapper objectMapper;
-
-    @Mock
-    StageWithCaseData stage;
-
     private DaysElapsedCalculatorImpl daysElapsedCalculator;
 
     private static final String SYSTEM_DAYS_ELAPSED_FIELD_NAME = "systemDaysElapsed";
@@ -32,53 +26,53 @@ public class DaysElapsedCalculatorImplTest {
 
     @Before
     public void before() {
-        daysElapsedCalculator = new DaysElapsedCalculatorImpl(workingDaysElapsedProvider, objectMapper);
+        daysElapsedCalculator = new DaysElapsedCalculatorImpl(workingDaysElapsedProvider);
     }
 
     @Test
     public void updateDaysElapsed_nullDateReceived() {
+        var data = new HashMap<String, String>(0);
 
-        daysElapsedCalculator.updateDaysElapsed(stage);
+        daysElapsedCalculator.updateDaysElapsed(data , "AnyType");
 
-        verify(stage).getDataMap(objectMapper);
-        verify(stage).update(Map.of(SYSTEM_DAYS_ELAPSED_FIELD_NAME, "0"), objectMapper);
-        checkNoMoreInteractions();
+        assertTrue(data.containsKey(SYSTEM_DAYS_ELAPSED_FIELD_NAME));
+        assertEquals("0", data.get(SYSTEM_DAYS_ELAPSED_FIELD_NAME));
 
     }
 
     @Test
     public void updateDaysElapsed_blankDateReceived() {
+        var data = new HashMap<String, String>(0);
+        data.put(DATE_RECEIVED_FIELD_NAME, "");
 
-        when(stage.getDataMap(objectMapper)).thenReturn(Map.of(DATE_RECEIVED_FIELD_NAME, ""));
+        daysElapsedCalculator.updateDaysElapsed(data, "AnyType");
 
-        daysElapsedCalculator.updateDaysElapsed(stage);
-
-        verify(stage).getDataMap(objectMapper);
-        verify(stage).update(Map.of(SYSTEM_DAYS_ELAPSED_FIELD_NAME, "0"), objectMapper);
-        checkNoMoreInteractions();
-
+        assertTrue(data.containsKey(SYSTEM_DAYS_ELAPSED_FIELD_NAME));
+        assertEquals("0", data.get(SYSTEM_DAYS_ELAPSED_FIELD_NAME));
     }
 
     @Test
     public void updateDaysElapsed_validDateReceived() {
 
         String dummyCaseType = "TypeA";
-        when(stage.getDataMap(objectMapper)).thenReturn(Map.of(DATE_RECEIVED_FIELD_NAME, "2020-06-14"));
-        when(stage.getCaseDataType()).thenReturn(dummyCaseType);
+        var data = new HashMap<String, String>(0);
+        data.put(DATE_RECEIVED_FIELD_NAME, "2020-06-14");
+
 
         LocalDate localDate = LocalDate.of(2020, 6, 14);
         when(workingDaysElapsedProvider.getWorkingDaysSince(dummyCaseType, localDate)).thenReturn(35);
-        daysElapsedCalculator.updateDaysElapsed(stage);
 
-        verify(stage).getCaseDataType();
-        verify(stage).getDataMap(objectMapper);
-        verify(stage).update(Map.of(SYSTEM_DAYS_ELAPSED_FIELD_NAME, "35"), objectMapper);
+        daysElapsedCalculator.updateDaysElapsed(data, dummyCaseType);
+
+        assertTrue(data.containsKey(SYSTEM_DAYS_ELAPSED_FIELD_NAME));
+        assertEquals("35", data.get(SYSTEM_DAYS_ELAPSED_FIELD_NAME));
+
         verify(workingDaysElapsedProvider).getWorkingDaysSince(dummyCaseType, localDate);
         checkNoMoreInteractions();
 
     }
 
     private void checkNoMoreInteractions() {
-        verifyNoMoreInteractions(workingDaysElapsedProvider, objectMapper, stage);
+        verifyNoMoreInteractions(workingDaysElapsedProvider);
     }
 }

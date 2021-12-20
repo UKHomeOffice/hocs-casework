@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api.factory.strategies;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -54,12 +53,12 @@ public class CopyCompToComp2 extends AbstractCaseCopyStrategy implements CaseCop
             "Directorate"
     };
 
-    private CaseDataService caseDataService;
-    private CorrespondentService correspondentService;
+    private final CaseDataService caseDataService;
+    private final CorrespondentService correspondentService;
 
     @Autowired
-    public CopyCompToComp2(ObjectMapper mapper, CaseDataService caseDataService, CorrespondentService correspondentService) {
-        super(mapper);
+    public CopyCompToComp2(CaseDataService caseDataService, CorrespondentService correspondentService) {
+        super();
         this.caseDataService = caseDataService;
         this.correspondentService = correspondentService;
     }
@@ -69,7 +68,7 @@ public class CopyCompToComp2 extends AbstractCaseCopyStrategy implements CaseCop
 
         // copy clob details
         copyClobData(fromCase, toCase, DATA_CLOB_KEYS);
-        caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap(mapper));
+        caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
 
         // Correspondents include the primary_correspondent_uuid
         correspondentService.copyCorrespondents(fromCase.getUuid(), toCase.getUuid());

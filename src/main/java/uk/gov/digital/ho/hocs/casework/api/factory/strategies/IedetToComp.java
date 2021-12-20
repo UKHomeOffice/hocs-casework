@@ -1,14 +1,11 @@
 package uk.gov.digital.ho.hocs.casework.api.factory.strategies;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopy;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-
-import java.util.Map;
 
 @Service
 @CaseCopy(fromCaseType = "IEDET", toCaseType = "COMP")
@@ -47,12 +44,12 @@ public class IedetToComp extends AbstractCaseCopyStrategy implements CaseCopyStr
             "ComplainantNationality"
     };
 
-    private CaseDataService caseDataService;
-    private CorrespondentService correspondentService;
+    private final CaseDataService caseDataService;
+    private final CorrespondentService correspondentService;
 
     @Autowired
-    public IedetToComp(ObjectMapper mapper, CaseDataService caseDataService, CorrespondentService correspondentService) {
-        super(mapper);
+    public IedetToComp(CaseDataService caseDataService, CorrespondentService correspondentService) {
+        super();
         this.caseDataService = caseDataService;
         this.correspondentService = correspondentService;
     }
@@ -62,9 +59,8 @@ public class IedetToComp extends AbstractCaseCopyStrategy implements CaseCopyStr
 
         // copy clob details
         copyClobData(fromCase, toCase, DATA_CLOB_KEYS);
-        Map<String, String> toCaseClobData = toCase.getDataMap(mapper);
-        toCaseClobData.put("CurrentStage", "COMP_CCH_RETURNS");
-        caseDataService.updateCaseData(toCase.getUuid(), null, toCaseClobData);
+        toCase.update("CurrentStage", "COMP_CCH_RETURNS");
+        caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
 
         // Correspondents include the primary_correspondent_uuid
         correspondentService.copyCorrespondents(fromCase.getUuid(), toCase.getUuid());

@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +22,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -62,8 +62,6 @@ public class ActionDataDeadlineExtensionServiceTest {
     @Captor
     private ArgumentCaptor<ActionDataDeadlineExtension> extensionArgumentCaptor = ArgumentCaptor.forClass(ActionDataDeadlineExtension.class);
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
     public static final String TOPIC_NAME = "topic_name";
     public static final UUID TOPIC_NAME_UUID = UUID.randomUUID();
@@ -81,14 +79,17 @@ public class ActionDataDeadlineExtensionServiceTest {
     public static final String PREV_EMAIL = "string 2";
     public static final String PREV_REFERENCE = "string 3";
     public static final String PREV_EXTERNAL_KEY = "string 4";
-    public static final String PREV_DATA_CLOB = "{\"key1\" : \"value1\", \"key2\" : \"value2\"}";
+    public static final Map<String, String> PREV_DATA_CLOB = new HashMap<>() {{
+        put("key1", "value1");
+        put("key2", "value2");
+    }};
     public static final String EXTENSION_REASON_1_SIMPLE_NAME = "EXTENSION_REASON_1_SIMPLE_NAME";
     public static final String EXTENSION_REASON_2_SIMPLE_NAME = "EXTENSION_REASON_2_SIMPLE_NAME";
-
     public static final EntityDto EXTENSION_REASON_1 = new EntityDto(EXTENSION_REASON_1_SIMPLE_NAME,
             Map.of("title", "Extension Reason 1"));
     public static final EntityDto EXTENSION_REASON_2 = new EntityDto(EXTENSION_REASON_1_SIMPLE_NAME,
             Map.of("title", "Extension Reason 2"));
+
 
     @Before
     public void setUp() {
@@ -97,8 +98,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 mockCaseDataRepository,
                 mockInfoClient,
                 mockAuditClient,
-                caseNoteService,
-                objectMapper
+                caseNoteService
         );
 
         when(mockInfoClient.getEntityBySimpleName(EXTENSION_REASON_1_SIMPLE_NAME))
@@ -131,7 +131,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         LocalDate originalDeadlineWarning = LocalDate.of(2021, Month.APRIL,28);
 
         CaseData previousCaseData = new CaseData(
-                1l,
+                1L,
                 PREVIOUS_CASE_UUID,
                 LocalDateTime.of(2021, Month.APRIL,1, 0,0),
                 PREVIOUS_CASE_TYPE,
@@ -232,7 +232,6 @@ public class ActionDataDeadlineExtensionServiceTest {
         UUID caseUUID = UUID.randomUUID();
         UUID actionTypeUuid = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
-        String caseType = "TEST_CASE_TYPE";
         int extendByDays = 8;
         ActionDataDeadlineExtensionInboundDto extensionDto = new ActionDataDeadlineExtensionInboundDto(
                 null,
@@ -243,18 +242,6 @@ public class ActionDataDeadlineExtensionServiceTest {
                 extendByDays,
                 "ANY NOTE HERE",
                 "Reason 1, Reason 2"
-        );
-        CaseTypeActionDto caseTypeActionDto = new CaseTypeActionDto(
-                actionTypeUuid,
-                null,
-                caseType,
-                null,
-                "TEST_EXTENSION",
-                null,
-                1,
-                10,
-                true,
-                null
         );
 
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
@@ -299,7 +286,7 @@ public class ActionDataDeadlineExtensionServiceTest {
 
 
         CaseData previousCaseData = new CaseData(
-                1l,
+                1L,
                 PREVIOUS_CASE_UUID,
                 LocalDateTime.of(2021, Month.APRIL,1, 0,0),
                 PREVIOUS_CASE_TYPE,
