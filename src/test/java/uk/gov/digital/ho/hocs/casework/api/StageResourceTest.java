@@ -188,11 +188,11 @@ public class StageResourceTest {
 
         Set<StageWithCaseData> stages = new HashSet<>();
 
-        when(stageService.getActiveStagesForUsersTeamsAndCaseType()).thenReturn(stages);
+        when(stageService.getActiveStagesForUsersTeams()).thenReturn(stages);
 
         ResponseEntity<GetStagesResponse> response = stageResource.getActiveStages();
 
-        verify(stageService).getActiveStagesForUsersTeamsAndCaseType();
+        verify(stageService).getActiveStagesForUsersTeams();
 
         checkNoMoreInteractions();
 
@@ -204,11 +204,11 @@ public class StageResourceTest {
     public void shouldGetActiveStagesForUser() {
         Set<StageWithCaseData> stages = new HashSet<>();
 
-        when(stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID)).thenReturn(stages);
+        when(stageService.getActiveUserStagesWithTeamsForUser(userUUID)).thenReturn(stages);
 
         ResponseEntity<GetStagesResponse> response = stageResource.getActiveStagesForUser(userUUID);
 
-        verify(stageService).getActiveUserStagesWithTeamsAndCaseType(userUUID);
+        verify(stageService).getActiveUserStagesWithTeamsForUser(userUUID);
 
         checkNoMoreInteractions();
 

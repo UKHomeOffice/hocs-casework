@@ -39,15 +39,6 @@ public class SummaryRepositoryTest {
     }
 
     @Test
-    public void findTeamsAndCaseCountByTeamUuidandCaseTypes_whereNoTypes() {
-        var summary =
-                summaryRepository.findTeamsAndCaseCountByCaseTypes(Collections.emptySet());
-
-        assertThat(summary).isNotNull();
-        assertThat(summary.size()).isEqualTo(0);
-    }
-
-    @Test
     public void findTeamsAndCaseCountByTeamUuidandCaseTypes_whereTeamMatchesCase() {
         var summary =
                 summaryRepository.findTeamsAndCaseCountByTeamUuid(Set.of(UUID.fromString("20000000-0000-0000-0000-000000000001")));
@@ -55,37 +46,6 @@ public class SummaryRepositoryTest {
         assertThat(summary).isNotNull();
         assertThat(summary.size()).isEqualTo(1);
         assertThat(summary.get(0).getCount()).isEqualTo(2);
-    }
-
-    @Test
-    public void findTeamsAndCaseCountByTeamUuidandCaseTypes_whereTeamMatchesCaseAndCaseTypeAdmin() {
-        var summary =
-                summaryRepository.findTeamsAndCaseCountByTeamUuid(Set.of(UUID.fromString("20000000-0000-0000-0000-000000000001")));
-
-        var summary_types =
-                summaryRepository.findTeamsAndCaseCountByCaseTypes(Set.of("TEST2"));
-
-        summary.addAll(summary_types);
-
-        assertThat(summary).isNotNull();
-        assertThat(summary.size()).isEqualTo(2);
-        assertThat(summary.get(0).getCount()).isEqualTo(2);
-        assertThat(summary.get(1).getCount()).isEqualTo(1);
-    }
-
-    @Test
-    public void findTeamsAndCaseCountByTeamUuidandCaseTypes_whereTeamNoMatchesCaseAndCaseTypeAdmin() {
-        var summary =
-                summaryRepository.findTeamsAndCaseCountByTeamUuid(Set.of(UUID.fromString("11111111-0000-0000-0000-000000000001")));
-
-        var summary_types =
-                summaryRepository.findTeamsAndCaseCountByCaseTypes(Set.of("TEST2"));
-
-        summary.addAll(summary_types);
-
-        assertThat(summary).isNotNull();
-        assertThat(summary.size()).isEqualTo(1);
-        assertThat(summary.get(0).getCount()).isEqualTo(1);
     }
 
     @Test
