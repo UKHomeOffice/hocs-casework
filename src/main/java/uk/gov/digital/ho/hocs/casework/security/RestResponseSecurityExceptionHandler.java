@@ -23,6 +23,12 @@ public class RestResponseSecurityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), UNAUTHORIZED);
     }
 
+    @ExceptionHandler(SecurityExceptions.ForbiddenException.class)
+    public ResponseEntity handle(SecurityExceptions.ForbiddenException e) {
+        logError(e);
+        return new ResponseEntity<>(e.getMessage(), FORBIDDEN);
+    }
+
     @ExceptionHandler(SecurityExceptions.StageNotAssignedToLoggedInUserException.class)
     public ResponseEntity handle(SecurityExceptions.StageNotAssignedToLoggedInUserException e) {
         logError(e);
