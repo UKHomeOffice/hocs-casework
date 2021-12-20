@@ -140,13 +140,13 @@ class StageResource {
 
     @GetMapping(value = "/stage")
     ResponseEntity<GetStagesResponse> getActiveStages() {
-        Set<StageWithCaseData> activeStages = stageService.getActiveStagesForUsersTeamsAndCaseType();
+        Set<StageWithCaseData> activeStages = stageService.getActiveStagesForUsersTeams();
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
     @GetMapping(value = "/stage/user/{userUuid}", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<GetStagesResponse> getActiveStagesForUser(@PathVariable UUID userUuid) {
-        Set<StageWithCaseData> activeStages = stageService.getActiveUserStagesWithTeamsAndCaseType(userUuid);
+        Set<StageWithCaseData> activeStages = stageService.getActiveUserStagesWithTeamsForUser(userUuid);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
