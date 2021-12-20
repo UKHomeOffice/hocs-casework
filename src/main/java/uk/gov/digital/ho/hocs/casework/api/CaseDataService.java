@@ -65,11 +65,19 @@ public class CaseDataService {
     private final CaseDataTypeService caseDataTypeService;
 
     public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
+    public static final Pattern CASE_UUID_PATTERN = Pattern.compile("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b", Pattern.CASE_INSENSITIVE);
+
 
     @Autowired
-    public CaseDataService(CaseDataRepository caseDataRepository, ActiveCaseViewDataRepository activeCaseViewDataRepository,
-                           CaseLinkRepository caseLinkRepository, InfoClient infoClient,
-                           ObjectMapper objectMapper, AuditClient auditClient, CaseCopyFactory caseCopyFactory, CaseActionService caseActionService, CaseDataTypeService caseDataTypeService) {
+    public CaseDataService(CaseDataRepository caseDataRepository,
+                           ActiveCaseViewDataRepository activeCaseViewDataRepository,
+                           CaseLinkRepository caseLinkRepository,
+                           InfoClient infoClient,
+                           ObjectMapper objectMapper,
+                           AuditClient auditClient,
+                           CaseCopyFactory caseCopyFactory,
+                           CaseActionService caseActionService,
+                           CaseDataTypeService caseDataTypeService) {
 
         this.caseDataRepository = caseDataRepository;
         this.activeCaseViewDataRepository = activeCaseViewDataRepository;
@@ -168,10 +176,7 @@ public class CaseDataService {
 
     public String getCaseDataField(CaseData caseData, String key) {
         log.debug("Looking up key {} for Case: {}", key, caseData.getUuid());
-        Map<String, String> dataMap = caseData.getDataMap(objectMapper);
-        String value = dataMap.getOrDefault(key, null);
-        log.debug("returning {} found value for Case: {}", value, caseData.getUuid());
-        return value;
+        return getCaseData(caseData.getUuid()).getData(key);
     }
 
     CaseData createCase(String caseType, Map<String, String> data, LocalDate dateReceived, UUID fromCaseUUID) {
@@ -233,7 +238,7 @@ public class CaseDataService {
     private CaseData createCaseBaseData(String caseType, Map<String, String> data, LocalDate dateReceived, Long caseNumber) {
         log.debug("Allocating Ref: {}", caseNumber);
         CaseDataType caseDataType = caseDataTypeService.getCaseDataType(caseType);
-        CaseData caseData = new CaseData(caseDataType, caseNumber, data, objectMapper, dateReceived);
+        CaseData caseData = new CaseData(caseDataType, caseNumber, data, dateReceived);
         LocalDate deadline = infoClient.getCaseDeadline(caseType, dateReceived, 0);
         caseData.setCaseDeadline(deadline);
         LocalDate deadlineWarning = infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0);
@@ -248,8 +253,7 @@ public class CaseDataService {
         log.debug("Calculating totals for Case: {} Stage: {}", caseUUID, stageUUID);
         Map<String, String> newDataMap = new HashMap<>();
         try {
-            CaseData caseData = getCaseData(caseUUID);
-            Map<String, String> dataMap = caseData.getDataMap(objectMapper);
+            Map<String, String> dataMap = getCaseData(caseUUID).getDataMap();
             List<EntityDto<EntityTotalDto>> entityList = infoClient.getEntityListTotals(listName);
             for (EntityDto<EntityTotalDto> entityDto : entityList) {
                 EntityTotalDto total = entityDto.getData();
@@ -269,7 +273,6 @@ public class CaseDataService {
             log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
             return;
         }
-
         updateCaseData(getCaseData(caseUUID), stageUUID, data);
     }
 
@@ -281,7 +284,7 @@ public class CaseDataService {
         }
 
         log.debug("Data size {}", data.size());
-        caseData.update(data, objectMapper);
+        caseData.update(data);
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);
         log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
@@ -330,17 +333,16 @@ public class CaseDataService {
         auditClient.updateCaseAudit(caseData, stageUUID);
     }
 
-    private void updateStageDeadlines(CaseData caseData) {
+    public void updateStageDeadlines(CaseData caseData) {
 
         if (caseData.getActiveStages() == null) {
             log.warn("Case uuid:{} supplied with null active stages", caseData.getUuid());
             return;
         }
 
-        Map<String, String> dataMap = caseData.getDataMap(objectMapper);
         for (ActiveStage stage : caseData.getActiveStages()) {
             // Try and overwrite the deadlines with inputted values from the data map.
-            String overrideDeadline = dataMap.get(String.format("%s_DEADLINE", stage.getStageType()));
+            String overrideDeadline = caseData.getData(String.format("%s_DEADLINE", stage.getStageType()));
             if (overrideDeadline == null) {
                 LocalDate dateReceived = caseData.getDateReceived();
                 LocalDate caseDeadline = caseData.getCaseDeadline();
@@ -361,16 +363,7 @@ public class CaseDataService {
     void updateStageDeadline(UUID caseUUID, UUID stageUUID, String stageType, int days) {
         log.debug("Updating deadline for Case: {} Stage: {} Days: {}", caseUUID, stageType, days);
         CaseData caseData = getCaseData(caseUUID);
-        LocalDate deadline = infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), days);
-        Map<String, String> data = Map.of(String.format("%s_DEADLINE", stageType), deadline.toString());
-        caseData.update(data, objectMapper);
-
-        if (caseData.getActiveStages() != null) {
-            ActiveStage activeStage = caseData.getActiveStages().stream().filter(stage -> stage.getStageType().equals(stageType)).findFirst().orElse(null);
-            if (activeStage != null) {
-                activeStage.setDeadline(deadline);
-            }
-        }
+        updateDeadlineForStage(caseData, stageType, days);
 
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);
@@ -384,22 +377,7 @@ public class CaseDataService {
         stageTypeAndDaysMap.forEach(
                 (stageType, noOfDays) -> {
                     log.debug("Updating deadline for Case: {} Stage: {} Days: {}", caseUUID, stageType, noOfDays);
-                    LocalDate deadline = infoClient.getCaseDeadline(
-                            caseData.getType(),
-                            caseData.getDateReceived(),
-                            noOfDays
-                    );
-                    Map<String, String> data = Map.of(String.format("%s_DEADLINE", stageType), deadline.toString());
-                    caseData.update(data, objectMapper);
-
-                    if (caseData.getActiveStages() != null) {
-                        ActiveStage activeStage = caseData.getActiveStages().stream().filter(
-                                stage -> stage.getStageType().equals(stageType)
-                        ).findFirst().orElse(null);
-                        if (activeStage != null) {
-                            activeStage.setDeadline(deadline);
-                        }
-                    }
+                    updateDeadlineForStage(caseData, stageType, noOfDays);
                 }
         );
 
@@ -431,7 +409,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.setCompleted(completed);
         if (completed) {
-            caseData.update(Map.of(CaseworkConstants.CURRENT_STAGE, ""), objectMapper);
+            caseData.update(CaseworkConstants.CURRENT_STAGE, "");
         }
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, null);
@@ -465,12 +443,12 @@ public class CaseDataService {
                 .withActiveStages(caseData.getActiveStages());
 
         Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
-        Map<String, String> caseDataMap = caseData.getDataMap(objectMapper);
 
         CaseActionDataResponseDto caseActionData = caseActionService.getAllCaseActionDataForCase(caseUUID);
 
         summaryBuilder.withActions(caseActionData);
 
+        Map<String, String> caseDataMap = caseData.getDataMap();
         summaryBuilder.withAdditionalFields(getAdditionalFieldsForSummary(summaryFields, caseDataMap));
         summaryBuilder.withStageDeadlines(getStageDeadlines(caseData, caseDataMap));
 
@@ -489,13 +467,25 @@ public class CaseDataService {
         return caseSummary;
     }
 
+    private void updateDeadlineForStage(CaseData caseData, String stageType, Integer noOfDays) {
+        LocalDate deadline = infoClient.getCaseDeadline(
+                caseData.getType(),
+                caseData.getDateReceived(),
+                noOfDays
+        );
+        caseData.update(String.format("%s_DEADLINE", stageType), deadline.toString());
+
+        if (caseData.getActiveStages() != null) {
+            caseData.getActiveStages().stream().filter(
+                    stage -> stage.getStageType().equals(stageType)
+            ).findFirst().ifPresent(activeStage -> activeStage.setDeadline(deadline));
+        }
+    }
+
     private Map<String, LocalDate> getStageDeadlines(CaseData caseData, Map<String, String> caseDataMap) {
         Map<String, LocalDate> stageDeadlinesOrig = infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived());
         // Make a deep copy of the cached map so it isn't modified below
-        Map<String, LocalDate> stageDeadlines = new LinkedHashMap<String, LocalDate>();
-        for (Map.Entry<String, LocalDate> stageDeadline : stageDeadlinesOrig.entrySet()) {
-            stageDeadlines.put(stageDeadline.getKey(), stageDeadline.getValue());
-        }
+        Map<String, LocalDate> stageDeadlines = new HashMap<>(stageDeadlinesOrig);
         // Try and overwrite the deadlines with inputted values from the data map.
         for (String stageType : stageDeadlines.keySet()) {
             String stageDeadlineKey = String.format("%s_DEADLINE", stageType);
@@ -585,22 +575,22 @@ public class CaseDataService {
 
     public Map<String, String> updateTeamByStageAndTexts(UUID caseUUID, UUID stageUUID, String stageType, String teamUUIDKey, String teamNameKey, String[] texts) {
         log.debug("Updating Team by Stage: {} {}", stageUUID, stageType);
-        Map<String, String> dataMap = getCaseData(caseUUID).getDataMap(objectMapper);
+        Map<String, String> dataMap = getCaseData(caseUUID).getDataMap();
         // build the linkValue text string used to search the team link table by converting "text" key to the case's data value
-        String linkValue = null;
+        StringBuilder linkValue = null;
         for (String text : texts) {
             String value = dataMap.getOrDefault(text, "");
             if (!value.isEmpty()) {
                 if (linkValue != null) {
-                    linkValue += "_";
-                    linkValue += value;
+                    linkValue.append("_");
+                    linkValue.append(value);
                 } else {
-                    linkValue = value;
+                    linkValue = new StringBuilder(value);
                 }
             }
         }
 
-        TeamDto teamDto = infoClient.getTeamByStageAndText(stageType, linkValue);
+        TeamDto teamDto = infoClient.getTeamByStageAndText(stageType, linkValue.toString());
         Map<String, String> teamMap = new HashMap<>();
         teamMap.put(teamUUIDKey, teamDto.getUuid().toString());
         teamMap.put(teamNameKey, teamDto.getDisplayName());

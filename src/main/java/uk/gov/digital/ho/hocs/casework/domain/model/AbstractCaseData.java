@@ -1,16 +1,19 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.*;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.Where;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.util.JsonDataMapUtils;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -18,6 +21,9 @@ import java.util.UUID;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
 
 @MappedSuperclass
+@TypeDefs({
+        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+})
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AbstractCaseData implements Serializable {
@@ -49,9 +55,10 @@ public class AbstractCaseData implements Serializable {
     private boolean deleted;
 
     @Getter
-    @Setter(AccessLevel.PROTECTED)
-    @Column(name = "data")
-    private String data = "{}";
+    @Setter(value = AccessLevel.PROTECTED)
+    @Type(type = "jsonb")
+    @Column(name = "data", columnDefinition = "jsonb")
+    private Map<String, String> dataMap = new HashMap<>(0);
 
     @Setter
     @Getter
@@ -109,10 +116,9 @@ public class AbstractCaseData implements Serializable {
     public AbstractCaseData(CaseDataType type,
                             Long caseNumber,
                             Map<String, String> data,
-                            ObjectMapper objectMapper,
                             LocalDate dateReceived) {
         this(type, caseNumber, dateReceived);
-        update(data, objectMapper);
+        update(data);
     }
 
     public AbstractCaseData(CaseDataType type, Long caseNumber, LocalDate dateReceived) {
@@ -136,11 +142,19 @@ public class AbstractCaseData implements Serializable {
         }
     }
 
-    public void update(Map<String,String> newData, ObjectMapper objectMapper) {
-        setData(JsonDataMapUtils.update(getData(), newData, objectMapper));
+    public void update(Map<String,String> newData) {
+        if (newData != null && newData.size() > 0) {
+            this.dataMap.putAll(newData);
+        }
     }
 
-    public Map<String,String> getDataMap(ObjectMapper objectMapper) {
-        return JsonDataMapUtils.getDataMap(getData(), objectMapper);
+    public void update(String key, String value) {
+        this.dataMap.put(key, value);
+
     }
+
+    public String getData(String key) {
+        return this.dataMap.getOrDefault(key, null);
+    }
+
 }

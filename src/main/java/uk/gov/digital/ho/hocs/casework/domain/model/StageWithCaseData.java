@@ -1,32 +1,32 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.util.JsonDataMapUtils;
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
 
 @NoArgsConstructor
+@TypeDefs({
+        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+})
 @Entity
 @Table(name = "stage")
 public class StageWithCaseData extends BaseStage {
-
-    public interface StageTeamUuid {
-        String getTeamUuid();
-    }
 
     public static final String DCU_MIN_INITIAL_DRAFT = "DCU_MIN_INITIAL_DRAFT";
     public static final String DCU_TRO_INITIAL_DRAFT = "DCU_TRO_INITIAL_DRAFT";
@@ -49,9 +49,11 @@ public class StageWithCaseData extends BaseStage {
     private String caseDataType;
 
     @Getter
-    @Setter(AccessLevel.PROTECTED)
-    @Column(name = "data", insertable = false, updatable = false)
-    private String data;
+    @Setter(value = AccessLevel.PROTECTED)
+    @Type(type = "jsonb")
+    @Column(name = "data", columnDefinition = "jsonb", insertable = false, updatable = false)
+    private Map<String, String> data;
+
 
     @Getter
     @Column(name = "case_created", insertable = false, updatable = false)
@@ -126,16 +128,25 @@ public class StageWithCaseData extends BaseStage {
         this.stageType = stageType;
         this.transitionNoteUUID = transitionNoteUUID;
         this.completed = Boolean.FALSE;
-        setTeam(teamUUID);
+        this.teamUUID = teamUUID;
         this.userUUID = userUUID;
     }
 
-    public void update(Map<String, String> newData, ObjectMapper objectMapper) {
-        setData(JsonDataMapUtils.update(getData(), newData, objectMapper));
+    public void putData(String key, String value) {
+        var newData = new HashMap<>(this.data);
+        newData.put(key, value);
+        this.data = newData;
+
     }
 
-    public Map<String, String> getDataMap(ObjectMapper objectMapper) {
-        return JsonDataMapUtils.getDataMap(getData(), objectMapper);
+    public void putAllData(Map<String,String> data) {
+        if (data != null) {
+            this.data.putAll(data);
+        }
+    }
+
+    public String getData(String key) {
+        return this.data.getOrDefault(key, null);
     }
 
 }

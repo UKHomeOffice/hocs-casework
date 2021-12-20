@@ -63,15 +63,13 @@ public class SecurityIntegrationTest {
     UUID teamUUID = UUID.fromString("44444444-2222-2222-2222-222222222222");
     CaseDataType caseDataType = CaseDataTypeFactory.from("MIN", "a1");
 
-    @Autowired
-    ObjectMapper mapper;
 
     @Test
     public void shouldGetCaseDataWhenInCaseTypeGroup() {
         when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
         Map<String, String> caseSubData = Map.of("key", "value");
 
-        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, LocalDate.now());
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(caseDataTypeService.getCaseDataType(caseData.getUuid())).thenReturn(CaseDataTypeFactory.from("MIN", "01"));
@@ -88,7 +86,7 @@ public class SecurityIntegrationTest {
         when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 6));
         Map<String, String> caseSubData = Map.of("key", "value");
 
-        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, LocalDate.now());
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(caseDataTypeService.getCaseDataType(caseData.getUuid())).thenReturn(CaseDataTypeFactory.from("MIN", "01"));
@@ -107,7 +105,7 @@ public class SecurityIntegrationTest {
             put("key", "value");
         }};
 
-        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, mapper, LocalDate.now());
+        CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, LocalDate.now());
 
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);

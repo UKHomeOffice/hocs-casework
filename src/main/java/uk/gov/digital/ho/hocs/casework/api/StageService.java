@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.amazonaws.util.json.Jackson;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +87,7 @@ public class StageService {
                         ContributionsProcessor contributionsProcessor,
                         ActionDataDeadlineExtensionService extensionService,
                         CaseDataTypeService caseDataTypeService) {
+      
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -156,7 +156,8 @@ public class StageService {
 
     private void calculateDeadlines(Stage stage, CaseData caseData) {
         // Try and overwrite the deadline with inputted values from the data map.
-        String overrideDeadline = caseDataService.getCaseDataField(caseData, String.format("%s_DEADLINE", stage.getStageType()));
+        var overrideDeadline = caseData.getData(String.format("%s_DEADLINE", stage.getStageType()));
+
         if (overrideDeadline == null) {
             LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadline());
             stage.setDeadline(deadline);
@@ -218,23 +219,13 @@ public class StageService {
 
     void checkSendOfflineQAEmail(StageWithCaseData stage) {
         if (stage.getStageType().equals(StageWithCaseData.DCU_DTEN_INITIAL_DRAFT) || stage.getStageType().equals(StageWithCaseData.DCU_TRO_INITIAL_DRAFT) || stage.getStageType().equals(StageWithCaseData.DCU_MIN_INITIAL_DRAFT)) {
-            final String offlineQaUser = getOfflineQaUser(stage.getData());
+            final String offlineQaUser = stage.getData(StageWithCaseData.OFFLINE_QA_USER);
             final UUID stageUserUUID = getLastCaseUserUUID(stage.getCaseUUID());
             if (offlineQaUser != null && stageUserUUID != null) {
                 UUID offlineQaUserUUID = UUID.fromString(offlineQaUser);
                 notifyClient.sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), stageUserUUID, offlineQaUserUUID, stage.getCaseReference());
             }
         }
-    }
-
-    String getOfflineQaUser(String stageData) {
-        if (stageData != null && stageData.contains(StageWithCaseData.OFFLINE_QA_USER)) {
-            final Map dataMap = Jackson.fromJsonString(stageData, Map.class);
-            if (dataMap != null) {
-                return (String) dataMap.get(StageWithCaseData.OFFLINE_QA_USER);
-            }
-        }
-        return null;
     }
 
     UUID getLastCaseUserUUID(UUID caseUUID) {
@@ -295,8 +286,8 @@ public class StageService {
         }
 
         for (StageWithCaseData stage : unassignedStages) {
-            updatePriority(stage);
-            updateDaysElapsed(stage);
+            stagePriorityCalculator.updatePriority(stage.getData(), stage.getCaseDataType());
+            daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
         }
 
         double prevSystemCalculatedPriority = 0;
@@ -358,9 +349,9 @@ public class StageService {
         updateContributions(stages);
 
         for (StageWithCaseData stage : stages) {
-            updatePriority(stage);
-            updateDaysElapsed(stage);
-            decorateTags(stage);
+            stagePriorityCalculator.updatePriority(stage.getData(), stage.getCaseDataType());
+            daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
+            stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType());
         }
     }
 
@@ -473,21 +464,6 @@ public class StageService {
             Optional<StageWithCaseData> maxDatedStage = stageSupplier.get().max(CREATED_COMPARATOR);
             return maxDatedStage.stream();
         }
-    }
-
-    private void updatePriority(StageWithCaseData stage) {
-        log.info("Updating priority for stage : {}", stage.getCaseUUID());
-        stagePriorityCalculator.updatePriority(stage);
-    }
-
-    private void updateDaysElapsed(StageWithCaseData stage) {
-        log.info("Updating days elapsed for stage : {}", stage.getCaseUUID());
-        daysElapsedCalculator.updateDaysElapsed(stage);
-    }
-
-    private void decorateTags(StageWithCaseData stage) {
-        log.info("Updating tags for stage: {}", stage.getCaseUUID());
-        stageTagsDecorator.decorateTags(stage);
     }
 
     public void withdrawCase(UUID caseUUID, UUID stageUUID, WithdrawCaseRequest request) {

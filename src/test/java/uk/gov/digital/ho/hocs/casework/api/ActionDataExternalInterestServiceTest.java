@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,8 +52,6 @@ public class ActionDataExternalInterestServiceTest {
     private ArgumentCaptor<ActionDataExternalInterest> externalInterestArgumentCaptor
             = ArgumentCaptor.forClass(ActionDataExternalInterest.class);
 
-    private ObjectMapper objectMapper = new ObjectMapper();
-
     public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
     public static final String TOPIC_NAME = "topic_name";
     public static final UUID TOPIC_NAME_UUID = UUID.randomUUID();
@@ -72,7 +69,10 @@ public class ActionDataExternalInterestServiceTest {
     public static final String PREV_EMAIL = "string 2";
     public static final String PREV_REFERENCE = "string 3";
     public static final String PREV_EXTERNAL_KEY = "string 4";
-    public static final String PREV_DATA_CLOB = "{\"key1\" : \"value1\", \"key2\" : \"value2\"}";
+    public static final Map<String, String> PREV_DATA_CLOB = new HashMap<>() {{
+        put("key1", "value1");
+        put("key2", "value2");
+    }};
 
 
     @Before
@@ -92,8 +92,6 @@ public class ActionDataExternalInterestServiceTest {
         UUID caseUUID = UUID.randomUUID();
         UUID actionTypeUuid = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
-        String caseType = "TEST_CASE_TYPE";
-        int extendByDays = 8;
         ActionDataExternalInterestInboundDto extensionDto = new ActionDataExternalInterestInboundDto(
                 null,
                 actionTypeUuid,
@@ -101,18 +99,6 @@ public class ActionDataExternalInterestServiceTest {
                 "ANY_STRING",
                 "ANY_PARTY",
                 "ANY NOTE HERE"
-        );
-        CaseTypeActionDto caseTypeActionDto = new CaseTypeActionDto(
-                actionTypeUuid,
-                null,
-                caseType,
-                null,
-                null,
-                "TEST_EXTERNAL_INTEREST",
-                1,
-                10,
-                true,
-                null
         );
 
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
@@ -210,7 +196,6 @@ public class ActionDataExternalInterestServiceTest {
         UUID caseUUID = UUID.randomUUID();
         UUID actionTypeUuid = UUID.randomUUID();
         UUID actionEntityId = UUID.randomUUID();
-        UUID stageUUID = UUID.randomUUID();
         String caseType = "TEST_CASE_TYPE";
         String actionTypeLabel = "TEST_DETAILS_CHANGED";
 

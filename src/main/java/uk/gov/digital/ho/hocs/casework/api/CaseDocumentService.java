@@ -1,10 +1,8 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentDto;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsResponse;
@@ -14,7 +12,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -27,7 +24,6 @@ public class CaseDocumentService {
     private final CaseDataRepository caseDataRepository;
     private final DocumentClient documentClient;
     protected final InfoClient infoClient;
-    protected final ObjectMapper objectMapper;
 
     private static final String DRAFT_DOCUMENT_FIELD_NAME = "DraftDocuments";
     private static final String PRIMARY_DRAFT_LABEL = "Primary Draft";
@@ -36,12 +32,10 @@ public class CaseDocumentService {
     public CaseDocumentService(
             CaseDataRepository caseDataRepository,
             DocumentClient documentClient,
-            InfoClient infoClient,
-            ObjectMapper objectMapper) {
+            InfoClient infoClient) {
         this.caseDataRepository = caseDataRepository;
         this.documentClient = documentClient;
         this.infoClient = infoClient;
-        this.objectMapper = objectMapper;
     }
 
     public GetDocumentsResponse getDocuments(UUID caseUUID, String type) {
@@ -49,10 +43,33 @@ public class CaseDocumentService {
         GetDocumentsResponse getDocumentsResponse = documentClient.getDocuments(caseUUID, type);
 
         CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
-        enrichDocumentsResponse(getDocumentsResponse, caseData);
+        enrichDocumentsResponse(getDocumentsResponse, caseData.getData(DRAFT_DOCUMENT_FIELD_NAME), caseData.getType());
         getDocumentsResponse.setDocumentTags(infoClient.getDocumentTags(caseData.getType()));
 
-        log.info("Got {} documents and {} document tags for Case: {} with type: {}", getDocumentsResponse.getDocumentDtos().size(), getDocumentsResponse.getDocumentTags().size(), caseUUID, value(EVENT, CASE_DOCUMENTS_RETRIEVED));
+        log.info("Got {} documents and {} document tags for Case: {} with type: {}",
+                getDocumentsResponse.getDocumentDtos().size(),
+                getDocumentsResponse.getDocumentTags().size(),
+                caseUUID,
+                type,
+                value(EVENT, CASE_DOCUMENTS_RETRIEVED));
+        return getDocumentsResponse;
+    }
+
+    public GetDocumentsResponse getDocumentsForAction(UUID caseUUID, UUID actionDataUuid, String type) {
+        log.debug("Getting documents for Case: {}, type {}, and action: {}", caseUUID, type, actionDataUuid);
+        GetDocumentsResponse getDocumentsResponse = documentClient.getDocumentsForAction(caseUUID, actionDataUuid, type);
+
+        CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
+        enrichDocumentsResponse(getDocumentsResponse, caseData.getData(DRAFT_DOCUMENT_FIELD_NAME), caseData.getType());
+        getDocumentsResponse.setDocumentTags(List.of(type));
+
+        log.info("Got {} documents and {} document tags for Case: {}, type: {}, and action: {}",
+                getDocumentsResponse.getDocumentDtos().size(),
+                getDocumentsResponse.getDocumentTags().size(),
+                caseUUID,
+                type,
+                actionDataUuid,
+                value(EVENT, CASE_DOCUMENTS_RETRIEVED));
         return getDocumentsResponse;
     }
 
@@ -83,41 +100,12 @@ public class CaseDocumentService {
         return document;
     }
 
-    private void enrichDocumentsResponse(GetDocumentsResponse getDocumentsResponse, CaseData caseData) {
-        String caseType = caseData.getType();
-        Map<String, String> data = caseData.getDataMap(objectMapper);
-
+    private void enrichDocumentsResponse(GetDocumentsResponse getDocumentsResponse, String fieldName, String caseType) {
         for (DocumentDto documentDto : getDocumentsResponse.getDocumentDtos()) {
-            updateDocumentLabels(documentDto, data);
-        }
-        getDocumentsResponse.setDocumentTags(infoClient.getDocumentTags(caseType));
-    }
-
-    private void updateDocumentLabels(DocumentDto documentDto, Map<String, String> caseData) {
-        if (!CollectionUtils.isEmpty(caseData) && caseData.containsKey(DRAFT_DOCUMENT_FIELD_NAME)) {
-            if (documentDto.getUuid().toString().equals(caseData.get(DRAFT_DOCUMENT_FIELD_NAME))) {
+            if (documentDto.getUuid().toString().equals(fieldName)) {
                 documentDto.addLabel(PRIMARY_DRAFT_LABEL);
             }
         }
-    }
-
-    public GetDocumentsResponse getDocumentsForAction(UUID caseUUID, UUID actionDataUuid, String type) {
-        log.debug("Getting documents for Case: {}, type {}, and action: {}", caseUUID, type, actionDataUuid);
-        GetDocumentsResponse getDocumentsResponse =
-                documentClient.getDocumentsForAction(caseUUID, actionDataUuid, type);
-
-        CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
-        enrichDocumentsResponse(getDocumentsResponse, caseData);
-
-        getDocumentsResponse.setDocumentTags(List.of(type));
-
-        log.info("Got {} documents and {} document tags for Case: {}, type: {}, and action: {}",
-                getDocumentsResponse.getDocumentDtos().size(),
-                getDocumentsResponse.getDocumentTags().size(),
-                caseUUID,
-                type,
-                actionDataUuid,
-                value(EVENT, CASE_DOCUMENTS_RETRIEVED));
-        return getDocumentsResponse;
+        getDocumentsResponse.setDocumentTags(infoClient.getDocumentTags(caseType));
     }
 }

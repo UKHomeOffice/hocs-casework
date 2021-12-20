@@ -10,6 +10,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -49,8 +50,8 @@ public class GetStageResponse {
     @JsonProperty("transitionNote")
     private UUID transitionNoteUUID;
 
-    @JsonRawValue
-    private String data;
+    @JsonProperty("data")
+    private Map<String, String> data;
 
     @JsonRawValue
     private String somu;
