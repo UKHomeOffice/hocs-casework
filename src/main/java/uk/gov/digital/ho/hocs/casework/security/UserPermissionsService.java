@@ -62,7 +62,7 @@ public class UserPermissionsService {
 
         var allTeams = infoClient.getTeams();
 
-        var userCaseAdminCaseTypes = getUserCaseAdminCaseTypes(allTeams, getUserTeams());
+        var userCaseAdminCaseTypes = getUserCaseAdminCaseTypes(allTeams, userTeamUuids);
 
         if (userCaseAdminCaseTypes.isEmpty()) {
             return userTeamUuids;
