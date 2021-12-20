@@ -156,7 +156,7 @@ public class SecurityIntegrationTest {
         }};
 
         CaseDataType caseDataType = CaseDataTypeFactory.from("SOME_OTHER_CASE_TYPE", "a1");
-        CaseData caseData = new CaseData(caseDataType,123456L, caseSubData, mapper, LocalDate.now());
+        CaseData caseData = new CaseData(caseDataType,123456L, caseSubData, LocalDate.now());
 
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(UUID.randomUUID()));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
