@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.Sets;
 import org.junit.Assert;
 import org.junit.Before;
@@ -423,14 +422,12 @@ public class StageServiceTest {
 
     @Test
     public void shouldGetActiveStagesCaseUUID() {
-
         stageService.getActiveStagesByCaseUUID(caseUUID);
 
         verify(stageRepository).findAllActiveByCaseUUID(caseUUID);
 
         verifyNoMoreInteractions(stageRepository);
          verifyNoInteractions(notifyClient);
-
     }
 
     @Test
@@ -460,7 +457,7 @@ public class StageServiceTest {
         stageService.getActiveStagesForUsersTeams();
 
         verify(userPermissionsService).getExpandedUserTeams();
-        verify(stageRepository).findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
+        verify(stageRepository).findAllActiveByTeamUUID(teams);
         verify(stagePriorityCalculator).updatePriority(stage.getData(), stage.getCaseDataType());
         verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
 
@@ -921,7 +918,6 @@ public class StageServiceTest {
         stageService.getActiveUserStagesWithTeamsForUser(userUUID);
 
         verify(userPermissionsService).getExpandedUserTeams();
-        verify(userPermissionsService).getCaseTypesIfUserTeamIsCaseTypeAdmin();
         verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
         verify(stagePriorityCalculator).updatePriority(stage.getData(), stage.getCaseDataType());
         verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
