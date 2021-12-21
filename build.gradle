@@ -55,7 +55,7 @@ dependencies {
     implementation('com.github.ben-manes.caffeine:caffeine:3.0.5')
     implementation("org.apache.camel:camel-spring-boot-starter:${camelVersion}")
     implementation("org.apache.camel:camel-aws:${camelVersion}")
-    implementation('com.amazonaws:aws-java-sdk:1.12.129')
+    implementation('com.amazonaws:aws-java-sdk:1.12.130')
     implementation 'org.json:json:20211205'
 
     implementation'org.flywaydb:flyway-core'
