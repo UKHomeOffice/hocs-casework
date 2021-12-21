@@ -37,14 +37,14 @@ public interface StageRepository extends CrudRepository<BaseStage, Long> {
     @Query(value = "SELECT sd.* FROM stage_data sd WHERE sd.team_uuid = ?1", nativeQuery = true)
     Set<StageWithCaseData> findAllActiveByTeamUUID(UUID teamUUID);
 
+    @Query(value = "SELECT sd.* FROM stage_data sd WHERE sd.team_uuid in ?1", nativeQuery = true)
+    Set<StageWithCaseData> findAllActiveByTeamUUID(Set<UUID> teamUUID);
+
     @Query(value = "SELECT sd.* FROM stage_data sd WHERE sd.team_uuid = ?1 AND sd.user_uuid IS NULL", nativeQuery = true)
     Set<StageWithCaseData> findAllUnassignedAndActiveByTeamUUID(UUID teamUUID);
 
-    @Query(value = "SELECT * FROM stage_data sd WHERE sd.team_uuid IN ?1 OR sd.case_type IN ?2", nativeQuery = true)
-    Set<StageWithCaseData> findAllActiveByTeamUUIDAndCaseType(Set<UUID> teamUUID, Set<String> caseTypes);
-
-    @Query(value = "SELECT * FROM stage_data sd WHERE user_uuid = ?1 AND NOT data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) AND (sd.team_uuid IN ?2 OR sd.case_type IN ?3)", nativeQuery = true)
-    Set<StageWithCaseData> findAllActiveByUserUuidAndTeamUuidAndCaseType(UUID userUuid, Set<UUID> teamUUID, Set<String> caseTypes);
+    @Query(value = "SELECT * FROM stage_data sd WHERE user_uuid = ?1 AND NOT data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) AND sd.team_uuid IN ?2", nativeQuery = true)
+    Set<StageWithCaseData> findAllActiveByUserUuidAndTeamUuid(UUID userUuid, Set<UUID> teamUUID);
 
     @Query(value = "SELECT sd.* FROM stage sd JOIN case_data cd ON sd.case_uuid = cd.uuid WHERE sd.user_uuid = ?1 AND sd.team_uuid = ?2 AND NOT cd.deleted", nativeQuery = true)
     Set<Stage> findStageCaseUUIDsByUserUUIDTeamUUID(UUID userUUID, UUID teamUUID);

@@ -10,19 +10,14 @@ import uk.gov.digital.ho.hocs.casework.api.dto.AddressDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.EventType;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataDeadlineExtension;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseDeadlineExtension;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
-import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-@java.lang.SuppressWarnings("squid:S1068")
 public interface AuditPayload {
     @AllArgsConstructor
     @Getter
@@ -113,8 +108,8 @@ public interface AuditPayload {
         @JsonProperty("reference")
         private String reference;
 
-        @JsonRawValue
-        private String data;
+        @JsonProperty("data")
+        private Map<String,String> data;
 
         @JsonProperty("caseDeadline")
         private LocalDate caseDeadline;
@@ -127,7 +122,7 @@ public interface AuditPayload {
                     caseData.getCreated(),
                     caseData.getType(),
                     caseData.getReference(),
-                    caseData.getData(),
+                    caseData.getDataMap(),
                     caseData.getCaseDeadline(),
                     caseData.getDateReceived());
         }
@@ -228,8 +223,8 @@ public interface AuditPayload {
         @JsonProperty("reference")
         private String reference;
 
-        @JsonRawValue
-        private String data;
+        @JsonProperty("data")
+        private Map<String,String> data;
 
         @JsonProperty("primaryTopic")
         private UUID primaryTopic;
@@ -250,7 +245,7 @@ public interface AuditPayload {
                     caseData.getCreated(),
                     caseData.getType(),
                     caseData.getReference(),
-                    caseData.getData(),
+                    caseData.getDataMap(),
                     caseData.getPrimaryTopicUUID(),
                     caseData.getPrimaryCorrespondentUUID(),
                     caseData.getCaseDeadline(),

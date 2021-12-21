@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
@@ -19,10 +18,8 @@ public class CreateCaseResponseTest {
         CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
-        ObjectMapper objectMapper = new ObjectMapper();
-        LocalDate caseDeadline = LocalDate.now().plusDays(20);
         LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, data, objectMapper,caseReceived);
+        CaseData caseData = new CaseData(type, caseNumber, data,caseReceived);
 
         CreateCaseResponse createCaseResponse = CreateCaseResponse.from(caseData);
 
@@ -37,10 +34,8 @@ public class CreateCaseResponseTest {
         CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Long caseNumber = 1234L;
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        LocalDate caseDeadline = LocalDate.now().plusDays(20);
         LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, null, objectMapper,caseReceived);
+        CaseData caseData = new CaseData(type, caseNumber, null, caseReceived);
 
         CreateCaseResponse createCaseResponse = CreateCaseResponse.from(caseData);
 

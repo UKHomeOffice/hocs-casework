@@ -51,8 +51,7 @@ public class DashboardServiceTest {
         List<Summary> teamWithUserCaseCount = List.of(new Summary(userTeamUuid, 3));
         List<Summary> teamWithUserOverdueCaseCount = List.of(new Summary(userTeamUuid, 4));
 
-        when(userPermissionsService.getUserTeams()).thenReturn(setUserTeams);
-        when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(setUserTeams);
 
         when(requestData.userId()).thenReturn(UUID.randomUUID().toString());
         when(summaryRepository.findTeamsAndCaseCountByTeamUuid(setUserTeams)).thenReturn(teamWithCaseCount);
@@ -85,7 +84,7 @@ public class DashboardServiceTest {
 
     @Test
     public void getDashboard_emptyTeam_returnEmptyMap() {
-        when(userPermissionsService.getUserTeams()).thenReturn(Collections.emptySet());
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(Collections.emptySet());
 
         var result = dashboardService.getDashboard();
 

@@ -1,26 +1,17 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
-import java.util.ArrayList;
 import java.util.Map;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StageTagsDecoratorImplTest {
-
-    @Mock
-    ObjectMapper objectMapper;
-
-    @Mock
-    StageWithCaseData stage;
 
     private static final String HOME_SEC_REPLY_FIELD_NAME = "HomeSecReply";
     private static final String PRIVATE_OFFICE_OVERRIDE_PO_TEAM_UUID_FIELD_NAME = "PrivateOfficeOverridePOTeamUUID";
@@ -34,91 +25,55 @@ public class StageTagsDecoratorImplTest {
 
     @Before
     public void before() {
-        stageTagsDecorator = new StageTagsDecoratorImpl(objectMapper);
+        stageTagsDecorator = new StageTagsDecoratorImpl();
     }
 
     @Test
     public void addsNoTagsWhenNotAHomeSecReplyStage() {
-        when(stage.getDataMap(objectMapper)).thenReturn(Map.of(HOME_SEC_REPLY_FIELD_NAME, "FALSE"));
-
-        ArrayList<String> tags = new ArrayList<>();
-
-        stageTagsDecorator.decorateTags(stage);
-
-        verify(stage).setTag(tags);
+        var tags = stageTagsDecorator.decorateTags(Map.of(HOME_SEC_REPLY_FIELD_NAME, "FALSE"), "AnyType");
+        assertEquals(0, tags.size());
     }
 
     @Test
     public void addsTagWhenAHomeSecReplyStage() {
-        when(stage.getDataMap(objectMapper)).thenReturn(Map.of(HOME_SEC_REPLY_FIELD_NAME, "TRUE"));
-        when(stage.getStageType()).thenReturn("DCU_MIN_MARKUP");
-
-        ArrayList<String> tags = new ArrayList<>();
-        tags.add(StageTags.HOME_SEC_REPLY_TAG);
-
-        stageTagsDecorator.decorateTags(stage);
-
-        verify(stage).setTag(tags);
+        var tags = stageTagsDecorator.decorateTags(Map.of(HOME_SEC_REPLY_FIELD_NAME, "TRUE"), "DCU_MIN_MARKUP");
+        assertTrue(tags.contains(StageTags.HOME_SEC_REPLY_TAG));
     }
 
     @Test
     public void addsTagWhenAHomeSecReplyNoPoTeamStage() {
-        when(stage.getDataMap(objectMapper)).thenReturn(Map.of(
+        var tags = stageTagsDecorator.decorateTags(Map.of(
                 HOME_SEC_REPLY_FIELD_NAME, "TRUE",
                 OVERRIDE_PO_TEAM_UUID_FIELD_NAME, "",
                 PO_TEAM_UUID_FIELD_NAME, ""
-        ));
-        when(stage.getStageType()).thenReturn("TEST_STAGE_TYPE");
+        ),"TEST_STAGE_TYPE");
 
-        ArrayList<String> tags = new ArrayList<>();
-        tags.add(StageTags.HOME_SEC_REPLY_TAG);
-
-        stageTagsDecorator.decorateTags(stage);
-
-        verify(stage).setTag(tags);
+        assertTrue(tags.contains(StageTags.HOME_SEC_REPLY_TAG));
     }
 
     @Test
     public void addsTagWhenAHomeSecReplyPoTeamStage() {
-        when(stage.getDataMap(objectMapper)).thenReturn(Map.of(
+        var tags = stageTagsDecorator.decorateTags(Map.of(
                 HOME_SEC_REPLY_FIELD_NAME, "TRUE",
                 PRIVATE_OFFICE_OVERRIDE_PO_TEAM_UUID_FIELD_NAME, HOME_SEC_PO_TEAM_UUID,
                 OVERRIDE_PO_TEAM_UUID_FIELD_NAME, "",
                 PO_TEAM_UUID_FIELD_NAME, ""
-        ));
-        when(stage.getStageType()).thenReturn("TEST_STAGE_TYPE");
+        ), "TEST_STAGE_TYPE");
 
-        ArrayList<String> tags = new ArrayList<>();
-        tags.add(StageTags.HOME_SEC_REPLY_TAG);
-
-        stageTagsDecorator.decorateTags(stage);
-
-        verify(stage).setTag(tags);
+        assertTrue(tags.contains(StageTags.HOME_SEC_REPLY_TAG));
     }
 
     @Test
     public void addsTagsWhenOverrideToHSTeam(){
-        when(stage.getDataMap(objectMapper)).thenReturn(Map.of(OVERRIDE_PO_TEAM_NAME, "Home Secretary"));
-        when(stage.getStageType()).thenReturn("DCU_MIN_MARKUP");
+        var tags = stageTagsDecorator.decorateTags(Map.of(OVERRIDE_PO_TEAM_NAME, "Home Secretary"), "DCU_MIN_MARKUP");
 
-        ArrayList<String> tags = new ArrayList<>();
-        tags.add(StageTags.HOME_SEC_REPLY_TAG);
-
-        stageTagsDecorator.decorateTags(stage);
-
-        verify(stage).setTag(tags);
+        assertTrue(tags.contains(StageTags.HOME_SEC_REPLY_TAG));
     }
 
     @Test
     public void addsTagsWhenDefaultToHSTeam(){
-        when(stage.getDataMap(objectMapper)).thenReturn(Map.of(PO_TEAM_NAME, "Home Secretary"));
-        when(stage.getStageType()).thenReturn("DCU_MIN_MARKUP");
+        var tags = stageTagsDecorator.decorateTags(Map.of(PO_TEAM_NAME, "Home Secretary"), "DCU_MIN_MARKUP");
 
-        ArrayList<String> tags = new ArrayList<>();
-        tags.add(StageTags.HOME_SEC_REPLY_TAG);
-
-        stageTagsDecorator.decorateTags(stage);
-
-        verify(stage).setTag(tags);
+        assertTrue(tags.contains(StageTags.HOME_SEC_REPLY_TAG));
     }
 }
