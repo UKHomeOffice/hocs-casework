@@ -30,7 +30,6 @@ class CaseProfileResource {
         this.infoClient = infoClient;
     }
 
-    @Cacheable(value = "CaseProfileResourceGetProfileForCase", unless = "#result == null")
     @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/profile/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ProfileDto> getProfileForCase(@PathVariable UUID caseUUID) {

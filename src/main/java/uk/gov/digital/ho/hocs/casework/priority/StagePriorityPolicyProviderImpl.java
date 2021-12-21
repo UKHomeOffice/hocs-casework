@@ -41,7 +41,6 @@ public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvi
     @Autowired
     private WorkingDaysElapsedProvider workingDaysElapsedProvider;
 
-    @Cacheable(value = "StagePriorityPolicyProviderImpl_getPolicies")
     @Override
     public List<StagePriorityPolicy> getPolicies(String caseType) {
         List<PriorityPolicyDto> policies = infoClient.getPriorityPoliciesForCaseType(caseType);
