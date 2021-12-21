@@ -1,33 +1,27 @@
 package uk.gov.digital.ho.hocs.casework.api.factory.strategies;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AbstractCaseCopyStrategyTest {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static String FROM_CLOB;
-    private static String EXISTING_CLOB;
+    private static final Map<String, String> FROM_CLOB;
+    private static final Map<String, String> EXISTING_CLOB;
 
     static {
-        Map<String, String> fromCaseValues = Map.of("key1", "value1", "key2", "value2", "key3", "value3", "key4", "value4");
-        Map<String, String> existingTargetValues = Map.of("exkey1", "exvalue1", "exkey2", "exvalue2");
-        try {
-            FROM_CLOB = MAPPER.writeValueAsString(fromCaseValues);
-            EXISTING_CLOB = MAPPER.writeValueAsString(existingTargetValues);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
+        Map<String, String> fromCaseValues = new HashMap<>(Map.of("key1", "value1", "key2", "value2", "key3", "value3", "key4", "value4"));
+        Map<String, String> existingTargetValues = new HashMap<>(Map.of("exkey1", "exvalue1", "exkey2", "exvalue2"));
+        FROM_CLOB = fromCaseValues;
+        EXISTING_CLOB = existingTargetValues;
     }
 
-    private static CaseData FROM_CASE = new CaseData(1L,
+    private static final CaseData FROM_CASE = new CaseData(1L,
             null,
             null,
             null,
@@ -50,8 +44,7 @@ public class AbstractCaseCopyStrategyTest {
 
     @Before
     public void setUp() {
-        abstractStrategy = new AbstractCaseCopyStrategy(new ObjectMapper()) {
-        };
+        abstractStrategy = new AbstractCaseCopyStrategy() {};
         toCase = new CaseData(2L,
                 null,
                 null,
@@ -86,7 +79,7 @@ public class AbstractCaseCopyStrategyTest {
                 "exkey2", "exvalue2",
                 "key2", "value2",
                 "key3", "value3");
-        assertThat(toCase.getDataMap(MAPPER)).isEqualTo(expectedValues);
+        assertThat(toCase.getDataMap()).isEqualTo(expectedValues);
     }
 
     @Test
@@ -103,7 +96,7 @@ public class AbstractCaseCopyStrategyTest {
                 "exkey2", "exvalue2",
                 "key2", "value2",
                 "key3", "value3");
-        assertThat(toCase.getDataMap(MAPPER)).isEqualTo(expectedValues);
+        assertThat(toCase.getDataMap()).isEqualTo(expectedValues);
     }
 
 }

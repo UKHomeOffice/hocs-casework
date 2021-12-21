@@ -11,7 +11,6 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
-import uk.gov.digital.ho.hocs.casework.application.NonMigrationEnvCondition;
 
 import java.util.Set;
 import java.util.UUID;
@@ -22,7 +21,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAU
 @Aspect
 @Component
 @Slf4j
-@Conditional(value = {NonMigrationEnvCondition.class})
 public class AuthorisationAspect {
 
     private CaseDataService caseService;

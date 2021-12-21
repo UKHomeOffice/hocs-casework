@@ -32,7 +32,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,11 +62,11 @@ public class AuditClientTest {
     private static final long caseID = 12345L;
     private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
     private final UUID caseUUID = randomUUID();
-    private LocalDate caseReceived = LocalDate.now();
-    private String auditQueue ="audit-queue";
-    private Address address = new Address("S1 3NS","some street","some town","some count","UK");
-    private Correspondent correspondent = new Correspondent(randomUUID(), "MP", "John Smith", "An Organisation", address, "123456789","test@test.com", "1234", "external key" );
-    private Topic topic = new Topic(caseUUID, "some topic", randomUUID());
+    private final LocalDate caseReceived = LocalDate.now();
+    private final String auditQueue ="audit-queue";
+    private final Address address = new Address("S1 3NS","some street","some town","some count","UK");
+    private final Correspondent correspondent = new Correspondent(randomUUID(), "MP", "John Smith", "An Organisation", address, "123456789","test@test.com", "1234", "external key" );
+    private final Topic topic = new Topic(caseUUID, "some topic", randomUUID());
 
     @Captor
     ArgumentCaptor jsonCaptor;
@@ -123,7 +122,7 @@ public class AuditClientTest {
 
     @Test
     public void shouldSetAuditFields() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
         auditClient.updateCaseAudit(caseData, stageUUID);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -137,15 +136,15 @@ public class AuditClientTest {
 
     @Test
     public void shouldNotThrowExceptionOnFailure() {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
         doThrow(new RuntimeException("An error occurred")).when(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        assertThatCode(() -> { auditClient.updateCaseAudit(caseData, stageUUID);}).doesNotThrowAnyException();
+        assertThatCode(() -> auditClient.updateCaseAudit(caseData, stageUUID)).doesNotThrowAnyException();
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
     }
 
     @Test
     public void createCaseAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
         auditClient.createCaseAudit(caseData);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -155,7 +154,7 @@ public class AuditClientTest {
 
     @Test
     public void updateCaseAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
         auditClient.updateCaseAudit(caseData, stageUUID);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -165,7 +164,7 @@ public class AuditClientTest {
 
     @Test
     public void viewCaseAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
         auditClient.viewCaseAudit(caseData);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -175,7 +174,7 @@ public class AuditClientTest {
 
     @Test
     public void deleteCaseAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
         auditClient.deleteCaseAudit(caseData, true);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -185,7 +184,7 @@ public class AuditClientTest {
 
     @Test
     public void viewCaseSummaryAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
         auditClient.viewCaseSummaryAudit(caseData);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -195,7 +194,7 @@ public class AuditClientTest {
 
     @Test
     public void viewStandardLineAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
         auditClient.viewStandardLineAudit(caseData);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -205,7 +204,7 @@ public class AuditClientTest {
 
     @Test
     public void viewTemplate() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
         auditClient.viewTemplateAudit(caseData);
         verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
         CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
@@ -225,7 +224,7 @@ public class AuditClientTest {
     @Test
     @Ignore // todo... change when new action.Extensions done.
     public void createExtensionAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(),mapper, caseReceived);
+        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
         CaseDeadlineExtension caseDeadlineExtension =
                 new CaseDeadlineExtension(
                         caseData,
@@ -396,7 +395,7 @@ public class AuditClientTest {
                 "namespace", ZonedDateTime.now(),EventType.CASE_CREATED.toString(),
                 "user")));
 
-        String events = CaseDataService.TIMELINE_EVENTS.stream().collect(Collectors.joining(","));
+        String events = String.join(",", CaseDataService.TIMELINE_EVENTS);
         when(restHelper.get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
                 GetAuditListResponse.class)).thenReturn(restResponse);
 
@@ -410,7 +409,7 @@ public class AuditClientTest {
     @Test
     public void shouldReturnEmptyCaseHistoryWhenAuditServiceCallFails() {
         UUID caseUUID = UUID.randomUUID();
-        String events = CaseDataService.TIMELINE_EVENTS.stream().collect(Collectors.joining(","));
+        String events = String.join(",", CaseDataService.TIMELINE_EVENTS);
         when(restHelper.get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
                 GetAuditListResponse.class)).thenThrow(RestClientException.class);
 
@@ -435,7 +434,6 @@ public class AuditClientTest {
     @Test
     public void shouldDeleteAuditLinesForCase() {
         UUID caseUUID = UUID.randomUUID();
-        UUID auditResponseUUID = UUID.randomUUID();
         DeleteCaseAuditResponse restResponse = new DeleteCaseAuditResponse("C", caseUUID, false, 1);
         when(restHelper.post(eq(auditService), eq(String.format("/audit/case/%s/delete", caseUUID)),
                 any(),

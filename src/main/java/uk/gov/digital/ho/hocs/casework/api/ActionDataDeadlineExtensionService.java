@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -39,16 +38,14 @@ public class ActionDataDeadlineExtensionService implements ActionService {
     private final InfoClient infoClient;
     private final AuditClient auditClient;
     private final CaseNoteService caseNoteService;
-    private final ObjectMapper objectMapper;
 
     @Autowired
-    public ActionDataDeadlineExtensionService(ActionDataDeadlineExtensionRepository extensionRepository, CaseDataRepository caseDataRepository, InfoClient infoClient, AuditClient auditClient, CaseNoteService caseNoteService, ObjectMapper objectMapper) {
+    public ActionDataDeadlineExtensionService(ActionDataDeadlineExtensionRepository extensionRepository, CaseDataRepository caseDataRepository, InfoClient infoClient, AuditClient auditClient, CaseNoteService caseNoteService) {
         this.extensionRepository = extensionRepository;
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
         this.caseNoteService = caseNoteService;
-        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -166,7 +163,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
             return;
         }
 
-        Map<String, String> dataMap = caseData.getDataMap(objectMapper);
+        Map<String, String> dataMap = caseData.getDataMap();
         for (ActiveStage stage : caseData.getActiveStages()) {
             // Try and overwrite the deadlines with inputted values from the data map.
             String overrideDeadline = dataMap.get(String.format("%s_DEADLINE", stage.getStageType()));
@@ -190,6 +187,6 @@ public class ActionDataDeadlineExtensionService implements ActionService {
 
     enum ExtendFrom {
         TODAY,
-        CURRENT_DEADLINE;
+        CURRENT_DEADLINE
     }
 }

@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
-import uk.gov.digital.ho.hocs.casework.application.NonMigrationEnvCondition;
 
 import java.util.Set;
 import java.util.UUID;
@@ -20,7 +19,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 @Component
 @AllArgsConstructor
 @Slf4j
-@Conditional(value = {NonMigrationEnvCondition.class})
 public class AllocatedAspect {
 
     private final StageService stageService;
@@ -72,15 +70,20 @@ public class AllocatedAspect {
         UUID userId = userService.getUserId();
         UUID assignedUser = stageService.getStageUser(caseUUID, stageUUID);
         if (!userId.equals(assignedUser)) {
-        throw new SecurityExceptions.StageNotAssignedToLoggedInUserException(String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedUser), SECURITY_CASE_NOT_ALLOCATED_TO_USER);
+            throw new SecurityExceptions.StageNotAssignedToLoggedInUserException(
+                    String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedUser),
+                    SECURITY_CASE_NOT_ALLOCATED_TO_USER);
         }
     }
 
     private void checkIfStageIsAssignedToUserTeam(UUID caseUUID, UUID stageUUID) {
-        Set<UUID> teams = userService.getUserTeams();
+        Set<UUID> teams = userService.getExpandedUserTeams();
         UUID assignedTeam = stageService.getStageTeam(caseUUID, stageUUID);
-        if (!teams.contains(assignedTeam)) {
-        throw new SecurityExceptions.StageNotAssignedToUserTeamException(String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedTeam), SECURITY_CASE_NOT_ALLOCATED_TO_TEAM);
+
+        if (assignedTeam == null || !teams.contains(assignedTeam)) {
+            throw new SecurityExceptions.StageNotAssignedToUserTeamException(
+                    String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedTeam),
+                    SECURITY_CASE_NOT_ALLOCATED_TO_TEAM);
         }
     }
 

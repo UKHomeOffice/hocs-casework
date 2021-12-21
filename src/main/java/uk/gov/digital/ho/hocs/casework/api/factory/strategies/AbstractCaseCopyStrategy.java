@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api.factory.strategies;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
@@ -8,12 +7,6 @@ import java.util.Map;
 
 @Slf4j
 public abstract class AbstractCaseCopyStrategy {
-
-    protected ObjectMapper mapper;
-
-    protected AbstractCaseCopyStrategy(ObjectMapper mapper) {
-        this.mapper = mapper;
-    }
 
     protected void copyClobData(CaseData fromCase, CaseData toCase, String[] dataClobKeys) {
 
@@ -29,8 +22,8 @@ public abstract class AbstractCaseCopyStrategy {
             throw new IllegalArgumentException("Parameter dataClobKeys cannot be null");
         }
 
-        Map<String, String> fromCaseClobData = fromCase.getDataMap(mapper);
-        Map<String, String> toCaseClobData = toCase.getDataMap(mapper);
+        Map<String, String> fromCaseClobData = fromCase.getDataMap();
+        Map<String, String> toCaseClobData = toCase.getDataMap();
 
         for (String dataClobKey : dataClobKeys) {
             if (fromCaseClobData.containsKey(dataClobKey)) {
@@ -40,6 +33,6 @@ public abstract class AbstractCaseCopyStrategy {
             }
         }
 
-        toCase.update(toCaseClobData, mapper);
+        toCase.update(toCaseClobData);
     }
 }

@@ -1,9 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.amazonaws.util.json.Jackson;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.util.Sets;
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,7 +41,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -97,8 +93,6 @@ public class StageServiceTest {
     private CaseNoteService caseNoteService;
     @Mock
     private ContributionsProcessor contributionsProcessor;
-    @Mock
-    private StageWithCaseData stage;
 
     @Mock
     private ActionDataDeadlineExtensionService extensionService;
@@ -139,7 +133,7 @@ public class StageServiceTest {
         LocalDate caseDeadlineWarning = caseDeadline.minusDays(2);
 
         CaseData caseData = new CaseData(caseDataType, 12344567L,caseDeadline);
-        caseData.update(caseDataData, new ObjectMapper());
+        caseData.update(caseDataData);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setCaseDeadlineWarning(caseDeadlineWarning);
 
@@ -168,12 +162,11 @@ public class StageServiceTest {
         LocalDate caseDeadlineWarning = caseDeadline.minusDays(2);
 
         CaseData caseData = new CaseData(caseDataType, 12344567L,caseDeadline);
-        caseData.update(caseDataData, new ObjectMapper());
+        caseData.update(caseDataData);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setCaseDeadlineWarning(caseDeadlineWarning);
 
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(caseDataService.getCaseDataField(caseData,overrideKey)).thenReturn(overrideDeadline.toString());
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
 
         // WHEN
@@ -195,12 +188,10 @@ public class StageServiceTest {
         LocalDate caseDeadlineWarning = caseDeadline.minusDays(2);
 
         CaseData caseData = new CaseData(caseDataType, 12344567L,caseDeadline);
-        caseData.update(caseDataData, new ObjectMapper());
+        caseData.update(caseDataData);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setCaseDeadlineWarning(caseDeadlineWarning);
 
-
-        when(caseDataService.getCaseDataField(caseData,overrideKey)).thenReturn(overrideDeadline.toString());
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
         when(infoClient.getStageDeadlineOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadline())).thenReturn(caseData.getCaseDeadline());
@@ -225,11 +216,10 @@ public class StageServiceTest {
         LocalDate caseDeadlineWarning = caseDeadline.minusDays(2);
 
         CaseData caseData = new CaseData(caseDataType, 12344567L,caseDeadline);
-        caseData.update(caseDataData, new ObjectMapper());
+        caseData.update(caseDataData);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setCaseDeadlineWarning(caseDeadlineWarning);
 
-        when(caseDataService.getCaseDataField(caseData,overrideKey)).thenReturn(overrideDeadline.toString());
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
         when(infoClient.getStageDeadlineOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadline())).thenReturn(caseData.getCaseDeadline());
@@ -432,27 +422,24 @@ public class StageServiceTest {
 
     @Test
     public void shouldGetActiveStagesCaseUUID() {
-
         stageService.getActiveStagesByCaseUUID(caseUUID);
 
         verify(stageRepository).findAllActiveByCaseUUID(caseUUID);
 
         verifyNoMoreInteractions(stageRepository);
          verifyNoInteractions(notifyClient);
-
     }
 
     @Test
     public void shouldGetActiveStages_blankResult() {
         Set<UUID> teams = new HashSet<>();
         teams.add(UUID.randomUUID());
-        Set<String> caseTypes = Set.of();
 
-        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
 
-        stageService.getActiveStagesForUsersTeamsAndCaseType();
+        stageService.getActiveStagesForUsersTeams();
 
-        verify(stageRepository).findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
+        verify(stageRepository).findAllActiveByTeamUUID(teams);
 
         verifyNoMoreInteractions(stageRepository);
         verifyNoInteractions(notifyClient);
@@ -461,21 +448,18 @@ public class StageServiceTest {
     @Test
     public void shouldGetActiveStages() {
         Set<UUID> teams = new HashSet<>();
-        Set<String> caseTypes = Set.of("CASE_TYPE1", "CASE_TYPE2");
         teams.add(UUID.randomUUID());
         StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
-        when(userPermissionsService.getUserTeams()).thenReturn(teams);
-        when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
-        when(stageRepository.findAllActiveByTeamUUIDAndCaseType(teams, caseTypes)).thenReturn(Set.of(stage));
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
+        when(stageRepository.findAllActiveByTeamUUID(teams)).thenReturn(Set.of(stage));
 
-        stageService.getActiveStagesForUsersTeamsAndCaseType();
+        stageService.getActiveStagesForUsersTeams();
 
-        verify(userPermissionsService).getUserTeams();
-        verify(userPermissionsService).getCaseTypesIfUserTeamIsCaseTypeAdmin();
-        verify(stageRepository).findAllActiveByTeamUUIDAndCaseType(teams, caseTypes);
-        verify(stagePriorityCalculator).updatePriority(stage);
-        verify(daysElapsedCalculator).updateDaysElapsed(stage);
+        verify(userPermissionsService).getExpandedUserTeams();
+        verify(stageRepository).findAllActiveByTeamUUID(teams);
+        verify(stagePriorityCalculator).updatePriority(stage.getData(), stage.getCaseDataType());
+        verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
 
         checkNoMoreInteraction();
     }
@@ -484,12 +468,12 @@ public class StageServiceTest {
     public void shouldGetActiveStagesEmpty() {
         Set<UUID> teams = new HashSet<>();
 
-        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
 
-        stageService.getActiveStagesForUsersTeamsAndCaseType();
+        stageService.getActiveStagesForUsersTeams();
 
         // We don't try and get active stages with no teams (empty set) because we're going to get 0 results.
-        verify(userPermissionsService).getUserTeams();
+        verify(userPermissionsService).getExpandedUserTeams();
         checkNoMoreInteraction();
 
     }
@@ -793,15 +777,6 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldGetOfflineQaUser() {
-        UUID offlineQaUserUUID = UUID.randomUUID();
-        Map dataMap = new HashMap();
-        dataMap.put(StageWithCaseData.OFFLINE_QA_USER, offlineQaUserUUID.toString());
-        final String offlineQaUser = stageService.getOfflineQaUser(Jackson.toJsonString(dataMap));
-        assertThat(offlineQaUser).isEqualTo(offlineQaUserUUID.toString());
-    }
-
-    @Test
     public void shouldCheckSendOfflineQAEmail() {
         UUID offlineQaUserUUID = UUID.randomUUID();
         StageWithCaseData stage = createStageOfflineQaData(offlineQaUserUUID);
@@ -810,6 +785,7 @@ public class StageServiceTest {
         final Set<GetAuditResponse> auditLines = getAuditLines(stage);
         when(auditClient.getAuditLinesForCase(caseUUID, auditType)).thenReturn(auditLines);
         stageService.checkSendOfflineQAEmail(stage);
+
         verify(auditClient).getAuditLinesForCase(caseUUID, auditType);
         verify(notifyClient).sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), UUID.fromString(userID), offlineQaUserUUID, stage.getCaseReference());
     }
@@ -931,23 +907,20 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldGetActiveUserStagesWithTeamsAndCaseType() {
+    public void shouldGetActiveUserStagesWithTeams() {
         Set<UUID> teams = new HashSet<>();
-        Set<String> caseTypes = Set.of("CASE_TYPE1", "CASE_TYPE2");
         teams.add(UUID.randomUUID());
         StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
-        when(userPermissionsService.getUserTeams()).thenReturn(teams);
-        when(userPermissionsService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(caseTypes);
-        when(stageRepository.findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes)).thenReturn(Set.of(stage));
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
+        when(stageRepository.findAllActiveByUserUuidAndTeamUuid(userUUID, teams)).thenReturn(Set.of(stage));
 
-        stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID);
+        stageService.getActiveUserStagesWithTeamsForUser(userUUID);
 
-        verify(userPermissionsService).getUserTeams();
-        verify(userPermissionsService).getCaseTypesIfUserTeamIsCaseTypeAdmin();
-        verify(stageRepository).findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes);
-        verify(stagePriorityCalculator).updatePriority(stage);
-        verify(daysElapsedCalculator).updateDaysElapsed(stage);
+        verify(userPermissionsService).getExpandedUserTeams();
+        verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
+        verify(stagePriorityCalculator).updatePriority(stage.getData(), stage.getCaseDataType());
+        verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
 
         checkNoMoreInteraction();
     }
@@ -956,24 +929,23 @@ public class StageServiceTest {
     public void shouldGetActiveUserStagesWithTeamsAndCaseType_noTeams() {
         Set<UUID> teams = new HashSet<>();
 
-        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
 
-        stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID);
+        stageService.getActiveUserStagesWithTeamsForUser(userUUID);
 
-        verify(userPermissionsService).getUserTeams();
+        verify(userPermissionsService).getExpandedUserTeams();
         checkNoMoreInteraction();
     }
 
     @Test
     public void getActiveUserStagesWithTeamsAndCaseType_blankResult() {
         Set<UUID> teams = Set.of(UUID.randomUUID());
-        Set<String> caseTypes = Set.of();
 
-        when(userPermissionsService.getUserTeams()).thenReturn(teams);
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
 
-        stageService.getActiveUserStagesWithTeamsAndCaseType(userUUID);
+        stageService.getActiveUserStagesWithTeamsForUser(userUUID);
 
-        verify(stageRepository).findAllActiveByUserUuidAndTeamUuidAndCaseType(userUUID, teams, caseTypes);
+        verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
 
         verifyNoMoreInteractions(stageRepository, notifyClient);
     }
@@ -1013,14 +985,12 @@ public class StageServiceTest {
      * @return Mocked Stage for setting and exposing the DATA with offline QA user.
      */
     private StageWithCaseData createStageOfflineQaData(UUID offlineQaUserUUID) {
-        Map dataMap = new HashMap();
-        dataMap.put(StageWithCaseData.OFFLINE_QA_USER, offlineQaUserUUID.toString());
         StageWithCaseData mockStage = mock(StageWithCaseData.class);
         when(mockStage.getUuid()).thenReturn(stageUUID);
         when(mockStage.getCaseUUID()).thenReturn(caseUUID);
         when(mockStage.getStageType()).thenReturn(StageWithCaseData.DCU_DTEN_INITIAL_DRAFT);
         when(mockStage.getCaseReference()).thenReturn("MIN/1234567/19");
-        when(mockStage.getData()).thenReturn(Jackson.toJsonString(dataMap));
+        when(mockStage.getData(StageWithCaseData.OFFLINE_QA_USER)).thenReturn(offlineQaUserUUID.toString());
         return mockStage;
     }
 
