@@ -1,15 +1,13 @@
 package uk.gov.digital.ho.hocs.casework.application.aws;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.Protocol;
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import com.amazonaws.services.sqs.AmazonSQSAsync;
+import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,55 +17,31 @@ import org.springframework.context.annotation.Profile;
 @Profile({"local"})
 public class LocalStackConfiguration {
 
-    @Bean("auditSqsClient")
-    public AmazonSQS auditSqsClient() {
-        return sqsClient();
-    }
+    private final AWSCredentialsProvider awsCredentialsProvider;
+    private final AwsClientBuilder.EndpointConfiguration endpoint;
 
-    @Value("${aws.local.host:localhost}")
-    private String awsHost;
+    public LocalStackConfiguration(@Value("${localstack.base-url}") String baseUrl,
+                                   @Value("${localstack.config.region}") String region) {
+        this.awsCredentialsProvider = new AWSStaticCredentialsProvider(new BasicAWSCredentials("test", "test"));
+        this.endpoint = new AwsClientBuilder.EndpointConfiguration(baseUrl, region);
+    }
 
     @Bean("notifySqsClient")
-    public AmazonSQS notifySqsClient() {
-        return sqsClient();
-    }
-
-
-    public AmazonSQS sqsClient() {
-
-        String host = String.format("http://%s:4576/", awsHost);
-
-        AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(host, "eu-west-2");
-        return AmazonSQSClientBuilder.standard()
-                .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
+    public AmazonSQSAsync sqsClient() {
+        return AmazonSQSAsyncClientBuilder
+                .standard()
                 .withCredentials(awsCredentialsProvider)
                 .withEndpointConfiguration(endpoint)
                 .build();
     }
 
     @Bean("auditSnsClient")
-    public AmazonSNS auditSnsClient() {
-        String host = String.format("http://%s:4575/", awsHost);
-        AwsClientBuilder.EndpointConfiguration endpoint = new AwsClientBuilder.EndpointConfiguration(host, "eu-west-2");
-        return AmazonSNSClientBuilder.standard()
-                .withClientConfiguration(new ClientConfiguration().withProtocol(Protocol.HTTP))
+    public AmazonSNS snsClient() {
+        return AmazonSNSClientBuilder
+                .standard()
                 .withCredentials(awsCredentialsProvider)
                 .withEndpointConfiguration(endpoint)
                 .build();
     }
-
-
-    private final AWSCredentialsProvider awsCredentialsProvider = new AWSCredentialsProvider() {
-
-        @Override
-        public AWSCredentials getCredentials() {
-            return new BasicAWSCredentials("test", "test");
-        }
-
-        @Override
-        public void refresh() {
-        // not needed locally
-        }
-    };
 
 }

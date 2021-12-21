@@ -36,10 +36,10 @@ steps:
   - name: test project
     image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
     environment:
-      SPRING_PROFILES_ACTIVE: "development, local"
+      SPRING_PROFILES_ACTIVE: "local"
       HOCS_DOCUMENT_SERVICE: "http://documents:8080"
       DB_HOST: "postgres"
-      AWS_LOCAL_HOST: "localstack"
+      LOCALSTACK_CONFIG_HOST: "localstack"
     commands:
       - ./gradlew check --no-daemon
     depends_on:
