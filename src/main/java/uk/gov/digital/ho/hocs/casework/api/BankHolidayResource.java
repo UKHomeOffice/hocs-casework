@@ -9,7 +9,6 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.BankHolidayRepository;
 @RestController
 public class BankHolidayResource {
     BankHolidayService bankHolidayService;
-    BankHolidayRepository bankHolidayRepository;
 
     @Autowired
     public BankHolidayResource(BankHolidayService bankHolidayService) {
