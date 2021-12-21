@@ -7,6 +7,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.SomuItemService;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
+@ActiveProfiles("local")
 public class ContributionsProcessorTest {
     private final UUID caseUuid = UUID.randomUUID();
     private final UUID somuUuid = UUID.randomUUID();

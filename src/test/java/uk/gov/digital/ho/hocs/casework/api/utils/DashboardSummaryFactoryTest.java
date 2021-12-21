@@ -18,7 +18,7 @@ import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "local"})
 public class DashboardSummaryFactoryTest {
 
     @Autowired
