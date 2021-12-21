@@ -1,25 +1,24 @@
 package uk.gov.digital.ho.hocs.casework.security;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -29,144 +28,142 @@ public class UserPermissionsServiceTest {
     private RequestData requestData;
 
     @Mock
-    InfoClient infoClient;
+    private InfoClient infoClient;
 
     private UserPermissionsService service;
 
-    private String uuid1 = Base64UUID.uuidToBase64String(UUID.fromString("1325fe16-b864-42c7-85c2-7cab2863fe01"));
-    private String uuid2 = Base64UUID.uuidToBase64String(UUID.fromString("f1825c7d-baff-4c09-8056-2166760ccbd2"));
-    private String uuid3 = Base64UUID.uuidToBase64String(UUID.fromString("1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d"));
+    private static final List<String> teamBase64 = new ArrayList<>();
+    private static final List<TeamDto> teamDtos = new ArrayList<>();
 
+    @BeforeClass
+    public static void setupData() {
+        UUID teamUuid = UUID.randomUUID();
+        teamBase64.add("/" + Base64UUID.uuidToBase64String(teamUuid));
+        teamDtos.add(new TeamDto("Test", teamUuid, true, Set.of(new PermissionDto("TEST1", AccessLevel.CASE_ADMIN))));
+
+        teamUuid = UUID.randomUUID();
+        teamBase64.add("/" + Base64UUID.uuidToBase64String(teamUuid));
+        teamDtos.add(new TeamDto("Test", teamUuid, true, Set.of(new PermissionDto("TEST1", AccessLevel.OWNER))));
+
+        teamUuid = UUID.randomUUID();
+        teamBase64.add("/" + Base64UUID.uuidToBase64String(teamUuid));
+        teamDtos.add(new TeamDto("Test", teamUuid, true, Set.of(new PermissionDto("TEST2", AccessLevel.CASE_ADMIN))));
+    }
 
     @Before
     public void setup() {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setMethod("GET");
-        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        setupInfoClientMocks();
+        when(infoClient.getTeams()).thenReturn(new HashSet<>(teamDtos));
     }
-
 
     @Test
     public void shouldParseValidUserGroups() {
-
-        String[] groups =
-                ("/" + uuid2 + "," +
-                        "/" + uuid3 + "," +
-                        "/" +  uuid1).split(",");
+        String[] groups = teamBase64.toArray(String[]::new);
 
         when(requestData.groupsArray()).thenReturn(groups);
         service = new UserPermissionsService(requestData, infoClient);
-        assertThat(service.getUserPermission().size()).isEqualTo(3);
+
+        assertThat(service.getUserTeams()).containsExactlyInAnyOrderElementsOf(
+                teamDtos.stream().map(TeamDto::getUuid).collect(Collectors.toList())
+        );
+    }
+
+    @Test
+    public void shouldIgnoreInvalidUserGroups() {
+        List<String> groups = new ArrayList<>(teamBase64);
+        groups.set(2, "INVALID_UUID");
+
+        when(requestData.groupsArray()).thenReturn(groups.toArray(String[]::new));
+        service = new UserPermissionsService(requestData, infoClient);
+
+        assertThat(service.getUserTeams()).containsExactlyInAnyOrder(teamDtos.get(0).getUuid(),
+                teamDtos.get(1).getUuid());
+    }
+
+    @Test
+    public void shouldReturnUnsetAccessLevelWhenUserHasNoGroup() {
+        when(requestData.groupsArray()).thenReturn(new String[0]);
+
+        service = new UserPermissionsService(requestData, infoClient);
+
+        assertThat(service.getMaxAccessLevel("UNDEFINED")).isEqualTo(AccessLevel.UNSET);
     }
 
     @Test
     public void shouldReturnUnsetWhenNoPermissionsFoundForCaseType() {
-        when(requestData.groupsArray()).thenReturn(new String[0]);
-        service = new UserPermissionsService(requestData, infoClient);
-
-        assertThat(service.getMaxAccessLevel("MIN")).isEqualTo(AccessLevel.UNSET);
-    }
-
-
-    @Test
-    public void shouldIgnoreInvalidUserGroups() {
-
-        String[] groups =
-                ("/" + uuid2 + "," +
-                        "INVALID_UUID," +
-                        "/" + uuid3 + ","
-                       ).split(",");
-
+        String[] groups = teamBase64.toArray(String[]::new);
         when(requestData.groupsArray()).thenReturn(groups);
+
         service = new UserPermissionsService(requestData, infoClient);
-        assertThat(service.getUserPermission().size()).isEqualTo(2);
 
-    }
-
-
-    @Test
-    public void shouldGetTeamsForUser() {
-        String[] groups =
-                ("/" + uuid3 + "," +
-                        "/" + uuid1).split(",");
-
-        when(requestData.groupsArray()).thenReturn(groups);
-        service = new UserPermissionsService(requestData, infoClient);
-        Set<UUID> teams = service.getUserTeams();
-        assertThat(teams).size().isEqualTo(2);
-        assertThat(teams).contains(UUID.fromString("1c1e2f17-d5d9-4ff6-a023-6c40d76e1e9d"));
-        assertThat(teams).doesNotContain(UUID.fromString("f1825c7d-baff-4c09-8056-2166760ccbd2"));
-        assertThat(teams).contains(UUID.fromString("1325fe16-b864-42c7-85c2-7cab2863fe01"));
+        assertThat(service.getMaxAccessLevel("UNDEFINED")).isEqualTo(AccessLevel.UNSET);
     }
 
     @Test
-    public void shouldGetCaseTypesForUser() {
-        String[] groups =
-                ("/" + uuid2 + "," +
-                        "/" + uuid3 + "," +
-                        "/" + uuid1).split(",");
-
+    public void shouldReturnHighestWhenTwoGroupsHaveCaseType() {
+        String[] groups = teamBase64.toArray(String[]::new);
         when(requestData.groupsArray()).thenReturn(groups);
+
         service = new UserPermissionsService(requestData, infoClient);
-        Set<String> caseTypes = service.getUserCaseTypes();
-        assertThat(caseTypes.stream().anyMatch(c -> c.equals("TRO"))).isTrue();
-        assertThat(caseTypes.stream().anyMatch(c -> c.equals("MIN"))).isTrue();
+
+        assertThat(service.getMaxAccessLevel("TEST1")).isEqualTo(AccessLevel.CASE_ADMIN);
     }
 
     @Test
-    public void shouldGetCaseTypesFromTeamIfTeamIsCaseTypeAdmin() {
-
-        String caseType1 = "CASE_TYPE_1";
-        String caseType2 = "CASE_TYPE_2";
-
-        String[] groups =
-                ("/" + uuid2 + "," +
-                        "/" + uuid3 + "," +
-                        "/" + uuid1).split(",");
-
-
-        Set<PermissionDto> permissions1 = Set.of(
-                new PermissionDto(caseType1, AccessLevel.CASE_ADMIN),
-                new PermissionDto(caseType2, AccessLevel.OWNER)
-        );
-
-        Set<TeamDto> teams = Set.of(
-                new TeamDto(
-                        "TEAM 1",
-                        Base64UUID.base64StringToUUID(uuid1),
-                        true,
-                        permissions1
-                )
-        );
+    public void shouldGetAllCaseTypeTeamsIfCaseAdmin() {
+        String[] groups = teamBase64.stream().limit(1).toArray(String[]::new);
 
         when(requestData.groupsArray()).thenReturn(groups);
-        when(infoClient.getTeams()).thenReturn(teams);
 
         service = new UserPermissionsService(requestData, infoClient);
-        Set<String> caseTypes = service.getCaseTypesIfUserTeamIsCaseTypeAdmin();
-        assertThat(caseTypes.size()).isEqualTo(1);
-        assertThat(caseTypes.contains(caseType1)).isTrue();
+
+        assertThat(service.getExpandedUserTeams()).containsExactlyInAnyOrderElementsOf(
+                teamDtos.stream().limit(2).map(TeamDto::getUuid).collect(Collectors.toList()));
     }
 
-    private void setupInfoClientMocks() {
+    @Test
+    public void shouldGetAllCaseTypeTeamsIfOnTeamCaseAdmin() {
+        String[] groups = new String[] { teamBase64.get(0), teamBase64.get(2) };
 
-        Set<TeamDto> teamDtos = new HashSet<>();
-        Set<PermissionDto> permissions1 = new HashSet<>();
-        permissions1.add(new PermissionDto("MIN", AccessLevel.READ));
-        permissions1.add(new PermissionDto("MIN", AccessLevel.OWNER));
-        TeamDto teamDto1 = new TeamDto("TEAM 1", UUID.fromString("1325fe16-b864-42c7-85c2-7cab2863fe01"), true, permissions1);
-        teamDtos.add(teamDto1);
+        when(requestData.groupsArray()).thenReturn(groups);
 
-        Set<PermissionDto> permissions2 = new HashSet<>();
-        permissions2.add(new PermissionDto("MIN", AccessLevel.READ));
-        permissions2.add(new PermissionDto("TRO",   AccessLevel.OWNER));
-        TeamDto teamDto2 = new TeamDto("TEAM 2", UUID.fromString("f1825c7d-baff-4c09-8056-2166760ccbd2"), true, permissions2);
-        teamDtos.add(teamDto2);
+        service = new UserPermissionsService(requestData, infoClient);
 
-        TeamDto teamDto3 = new TeamDto("TEAM 3", UUID.fromString("f1825c7d-baff-4c09-8056-2166760ccbd2"), true, new HashSet<>());
-        teamDtos.add(teamDto3);
-
-        when(infoClient.getTeams()).thenReturn(teamDtos);
+        assertThat(service.getExpandedUserTeams()).containsExactlyInAnyOrderElementsOf(
+                teamDtos.stream().map(TeamDto::getUuid).collect(Collectors.toList()));
     }
+
+    @Test
+    public void shouldGetCaseTypeWhenCaseAdmin() {
+        String[] groups = teamBase64.stream().limit(1).toArray(String[]::new);
+
+        when(requestData.groupsArray()).thenReturn(groups);
+
+        service = new UserPermissionsService(requestData, infoClient);
+
+        assertThat(service.getCaseTypesIfUserTeamIsCaseTypeAdmin()).contains("TEST1");
+    }
+
+    @Test
+    public void shouldGetCaseTypeWhenNotCaseAdmin() {
+        String[] groups = teamBase64.stream().skip(1).limit(1).toArray(String[]::new);
+
+        when(requestData.groupsArray()).thenReturn(groups);
+
+        service = new UserPermissionsService(requestData, infoClient);
+
+        assertThat(service.getCaseTypesIfUserTeamIsCaseTypeAdmin()).isEmpty();
+    }
+
+    @Test
+    public void shouldReturnTrueIfUserCaseAdmin() {
+        String[] groups = teamBase64.stream().limit(1).toArray(String[]::new);
+
+        when(requestData.groupsArray()).thenReturn(groups);
+
+        service = new UserPermissionsService(requestData, infoClient);
+
+        assertThat(service.isUserInTeam(teamDtos.get(1).getUuid())).isTrue();
+        assertThat(service.isUserInTeam(teamDtos.get(2).getUuid())).isFalse();
+    }
+
 }
