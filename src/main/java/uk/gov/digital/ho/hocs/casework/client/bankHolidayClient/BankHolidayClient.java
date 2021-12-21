@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.client.bankHolidayClient;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.BankHolidaysByRegionDto;
@@ -18,15 +19,18 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REFRESH_BANK_
 @Component
 public class BankHolidayClient {
     private final RestHelper restHelper;
+    String bankHolidaysApiUrl;
 
     @Autowired
-    public BankHolidayClient(final RestHelper restHelper) {
+    public BankHolidayClient(final RestHelper restHelper,
+                             final @Value("${bank-holidays-api-url}") String bankHolidaysApiUrl) {
         this.restHelper = restHelper;
+        this.bankHolidaysApiUrl = bankHolidaysApiUrl;
     }
 
     public Map<String, BankHolidaysByRegionDto> getBankHolidays() {
         final Map<String, BankHolidaysByRegionDto> bankHolidaysByRegion =
-                restHelper.get("https://www.gov.uk", "/bank-holidays.json",
+                restHelper.get("", bankHolidaysApiUrl,
                         new ParameterizedTypeReference<>() {
                         });
 
