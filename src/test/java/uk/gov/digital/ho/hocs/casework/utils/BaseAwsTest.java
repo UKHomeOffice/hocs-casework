@@ -12,7 +12,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class BaseAwsTest {
     @Autowired
-    private ObjectMapper objectMapper;
+    protected ObjectMapper objectMapper;
 
     public String getMessageMd5(Object objectToHash) {
         try{

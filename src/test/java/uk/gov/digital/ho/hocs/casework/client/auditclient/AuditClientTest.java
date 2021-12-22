@@ -1,401 +1,496 @@
 package uk.gov.digital.ho.hocs.casework.client.auditclient;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.util.concurrent.MoreExecutors;
-import org.apache.camel.ProducerTemplate;
+import com.amazonaws.services.sns.AmazonSNSAsync;
+import com.amazonaws.services.sns.model.MessageAttributeValue;
+import com.amazonaws.services.sns.model.PublishRequest;
+import com.amazonaws.services.sns.model.PublishResult;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
-import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
+import uk.gov.digital.ho.hocs.casework.utils.BaseAwsTest;
 
+import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public class AuditClientTest {
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@ActiveProfiles("local")
+public class AuditClientTest extends BaseAwsTest {
 
-    @Mock
-    RequestData requestData;
+    @Captor
+    private ArgumentCaptor<PublishRequest> publicRequestCaptor;
 
-    @Mock
-    ProducerTemplate producerTemplate;
+    private ResultCaptor<PublishResult> snsPublishResult;
 
-    @Mock
-    RestHelper restHelper;
+    @SpyBean
+    private AmazonSNSAsync auditSearchSnsClient;
 
-    SpringConfiguration configuration = new SpringConfiguration();
-    ObjectMapper mapper;
-    UUID stageUUID = UUID.randomUUID();
-    String userId = "any user";
+    @MockBean(name = "requestData")
+    private RequestData requestData;
+
+    @MockBean
+    private RestHelper restHelper;
+
+    @Autowired
     private AuditClient auditClient;
-    private static final long caseID = 12345L;
-    private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
-    private final UUID caseUUID = randomUUID();
-    private final LocalDate caseReceived = LocalDate.now();
-    private final String auditQueue ="audit-queue";
-    private final Address address = new Address("S1 3NS","some street","some town","some count","UK");
-    private final Correspondent correspondent = new Correspondent(randomUUID(), "MP", "John Smith", "An Organisation", address, "123456789","test@test.com", "1234", "external key" );
-    private final Topic topic = new Topic(caseUUID, "some topic", randomUUID());
 
-    @Captor
-    ArgumentCaptor jsonCaptor;
-
-    @Captor
-    ArgumentCaptor<HashMap<String,Object>> headerCaptor;
-
+    @Value("${hocs.audit-service}")
     private String auditService;
+
 
     @Before
     public void setUp() {
-        when(requestData.correlationId()).thenReturn(randomUUID().toString());
+        when(requestData.correlationId()).thenReturn(UUID.randomUUID().toString());
         when(requestData.userId()).thenReturn("some user id");
         when(requestData.groups()).thenReturn("some groups");
         when(requestData.username()).thenReturn("some username");
 
-        mapper = configuration.initialiseObjectMapper();
-        auditService = "http://audit-service";
-        auditClient = new AuditClient(producerTemplate, auditQueue,"hocs-casework","namespace", mapper, requestData, restHelper,
-                auditService);
-        auditClient.setExecutorService(MoreExecutors.newDirectExecutorService());
+        snsPublishResult = new ResultCaptor<>();
+        doAnswer(snsPublishResult).when(auditSearchSnsClient).publish(any());
     }
 
     @Test
-    public void shouldSetDataField() throws IOException {
-        UUID topicUUID = UUID.randomUUID();
-        UUID caseUUID = UUID.randomUUID();
-        Topic topic = new Topic(caseUUID,"topic name", topicUUID);
-        auditClient.createTopicAudit(topic);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getData()).isNotEmpty();
-    }
+    public void shouldSendCaseCreateEvent() throws JsonProcessingException {
+        var caseID = 12345L;
+        var caseType = CaseDataTypeFactory.from("TEST", "F0");
+        var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
 
-    @Test
-    public void shouldSetHeaders()  {
-        Map<String, Object> expectedHeaders = Map.of(
-        "event_type", EventType.CASE_TOPIC_CREATED.toString(),
-        RequestData.CORRELATION_ID_HEADER, requestData.correlationId(),
-        RequestData.USER_ID_HEADER, requestData.userId(),
-        RequestData.USERNAME_HEADER, requestData.username(),
-        RequestData.GROUP_HEADER, requestData.groups());
-
-        UUID topicUUID = UUID.randomUUID();
-        UUID caseUUID = UUID.randomUUID();
-        Topic topic = new Topic(caseUUID, "topic name", topicUUID);
-        auditClient.createTopicAudit(topic);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), any(), headerCaptor.capture());
-        Map headers = headerCaptor.getValue();
-
-        assertThat(headers).containsAllEntriesOf(expectedHeaders);
-    }
-
-    @Test
-    public void shouldSetAuditFields() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
-        auditClient.updateCaseAudit(caseData, stageUUID);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_UPDATED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
-        assertThat(request.getCorrelationID()).isEqualTo(requestData.correlationId());
-        assertThat(request.getNamespace()).isEqualTo("namespace");
-        assertThat(request.getRaisingService()).isEqualTo("hocs-casework");
-        assertThat(request.getUserID()).isEqualTo(requestData.userId());
-    }
-
-    @Test
-    public void shouldNotThrowExceptionOnFailure() {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
-        doThrow(new RuntimeException("An error occurred")).when(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        assertThatCode(() -> auditClient.updateCaseAudit(caseData, stageUUID)).doesNotThrowAnyException();
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-    }
-
-    @Test
-    public void createCaseAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
         auditClient.createCaseAudit(caseData);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_CREATED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseData.getUuid(), EventType.CASE_CREATED);
     }
 
     @Test
-    public void updateCaseAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
+    public void shouldSendCaseUpdateEvent() throws JsonProcessingException {
+        var caseID = 12345L;
+        var caseType = CaseDataTypeFactory.from("TEST", "F0");
+        var stageUUID = UUID.randomUUID();
+        var caseData = new CaseData(caseType, caseID, new HashMap<>(),  LocalDate.now());
+
         auditClient.updateCaseAudit(caseData, stageUUID);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_UPDATED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseData.getUuid(), EventType.CASE_UPDATED);
     }
 
     @Test
-    public void viewCaseAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
+    public void shouldSendViewCaseEvent() throws JsonProcessingException {
+        var caseID = 12345L;
+        var caseType = CaseDataTypeFactory.from("TEST", "F0");
+        var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
+
         auditClient.viewCaseAudit(caseData);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_VIEWED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseData.getUuid(), EventType.CASE_VIEWED);
     }
 
     @Test
-    public void deleteCaseAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
+    public void shouldSendDeleteCaseEvent() throws JsonProcessingException {
+        var caseID = 12345L;
+        var caseType = CaseDataTypeFactory.from("TEST", "F0");
+        var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
+
         auditClient.deleteCaseAudit(caseData, true);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_DELETED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseData.getUuid(), EventType.CASE_DELETED);
     }
 
     @Test
     public void viewCaseSummaryAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
+        var caseID = 12345L;
+        var caseType = CaseDataTypeFactory.from("TEST", "F0");
+        var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
+
         auditClient.viewCaseSummaryAudit(caseData);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_SUMMARY_VIEWED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseData.getUuid(), EventType.CASE_SUMMARY_VIEWED);
     }
 
     @Test
     public void viewStandardLineAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
+        var caseID = 12345L;
+        var caseType = CaseDataTypeFactory.from("TEST", "F0");
+        var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
+
         auditClient.viewStandardLineAudit(caseData);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.STANDARD_LINE_VIEWED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseData.getUuid(), EventType.STANDARD_LINE_VIEWED);
     }
 
     @Test
     public void viewTemplate() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
+        var caseID = 12345L;
+        var caseType = CaseDataTypeFactory.from("TEST", "F0");
+        var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
+
         auditClient.viewTemplateAudit(caseData);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.TEMPLATE_VIEWED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseData.getUuid());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseData.getUuid(), EventType.TEMPLATE_VIEWED);
     }
 
     @Test
     public void createCorrespondentAudit() throws IOException {
-        auditClient.createCorrespondentAudit(correspondent);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CORRESPONDENT_CREATED);
-        assertThat(request.getCaseUUID()).isEqualTo(correspondent.getCaseUUID());
-    }
+        var address = new Address("TEST", "some street", "some town", "some count", "UK");
+        var correspondent = new Correspondent(UUID.randomUUID(), "MP", "John Smith",
+                "An Organisation", address, "123456789","test@test.com",
+                "1234", "external key" );
 
-    @Test
-    @Ignore // todo... change when new action.Extensions done.
-    public void createExtensionAudit() throws IOException {
-        CaseData caseData = new CaseData(caseType, caseID, new HashMap<>(), caseReceived);
-        CaseDeadlineExtension caseDeadlineExtension =
-                new CaseDeadlineExtension(
-                        caseData,
-                        new CaseDeadlineExtensionType("TEST_EXT_TYPE", 5),
-                        "TEST NOTE"
-                );
-//        auditClient.createExtensionAudit(caseDeadlineExtension);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.EXTENSION_APPLIED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseDeadlineExtension.getCaseData().getUuid());
+        auditClient.createCorrespondentAudit(correspondent);
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(correspondent.getCaseUUID(), EventType.CORRESPONDENT_CREATED);
     }
 
     @Test
     public void deleteCorrespondentAudit() throws IOException {
+        var address = new Address("TEST", "some street", "some town", "some count", "UK");
+        var correspondent = new Correspondent(UUID.randomUUID(), "MP", "John Smith",
+                "An Organisation", address, "123456789","test@test.com",
+                "1234", "external key" );
+
         auditClient.deleteCorrespondentAudit(correspondent);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CORRESPONDENT_DELETED);
-        assertThat(request.getCaseUUID()).isEqualTo(correspondent.getCaseUUID());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(correspondent.getCaseUUID(), EventType.CORRESPONDENT_DELETED);
     }
 
     @Test
     public void updateCorrespondentAudit() throws IOException {
+        var address = new Address("TEST", "some street", "some town", "some count", "UK");
+        var correspondent = new Correspondent(UUID.randomUUID(), "MP", "John Smith",
+                "An Organisation", address, "123456789","test@test.com",
+                "1234", "external key" );
+
         auditClient.updateCorrespondentAudit(correspondent);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CORRESPONDENT_UPDATED);
-        assertThat(request.getCaseUUID()).isEqualTo(correspondent.getCaseUUID());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(correspondent.getCaseUUID(), EventType.CORRESPONDENT_UPDATED);
     }
 
     @Test
     public void createTopicAudit() throws IOException {
-        Topic topic = new Topic(caseUUID,"topic name", UUID.randomUUID());
+        var caseUUID = UUID.randomUUID();
+        var topic = new Topic(caseUUID,"topic name", UUID.randomUUID());
+
         auditClient.createTopicAudit(topic);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_TOPIC_CREATED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseUUID);
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(topic.getCaseUUID(), EventType.CASE_TOPIC_CREATED);
     }
 
     @Test
     public void deleteTopicAudit() throws IOException {
+        var caseUUID = UUID.randomUUID();
+        var topic = new Topic(caseUUID,"topic name", UUID.randomUUID());
+
         auditClient.deleteTopicAudit(topic);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_TOPIC_DELETED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseUUID);
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(topic.getCaseUUID(), EventType.CASE_TOPIC_DELETED);
     }
 
     @Test
     public void viewCaseNotesAudit() throws IOException {
+        var caseUUID = UUID.randomUUID();
+
         auditClient.viewCaseNotesAudit(caseUUID);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_NOTES_VIEWED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseUUID);
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseUUID, EventType.CASE_NOTES_VIEWED);
     }
 
     @Test
     public void viewCaseNoteAudit() throws IOException {
-        CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note", userId);
+        var caseUUID = UUID.randomUUID();
+        var caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note", "Test User");
+
         auditClient.viewCaseNoteAudit(caseNote);
-              verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_NOTE_VIEWED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseNote.getCaseUUID());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseNote.getCaseUUID(), EventType.CASE_NOTE_VIEWED);
     }
 
     @Test
     public void createCaseNoteAudit() throws IOException {
-        CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note",userId);
+        var caseUUID = UUID.randomUUID();
+        var caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note", "Test User");
+
         auditClient.createCaseNoteAudit(caseNote);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_NOTE_CREATED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseNote.getCaseUUID());
-        assertThat(request.getAuditPayload()).contains("\"caseNoteType\" : \"ORIGINAL\"");
-        assertThat(request.getAuditPayload()).contains("\"text\" : \"some note\"");
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseNote.getCaseUUID(), EventType.CASE_NOTE_CREATED,
+                Map.of("caseNoteType", "ORIGINAL",
+                        "text", "some note"));
     }
 
     @Test
     public void updateCaseNoteAudit() throws IOException {
-        CaseNote caseNote = new CaseNote(caseUUID, "DRAFT", "post-text",userId);
+        var caseUUID = UUID.randomUUID();
+        var caseNote = new CaseNote(caseUUID, "DRAFT", "post-text", "Test User");
+
         auditClient.updateCaseNoteAudit(caseNote, "ORIGINAL", "pre-text");
-              verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_NOTE_UPDATED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseNote.getCaseUUID());
-        assertThat(request.getAuditPayload()).contains("\"prevCaseNoteType\" : \"ORIGINAL\"");
-        assertThat(request.getAuditPayload()).contains("\"prevText\" : \"pre-text\"");
-        assertThat(request.getAuditPayload()).contains("\"caseNoteType\" : \"DRAFT\"");
-        assertThat(request.getAuditPayload()).contains("\"text\" : \"post-text\"");
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseNote.getCaseUUID(), EventType.CASE_NOTE_UPDATED,
+                Map.of("prevCaseNoteType", "ORIGINAL",
+                        "prevText", "pre-text",
+                        "caseNoteType", "DRAFT",
+                        "text", "post-text"));
     }
 
     @Test
     public void deleteCaseNoteAudit() throws IOException {
-        CaseNote caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note",userId);
+        var caseUUID = UUID.randomUUID();
+        var caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note", "Test User");
+
         auditClient.deleteCaseNoteAudit(caseNote);
-              verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.CASE_NOTE_DELETED);
-        assertThat(request.getCaseUUID()).isEqualTo(caseNote.getCaseUUID());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseNote.getCaseUUID(), EventType.CASE_NOTE_DELETED);
     }
 
     @Test
     public void auditStageUserAllocate() throws IOException {
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID(), randomUUID());
-        stage.setUserUUID(randomUUID());
+        var caseUUID = UUID.randomUUID();
+        var stage = new Stage(caseUUID,"SOME_STAGE", UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
+
         auditClient.updateStageUser(stage);
-              verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.STAGE_ALLOCATED_TO_USER);
-        assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(stage.getCaseUUID(), EventType.STAGE_ALLOCATED_TO_USER);
     }
 
     @Test
     public void auditStageUserUnallocate() throws IOException {
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), null, null);
-        stage.setUserUUID(null);
+        var caseUUID = UUID.randomUUID();
+        var stage = new Stage(caseUUID,"SOME_STAGE", UUID.randomUUID(), null, null);
+
         auditClient.updateStageUser(stage);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.STAGE_UNALLOCATED_FROM_USER);
-        assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(stage.getCaseUUID(), EventType.STAGE_UNALLOCATED_FROM_USER);
     }
 
     @Test
     public void auditStageTeamAllocate() throws IOException {
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID(), randomUUID());
-        stage.setUuid(randomUUID());
+        var caseUUID = UUID.randomUUID();
+        var stage = new Stage(caseUUID,"SOME_STAGE", UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
+
         auditClient.updateStageTeam(stage);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.STAGE_ALLOCATED_TO_TEAM);
-        assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(stage.getCaseUUID(), EventType.STAGE_ALLOCATED_TO_TEAM);
     }
 
     @Test
     public void auditStageTeamUnallocate() throws IOException {
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", null, null, null);
+        var caseUUID = UUID.randomUUID();
+        var stage = new Stage(caseUUID,"SOME_STAGE", null, null, null);
+
         auditClient.updateStageTeam(stage);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.STAGE_COMPLETED);
-        assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(stage.getCaseUUID(), EventType.STAGE_COMPLETED);
     }
 
     @Test
     public void auditStageCreated() throws IOException {
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", null, null, null);
+        var caseUUID = UUID.randomUUID();
+        var stage = new Stage(caseUUID,"SOME_STAGE", null, null, null);
+
         auditClient.createStage(stage);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.STAGE_CREATED);
-        assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(stage.getCaseUUID(), EventType.STAGE_CREATED);
+    }
+
+
+
+    @Test
+    public void shouldRecreateStage() throws IOException {
+        var caseUUID = UUID.randomUUID();
+        var stage = new Stage(caseUUID,"SOME_STAGE", UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
+
+        auditClient.recreateStage(stage);
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(stage.getCaseUUID(), EventType.STAGE_RECREATED);
+    }
+
+
+
+    @Test
+    public void viewSomuItemsAudit() throws IOException {
+        var caseUUID = UUID.randomUUID();
+
+        auditClient.viewAllSomuItemsAudit(caseUUID);
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(caseUUID, EventType.SOMU_ITEMS_VIEWED);
+    }
+
+    @Test
+    public void viewSomuItemAudit() throws IOException {
+        var caseUUID = UUID.randomUUID();
+        var somuItem = new SomuItem(UUID.randomUUID(), caseUUID, UUID.randomUUID(), "{}");
+
+        auditClient.viewCaseSomuItemsBySomuTypeAudit(caseUUID, somuItem.getUuid());
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(somuItem.getCaseUuid(), EventType.SOMU_ITEM_VIEWED);
+    }
+
+    @Test
+    public void createSomuItemAudit() throws IOException {
+        var caseUUID = UUID.randomUUID();
+        var somuItem = new SomuItem(UUID.randomUUID(), caseUUID, UUID.randomUUID(), "{}");
+
+        auditClient.createCaseSomuItemAudit(somuItem);
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(somuItem.getCaseUuid(), EventType.SOMU_ITEM_CREATED);
+    }
+
+    @Test
+    public void updateSomuItemAudit() throws IOException {
+        var caseUUID = UUID.randomUUID();
+        var somuItem = new SomuItem(UUID.randomUUID(), caseUUID, UUID.randomUUID(), "{}");
+
+        auditClient.updateSomuItemAudit(somuItem);
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(somuItem.getCaseUuid(), EventType.SOMU_ITEM_UPDATED);
+    }
+
+    @Test
+    public void deleteSomuItemAudit() throws IOException {
+        var caseUUID = UUID.randomUUID();
+        var somuItem = new SomuItem(UUID.randomUUID(), caseUUID, UUID.randomUUID(), "{}");
+
+        auditClient.deleteSomuItemAudit(somuItem);
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        assertSnsValues(somuItem.getCaseUuid(), EventType.SOMU_ITEM_DELETED);
+    }
+
+    @Test
+    public void shouldSetHeaders()  {
+        var caseID = 12345L;
+        var caseType = CaseDataTypeFactory.from("TEST", "F0");
+        var caseData = new CaseData(caseType, caseID, new HashMap<>(),  LocalDate.now());
+        Map<String, MessageAttributeValue> expectedHeaders = Map.of(
+                "event_type", new SnsStringMessageAttributeValue(EventType.CASE_CREATED.toString()),
+                RequestData.CORRELATION_ID_HEADER, new SnsStringMessageAttributeValue(requestData.correlationId()),
+                RequestData.USER_ID_HEADER, new SnsStringMessageAttributeValue(requestData.userId()),
+                RequestData.USERNAME_HEADER, new SnsStringMessageAttributeValue(requestData.username()),
+                RequestData.GROUP_HEADER, new SnsStringMessageAttributeValue(requestData.groups()));
+
+        auditClient.createCaseAudit(caseData);
+
+        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
+
+        Assertions.assertTrue(publicRequestCaptor
+                .getValue().getMessageAttributes().entrySet()
+                .containsAll(expectedHeaders.entrySet()));
+    }
+
+    @Test
+    public void shouldNotThrowExceptionOnFailure() {
+        var caseID = 12345L;
+        var caseType = CaseDataTypeFactory.from("TEST", "F0");
+        var stageUUID = UUID.randomUUID();
+        var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
+
+        doThrow(new RuntimeException("An error occurred")).when(auditSearchSnsClient).publish(any());
+
+        assertThatCode(() -> auditClient.updateCaseAudit(caseData, stageUUID)).doesNotThrowAnyException();
     }
 
     @Test
     public void shouldGetCaseHistory() {
-        UUID caseUUID = UUID.randomUUID();
-        UUID auditResponseUUID = UUID.randomUUID();
-        GetAuditListResponse restResponse = new GetAuditListResponse(Set.of(new GetAuditResponse(auditResponseUUID,
+        var caseUUID = UUID.randomUUID();
+        var auditResponseUUID = UUID.randomUUID();
+        var restResponse = new GetAuditListResponse(Set.of(new GetAuditResponse(auditResponseUUID,
                 caseUUID,
                 null,
                 "correlation Id",
                 "hocs-casework","",
                 "namespace", ZonedDateTime.now(),EventType.CASE_CREATED.toString(),
                 "user")));
+        var events = String.join(",", CaseDataService.TIMELINE_EVENTS);
 
-        String events = String.join(",", CaseDataService.TIMELINE_EVENTS);
         when(restHelper.get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
                 GetAuditListResponse.class)).thenReturn(restResponse);
 
@@ -405,36 +500,11 @@ public class AuditClientTest {
         assertThat(response.size()).isEqualTo(1);
     }
 
-
-    @Test
-    public void shouldReturnEmptyCaseHistoryWhenAuditServiceCallFails() {
-        UUID caseUUID = UUID.randomUUID();
-        String events = String.join(",", CaseDataService.TIMELINE_EVENTS);
-        when(restHelper.get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
-                GetAuditListResponse.class)).thenThrow(RestClientException.class);
-
-        Set<GetAuditResponse> response = auditClient.getAuditLinesForCase(caseUUID, CaseDataService.TIMELINE_EVENTS);
-        verify(restHelper).get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
-                GetAuditListResponse.class);
-        assertThat(response.size()).isEqualTo(0);
-    }
-
-    @Test
-    public void shouldRecreateStage() throws IOException {
-
-        Stage stage = new Stage(caseUUID,"SOME_STAGE", randomUUID(), randomUUID(), randomUUID());
-        auditClient.recreateStage(stage);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.STAGE_RECREATED);
-        assertThat(request.getCaseUUID()).isEqualTo(stage.getCaseUUID());
-        assertThat(request.getStageUUID()).isEqualTo(stage.getUuid());
-    }
-
     @Test
     public void shouldDeleteAuditLinesForCase() {
-        UUID caseUUID = UUID.randomUUID();
-        DeleteCaseAuditResponse restResponse = new DeleteCaseAuditResponse("C", caseUUID, false, 1);
+        var caseUUID = UUID.randomUUID();
+        var restResponse = new DeleteCaseAuditResponse("C", caseUUID, false, 1);
+
         when(restHelper.post(eq(auditService), eq(String.format("/audit/case/%s/delete", caseUUID)),
                 any(),
                 eq(DeleteCaseAuditResponse.class))).thenReturn(restResponse);
@@ -448,81 +518,40 @@ public class AuditClientTest {
     }
 
     @Test
-    public void viewSomuItemsAudit() throws IOException {
-        auditClient.viewAllSomuItemsAudit(this.caseUUID);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-        
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.SOMU_ITEMS_VIEWED);
-        assertThat(request.getCaseUUID()).isEqualTo(this.caseUUID);
+    public void shouldReturnEmptyCaseHistoryWhenAuditServiceCallFails() {
+        var caseUUID = UUID.randomUUID();
+        var events = String.join(",", CaseDataService.TIMELINE_EVENTS);
+
+        when(restHelper.get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
+                GetAuditListResponse.class)).thenThrow(RestClientException.class);
+
+        Set<GetAuditResponse> response = auditClient.getAuditLinesForCase(caseUUID, CaseDataService.TIMELINE_EVENTS);
+
+        verify(restHelper).get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
+                GetAuditListResponse.class);
+        assertThat(response.size()).isEqualTo(0);
     }
 
-    @Test
-    public void viewSomuItemAudit() throws IOException {
-        UUID uuid = UUID.randomUUID();
-        UUID somuUuid = UUID.randomUUID();
-        SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
-
-        String itemView = mapper.writeValueAsString(new AuditPayload.SomuItem(somuItem.getUuid()));
-
-        auditClient.viewCaseSomuItemsBySomuTypeAudit(caseUUID, uuid);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.SOMU_ITEM_VIEWED);
-        assertThat(request.getCaseUUID()).isEqualTo(somuItem.getCaseUuid());
-        assertThat(request.getAuditPayload()).isEqualTo(itemView);
+    private void assertSnsValues(UUID caseUuid, EventType event) throws JsonProcessingException {
+        assertSnsValues(caseUuid, event, Collections.emptyMap());
     }
 
-    @Test
-    public void createSomuItemAudit() throws IOException {
-        UUID uuid = UUID.randomUUID();
-        UUID somuUuid = UUID.randomUUID();
-        SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
+    private void assertSnsValues(UUID caseUuid, EventType event, @NotNull Map<String, String> otherValues) throws JsonProcessingException {
+        var caseCreated =
+                objectMapper.readValue(publicRequestCaptor.getValue().getMessage(), CreateAuditRequest.class);
 
-        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
-        
-        auditClient.createCaseSomuItemAudit(somuItem);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
+        Assertions.assertNotNull(snsPublishResult.getResult());
+        Assertions.assertNotNull(snsPublishResult.getResult().getMessageId());
+        Assertions.assertEquals(snsPublishResult.getResult().getSdkHttpMetadata().getHttpStatusCode(), 200);
+        Assertions.assertEquals(caseCreated.getCaseUUID(), caseUuid);
+        Assertions.assertEquals(caseCreated.getType(), event);
 
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.SOMU_ITEM_CREATED);
-        assertThat(request.getCaseUUID()).isEqualTo(somuItem.getCaseUuid());
-        assertThat(request.getAuditPayload()).isEqualTo(itemUpdate);
-    }
+        if (!otherValues.isEmpty()) {
+            var caseCreatedData =
+                    objectMapper.readValue(caseCreated.getAuditPayload(), Map.class);
 
-    @Test
-    public void updateSomuItemAudit() throws IOException {
-        UUID uuid = UUID.randomUUID();
-        UUID somuUuid = UUID.randomUUID();
-        SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
-        
-        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
-
-        auditClient.updateSomuItemAudit(somuItem);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.SOMU_ITEM_UPDATED);
-        assertThat(request.getCaseUUID()).isEqualTo(somuItem.getCaseUuid());
-        assertThat(request.getAuditPayload()).isEqualTo(itemUpdate);
-    }
-    
-    @Test
-    public void deleteSomuItemAudit() throws IOException {
-        UUID uuid = UUID.randomUUID();
-        UUID somuUuid = UUID.randomUUID();
-        SomuItem somuItem = new SomuItem(uuid, this.caseUUID, somuUuid, "{}");
-
-        String itemUpdate = mapper.writeValueAsString(new AuditPayload.SomuItemWithData(somuItem.getSomuUuid(), somuItem.getUuid(), somuItem.getData()));
-
-        auditClient.deleteSomuItemAudit(somuItem);
-        verify(producerTemplate).sendBodyAndHeaders(eq(auditQueue), jsonCaptor.capture(), any());
-
-        CreateAuditRequest request = mapper.readValue((String)jsonCaptor.getValue(), CreateAuditRequest.class);
-        assertThat(request.getType()).isEqualTo(EventType.SOMU_ITEM_DELETED);
-        assertThat(request.getCaseUUID()).isEqualTo(somuItem.getCaseUuid());
-        assertThat(request.getAuditPayload()).isEqualTo(itemUpdate);
+            Assertions.assertTrue(caseCreatedData.entrySet().containsAll(otherValues.entrySet()));
+        }
     }
 
 }
