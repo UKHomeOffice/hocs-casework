@@ -1,10 +1,13 @@
 package uk.gov.digital.ho.hocs.casework.application.aws;
 
+import com.amazonaws.ClientConfiguration;
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.sns.AmazonSNS;
+import com.amazonaws.services.sns.AmazonSNSAsync;
+import com.amazonaws.services.sns.AmazonSNSAsyncClientBuilder;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQSAsync;
 import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
@@ -37,9 +40,10 @@ public class LocalStackConfiguration {
                 .build();
     }
 
-    @Bean("auditSnsClient")
-    public AmazonSNS snsClient() {
-        return AmazonSNSClientBuilder
+    @Primary
+    @Bean
+    public AmazonSNSAsync snsClient() {
+        return AmazonSNSAsyncClientBuilder
                 .standard()
                 .withCredentials(awsCredentialsProvider)
                 .withEndpointConfiguration(endpoint)
