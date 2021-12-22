@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -16,6 +17,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
+import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
@@ -38,6 +40,8 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_WITHDRAW
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_EMPTY;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_FORBIDDEN;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAUTHORISED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGES_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_TEAM;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_USER;
@@ -261,6 +265,14 @@ public class StageService {
 
     Set<StageWithCaseData> getActiveStagesByTeamUUID(UUID teamUUID) {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
+
+        Set<UUID> usersTeam = userPermissionsService.getExpandedUserTeams();
+
+        if (!usersTeam.contains(teamUUID)) {
+            log.warn("User {} attempted to view team {}", userPermissionsService.getUserId(), teamUUID, value(EVENT, SECURITY_FORBIDDEN));
+            throw new SecurityExceptions.ForbiddenException("User does not have access to the requested resource", SECURITY_FORBIDDEN);
+        }
+
         Set<StageWithCaseData> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
 
         updateStages(stages);

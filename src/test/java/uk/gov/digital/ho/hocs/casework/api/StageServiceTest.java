@@ -26,6 +26,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
+import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
@@ -897,13 +898,28 @@ public class StageServiceTest {
 
     @Test
     public void shouldGetActiveStagesByTeamUuids() {
+        Set<UUID> teamUuids = Set.of(teamUUID);
         StageWithCaseData stage1 = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
         StageWithCaseData stage2 = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
         Set<StageWithCaseData> stages = Set.of(stage1, stage2);
 
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teamUuids);
         when(stageRepository.findAllActiveByTeamUUID(teamUUID)).thenReturn(stages);
+
         stageService.getActiveStagesByTeamUUID(teamUUID);
+
+        verify(userPermissionsService).getExpandedUserTeams();
         verify(contributionsProcessor).processContributionsForStages(stages);
+        verify(stageRepository).findAllActiveByTeamUUID(teamUUID);
+    }
+
+    @Test(expected = SecurityExceptions.ForbiddenException.class)
+    public void shouldGetActiveStagesByTeamUuids_ForbiddenThrownWhenNotInTeam() {
+        Set<UUID> teamUuids = Set.of(UUID.randomUUID());
+
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teamUuids);
+
+        stageService.getActiveStagesByTeamUUID(teamUUID);
     }
 
     @Test

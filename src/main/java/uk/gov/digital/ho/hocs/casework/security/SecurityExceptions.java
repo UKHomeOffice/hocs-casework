@@ -29,10 +29,17 @@ public interface SecurityExceptions {
     }
 
     class PermissionCheckException extends EventRuntimeException {
-        PermissionCheckException(String s, LogEvent event) {
+        public PermissionCheckException(String s, LogEvent event) {
             super(s, event);
         }
     }
+
+    class ForbiddenException extends EventRuntimeException {
+        public ForbiddenException(String s, LogEvent event) {
+            super(s, event);
+        }
+    }
+
 
 
 }
