@@ -17,7 +17,6 @@ public class WorkingDaysElapsedProviderImpl implements WorkingDaysElapsedProvide
     @Autowired
     private InfoClient infoClient;
 
-    @Cacheable(value = "WorkingDaysElapsedProviderImpl_getWorkingDaysSince")
     @Override
     public Integer getWorkingDaysSince(String caseType, LocalDate fromDate) {
         return infoClient.getWorkingDaysElapsedForCaseType(caseType, fromDate);
