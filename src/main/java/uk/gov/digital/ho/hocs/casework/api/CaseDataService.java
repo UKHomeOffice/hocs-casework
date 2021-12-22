@@ -614,7 +614,4 @@ public class CaseDataService {
         }).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
-    public void clearCachedTemplateForCaseType(String caseType) {
-        infoClient.clearCachedTemplateForCaseType(caseType);
-    }
 }

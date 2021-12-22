@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
@@ -172,12 +171,6 @@ class CaseDataResource {
     public ResponseEntity<List<TemplateDto>> getTemplate(@PathVariable UUID caseUUID) {
         List<TemplateDto> template = caseDataService.getTemplates(caseUUID);
         return ResponseEntity.ok(template);
-    }
-
-    @PostMapping(value = "/caseType/{caseType}/clearCachedTemplate")
-    public ResponseEntity<String> clearCachedTemplateForCaseType(@PathVariable String caseType) {
-        caseDataService.clearCachedTemplateForCaseType(caseType);
-        return ResponseEntity.ok("Cache Cleared");
     }
 
     @GetMapping(value = "/case/{caseUUID}/data/{variableName}")

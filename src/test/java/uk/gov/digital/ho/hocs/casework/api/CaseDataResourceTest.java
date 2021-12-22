@@ -295,14 +295,6 @@ public class CaseDataResourceTest {
     }
 
     @Test
-    public void shouldEvictFromTheCache() {
-        ResponseEntity<String> responseEntity = caseDataResource.clearCachedTemplateForCaseType(caseDataType.getDisplayName());
-
-        assertThat(responseEntity.getBody()).isEqualTo("Cache Cleared");
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
     public void getCaseDataValue() {
         String variableName = "TestVariableName";
         String expectedValue = "TestValue";

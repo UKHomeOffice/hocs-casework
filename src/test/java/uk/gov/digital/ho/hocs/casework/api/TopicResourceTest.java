@@ -96,14 +96,6 @@ public class TopicResourceTest {
     }
 
     @Test
-    public void shouldEvictFromTheCache() {
-        ResponseEntity responseEntity = topicResource.clearCachedStandardLineForTopic(topicUUID);
-
-        assertThat(responseEntity.getBody()).isEqualTo("Cache Cleared");
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
     public void shouldGetAllTopics() {
 
         when(topicService.getAllTopics()).thenReturn(new HashSet<>());

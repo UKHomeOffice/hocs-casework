@@ -56,12 +56,6 @@ public class TopicResource {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping(value = "/topic/{topicUUID}/clearCachedStandardLine")
-    ResponseEntity clearCachedStandardLineForTopic(@PathVariable UUID topicUUID) {
-        topicService.clearCachedStandardLineForTopic(topicUUID);
-        return ResponseEntity.ok("Cache Cleared");
-    }
-
     @GetMapping(value = "/topics")
     ResponseEntity<GetTopicsResponse> getAllCaseTopics() {
         Set<Topic> topics = topicService.getAllTopics();
