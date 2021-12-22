@@ -45,7 +45,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:case/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
-@ActiveProfiles("local")
+@ActiveProfiles({ "local", "integration" })
 public class CaseDataCreateCaseIntegrationTest {
     private MockRestServiceServer mockInfoService;
     private TestRestTemplate testRestTemplate = new TestRestTemplate();
