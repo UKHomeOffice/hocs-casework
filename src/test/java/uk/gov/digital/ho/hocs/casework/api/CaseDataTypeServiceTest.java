@@ -44,7 +44,7 @@ public class CaseDataTypeServiceTest {
         when(infoClient.getAllCaseDataTypes()).thenReturn(caseDataTypes);
 
         // Call with an uninteresting predicate
-        var result = caseDataTypeService.getAllCaseDataTypes(Objects::nonNull).collect(Collectors.toSet());
+        var result = caseDataTypeService.getCaseDataTypes(Objects::nonNull).collect(Collectors.toSet());
 
         verify(infoClient).getAllCaseDataTypes();
         verifyNoMoreInteractions(infoClient);
@@ -61,7 +61,7 @@ public class CaseDataTypeServiceTest {
         when(infoClient.getAllCaseDataTypes()).thenReturn(caseDataTypes);
 
         // Call with an uninteresting predicate
-        var result = caseDataTypeService.getAllCaseDataTypes(Objects::nonNull).collect(Collectors.toSet());
+        var result = caseDataTypeService.getCaseDataTypes(Objects::nonNull).collect(Collectors.toSet());
 
         verify(infoClient).getAllCaseDataTypes();
         verifyNoMoreInteractions(infoClient);
@@ -78,7 +78,7 @@ public class CaseDataTypeServiceTest {
         when(infoClient.getAllCaseDataTypes()).thenReturn(caseDataTypes);
 
         // Call with an uninteresting predicate
-        var result = caseDataTypeService.getAllCaseDataTypes(it -> it.getShortCode().equals("45")).collect(Collectors.toSet());
+        var result = caseDataTypeService.getCaseDataTypes(it -> it.getShortCode().equals("45")).collect(Collectors.toSet());
 
         verify(infoClient).getAllCaseDataTypes();
         verifyNoMoreInteractions(infoClient);
@@ -96,7 +96,7 @@ public class CaseDataTypeServiceTest {
         when(infoClient.getAllCaseDataTypes()).thenReturn(caseDataTypes);
 
         // Call with an uninteresting predicate
-        var result = caseDataTypeService.getAllCaseDataTypes(it -> it.getShortCode().equals("99")).collect(Collectors.toSet());
+        var result = caseDataTypeService.getCaseDataTypes(it -> it.getShortCode().equals("99")).collect(Collectors.toSet());
 
         verify(infoClient).getAllCaseDataTypes();
         verifyNoMoreInteractions(infoClient);

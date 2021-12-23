@@ -25,18 +25,18 @@ public class CaseDataTypeService {
         this.infoClient = infoClient;
     }
 
-    public Stream<CaseDataType> getAllCaseDataTypes(Predicate<CaseDataType> predicate) {
+    public Stream<CaseDataType> getCaseDataTypes(Predicate<CaseDataType> predicate) {
         return infoClient.getAllCaseDataTypes().stream().filter(predicate);
     }
 
     public CaseDataType getCaseDataType(String caseType) {
         var type = getNonNullValue(caseType);
-        return getAllCaseDataTypes(it -> it.getDisplayCode().equals(type)).findFirst().orElseThrow(() -> getNotFoundException(type));
+        return getCaseDataTypes(it -> it.getDisplayCode().equals(type)).findFirst().orElseThrow(() -> getNotFoundException(type));
     }
 
     public CaseDataType getCaseDataType(UUID caseUUID){
         var shortCode = getNonNullValue(caseUUID).toString().substring(34);
-        return getAllCaseDataTypes(it -> it.getShortCode().equals(shortCode)).findFirst().orElseThrow(() -> getNotFoundException(shortCode));
+        return getCaseDataTypes(it -> it.getShortCode().equals(shortCode)).findFirst().orElseThrow(() -> getNotFoundException(shortCode));
     }
 
     private static <T> T getNonNullValue(T value) {

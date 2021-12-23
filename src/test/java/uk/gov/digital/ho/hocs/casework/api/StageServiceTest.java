@@ -1,7 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.amazonaws.util.json.Jackson;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.assertj.core.util.Sets;
 import org.junit.Assert;
 import org.junit.Before;
@@ -704,7 +702,7 @@ public class StageServiceTest {
         when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
         when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(Set.of(repositoryStage));
 
-        when(caseDataTypeService.getAllCaseDataTypes(any())).thenReturn(caseDataTypes);
+        when(caseDataTypeService.getCaseDataTypes(any())).thenReturn(caseDataTypes);
 
         // when
         Set<StageWithCaseData> stageResults = stageService.search(searchRequest);
