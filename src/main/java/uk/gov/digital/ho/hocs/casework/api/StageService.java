@@ -423,7 +423,7 @@ public class StageService {
         // get the case types with a previous case type and reduce to
         // Map<K, V>, - K is the previousCaseType, V is the caseType
         Map<String, String> caseTypes = caseDataTypeService.getCaseDataTypes(caseType -> Objects.nonNull(caseType.getPreviousCaseType()))
-                .collect(Collectors.toMap(CaseDataType::getPreviousCaseType, CaseDataType::getDisplayCode));
+                .collect(Collectors.toMap(CaseDataType::getPreviousCaseType, CaseDataType::getType));
 
         // map the previous case type on to the cases found
         // only stages with completed cases have the next caseType

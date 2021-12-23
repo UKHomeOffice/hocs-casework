@@ -31,7 +31,7 @@ public class CaseDataTypeService {
 
     public CaseDataType getCaseDataType(String caseType) {
         var type = getNonNullValue(caseType);
-        return getCaseDataTypes(it -> it.getDisplayCode().equals(type)).findFirst().orElseThrow(() -> getNotFoundException(type));
+        return getCaseDataTypes(it -> it.getType().equals(type)).findFirst().orElseThrow(() -> getNotFoundException(type));
     }
 
     public CaseDataType getCaseDataType(UUID caseUUID){
