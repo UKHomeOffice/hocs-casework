@@ -1,12 +1,10 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -288,33 +286,19 @@ public class StageService {
     StageWithCaseData getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {
         log.debug("Getting unassigned cases for user: {} in team {}", userUUID, teamUUID);
         Set<StageWithCaseData> unassignedStages = stageRepository.findAllUnassignedAndActiveByTeamUUID(teamUUID);
-        if (unassignedStages.isEmpty()) {
-            log.debug("No unassigned case found for user: {} in team {}", userUUID, teamUUID);
+
+        unassignedStages.forEach(stage -> stagePriorityCalculator.updatePriority(stage.getData(), stage.getCaseDataType()));
+
+        var nextAvailableStage = unassignedStages.stream().max(Comparator.comparingDouble(stage -> Double.parseDouble(stage.getData().getOrDefault("systemCalculatedPriority", "0"))));
+
+        if(nextAvailableStage.isPresent()) {
+            StageWithCaseData stage = nextAvailableStage.get();
+            updateStageUser(stage.getCaseUUID(), stage.getUuid(), userUUID);
+            daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
+            return stage;
+        } else {
             return null;
         }
-
-        for (StageWithCaseData stage : unassignedStages) {
-            stagePriorityCalculator.updatePriority(stage.getData(), stage.getCaseDataType());
-            daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
-        }
-
-        double prevSystemCalculatedPriority = 0;
-        StageWithCaseData nextAvailableStage = unassignedStages.stream().findFirst().get();
-        for (StageWithCaseData stage : unassignedStages) {
-            JSONObject caseData = new JSONObject(stage.getData());
-            double systemCalculatedPriority = caseData.getDouble("systemCalculatedPriority");
-
-            if (systemCalculatedPriority > prevSystemCalculatedPriority) {
-                prevSystemCalculatedPriority = systemCalculatedPriority;
-                nextAvailableStage = stage;
-            }
-        }
-
-        UUID caseUUID = nextAvailableStage.getCaseUUID();
-        UUID stageUUID = nextAvailableStage.getUuid();
-        updateStageUser(caseUUID, stageUUID, userUUID);
-
-        return nextAvailableStage;
     }
 
     Set<StageWithCaseData> getActiveStagesForUsersTeams() {
