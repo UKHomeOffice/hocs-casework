@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ActiveProfiles("test")
+@ActiveProfiles({"test", "local"})
 @AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
 @Sql("classpath:sql/summary/init.sql")
 @Sql(

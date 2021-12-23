@@ -10,19 +10,36 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: dev
 
+  - name: localstack
+    image: quay.io/ukhomeofficedigital/localstack
+    environment:
+      SERVICES: sqs, sns
+      DEFAULT_REGION: eu-west-2
+
 steps:
+  - name: setup localstack
+    image: quay.io/ukhomeofficedigital/localstack # need curl which is not in alpine
+    commands:
+      - cd config/localstack
+      - ./1-setup-sqs.sh
+      - ./2-setup-sns.sh
+    depends_on:
+      - clone
+
   - name: build project
     image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
     commands:
       - ./gradlew assemble --no-daemon
+    depends_on:
+      - setup localstack
 
   - name: test project
     image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
     environment:
-      SPRING_PROFILES_ACTIVE: "development, local"
+      SPRING_PROFILES_ACTIVE: "local"
       HOCS_DOCUMENT_SERVICE: "http://documents:8080"
       DB_HOST: "postgres"
-      AWS_LOCAL_HOST: "localstack"
+      LOCALSTACK_CONFIG_HOST: "localstack"
     commands:
       - ./gradlew check --no-daemon
     depends_on:
