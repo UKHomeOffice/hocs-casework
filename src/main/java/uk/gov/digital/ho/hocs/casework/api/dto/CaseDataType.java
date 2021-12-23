@@ -22,4 +22,9 @@ public class CaseDataType {
     @JsonProperty("previousCaseType")
     private String previousCaseType;
 
+    @JsonProperty("sla")
+    private int sla;
+
+    @JsonProperty("deadLineWarning")
+    private int deadLineWarning;
 }

@@ -124,26 +124,6 @@ public class InfoClient {
         return response;
     }
 
-    public LocalDate getCaseDeadline(String caseType, LocalDate received, int days) {
-        LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s&days=%s", caseType, received, days), LocalDate.class);
-        log.info("Got {} as deadline for CaseType {} and Date {} and Days {}", response.toString(), caseType, received, days, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
-        return response;
-    }
-
-    public LocalDate getCaseDeadline(String caseType, LocalDate received, int days, int extensionDays) {
-        LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline?received=%s&days=%s&extensionDays=%s", caseType, received, days, extensionDays), LocalDate.class);
-        log.info("Got {} as deadline for CaseType {} and Date {} and Days {}", response.toString(), caseType, received, days, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
-        return response;
-    }
-
-    @Cacheable(value = "InfoClientGetCaseDeadlineWarning", unless = "#result == null", key = "{#caseType, #received.toString(), #days.toString() }")
-    public LocalDate getCaseDeadlineWarning(String caseType, LocalDate received, int days) {
-        LocalDate response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadlineWarning?received=%s&days=%s", caseType, received, days), LocalDate.class);
-        log.info("Got {} as deadline warning for CaseType {} and Date {} and Days {}", response.toString(), caseType, received, days, value(EVENT, INFO_CLIENT_GET_CASE_DEADLINE_SUCCESS));
-        return response;
-    }
-
-
     @Cacheable(value = "InfoClientGetStageDeadlines", unless = "#result.size() == 0", key = "{#caseType, #received.toString() }")
     public Map<String, LocalDate> getStageDeadlines(String caseType, LocalDate received) {
         Map<String, LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, received), new ParameterizedTypeReference<Map<String, LocalDate>>() {
@@ -253,6 +233,13 @@ public class InfoClient {
     public ProfileDto getProfileByCaseType(String caseType) {
         ProfileDto response = restHelper.get(serviceBaseURL, String.format("/profile/forcasetype/%s", caseType), ProfileDto.class);
         log.info("Got profile {} for case type {}, event {}", response.getProfileName(), caseType, value(EVENT, INFO_CLIENT_GET_PROFILE_BY_CASE_TYPE_SUCCESS));
+        return response;
+    }
+
+    @Cacheable(value = "InfoGetBankHolidaysByCaseType", unless = "#result == null")
+    public List<String> getBankHolidayRegionsByCaseType(String caseType) {
+        List<String> response = restHelper.get(serviceBaseURL, String.format("/bankHolidayRegion/caseType/%s", caseType), new ParameterizedTypeReference<>() {});
+        log.info("Got {} bank holidays for case type {}, event {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_BANK_HOLIDAYS_BY_CASE_TYPE_SUCCESS));
         return response;
     }
 

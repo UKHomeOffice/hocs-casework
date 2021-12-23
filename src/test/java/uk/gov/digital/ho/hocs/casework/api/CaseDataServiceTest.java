@@ -121,6 +121,23 @@ public class CaseDataServiceTest {
     @Mock
     private CaseLinkRepository caseLinkRepository;
 
+    @Mock
+    private BankHolidayService bankHolidayService;
+
+    Set<LocalDate> englandAndWalesBankHolidays2020 = Set.of(
+            LocalDate.parse("2020-01-01"),
+            LocalDate.parse("2020-04-10"),
+            LocalDate.parse("2020-04-13"),
+            LocalDate.parse("2020-05-08"),
+            LocalDate.parse("2020-05-25"),
+            LocalDate.parse("2020-08-31"),
+            LocalDate.parse("2020-12-25"),
+            LocalDate.parse("2020-12-28")
+    );
+
+    Set<BankHoliday.BankHolidayRegion> bankHolidayRegions = Set.of(BankHoliday.BankHolidayRegion.ENGLAND_AND_WALES);
+    List<String> bankHolidayRegionsAsString = List.of("ENGLAND_AND_WALES");
+
     @Before
     public void setUp() {
         configuration = new SpringConfiguration();
@@ -132,22 +149,31 @@ public class CaseDataServiceTest {
                 objectMapper,
                 auditClient,
                 caseCopyFactory,
-                caseActionService
+                caseActionService,
+                bankHolidayService
         );
     }
 
     @Test
     public void shouldCreateCase() throws ApplicationExceptions.EntityCreationException {
+        // given
+        LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
+        LocalDate expectedDeadline = LocalDate.parse("2020-03-02");
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(infoClient.getBankHolidayRegionsByCaseType(any())).thenReturn(bankHolidayRegionsAsString);
+        when(bankHolidayService.getBankHolidayDatesForRegions(eq(bankHolidayRegions))).thenReturn(englandAndWalesBankHolidays2020);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, null);
+        // when
+        CaseData caseData = caseDataService
+                .createCase(caseType.getDisplayCode(), new HashMap<>(), originalReceivedDate, null);
 
+        // then
         verify(caseDataRepository, times(1)).getNextSeriesId();
-        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
         verify(caseDataRepository, times(1)).save(caseData);
+
+        assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
 
         verifyNoMoreInteractions(caseDataRepository);
     }
@@ -156,8 +182,11 @@ public class CaseDataServiceTest {
     public void shouldCreateCaseUsingPreviousUUID() throws ApplicationExceptions.EntityCreationException {
 
         // given
+        LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
+        LocalDate expectedDeadline = LocalDate.parse("2020-03-02");
+
         CaseDataType comp2 = new CaseDataType("display_name",
-                "c6", "DISP", PREVIOUS_CASE_TYPE);
+                "c6", "DISP", PREVIOUS_CASE_TYPE, 20);
 
         CaseData previousCaseData = new CaseData(
                 1L,
@@ -193,17 +222,15 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findActiveByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);
 
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(comp2);
         when(caseCopyFactory.getStrategy(any(), any())).thenReturn(Optional.of((fromCase, toCase) -> {}));
 
         // when
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, PREVIOUS_CASE_UUID);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), originalReceivedDate, PREVIOUS_CASE_UUID);
 
         // then
         verify(caseDataRepository, times(1)).findActiveByUuid(PREVIOUS_CASE_UUID);
         verify(caseDataRepository, times(0)).getNextSeriesId(); // ensure not used
-        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
         verify(caseDataRepository, times(1)).save(caseData);
         ArgumentCaptor<CaseLink> caseLink = ArgumentCaptor.forClass(CaseLink.class);
         verify(caseLinkRepository, times(1)).save(caseLink.capture());
@@ -226,20 +253,28 @@ public class CaseDataServiceTest {
         // assert the reference sequence number part is valid
         assertThat(previousReferenceMatcher.group(1)).isEqualTo(caseReferenceMatcher.group(1));
 
+        // check deadline
+        assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
     }
 
     @Test
     public void shouldCreateCaseWithValidParamsNullData() throws ApplicationExceptions.EntityCreationException {
+        // given
+        LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
+        LocalDate expectedDeadline = LocalDate.parse("2020-03-02");
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayName(), null, deadlineDate, null);
+        // when
+        CaseData caseData = caseDataService
+                .createCase(caseType.getDisplayName(), null, originalReceivedDate, null);
 
+        // then
         verify(caseDataRepository, times(1)).getNextSeriesId();
-        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
         verify(caseDataRepository, times(1)).save(caseData);
+
+        assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
 
         verifyNoMoreInteractions(caseDataRepository);
     }
@@ -248,7 +283,6 @@ public class CaseDataServiceTest {
     public void shouldAuditCreateCase() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
 
         CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, null);
@@ -739,32 +773,85 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
     }
 
-
     @Test
     public void shouldUpdateDateReceived() {
-
         // given
-        CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
+        LocalDate originalReceivedDate = LocalDate.parse("2020-01-01");
+        LocalDate updatedReceivedDate = LocalDate.parse("2020-01-04");
+        LocalDate expectedNewDeadline = LocalDate.parse("2020-02-03");
+
+        CaseData caseData = new CaseData(caseType, caseID, originalReceivedDate);
+        CaseDataType caseDataType =
+                new CaseDataType(
+                        "TEST_TYPE",
+                        "TT",
+                        "TEST_TYPE",
+                        null,
+                        20
+                );
+
+        when(infoClient.getBankHolidayRegionsByCaseType(any())).thenReturn(bankHolidayRegionsAsString);
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
-        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 0)).thenReturn(caseDeadline);
-        when(infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0)).thenReturn(caseDeadlineWarning);
+        when(infoClient.getCaseType(any())).thenReturn(caseDataType);
+        when(bankHolidayService.getBankHolidayDatesForRegions(eq(bankHolidayRegions))).thenReturn(englandAndWalesBankHolidays2020);
+        when(infoClient.getCaseDeadlineWarning(eq(caseData.getType()), eq(updatedReceivedDate), eq(0))).thenReturn(caseDeadlineWarning);
 
         // when
-        caseDataService.updateDateReceived(caseUUID, stageUUID, deadlineDate, 0);
+        caseDataService.updateDateReceived_defaultSla(caseUUID, stageUUID, updatedReceivedDate);
 
         // then
-        assertThat(caseData.getDateReceived()).isEqualTo(deadlineDate);
+        ArgumentCaptor<CaseData> caseDataCaptor = ArgumentCaptor.forClass(CaseData.class);
+
+        assertThat(caseData.getDateReceived()).isEqualTo(updatedReceivedDate);
         verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
-        verify(caseDataRepository, times(1)).save(caseData);
+        verify(caseDataRepository, times(1)).save(caseDataCaptor.capture());
+
+        assertThat(caseDataCaptor.getValue().getCaseDeadline()).isEqualTo(expectedNewDeadline);
+
         verifyNoMoreInteractions(caseDataRepository);
 
-        verify(infoClient, times(1)).getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 0);
         verify(infoClient, times(1)).getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0);
-
         verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
-
     }
 
+    @Test
+    public void shouldOverrideSla() {
+        // given
+        LocalDate originalReceivedDate = LocalDate.parse("2020-02-01"); // todo: use dates that have a bank holiday between
+        LocalDate expectedNewDeadline = LocalDate.parse("2020-02-17");
+
+        CaseData caseData = new CaseData(caseType, caseID, originalReceivedDate);
+        CaseDataType caseDataType =
+                new CaseDataType(
+                        "TEST_TYPE",
+                        "TT",
+                        "TEST_TYPE",
+                        null,
+                        20
+                );
+
+        when(infoClient.getBankHolidayRegionsByCaseType(any())).thenReturn(bankHolidayRegionsAsString);
+        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+        when(bankHolidayService.getBankHolidayDatesForRegions(eq(bankHolidayRegions))).thenReturn(englandAndWalesBankHolidays2020);
+        when(infoClient.getCaseDeadlineWarning(eq(caseData.getType()), eq(originalReceivedDate), eq(10))).thenReturn(caseDeadlineWarning);
+
+        // when
+        caseDataService.overrideSla(caseUUID, stageUUID, 10);
+
+        // then
+        ArgumentCaptor<CaseData> caseDataCaptor = ArgumentCaptor.forClass(CaseData.class);
+
+        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
+        verify(caseDataRepository, times(1)).save(caseDataCaptor.capture());
+
+        assertThat(caseDataCaptor.getValue().getCaseDeadline()).isEqualTo(expectedNewDeadline);
+
+        verifyNoMoreInteractions(caseDataRepository);
+
+        verify(infoClient, times(1))
+                .getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 10);
+        verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
+    }
 
     @Test
     public void shouldUpdateDispatchDeadlineDate() {
@@ -795,7 +882,6 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         LocalDate caseDeadline = LocalDate.now();
-        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 7)).thenReturn(caseDeadline);
 
         caseDataService.updateStageDeadline(caseData.getUuid(), stageUUID, "TEST", 7);
 
@@ -943,10 +1029,6 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         LocalDate caseDeadline = LocalDate.now();
-
-        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 5)).thenReturn(caseDeadline);
-        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 10)).thenReturn(caseDeadline);
-        when(infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), 9)).thenReturn(caseDeadline);
 
         caseDataService.updateDeadlineForStages(caseData.getUuid(), stageUUID, stageTypeAndDaysMap);
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.BankHolidaysByRegionDto;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.client.bankHolidayClient.BankHolidayClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.BankHoliday;
 import uk.gov.digital.ho.hocs.casework.domain.repository.BankHolidayRepository;
 
@@ -27,11 +28,15 @@ public class BankHolidayService {
     private final BankHolidayRepository bankHolidayRepository;
     private final BankHolidayClient bankHolidayClient;
 
+    private final InfoClient infoClient;
+
     @Autowired
     public BankHolidayService(final BankHolidayRepository bankHolidayRepository,
-                              final BankHolidayClient bankHolidayClient) {
+                              final BankHolidayClient bankHolidayClient,
+                              final InfoClient infoClient) {
         this.bankHolidayRepository = bankHolidayRepository;
         this.bankHolidayClient = bankHolidayClient;
+        this.infoClient = infoClient;
     }
 
     public int refreshBankHolidayTable() {
@@ -78,6 +83,19 @@ public class BankHolidayService {
     }
 
     public Set<LocalDate> getBankHolidayDatesForRegions(final Set<BankHoliday.BankHolidayRegion> regions) {
+        final Set<BankHoliday> bankHolidaysInRegions = bankHolidayRepository.findByRegionIn(regions);
+
+        // extract dates from BankHolidays and remove duplicates by putting them in a set (to enforce uniqueness)
+        return bankHolidaysInRegions.stream().map(BankHoliday::getDate).collect(Collectors.toSet());
+    }
+
+    public Set<LocalDate> getBankHolidayDatesForCaseType(final String caseType) {
+        final Set<BankHoliday.BankHolidayRegion> regions =
+                infoClient.getBankHolidayRegionsByCaseType(caseType)
+                        .stream()
+                        .map(BankHoliday.BankHolidayRegion::valueOf)
+                        .collect(Collectors.toSet());
+
         final Set<BankHoliday> bankHolidaysInRegions = bankHolidayRepository.findByRegionIn(regions);
 
         // extract dates from BankHolidays and remove duplicates by putting them in a set (to enforce uniqueness)

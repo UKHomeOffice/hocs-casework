@@ -7,3 +7,4 @@ DELETE FROM action_data_external_interest WHERE case_data_uuid = '14915b78-6977-
 DELETE FROM correspondent WHERE case_uuid IN ('14915b78-6977-42db-b343-0915a7f412a1','bb915b78-6977-42db-b343-0915a7f412a1');
 DELETE FROM stage WHERE case_uuid IN ('14915b78-6977-42db-b343-0915a7f412a1','bb915b78-6977-42db-b343-0915a7f412a1');
 DELETE FROM case_data WHERE uuid IN ('14915b78-6977-42db-b343-0915a7f412a1','bb915b78-6977-42db-b343-0915a7f412a1');
+DELETE FROM bank_holiday;

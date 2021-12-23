@@ -9,6 +9,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.BankHolidaysByRegionDto;
 import uk.gov.digital.ho.hocs.casework.client.bankHolidayClient.BankHolidayClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.BankHoliday;
 import uk.gov.digital.ho.hocs.casework.domain.repository.BankHolidayRepository;
 
@@ -31,6 +32,9 @@ public class BankHolidayServiceTest {
     @Mock
     private BankHolidayRepository mockBankHolidayRepository;
 
+    @Mock
+    private InfoClient infoClient;
+
     @Captor
     ArgumentCaptor<List<BankHoliday>> savedBankHolidaysCaptor;
 
@@ -43,7 +47,7 @@ public class BankHolidayServiceTest {
 
     @Before
     public void setUp() {
-        this.bankHolidayService = new BankHolidayService(mockBankHolidayRepository, mockBankHolidayClient);
+        this.bankHolidayService = new BankHolidayService(mockBankHolidayRepository, mockBankHolidayClient, infoClient);
     }
 
     @Test

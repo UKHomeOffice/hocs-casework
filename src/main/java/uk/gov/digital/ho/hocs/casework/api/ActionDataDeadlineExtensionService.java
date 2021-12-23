@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboun
 
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionOutboundDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
+import uk.gov.digital.ho.hocs.casework.api.utils.DateUtils;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -19,11 +20,9 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.ActionDataDeadlineExtensionRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
+import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.ACTION_DATA_CREATE_FAILURE;
@@ -37,15 +36,23 @@ public class ActionDataDeadlineExtensionService implements ActionService {
     private final CaseDataRepository caseDataRepository;
     private final InfoClient infoClient;
     private final AuditClient auditClient;
-    private final CaseNoteService caseNoteService;
+    private final BankHolidayService bankHolidayService;
+    private final Clock clock;
 
     @Autowired
-    public ActionDataDeadlineExtensionService(ActionDataDeadlineExtensionRepository extensionRepository, CaseDataRepository caseDataRepository, InfoClient infoClient, AuditClient auditClient, CaseNoteService caseNoteService) {
+    public ActionDataDeadlineExtensionService(ActionDataDeadlineExtensionRepository extensionRepository,
+                                              CaseDataRepository caseDataRepository,
+                                              InfoClient infoClient,
+                                              AuditClient auditClient,
+                                              BankHolidayService bankHolidayService,
+                                              Clock clock
+    ) {
         this.extensionRepository = extensionRepository;
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
-        this.caseNoteService = caseNoteService;
+        this.bankHolidayService = bankHolidayService;
+        this.clock = clock;
     }
 
     @Override
@@ -70,7 +77,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
             log.info(e.getMessage());
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-        LocalDate extendFromDate = LocalDate.now();
+        LocalDate extendFromDate = LocalDate.now(clock);
         UUID extensionTypeUuid = extensionDto.getCaseTypeActionUuid();
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUuid);
@@ -100,8 +107,12 @@ public class ActionDataDeadlineExtensionService implements ActionService {
             extendFromDate = caseData.getCaseDeadline();
         }
 
-        LocalDate updatedDeadline = infoClient.getCaseDeadline(caseData.getType(),extendFromDate,extendByNumberOfDays);
-        LocalDate updateDeadlineWarning = infoClient.getCaseDeadlineWarning(caseData.getType(),extendFromDate,extendByNumberOfDays);
+        final Set<LocalDate> bankHolidays = bankHolidayService.getBankHolidayDatesForCaseType(caseData.getType());
+
+        /* Before the calls to info-service were removed, they assigned exactly the same values to updateDeadline
+        * and updateDeadlineWarning. This behaviour has been kept to avoid breaking the current behaviour.*/
+        LocalDate updatedDeadline = DateUtils.addWorkingDays(extendFromDate, extendByNumberOfDays, bankHolidays);
+        LocalDate updateDeadlineWarning = DateUtils.addWorkingDays(extendFromDate, extendByNumberOfDays, bankHolidays);
 
         if (caseData.getCaseDeadline().isAfter(updatedDeadline)) {
             String msg = String.format("CaseId: %s, existing deadline (%s) is later than requested extension (%s). Extension not applied.", caseUuid, caseData.getCaseDeadline(), updatedDeadline);

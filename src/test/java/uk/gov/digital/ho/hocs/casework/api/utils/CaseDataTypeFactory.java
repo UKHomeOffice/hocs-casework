@@ -11,7 +11,7 @@ public class CaseDataTypeFactory {
      * @return
      */
     public static CaseDataType from(String type, String shortCode) {
-        return new CaseDataType( type, shortCode, type, null);
+        return new CaseDataType( type, shortCode, type, null, 20);
     }
 
     /**
@@ -22,6 +22,6 @@ public class CaseDataTypeFactory {
      * @return
      */
     public static CaseDataType from(String type, String shortCode, String previousCaseType) {
-        return new CaseDataType( type, shortCode, type, previousCaseType);
+        return new CaseDataType( type, shortCode, type, previousCaseType, 20);
     }
 }

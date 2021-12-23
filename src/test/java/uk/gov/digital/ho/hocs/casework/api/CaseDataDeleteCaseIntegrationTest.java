@@ -69,7 +69,7 @@ public class CaseDataDeleteCaseIntegrationTest {
     @Autowired
     ObjectMapper mapper;
 
-    private final CaseDataType CASE_DATA_TYPE = new CaseDataType("TEST", "a1", "TEST", null);
+    private final CaseDataType CASE_DATA_TYPE = new CaseDataType("TEST", "a1", "TEST", null, 20);
 
     private final UUID CASE_UUID = UUID.fromString("14915b78-6977-42db-b343-0915a7f412a1");
 
