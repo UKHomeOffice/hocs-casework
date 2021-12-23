@@ -279,10 +279,10 @@ spec:
                   name: {{.KUBE_NAMESPACE}}-audit-sqs
                   key: secret_access_key
             - name: AWS_SNS_AUDIT_SEARCH_ACCOUNT_ID
-                valueFrom:
-                  configMapKeyRef:
-                    name: hocs-queue-config
-                    key: AWS_ACCOUNT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: hocs-queue-config
+                  key: AWS_ACCOUNT_ID
             - name: AUDITING_DEPLOYMENT_NAME
               valueFrom:
                 fieldRef:
