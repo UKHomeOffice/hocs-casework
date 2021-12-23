@@ -25,7 +25,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.getDataMap()).isEqualTo(Map.of());
         assertThat(caseData.isDeleted()).isFalse();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isNull();
@@ -47,7 +47,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.getDataMap()).isEqualTo(Map.of());
         assertThat(caseData.isDeleted()).isFalse();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -65,7 +65,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.getDataMap()).isEqualTo(Map.of());
         assertThat(caseData.isDeleted()).isFalse();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -86,7 +86,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getReference()).matches("[A-Z]{3,4}/[0-9]{7}/[0-9]{2}");
 
-        assertThat(caseData.getReference()).startsWith(type.getDisplayCode());
+        assertThat(caseData.getReference()).startsWith(type.getType());
         assertThat(caseData.getReference()).contains(String.valueOf(caseNumber));
         assertThat(caseData.getReference()).endsWith(String.valueOf(caseData.getCreated().getYear()).substring(2, 4));
 
@@ -123,7 +123,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.getDataMap()).isEqualTo(Map.of());
         assertThat(caseData.isDeleted()).isFalse();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -141,7 +141,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.isDeleted()).isFalse();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
@@ -239,7 +239,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.getDataMap()).isEqualTo(Map.of());
         assertThat(caseData.isDeleted()).isFalse();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -251,7 +251,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.getDataMap()).isEqualTo(Map.of());
         assertThat(caseData.isDeleted()).isFalse();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -272,7 +272,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.getDataMap()).isEqualTo(Map.of());
         assertThat(caseData.isDeleted()).isFalse();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -283,7 +283,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.getDataMap()).isEqualTo(Map.of());
         assertThat(caseData.isDeleted()).isTrue();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -305,7 +305,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.getDataMap()).isEqualTo(Map.of());
         assertThat(caseData.isDeleted()).isFalse();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -316,7 +316,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.getDataMap()).isEqualTo(Map.of());
         assertThat(caseData.isDeleted()).isFalse();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(primary);
@@ -339,7 +339,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.getDataMap()).isEqualTo(Map.of());
         assertThat(caseData.isDeleted()).isFalse();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
@@ -350,7 +350,7 @@ public class CaseDataTest {
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
-        assertThat(caseData.getType()).isEqualTo(type.getDisplayCode());
+        assertThat(caseData.getType()).isEqualTo(type.getType());
         assertThat(caseData.getDataMap()).isEqualTo(Map.of());
         assertThat(caseData.isDeleted()).isFalse();
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);

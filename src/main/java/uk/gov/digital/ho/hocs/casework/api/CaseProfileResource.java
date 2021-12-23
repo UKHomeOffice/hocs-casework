@@ -31,7 +31,7 @@ class CaseProfileResource {
     @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/profile/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ProfileDto> getProfileForCase(@PathVariable UUID caseUUID) {
-        String caseType = caseDatatypeService.getCaseDataType(caseUUID).getDisplayCode();
+        String caseType = caseDatatypeService.getCaseDataType(caseUUID).getType();
         ProfileDto profile = infoClient.getProfileByCaseType(caseType);
         return ResponseEntity.ok(profile);
     }

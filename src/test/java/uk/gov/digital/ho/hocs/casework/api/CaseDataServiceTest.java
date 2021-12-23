@@ -140,13 +140,13 @@ public class CaseDataServiceTest {
     public void shouldCreateCase() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
-        when(caseDataTypeService.getCaseDataType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(infoClient.getCaseDeadline(caseType.getType(), deadlineDate, 0)).thenReturn(caseDeadline);
+        when(caseDataTypeService.getCaseDataType(caseType.getType())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, null);
+        CaseData caseData = caseDataService.createCase(caseType.getType(), new HashMap<>(), deadlineDate, null);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
-        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
+        verify(infoClient, times(1)).getCaseDeadline(caseType.getType(), deadlineDate, 0);
         verify(caseDataRepository, times(1)).save(caseData);
 
         verifyNoMoreInteractions(caseDataRepository);
@@ -193,17 +193,17 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findActiveByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);
 
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
-        when(caseDataTypeService.getCaseDataType(caseType.getDisplayCode())).thenReturn(comp2);
+        when(infoClient.getCaseDeadline(caseType.getType(), deadlineDate, 0)).thenReturn(caseDeadline);
+        when(caseDataTypeService.getCaseDataType(caseType.getType())).thenReturn(comp2);
         when(caseCopyFactory.getStrategy(any(), any())).thenReturn(Optional.of((fromCase, toCase) -> {}));
 
         // when
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, PREVIOUS_CASE_UUID);
+        CaseData caseData = caseDataService.createCase(caseType.getType(), new HashMap<>(), deadlineDate, PREVIOUS_CASE_UUID);
 
         // then
         verify(caseDataRepository, times(1)).findActiveByUuid(PREVIOUS_CASE_UUID);
         verify(caseDataRepository, times(0)).getNextSeriesId(); // ensure not used
-        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
+        verify(infoClient, times(1)).getCaseDeadline(caseType.getType(), deadlineDate, 0);
         verify(caseDataRepository, times(1)).save(caseData);
         ArgumentCaptor<CaseLink> caseLink = ArgumentCaptor.forClass(CaseLink.class);
         verify(caseLinkRepository, times(1)).save(caseLink.capture());
@@ -232,13 +232,13 @@ public class CaseDataServiceTest {
     public void shouldCreateCaseWithValidParamsNullData() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
-        when(caseDataTypeService.getCaseDataType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(infoClient.getCaseDeadline(caseType.getType(), deadlineDate, 0)).thenReturn(caseDeadline);
+        when(caseDataTypeService.getCaseDataType(caseType.getType())).thenReturn(caseType);
 
         CaseData caseData = caseDataService.createCase(caseType.getDisplayName(), null, deadlineDate, null);
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
-        verify(infoClient, times(1)).getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0);
+        verify(infoClient, times(1)).getCaseDeadline(caseType.getType(), deadlineDate, 0);
         verify(caseDataRepository, times(1)).save(caseData);
 
         verifyNoMoreInteractions(caseDataRepository);
@@ -248,10 +248,10 @@ public class CaseDataServiceTest {
     public void shouldAuditCreateCase() throws ApplicationExceptions.EntityCreationException {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseDeadline(caseType.getDisplayCode(), deadlineDate, 0)).thenReturn(caseDeadline);
-        when(caseDataTypeService.getCaseDataType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(infoClient.getCaseDeadline(caseType.getType(), deadlineDate, 0)).thenReturn(caseDeadline);
+        when(caseDataTypeService.getCaseDataType(caseType.getType())).thenReturn(caseType);
 
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, null);
+        CaseData caseData = caseDataService.createCase(caseType.getType(), new HashMap<>(), deadlineDate, null);
 
         verify(auditClient, times(1)).createCaseAudit(caseData);
         verifyNoMoreInteractions(auditClient);

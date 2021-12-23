@@ -17,7 +17,7 @@ public class CaseDataType {
     private String shortCode;
 
     @JsonProperty("type")
-    private String displayCode;
+    private String type;
 
     @JsonProperty("previousCaseType")
     private String previousCaseType;

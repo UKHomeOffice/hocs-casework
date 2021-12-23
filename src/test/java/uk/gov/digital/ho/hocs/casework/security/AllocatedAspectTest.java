@@ -199,7 +199,7 @@ public class AllocatedAspectTest {
 
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(caseDataTypeService.getCaseDataType(caseUUID)).thenReturn(caseDataType);
-        when(userService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(Set.of(caseDataType.getDisplayCode()));
+        when(userService.getCaseTypesIfUserTeamIsCaseTypeAdmin()).thenReturn(Set.of(caseDataType.getType()));
 
         aspect = new AllocatedAspect(stageService, userService, caseDataTypeService);
         aspect.validateUserAccess(proceedingJoinPoint, annotation);

@@ -72,7 +72,7 @@ public class AuthorisationAspect {
         UUID caseUUID = null;
         if (joinPoint.getArgs()[0] instanceof UUID) {
             caseUUID = (UUID) joinPoint.getArgs()[0];
-            caseType = caseDataTypeService.getCaseDataType(caseUUID).getDisplayCode();
+            caseType = caseDataTypeService.getCaseDataType(caseUUID).getType();
         } else if (joinPoint.getArgs()[0] instanceof CreateCaseRequestInterface) {
             CreateCaseRequestInterface createCaseRequest = (CreateCaseRequestInterface) joinPoint.getArgs()[0];
             caseType = createCaseRequest.getType();

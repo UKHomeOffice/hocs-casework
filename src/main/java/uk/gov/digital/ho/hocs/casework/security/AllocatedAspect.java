@@ -93,7 +93,7 @@ public class AllocatedAspect {
     }
 
     private boolean proceedIfUserTeamIsAdminForCaseType(UUID caseUUID) {
-        String caseType = caseDataTypeService.getCaseDataType(caseUUID).getDisplayCode();
+        String caseType = caseDataTypeService.getCaseDataType(caseUUID).getType();
         Set<String> caseTypesForCaseTypeAdmin = userService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
         return caseTypesForCaseTypeAdmin.contains(caseType);
     }

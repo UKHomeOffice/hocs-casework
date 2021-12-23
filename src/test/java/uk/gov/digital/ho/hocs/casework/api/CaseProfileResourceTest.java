@@ -40,7 +40,7 @@ public class CaseProfileResourceTest {
         ProfileDto profileDto = new ProfileDto("profileName1", false, null);
 
         when(caseDataTypeService.getCaseDataType(testUUID)).thenReturn(caseType);
-        when(infoClient.getProfileByCaseType(caseType.getDisplayCode())).thenReturn(profileDto);
+        when(infoClient.getProfileByCaseType(caseType.getType())).thenReturn(profileDto);
 
         ResponseEntity<ProfileDto> response = caseProfileResource.getProfileForCase(testUUID);
 
@@ -53,7 +53,7 @@ public class CaseProfileResourceTest {
         assertThat(response.getBody().getSearchFields()).isNull();
 
         verify(caseDataTypeService).getCaseDataType(testUUID);
-        verify(infoClient).getProfileByCaseType(caseType.getDisplayCode());
+        verify(infoClient).getProfileByCaseType(caseType.getType());
         verifyNoMoreInteractions(caseDataTypeService, infoClient);
 
     }

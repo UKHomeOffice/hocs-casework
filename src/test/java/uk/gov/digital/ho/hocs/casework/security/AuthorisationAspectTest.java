@@ -75,7 +75,7 @@ public class AuthorisationAspectTest {
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         verify(caseDataTypeService, times(1)).getCaseDataType(caseUUID);
-        verify(userService, times(1)).getMaxAccessLevel(caseDataType.getDisplayCode());
+        verify(userService, times(1)).getMaxAccessLevel(caseDataType.getType());
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
 
         verifyNoMoreInteractions(caseService);
@@ -85,14 +85,14 @@ public class AuthorisationAspectTest {
     public void shouldNotCallCaseServiceWhenNewCase() throws Throwable {
         CaseDataType caseDataType = CaseDataTypeFactory.from("SOME_CASE_TYPE", "01");
         Object[] args = new Object[1];
-        args[0] = new CreateCaseRequest(caseDataType.getDisplayCode(), new HashMap<>(), LocalDate.now(), null);
+        args[0] = new CreateCaseRequest(caseDataType.getType(), new HashMap<>(), LocalDate.now(), null);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
         verify(caseService, never()).getCase(caseUUID);
-        verify(userService, times(1)).getMaxAccessLevel(caseDataType.getDisplayCode());
+        verify(userService, times(1)).getMaxAccessLevel(caseDataType.getType());
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
 

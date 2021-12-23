@@ -59,13 +59,13 @@ public class CaseDataResourceTest {
 
         //given
         CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
-        CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID);
+        CreateCaseRequest request = new CreateCaseRequest(caseDataType.getType(), data, dateArg, FROM_CASE_UUID);
 
-        when(caseDataService.createCase(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID)).thenReturn(caseData);
+        when(caseDataService.createCase(caseDataType.getType(), data, dateArg, FROM_CASE_UUID)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
-        verify(caseDataService, times(1)).createCase(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID);
+        verify(caseDataService, times(1)).createCase(caseDataType.getType(), data, dateArg, FROM_CASE_UUID);
 
         verifyNoMoreInteractions(caseDataService);
 

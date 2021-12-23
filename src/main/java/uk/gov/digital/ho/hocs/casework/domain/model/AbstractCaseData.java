@@ -126,7 +126,7 @@ public class AbstractCaseData implements Serializable {
             throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
         }
 
-        this.type = type.getDisplayCode();
+        this.type = type.getType();
         this.reference = CaseReferenceGenerator.generateCaseReference(this.type, caseNumber, this.created);
         this.uuid = randomUUID(type.getShortCode());
         this.dateReceived = dateReceived;
