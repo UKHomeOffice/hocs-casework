@@ -1,53 +1,57 @@
 package uk.gov.digital.ho.hocs.casework.client.notifiyclient;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.camel.ProducerTemplate;
+import com.amazonaws.services.sqs.AmazonSQSAsync;
+import com.amazonaws.services.sqs.model.MessageAttributeValue;
+import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.SendMessageResult;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.test.mock.mockito.SpyBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
-import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.OfflineQaUserCommand;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.TeamAssignChangeCommand;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.UserAssignChangeCommand;
+import uk.gov.digital.ho.hocs.casework.util.SqsStringMessageAttributeValue;
+import uk.gov.digital.ho.hocs.casework.utils.BaseAwsTest;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
-@RunWith(MockitoJUnitRunner.class)
-public class NotifyClientTest {
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@ActiveProfiles("local")
+public class NotifyClientTest extends BaseAwsTest {
 
-    @Mock
+    private static final UUID caseUUID = UUID.randomUUID();
+    private static final UUID stageUUID = UUID.randomUUID();
+    private static final String caseRef = "";
+
+    @Captor
+    ArgumentCaptor<SendMessageRequest> messageCaptor;
+
+    @SpyBean
+    private AmazonSQSAsync notifySqsClient;
+
+    @MockBean(name = "requestData")
     private RequestData requestData;
 
-    @Mock
-    ProducerTemplate producerTemplate;
+    private ResultCaptor<SendMessageResult> sqsMessageResult;
 
-    private SpringConfiguration configuration = new SpringConfiguration();
-    private ObjectMapper mapper;
-    private String notifyQueue ="notify-queue";
-    private UUID caseUUID = UUID.randomUUID();
-    private UUID stageUUID = UUID.randomUUID();
-
-    private String caseRef = "";
-
-    @Captor
-    ArgumentCaptor jsonCaptor;
-
-    @Captor
-    ArgumentCaptor<HashMap<String,Object>> headerCaptor;
-
+    @Autowired
     private NotifyClient notifyClient;
 
     @Before
@@ -57,76 +61,65 @@ public class NotifyClientTest {
         when(requestData.groups()).thenReturn("some groups");
         when(requestData.username()).thenReturn("some username");
 
-        mapper = configuration.initialiseObjectMapper();
-        notifyClient = new NotifyClient(producerTemplate, notifyQueue, mapper, requestData);
+        sqsMessageResult = new ResultCaptor<>();
+        doAnswer(sqsMessageResult).when(notifySqsClient).sendMessage(any());
     }
 
     @Test
-    public void shouldSetUserDataFields() throws IOException {
+    public void shouldSendUserAssignedCommand() {
         UUID currentUser = UUID.randomUUID();
         UUID newUser = UUID.randomUUID();
 
+        var userAssignedCommand = new UserAssignChangeCommand(caseUUID, stageUUID, caseRef, currentUser, newUser);
         notifyClient.sendUserEmail(caseUUID, stageUUID, currentUser, newUser, caseRef);
 
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(notifyQueue), jsonCaptor.capture(), any());
-        UserAssignChangeCommand request = mapper.readValue((String)jsonCaptor.getValue(), UserAssignChangeCommand.class);
-        assertThat(request.getCaseUUID()).isEqualTo(caseUUID);
-        assertThat(request.getStageUUID()).isEqualTo(stageUUID);
-        assertThat(request.getCurrentUserUUID()).isEqualTo(currentUser);
-        assertThat(request.getNewUserUUID()).isEqualTo(newUser);
-        assertThat(request.getCaseReference()).isEqualTo(caseRef);
-
+        assertSqsValue(userAssignedCommand);
     }
 
     @Test
-    public void shouldSetOfflineQaDataFields() throws IOException {
+    public void shouldSendTeamAssignedCommand() {
+        UUID teamUuid = UUID.randomUUID();
+
+        var teamAssignChangeCommand = new TeamAssignChangeCommand(caseUUID, stageUUID, caseRef, teamUuid, "TEST");
+        notifyClient.sendTeamEmail(caseUUID, stageUUID, teamUuid, caseRef, "TEST");
+
+        assertSqsValue(teamAssignChangeCommand);
+    }
+
+    @Test
+    public void shouldSendOfflineQAUserCommand() {
         UUID currentUser = UUID.randomUUID();
-        UUID offlineQaUser = UUID.randomUUID();
+        UUID offlineUser = UUID.randomUUID();
 
-        notifyClient.sendOfflineQaEmail(caseUUID, stageUUID, currentUser, offlineQaUser, caseRef);
+        var offlineQaUserCommand = new OfflineQaUserCommand(caseUUID, stageUUID, caseRef, offlineUser, currentUser);
+        notifyClient.sendOfflineQaEmail(caseUUID, stageUUID, currentUser, offlineUser, caseRef);
 
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(notifyQueue), jsonCaptor.capture(), any());
-        OfflineQaUserCommand request = mapper.readValue((String)jsonCaptor.getValue(), OfflineQaUserCommand.class);
-        assertThat(request.getCaseUUID()).isEqualTo(caseUUID);
-        assertThat(request.getStageUUID()).isEqualTo(stageUUID);
-        assertThat(request.getCurrentUserUUID()).isEqualTo(currentUser);
-        assertThat(request.getOfflineQaUserUUID()).isEqualTo(offlineQaUser);
-        assertThat(request.getCaseReference()).isEqualTo(caseRef);
-
-    }
-
-    @Test
-    public void shouldSetTeamDataFields() throws IOException {
-        UUID teamUUID = UUID.randomUUID();
-
-        notifyClient.sendTeamEmail(caseUUID, stageUUID, teamUUID, caseRef, "something");
-
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(notifyQueue), jsonCaptor.capture(), any());
-        TeamAssignChangeCommand request = mapper.readValue((String)jsonCaptor.getValue(), TeamAssignChangeCommand.class);
-        assertThat(request.getCaseUUID()).isEqualTo(caseUUID);
-        assertThat(request.getStageUUID()).isEqualTo(stageUUID);
-        assertThat(request.getTeamUUID()).isEqualTo(teamUUID);
-        assertThat(request.getAllocationType()).isEqualTo("something");
-        assertThat(request.getCaseReference()).isEqualTo(caseRef);
-
+        assertSqsValue(offlineQaUserCommand);
     }
 
     @Test
     public void shouldSetHeaders()  {
-        Map<String, Object> expectedHeaders = Map.of(
-                RequestData.CORRELATION_ID_HEADER, requestData.correlationId(),
-                RequestData.USER_ID_HEADER, requestData.userId(),
-                RequestData.USERNAME_HEADER, requestData.username(),
-                RequestData.GROUP_HEADER, requestData.groups());
+        Map<String, MessageAttributeValue> expectedHeaders = Map.of(
+                "event_type", new SqsStringMessageAttributeValue(LogEvent.USER_EMAIL_SENT.toString()),
+                RequestData.CORRELATION_ID_HEADER, new SqsStringMessageAttributeValue(requestData.correlationId()),
+                RequestData.USER_ID_HEADER, new SqsStringMessageAttributeValue(requestData.userId()),
+                RequestData.USERNAME_HEADER, new SqsStringMessageAttributeValue(requestData.username()),
+                RequestData.GROUP_HEADER, new SqsStringMessageAttributeValue(requestData.groups()));
 
         UUID currentUser = UUID.randomUUID();
         UUID newUser = UUID.randomUUID();
 
         notifyClient.sendUserEmail(caseUUID, stageUUID, currentUser, newUser, caseRef);
-        verify(producerTemplate, times(1)).sendBodyAndHeaders(eq(notifyQueue), any(), headerCaptor.capture());
-        Map headers = headerCaptor.getValue();
 
-        assertThat(headers).containsAllEntriesOf(expectedHeaders);
+        verify(notifySqsClient).sendMessage(messageCaptor.capture());
+        Assertions.assertEquals(messageCaptor.getValue().getMessageAttributes(), expectedHeaders);
+    }
+
+    private void assertSqsValue(Object command) {
+        Assertions.assertNotNull(sqsMessageResult);
+
+        // getMessageMd5 - toString strips leading zeros, 31/32 matched is close enough in this instance
+        Assertions.assertTrue(sqsMessageResult.getResult().getMD5OfMessageBody().contains(getMessageMd5(command)));
     }
 
 }
