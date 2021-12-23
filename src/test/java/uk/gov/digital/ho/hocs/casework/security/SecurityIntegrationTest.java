@@ -54,7 +54,7 @@ public class SecurityIntegrationTest {
     @Qualifier("CaseDataService")
     CaseDataService caseDataService;
 
-    @MockBean()
+    @MockBean
     CaseDataTypeService caseDataTypeService;
 
     @MockBean
