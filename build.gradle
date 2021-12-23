@@ -32,7 +32,6 @@ jacocoTestReport {
     }
 }
 
-
 dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web') {
         exclude(module: 'spring-boot-starter-tomcat')
@@ -44,14 +43,13 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-json')
     implementation('org.springframework.boot:spring-boot-starter-cache')
     implementation('org.springframework.boot:spring-boot-starter-validation')
+    implementation 'org.springframework.cloud:spring-cloud-aws-messaging:2.2.6.RELEASE'
     implementation('com.vladmihalcea:hibernate-types-52:2.14.0')
-
 
     implementation('net.logstash.logback:logstash-logback-encoder:7.0.1')
     implementation('org.springdoc:springdoc-openapi-ui:1.6.2')
 
     implementation('com.github.ben-manes.caffeine:caffeine:3.0.5')
-    implementation('com.amazonaws:aws-java-sdk:1.12.131')
     implementation 'org.json:json:20211205'
 
     implementation 'org.flywaydb:flyway-core:8.1.0'
@@ -66,6 +64,12 @@ dependencies {
     testImplementation('org.assertj:assertj-core')
     testImplementation('junit:junit:4.13.2')
     testImplementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:2021.0.0"
+    }
 }
 
 jar {
