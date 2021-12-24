@@ -57,6 +57,8 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE
 @Service
 public class StageService {
 
+    private static final String NO_PRIORITY = "0";
+
     private final StageRepository stageRepository;
     private final UserPermissionsService userPermissionsService;
     private final NotifyClient notifyClient;
@@ -284,14 +286,13 @@ public class StageService {
     }
 
     StageWithCaseData getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {
-        log.debug("Getting unassigned cases for user: {} in team {}", userUUID, teamUUID);
         Set<StageWithCaseData> unassignedStages = stageRepository.findAllUnassignedAndActiveByTeamUUID(teamUUID);
 
         unassignedStages.forEach(stage -> stagePriorityCalculator.updatePriority(stage.getData(), stage.getCaseDataType()));
 
-        var nextAvailableStage = unassignedStages.stream().max(Comparator.comparingDouble(stage -> Double.parseDouble(stage.getData().getOrDefault("systemCalculatedPriority", "0"))));
+        var nextAvailableStage = unassignedStages.stream().max(Comparator.comparingDouble(stage -> Double.parseDouble(stage.getData().getOrDefault("systemCalculatedPriority", NO_PRIORITY))));
 
-        if(nextAvailableStage.isPresent()) {
+        if (nextAvailableStage.isPresent()) {
             StageWithCaseData stage = nextAvailableStage.get();
             updateStageUser(stage.getCaseUUID(), stage.getUuid(), userUUID);
             daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());

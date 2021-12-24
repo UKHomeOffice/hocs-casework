@@ -43,6 +43,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -802,7 +804,7 @@ public class StageServiceTest {
         when(stageRepository.findAllByCaseUUID(caseUUID)).thenReturn(stages);
 
         Set<StageWithCaseData> result = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
-        Assert.assertEquals(stages, result);
+        assertEquals(stages, result);
     }
 
     @Test
@@ -814,7 +816,7 @@ public class StageServiceTest {
 
         String result = stageService.getStageType(caseUUID, stageUUID);
 
-        Assert.assertEquals(stageType, result);
+        assertEquals(stageType, result);
     }
 
     @Test
@@ -826,7 +828,7 @@ public class StageServiceTest {
 
         String result = stageService.getStageType(caseUUID, stageUUID);
 
-        Assert.assertEquals(stageType, result);
+        assertEquals(stageType, result);
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
@@ -896,6 +898,74 @@ public class StageServiceTest {
 
         verifyNoMoreInteractions(stageRepository);
          verifyNoInteractions(notifyClient);
+    }
+
+    @Test
+    public void shouldGetUnassignedAndActiveStageByTeamUUIDNoStagesReturnsNull() {
+        when(stageRepository.findAllUnassignedAndActiveByTeamUUID(teamUUID)).thenReturn(Collections.emptySet());
+
+        var result = stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID);
+
+        verify(stageRepository).findAllUnassignedAndActiveByTeamUUID(teamUUID);
+
+        assertNull(result);
+
+        verifyNoMoreInteractions(stageRepository);
+        verifyNoInteractions(notifyClient);
+    }
+
+    @Test
+    public void shouldGetUnassignedAndActiveStageByTeamUUIDOneStageReturnsStage() {
+        StageWithCaseData stage = new StageWithCaseData(UUID.randomUUID(), "AnyType", teamUUID, null, null);
+        when(stageRepository.findAllUnassignedAndActiveByTeamUUID(teamUUID)).thenReturn(Set.of(stage));
+        when(stageRepository.findActiveByCaseUuidStageUUID(stage.getCaseUUID(), stage.getUuid())).thenReturn(stage);
+
+        var result = stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID);
+
+        verify(stageRepository).findAllUnassignedAndActiveByTeamUUID(teamUUID);
+        verify(stageRepository).findActiveByCaseUuidStageUUID(stage.getCaseUUID(), stage.getUuid());
+        verify(stageRepository).save(stage);
+        verify(notifyClient).sendUserEmail(stage.getCaseUUID(), stage.getUuid(), null, userUUID, stage.getCaseReference());
+
+        assertEquals(stage, result);
+
+        verifyNoMoreInteractions(stageRepository);
+        verifyNoMoreInteractions(notifyClient);
+    }
+
+    @Test
+    public void shouldGetUnassignedAndActiveStageByTeamUUIDOneStageReturnsPriorityStage() {
+        var data1 = new HashMap<String, String>();
+        data1.put("systemCalculatedPriority", "0");
+
+        StageWithCaseData stage1 = mock(StageWithCaseData.class);
+        when(stage1.getUuid()).thenReturn(stageUUID);
+        when(stage1.getCaseUUID()).thenReturn(caseUUID);
+        when(stage1.getData()).thenReturn(data1);
+
+
+        var data2 = new HashMap<String, String>();
+        data2.put("systemCalculatedPriority", "5");
+
+        StageWithCaseData stage2 = mock(StageWithCaseData.class);
+        when(stage2.getUuid()).thenReturn(stageUUID);
+        when(stage2.getCaseUUID()).thenReturn(caseUUID);
+        when(stage2.getData()).thenReturn(data2);
+
+        when(stageRepository.findAllUnassignedAndActiveByTeamUUID(teamUUID)).thenReturn(Set.of(stage1, stage2));
+        when(stageRepository.findActiveByCaseUuidStageUUID(stage2.getCaseUUID(), stage2.getUuid())).thenReturn(stage2);
+
+        var result = stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID);
+
+        verify(stageRepository).findAllUnassignedAndActiveByTeamUUID(teamUUID);
+        verify(stageRepository).findActiveByCaseUuidStageUUID(stage2.getCaseUUID(), stage2.getUuid());
+        verify(stageRepository).save(stage2);
+        verify(notifyClient).sendUserEmail(stage2.getCaseUUID(), stage2.getUuid(), null, userUUID, stage2.getCaseReference());
+
+        assertEquals(stage2, result);
+
+        verifyNoMoreInteractions(stageRepository);
+        verifyNoMoreInteractions(notifyClient);
     }
 
     @Test
