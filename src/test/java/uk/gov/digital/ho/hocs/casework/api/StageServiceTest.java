@@ -937,8 +937,6 @@ public class StageServiceTest {
         data1.put("systemCalculatedPriority", "0");
 
         StageWithCaseData stage1 = mock(StageWithCaseData.class);
-        when(stage1.getUuid()).thenReturn(stageUUID);
-        when(stage1.getCaseUUID()).thenReturn(caseUUID);
         when(stage1.getData()).thenReturn(data1);
 
 
