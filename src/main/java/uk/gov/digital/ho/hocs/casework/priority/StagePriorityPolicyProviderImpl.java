@@ -3,9 +3,7 @@ package uk.gov.digital.ho.hocs.casework.priority;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.api.WorkingDaysElapsedProvider;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PriorityPolicyDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -38,9 +36,6 @@ public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvi
     @Autowired
     private InfoClient infoClient;
 
-    @Autowired
-    private WorkingDaysElapsedProvider workingDaysElapsedProvider;
-
     @Override
     public List<StagePriorityPolicy> getPolicies(String caseType) {
         List<PriorityPolicyDto> policies = infoClient.getPriorityPoliciesForCaseType(caseType);
@@ -65,7 +60,7 @@ public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvi
                         Double.parseDouble(data.get(PROPERTY_CAP_POINTS_TO_AWARD)),
                         Double.parseDouble(data.get(PROPERTY_POINTS_TO_AWARD_PER_DAY)));
             case POLICY_TYPE_WORKING_DAYS_ELAPSED:
-                return new WorkingDaysElapsedPolicy(workingDaysElapsedProvider, data.get(PROPERTY_NAME), data.get(PROPERTY_VALUE),
+                return new WorkingDaysElapsedPolicy(infoClient, data.get(PROPERTY_NAME), data.get(PROPERTY_VALUE),
                         data.get(PROPERTY_DATE_FIELD_NAME), data.get(PROPERTY_DATE_FIELD_FORMAT),
                         Integer.parseInt(data.get(PROPERTY_CAP_NUMBER_OF_DAYS)),
                         Double.parseDouble(data.get(PROPERTY_CAP_POINTS_TO_AWARD)),

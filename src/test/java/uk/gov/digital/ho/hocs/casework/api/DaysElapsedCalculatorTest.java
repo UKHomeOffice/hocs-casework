@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -14,19 +15,19 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DaysElapsedCalculatorImplTest {
+public class DaysElapsedCalculatorTest {
 
     @Mock
-    WorkingDaysElapsedProvider workingDaysElapsedProvider;
+    InfoClient infoClient;
 
-    private DaysElapsedCalculatorImpl daysElapsedCalculator;
+    private DaysElapsedCalculator daysElapsedCalculator;
 
     private static final String SYSTEM_DAYS_ELAPSED_FIELD_NAME = "systemDaysElapsed";
     private static final String DATE_RECEIVED_FIELD_NAME = "DateReceived";
 
     @Before
     public void before() {
-        daysElapsedCalculator = new DaysElapsedCalculatorImpl(workingDaysElapsedProvider);
+        daysElapsedCalculator = new DaysElapsedCalculator(infoClient);
     }
 
     @Test
@@ -60,19 +61,19 @@ public class DaysElapsedCalculatorImplTest {
 
 
         LocalDate localDate = LocalDate.of(2020, 6, 14);
-        when(workingDaysElapsedProvider.getWorkingDaysSince(dummyCaseType, localDate)).thenReturn(35);
+        when(infoClient.getWorkingDaysElapsedForCaseType(dummyCaseType, localDate)).thenReturn(35);
 
         daysElapsedCalculator.updateDaysElapsed(data, dummyCaseType);
 
         assertTrue(data.containsKey(SYSTEM_DAYS_ELAPSED_FIELD_NAME));
         assertEquals("35", data.get(SYSTEM_DAYS_ELAPSED_FIELD_NAME));
 
-        verify(workingDaysElapsedProvider).getWorkingDaysSince(dummyCaseType, localDate);
+        verify(infoClient).getWorkingDaysElapsedForCaseType(dummyCaseType, localDate);
         checkNoMoreInteractions();
 
     }
 
     private void checkNoMoreInteractions() {
-        verifyNoMoreInteractions(workingDaysElapsedProvider);
+        verifyNoMoreInteractions(infoClient);
     }
 }

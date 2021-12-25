@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.assertj.core.util.Sets;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -157,7 +156,7 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldCreateStage_stageOverride() throws JsonProcessingException {
+    public void shouldCreateStage_stageOverride() {
         // GIVEN
         LocalDate overrideDeadline = LocalDate.of(2021, 12, 31);
         Map<String, String> caseDataData = new HashMap<>();
@@ -464,7 +463,6 @@ public class StageServiceTest {
         verify(userPermissionsService).getExpandedUserTeams();
         verify(stageRepository).findAllActiveByTeamUUID(teams);
         verify(stagePriorityCalculator).updatePriority(stage.getData(), stage.getCaseDataType());
-        verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
 
         checkNoMoreInteraction();
     }
@@ -1008,7 +1006,6 @@ public class StageServiceTest {
         verify(userPermissionsService).getExpandedUserTeams();
         verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
         verify(stagePriorityCalculator).updatePriority(stage.getData(), stage.getCaseDataType());
-        verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
 
         checkNoMoreInteraction();
     }
@@ -1091,7 +1088,7 @@ public class StageServiceTest {
 
     private void checkNoMoreInteraction() {
         verifyNoMoreInteractions(stageRepository, userPermissionsService, notifyClient, auditClient, searchClient,
-                infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, caseNoteService);
+                infoClient, caseDataService, stagePriorityCalculator, caseNoteService);
     }
 
 }

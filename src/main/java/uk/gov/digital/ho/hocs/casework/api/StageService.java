@@ -39,7 +39,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_EMPTY;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_FORBIDDEN;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAUTHORISED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGES_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_TEAM;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_USER;
@@ -58,6 +57,8 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE
 public class StageService {
 
     private static final String NO_PRIORITY = "0";
+    public static final String SYSTEM_CALCULATED_PRIORITY = "systemCalculatedPriority";
+    private static final Comparator<StageWithCaseData> CREATED_COMPARATOR = Comparator.comparing(StageWithCaseData::getCreated);
 
     private final StageRepository stageRepository;
     private final UserPermissionsService userPermissionsService;
@@ -72,8 +73,6 @@ public class StageService {
     private final CaseNoteService caseNoteService;
     private final ContributionsProcessor contributionsProcessor;
     private final ActionDataDeadlineExtensionService extensionService;
-
-    private static final Comparator<StageWithCaseData> CREATED_COMPARATOR = Comparator.comparing(StageWithCaseData::getCreated);
 
     @Autowired
     public StageService(StageRepository stageRepository,
@@ -290,7 +289,7 @@ public class StageService {
 
         unassignedStages.forEach(stage -> stagePriorityCalculator.updatePriority(stage.getData(), stage.getCaseDataType()));
 
-        var nextAvailableStage = unassignedStages.stream().max(Comparator.comparingDouble(stage -> Double.parseDouble(stage.getData().getOrDefault("systemCalculatedPriority", NO_PRIORITY))));
+        var nextAvailableStage = unassignedStages.stream().max(Comparator.comparingDouble(stage -> Double.parseDouble(stage.getData().getOrDefault(SYSTEM_CALCULATED_PRIORITY, NO_PRIORITY))));
 
         if (nextAvailableStage.isPresent()) {
             StageWithCaseData stage = nextAvailableStage.get();
