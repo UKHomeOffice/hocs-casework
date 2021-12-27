@@ -157,31 +157,27 @@ public class GetCorrespondentsIntegrationTest {
     }
 
     @Test
-    public void shouldReturnOkAndEmptySetSetWhenGetCorrespondentsForInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
         setupMockTeams("TEST", 5, 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(EMPTY_CORRESPONDENTS_EXPECTED_RESULT);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnOkAndEmptySetWhenGetCorrespondentsForInvalidCaseWithPermissionLevelWrite() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelWrite() throws JsonProcessingException {
         setupMockTeams("TEST", 3, 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(EMPTY_CORRESPONDENTS_EXPECTED_RESULT);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnOkAndEmptySetWhenGetCorrespondentsForInvalidCaseWithPermissionLevelRead() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelRead() throws JsonProcessingException {
         setupMockTeams("TEST", 2, 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(EMPTY_CORRESPONDENTS_EXPECTED_RESULT);
-
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test

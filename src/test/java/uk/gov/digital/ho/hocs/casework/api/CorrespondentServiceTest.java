@@ -37,7 +37,6 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class CorrespondentServiceTest {
 
-    private static final UUID PREV_CASE_UUID = UUID.randomUUID();
     private final UUID caseUUID = UUID.randomUUID();
     private final UUID stageUUID = UUID.randomUUID();
     private final CaseDataType caseDataType = new CaseDataType("TEST", "1a", "TEST", "Testfield");
@@ -59,9 +58,6 @@ public class CorrespondentServiceTest {
 
     @Captor
     private ArgumentCaptor<Correspondent> correspondentRepoCapture = ArgumentCaptor.forClass(Correspondent.class);
-
-    @Captor
-    private ArgumentCaptor<Correspondent> correspondentAuditCaptor = ArgumentCaptor.forClass(Correspondent.class);
 
     @Before
     public void setUp() {
@@ -151,22 +147,21 @@ public class CorrespondentServiceTest {
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
-        return correspondent;
+        return new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
     }
 
 
     @Test
     public void shouldGetCorrespondentTypes() {
 
-        when(caseDataRepository.getCaseType(caseUUID)).thenReturn("TEST");
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("TEST");
         CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();
         GetCorrespondentTypeResponse getCorrespondentTypeResponse = new GetCorrespondentTypeResponse(Set.of(correspondentTypeDto));
         when(infoClient.getCorrespondentType("TEST")).thenReturn(getCorrespondentTypeResponse);
 
         Set<CorrespondentTypeDto> CorrespondentTypeDtos = correspondentService.getCorrespondentTypes(caseUUID);
 
-        verify(caseDataRepository).getCaseType(caseUUID);
+        verify(caseDataService).getCaseType(caseUUID);
         verifyNoMoreInteractions(caseDataRepository);
         verify(infoClient).getCorrespondentType("TEST");
         verifyNoMoreInteractions(infoClient);
@@ -299,7 +294,8 @@ public class CorrespondentServiceTest {
 
         Correspondent mockDBResponse = new Correspondent(testCaseUUID, "SomeType" ,testFullname, null, null, null, null, null, null);
         when(correspondentRepository.findByUUID(testCaseUUID, testCorrespondenceUUID)).thenReturn(mockDBResponse);
-        when(caseDataRepository.getCaseType(testCaseUUID)).thenReturn("TEST");
+
+        when(caseDataService.getCaseType(testCaseUUID)).thenReturn("TEST");
         CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();
         GetCorrespondentTypeResponse getCorrespondentTypeResponse = new GetCorrespondentTypeResponse(Set.of(correspondentTypeDto));
         when(infoClient.getCorrespondentType("TEST")).thenReturn(getCorrespondentTypeResponse);
@@ -311,7 +307,7 @@ public class CorrespondentServiceTest {
 
         verify(correspondentRepository, times(1)).findByUUID(testCaseUUID, testCorrespondenceUUID);
         verify(correspondentRepository, times(1)).save(correspondentRepoCapture.capture());
-        verify(caseDataRepository, times(1)).getCaseType(any());
+        verify(caseDataService, times(1)).getCaseType(any());
         verify(auditClient, times(1)).updateCorrespondentAudit(any());
 
         Correspondent captureOutput = correspondentRepoCapture.getValue();

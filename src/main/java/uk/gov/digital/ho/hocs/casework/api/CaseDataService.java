@@ -179,6 +179,10 @@ public class CaseDataService {
         return getCaseData(caseData.getUuid()).getData(key);
     }
 
+    public String getCaseType(UUID caseUUID) {
+       return getCaseData(caseUUID).getType();
+    }
+
     CaseData createCase(String caseType, Map<String, String> data, LocalDate dateReceived, UUID fromCaseUUID) {
         log.debug("Creating Case of type: {}", caseType);
 
@@ -514,7 +518,7 @@ public class CaseDataService {
     }
 
     List<String> getDocumentTags(UUID caseUUID) {
-        String caseType = caseDataRepository.getCaseType(caseUUID);
+        String caseType = getCaseType(caseUUID);
         List<String> documentTags = infoClient.getDocumentTags(caseType);
         return documentTags;
     }

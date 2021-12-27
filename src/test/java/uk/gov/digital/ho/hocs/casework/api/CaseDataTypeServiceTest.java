@@ -135,43 +135,7 @@ public class CaseDataTypeServiceTest {
     @Test
     public void ShouldGetCaseDataType_ByCaseType_Null() {
         assertThrows(ApplicationExceptions.EntityNotFoundException.class, () ->
-            caseDataTypeService.getCaseDataType((String)null));
-    }
-
-    @Test
-    public void ShouldGetCaseDataType_ByShortCode() {
-        var caseDataTypes = List.of(
-                CaseDataTypeFactory.from("A Type", "01"),
-                CaseDataTypeFactory.from("B Type", "45"));
-
-        when(infoClient.getAllCaseDataTypes()).thenReturn(caseDataTypes);
-
-        UUID uuid = UUID.fromString("1111111-1111-1111-1111-111111111101");
-        var result = caseDataTypeService.getCaseDataType(uuid);
-
-        verify(infoClient).getAllCaseDataTypes();
-        verifyNoMoreInteractions(infoClient);
-
-        assertEquals(caseDataTypes.get(0), result);
-    }
-
-    @Test
-    public void ShouldGetCaseDataType_ByShortCode_NoMatch() {
-        var caseDataTypes = List.of(
-                CaseDataTypeFactory.from("A Type", "01"),
-                CaseDataTypeFactory.from("B Type", "45"));
-
-        when(infoClient.getAllCaseDataTypes()).thenReturn(caseDataTypes);
-
-        UUID uuid = UUID.fromString("1111111-1111-1111-1111-111111111199");
-        assertThrows(ApplicationExceptions.EntityNotFoundException.class, () ->
-            caseDataTypeService.getCaseDataType(uuid));
-    }
-
-    @Test
-    public void ShouldGetCaseDataType_ByShortCode_Null() {
-        assertThrows(ApplicationExceptions.EntityNotFoundException.class, () ->
-            caseDataTypeService.getCaseDataType((UUID)null));
+            caseDataTypeService.getCaseDataType(null));
     }
 
 

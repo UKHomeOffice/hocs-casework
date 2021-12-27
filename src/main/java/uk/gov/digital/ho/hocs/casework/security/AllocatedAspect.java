@@ -5,8 +5,9 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.hocs.casework.api.CaseDataTypeService;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.util.Set;
 import java.util.UUID;
@@ -19,15 +20,15 @@ public class AllocatedAspect {
 
     private final StageService stageService;
     private final UserPermissionsService userService;
-    private final CaseDataTypeService caseDataTypeService;
+    private final CaseDataService caseDataService;
 
     @Autowired
     public AllocatedAspect(StageService stageService,
                            UserPermissionsService userService,
-                           CaseDataTypeService caseDataTypeService) {
+                           CaseDataService caseDataService) {
         this.stageService = stageService;
         this.userService = userService;
-        this.caseDataTypeService = caseDataTypeService;
+        this.caseDataService = caseDataService;
     }
 
     @Around("@annotation(allocated)")
@@ -93,8 +94,12 @@ public class AllocatedAspect {
     }
 
     private boolean proceedIfUserTeamIsAdminForCaseType(UUID caseUUID) {
-        String caseType = caseDataTypeService.getCaseDataType(caseUUID).getType();
-        Set<String> caseTypesForCaseTypeAdmin = userService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
-        return caseTypesForCaseTypeAdmin.contains(caseType);
+        try {
+            String caseType = caseDataService.getCaseType(caseUUID);
+            Set<String> caseTypesForCaseTypeAdmin = userService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
+            return caseTypesForCaseTypeAdmin.contains(caseType);
+        } catch (ApplicationExceptions.EntityNotFoundException e) {
+            return false;
+        }
     }
 }

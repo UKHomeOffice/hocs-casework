@@ -150,31 +150,27 @@ public class TopicsGetIntegrationTest {
     }
 
     @Test
-    public void shouldReturnOkAndEmptySetSetWhenGetTopicsForInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
         setupMockTeams("TEST", 5, 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnOkAndEmptySetWhenGetTopicsForInvalidCaseWithPermissionLevelWrite() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelWrite() throws JsonProcessingException {
         setupMockTeams("TEST", 3, 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "3")), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnOkAndEmptySetWhenGetTopicsForInvalidCaseWithPermissionLevelRead() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelRead() throws JsonProcessingException {
         setupMockTeams("TEST", 2, 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET, new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(result.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
-
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test

@@ -73,7 +73,7 @@ public class SecurityIntegrationTest {
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, LocalDate.now());
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(caseDataTypeService.getCaseDataType(caseData.getUuid())).thenReturn(CaseDataTypeFactory.from("MIN", "01"));
+        when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("MIN");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
@@ -90,7 +90,7 @@ public class SecurityIntegrationTest {
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, LocalDate.now());
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(caseDataTypeService.getCaseDataType(caseData.getUuid())).thenReturn(CaseDataTypeFactory.from("MIN", "01"));
+        when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("MIN");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
@@ -110,7 +110,7 @@ public class SecurityIntegrationTest {
 
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(teamUUID));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(caseDataTypeService.getCaseDataType(caseData.getUuid())).thenReturn(CaseDataTypeFactory.from("TRO", "01"));
+        when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("TRO");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
@@ -125,7 +125,7 @@ public class SecurityIntegrationTest {
         UUID caseUUID = UUID.randomUUID();
 
         when(caseDataService.getCaseTeams(caseUUID)).thenReturn(Set.of(UUID.randomUUID()));
-        when(caseDataTypeService.getCaseDataType(caseUUID)).thenReturn(CaseDataTypeFactory.from("TRO", "01"));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("TRO");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
@@ -139,7 +139,7 @@ public class SecurityIntegrationTest {
         when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
         UUID caseUUID = UUID.randomUUID();
 
-        when(caseDataTypeService.getCaseDataType(caseUUID)).thenReturn(CaseDataTypeFactory.from("MIN", "01"));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/MzMzMzMzMzMzMzMzMzMzMw");
@@ -161,7 +161,7 @@ public class SecurityIntegrationTest {
 
         when(caseDataService.getCaseTeams(caseData.getUuid())).thenReturn(Set.of(UUID.randomUUID()));
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(caseDataTypeService.getCaseDataType(caseData.getUuid())).thenReturn(caseDataType);
+        when(caseDataService.getCaseType(caseData.getUuid())).thenReturn("SOME_OTHER_CASE_TYPE");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
@@ -176,7 +176,7 @@ public class SecurityIntegrationTest {
         UUID caseUUID = UUID.randomUUID();
 
         when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
-        when(caseDataTypeService.getCaseDataType(caseUUID)).thenReturn(CaseDataTypeFactory.from("MIN", "01"));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");
@@ -191,7 +191,7 @@ public class SecurityIntegrationTest {
 
         when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 6));
         when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
-        when(caseDataTypeService.getCaseDataType(caseUUID)).thenReturn(CaseDataTypeFactory.from("MIN", "01"));
+        when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
 
         headers.add(RequestData.USER_ID_HEADER, userId);
         headers.add(RequestData.GROUP_HEADER, "/RERERCIiIiIiIiIiIiIiIg");

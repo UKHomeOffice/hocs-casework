@@ -152,30 +152,30 @@ public class TopicGetIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundSetWhenGetTopicsForInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
         setupMockTeams("TEST", 5, 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic/" + TOPIC_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnNotFoundWhenGetTopicsForInvalidCaseWithPermissionLevelWrite() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelWrite() throws JsonProcessingException {
         setupMockTeams("TEST", 3, 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic/" + TOPIC_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnNotFoundWhenGetTopicsForInvalidCaseWithPermissionLevelRead() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelRead() throws JsonProcessingException {
         setupMockTeams("TEST", 2, 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic/" + TOPIC_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
     }
 

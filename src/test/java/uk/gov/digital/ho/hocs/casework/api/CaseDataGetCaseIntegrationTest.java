@@ -121,30 +121,30 @@ public class CaseDataGetCaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenGetInValidCaseWithPermissionLevelOwner() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetInValidCaseWithPermissionLevelOwner() throws JsonProcessingException {
         setupMockTeams("TEST", 5);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders()), Void.class);
 
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnNotFoundWhenGetInValidCaseWithPermissionLevelWrite() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetInValidCaseWithPermissionLevelWrite() throws JsonProcessingException {
         setupMockTeams("TEST", 3);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders()), Void.class);
 
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnNotFoundWhenGetInValidCaseWithPermissionLevelRead() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetInValidCaseWithPermissionLevelRead() throws JsonProcessingException {
         setupMockTeams("TEST", 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders()), Void.class);
 
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test

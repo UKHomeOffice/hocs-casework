@@ -34,11 +34,6 @@ public class CaseDataTypeService {
         return getCaseDataTypes(it -> it.getType().equals(type)).findFirst().orElseThrow(() -> getNotFoundException(type));
     }
 
-    public CaseDataType getCaseDataType(UUID caseUUID){
-        var shortCode = getNonNullValue(caseUUID).toString().substring(34);
-        return getCaseDataTypes(it -> it.getShortCode().equals(shortCode)).findFirst().orElseThrow(() -> getNotFoundException(shortCode));
-    }
-
     private static <T> T getNonNullValue(T value) {
         return Optional.ofNullable(value).orElseThrow(() -> getNotFoundException("null"));
     }

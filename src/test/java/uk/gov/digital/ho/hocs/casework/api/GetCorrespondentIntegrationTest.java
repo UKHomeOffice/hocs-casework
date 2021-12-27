@@ -142,30 +142,30 @@ public class GetCorrespondentIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundSetWhenGetCorrespondentsForInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
         setupMockTeams("TEST",5, 2);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnNotFoundWhenGetCorrespondentsForInvalidCaseWithPermissionLevelWrite() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelWrite() throws JsonProcessingException {
         setupMockTeams("TEST",3, 2);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
-    public void shouldReturnNotFoundWhenGetCorrespondentsForInvalidCaseWithPermissionLevelRead() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelRead() throws JsonProcessingException {
         setupMockTeams("TEST",2, 2);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
     }
 

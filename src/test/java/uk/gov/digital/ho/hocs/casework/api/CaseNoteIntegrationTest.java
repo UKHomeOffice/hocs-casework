@@ -135,12 +135,12 @@ public class CaseNoteIntegrationTest {
     }
 
     @Test
-    public void shouldReturnBadRequestAndNotCreateACaseWhenCaseUUIDInvalid() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedAndNotCreateACaseWhenCaseUUIDInvalid() throws JsonProcessingException {
         setupMockTeams("TEST", 5);
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<Void> result = getCreateCaseNoteInavlidCaseUUIDResponse(createBody(), "TEST", "5");
         long numberOfCasesAfter = caseNoteRepository.count();
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
     }
 

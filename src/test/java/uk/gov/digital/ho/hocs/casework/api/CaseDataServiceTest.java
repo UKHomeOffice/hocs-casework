@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
@@ -282,14 +283,16 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetDocumentTags() {
         UUID caseUUID = UUID.randomUUID();
-        when(caseDataRepository.getCaseType(caseUUID)).thenReturn("TEST");
-        List<String> documentTags = new ArrayList<String>(Arrays.asList("Tag"));
+        CaseData caseData = Mockito.mock(CaseData.class);
+        when(caseData.getType()).thenReturn("TEST");
+        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+        List<String> documentTags = new ArrayList<>(List.of("Tag"));
         when(infoClient.getDocumentTags("TEST")).thenReturn(documentTags);
 
         List<String> tags = caseDataService.getDocumentTags(caseUUID);
 
         assertThat(tags).isSameAs(documentTags);
-        verify(caseDataRepository).getCaseType(caseUUID);
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
         verifyNoMoreInteractions(caseDataRepository);
         verify(infoClient).getDocumentTags("TEST");
         verifyNoMoreInteractions(infoClient);

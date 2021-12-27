@@ -10,6 +10,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataTypeService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.util.Set;
 import java.util.UUID;
@@ -22,12 +23,10 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAU
 public class AuthorisationAspect {
 
     private final CaseDataService caseService;
-    private final CaseDataTypeService caseDataTypeService;
     private final UserPermissionsService userService;
 
-    public AuthorisationAspect(@Qualifier("CaseDataService") CaseDataService caseService, CaseDataTypeService caseDataTypeService, UserPermissionsService userService) {
+    public AuthorisationAspect(@Qualifier("CaseDataService") CaseDataService caseService, UserPermissionsService userService) {
         this.caseService = caseService;
-        this.caseDataTypeService = caseDataTypeService;
         this.userService = userService;
     }
 
@@ -72,7 +71,11 @@ public class AuthorisationAspect {
         UUID caseUUID = null;
         if (joinPoint.getArgs()[0] instanceof UUID) {
             caseUUID = (UUID) joinPoint.getArgs()[0];
-            caseType = caseDataTypeService.getCaseDataType(caseUUID).getType();
+            try {
+                caseType = caseService.getCaseType(caseUUID);
+            } catch( ApplicationExceptions.EntityNotFoundException e) {
+                throw new SecurityExceptions.PermissionCheckException("Unable to find Case: " + caseUUID, SECURITY_PARSE_ERROR);
+            }
         } else if (joinPoint.getArgs()[0] instanceof CreateCaseRequestInterface) {
             CreateCaseRequestInterface createCaseRequest = (CreateCaseRequestInterface) joinPoint.getArgs()[0];
             caseType = createCaseRequest.getType();

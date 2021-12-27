@@ -19,19 +19,19 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 @RestController
 class CaseProfileResource {
 
-    private final CaseDataTypeService caseDatatypeService;
+    private final CaseDataService caseDataService;
     private final InfoClient infoClient;
 
     @Autowired
-    public CaseProfileResource(CaseDataTypeService caseDatatypeService, InfoClient infoClient) {
-        this.caseDatatypeService = caseDatatypeService;
+    public CaseProfileResource(CaseDataService caseDataService, InfoClient infoClient) {
+        this.caseDataService = caseDataService;
         this.infoClient = infoClient;
     }
 
     @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/profile/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ProfileDto> getProfileForCase(@PathVariable UUID caseUUID) {
-        String caseType = caseDatatypeService.getCaseDataType(caseUUID).getType();
+        String caseType = caseDataService.getCaseType(caseUUID);
         ProfileDto profile = infoClient.getProfileByCaseType(caseType);
         return ResponseEntity.ok(profile);
     }

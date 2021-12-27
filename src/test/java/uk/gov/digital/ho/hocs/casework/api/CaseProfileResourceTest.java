@@ -23,24 +23,24 @@ public class CaseProfileResourceTest {
     private CaseProfileResource caseProfileResource;
 
     @Mock
-    private CaseDataTypeService caseDataTypeService;
+    private CaseDataService caseDataService;
     @Mock
     private InfoClient infoClient;
 
     @Before
     public void before(){
-        caseProfileResource = new CaseProfileResource(caseDataTypeService, infoClient);
+        caseProfileResource = new CaseProfileResource(caseDataService, infoClient);
     }
 
     @Test
     public void getProfileForCase(){
 
         UUID testUUID = UUID.randomUUID();
-        CaseDataType caseType = CaseDataTypeFactory.from("caseTypeA", "01");
+        String caseType = "caseTypeA";
         ProfileDto profileDto = new ProfileDto("profileName1", false, null);
 
-        when(caseDataTypeService.getCaseDataType(testUUID)).thenReturn(caseType);
-        when(infoClient.getProfileByCaseType(caseType.getType())).thenReturn(profileDto);
+        when(caseDataService.getCaseType(testUUID)).thenReturn(caseType);
+        when(infoClient.getProfileByCaseType(caseType)).thenReturn(profileDto);
 
         ResponseEntity<ProfileDto> response = caseProfileResource.getProfileForCase(testUUID);
 
@@ -52,9 +52,9 @@ public class CaseProfileResourceTest {
         assertThat(response.getBody().isSummaryDeadlineEnabled()).isFalse();
         assertThat(response.getBody().getSearchFields()).isNull();
 
-        verify(caseDataTypeService).getCaseDataType(testUUID);
-        verify(infoClient).getProfileByCaseType(caseType.getType());
-        verifyNoMoreInteractions(caseDataTypeService, infoClient);
+        verify(caseDataService).getCaseType(testUUID);
+        verify(infoClient).getProfileByCaseType(caseType);
+        verifyNoMoreInteractions(caseDataService, infoClient);
 
     }
 }

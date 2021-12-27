@@ -192,12 +192,12 @@ public class CaseDataDeleteCaseIntegrationTest {
 
 
     @Test
-    public void shouldReturnNotFoundWhenDeleteInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
         setupMockTeams("TEST", 5);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/false", DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
 
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
