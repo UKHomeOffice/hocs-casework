@@ -6,12 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
-import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
@@ -22,26 +20,18 @@ import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_WITHDRAWN;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_EMPTY;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_FORBIDDEN;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAUTHORISED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGES_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_TEAM;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_USER;
@@ -63,7 +53,6 @@ public class StageService {
     private final UserPermissionsService userPermissionsService;
     private final NotifyClient notifyClient;
     private final AuditClient auditClient;
-    private final SearchClient searchClient;
     private final InfoClient infoClient;
     private final CaseDataService caseDataService;
     private final StagePriorityCalculator stagePriorityCalculator;
@@ -73,14 +62,11 @@ public class StageService {
     private final ContributionsProcessor contributionsProcessor;
     private final ActionDataDeadlineExtensionService extensionService;
 
-    private static final Comparator<StageWithCaseData> CREATED_COMPARATOR = Comparator.comparing(StageWithCaseData::getCreated);
-
     @Autowired
     public StageService(StageRepository stageRepository,
                         UserPermissionsService userPermissionsService,
                         NotifyClient notifyClient,
                         AuditClient auditClient,
-                        SearchClient searchClient,
                         InfoClient infoClient,
                         CaseDataService caseDataService,
                         StagePriorityCalculator stagePriorityCalculator,
@@ -93,7 +79,6 @@ public class StageService {
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
         this.auditClient = auditClient;
-        this.searchClient = searchClient;
         this.infoClient = infoClient;
         this.caseDataService = caseDataService;
         this.stagePriorityCalculator = stagePriorityCalculator;
@@ -404,36 +389,7 @@ public class StageService {
     Set<StageWithCaseData> getActiveStagesByCaseReference(String reference) {
         log.debug("Getting Active Stages for reference: {}", reference);
         Set<StageWithCaseData> stages = stageRepository.findByCaseReference(reference);
-        return reduceToMostActive(stages).collect(Collectors.toSet());
-    }
-
-    Set<StageWithCaseData> search(SearchRequest searchRequest) {
-        log.debug("Getting Stages for Search Request");
-        Set<UUID> caseUUIDs = searchClient.search(searchRequest);
-        if (caseUUIDs.isEmpty()) {
-            log.info("No cases - Returning 0 Stages", value(EVENT, SEARCH_STAGE_LIST_EMPTY));
-            return new HashSet<>(0);
-        }
-
-        Set<StageWithCaseData> stages = stageRepository.findAllByCaseUUIDIn(caseUUIDs);
-
-        // done like this because the case relationship is in the info schema
-        // get the case types with a previous case type and reduce to
-        // Map<K, V>, - K is the previousCaseType, V is the caseType
-        Map<String, String> caseTypes = infoClient.getAllCaseTypes()
-                .stream()
-                .filter( caseType -> Objects.nonNull(caseType.getPreviousCaseType()))
-                .collect(Collectors.toMap(CaseDataType::getPreviousCaseType, CaseDataType::getDisplayCode));
-
-        // map the previous case type on to the cases found
-        // only stages with completed cases have the next caseType
-        stages.stream()
-                .filter(stage -> stage.getCompleted())
-                .forEach(stage -> stage.setNextCaseType(caseTypes.get(stage.getCaseDataType())));
-
-        log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));
-        return groupByCaseUUID(stages);
-
+        return SearchService.reduceToMostActive(stages);
     }
 
     Set<StageWithCaseData> getAllStagesForCaseByCaseUUID(UUID caseUUID) {
@@ -448,30 +404,8 @@ public class StageService {
         }
     }
 
-    private static Set<StageWithCaseData> groupByCaseUUID(Set<? extends StageWithCaseData> stages) {
-
-        // Group the stages by case UUID
-        Map<UUID, List<StageWithCaseData>> groupedStages = stages.stream().collect(Collectors.groupingBy(StageWithCaseData::getCaseUUID));
-
-        // for each of the entry sets, filter out none-active stages, unless there are no active stages then use the latest stage
-        return groupedStages.entrySet().stream().flatMap(s -> reduceToMostActive(s.getValue())).collect(Collectors.toSet());
-    }
-
-    private static Stream<StageWithCaseData> reduceToMostActive(Set<StageWithCaseData> stages) {
-        return reduceToMostActive(new ArrayList<>(stages));
-    }
-
-    private static Stream<StageWithCaseData> reduceToMostActive(List<StageWithCaseData> stages) {
-        Supplier<Stream<StageWithCaseData>> stageSupplier = stages::stream;
-
-        // If any stages are active
-        if (stageSupplier.get().anyMatch(StageWithCaseData::isActive)) {
-            return stageSupplier.get().filter(StageWithCaseData::isActive);
-        } else {
-            // return the most recent stage.
-            Optional<StageWithCaseData> maxDatedStage = stageSupplier.get().max(CREATED_COMPARATOR);
-            return maxDatedStage.stream();
-        }
+    public Set<StageWithCaseData> getAllStagesByCaseUUIDIn(Set<UUID> caseUUIDs) {
+        return stageRepository.findAllByCaseUUIDIn(caseUUIDs);
     }
 
     public void withdrawCase(UUID caseUUID, UUID stageUUID, WithdrawCaseRequest request) {

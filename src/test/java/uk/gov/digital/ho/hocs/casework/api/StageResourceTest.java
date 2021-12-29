@@ -16,7 +16,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStageResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStagesResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.RecreateStageRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageUserRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -276,23 +275,6 @@ public class StageResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-    }
-
-    @Test
-    public void shouldSearch() {
-
-        Set<StageWithCaseData> stages = new HashSet<>();
-        SearchRequest searchRequest = new SearchRequest();
-
-        when(stageService.search(searchRequest)).thenReturn(stages);
-
-        ResponseEntity<GetStagesResponse> response = stageResource.search(searchRequest);
-
-        verify(stageService).search(searchRequest);
-        checkNoMoreInteractions();
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test

@@ -16,7 +16,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStageResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStagesResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.RecreateStageRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageTeamRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageUserRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
@@ -30,7 +29,6 @@ import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
-import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -161,12 +159,6 @@ class StageResource {
     ResponseEntity<Set<UUID>> getActiveStageCaseUUIDsForUserAndTeam(@PathVariable UUID userUUID, @PathVariable UUID teamUUID) {
         Set<UUID> caseUUIDs = stageService.getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
         return ResponseEntity.ok(caseUUIDs);
-    }
-
-    @PostMapping(value = "/search")
-    ResponseEntity<GetStagesResponse> search(@Valid @RequestBody SearchRequest request) {
-        Set<StageWithCaseData> stages = stageService.search(request);
-        return ResponseEntity.ok(GetStagesResponse.from(stages));
     }
 
     @GetMapping(value = "/stage/case/{caseUUID}")

@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.assertj.core.util.Sets;
 import org.junit.Assert;
 import org.junit.Before;
@@ -10,14 +9,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
-import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
-import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
@@ -64,9 +60,6 @@ public class StageServiceTest {
     private final String allocationType = "anyAllocate";
     private final UUID transitionNoteUUID = UUID.randomUUID();
     private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN", null);
-    private final List<CaseDataType> caseDataTypes = List.of(
-            CaseDataTypeFactory.from("NXT", "a5", "MIN"), // NXT can be reached through MIN
-                caseDataType);
 
     private final String userID = UUID.randomUUID().toString();
 
@@ -80,8 +73,6 @@ public class StageServiceTest {
     private NotifyClient notifyClient;
     @Mock
     private AuditClient auditClient;
-    @Mock
-    private SearchClient searchClient;
     @Mock
     private InfoClient infoClient;
     @Mock
@@ -102,8 +93,7 @@ public class StageServiceTest {
 
     @Before
     public void setUp() {
-        this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient,
-                searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, stageTagsDecorator, caseNoteService, contributionsProcessor, extensionService);
+        this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, stageTagsDecorator, caseNoteService, contributionsProcessor, extensionService);
     }
 
     @Test
@@ -155,7 +145,7 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldCreateStage_stageOverride() throws JsonProcessingException {
+    public void shouldCreateStage_stageOverride() {
         // GIVEN
         LocalDate overrideDeadline = LocalDate.of(2021, 12, 31);
         Map<String, String> caseDataData = new HashMap<>();
@@ -636,150 +626,6 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldSearch() {
-
-        Set<UUID> caseUUIDS = new HashSet<>();
-        caseUUIDS.add(caseUUID);
-
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        Set<StageWithCaseData> stages = new HashSet<>();
-        stages.add(stage);
-
-
-        SearchRequest searchRequest = new SearchRequest();
-
-        when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
-        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
-
-        Set<StageWithCaseData> stageResults = stageService.search(searchRequest);
-
-        verify(searchClient).search(searchRequest);
-        verify(stageRepository).findAllByCaseUUIDIn(caseUUIDS);
-        verifyNoMoreInteractions(searchClient);
-        verifyNoMoreInteractions(stageRepository);
-
-        assertThat(stageResults).hasSize(1);
-
-    }
-
-    @Test
-    public void shouldSearchCaseAndNextCaseTypesPresent() {
-        StageWithCaseData stageFound = testCaseWithNextCaseType(Boolean.TRUE);
-        assertThat(stageFound.getNextCaseType()).isNotBlank();
-    }
-
-    @Test
-    public void shouldSearchIncompleteCaseAndNextCaseTypesPresent() {
-        StageWithCaseData stageFound = testCaseWithNextCaseType(Boolean.FALSE);
-        assertThat(stageFound.getNextCaseType()).isNull();
-    }
-
-    private StageWithCaseData testCaseWithNextCaseType(Boolean completeCase) {
-
-        // given
-        Set<UUID> caseUUIDS = Set.of(caseUUID);
-        StageWithCaseData repositoryStage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        repositoryStage.setCompleted(completeCase);
-        repositoryStage.setCaseDataType("MIN");
-
-        SearchRequest searchRequest = new SearchRequest();
-
-        when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
-        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(Set.of(repositoryStage));
-
-        when(infoClient.getAllCaseTypes()).thenReturn(caseDataTypes);
-
-        // when
-        Set<StageWithCaseData> stageResults = stageService.search(searchRequest);
-
-        // then
-        verify(searchClient).search(searchRequest);
-        verify(stageRepository).findAllByCaseUUIDIn(caseUUIDS);
-        verifyNoMoreInteractions(searchClient);
-        verifyNoMoreInteractions(stageRepository);
-
-        assertThat(stageResults).hasSize(1);
-
-        return stageResults.iterator().next();
-
-    }
-
-    @Test
-    public void shouldSearchInactiveStage() {
-
-        Set<UUID> caseUUIDS = new HashSet<>();
-        caseUUIDS.add(caseUUID);
-
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        StageWithCaseData stage_old = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", null, null, transitionNoteUUID);
-        Set<StageWithCaseData> stages = new HashSet<>();
-        stages.add(stage);
-        stages.add(stage_old);
-
-
-        SearchRequest searchRequest = new SearchRequest();
-
-        when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
-        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
-
-        Set<StageWithCaseData> stageResults = stageService.search(searchRequest);
-
-        verify(searchClient).search(searchRequest);
-        verify(stageRepository).findAllByCaseUUIDIn(caseUUIDS);
-        verifyNoMoreInteractions(searchClient);
-        verifyNoMoreInteractions(stageRepository);
-
-        assertThat(stageResults).hasSize(1);
-
-    }
-
-    @Test
-    public void shouldSearchMultipleStages() {
-
-        Set<UUID> caseUUIDS = new HashSet<>();
-        caseUUIDS.add(caseUUID);
-
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-        StageWithCaseData stage_old = new StageWithCaseData(UUID.randomUUID(), "DCU_MIN_MARKUP", null, null, transitionNoteUUID);
-        Set<StageWithCaseData> stages = new HashSet<>();
-        stages.add(stage);
-        stages.add(stage_old);
-
-
-        SearchRequest searchRequest = new SearchRequest();
-
-        when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
-        when(stageRepository.findAllByCaseUUIDIn(caseUUIDS)).thenReturn(stages);
-
-        Set<StageWithCaseData> stageResults = stageService.search(searchRequest);
-
-        verify(searchClient).search(searchRequest);
-        verify(stageRepository).findAllByCaseUUIDIn(caseUUIDS);
-        verifyNoMoreInteractions(searchClient);
-        verifyNoMoreInteractions(stageRepository);
-
-        assertThat(stageResults).hasSize(2);
-
-    }
-
-    @Test
-    public void shouldSearchNoResults() {
-
-        Set<UUID> caseUUIDS = new HashSet<>(0);
-
-        SearchRequest searchRequest = new SearchRequest();
-
-        when(searchClient.search(searchRequest)).thenReturn(caseUUIDS);
-
-        stageService.search(searchRequest);
-
-        verify(searchClient).search(searchRequest);
-        verifyNoMoreInteractions(searchClient);
-         verifyNoInteractions(stageRepository);
-
-    }
-
-    @Test
     public void shouldCheckSendOfflineQAEmail() {
         UUID offlineQaUserUUID = UUID.randomUUID();
         StageWithCaseData stage = createStageOfflineQaData(offlineQaUserUUID);
@@ -1020,7 +866,7 @@ public class StageServiceTest {
     }
 
     private void checkNoMoreInteraction() {
-        verifyNoMoreInteractions(stageRepository, userPermissionsService, notifyClient, auditClient, searchClient,
+        verifyNoMoreInteractions(stageRepository, userPermissionsService, notifyClient, auditClient,
                 infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, caseNoteService);
     }
 
