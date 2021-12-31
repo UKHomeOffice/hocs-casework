@@ -6,11 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
-import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -41,7 +38,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_EMPTY;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_FORBIDDEN;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAUTHORISED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGES_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_TEAM;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_USER;
@@ -53,7 +49,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_TRANSIT
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_EMPTY;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.USERS_TEAMS_STAGE_LIST_RETRIEVED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @Slf4j
 @Service
@@ -61,7 +56,7 @@ public class StageService {
 
     private final StageRepository stageRepository;
     private final UserPermissionsService userPermissionsService;
-    private final NotifyClient notifyClient;
+    private final EmailService emailService;
     private final AuditClient auditClient;
     private final SearchClient searchClient;
     private final InfoClient infoClient;
@@ -78,7 +73,7 @@ public class StageService {
     @Autowired
     public StageService(StageRepository stageRepository,
                         UserPermissionsService userPermissionsService,
-                        NotifyClient notifyClient,
+                        EmailService emailService,
                         AuditClient auditClient,
                         SearchClient searchClient,
                         InfoClient infoClient,
@@ -91,7 +86,7 @@ public class StageService {
                         ActionDataDeadlineExtensionService extensionService) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
-        this.notifyClient = notifyClient;
+        this.emailService = emailService;
         this.auditClient = auditClient;
         this.searchClient = searchClient;
         this.infoClient = infoClient;
@@ -150,7 +145,7 @@ public class StageService {
         caseDataService.updateCaseData(caseData, stage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
         auditClient.createStage(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
-        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, caseData.getReference(), emailType);
+        emailService.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, emailType);
         return stage;
     }
 
@@ -204,47 +199,18 @@ public class StageService {
 
     void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID, String emailType) {
         log.debug("Updating Team: {} for Stage: {}", newTeamUUID, stageUUID);
-        StageWithCaseData stage = getStageWithCaseData(caseUUID, stageUUID);
+        Stage stage = getBasicStage(caseUUID, stageUUID);
+        UUID currentUserUUID = stage.getUserUUID();
         stage.setTeam(newTeamUUID);
-        checkSendOfflineQAEmail(stage);
         stageRepository.save(stage);
         auditClient.updateStageTeam(stage);
         if (newTeamUUID == null) {
             log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID, value(EVENT, STAGE_COMPLETED));
         } else {
             log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, newTeamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
-            notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), newTeamUUID, stage.getCaseReference(), emailType);
+            emailService.sendTeamEmail(caseUUID, stageUUID, newTeamUUID, emailType);
+            emailService.sendOfflineQAEmail(caseUUID, stageUUID, stage.getStageType(), currentUserUUID);
         }
-    }
-
-    void checkSendOfflineQAEmail(StageWithCaseData stage) {
-        if (stage.getStageType().equals(StageWithCaseData.DCU_DTEN_INITIAL_DRAFT) || stage.getStageType().equals(StageWithCaseData.DCU_TRO_INITIAL_DRAFT) || stage.getStageType().equals(StageWithCaseData.DCU_MIN_INITIAL_DRAFT)) {
-            final String offlineQaUser = stage.getData(StageWithCaseData.OFFLINE_QA_USER);
-            final UUID stageUserUUID = getLastCaseUserUUID(stage.getCaseUUID());
-            if (offlineQaUser != null && stageUserUUID != null) {
-                UUID offlineQaUserUUID = UUID.fromString(offlineQaUser);
-                notifyClient.sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), stageUserUUID, offlineQaUserUUID, stage.getCaseReference());
-            }
-        }
-    }
-
-    UUID getLastCaseUserUUID(UUID caseUUID) {
-        List<String> auditType = new ArrayList<>();
-        auditType.add(STAGE_ALLOCATED_TO_USER.name());
-        final Set<GetAuditResponse> linesForCase = auditClient.getAuditLinesForCase(caseUUID, auditType);
-        GetAuditResponse lastAudit = null;
-        for (GetAuditResponse line : linesForCase) {
-            if (line.getUserID() != null) {
-                if (lastAudit == null || lastAudit.getAuditTimestamp() == null) {
-                    lastAudit = line;
-                } else {
-                    if (line.getAuditTimestamp().isAfter(lastAudit.getAuditTimestamp())) {
-                        lastAudit = line;
-                    }
-                }
-            }
-        }
-        return lastAudit == null ? null : UUID.fromString(lastAudit.getUserID());
     }
 
     void updateStageUser(UUID caseUUID, UUID stageUUID, UUID newUserUUID) {
@@ -255,7 +221,7 @@ public class StageService {
         stageRepository.save(stage);
         auditClient.updateStageUser(stage);
         log.info("Updated User: {} for Stage {}", newUserUUID, stageUUID, value(EVENT, STAGE_ASSIGNED_USER));
-        notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, stage.getCaseReference());
+        emailService.sendUserEmail(caseUUID, stageUUID, currentUserUUID, newUserUUID);
     }
 
     Set<StageWithCaseData> getActiveStagesByCaseUUID(UUID caseUUID) {
