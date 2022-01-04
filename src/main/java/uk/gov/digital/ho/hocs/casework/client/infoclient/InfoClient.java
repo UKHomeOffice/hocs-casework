@@ -132,6 +132,15 @@ public class InfoClient {
         return response;
     }
 
+    @Cacheable(value = "InfoClientGetAllStagesForCaseType", unless = "#result.size() == 0", key = "{#caseType}")
+    public Set<StageTypeDto> getAllStagesForCaseType(String caseType) {
+        Set<StageTypeDto> response = restHelper.get(serviceBaseURL, String.format("/stages/caseType/%s", caseType), new ParameterizedTypeReference<>() {
+        });
+
+        log.info("Got {} stage types for CaseType {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
+        return response;
+    }
+
     @Cacheable(value = "InfoClientGetStageContributions", unless = "#result == null", key = "{#stageType}")
     public Boolean getStageContributions(String stageType) {
         Boolean response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/contributions", stageType), new ParameterizedTypeReference<Boolean>() {});
