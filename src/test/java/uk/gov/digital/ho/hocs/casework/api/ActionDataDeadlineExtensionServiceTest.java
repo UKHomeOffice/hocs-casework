@@ -10,6 +10,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboundDto;
 
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto;
@@ -191,6 +192,14 @@ public class ActionDataDeadlineExtensionServiceTest {
         when(mockInfoClient.getCaseTypeActionByUuid(previousCaseData.getType(), extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(previousCaseData);
         when(mockBankHolidayService.getBankHolidayDatesForCaseType(any())).thenReturn(englandAndWalesBankHolidays2020);
+        when(mockInfoClient.getCaseType(any())).thenReturn(new CaseDataType(
+                null,
+                null,
+                null,
+                null,
+                20,
+                15
+        ));
 
         // WHEN
         actionDataDeadlineExtensionService.createExtension(caseUUID,stageUUID, extensionDto);
@@ -204,7 +213,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         verify(mockCaseDataRepository, times(1)).save(caseDataArgCapture.capture());
 
         assertThat(caseDataArgCapture.getValue().getCaseDeadline()).isEqualTo(LocalDate.parse("2020-05-11"));
-        assertThat(caseDataArgCapture.getValue().getCaseDeadlineWarning()).isEqualTo(mockedNow.plusDays(6));
+        assertThat(caseDataArgCapture.getValue().getCaseDeadlineWarning()).isEqualTo(mockedNow.plusDays(4));
 
         verify(mockAuditClient, times(1)).updateCaseAudit(any(), any());
 

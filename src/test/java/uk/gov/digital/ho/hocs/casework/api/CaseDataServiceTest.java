@@ -855,6 +855,8 @@ public class CaseDataServiceTest {
         // given
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+        when(infoClient.getCaseType(caseType.getDisplayName()))
+                .thenReturn(new CaseDataType(null, null, null, null, 20, 15));
 
         // when
         caseDataService.updateDispatchDeadlineDate(caseUUID, stageUUID, deadlineDate);

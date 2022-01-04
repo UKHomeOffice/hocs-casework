@@ -327,6 +327,11 @@ public class CaseDataCreateCaseIntegrationTest {
                 .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {

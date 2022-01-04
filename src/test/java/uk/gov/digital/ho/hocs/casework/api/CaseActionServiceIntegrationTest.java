@@ -164,7 +164,7 @@ public class CaseActionServiceIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(8).toString()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadlineWarning?received=2018-01-01&caseDeadlineWarning=" + LocalDate.now().plusDays(6) + "&overrideSla=true"))
+                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadlineWarning?received=2018-01-01&caseDeadlineWarning=" + LocalDate.now().plusDays(3) + "&overrideSla=true"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(6).toString()), MediaType.APPLICATION_JSON));
         mockInfoService
@@ -223,6 +223,19 @@ public class CaseActionServiceIntegrationTest {
                         "http://localhost:8085/entity/simpleName/EXTENSION_REASON_2_SIMPLE_NAME"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(EXTENSION_REASON_2), MediaType.APPLICATION_JSON));
+
+        mockInfoService
+                .expect(manyTimes(), requestTo(
+                        "http://localhost:8085/caseType/type/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(new CaseDataType(
+                        null,
+                        null,
+                        null,
+                        null,
+                        20,
+                        15
+                )), MediaType.APPLICATION_JSON));
     }
 
     // EXTENSIONS - CREATE

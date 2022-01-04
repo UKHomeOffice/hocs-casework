@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboun
 
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionOutboundDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.DateUtils;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
@@ -109,10 +110,12 @@ public class ActionDataDeadlineExtensionService implements ActionService {
 
         final Set<LocalDate> bankHolidays = bankHolidayService.getBankHolidayDatesForCaseType(caseData.getType());
 
-        /* Before the calls to info-service were removed, they assigned exactly the same values to updateDeadline
-        * and updateDeadlineWarning. This behaviour has been kept to avoid breaking the current behaviour.*/
+        final CaseDataType caseType = infoClient.getCaseType(caseData.getType());
+        final int deadlineWarningOffset = caseType.getSla() - caseType.getDeadLineWarning();
+
         LocalDate updatedDeadline = DateUtils.addWorkingDays(extendFromDate, extendByNumberOfDays, bankHolidays);
-        LocalDate updateDeadlineWarning = DateUtils.addWorkingDays(extendFromDate, extendByNumberOfDays, bankHolidays);
+        LocalDate updateDeadlineWarning =
+                DateUtils.addWorkingDays(extendFromDate, extendByNumberOfDays - deadlineWarningOffset, bankHolidays);
 
         if (caseData.getCaseDeadline().isAfter(updatedDeadline)) {
             String msg = String.format("CaseId: %s, existing deadline (%s) is later than requested extension (%s). Extension not applied.", caseUuid, caseData.getCaseDeadline(), updatedDeadline);
