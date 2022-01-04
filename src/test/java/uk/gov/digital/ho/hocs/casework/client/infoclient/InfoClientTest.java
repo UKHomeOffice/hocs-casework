@@ -89,17 +89,6 @@ public class InfoClientTest {
     }
 
     @Test
-    public void getCaseDeadlineWarning() {
-        LocalDate expected = LocalDate.of(2020, 5, 13);
-        when(restHelper.get("infoService", "/caseType/TEST/deadlineWarning?received=2020-05-08&days=0", LocalDate.class)).thenReturn(expected);
-
-        LocalDate response = infoClient.getCaseDeadlineWarning("TEST", LocalDate.of(2020, 5, 8), 0);
-
-        assertThat(response).isNotNull();
-        assertThat(response).isEqualTo(expected);
-    }
-
-    @Test
     public void getStageDeadlineWarning() {
         LocalDate expected = LocalDate.of(2020, 5, 13);
         when(restHelper.get("infoService", "/stageType/TEST/deadlineWarning?received=2020-05-08&caseDeadlineWarning=2020-05-09", LocalDate.class)).thenReturn(expected);

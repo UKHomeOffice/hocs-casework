@@ -63,7 +63,14 @@ public class StageServiceTest {
     private final String stageType = "DCU_MIN_MARKUP";
     private final String allocationType = "anyAllocate";
     private final UUID transitionNoteUUID = UUID.randomUUID();
-    private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN", null, 20);
+    private final CaseDataType caseDataType = new CaseDataType(
+            "MIN",
+            "1a",
+            "MIN",
+            null,
+            20,
+            15
+    );
     private final List<CaseDataType> caseDataTypes = List.of(
             CaseDataTypeFactory.from("NXT", "a5", "MIN"), // NXT can be reached through MIN
                 caseDataType);

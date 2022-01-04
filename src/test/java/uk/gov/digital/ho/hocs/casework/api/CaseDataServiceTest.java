@@ -186,7 +186,7 @@ public class CaseDataServiceTest {
         LocalDate expectedDeadline = LocalDate.parse("2020-03-02");
 
         CaseDataType comp2 = new CaseDataType("display_name",
-                "c6", "DISP", PREVIOUS_CASE_TYPE, 20);
+                "c6", "DISP", PREVIOUS_CASE_TYPE, 20, 15);
 
         CaseData previousCaseData = new CaseData(
                 1L,
@@ -787,14 +787,14 @@ public class CaseDataServiceTest {
                         "TT",
                         "TEST_TYPE",
                         null,
-                        20
+                        20,
+                        15
                 );
 
         when(infoClient.getBankHolidayRegionsByCaseType(any())).thenReturn(bankHolidayRegionsAsString);
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
         when(infoClient.getCaseType(any())).thenReturn(caseDataType);
         when(bankHolidayService.getBankHolidayDatesForRegions(eq(bankHolidayRegions))).thenReturn(englandAndWalesBankHolidays2020);
-        when(infoClient.getCaseDeadlineWarning(eq(caseData.getType()), eq(updatedReceivedDate), eq(0))).thenReturn(caseDeadlineWarning);
 
         // when
         caseDataService.updateDateReceived_defaultSla(caseUUID, stageUUID, updatedReceivedDate);
@@ -809,8 +809,6 @@ public class CaseDataServiceTest {
         assertThat(caseDataCaptor.getValue().getCaseDeadline()).isEqualTo(expectedNewDeadline);
 
         verifyNoMoreInteractions(caseDataRepository);
-
-        verify(infoClient, times(1)).getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0);
         verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
     }
 
@@ -827,13 +825,13 @@ public class CaseDataServiceTest {
                         "TT",
                         "TEST_TYPE",
                         null,
-                        20
+                        20,
+                        15
                 );
 
         when(infoClient.getBankHolidayRegionsByCaseType(any())).thenReturn(bankHolidayRegionsAsString);
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
         when(bankHolidayService.getBankHolidayDatesForRegions(eq(bankHolidayRegions))).thenReturn(englandAndWalesBankHolidays2020);
-        when(infoClient.getCaseDeadlineWarning(eq(caseData.getType()), eq(originalReceivedDate), eq(10))).thenReturn(caseDeadlineWarning);
 
         // when
         caseDataService.overrideSla(caseUUID, stageUUID, 10);
@@ -848,8 +846,6 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(caseDataRepository);
 
-        verify(infoClient, times(1))
-                .getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 10);
         verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
     }
 
@@ -859,7 +855,6 @@ public class CaseDataServiceTest {
         // given
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
-        when(infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0)).thenReturn(caseDeadlineWarning);
 
         // when
         caseDataService.updateDispatchDeadlineDate(caseUUID, stageUUID, deadlineDate);
@@ -870,7 +865,6 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).save(caseData);
         verifyNoMoreInteractions(caseDataRepository);
 
-        verify(infoClient, times(1)).getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0);
         verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
 
     }

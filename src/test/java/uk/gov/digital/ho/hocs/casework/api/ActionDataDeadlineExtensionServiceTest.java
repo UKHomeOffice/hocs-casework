@@ -190,7 +190,6 @@ public class ActionDataDeadlineExtensionServiceTest {
 
         when(mockInfoClient.getCaseTypeActionByUuid(previousCaseData.getType(), extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(previousCaseData);
-        when(mockInfoClient.getCaseDeadlineWarning(anyString(), any(LocalDate.class), anyInt())).thenReturn(mockedNow.plusDays(extendByDays - 2));
         when(mockBankHolidayService.getBankHolidayDatesForCaseType(any())).thenReturn(englandAndWalesBankHolidays2020);
 
         // WHEN

@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @RunWith(SpringRunner.class)
 public class CaseCopyFactoryTest {
 
-    public static final CaseDataType CASE_DATA_TYPE = new CaseDataType("a", "b", "c", "d", 20);
+    public static final CaseDataType CASE_DATA_TYPE = new CaseDataType("a", "b", "c", "d", 20, 15);
     public static final CaseData CASE = new CaseData(CASE_DATA_TYPE, 1L, LocalDate.now());
 
     @Autowired
