@@ -29,6 +29,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
@@ -53,7 +54,7 @@ public class ActionDataDeadlineExtensionServiceTest {
     private AuditClient mockAuditClient;
 
     @Mock
-    private BankHolidayService mockBankHolidayService;
+    private DeadlineService deadlineService;
 
     @Captor
     private ArgumentCaptor<CaseData> caseDataArgCapture = ArgumentCaptor.forClass(CaseData.class);
@@ -112,7 +113,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 mockCaseDataRepository,
                 mockInfoClient,
                 mockAuditClient,
-                mockBankHolidayService,
+                deadlineService,
                 fixedClock
         );
 
@@ -191,7 +192,6 @@ public class ActionDataDeadlineExtensionServiceTest {
 
         when(mockInfoClient.getCaseTypeActionByUuid(previousCaseData.getType(), extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(previousCaseData);
-        when(mockBankHolidayService.getBankHolidayDatesForCaseType(any())).thenReturn(englandAndWalesBankHolidays2020);
         when(mockInfoClient.getCaseType(any())).thenReturn(new CaseDataType(
                 null,
                 null,
@@ -200,6 +200,11 @@ public class ActionDataDeadlineExtensionServiceTest {
                 20,
                 15
         ));
+        when(deadlineService.calculateWorkingDaysForCaseType(any(), any(), eq(9)))
+                .thenReturn(LocalDate.parse("2020-05-11"));
+
+        when(deadlineService.calculateWorkingDaysForCaseType(any(), any(), eq(4)))
+                .thenReturn(LocalDate.parse("2020-05-01"));
 
         // WHEN
         actionDataDeadlineExtensionService.createExtension(caseUUID,stageUUID, extensionDto);
@@ -213,7 +218,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         verify(mockCaseDataRepository, times(1)).save(caseDataArgCapture.capture());
 
         assertThat(caseDataArgCapture.getValue().getCaseDeadline()).isEqualTo(LocalDate.parse("2020-05-11"));
-        assertThat(caseDataArgCapture.getValue().getCaseDeadlineWarning()).isEqualTo(mockedNow.plusDays(4));
+        assertThat(caseDataArgCapture.getValue().getCaseDeadlineWarning()).isEqualTo(LocalDate.parse("2020-05-01"));
 
         verify(mockAuditClient, times(1)).updateCaseAudit(any(), any());
 

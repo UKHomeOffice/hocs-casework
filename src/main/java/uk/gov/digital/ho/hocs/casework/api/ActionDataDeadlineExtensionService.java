@@ -10,7 +10,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboun
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionOutboundDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.utils.DateUtils;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -37,7 +36,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
     private final CaseDataRepository caseDataRepository;
     private final InfoClient infoClient;
     private final AuditClient auditClient;
-    private final BankHolidayService bankHolidayService;
+    private final DeadlineService deadlineService;
     private final Clock clock;
 
     @Autowired
@@ -45,14 +44,14 @@ public class ActionDataDeadlineExtensionService implements ActionService {
                                               CaseDataRepository caseDataRepository,
                                               InfoClient infoClient,
                                               AuditClient auditClient,
-                                              BankHolidayService bankHolidayService,
+                                              DeadlineService deadlineService,
                                               Clock clock
     ) {
         this.extensionRepository = extensionRepository;
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
-        this.bankHolidayService = bankHolidayService;
+        this.deadlineService = deadlineService;
         this.clock = clock;
     }
 
@@ -108,14 +107,14 @@ public class ActionDataDeadlineExtensionService implements ActionService {
             extendFromDate = caseData.getCaseDeadline();
         }
 
-        final Set<LocalDate> bankHolidays = bankHolidayService.getBankHolidayDatesForCaseType(caseData.getType());
-
         final CaseDataType caseType = infoClient.getCaseType(caseData.getType());
-        final int deadlineWarningOffset = caseType.getSla() - caseType.getDeadLineWarning();
+        final int deadlineWarningOffset = extendByNumberOfDays - (caseType.getSla() - caseType.getDeadLineWarning());
 
-        LocalDate updatedDeadline = DateUtils.addWorkingDays(extendFromDate, extendByNumberOfDays, bankHolidays);
-        LocalDate updateDeadlineWarning =
-                DateUtils.addWorkingDays(extendFromDate, extendByNumberOfDays - deadlineWarningOffset, bankHolidays);
+        LocalDate updatedDeadline =
+                deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), extendFromDate, extendByNumberOfDays);
+
+        LocalDate updatedDeadlineWarning =
+                deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), extendFromDate, Math.max(deadlineWarningOffset, 0));
 
         if (caseData.getCaseDeadline().isAfter(updatedDeadline)) {
             String msg = String.format("CaseId: %s, existing deadline (%s) is later than requested extension (%s). Extension not applied.", caseUuid, caseData.getCaseDeadline(), updatedDeadline);
@@ -136,7 +135,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         );
 
         caseData.setCaseDeadline(updatedDeadline);
-        caseData.setCaseDeadlineWarning(updateDeadlineWarning);
+        caseData.setCaseDeadlineWarning(updatedDeadlineWarning);
         updateStageDeadlines(caseData);
 
         ActionDataDeadlineExtension createdExtension = extensionRepository.save(extensionEntity);
@@ -185,10 +184,9 @@ public class ActionDataDeadlineExtensionService implements ActionService {
                 LocalDate dateReceived = caseData.getDateReceived();
                 LocalDate caseDeadline = caseData.getCaseDeadline();
                 LocalDate caseDeadlineWarning = caseData.getCaseDeadlineWarning();
-                LocalDate deadline = infoClient.getStageDeadlineOverridingSLA(stage.getStageType(), dateReceived, caseDeadline);
-                stage.setDeadline(deadline);
+                stage.setDeadline(caseDeadline);
                 if (caseDeadlineWarning != null) {
-                    LocalDate deadlineWarning = infoClient.getStageDeadlineWarningOverridingSLA(stage.getStageType(), dateReceived, caseDeadlineWarning);
+                    LocalDate deadlineWarning = caseDeadlineWarning;
                     stage.setDeadlineWarning(deadlineWarning);
                 }
             } else {

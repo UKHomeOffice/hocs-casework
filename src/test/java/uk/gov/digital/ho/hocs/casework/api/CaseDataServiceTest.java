@@ -51,6 +51,7 @@ import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
@@ -122,7 +123,7 @@ public class CaseDataServiceTest {
     private CaseLinkRepository caseLinkRepository;
 
     @Mock
-    private BankHolidayService bankHolidayService;
+    private DeadlineService deadlineService;
 
     Set<LocalDate> englandAndWalesBankHolidays2020 = Set.of(
             LocalDate.parse("2020-01-01"),
@@ -150,7 +151,7 @@ public class CaseDataServiceTest {
                 auditClient,
                 caseCopyFactory,
                 caseActionService,
-                bankHolidayService
+                deadlineService
         );
     }
 
@@ -160,10 +161,11 @@ public class CaseDataServiceTest {
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
         LocalDate expectedDeadline = LocalDate.parse("2020-03-02");
 
-        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
-        when(infoClient.getBankHolidayRegionsByCaseType(any())).thenReturn(bankHolidayRegionsAsString);
-        when(bankHolidayService.getBankHolidayDatesForRegions(eq(bankHolidayRegions))).thenReturn(englandAndWalesBankHolidays2020);
+        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+        when(deadlineService
+                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla()))
+                .thenReturn(expectedDeadline);
 
         // when
         CaseData caseData = caseDataService
@@ -172,6 +174,8 @@ public class CaseDataServiceTest {
         // then
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
+        verify(deadlineService, times(1))
+                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
 
         assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
 
@@ -221,6 +225,9 @@ public class CaseDataServiceTest {
 
 
         when(caseDataRepository.findActiveByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);
+        when(deadlineService
+                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla()))
+                .thenReturn(expectedDeadline);
 
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(comp2);
         when(caseCopyFactory.getStrategy(any(), any())).thenReturn(Optional.of((fromCase, toCase) -> {}));
@@ -253,6 +260,9 @@ public class CaseDataServiceTest {
         // assert the reference sequence number part is valid
         assertThat(previousReferenceMatcher.group(1)).isEqualTo(caseReferenceMatcher.group(1));
 
+        verify(deadlineService, times(1))
+                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
+
         // check deadline
         assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
     }
@@ -265,6 +275,9 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(deadlineService
+                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla()))
+                .thenReturn(expectedDeadline);
 
         // when
         CaseData caseData = caseDataService
@@ -273,6 +286,9 @@ public class CaseDataServiceTest {
         // then
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
+
+        verify(deadlineService, times(1))
+                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
 
         assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
 
@@ -783,7 +799,7 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, originalReceivedDate);
         CaseDataType caseDataType =
                 new CaseDataType(
-                        "TEST_TYPE",
+                        "MIN",
                         "TT",
                         "TEST_TYPE",
                         null,
@@ -791,10 +807,11 @@ public class CaseDataServiceTest {
                         15
                 );
 
-        when(infoClient.getBankHolidayRegionsByCaseType(any())).thenReturn(bankHolidayRegionsAsString);
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
         when(infoClient.getCaseType(any())).thenReturn(caseDataType);
-        when(bankHolidayService.getBankHolidayDatesForRegions(eq(bankHolidayRegions))).thenReturn(englandAndWalesBankHolidays2020);
+        when(deadlineService.calculateWorkingDaysForCaseType(
+                eq(caseDataType.getDisplayName()), eq(updatedReceivedDate), anyInt()))
+                .thenReturn(expectedNewDeadline);
 
         // when
         caseDataService.updateDateReceived_defaultSla(caseUUID, stageUUID, updatedReceivedDate);
@@ -805,6 +822,8 @@ public class CaseDataServiceTest {
         assertThat(caseData.getDateReceived()).isEqualTo(updatedReceivedDate);
         verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
         verify(caseDataRepository, times(1)).save(caseDataCaptor.capture());
+        verify(deadlineService, times(1))
+                .calculateWorkingDaysForCaseType(caseDataType.getDisplayName(), updatedReceivedDate, caseType.getSla());
 
         assertThat(caseDataCaptor.getValue().getCaseDeadline()).isEqualTo(expectedNewDeadline);
 
@@ -821,7 +840,7 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, originalReceivedDate);
         CaseDataType caseDataType =
                 new CaseDataType(
-                        "TEST_TYPE",
+                        "MIN",
                         "TT",
                         "TEST_TYPE",
                         null,
@@ -829,9 +848,10 @@ public class CaseDataServiceTest {
                         15
                 );
 
-        when(infoClient.getBankHolidayRegionsByCaseType(any())).thenReturn(bankHolidayRegionsAsString);
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
-        when(bankHolidayService.getBankHolidayDatesForRegions(eq(bankHolidayRegions))).thenReturn(englandAndWalesBankHolidays2020);
+        when(deadlineService
+                .calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), 10))
+                .thenReturn(expectedNewDeadline);
 
         // when
         caseDataService.overrideSla(caseUUID, stageUUID, 10);
@@ -841,6 +861,8 @@ public class CaseDataServiceTest {
 
         verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
         verify(caseDataRepository, times(1)).save(caseDataCaptor.capture());
+        verify(deadlineService, times(2))
+                .calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), 10);
 
         assertThat(caseDataCaptor.getValue().getCaseDeadline()).isEqualTo(expectedNewDeadline);
 
@@ -857,7 +879,9 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
         when(infoClient.getCaseType(caseType.getDisplayName()))
                 .thenReturn(new CaseDataType(null, null, null, null, 20, 15));
-
+        when(deadlineService
+                .calculateWorkingDaysForCaseType(any(), any(), eq(15)))
+                .thenReturn(LocalDate.now());
         // when
         caseDataService.updateDispatchDeadlineDate(caseUUID, stageUUID, deadlineDate);
 
@@ -866,7 +890,7 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
         verify(caseDataRepository, times(1)).save(caseData);
         verifyNoMoreInteractions(caseDataRepository);
-
+        verify(deadlineService).calculateWorkingDaysForCaseType(any(), any(), eq(15));
         verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
 
     }
@@ -879,12 +903,17 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         LocalDate caseDeadline = LocalDate.now();
 
+        when(deadlineService
+                .calculateWorkingDaysForCaseType(any(), any(), eq(7)))
+                .thenReturn(LocalDate.now());
+
         caseDataService.updateStageDeadline(caseData.getUuid(), stageUUID, "TEST", 7);
 
         verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
         verify(caseDataRepository).save(caseData);
         verifyNoMoreInteractions(caseDataRepository);
         verify(auditClient).updateCaseAudit(caseData, stageUUID);
+        verify(deadlineService).calculateWorkingDaysForCaseType(any(), any(), eq(7));
         verifyNoMoreInteractions(auditClient);
     }
 
@@ -1025,8 +1054,21 @@ public class CaseDataServiceTest {
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         LocalDate caseDeadline = LocalDate.now();
+        when(deadlineService
+                .calculateWorkingDaysForCaseType(eq(caseType.getDisplayCode()), eq(deadlineDate), eq(9)))
+                .thenReturn(caseDeadline);
+        when(deadlineService
+                .calculateWorkingDaysForCaseType(eq(caseType.getDisplayCode()), eq(deadlineDate), eq(10)))
+                .thenReturn(caseDeadline);
+        when(deadlineService
+                .calculateWorkingDaysForCaseType(eq(caseType.getDisplayCode()), eq(deadlineDate), eq(5)))
+                .thenReturn(caseDeadline);
 
         caseDataService.updateDeadlineForStages(caseData.getUuid(), stageUUID, stageTypeAndDaysMap);
+
+        verify(deadlineService).calculateWorkingDaysForCaseType(any(), any(), eq(9));
+        verify(deadlineService).calculateWorkingDaysForCaseType(any(), any(), eq(10));
+        verify(deadlineService).calculateWorkingDaysForCaseType(any(), any(), eq(5));
 
         verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
         verify(caseDataRepository).save(caseData);

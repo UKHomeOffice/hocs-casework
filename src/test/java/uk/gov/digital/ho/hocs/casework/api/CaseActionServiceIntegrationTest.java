@@ -17,11 +17,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.utils.DateUtils;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -164,7 +166,7 @@ public class CaseActionServiceIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(8).toString()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadlineWarning?received=2018-01-01&caseDeadlineWarning=" + LocalDate.now().plusDays(3) + "&overrideSla=true"))
+                .expect(requestTo("http://localhost:8085/stageType/INITIAL_DRAFT/deadlineWarning?received=2018-01-01&caseDeadlineWarning=" + DateUtils.addWorkingDays(LocalDate.now(), 3, Set.of()) + "&overrideSla=true"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(6).toString()), MediaType.APPLICATION_JSON));
         mockInfoService
@@ -196,6 +198,10 @@ public class CaseActionServiceIntegrationTest {
                 .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/deadline/2018-01-29/remainingDays"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(10), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
                 .andExpect(method(GET))
