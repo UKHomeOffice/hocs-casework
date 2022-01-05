@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -41,7 +40,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_EMPTY;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_FORBIDDEN;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAUTHORISED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGES_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_TEAM;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_USER;
@@ -357,7 +355,7 @@ public class StageService {
         for (StageWithCaseData stage : stages) {
             stagePriorityCalculator.updatePriority(stage.getData(), stage.getCaseDataType());
             daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
-            stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType());
+            stage.setTag(stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType()));
         }
     }
 
