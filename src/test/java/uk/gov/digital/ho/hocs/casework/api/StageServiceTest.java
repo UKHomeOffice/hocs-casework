@@ -1022,20 +1022,6 @@ public class StageServiceTest {
         stageService.getStageTeam(caseUuid, stageUuid);
     }
 
-//    @Test
-//    private void shouldSetTagsOntoStage() {
-//        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-//        Set<StageWithCaseData> stages = new HashSet<>();
-//        stages.add(stage);
-//
-//        ArrayList<String> mockTags = new ArrayList<String>();
-//        mockTags.add("HS");
-//
-//        when(stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType())).thenReturn(mockTags);
-//
-//        var result = stageService.update
-//
-//    }
 
     /**
      * The stage cannot be an instance as it does not have a function to set data (in the Stage Class).
