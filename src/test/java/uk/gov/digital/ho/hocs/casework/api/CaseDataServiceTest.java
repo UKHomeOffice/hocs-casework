@@ -841,7 +841,7 @@ public class CaseDataServiceTest {
     @Test
     public void shouldOverrideSla() {
         // given
-        LocalDate originalReceivedDate = LocalDate.parse("2020-02-01"); // todo: use dates that have a bank holiday between
+        LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
         LocalDate expectedNewDeadline = LocalDate.parse("2020-02-17");
 
         CaseData caseData = new CaseData(caseType, caseID, originalReceivedDate);

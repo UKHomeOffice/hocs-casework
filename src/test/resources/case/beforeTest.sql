@@ -3,7 +3,9 @@ INSERT INTO case_data (uuid, created, type, reference, data, primary_topic_uuid,
 VALUES ('14915b78-6977-42db-b343-0915a7f412a1', '2018-12-14 12:00:00', 'TEST', 'TEST/9990190/18',
         '{"DateReceived": "2018-01-01"}', null, null, '2018-01-29', '2018-01-01', false),
        ('24915b78-6977-42db-b343-0915a7f412a1', '2018-12-14 12:00:00', 'TEST', 'TEST/9990191/18',
-        '{"DateReceived": "2018-01-01"}', null, null, '2018-01-29', '2018-01-01', false);
+        '{"DateReceived": "2018-01-01"}', null, null, '2018-01-29', '2018-01-01', false),
+       ('b2e0b71c-d9be-4a0b-8e6c-38d06146f0e0', '2018-12-14 12:00:00', 'TEST', 'TEST/9990192/18',
+        '{"DateReceived": "2021-12-08"}', null, null, '2022-01-10', '2021-12-08', false);
 
 INSERT INTO stage (uuid, created, type, deadline, case_uuid, team_uuid, user_uuid)
 VALUES ('e9151b83-7602-4419-be83-bff1c924c80d', '2018-12-14 12:00:00', 'INITIAL_DRAFT', '2018-01-07',
@@ -11,6 +13,9 @@ VALUES ('e9151b83-7602-4419-be83-bff1c924c80d', '2018-12-14 12:00:00', 'INITIAL_
         '4035d37f-9c1d-436e-99de-1607866634d4'),
        ('44d849e4-e7f1-47fb-b4a1-2092270c9b0d', '2018-12-14 12:00:00', 'INITIAL_DRAFT', '2018-01-07',
         '24915b78-6977-42db-b343-0915a7f412a1', '20a47a36-361f-4b85-90e3-1a1946874ef6',
+        null),
+       ('7c4fd5df-16d9-4304-9ba9-ed01e8c6b133', '2018-12-14 12:00:00', 'INITIAL_DRAFT', '2018-01-07',
+        'b2e0b71c-d9be-4a0b-8e6c-38d06146f0e0', '20a47a36-361f-4b85-90e3-1a1946874ef6',
         null);
 
 INSERT INTO correspondent (uuid, created, type, case_uuid, fullname, postcode, address1, address2, address3, country,
@@ -36,4 +41,13 @@ INSERT INTO bank_holiday (region, date) VALUES
         ('ENGLAND_AND_WALES', '2020-05-25'),
         ('ENGLAND_AND_WALES', '2020-08-31'),
         ('ENGLAND_AND_WALES', '2020-12-25'),
-        ('ENGLAND_AND_WALES', '2020-12-28');
+        ('ENGLAND_AND_WALES', '2020-12-28'),
+        ('ENGLAND_AND_WALES', '2021-01-01'),
+        ('ENGLAND_AND_WALES', '2021-04-02'),
+        ('ENGLAND_AND_WALES', '2021-04-05'),
+        ('ENGLAND_AND_WALES', '2021-05-03'),
+        ('ENGLAND_AND_WALES', '2021-05-31'),
+        ('ENGLAND_AND_WALES', '2021-08-30'),
+        ('ENGLAND_AND_WALES', '2021-12-27'),
+        ('ENGLAND_AND_WALES', '2021-12-28'),
+        ('ENGLAND_AND_WALES', '2022-01-03');

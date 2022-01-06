@@ -319,9 +319,7 @@ public class CaseDataService {
 
         caseData.setCaseDeadline(deadline);
 
-        // 0 previously hardcoded from old call on line 88 of CaseDataResource
-        // this will be removed once a specialised version of updateCaseDeadlines exists
-        updateCaseDeadlines(caseData, stageUUID, dateReceived, 0);
+        updateCaseDeadlines(caseData, stageUUID);
     }
 
     void overrideSla(UUID caseUUID, UUID stageUUID, int days) {
@@ -337,10 +335,7 @@ public class CaseDataService {
 
         caseData.setCaseDeadline(deadline);
 
-        // null date is a result of updateCaseDeadlines having multiple responsibilities and will
-        // be removed when this is fixed
-        // this will be removed once a specialised version of updateCaseDeadlines exists
-        updateCaseDeadlines(caseData, stageUUID, null, days);
+        updateCaseDeadlines(caseData, stageUUID, days);
     }
 
     void updateDispatchDeadlineDate(UUID caseUUID, UUID stageUUID, LocalDate dispatchDeadlineDate) {
@@ -354,24 +349,32 @@ public class CaseDataService {
             caseData.setCaseDeadline(dispatchDeadlineDate);
         }
 
-        updateCaseDeadlines(caseData, stageUUID, dispatchDeadlineDate, 0);
+        updateCaseDeadlines(caseData, stageUUID);
     }
 
+    private void updateCaseDeadlines(CaseData caseData, UUID stageUUID) {
+        log.debug("Updating case deadlines for Case: {} Date: {}", caseData.getUuid(), caseData.getDateReceived());
 
-    private void updateCaseDeadlines(CaseData caseData, UUID stageUUID, LocalDate dateReceived, int days) {
-        log.debug("Updating case deadlines for Case: {} Date: {}", caseData.getUuid(), dateReceived);
+        final CaseDataType caseTypeDto = infoClient.getCaseType(caseData.getType());
+        LocalDate deadlineWarning = deadlineService.calculateWorkingDaysForCaseType(
+                caseData.getType(),
+                caseData.getDateReceived(),
+                caseTypeDto.getDeadLineWarning());
 
-        LocalDate deadlineWarning;
-
-        if (days > 0) { // todo: get rid of this if/else
-            deadlineWarning = deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), days);
-        } else {
-            final CaseDataType caseTypeDto = infoClient.getCaseType(caseData.getType());
-            deadlineWarning = deadlineService.calculateWorkingDaysForCaseType(
-                    caseData.getType(),
-                    caseData.getDateReceived(),
-                    caseTypeDto.getDeadLineWarning());
+        if (deadlineWarning.isAfter(LocalDate.now())) {
+            caseData.setCaseDeadlineWarning(deadlineWarning);
         }
+
+        updateStageDeadlines(caseData);
+        caseDataRepository.save(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
+    }
+
+    private void updateCaseDeadlines(CaseData caseData, UUID stageUUID, int days) {
+        log.debug("Updating case deadlines for Case: {} Date: {}", caseData.getUuid(), caseData.getDateReceived());
+
+        LocalDate deadlineWarning =
+                deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), days);
 
         if (deadlineWarning.isAfter(LocalDate.now())) {
             caseData.setCaseDeadlineWarning(deadlineWarning);
