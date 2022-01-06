@@ -133,10 +133,13 @@ public class StageWithCaseData extends BaseStage {
     }
 
     public void putData(String key, String value) {
+        if (this.data == null) {
+            this.data = new HashMap<>();
+        }
+
         var newData = new HashMap<>(this.data);
         newData.put(key, value);
         this.data = newData;
-
     }
 
     public void putAllData(Map<String,String> data) {
