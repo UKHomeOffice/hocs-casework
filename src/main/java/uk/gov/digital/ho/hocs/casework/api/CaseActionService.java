@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,11 +23,16 @@ public class CaseActionService {
     private final CaseDataRepository caseDataRepository;
     private final InfoClient infoClient;
     private final List<ActionService> actionServiceList;
+    private final DeadlineService deadlineService;
 
-    public CaseActionService(CaseDataRepository caseDataRepository, InfoClient infoClient, List<ActionService> actionServiceMap ) {
+    public CaseActionService(final CaseDataRepository caseDataRepository,
+                             final InfoClient infoClient,
+                             final List<ActionService> actionServiceMap,
+                             final DeadlineService deadlineService) {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.actionServiceList = new LinkedList<>(actionServiceMap);
+        this.deadlineService = deadlineService;
     }
 
     public CaseActionDataResponseDto getAllCaseActionDataForCase(UUID caseId) {
@@ -38,7 +44,8 @@ public class CaseActionService {
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseId);
         List<CaseTypeActionDto> caseTypeActionDtoList =  infoClient.getCaseTypeActionForCaseType(caseData.getType());
-        int remainingDays = infoClient.getRemainingDaysToDeadline(caseData.getType(), caseData.getCaseDeadline());
+        int remainingDays = deadlineService
+                .calculateRemainingWorkingDaysForCaseType(caseData.getType(), caseData.getCaseDeadline(), LocalDate.now());
 
         log.info("Returning case action data for caseId: {}", caseId);
         return CaseActionDataResponseDto.from(actions, caseTypeActionDtoList, caseData.getCaseDeadline(), remainingDays);

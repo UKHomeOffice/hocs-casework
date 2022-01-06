@@ -478,7 +478,8 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
-        when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived()))
+                .thenReturn(deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -487,7 +488,8 @@ public class CaseDataServiceTest {
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
         verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
-        verify(infoClient, times(1)).getStageDeadlines(caseData.getType(), caseData.getDateReceived());
+        verify(deadlineService, times(1))
+                .getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
     }
 
@@ -511,7 +513,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
-        when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -521,7 +523,7 @@ public class CaseDataServiceTest {
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
         verify(infoClient).getCaseSummaryFields(caseData.getType());
-        verify(infoClient).getStageDeadlines(caseData.getType(), caseData.getDateReceived());
+        verify(deadlineService).getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
     }
 
@@ -538,7 +540,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
-        when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
 
         CaseSummary caseSummary = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -562,7 +564,8 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
-        when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived()))
+                .thenReturn(deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -571,7 +574,8 @@ public class CaseDataServiceTest {
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
         verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
-        verify(infoClient, times(1)).getStageDeadlines(caseData.getType(), caseData.getDateReceived());
+        verify(deadlineService, times(1))
+                .getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
 
     }
@@ -598,7 +602,8 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
-        when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived()))
+                .thenReturn(deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -607,7 +612,8 @@ public class CaseDataServiceTest {
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
         verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
-        verify(infoClient, times(1)).getStageDeadlines(caseData.getType(), caseData.getDateReceived());
+        verify(deadlineService, times(1))
+                .getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
     }
 
@@ -644,7 +650,8 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
         when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
-        when(infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived()))
+                .thenReturn(deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 

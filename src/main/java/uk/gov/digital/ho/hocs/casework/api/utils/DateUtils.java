@@ -4,6 +4,7 @@ package uk.gov.digital.ho.hocs.casework.api.utils;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class DateUtils {
 
@@ -47,5 +48,35 @@ public final class DateUtils {
             }
         }
         return result;
+    }
+
+    public static int calculateRemainingWorkingDays(LocalDate today, LocalDate deadline, Set<LocalDate> holidays) {
+
+        int daysRemaining = 0;
+
+        while(today.isBefore(deadline.plusDays(1))) {
+            if (!DateUtils.isDateNonWorkingDay(today, holidays)) {
+                daysRemaining++;
+            }
+            today = today.plusDays(1);
+        }
+
+        return daysRemaining;
+    }
+
+    public static int calculateWorkingDaysElapsedSinceDate(LocalDate fromDate,
+                                                    LocalDate today,
+                                                    Set<LocalDate> bankHolidayDatesForCase) {
+        LocalDate date = fromDate;
+        int workingDays = 0;
+        while (date.isBefore(today)) {
+            if (!DateUtils.isDateNonWorkingDay(date, bankHolidayDatesForCase)) {
+                workingDays++;
+            }
+
+            date = date.plusDays(1);
+        }
+
+        return workingDays;
     }
 }

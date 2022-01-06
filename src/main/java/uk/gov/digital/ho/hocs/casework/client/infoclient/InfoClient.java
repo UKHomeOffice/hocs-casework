@@ -9,8 +9,6 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -124,14 +122,6 @@ public class InfoClient {
         return response;
     }
 
-    @Cacheable(value = "InfoClientGetStageDeadlines", unless = "#result.size() == 0", key = "{#caseType, #received.toString() }")
-    public Map<String, LocalDate> getStageDeadlines(String caseType, LocalDate received) {
-        Map<String, LocalDate> response = restHelper.get(serviceBaseURL, String.format("/caseType/%s/stageType/deadline?received=%s", caseType, received), new ParameterizedTypeReference<Map<String, LocalDate>>() {
-        });
-        log.info("Got {} stage deadlines for CaseType {} and Date {}", response.size(), caseType, received, value(EVENT, INFO_CLIENT_GET_DEADLINES_SUCCESS));
-        return response;
-    }
-
     @Cacheable(value = "InfoClientGetAllStagesForCaseType", unless = "#result.size() == 0", key = "{#caseType}")
     public Set<StageTypeDto> getAllStagesForCaseType(String caseType) {
         Set<StageTypeDto> response = restHelper.get(serviceBaseURL, String.format("/stages/caseType/%s", caseType), new ParameterizedTypeReference<>() {
@@ -193,23 +183,6 @@ public class InfoClient {
         });
         log.info("Got {} policies", policies.size(), value(EVENT, INFO_CLIENT_GET_PRIORITY_POLICIES_SUCCESS));
         return policies;
-    }
-
-    @Cacheable(value = "InfoClientGetWorkingDaysElapsedForCaseType")
-    public Integer getWorkingDaysElapsedForCaseType(String caseType, LocalDate fromDate) {
-        String dateString = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(fromDate);
-        Integer elapsedWorkingDays = restHelper.get(serviceBaseURL, String.format("/caseType/%s/workingDays/%s", caseType, dateString), new ParameterizedTypeReference<Integer>() {
-        });
-        log.info("Got working days elapsed for case type: {} fromDate: {}, event {}", caseType, dateString, value(EVENT, INFO_CLIENT_GET_WORKING_DAYS_FOR_CASE_TYPE_SUCCESS));
-        return elapsedWorkingDays;
-    }
-
-    public Integer getRemainingDaysToDeadline(String caseType, LocalDate deadlineDate) {
-        String dateString = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(deadlineDate);
-        Integer remainingDays = restHelper.get(serviceBaseURL, String.format("/caseType/%s/deadline/%s/remainingDays", caseType, dateString), new ParameterizedTypeReference<Integer>() {
-        });
-        log.info("Got remaining days for caseType {} with deadline {} as {} days remaining, event {}", caseType, dateString, remainingDays, value(EVENT, INFO_CLIENT_REMAINING_DAYS_FOR_CASE_TYPE_AND_DEADLINE_SUCCESS));
-        return remainingDays;
     }
 
     @Cacheable(value = "InfoGetProfileByCaseType", unless = "#result == null")

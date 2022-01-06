@@ -132,23 +132,6 @@ public class InfoClientTest {
     }
 
     @Test
-    public void getWorkingDaysElapsedForCaseType() {
-        String caseType = "CASE_TYPE_A";
-        LocalDate fromDate = LocalDate.parse("2020-05-11");
-        when(restHelper.get("infoService", "/caseType/CASE_TYPE_A/workingDays/2020-05-11", new ParameterizedTypeReference<Integer>() {
-        })).thenReturn(12);
-
-        Integer result = infoClient.getWorkingDaysElapsedForCaseType(caseType, fromDate);
-        assertThat(result).isNotNull();
-        assertThat(result).isEqualTo(12);
-
-        verify(restHelper).get("infoService", "/caseType/CASE_TYPE_A/workingDays/2020-05-11", new ParameterizedTypeReference<Integer>() {
-        });
-        verifyNoMoreInteractions(restHelper);
-    }
-
-
-    @Test
     public void getProfileByCaseType() {
 
         ProfileDto profileDto = new ProfileDto("prof1", true, List.of());

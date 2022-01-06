@@ -22,4 +22,6 @@ public class StageTypeDto {
     @JsonProperty("deadlineWarning")
     private int deadlineWarning;
 
+    @JsonProperty("sortOrder")
+    private int sortOrder;
 }

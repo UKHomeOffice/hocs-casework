@@ -79,7 +79,14 @@ public class StageServiceTest {
     private final String userID = UUID.randomUUID().toString();
 
     private StageService stageService;
-    private final StageTypeDto stageTypeDto = new StageTypeDto("DCU_MIN_MARKUP", null, "DCU_MIN_MARKUP", 20, 15);
+    private final StageTypeDto stageTypeDto = new StageTypeDto(
+            "DCU_MIN_MARKUP",
+            null,
+            "DCU_MIN_MARKUP",
+            20,
+            15,
+            1
+    );
 
     @Mock
     private StageRepository stageRepository;

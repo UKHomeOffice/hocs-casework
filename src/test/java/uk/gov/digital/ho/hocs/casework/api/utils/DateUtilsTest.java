@@ -109,4 +109,68 @@ public class DateUtilsTest {
         // then
         assertThat(result).isEqualTo(expectedExtendedDate);
     }
+
+    @Test
+    public void calculateRemainingWorkingDays_fromWorkingDay() {
+        // given
+        String today = "2020-08-17";
+        String deadline = "2020-09-13";
+
+        LocalDate todayDate = LocalDate.parse(today);
+        LocalDate deadlineDate = LocalDate.parse(deadline);
+
+        // when
+        final int result = DateUtils.calculateRemainingWorkingDays(todayDate, deadlineDate, bankHolidays);
+
+        // then
+        assertThat(result).isEqualTo(19);
+    }
+
+    @Test
+    public void calculateRemainingWorkingDays_fromNonWorkingDay() {
+        // given
+        String today = "2020-01-04";
+        String deadline = "2020-02-03";
+
+        LocalDate todayDate = LocalDate.parse(today);
+        LocalDate deadlineDate = LocalDate.parse(deadline);
+
+        // when
+        final int result = DateUtils.calculateRemainingWorkingDays(todayDate, deadlineDate, bankHolidays);
+
+        // then
+        assertThat(result).isEqualTo(21);
+    }
+
+    @Test
+    public void calculateWorkingDaysElapsedSinceDate_fromWorkingDay() {
+        // given
+        String start = "2020-08-17";
+        String today = "2020-09-13";
+
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate todayDate = LocalDate.parse(today);
+
+        // when
+        final int result = DateUtils.calculateWorkingDaysElapsedSinceDate(startDate, todayDate, bankHolidays);
+
+        // then
+        assertThat(result).isEqualTo(19);
+    }
+
+    @Test
+    public void calculateWorkingDaysElapsedSinceDate_fromNonWorkingDay() {
+        // given
+        String start = "2020-01-04";
+        String today = "2020-02-03";
+
+        LocalDate startDate = LocalDate.parse(start);
+        LocalDate todayDate = LocalDate.parse(today);
+
+        // when
+        final int result = DateUtils.calculateWorkingDaysElapsedSinceDate(startDate, todayDate, bankHolidays);
+
+        // then
+        assertThat(result).isEqualTo(20);
+    }
 }
