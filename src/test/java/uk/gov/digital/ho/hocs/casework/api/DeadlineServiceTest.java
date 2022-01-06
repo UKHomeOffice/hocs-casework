@@ -51,7 +51,6 @@ public class DeadlineServiceTest {
     public void setUp() {
         configuration = new SpringConfiguration();
 
-//        when(mockInfoService.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
         when(mockInfoService.getBankHolidayRegionsByCaseType(any())).thenReturn(bankHolidayRegionsAsString);
         when(mockBankHolidayService.getBankHolidayDatesForRegions(eq(bankHolidayRegions)))
                 .thenReturn(englandAndWalesBankHolidays);
@@ -64,9 +63,6 @@ public class DeadlineServiceTest {
         // given
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
         LocalDate expectedDeadline = LocalDate.parse("2020-03-02");
-//
-//        when(mockInfoService.getCaseType(caseType.getDisplayCode()))
-//                .thenReturn(caseType);
 
         // when
         final LocalDate result =
