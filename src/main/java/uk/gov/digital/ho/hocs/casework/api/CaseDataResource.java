@@ -91,21 +91,19 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    // TODO: Add test
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/deadline")
     public ResponseEntity<Void> overrideSla(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody int days) {
         caseDataService.overrideSla(caseUUID, stageUUID, days);
         return ResponseEntity.ok().build();
     }
 
-    // TODO: Add test
+
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/dispatchDeadlineDate")
     public ResponseEntity<Void> updateCaseDispatchDeadlineDate(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody LocalDate dispatchDate) {
         caseDataService.updateDispatchDeadlineDate(caseUUID, stageUUID, dispatchDate);
         return ResponseEntity.ok().build();
     }
 
-    // TODO: Add test
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/stageDeadline")
     public ResponseEntity<Void> updateStageDeadline(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageDeadlineRequest request) {
         caseDataService.updateStageDeadline(caseUUID, stageUUID, request.getStageType(), request.getDays());
@@ -118,7 +116,6 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    // TODO: Add test
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryCorrespondent")
     public ResponseEntity<Void> updateCasePrimaryCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryCorrespondentUUID) {
         caseDataService.updatePrimaryCorrespondent(caseUUID, stageUUID, primaryCorrespondentUUID);

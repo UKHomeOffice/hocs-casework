@@ -18,13 +18,17 @@ import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,6 +60,9 @@ public class CaseDataDeadlinesIntegrationTest {
     private CaseDataRepository caseDataRepository;
 
     @Autowired
+    private StageRepository stageRepository;
+
+    @Autowired
     private RestTemplate restTemplate;
 
     @Before
@@ -80,7 +87,7 @@ public class CaseDataDeadlinesIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateCaseDateReceivedAndSetCorrectDeadlines() throws JsonProcessingException {
+    public void shouldOverrideCaseAndStageSlas() throws JsonProcessingException {
         setupMockTeams("TEST", 5);
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -91,6 +98,44 @@ public class CaseDataDeadlinesIntegrationTest {
 
         final CaseData caseData =
                 caseDataRepository.findActiveByUuid(UUID.fromString("b2e0b71c-d9be-4a0b-8e6c-38d06146f0e0"));
+
+        assertThat(caseData).isNotNull();
+        assertThat(caseData.getDateReceived()).isEqualTo("2021-12-08");
+        assertThat(caseData.getCaseDeadlineWarning()).isEqualTo("2022-01-07");
+        assertThat(caseData.getCaseDeadline()).isEqualTo("2022-01-07");
+
+        final Stage stage = stageRepository
+                .findActiveBasicStageByCaseUuidStageUUID(
+                        UUID.fromString("b2e0b71c-d9be-4a0b-8e6c-38d06146f0e0"),
+                        UUID.fromString("7c4fd5df-16d9-4304-9ba9-ed01e8c6b133"));
+
+        assertThat(stage.getDeadline()).isEqualTo("2021-12-22");
+        assertThat(stage.getDeadlineWarning()).isEqualTo("2021-12-15");
+    }
+
+    @Test
+    public void shouldUpdateReceivedDate() throws JsonProcessingException {
+        setupMockTeams("TEST", 5);
+
+        ResponseEntity<Void> result = testRestTemplate.exchange(
+                getBasePath() + "/case/b2e0b71c-d9be-4a0b-8e6c-38d06146f0e0/stage/7c4fd5df-16d9-4304-9ba9-ed01e8c6b133/dateReceived",
+                PUT, new HttpEntity(LocalDate.parse("2021-12-10"), createValidAuthHeaders()), Void.class);
+
+        assertThat(result.getStatusCodeValue()).isEqualTo(200);
+
+        final CaseData caseData =
+                caseDataRepository.findActiveByUuid(UUID.fromString("b2e0b71c-d9be-4a0b-8e6c-38d06146f0e0"));
+
+        assertThat(caseData).isNotNull();
+        assertThat(caseData.getDateReceived()).isEqualTo("2021-12-10");
+        assertThat(caseData.getCaseDeadline()).isEqualTo("2022-01-12");
+
+        final Stage stage = stageRepository
+                .findActiveBasicStageByCaseUuidStageUUID(
+                        UUID.fromString("b2e0b71c-d9be-4a0b-8e6c-38d06146f0e0"),
+                        UUID.fromString("7c4fd5df-16d9-4304-9ba9-ed01e8c6b133"));
+
+        assertThat(stage.getDeadline()).isEqualTo("2021-12-24");
     }
 
     private ResponseEntity<CreateCaseResponse> getCreateCaseResponse(String body, String caseTypePermission, String permissionLevel) {
@@ -124,6 +169,11 @@ public class CaseDataDeadlinesIntegrationTest {
                 .andRespond(withSuccess(mapper.writeValueAsString(CaseDataTypeFactory.from("TEST", "a1")), MediaType.APPLICATION_JSON));
 
         mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/type/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(CaseDataTypeFactory.from("TEST", "a1")), MediaType.APPLICATION_JSON));
+
+        mockInfoService
                 .expect(requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
@@ -142,10 +192,23 @@ public class CaseDataDeadlinesIntegrationTest {
                 .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
+
         mockInfoService
                 .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/stages/caseType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(Set.of(
+                        new StageTypeDto("initial draft", "DRAFT", "INITIAL_DRAFT", 10, 5, 1))),
+                        MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
