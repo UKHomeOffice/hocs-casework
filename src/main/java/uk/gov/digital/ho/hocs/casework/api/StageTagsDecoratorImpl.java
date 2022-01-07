@@ -19,9 +19,9 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
 
 
     @Override
-    public Collection<String> decorateTags(Map<String,String> data, String stageType) {
+    public ArrayList<String> decorateTags(Map<String,String> data, String stageType) {
         ArrayList<String> tags = new ArrayList<>();
-        if (this.addHomeSecReplyTag(data, stageType)) {
+        if (this.addHomeSecReplyTag(data, stageType).equals(Boolean.TRUE)) {
             tags.add(StageTags.HOME_SEC_REPLY_TAG);
         }
         return tags;
