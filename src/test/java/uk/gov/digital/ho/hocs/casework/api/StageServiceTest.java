@@ -964,6 +964,32 @@ public class StageServiceTest {
     }
 
     @Test
+    public void shouldSetTagsOnStages() {
+        Set<UUID> teams = new HashSet<>();
+        teams.add(UUID.randomUUID());
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        stage.putData("HomeSecReply", "TRUE");
+
+        ArrayList<String> tags = new ArrayList<String>(Collections.singleton("HS"));
+
+        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
+        when(stageRepository.findAllActiveByUserUuidAndTeamUuid(userUUID, teams)).thenReturn(Set.of(stage));
+        when(stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType())).thenReturn(tags);
+
+        var result = stageService.getActiveUserStagesWithTeamsForUser(userUUID);
+
+        verify(userPermissionsService).getExpandedUserTeams();
+        verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
+        verify(stagePriorityCalculator).updatePriority(stage.getData(), stage.getCaseDataType());
+        verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
+        verify(stageTagsDecorator).decorateTags(stage.getData(), stage.getStageType());
+
+        assertThat(result.iterator().next().getTag()).isEqualTo(tags);
+
+        checkNoMoreInteraction();
+    }
+
+    @Test
     public void shouldGetActiveUserStagesWithTeamsAndCaseType_noTeams() {
         Set<UUID> teams = new HashSet<>();
 
@@ -1016,6 +1042,7 @@ public class StageServiceTest {
         stageService.getStageTeam(caseUuid, stageUuid);
     }
 
+
     /**
      * The stage cannot be an instance as it does not have a function to set data (in the Stage Class).
      * I did not want to create a setData on the Stage class for testing only.
@@ -1043,5 +1070,4 @@ public class StageServiceTest {
         verifyNoMoreInteractions(stageRepository, userPermissionsService, notifyClient, auditClient, searchClient,
                 infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator, caseNoteService);
     }
-
 }

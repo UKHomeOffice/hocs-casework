@@ -139,6 +139,9 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         updateStageDeadlines(caseData);
 
         ActionDataDeadlineExtension createdExtension = extensionRepository.save(extensionEntity);
+
+        // add extension indicator - is picked up in workstack Extended column.
+        caseData.getDataMap().put("isCaseExtended","True");
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUuid);
         auditClient.createExtensionAudit(createdExtension);

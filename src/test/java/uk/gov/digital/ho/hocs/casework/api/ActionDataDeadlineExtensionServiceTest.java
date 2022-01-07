@@ -220,6 +220,8 @@ public class ActionDataDeadlineExtensionServiceTest {
         verify(mockCaseDataRepository, times(1)).save(caseDataArgCapture.capture());
 
         assertThat(caseDataArgCapture.getValue().getCaseDeadline()).isEqualTo(LocalDate.parse("2020-05-11"));
+        assertThat(caseDataArgCapture.getValue().getDataMap().get("isCaseExtended").contentEquals("True"));
+
         verify(mockAuditClient, times(1)).updateCaseAudit(any(), any());
 
         assertThat(extensionArgumentCaptor
