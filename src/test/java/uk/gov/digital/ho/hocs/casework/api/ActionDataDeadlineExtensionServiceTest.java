@@ -192,6 +192,7 @@ public class ActionDataDeadlineExtensionServiceTest {
 
         assertThat(caseDataArgCapture.getValue().getCaseDeadline()).isEqualTo(LocalDate.now().plusDays(8));
         assertThat(caseDataArgCapture.getValue().getCaseDeadlineWarning()).isEqualTo(LocalDate.now().plusDays(6));
+        assertThat(caseDataArgCapture.getValue().getDataMap().get("isCaseExtended").contentEquals("True"));
 
         verify(mockAuditClient, times(1)).updateCaseAudit(any(), any());
 
