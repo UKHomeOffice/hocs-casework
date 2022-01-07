@@ -168,7 +168,6 @@ public class StageServiceTest {
 
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
-//        when(infoClient.getStageDeadlineWarningOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning())).thenReturn(caseData.getCaseDeadlineWarning());
 
         // WHEN
         Stage stage = stageService.createStage(caseData.getUuid(), stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
@@ -222,7 +221,6 @@ public class StageServiceTest {
 
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
-//        when(infoClient.getStageDeadlineWarningOverridingSLA(stageType, caseData.getDateReceived(), caseData.getCaseDeadlineWarning())).thenReturn(caseData.getCaseDeadlineWarning());
 
         // WHEN
         Stage stage = stageService.createStage(caseData.getUuid(), stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);

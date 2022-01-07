@@ -16,10 +16,8 @@ public class BankHolidayResource {
     }
 
     @GetMapping(value = "/bankHoliday/refresh")
-    public ResponseEntity<String> refreshFromApi() {
-        int holidaysAdded = bankHolidayService.refreshBankHolidayTable();
-        return ResponseEntity.ok(String.format("Success: Added %d bank holidays", holidaysAdded));
+    public ResponseEntity<Void> refreshFromApi() {
+        bankHolidayService.refreshBankHolidayTable();
+        return ResponseEntity.ok().build();
     }
-
-
 }

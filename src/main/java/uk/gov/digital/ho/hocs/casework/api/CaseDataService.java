@@ -224,7 +224,8 @@ public class CaseDataService {
         // get the existing case number
         Matcher findSerialNumber = CASE_REFERENCE_PATTERN.matcher(copyFromCase.getReference());
         if (!findSerialNumber.find()) {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot extract case sequence number! Failed to create Case: %s", caseType), CASE_CREATE_FAILURE);        }
+            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot extract case sequence number! Failed to create Case: %s", caseType), CASE_CREATE_FAILURE);
+        }
         Long caseNumber = Long.parseLong(findSerialNumber.group(1));
 
         // create new case with previous serial number
@@ -240,7 +241,8 @@ public class CaseDataService {
         if (strategy.isPresent()) {
             strategy.get().copyCase(copyFromCase, caseData);
         } else {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot find a copy strategy from:%s to :%s", copyFromCase.getType(), caseType), CASE_CREATE_FAILURE);        }
+            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot find a copy strategy from:%s to :%s", copyFromCase.getType(), caseType), CASE_CREATE_FAILURE);
+        }
 
         log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
         return caseData;
@@ -392,6 +394,8 @@ public class CaseDataService {
             return;
         }
 
+        final Set<StageTypeDto> stageTypesForCaseType = infoClient.getAllStagesForCaseType(caseData.getType());
+
         for (ActiveStage stage : caseData.getActiveStages()) {
             // Try and overwrite the deadlines with inputted values from the data map.
             String overrideDeadline = caseData.getData(String.format("%s_DEADLINE", stage.getStageType()));
@@ -400,8 +404,9 @@ public class CaseDataService {
                 LocalDate caseDeadline = caseData.getCaseDeadline();
                 LocalDate caseDeadlineWarning = caseData.getCaseDeadlineWarning();
 
-                final StageTypeDto stageDefinition = infoClient.getAllStagesForCaseType(caseData.getType()).stream()
-                        .filter(element -> element.getType().equals(stage.getStageType())).collect(Collectors.toList()).get(0);
+                final StageTypeDto stageDefinition = stageTypesForCaseType.stream()
+                        .filter(element -> element.getType().equals(stage.getStageType())).collect(Collectors.toList())
+                        .get(0);
 
                 LocalDate deadline = deadlineService.calculateWorkingDaysForStage(
                         caseData.getType(),

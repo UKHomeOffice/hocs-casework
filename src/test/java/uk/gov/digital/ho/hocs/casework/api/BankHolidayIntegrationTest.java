@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
+import uk.gov.digital.ho.hocs.casework.domain.repository.BankHolidayRepository;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +40,9 @@ public class BankHolidayIntegrationTest {
 
     @Autowired
     private final RestTemplate restTemplate = new RestTemplate();
+
+    @Autowired
+    private BankHolidayRepository bankHolidayRepository;
 
     @LocalServerPort
     int port;
@@ -68,6 +72,7 @@ public class BankHolidayIntegrationTest {
 
     @Test
     public void shouldUpdateBankHolidaysAndReturn200_thenAddNewBankHolidaysAndReturn200() {
+        int initialBankHolidayCount = bankHolidayRepository.findAll().size();
 
         ResponseEntity<String> firstResponse = testRestTemplate.exchange(
                 getBasePath() + "/bankHoliday/refresh",
@@ -76,9 +81,12 @@ public class BankHolidayIntegrationTest {
                 String.class
         );
 
+        int numberOfbankHolidaysAfterFirstAddition = bankHolidayRepository.findAll().size();
+        int numberOfBankHolidaysAddedAfterFirstAddition =
+                numberOfbankHolidaysAfterFirstAddition - initialBankHolidayCount;
+
         assertThat(firstResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(firstResponse.getBody()).isNotNull();
-        assertThat(firstResponse.getBody()).isEqualTo("Success: Added 1 bank holidays");
+        assertThat(numberOfBankHolidaysAddedAfterFirstAddition).isEqualTo(1);
 
         ResponseEntity<String> secondResponse = testRestTemplate.exchange(
                 getBasePath() + "/bankHoliday/refresh",
@@ -87,9 +95,12 @@ public class BankHolidayIntegrationTest {
                 String.class
         );
 
+        int numberOfBankHolidaysAfterSecondAddition = bankHolidayRepository.findAll().size();
+        int numberOfBankHolidaysAddedAfterSecondAddition =
+                numberOfBankHolidaysAfterSecondAddition - numberOfbankHolidaysAfterFirstAddition;
+
         assertThat(secondResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(secondResponse.getBody()).isNotNull();
-        assertThat(secondResponse.getBody()).isEqualTo("Success: Added 3 bank holidays");
+        assertThat(numberOfBankHolidaysAddedAfterSecondAddition).isEqualTo(3);
     }
 
     // -------- HELPERS ----------

@@ -116,6 +116,7 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
+    // TODO: Add test
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/primaryCorrespondent")
     public ResponseEntity<Void> updateCasePrimaryCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UUID primaryCorrespondentUUID) {
         caseDataService.updatePrimaryCorrespondent(caseUUID, stageUUID, primaryCorrespondentUUID);

@@ -20,7 +20,12 @@ import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.ActionDataDeadlineExtensionRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
-import java.time.*;
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.Month;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -203,9 +208,6 @@ public class ActionDataDeadlineExtensionServiceTest {
         when(deadlineService.calculateWorkingDaysForCaseType(any(), any(), eq(9)))
                 .thenReturn(LocalDate.parse("2020-05-11"));
 
-        when(deadlineService.calculateWorkingDaysForCaseType(any(), any(), eq(4)))
-                .thenReturn(LocalDate.parse("2020-05-01"));
-
         // WHEN
         actionDataDeadlineExtensionService.createExtension(caseUUID,stageUUID, extensionDto);
 
@@ -218,8 +220,6 @@ public class ActionDataDeadlineExtensionServiceTest {
         verify(mockCaseDataRepository, times(1)).save(caseDataArgCapture.capture());
 
         assertThat(caseDataArgCapture.getValue().getCaseDeadline()).isEqualTo(LocalDate.parse("2020-05-11"));
-        assertThat(caseDataArgCapture.getValue().getCaseDeadlineWarning()).isEqualTo(LocalDate.parse("2020-05-01"));
-
         verify(mockAuditClient, times(1)).updateCaseAudit(any(), any());
 
         assertThat(extensionArgumentCaptor

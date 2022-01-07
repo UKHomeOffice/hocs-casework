@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.utils.DateUtils;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -73,7 +74,7 @@ public class DeadlineService {
     }
 
     Map<String, LocalDate> getAllStageDeadlinesForCaseType(String type, LocalDate receivedDate) {
-        log.debug("Getting all stage deadlines for caseType {} with received date of {} ", type, receivedDate);
+        log.info("Getting all stage deadlines for caseType {} with received date of {} ", type, receivedDate);
 
         final Set<StageTypeDto> allStagesForCaseType = infoClient.getAllStagesForCaseType(type);
         final Set<LocalDate> bankHolidayDatesForCase = bankHolidayService.getBankHolidayDatesForCaseType(type);
@@ -95,5 +96,20 @@ public class DeadlineService {
         }
 
         return DateUtils.calculateWorkingDaysElapsedSinceDate(fromDate, today, bankHolidayDatesForCase);
+    }
+
+    /**
+     * Returns the number of days until the deadline warning should be displayed.
+     *
+     * When an SLA is manually overridden, ie when a deadline is overridden to an arbitrary date and number of days,
+     * such as in extensions, this method is necessary to deduce how many days before the deadline
+     * to place the deadline warning.
+     *
+     * @param extendByNumberOfDays
+     * @param caseType
+     * @return days until deadline
+     */
+    public int daysUntilDeadline(int extendByNumberOfDays, CaseDataType caseType) {
+        return extendByNumberOfDays - (caseType.getSla() - caseType.getDeadLineWarning());
     }
 }

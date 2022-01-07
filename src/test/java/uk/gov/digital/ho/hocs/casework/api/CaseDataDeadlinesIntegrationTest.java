@@ -101,7 +101,6 @@ public class CaseDataDeadlinesIntegrationTest {
 
         assertThat(caseData).isNotNull();
         assertThat(caseData.getDateReceived()).isEqualTo("2021-12-08");
-        assertThat(caseData.getCaseDeadlineWarning()).isEqualTo("2022-01-07");
         assertThat(caseData.getCaseDeadline()).isEqualTo("2022-01-07");
 
         final Stage stage = stageRepository
@@ -110,7 +109,6 @@ public class CaseDataDeadlinesIntegrationTest {
                         UUID.fromString("7c4fd5df-16d9-4304-9ba9-ed01e8c6b133"));
 
         assertThat(stage.getDeadline()).isEqualTo("2021-12-22");
-        assertThat(stage.getDeadlineWarning()).isEqualTo("2021-12-15");
     }
 
     @Test

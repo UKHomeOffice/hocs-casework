@@ -19,7 +19,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REFRESH_BANK_
 @Component
 public class BankHolidayClient {
     private final RestHelper restHelper;
-    String bankHolidaysApiUrl;
+    private String bankHolidaysApiUrl;
 
     @Autowired
     public BankHolidayClient(final RestHelper restHelper,

@@ -108,13 +108,13 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         }
 
         final CaseDataType caseType = infoClient.getCaseType(caseData.getType());
-        final int deadlineWarningOffset = extendByNumberOfDays - (caseType.getSla() - caseType.getDeadLineWarning());
+        final int daysUntilDeadline = deadlineService.daysUntilDeadline(extendByNumberOfDays, caseType);
 
         LocalDate updatedDeadline =
                 deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), extendFromDate, extendByNumberOfDays);
 
         LocalDate updatedDeadlineWarning =
-                deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), extendFromDate, Math.max(deadlineWarningOffset, 0));
+                deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), extendFromDate, Math.max(daysUntilDeadline, 0));
 
         if (caseData.getCaseDeadline().isAfter(updatedDeadline)) {
             String msg = String.format("CaseId: %s, existing deadline (%s) is later than requested extension (%s). Extension not applied.", caseUuid, caseData.getCaseDeadline(), updatedDeadline);
@@ -181,13 +181,11 @@ public class ActionDataDeadlineExtensionService implements ActionService {
             // Try and overwrite the deadlines with inputted values from the data map.
             String overrideDeadline = dataMap.get(String.format("%s_DEADLINE", stage.getStageType()));
             if (overrideDeadline == null) {
-                LocalDate dateReceived = caseData.getDateReceived();
-                LocalDate caseDeadline = caseData.getCaseDeadline();
+
                 LocalDate caseDeadlineWarning = caseData.getCaseDeadlineWarning();
-                stage.setDeadline(caseDeadline);
+                stage.setDeadline(caseData.getCaseDeadline());
                 if (caseDeadlineWarning != null) {
-                    LocalDate deadlineWarning = caseDeadlineWarning;
-                    stage.setDeadlineWarning(deadlineWarning);
+                    stage.setDeadlineWarning(caseDeadlineWarning);
                 }
             } else {
                 LocalDate deadline = LocalDate.parse(overrideDeadline);

@@ -39,7 +39,7 @@ public class BankHolidayService {
         this.infoClient = infoClient;
     }
 
-    public int refreshBankHolidayTable() {
+    public void refreshBankHolidayTable() {
         log.info("Refreshing bank holidays");
 
         final Map<String, BankHolidaysByRegionDto> bankHolidaysByRegion =
@@ -50,15 +50,13 @@ public class BankHolidayService {
 
         bankHolidayRepository.saveAll(newBankHolidays);
         log.info("Saved {} new bank holidays", newBankHolidays.size());
-
-        return newBankHolidays.size();
     }
 
     private List<BankHoliday> filterOutExistingBankHolidays(
             final Map<String, BankHolidaysByRegionDto> bankHolidayRegions,
             final Set<BankHoliday> currentBankHolidays
     ) {
-        final List<BankHoliday> newBankHolidays = bankHolidayRegions.entrySet().stream().flatMap(
+        return bankHolidayRegions.entrySet().stream().flatMap(
                 this::createBankHolidayEntitiesFromRegionInDto
         ).filter(bankHoliday -> {
             if (currentBankHolidays.contains(bankHoliday)) {
@@ -68,7 +66,6 @@ public class BankHolidayService {
             }
             return true;
         }).collect(Collectors.toList());
-        return newBankHolidays;
     }
 
     private Stream<BankHoliday> createBankHolidayEntitiesFromRegionInDto(
@@ -76,17 +73,14 @@ public class BankHolidayService {
         final String regionName = region.getKey();
         final List<BankHolidaysByRegionDto.Event> events = region.getValue().getEvents();
 
-        final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-
         return events.stream().map(event ->
-                new BankHoliday(regionName, LocalDate.parse(event.getDate(), formatter)));
+                new BankHoliday(regionName, LocalDate.parse(event.getDate())));
     }
 
     public Set<LocalDate> getBankHolidayDatesForRegions(final Set<BankHoliday.BankHolidayRegion> regions) {
         final Set<BankHoliday> bankHolidaysInRegions = bankHolidayRepository.findByRegionIn(regions);
 
-        // extract dates from BankHolidays and remove duplicates by putting them in a set (to enforce uniqueness)
-        return bankHolidaysInRegions.stream().map(BankHoliday::getDate).collect(Collectors.toSet());
+        return getBankHolidaysDatesAsSet(bankHolidaysInRegions);
     }
 
     public Set<LocalDate> getBankHolidayDatesForCaseType(final String caseType) {
@@ -98,6 +92,10 @@ public class BankHolidayService {
 
         final Set<BankHoliday> bankHolidaysInRegions = bankHolidayRepository.findByRegionIn(regions);
 
+        return getBankHolidaysDatesAsSet(bankHolidaysInRegions);
+    }
+
+    private Set<LocalDate> getBankHolidaysDatesAsSet(Set<BankHoliday> bankHolidaysInRegions) {
         // extract dates from BankHolidays and remove duplicates by putting them in a set (to enforce uniqueness)
         return bankHolidaysInRegions.stream().map(BankHoliday::getDate).collect(Collectors.toSet());
     }
