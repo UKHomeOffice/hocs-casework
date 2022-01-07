@@ -341,7 +341,7 @@ public class StageService {
         for (StageWithCaseData stage : stages) {
             stagePriorityCalculator.updatePriority(stage.getData(), stage.getCaseDataType());
             daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
-            stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType());
+            stage.setTag(stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType()));
         }
     }
 
