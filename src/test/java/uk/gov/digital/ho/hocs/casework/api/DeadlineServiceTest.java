@@ -26,13 +26,12 @@ public class DeadlineServiceTest {
     private DeadlineService deadlineService;
 
     @Mock
-    BankHolidayService mockBankHolidayService;
+    InfoClient infoClient;
 
     @Mock
     InfoClient mockInfoService;
 
     private final Set<BankHoliday.BankHolidayRegion> bankHolidayRegions = Set.of(BankHoliday.BankHolidayRegion.ENGLAND_AND_WALES);
-    private final List<String> bankHolidayRegionsAsString = List.of("ENGLAND_AND_WALES");
 
     private final CaseDataType caseType = CaseDataTypeFactory.from("A1", "a1");
 
@@ -50,12 +49,7 @@ public class DeadlineServiceTest {
     @Before
     public void setUp() {
         configuration = new SpringConfiguration();
-
-        when(mockInfoService.getBankHolidayRegionsByCaseType(any())).thenReturn(bankHolidayRegionsAsString);
-        when(mockBankHolidayService.getBankHolidayDatesForRegions(eq(bankHolidayRegions)))
-                .thenReturn(englandAndWalesBankHolidays);
-
-        deadlineService = new DeadlineService(mockInfoService, mockBankHolidayService);
+        deadlineService = new DeadlineService(mockInfoService);
     }
 
     @Test

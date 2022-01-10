@@ -9,6 +9,8 @@ import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
+
+import java.time.LocalDate;
 import java.util.*;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -192,13 +194,6 @@ public class InfoClient {
         return response;
     }
 
-    @Cacheable(value = "InfoGetBankHolidaysByCaseType", unless = "#result == null")
-    public List<String> getBankHolidayRegionsByCaseType(String caseType) {
-        List<String> response = restHelper.get(serviceBaseURL, String.format("/bankHolidayRegion/caseType/%s", caseType), new ParameterizedTypeReference<>() {});
-        log.info("Got {} bank holidays for case type {}, event {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_BANK_HOLIDAYS_BY_CASE_TYPE_SUCCESS));
-        return response;
-    }
-
     public List<UserDto> getUsersForTeam(UUID teamUUID) {
         List<UserDto> response = restHelper.get(serviceBaseURL, String.format("/teams/%s/members", teamUUID), new ParameterizedTypeReference<List<UserDto>>() {
         });
@@ -230,5 +225,17 @@ public class InfoClient {
 
         log.info("Received {} CaseTypeActions for caseType {}", response.size(), caseType);
         return response;
+    }
+
+    @Cacheable(value = "InfoClientGetExemptionDatesForType", unless = "#result == null", key = "#caseType")
+    public Set<LocalDate> getExemptionDatesForType(String caseType) {
+        log.debug("Requesting exemption dates for case type: {}", caseType);
+
+        ParameterizedTypeReference<Set<LocalDate>> typeRef = new ParameterizedTypeReference<>() {};
+        Set<LocalDate> exemptionDates =
+                restHelper.get(serviceBaseURL, String.format("/caseType/%s/exemptionDates", caseType), typeRef);
+
+        log.info("Received {} CaseTypeActions", exemptionDates.size(), caseType);
+        return exemptionDates;
     }
 }

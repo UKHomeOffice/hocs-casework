@@ -33,21 +33,3 @@ VALUES ('d472a1a9-d32d-46cb-a08a-56c22637c584', '2018-12-14 12:00:00', '14915b78
        ('2a4bd71d-7c8e-4582-8698-8ed689c09075', '2018-12-14 12:00:00', '24915b78-6977-42db-b343-0915a7f412a1',
         'SomeText', '38034968-d03b-4d8f-9918-dc8cc979bc57', false);
 
-INSERT INTO bank_holiday (region, date) VALUES
-        ('ENGLAND_AND_WALES', '2020-01-01'),
-        ('ENGLAND_AND_WALES', '2020-04-10'),
-        ('ENGLAND_AND_WALES', '2020-04-13'),
-        ('ENGLAND_AND_WALES', '2020-05-08'),
-        ('ENGLAND_AND_WALES', '2020-05-25'),
-        ('ENGLAND_AND_WALES', '2020-08-31'),
-        ('ENGLAND_AND_WALES', '2020-12-25'),
-        ('ENGLAND_AND_WALES', '2020-12-28'),
-        ('ENGLAND_AND_WALES', '2021-01-01'),
-        ('ENGLAND_AND_WALES', '2021-04-02'),
-        ('ENGLAND_AND_WALES', '2021-04-05'),
-        ('ENGLAND_AND_WALES', '2021-05-03'),
-        ('ENGLAND_AND_WALES', '2021-05-31'),
-        ('ENGLAND_AND_WALES', '2021-08-30'),
-        ('ENGLAND_AND_WALES', '2021-12-27'),
-        ('ENGLAND_AND_WALES', '2021-12-28'),
-        ('ENGLAND_AND_WALES', '2022-01-03');

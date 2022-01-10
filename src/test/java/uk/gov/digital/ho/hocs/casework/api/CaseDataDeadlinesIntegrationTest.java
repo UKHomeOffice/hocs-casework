@@ -161,6 +161,26 @@ public class CaseDataDeadlinesIntegrationTest {
         TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissionDtos);
         teamDtos.add(teamDto);
 
+        Set<String> exemptionDates = Set.of(
+                "2020-01-01",
+                "2020-04-10",
+                "2020-04-13",
+                "2020-05-08",
+                "2020-05-25",
+                "2020-08-31",
+                "2020-12-25",
+                "2020-12-28",
+                "2021-01-01",
+                "2021-04-02",
+                "2021-04-05",
+                "2021-05-03",
+                "2021-05-31",
+                "2021-08-30",
+                "2021-12-27",
+                "2021-12-28",
+                "2022-01-03"
+        );
+
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType/type/TEST"))
                 .andExpect(method(GET))
@@ -177,29 +197,24 @@ public class CaseDataDeadlinesIntegrationTest {
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/TEST/deadlineWarning?received=2018-01-01&days=0"))
+                .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON_UTF8));
+                .andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
-
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/stages/caseType/TEST"))

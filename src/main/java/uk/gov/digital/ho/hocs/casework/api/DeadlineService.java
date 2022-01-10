@@ -24,13 +24,10 @@ import java.util.stream.Collectors;
 public class DeadlineService {
 
     private final InfoClient infoClient;
-    private final BankHolidayService bankHolidayService;
 
     @Autowired
-    public DeadlineService(final InfoClient infoClient,
-                           final BankHolidayService bankHolidayService) {
+    public DeadlineService(final InfoClient infoClient) {
         this.infoClient = infoClient;
-        this.bankHolidayService = bankHolidayService;
     }
 
     public LocalDate calculateWorkingDaysForStage(final String caseType,
@@ -58,26 +55,15 @@ public class DeadlineService {
         return DateUtils.calculateRemainingWorkingDays(todaysDate, receivedDate, bankHolidayDatesForCase);
     }
 
-    /** todo: get final confirmation - should this method get the bank holidays from the Casework service,
-    or from the Info service? **/
     private Set<LocalDate> getBankHolidayDatesForCase(String caseType) {
-        // get bank holiday dates
-        Set<BankHoliday.BankHolidayRegion> bankHolidayRegionsForCase =
-                infoClient.getBankHolidayRegionsByCaseType(caseType)
-                        .stream()
-                        .map(BankHoliday.BankHolidayRegion::valueOf)
-                        .collect(Collectors.toSet());
-
-        final Set<LocalDate> bankHolidayDatesForCase =
-                bankHolidayService.getBankHolidayDatesForRegions(bankHolidayRegionsForCase);
-        return bankHolidayDatesForCase;
+        return infoClient.getExemptionDatesForType(caseType);
     }
 
     Map<String, LocalDate> getAllStageDeadlinesForCaseType(String type, LocalDate receivedDate) {
         log.info("Getting all stage deadlines for caseType {} with received date of {} ", type, receivedDate);
 
         final Set<StageTypeDto> allStagesForCaseType = infoClient.getAllStagesForCaseType(type);
-        final Set<LocalDate> bankHolidayDatesForCase = bankHolidayService.getBankHolidayDatesForCaseType(type);
+        final Set<LocalDate> bankHolidayDatesForCase = getBankHolidayDatesForCase(type);
 
         Map<String, LocalDate> deadlines = allStagesForCaseType.stream().filter(st -> st.getSla() >= 0)
                 .sorted(Comparator.comparingInt(StageTypeDto::getSortOrder))
@@ -89,7 +75,7 @@ public class DeadlineService {
     }
 
     public int calculateWorkingDaysElapsedForCaseType(String caseType, LocalDate fromDate, LocalDate today) {
-        final Set<LocalDate> bankHolidayDatesForCase = bankHolidayService.getBankHolidayDatesForCaseType(caseType);
+        final Set<LocalDate> bankHolidayDatesForCase = getBankHolidayDatesForCase(caseType);
 
         if (fromDate == null || today.isBefore(fromDate) || today.isEqual(fromDate)) {
             return 0;

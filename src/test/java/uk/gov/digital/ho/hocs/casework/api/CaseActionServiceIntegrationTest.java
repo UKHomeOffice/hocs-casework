@@ -41,7 +41,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:action/beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
 @Sql(scripts = "classpath:action/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
-@ActiveProfiles({ "local", "integration" })
+@ActiveProfiles({"local", "integration"})
 public class CaseActionServiceIntegrationTest {
 
     private final TestRestTemplate testRestTemplate = new TestRestTemplate();
@@ -126,6 +126,17 @@ public class CaseActionServiceIntegrationTest {
             "{}"
     );
 
+    private Set<LocalDate> exemptionDates = Set.of(
+            LocalDate.parse("2020-01-01"),
+            LocalDate.parse("2020-04-10"),
+            LocalDate.parse("2020-04-13"),
+            LocalDate.parse("2020-05-08"),
+            LocalDate.parse("2020-05-25"),
+            LocalDate.parse("2020-08-31"),
+            LocalDate.parse("2020-12-25"),
+            LocalDate.parse("2020-12-28")
+    );
+
     @Before
     public void setUp() throws JsonProcessingException {
         MockRestServiceServer mockInfoService = buildMockService(restTemplate);
@@ -138,11 +149,11 @@ public class CaseActionServiceIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(MOCK_CASE_TYPE_ACTION_EXTERNAL_INTEREST_DTO), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(manyTimes(),requestTo("http://localhost:8085/caseType/FOI/actions/" + NON_EXISTENT_CASE_TYPE_ACTION_ID))
+                .expect(manyTimes(), requestTo("http://localhost:8085/caseType/FOI/actions/" + NON_EXISTENT_CASE_TYPE_ACTION_ID))
                 .andExpect(method(GET))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
         mockInfoService
-                .expect(manyTimes(),requestTo("http://localhost:8085/caseType/FOI/actions/" + APPEAL_CASE_TYPE_ACTION_ID))
+                .expect(manyTimes(), requestTo("http://localhost:8085/caseType/FOI/actions/" + APPEAL_CASE_TYPE_ACTION_ID))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(MOCK_CASE_TYPE_ACTION_APPEAL_DTO), MediaType.APPLICATION_JSON));
         mockInfoService
@@ -170,10 +181,10 @@ public class CaseActionServiceIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(6).toString()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(manyTimes(),requestTo("http://localhost:8085/caseType/TEST/actions"))
+                .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(List.of(
-                        MOCK_CASE_TYPE_ACTION_EXTENSION_DTO,MOCK_CASE_TYPE_ACTION_APPEAL_DTO, MOCK_CASE_TYPE_ACTION_EXTERNAL_INTEREST_DTO)), MediaType.APPLICATION_JSON));
+                        MOCK_CASE_TYPE_ACTION_EXTENSION_DTO, MOCK_CASE_TYPE_ACTION_APPEAL_DTO, MOCK_CASE_TYPE_ACTION_EXTERNAL_INTEREST_DTO)), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions/326eddb3-ba64-4253-ad39-916ccbb59f4e"))
                 .andExpect(method(GET))
@@ -199,13 +210,13 @@ public class CaseActionServiceIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(10), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/bankHolidayRegion/caseType/TEST"))
+                .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(List.of("ENGLAND_AND_WALES")), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
         final EntityDto test_interested_party = new EntityDto(
                 "TEST_INTERESTED_PARTY",
                 UUID.randomUUID().toString(),
@@ -213,7 +224,7 @@ public class CaseActionServiceIntegrationTest {
         );
 
         mockInfoService.expect(manyTimes(), requestTo(
-                "http://localhost:8085/entity/simpleName/TEST_INTERESTED_PARTY"))
+                        "http://localhost:8085/entity/simpleName/TEST_INTERESTED_PARTY"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(
                         test_interested_party), MediaType.APPLICATION_JSON));

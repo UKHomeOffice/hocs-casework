@@ -58,13 +58,3 @@ VALUES (
         now(),
         now()
        ) ON CONFLICT DO NOTHING;
-
-INSERT INTO bank_holiday (region, date) VALUES
-        ('ENGLAND_AND_WALES', '2020-01-01'),
-        ('ENGLAND_AND_WALES', '2020-04-10'),
-        ('ENGLAND_AND_WALES', '2020-04-13'),
-        ('ENGLAND_AND_WALES', '2020-05-08'),
-        ('ENGLAND_AND_WALES', '2020-05-25'),
-        ('ENGLAND_AND_WALES', '2020-08-31'),
-        ('ENGLAND_AND_WALES', '2020-12-25'),
-        ('ENGLAND_AND_WALES', '2020-12-28');
