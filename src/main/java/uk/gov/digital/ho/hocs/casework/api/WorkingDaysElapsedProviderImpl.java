@@ -15,10 +15,10 @@ import java.time.LocalDate;
 public class WorkingDaysElapsedProviderImpl implements WorkingDaysElapsedProvider {
 
     @Autowired
-    private InfoClient infoClient;
+    private DeadlineService deadlineService;
 
     @Override
     public Integer getWorkingDaysSince(String caseType, LocalDate fromDate) {
-        return infoClient.getWorkingDaysElapsedForCaseType(caseType, fromDate);
+        return deadlineService.calculateWorkingDaysElapsedForCaseType(caseType, fromDate, LocalDate.now());
     }
 }

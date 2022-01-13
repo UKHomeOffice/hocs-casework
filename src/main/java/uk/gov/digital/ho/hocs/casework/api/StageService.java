@@ -70,6 +70,7 @@ public class StageService {
     private final CaseNoteService caseNoteService;
     private final ContributionsProcessor contributionsProcessor;
     private final ActionDataDeadlineExtensionService extensionService;
+    private final DeadlineService deadlineService;
 
     private static final Comparator<StageWithCaseData> CREATED_COMPARATOR = Comparator.comparing(StageWithCaseData::getCreated);
 
@@ -86,7 +87,8 @@ public class StageService {
                         StageTagsDecorator stageTagsDecorator,
                         CaseNoteService caseNoteService,
                         ContributionsProcessor contributionsProcessor,
-                        ActionDataDeadlineExtensionService extensionService) {
+                        ActionDataDeadlineExtensionService extensionService,
+                        DeadlineService deadlineService) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -100,6 +102,7 @@ public class StageService {
         this.caseNoteService = caseNoteService;
         this.contributionsProcessor = contributionsProcessor;
         this.extensionService = extensionService;
+        this.deadlineService = deadlineService;
     }
 
     /**
@@ -156,21 +159,27 @@ public class StageService {
         // Try and overwrite the deadline with inputted values from the data map.
         var overrideDeadline = caseData.getData(String.format("%s_DEADLINE", stage.getStageType()));
 
+        final StageTypeDto stageDefinition = infoClient.getAllStagesForCaseType(caseData.getType()).stream()
+                .filter(element -> element.getType().equals(stage.getStageType())).collect(Collectors.toList()).get(0);
+
         if (overrideDeadline == null) {
-            LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadline());
+            LocalDate deadline =
+                    deadlineService.calculateWorkingDaysForStage(
+                            caseData.getType(),
+                            caseData.getDateReceived(),
+                            caseData.getCaseDeadline(),
+                            stageDefinition.getSla());
             stage.setDeadline(deadline);
             if (caseData.getCaseDeadlineWarning() != null) {
-                LocalDate deadlineWarning = infoClient.getStageDeadlineWarning(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
-                stage.setDeadlineWarning(deadlineWarning);
+                stage.setDeadlineWarning(caseData.getCaseDeadlineWarning());
             }
         }
 
         boolean isExtended = extensionService.hasExtensions(caseData.getUuid());
         if (isExtended) {
-            LocalDate deadline = infoClient.getStageDeadlineOverridingSLA(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadline());
-            stage.setDeadline(deadline);
+            stage.setDeadline(caseData.getCaseDeadline());
             if (caseData.getCaseDeadlineWarning() != null) {
-                LocalDate deadlineWarning = infoClient.getStageDeadlineWarningOverridingSLA(stage.getStageType(), caseData.getDateReceived(), caseData.getCaseDeadlineWarning());
+                LocalDate deadlineWarning = caseData.getCaseDeadlineWarning();
                 stage.setDeadlineWarning(deadlineWarning);
             }
         }

@@ -16,6 +16,8 @@ else
     export MIN_REPLICAS="1"
     export MAX_REPLICAS="2"
 
+    export BANK_HOLIDAY_REFRESH_HOUR="8"
+
     export UPTIME_PERIOD="Mon-Fri 08:00-18:00 Europe/London"
 fi
 

@@ -42,6 +42,8 @@ In order to stop the containers, run
 docker-compose down
 ````
 
+To populate the bank holidays table locally , call ``http://localhost:8082/bankHoliday/refresh``.
+
 ### Running in an IDE
 
 If you are using an IDE, such as IntelliJ, this service can be started by running the ```HocsCaseServiceApplication``` main class. 

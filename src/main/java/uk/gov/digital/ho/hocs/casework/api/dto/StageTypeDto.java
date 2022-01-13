@@ -2,14 +2,11 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
-@Getter
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"shortCode"})
-public class CaseDataType {
-
+@Getter
+public class StageTypeDto {
     @JsonProperty("displayName")
     private String displayName;
 
@@ -17,14 +14,14 @@ public class CaseDataType {
     private String shortCode;
 
     @JsonProperty("type")
-    private String displayCode;
-
-    @JsonProperty("previousCaseType")
-    private String previousCaseType;
+    private String type;
 
     @JsonProperty("sla")
     private int sla;
 
-    @JsonProperty("deadLineWarning")
-    private int deadLineWarning;
+    @JsonProperty("deadlineWarning")
+    private int deadlineWarning;
+
+    @JsonProperty("sortOrder")
+    private int sortOrder;
 }
