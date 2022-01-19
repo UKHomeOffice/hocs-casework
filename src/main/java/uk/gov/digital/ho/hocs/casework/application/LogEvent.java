@@ -131,7 +131,8 @@ public enum LogEvent {
     INFO_CLIENT_REMAINING_DAYS_FOR_CASE_TYPE_AND_DEADLINE_SUCCESS,
     USER_EMAIL_SENT,
     GET_CASE_REF_BY_UUID,
-    GET_CASE_REF_BY_UUID_FAILURE;
+    GET_CASE_REF_BY_UUID_FAILURE,
+    INFO_CLIENT_GET_TEAM_FOR_STAGE_SUCCESS;
 
     public static final String EVENT = "event_id";
     public static final String EXCEPTION = "exception";

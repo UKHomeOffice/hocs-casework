@@ -56,4 +56,11 @@ public interface ApplicationExceptions {
             super(String.format(msg, args));
         }
     }
+
+    class MultipleActiveStageException extends RuntimeException {
+
+        public MultipleActiveStageException(String caseUuidString) {
+            super(String.format("Multiple active stages exist for case: %s",caseUuidString));
+        }
+    }
 }

@@ -1,6 +1,8 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.NoArgsConstructor;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.Entity;
@@ -27,6 +29,16 @@ public class Stage extends BaseStage {
         this.transitionNoteUUID = transitionNoteUUID;
         setTeam(teamUUID);
         this.userUUID = userUUID;
+    }
+
+    public static Stage fromCreateStageRequest(UUID caseUUID, CreateStageRequest request) {
+        return new Stage(
+                caseUUID,
+                request.getType(),
+                request.getTeamUUID(),
+                request.getUserUUID(),
+                request.getTransitionNoteUUID()
+        );
     }
 
 }

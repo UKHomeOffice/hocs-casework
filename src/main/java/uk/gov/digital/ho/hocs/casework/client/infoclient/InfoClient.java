@@ -94,6 +94,13 @@ public class InfoClient {
         return teams;
     }
 
+    @Cacheable(value = "InfoClientGetTeamForStageType", unless = "#result == null", key = "#stageType")
+    public UUID getTeamForStageType(String stageType) {
+        TeamDto response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/team", stageType), TeamDto.class);
+        log.info("Got Team teamUUID {} for Stage {}, event: {}", response.getUuid(), stageType, value(EVENT, INFO_CLIENT_GET_TEAM_FOR_STAGE_SUCCESS));
+        return response.getUuid();
+    }
+
     @Cacheable(value = "InfoClientGetTeamForStageAndText", unless = "#result == null", key = "{ #stageType, #text }")
     public TeamDto getTeamByStageAndText(String stageType, String text) {
         TeamDto response = restHelper.get(serviceBaseURL, String.format("/team/stage/%s/text/%s", stageType, text), TeamDto.class);
@@ -191,6 +198,12 @@ public class InfoClient {
     public ProfileDto getProfileByCaseType(String caseType) {
         ProfileDto response = restHelper.get(serviceBaseURL, String.format("/profile/forcasetype/%s", caseType), ProfileDto.class);
         log.info("Got profile {} for case type {}, event {}", response.getProfileName(), caseType, value(EVENT, INFO_CLIENT_GET_PROFILE_BY_CASE_TYPE_SUCCESS));
+        return response;
+    }
+
+    public UserDto getUserForTeam(UUID teamUUID, UUID userUUID) {
+        UserDto response  = restHelper.get(serviceBaseURL, String.format("/teams/%s/member/%s", teamUUID, userUUID), UserDto.class);
+        log.info("Got User for Team {} for User {}, event: {}", teamUUID, userUUID, value(EVENT, INFO_CLIENT_GET_USER_SUCCESS));
         return response;
     }
 

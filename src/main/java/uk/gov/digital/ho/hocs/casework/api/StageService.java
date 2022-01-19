@@ -5,15 +5,25 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.RecreateStageRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
@@ -141,18 +151,59 @@ public class StageService {
     }
 
     @Transactional
-    Stage createStage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, String emailType, UUID transitionNoteUUID) {
-        log.debug("Creating Stage of type: {}", stageType);
-        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
+    public Stage createStage(UUID caseUUID, CreateStageRequest createStageRequest) {
+
+        if (caseUUID == null || createStageRequest == null) {
+            String msg = String.format("Missing required info to create new stage; caseUUID: %s, createStageRequest: %s", caseUUID, createStageRequest);
+            log.error(msg);
+            throw new ApplicationExceptions.EntityCreationException(msg, LogEvent.STAGE_CREATE_FAILURE);
+        }
+
+        log.info("Creating Stage: {} for case {}", createStageRequest, caseUUID);
+
+        // find current active stage
+        Set<StageWithCaseData> activeStages = stageRepository.findAllActiveByCaseUUID(caseUUID);
+        if (activeStages.size() > 1) {
+            log.error("Multiple Active Stages discovered for case: {}, stages: {}", caseUUID, activeStages);
+            throw new ApplicationExceptions.MultipleActiveStageException(caseUUID.toString());
+        }
+
+        Stage stage = Stage.fromCreateStageRequest(caseUUID, createStageRequest);
+
         CaseData caseData = caseDataService.getCase(caseUUID);
         calculateDeadlines(stage, caseData);
-        stage.setUserUUID(userUUID);
+
+        // create new stage
         stageRepository.save(stage);
-        caseDataService.updateCaseData(caseData, stage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
+
+        // assign team/user/both to make new active stage
+        assignTeamForStage(stage);
+        assignUserIfTeamMember(stage);
+
+        // remove old active stage
+        if (!activeStages.isEmpty()) {
+            UUID currentActiveStageUUID = new ArrayList<>(activeStages).get(0).getUuid();
+            log.info("Active stage {} exists; removing team allocation to deactivate stage.", currentActiveStageUUID);
+            updateStageTeam(caseUUID,currentActiveStageUUID, null, null);
+        }
+
+        caseDataService.updateCaseData(caseData, stage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stage.getStageType()));
         auditClient.createStage(stage);
         log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
-        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, caseData.getReference(), emailType);
+//        notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), stage.getTeamUUID(), caseData.getReference(), createStageRequest.getAllocationType().toString());
         return stage;
+    }
+
+    private void assignUserIfTeamMember(Stage stage) {
+        if (stage.getTeamUUID() != null && stage.getUserUUID() != null) {
+            UserDto userInTeam = infoClient.getUserForTeam(stage.getTeamUUID(), stage.getUserUUID());
+            if (userInTeam == null) {
+                log.warn("Requested user {} for new stage {} is not in team {}; setting userUUID to null", stage.getUserUUID(), stage, stage.getTeamUUID());
+                stage.setUserUUID(null);
+            } else {
+                updateStageUser(stage.getCaseUUID(), stage.getUuid(), UUID.fromString(userInTeam.getId()));
+            }
+        }
     }
 
     private void calculateDeadlines(Stage stage, CaseData caseData) {
@@ -193,12 +244,23 @@ public class StageService {
         }
     }
 
-    public void recreateStage(UUID caseUUID, UUID stageUUID, String stageType) {
-        Stage stage = getBasicStage(caseUUID, stageUUID);
+    public void recreateStage(UUID caseUUID, RecreateStageRequest request) {
+        Stage stage = getBasicStage(caseUUID, request.getStageUUID());
+        assignTeamForStage(stage);
+        assignUserIfTeamMember(stage);
         auditClient.recreateStage(stage);
-        caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(CaseworkConstants.CURRENT_STAGE, stageType));
-        log.debug("Recreated Stage {} for Case: {}, event: {}", stageUUID, caseUUID, value(EVENT, STAGE_RECREATED));
+        caseDataService.updateCaseData(caseUUID, request.getStageUUID(), Map.of(CaseworkConstants.CURRENT_STAGE, request.getStageType()));
+        log.debug("Recreated Stage {} for Case: {}, event: {}", request.getStageUUID(), caseUUID, value(EVENT, STAGE_RECREATED));
 
+    }
+
+    private void assignTeamForStage(Stage stage) {
+        if (stage.getTeamUUID() == null) {
+            UUID teamUUID = infoClient.getTeamForStageType(stage.getStageType());
+            stage.setTeam(teamUUID);
+        }
+        // todo: emailType should be Enum type, however change would require greater changes out of scope for this ticket.
+        updateStageTeam(stage.getCaseUUID(), stage.getUuid(), stage.getTeamUUID(), "ALLOCATE_TEAM");
     }
 
     void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
@@ -261,7 +323,7 @@ public class StageService {
         stage.setUserUUID(newUserUUID);
         stageRepository.save(stage);
         auditClient.updateStageUser(stage);
-        log.info("Updated User: {} for Stage {}", newUserUUID, stageUUID, value(EVENT, STAGE_ASSIGNED_USER));
+        log.info("Updated User: {} for Stage {}, event: {}", newUserUUID, stageUUID, value(EVENT, STAGE_ASSIGNED_USER));
         notifyClient.sendUserEmail(caseUUID, stage.getUuid(), currentUserUUID, newUserUUID, stage.getCaseReference());
     }
 
