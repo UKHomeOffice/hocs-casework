@@ -172,7 +172,7 @@ public class StageServiceTest {
         caseData.setCaseDeadline(deadline);
         caseData.setCaseDeadlineWarning(deadlineWarning);
         CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, transitionNoteUUID, null);
-        StageWithCaseData mockNewStage = new StageWithCaseData(caseData.getUuid(), stageType, null, null, transitionNoteUUID);
+        StageWithCaseData mockNewStage = new StageWithCaseData(caseData.getUuid(), stageType, teamUUID, null, transitionNoteUUID);
 
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
@@ -188,7 +188,7 @@ public class StageServiceTest {
         verify(stageRepository).save(any(Stage.class));
         verify(stageRepository).findByCaseUuidStageUUID(eq(caseData.getUuid()), any(UUID.class));
         verify(stageRepository).save(any(StageWithCaseData.class));
-        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), any(), eq(allocationType.toString()));
+        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), any(), eq(allocationType));
         verify(infoClient).getAllStagesForCaseType(anyString());
 
         verifyNoMoreInteractions(infoClient);
@@ -379,24 +379,26 @@ public class StageServiceTest {
 
     @Test
     public void testShouldRecreateStageWithoutTeamOrUserOverride() {
+
+        // GIVEN
         Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
         RecreateStageRequest request = new RecreateStageRequest(stageUUID, stageType, null, null);
         StageWithCaseData mockNewStage = new StageWithCaseData(caseUUID, stageType, null, null, transitionNoteUUID);
         mockNewStage.setUuid(stageUUID);
 
-        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(stage);
         when(stageRepository.findByCaseUuidStageUUID(eq(caseUUID), any())).thenReturn(mockNewStage);
+        when(infoClient.getTeamForStageType(stage.getStageType())).thenReturn(teamUUID);
 
+        // WHEN
         stageService.recreateStage(caseUUID, request);
 
-        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
+        // THEN
         verify(stageRepository).findByCaseUuidStageUUID(eq(caseUUID), any(UUID.class));
+        verify(stageRepository).findAllActiveByCaseUUID(caseUUID);
         verify(stageRepository).save(any(StageWithCaseData.class));
         verify(auditClient).updateStageTeam(any(StageWithCaseData.class));
-        verify(auditClient).recreateStage(stage);
-        verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), any(), eq(allocationType.toString()));
-
-
+        verify(auditClient).recreateStage(any(StageWithCaseData.class));
+        verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), any(), eq(allocationType));
 
         verifyNoMoreInteractions(auditClient, stageRepository, notifyClient);
 
