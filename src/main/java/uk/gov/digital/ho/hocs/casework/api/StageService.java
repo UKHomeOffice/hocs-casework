@@ -338,7 +338,6 @@ public class StageService {
         log.info("Set Stage Transition Note: {} ({}) for Case {}", stageUUID, transitionNoteUUID, caseUUID, value(EVENT, STAGE_TRANSITION_NOTE_UPDATED));
     }
 
-    // has to stay or be refactored
     void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID, String emailType) {
         log.debug("Updating Team: {} for Stage: {}", newTeamUUID, stageUUID);
         StageWithCaseData stage = getStageWithCaseData(caseUUID, stageUUID);
