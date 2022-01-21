@@ -202,11 +202,13 @@ public class StageService {
     }
 
     private void assignTeamAndMemberUserToStage(StageWithCaseData stage, UUID currentUserUUID) {
-        log.debug("Updating Team for Stage: {}, requested team: {}",stage.getUuid(),stage.getTeamUUID());
 
         if (stage.getTeamUUID() == null) {
+            log.debug("Updating Team for Stage: {} using default team",stage.getUuid());
             UUID teamUUID = infoClient.getTeamForStageType(stage.getStageType());
             stage.setTeam(teamUUID);
+        } else {
+            log.debug("Updating Team for Stage: {} with requested team: {}",stage.getUuid(),stage.getTeamUUID());
         }
 
         if (stage.getTeamUUID() != null && stage.getUserUUID() != null) {

@@ -41,13 +41,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -342,6 +336,7 @@ public class StageServiceTest {
 
         verify(auditClient).createStage(any(BaseStage.class));
         verify(auditClient).updateStageTeam(any(StageWithCaseData.class));
+        verify(auditClient).updateStageUser(any(StageWithCaseData.class));
         verifyNoMoreInteractions(auditClient);
 
         verify(notifyClient).sendTeamEmail(any(), any(), eq(teamUUID), any(), eq(allocationType.toString()));
@@ -385,18 +380,24 @@ public class StageServiceTest {
         RecreateStageRequest request = new RecreateStageRequest(stageUUID, stageType, null, null);
         StageWithCaseData mockNewStage = new StageWithCaseData(caseUUID, stageType, null, null, transitionNoteUUID);
         mockNewStage.setUuid(stageUUID);
+        StageWithCaseData currentActiveStage = new StageWithCaseData(caseUUID, "ANOTHER_TYPE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
 
-        when(stageRepository.findByCaseUuidStageUUID(eq(caseUUID), any())).thenReturn(mockNewStage);
+        when(stageRepository.findByCaseUuidStageUUID(caseUUID,stageUUID)).thenReturn(mockNewStage);
+        when(stageRepository.findByCaseUuidStageUUID(caseUUID,currentActiveStage.getUuid())).thenReturn(currentActiveStage);
+        when(stageRepository.findAllActiveByCaseUUID(caseUUID)).thenReturn(Set.of(currentActiveStage));
         when(infoClient.getTeamForStageType(stage.getStageType())).thenReturn(teamUUID);
 
         // WHEN
         stageService.recreateStage(caseUUID, request);
 
         // THEN
-        verify(stageRepository).findByCaseUuidStageUUID(eq(caseUUID), any(UUID.class));
+        verify(stageRepository).findByCaseUuidStageUUID(eq(caseUUID), eq(stageUUID));
+        verify(stageRepository).findByCaseUuidStageUUID(eq(caseUUID), eq(currentActiveStage.getUuid()));
+
         verify(stageRepository).findAllActiveByCaseUUID(caseUUID);
-        verify(stageRepository).save(any(StageWithCaseData.class));
-        verify(auditClient).updateStageTeam(any(StageWithCaseData.class));
+        verify(stageRepository, times(2)).save(any(StageWithCaseData.class));
+        verify(auditClient, times(2)).updateStageTeam(any(StageWithCaseData.class));
+        verify(auditClient).updateStageUser(any(StageWithCaseData.class));
         verify(auditClient).recreateStage(any(StageWithCaseData.class));
         verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), any(), eq(allocationType));
 
