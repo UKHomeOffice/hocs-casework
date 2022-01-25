@@ -1,5 +1,6 @@
 # hocs-casework
 
+[![CodeQL](https://github.com/UKHomeOffice/hocs-casework/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/UKHomeOffice/hocs-casework/actions/workflows/codeql-analysis.yml)
 
 This is the Home Office Correspondence Service (HOCS) casework service.
 
