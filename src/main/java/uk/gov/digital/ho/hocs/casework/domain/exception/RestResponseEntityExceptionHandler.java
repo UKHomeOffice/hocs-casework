@@ -90,6 +90,12 @@ public class RestResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
+    @ExceptionHandler(ApplicationExceptions.TeamAllocationException.class)
+    public ResponseEntity<String> handle(ApplicationExceptions.TeamAllocationException e) {
+        log.error("TeamAllocationException: {}", e.getMessage(), value(EVENT, INTERNAL_SERVER_ERROR));
+        return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity handle(Exception e) {
         Writer stackTraceWriter = new StringWriter();

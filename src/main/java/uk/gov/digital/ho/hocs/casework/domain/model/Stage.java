@@ -30,14 +30,4 @@ public class Stage extends BaseStage {
         this.userUUID = userUUID;
     }
 
-    public static Stage fromCreateStageRequest(UUID caseUUID, CreateStageRequest request) {
-        return new Stage(
-                caseUUID,
-                request.getType(),
-                request.getTeamUUID(),
-                request.getUserUUID(),
-                request.getTransitionNoteUUID()
-        );
-    }
-
 }

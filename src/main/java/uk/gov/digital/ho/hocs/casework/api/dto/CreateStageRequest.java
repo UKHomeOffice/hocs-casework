@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -12,6 +13,7 @@ import java.util.UUID;
 @ToString
 public class CreateStageRequest {
 
+    @NotNull
     @JsonProperty("type")
     private String type;
 

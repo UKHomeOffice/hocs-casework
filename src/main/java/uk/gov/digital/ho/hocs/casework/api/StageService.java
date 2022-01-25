@@ -15,15 +15,13 @@ import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
@@ -45,22 +43,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_WITHDRAWN;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_EMPTY;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_RETRIEVED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_FORBIDDEN;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGES_NOT_FOUND;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_TEAM;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_USER;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_COMPLETED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_NOT_FOUND;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_RECREATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_TRANSITION_NOTE_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_EMPTY;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_RETRIEVED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.USERS_TEAMS_STAGE_LIST_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @Slf4j
@@ -153,75 +136,55 @@ public class StageService {
     @Transactional
     public Stage createStage(UUID caseUUID, CreateStageRequest createStageRequest) {
 
-        if (caseUUID == null || createStageRequest == null) {
-            String msg = String.format("Missing required info to create new stage; caseUUID: %s, createStageRequest: %s", caseUUID, createStageRequest);
-            log.error(msg);
-            throw new ApplicationExceptions.EntityCreationException(msg, LogEvent.STAGE_CREATE_FAILURE);
-        }
-
-        log.info("Creating Stage: {} for case {}", createStageRequest, caseUUID);
+        log.debug("Creating Stage: {} for case {}", createStageRequest, caseUUID);
 
         // find current active stage to deactivate
-        StageWithCaseData activeStageToBeDeactivated = getCurrentActiveStageWithCaseData(caseUUID);
+        Optional<Stage> maybeActiveStage = stageRepository.findFirstByCaseUUIDAndActive(caseUUID);
 
         UUID currentUserUUID = null;
-        if(activeStageToBeDeactivated != null) {
-            currentUserUUID = activeStageToBeDeactivated.getUserUUID();
+        if(maybeActiveStage.isPresent()) {
+            currentUserUUID = maybeActiveStage.get().getUserUUID();
         }
 
         // Create new stage
-        Stage stage = Stage.fromCreateStageRequest(caseUUID, createStageRequest);
+        Stage newStage = new Stage(caseUUID, createStageRequest.getType(),
+                createStageRequest.getTeamUUID(), createStageRequest.getUserUUID(), createStageRequest.getTransitionNoteUUID());
 
         CaseData caseData = caseDataService.getCase(caseUUID);
-        calculateDeadlines(stage, caseData);
+        calculateDeadlines(newStage, caseData);
 
-        stageRepository.save(stage);
-        log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stage.getUuid(), stage.getStageType(), stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
+        stageRepository.save(newStage);
+        log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", newStage.getUuid(), newStage.getStageType(), newStage.getCaseUUID(), value(EVENT, STAGE_CREATED));
 
-        StageWithCaseData stageWithCaseData = getStageWithCaseData(caseUUID, stage.getUuid());
-        caseDataService.updateCaseData(caseData, stage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stage.getStageType()));
+        caseDataService.updateCaseData(caseData, newStage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, newStage.getStageType()));
 
         // Update team and user to activate new stage
-        assignTeamAndMemberUserToStage(stageWithCaseData, currentUserUUID);
+        assignTeamAndMemberUserToStage(newStage);
 
         // remove old active stage
-        if (activeStageToBeDeactivated != null) {
-            deactivateCurrentActiveStage(caseUUID, activeStageToBeDeactivated);
-        }
+        maybeActiveStage.ifPresent(value -> updateStageTeam(caseUUID, value.getUuid(), null, null));
 
         // Update audit and timeline - positioned here maintains timeline consistency.
-        auditClient.createStage(stageWithCaseData);
+        auditClient.createStage(newStage);
 
         // Issue assignment notifications
-        updateAssignmentAudit(stageWithCaseData);
-        sendAssignmentNotifications(stageWithCaseData, currentUserUUID);
+        updateAssignmentAudit(newStage);
+        sendAssignmentNotifications(caseData, newStage, currentUserUUID);
 
-        return stage;
+        return newStage;
     }
 
-    private void deactivateCurrentActiveStage(UUID caseUUID, StageWithCaseData activeStage) {
-
-        log.info("Active stage {} exists; removing team allocation to complete stage.", activeStage);
-        updateStageTeam(caseUUID,activeStage.getUuid(), null, null);
-    }
-
-    private StageWithCaseData getCurrentActiveStageWithCaseData(UUID caseUUID) {
-        Set<StageWithCaseData> activeStages = stageRepository.findAllActiveByCaseUUID(caseUUID);
-        if (activeStages.size() > 1) {
-            log.error("Multiple Active Stages discovered for case: {}, stages: {}", caseUUID, activeStages);
-            throw new ApplicationExceptions.MultipleActiveStageException(caseUUID.toString());
-        }
-        ArrayList<StageWithCaseData> listOfActiveStages = new ArrayList<>(activeStages);
-
-        return !listOfActiveStages.isEmpty() ? listOfActiveStages.get(0) : null;
-    }
-
-    private void assignTeamAndMemberUserToStage(StageWithCaseData stage, UUID currentUserUUID) {
+    private void assignTeamAndMemberUserToStage(Stage stage) {
 
         if (stage.getTeamUUID() == null) {
             log.debug("Updating Team for Stage: {} using default team",stage.getUuid());
-            UUID teamUUID = infoClient.getTeamForStageType(stage.getStageType());
-            stage.setTeam(teamUUID);
+            TeamDto teamDto = infoClient.getTeamForStageType(stage.getStageType());
+            if (teamDto == null) {
+                String msg = String.format("There is no team defined for stage type: %s", stage.getStageType());
+                log.error(msg, value(EXCEPTION, MISSING_TEAM_FOR_STAGE));
+                throw new ApplicationExceptions.TeamAllocationException(msg, LogEvent.MISSING_TEAM_FOR_STAGE);
+            }
+            stage.setTeam(teamDto.getUuid());
         } else {
             log.debug("Updating Team for Stage: {} with requested team: {}",stage.getUuid(),stage.getTeamUUID());
         }
@@ -240,19 +203,19 @@ public class StageService {
         log.info("Event: {} Case: {}, Stage: {}, Team assigned: {}",value(EVENT, STAGE_ASSIGNED_TEAM),stage.getCaseUUID(),stage.getUuid(),stage.getTeamUUID());
     }
 
-    private void updateAssignmentAudit(StageWithCaseData stage) {
+    private void updateAssignmentAudit(BaseStage stage) {
         auditClient.updateStageTeam(stage);
         auditClient.updateStageUser(stage);
     }
 
-    private void sendAssignmentNotifications(StageWithCaseData stage, UUID currentUserUUID) {
-        notifyClient.sendTeamEmail(stage.getCaseUUID(), stage.getUuid(), stage.getTeamUUID(), stage.getCaseReference(), "ALLOCATE_TEAM");
+    private void sendAssignmentNotifications(CaseData caseData, Stage stage, UUID currentUserUUID) {
+        notifyClient.sendTeamEmail(stage.getCaseUUID(), stage.getUuid(), stage.getTeamUUID(), caseData.getReference(), "ALLOCATE_TEAM");
 
-        checkSendOfflineQAEmail(stage);
+        checkSendOfflineQAEmail(stage, caseData.getDataMap(), caseData.getReference());
 
         if (stage.getUserUUID() != null) {
             log.info("Event: {} Case: {}, Stage: {}, User assigned: {}",value(EVENT, STAGE_ASSIGNED_USER), stage.getCaseUUID(), stage.getUuid(), stage.getUserUUID());
-            notifyClient.sendUserEmail(stage.getCaseUUID(), stage.getUuid(), currentUserUUID, stage.getUserUUID(), stage.getCaseReference());
+            notifyClient.sendUserEmail(stage.getCaseUUID(), stage.getUuid(), currentUserUUID, stage.getUserUUID(), caseData.getReference());
         }
     }
 
@@ -300,34 +263,36 @@ public class StageService {
         log.debug("Recreating Stage: {} for Case: {}", request, caseUUID);
 
         // Get stage we want to recreate
-        StageWithCaseData stageToRecreate = getStageWithCaseData(caseUUID, request.getStageUUID());
+        Stage stageToRecreate = getBasicStage(caseUUID, request.getStageUUID());
 
-        StageWithCaseData currentActiveStage = getCurrentActiveStageWithCaseData(caseUUID);
+        Optional<Stage> maybeCurrentActiveStage = stageRepository.findFirstByCaseUUIDAndActive(caseUUID);
 
-        if (currentActiveStage == null) {
+        UUID currentUserUUID = null;
+
+        if (maybeCurrentActiveStage.isEmpty()) {
             log.warn("No active stage for Case: {} discovered when try to recreate a stage. Recreation can continue.", caseUUID);
+        } else {
+            currentUserUUID = maybeCurrentActiveStage.get().getUserUUID();
         }
-
-        UUID currentUserUUID = currentActiveStage != null ? currentActiveStage.getUuid() : null;
 
         stageToRecreate.setTeam(request.getTeamUUID());
         stageToRecreate.setUserUUID(request.getUserUUID());
 
-        assignTeamAndMemberUserToStage(stageToRecreate, currentUserUUID);
-        log.info("Recreated Stage {} for Case: {}, event: {}", request.getStageUUID(), caseUUID, value(EVENT, STAGE_RECREATED));
+        assignTeamAndMemberUserToStage(stageToRecreate);
 
-        caseDataService.updateCaseData(caseUUID, request.getStageUUID(), Map.of(CaseworkConstants.CURRENT_STAGE, request.getStageType()));
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        caseDataService.updateCaseData(caseData, request.getStageUUID(), Map.of(CaseworkConstants.CURRENT_STAGE, request.getStageType()));
 
         // Close if present and not the stage requested for recreation.
-        if (currentActiveStage != null && !stageToRecreate.getUuid().equals(currentActiveStage.getUuid())) {
-            deactivateCurrentActiveStage(caseUUID, currentActiveStage);
+        if (maybeCurrentActiveStage.isPresent() && !stageToRecreate.getUuid().equals(maybeCurrentActiveStage.get().getUuid())) {
+            updateStageTeam(maybeCurrentActiveStage.get(), caseData.getDataMap(), caseData.getReference(), null, null);
             auditClient.recreateStage(stageToRecreate);
-        } else {
-            log.info("Stage recreated (Stage: {}, Case: {}) is currently active stage", stageToRecreate.getUuid(), stageToRecreate.getCaseUUID());
         }
 
+        log.info("Recreated Stage {} for Case: {}, event: {}", request.getStageUUID(), caseUUID, value(EVENT, STAGE_RECREATED));
+
         updateAssignmentAudit(stageToRecreate);
-        sendAssignmentNotifications(stageToRecreate, currentUserUUID);
+        sendAssignmentNotifications(caseData, stageToRecreate, currentUserUUID);
    }
 
     void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
@@ -341,25 +306,33 @@ public class StageService {
     void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID, String emailType) {
         log.debug("Updating Team: {} for Stage: {}", newTeamUUID, stageUUID);
         StageWithCaseData stage = getStageWithCaseData(caseUUID, stageUUID);
+        updateStageTeam(stage, stage.getData(),stage.getCaseReference(), newTeamUUID, emailType);
+    }
+
+    private void updateStageTeam(BaseStage stage, Map<String, String> caseDataMap, String caseReference, UUID newTeamUUID, String emailType) {
         stage.setTeam(newTeamUUID);
-        checkSendOfflineQAEmail(stage);
+        checkSendOfflineQAEmail(stage, caseDataMap, caseReference);
         stageRepository.save(stage);
         auditClient.updateStageTeam(stage);
         if (newTeamUUID == null) {
-            log.info("Completed Stage ({}) for Case {}", stageUUID, caseUUID, value(EVENT, STAGE_COMPLETED));
+            log.info("Completed Stage ({}) for Case {}", stage.getUuid(), stage.getCaseUUID(), value(EVENT, STAGE_COMPLETED));
         } else {
-            log.info("Set Stage Team: {} ({}) for Case {}", stageUUID, newTeamUUID, caseUUID, value(EVENT, STAGE_ASSIGNED_TEAM));
-            notifyClient.sendTeamEmail(caseUUID, stage.getUuid(), newTeamUUID, stage.getCaseReference(), emailType);
+            log.info("Set Stage Team: {} ({}) for Case {}", stage.getUuid(), newTeamUUID, stage.getCaseUUID(), value(EVENT, STAGE_ASSIGNED_TEAM));
+            notifyClient.sendTeamEmail(stage.getCaseUUID(), stage.getUuid(), newTeamUUID, caseReference, emailType);
         }
     }
 
     void checkSendOfflineQAEmail(StageWithCaseData stage) {
+        checkSendOfflineQAEmail(stage, stage.getData(), stage.getCaseReference());
+    }
+
+    private void checkSendOfflineQAEmail(BaseStage stage, Map<String, String> caseDataMap, String caseReference) {
         if (stage.getStageType().equals(StageWithCaseData.DCU_DTEN_INITIAL_DRAFT) || stage.getStageType().equals(StageWithCaseData.DCU_TRO_INITIAL_DRAFT) || stage.getStageType().equals(StageWithCaseData.DCU_MIN_INITIAL_DRAFT)) {
-            final String offlineQaUser = stage.getData(StageWithCaseData.OFFLINE_QA_USER);
+            final String offlineQaUser = caseDataMap.get(StageWithCaseData.OFFLINE_QA_USER);
             final UUID stageUserUUID = getLastCaseUserUUID(stage.getCaseUUID());
             if (offlineQaUser != null && stageUserUUID != null) {
                 UUID offlineQaUserUUID = UUID.fromString(offlineQaUser);
-                notifyClient.sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), stageUserUUID, offlineQaUserUUID, stage.getCaseReference());
+                notifyClient.sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), stageUserUUID, offlineQaUserUUID, caseReference);
             }
         }
     }
@@ -517,7 +490,9 @@ public class StageService {
             log.info("Got Stage: {} for Case: {}", stageUUID, caseUUID);
             return stage;
         } else {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Stage UUID: %s not found!", stageUUID), STAGE_NOT_FOUND);
+            String msg = String.format("Stage UUID: %s for Case: %s not found!", stageUUID, caseUUID);
+            log.error(msg);
+            throw new ApplicationExceptions.EntityNotFoundException(msg, STAGE_NOT_FOUND);
         }
     }
 

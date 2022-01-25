@@ -57,10 +57,20 @@ public interface ApplicationExceptions {
         }
     }
 
-    class MultipleActiveStageException extends RuntimeException {
+    class TeamAllocationException extends RuntimeException {
+        private final LogEvent event;
+        private final LogEvent exception;
 
-        public MultipleActiveStageException(String caseUuidString) {
-            super(String.format("Multiple active stages exist for case: %s",caseUuidString));
+        public TeamAllocationException( String msg, LogEvent event, Object... args) {
+            super(String.format(msg, args));
+            this.event = event;
+            this.exception = null;
+        }
+
+        public TeamAllocationException( String msg, LogEvent event, LogEvent exception, Object... args) {
+            super(String.format(msg, args));
+            this.event = event;
+            this.exception = exception;
         }
     }
 }
