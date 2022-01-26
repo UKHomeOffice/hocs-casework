@@ -138,7 +138,7 @@ public class StageService {
 
         log.debug("Creating Stage: {} for case {}", createStageRequest, caseUUID);
 
-        // find current active stage to deactivate
+        // find current active stage to deactivate (assumes 1 or 0)
         Optional<Stage> maybeActiveStage = stageRepository.findFirstByCaseUUIDAndActive(caseUUID);
 
         UUID currentUserUUID = null;
@@ -148,7 +148,7 @@ public class StageService {
 
         // Create new stage
         Stage newStage = new Stage(caseUUID, createStageRequest.getType(),
-                createStageRequest.getTeamUUID(), createStageRequest.getUserUUID(), createStageRequest.getTransitionNoteUUID());
+                null, null, createStageRequest.getTransitionNoteUUID());
 
         CaseData caseData = caseDataService.getCase(caseUUID);
         calculateDeadlines(newStage, caseData);
@@ -159,10 +159,10 @@ public class StageService {
         caseDataService.updateCaseData(caseData, newStage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, newStage.getStageType()));
 
         // Update team and user to activate new stage
-        assignTeamAndMemberUserToStage(newStage);
+        assignTeamAndMemberUserToStage(newStage, createStageRequest.getTeamUUID(), createStageRequest.getUserUUID());
 
         // remove old active stage
-        maybeActiveStage.ifPresent(value -> updateStageTeam(caseUUID, value.getUuid(), null, null));
+        maybeActiveStage.ifPresent(value -> updateStageTeam(maybeActiveStage.get(), caseData.getDataMap(), caseData.getReference(), null, null));
 
         // Update audit and timeline - positioned here maintains timeline consistency.
         auditClient.createStage(newStage);
@@ -174,9 +174,9 @@ public class StageService {
         return newStage;
     }
 
-    private void assignTeamAndMemberUserToStage(Stage stage) {
+    private void assignTeamAndMemberUserToStage(Stage stage, UUID newTeamUUID, UUID newUserUUID) {
 
-        if (stage.getTeamUUID() == null) {
+        if (newTeamUUID == null) {
             log.debug("Updating Team for Stage: {} using default team",stage.getUuid());
             TeamDto teamDto = infoClient.getTeamForStageType(stage.getStageType());
             if (teamDto == null) {
@@ -186,16 +186,21 @@ public class StageService {
             }
             stage.setTeam(teamDto.getUuid());
         } else {
-            log.debug("Updating Team for Stage: {} with requested team: {}",stage.getUuid(),stage.getTeamUUID());
+            log.debug("Updating Team for Stage: {} with requested team: {}",stage.getUuid(),newTeamUUID);
+            stage.setTeam(newTeamUUID);
         }
 
-        if (stage.getTeamUUID() != null && stage.getUserUUID() != null) {
+        if (stage.getTeamUUID() != null  && newUserUUID != null) {
             log.debug("Updating User: {} for Stage: {}",stage.getUserUUID() , stage.getUuid());
 
-            UserDto userInTeam = infoClient.getUserForTeam(stage.getTeamUUID(), stage.getUserUUID());
+            UserDto userInTeam = infoClient.getUserForTeam(stage.getTeamUUID(), newUserUUID);
             if (userInTeam == null) {
-                log.warn("Requested user {} for new stage {} is not a member of team {}; setting userUUID to null", stage.getUserUUID(), stage, stage.getTeamUUID());
+                log.warn(
+                        "Requested user {} for new stage {} is not a member of team {}; setting userUUID to null",
+                        stage.getUserUUID(), stage, stage.getTeamUUID(), value(EVENT, STAGE_ASSIGNED_USER_FAILURE));
                 stage.setUserUUID(null);
+            } else {
+                stage.setUserUUID(newUserUUID);
             }
         }
 
@@ -205,7 +210,9 @@ public class StageService {
 
     private void updateAssignmentAudit(BaseStage stage) {
         auditClient.updateStageTeam(stage);
-        auditClient.updateStageUser(stage);
+        if (stage.getUserUUID() != null) {
+            auditClient.updateStageUser(stage);
+        }
     }
 
     private void sendAssignmentNotifications(CaseData caseData, Stage stage, UUID currentUserUUID) {
@@ -275,10 +282,7 @@ public class StageService {
             currentUserUUID = maybeCurrentActiveStage.get().getUserUUID();
         }
 
-        stageToRecreate.setTeam(request.getTeamUUID());
-        stageToRecreate.setUserUUID(request.getUserUUID());
-
-        assignTeamAndMemberUserToStage(stageToRecreate);
+        assignTeamAndMemberUserToStage(stageToRecreate, request.getTeamUUID(), request.getUserUUID());
 
         CaseData caseData = caseDataService.getCase(caseUUID);
         caseDataService.updateCaseData(caseData, request.getStageUUID(), Map.of(CaseworkConstants.CURRENT_STAGE, request.getStageType()));
