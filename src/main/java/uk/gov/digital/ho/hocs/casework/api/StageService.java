@@ -179,11 +179,6 @@ public class StageService {
         if (newTeamUUID == null) {
             log.debug("Updating Team for Stage: {} using default team",stage.getUuid());
             TeamDto teamDto = infoClient.getTeamForStageType(stage.getStageType());
-            if (teamDto == null) {
-                String msg = String.format("There is no team defined for stage type: %s", stage.getStageType());
-                log.error(msg, value(EXCEPTION, MISSING_TEAM_FOR_STAGE));
-                throw new ApplicationExceptions.TeamAllocationException(msg, LogEvent.MISSING_TEAM_FOR_STAGE);
-            }
             stage.setTeam(teamDto.getUuid());
         } else {
             log.debug("Updating Team for Stage: {} with requested team: {}",stage.getUuid(),newTeamUUID);

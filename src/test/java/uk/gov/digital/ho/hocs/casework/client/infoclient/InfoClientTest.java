@@ -9,6 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -59,6 +60,41 @@ public class InfoClientTest {
         assertThat(getCorrespondentTypeResponse.getCorrespondentTypes().size()).isEqualTo(1);
 
         verify(restHelper).get("infoService", "/correspondentType/CASE_TYPE", GetCorrespondentTypeResponse.class);
+        verifyNoMoreInteractions(restHelper);
+    }
+
+    @Test(expected = ApplicationExceptions.TeamAllocationException.class)
+    public void shouldThrowExceptionIfNullResponseFromCallForTeam() {
+        // GIVEN
+        String mockStageType = "FAKE_STAGE";
+        String uri = String.format("/stageType/%s/team", mockStageType);
+
+        when(restHelper.get("infoService", uri, TeamDto.class)).thenReturn(null);
+
+        // WHEN
+        infoClient.getTeamForStageType(mockStageType);
+
+        // THEN -- Exception throw test
+    }
+
+    @Test
+    public void shouldReturnTeamDto() {
+        // GIVEN
+        String mockStageType = "FAKE_STAGE";
+        String uri = String.format("/stageType/%s/team", mockStageType);
+
+        TeamDto teamDto = new TeamDto(null,UUID.randomUUID(), true, null);
+
+        when(restHelper.get("infoService", uri, TeamDto.class)).thenReturn(teamDto);
+
+        // WHEN
+        TeamDto output = infoClient.getTeamForStageType(mockStageType);
+
+        // THEN
+
+        assertThat(output).isNotNull();
+
+        verify(restHelper).get(eq("infoService"), eq("/stageType/FAKE_STAGE/team"), eq(TeamDto.class));
         verifyNoMoreInteractions(restHelper);
     }
 

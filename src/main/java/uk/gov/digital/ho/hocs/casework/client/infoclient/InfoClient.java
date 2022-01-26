@@ -8,6 +8,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
@@ -98,6 +99,11 @@ public class InfoClient {
     @Cacheable(value = "InfoClientGetTeamForStageType", unless = "#result == null", key = "#stageType")
     public TeamDto getTeamForStageType(String stageType) {
         TeamDto response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/team", stageType), TeamDto.class);
+        if (response == null) {
+            String msg = String.format("There is no team defined for stage type: %s", stageType);
+            log.error(msg, value(EXCEPTION, MISSING_TEAM_FOR_STAGE));
+            throw new ApplicationExceptions.TeamAllocationException(msg, LogEvent.MISSING_TEAM_FOR_STAGE);
+        }
         log.info("Got Team teamUUID {} for Stage {}, event: {}", response.getUuid(), stageType, value(EVENT, INFO_CLIENT_GET_TEAM_FOR_STAGE_SUCCESS));
         return response;
     }

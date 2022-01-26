@@ -124,33 +124,6 @@ public class StageServiceTest {
                 stageTagsDecorator, caseNoteService, contributionsProcessor, extensionService, deadlineService);
     }
 
-    @Test(expected = ApplicationExceptions.TeamAllocationException.class)
-    public void testShouldThrowExceptionWhenNoOverrideTeamAndNoDefaultTeam() {
-        // GIVEN
-        LocalDate received = LocalDate.parse("2021-01-04");
-        LocalDate deadline = LocalDate.parse("2021-02-01");
-        LocalDate deadlineWarning = LocalDate.parse("2021-01-25");
-
-        CaseData caseData = new CaseData(caseDataType, 12344567L, received);
-        caseData.setCaseDeadline(deadline);
-        caseData.setCaseDeadlineWarning(deadlineWarning);
-        CreateStageRequest request = new CreateStageRequest(stageType, null, allocationType, transitionNoteUUID, userUUID);
-        Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
-        Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
-
-        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
-        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
-        when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
-
-        when(infoClient.getTeamForStageType(request.getType())).thenReturn(null); // Test condition
-
-        // WHEN
-        stageService.createStage(caseData.getUuid(), request);
-
-        // THEN - Expect exception throw
-    }
-
     @Test
     public void testShouldCreateStageWithDefaultStageTeamAndNoUserOverride() {
         // GIVEN
