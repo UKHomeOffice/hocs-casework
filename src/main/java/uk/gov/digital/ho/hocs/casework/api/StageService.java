@@ -139,7 +139,7 @@ public class StageService {
         log.debug("Creating Stage: {} for case {}", createStageRequest, caseUUID);
 
         // find current active stage to deactivate (assumes 1 or 0)
-        Optional<Stage> maybeActiveStage = stageRepository.findFirstByCaseUUIDAndActive(caseUUID);
+        Optional<Stage> maybeActiveStage = stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseUUID);
 
         UUID currentUserUUID = null;
         if(maybeActiveStage.isPresent()) {
@@ -272,7 +272,7 @@ public class StageService {
         // Get stage we want to recreate
         Stage stageToRecreate = getBasicStage(caseUUID, request.getStageUUID());
 
-        Optional<Stage> maybeCurrentActiveStage = stageRepository.findFirstByCaseUUIDAndActive(caseUUID);
+        Optional<Stage> maybeCurrentActiveStage = stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseUUID);
 
         UUID currentUserUUID = null;
 

@@ -138,7 +138,7 @@ public class StageServiceTest {
         Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
         Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
 
-        when(stageRepository.findFirstByCaseUUIDAndActive(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
@@ -167,7 +167,7 @@ public class StageServiceTest {
         Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
         Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
 
-        when(stageRepository.findFirstByCaseUUIDAndActive(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getAllStagesForCaseType(caseData.getType())).thenReturn(Set.of(stageTypeDto));
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
@@ -178,7 +178,7 @@ public class StageServiceTest {
 
         // THEN
         // -- Always called
-        verify(stageRepository).findFirstByCaseUUIDAndActive(caseData.getUuid());
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
         verify(caseDataService).getCase(caseData.getUuid());
         verify(infoClient).getAllStagesForCaseType(caseData.getType());
         verify(deadlineService).calculateWorkingDaysForStage("MIN", received, deadline, stageTypeDto.getSla());
@@ -217,7 +217,7 @@ public class StageServiceTest {
         Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
         Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
 
-        when(stageRepository.findFirstByCaseUUIDAndActive(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getAllStagesForCaseType(caseData.getType())).thenReturn(Set.of(stageTypeDto));
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
@@ -227,7 +227,7 @@ public class StageServiceTest {
 
         // THEN
         // -- Always called
-        verify(stageRepository).findFirstByCaseUUIDAndActive(caseData.getUuid());
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
         verify(caseDataService).getCase(caseData.getUuid());
         verify(infoClient).getAllStagesForCaseType(caseData.getType());
         verify(deadlineService).calculateWorkingDaysForStage("MIN", received, deadline, stageTypeDto.getSla());
@@ -268,7 +268,7 @@ public class StageServiceTest {
         Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
         Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
 
-        when(stageRepository.findFirstByCaseUUIDAndActive(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(infoClient.getAllStagesForCaseType(caseData.getType())).thenReturn(Set.of(stageTypeDto));
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
@@ -281,7 +281,7 @@ public class StageServiceTest {
 
         // THEN
         // -- Always called
-        verify(stageRepository).findFirstByCaseUUIDAndActive(caseData.getUuid());
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
         verify(caseDataService).getCase(caseData.getUuid());
         verify(infoClient).getAllStagesForCaseType(caseData.getType());
         verify(deadlineService).calculateWorkingDaysForStage(caseData.getType(), received, deadline, stageTypeDto.getSla());
@@ -321,7 +321,7 @@ public class StageServiceTest {
         Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
         Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
 
-        when(stageRepository.findFirstByCaseUUIDAndActive(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
         when(infoClient.getTeamForStageType(request.getType())).thenReturn(teamDto);
@@ -332,7 +332,7 @@ public class StageServiceTest {
         stageService.createStage(caseData.getUuid(), request);
 
         // -- Always called
-        verify(stageRepository).findFirstByCaseUUIDAndActive(caseData.getUuid());
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
         verify(caseDataService).getCase(caseData.getUuid());
         verify(infoClient).getAllStagesForCaseType(caseData.getType());
         verify(deadlineService).calculateWorkingDaysForStage(caseData.getType(), received, deadline, stageTypeDto.getSla());
@@ -373,7 +373,7 @@ public class StageServiceTest {
         Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
         Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
 
-        when(stageRepository.findFirstByCaseUUIDAndActive(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true); // -- test condition
         when(infoClient.getTeamForStageType(request.getType())).thenReturn(teamDto);
@@ -386,7 +386,7 @@ public class StageServiceTest {
         assertThat(createdStage.getDeadlineWarning()).isEqualTo(caseData.getCaseDeadlineWarning());
 
         // -- Always called
-        verify(stageRepository).findFirstByCaseUUIDAndActive(caseData.getUuid());
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
         verify(caseDataService).getCase(caseData.getUuid());
         verify(infoClient).getAllStagesForCaseType(caseData.getType());
         verify(deadlineService).calculateWorkingDaysForStage(caseData.getType(), received, deadline, stageTypeDto.getSla());
@@ -432,7 +432,7 @@ public class StageServiceTest {
         Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
         Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
 
-        when(stageRepository.findFirstByCaseUUIDAndActive(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
         when(infoClient.getTeamForStageType(request.getType())).thenReturn(teamDto);
@@ -472,7 +472,7 @@ public class StageServiceTest {
         Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
         Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
 
-        when(stageRepository.findFirstByCaseUUIDAndActive(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
         when(infoClient.getTeamForStageType(request.getType())).thenReturn(teamDto);
@@ -512,7 +512,7 @@ public class StageServiceTest {
         Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
         Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
 
-        when(stageRepository.findFirstByCaseUUIDAndActive(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
         when(infoClient.getTeamForStageType(request.getType())).thenReturn(teamDto);
@@ -576,7 +576,7 @@ public class StageServiceTest {
 
 
         when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(),stageUUID)).thenReturn(stageToRecreate);
-        when(stageRepository.findFirstByCaseUUIDAndActive(caseData.getUuid())).thenReturn(optionalOfCurrentActiveStage);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfCurrentActiveStage);
         when(infoClient.getTeamForStageType(stageToRecreate.getStageType())).thenReturn(teamDto);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
 
@@ -585,7 +585,7 @@ public class StageServiceTest {
 
         // THEN
         verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(), stageUUID);
-        verify(stageRepository).findFirstByCaseUUIDAndActive(caseData.getUuid());
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
         verify(caseDataService).getCase(caseData.getUuid());
         verify(caseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
 
@@ -621,7 +621,7 @@ public class StageServiceTest {
 
 
         when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(),stageUUID)).thenReturn(stageToRecreate);
-        when(stageRepository.findFirstByCaseUUIDAndActive(caseData.getUuid())).thenReturn(optionalOfCurrentActiveStage);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfCurrentActiveStage);
         when(infoClient.getTeamForStageType(stageToRecreate.getStageType())).thenReturn(teamDto);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
 
@@ -630,7 +630,7 @@ public class StageServiceTest {
 
         // THEN
         verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(), stageUUID);
-        verify(stageRepository).findFirstByCaseUUIDAndActive(caseData.getUuid());
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
         verify(caseDataService).getCase(caseData.getUuid());
         verify(caseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
 
