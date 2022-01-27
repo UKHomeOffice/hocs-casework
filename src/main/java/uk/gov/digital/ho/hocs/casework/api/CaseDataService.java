@@ -46,6 +46,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_LOO
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.GET_CASE_REF_BY_UUID;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.GET_CASE_REF_BY_UUID_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRESPONDENT_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_TOPIC_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
@@ -168,6 +169,7 @@ public class CaseDataService {
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
         if(caseData == null) {
+            log.warn("CaseData not found for Case: {}", caseUUID, value(EVENT, GET_CASE_REF_BY_UUID_FAILURE));
             return REFERENCE_NOT_FOUND;
         }
         return caseData.getReference();

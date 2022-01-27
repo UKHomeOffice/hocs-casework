@@ -1107,7 +1107,7 @@ public class CaseDataServiceTest {
         String result = caseDataService.getCaseRef(caseData.getUuid());
 
         assertThat(result).isEqualTo(caseData.getReference());
-        verify(caseDataRepository).findActiveByUuid(caseUUID);
+        verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
         checkNoMoreInteractions();
     }
 
