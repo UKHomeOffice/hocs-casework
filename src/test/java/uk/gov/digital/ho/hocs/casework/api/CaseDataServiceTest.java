@@ -1098,6 +1098,31 @@ public class CaseDataServiceTest {
 
     }
 
+    @Test
+    public void getCaseReferenceByUUID() {
+        CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
+
+        when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
+
+        String result = caseDataService.getCaseRef(caseData.getUuid());
+
+        assertThat(result).isEqualTo(caseData.getReference());
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
+        checkNoMoreInteractions();
+    }
+
+    @Test
+    public void getCaseReferenceByUUIDNull() {
+        UUID caseUUID = UUID.randomUUID();
+        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
+
+        String result = caseDataService.getCaseRef(caseUUID);
+
+        assertThat(result).isEqualTo("REFERENCE NOT FOUND");
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
+        checkNoMoreInteractions();
+    }
+
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void getCaseDataByReference_forNullResult() {

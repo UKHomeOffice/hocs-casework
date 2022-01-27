@@ -129,7 +129,8 @@ public enum LogEvent {
     ACTION_DATA_UPDATE_SUCCESS,
     ACTION_DATA_UPDATE_FAILURE,
     INFO_CLIENT_REMAINING_DAYS_FOR_CASE_TYPE_AND_DEADLINE_SUCCESS,
-    USER_EMAIL_SENT;
+    USER_EMAIL_SENT,
+    GET_CASE_REF_BY_UUID;
 
     public static final String EVENT = "event_id";
     public static final String EXCEPTION = "exception";
