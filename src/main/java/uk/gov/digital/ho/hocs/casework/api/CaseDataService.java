@@ -45,6 +45,8 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_SUMMARY_
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_LOOKUP_FAILED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.GET_CASE_REF_BY_UUID;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.GET_CASE_REF_BY_UUID_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRESPONDENT_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_TOPIC_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
@@ -66,6 +68,8 @@ public class CaseDataService {
     private final DeadlineService deadlineService;
     public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
     public static final Pattern CASE_UUID_PATTERN = Pattern.compile("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b", Pattern.CASE_INSENSITIVE);
+    public static final String REFERENCE_NOT_FOUND = "REFERENCE NOT FOUND";
+
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository,
                            ActiveCaseViewDataRepository activeCaseViewDataRepository,
@@ -162,9 +166,13 @@ public class CaseDataService {
     }
 
     public String getCaseRef(UUID caseUUID) {
-        log.debug("Looking up CaseRef for Case: {}", caseUUID);
+        log.info("Looking up CaseRef for Case: {}", caseUUID, value(EVENT, GET_CASE_REF_BY_UUID));
+
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
-        log.debug("CaseRef {} found for Case: {}", caseData.getReference(), caseUUID);
+        if(caseData == null) {
+            log.warn("CaseData not found for Case: {}", caseUUID, value(EVENT, GET_CASE_REF_BY_UUID_FAILURE));
+            return REFERENCE_NOT_FOUND;
+        }
         return caseData.getReference();
     }
 
