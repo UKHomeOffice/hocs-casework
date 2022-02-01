@@ -66,6 +66,8 @@ public class CaseDataService {
     private final CaseLinkRepository caseLinkRepository;
     private final CaseActionService caseActionService;
     private final DeadlineService deadlineService;
+    private final StageRepository stageRepository;
+
     public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
     public static final Pattern CASE_UUID_PATTERN = Pattern.compile("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b", Pattern.CASE_INSENSITIVE);
     public static final String REFERENCE_NOT_FOUND = "REFERENCE NOT FOUND";
@@ -79,7 +81,8 @@ public class CaseDataService {
                            AuditClient auditClient,
                            CaseCopyFactory caseCopyFactory,
                            CaseActionService caseActionService,
-                           DeadlineService deadlineService) {
+                           DeadlineService deadlineService,
+                           StageRepository stageRepository) {
 
         this.caseDataRepository = caseDataRepository;
         this.activeCaseViewDataRepository = activeCaseViewDataRepository;
@@ -90,6 +93,7 @@ public class CaseDataService {
         this.caseCopyFactory = caseCopyFactory;
         this.caseActionService = caseActionService;
         this.deadlineService = deadlineService;
+        this.stageRepository = stageRepository;
     }
 
     public static final List<String> TIMELINE_EVENTS = List.of(
@@ -490,6 +494,17 @@ public class CaseDataService {
         log.debug("Updating completed status Case: {} completed {}", caseUUID, completed);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setCompleted(completed);
+
+        // Complete final stage if active stage exists
+        Optional<Stage> maybeFinalStage = stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseUUID);
+
+        if (maybeFinalStage.isPresent()) {
+            Stage finalStage = maybeFinalStage.get();
+            finalStage.setTeam(null);
+            stageRepository.save(finalStage);
+            log.info("Final active stage: {} for case: {}, completed", finalStage.getUuid(), caseUUID, value(EVENT, STAGE_COMPLETED));
+        }
+
         if (completed) {
             caseData.update(CaseworkConstants.CURRENT_STAGE, "");
         }

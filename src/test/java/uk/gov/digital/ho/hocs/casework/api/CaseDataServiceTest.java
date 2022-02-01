@@ -151,8 +151,8 @@ public class CaseDataServiceTest {
                 auditClient,
                 caseCopyFactory,
                 caseActionService,
-                deadlineService
-        );
+                deadlineService,
+                stageRepository);
     }
 
     @Test
