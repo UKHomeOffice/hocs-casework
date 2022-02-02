@@ -125,6 +125,9 @@ public class CaseDataServiceTest {
     @Mock
     private DeadlineService deadlineService;
 
+    @Mock
+    private StageRepository stageRepository;
+
     Set<LocalDate> englandAndWalesBankHolidays2020 = Set.of(
             LocalDate.parse("2020-01-01"),
             LocalDate.parse("2020-04-10"),
@@ -925,18 +928,44 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldCompleteCase() {
+    public void shouldCompleteCaseWhenNoFinalActiveStage() {
 
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
 
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(Optional.empty());
+        when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
+
+        caseDataService.completeCase(caseData.getUuid(), true);
+
+        verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
+        verify(stageRepository, times(1)).findFirstByTeamUUIDIsNotNullAndCaseUUID(any(UUID.class));
+        verify(caseDataRepository, times(1)).save(caseData);
+
+        // Not invoked
+        verify(stageRepository, times(0)).save(any(Stage.class));
+
+        verifyNoMoreInteractions(caseDataRepository, stageRepository);
+    }
+
+    @Test
+    public void shouldCompleteStageAndCaseWhenFinalActiveStage() {
+
+        CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
+
+        Stage mockStage = new Stage(caseData.getUuid(), "RANDOM_STAGE_TYPE",UUID.randomUUID(),UUID.randomUUID(),UUID.randomUUID());
+        Optional<Stage> mockOptionalOfStage = Optional.of(mockStage);
+
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(mockOptionalOfStage);
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
 
         caseDataService.completeCase(caseData.getUuid(), true);
 
         verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
         verify(caseDataRepository, times(1)).save(caseData);
+        verify(stageRepository, times(1)).findFirstByTeamUUIDIsNotNullAndCaseUUID(any(UUID.class));
+        verify(stageRepository, times(1)).save(any(Stage.class));
 
-        verifyNoMoreInteractions(caseDataRepository);
+        verifyNoMoreInteractions(caseDataRepository, stageRepository);
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
