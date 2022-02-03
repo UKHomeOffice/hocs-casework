@@ -8,7 +8,9 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -92,6 +94,18 @@ public class InfoClient {
         });
         log.info("Got {} teams", teams.size(), value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
         return teams;
+    }
+
+    @Cacheable(value = "InfoClientGetTeamForStageType", unless = "#result == null", key = "#stageType")
+    public TeamDto getTeamForStageType(String stageType) {
+        TeamDto response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/team", stageType), TeamDto.class);
+        if (response == null) {
+            String msg = String.format("There is no team defined for stage type: %s", stageType);
+            log.error(msg, value(EXCEPTION, MISSING_TEAM_FOR_STAGE));
+            throw new ApplicationExceptions.TeamAllocationException(msg, LogEvent.MISSING_TEAM_FOR_STAGE);
+        }
+        log.info("Got Team teamUUID {} for Stage {}, event: {}", response.getUuid(), stageType, value(EVENT, INFO_CLIENT_GET_TEAM_FOR_STAGE_SUCCESS));
+        return response;
     }
 
     @Cacheable(value = "InfoClientGetTeamForStageAndText", unless = "#result == null", key = "{ #stageType, #text }")
@@ -191,6 +205,12 @@ public class InfoClient {
     public ProfileDto getProfileByCaseType(String caseType) {
         ProfileDto response = restHelper.get(serviceBaseURL, String.format("/profile/forcasetype/%s", caseType), ProfileDto.class);
         log.info("Got profile {} for case type {}, event {}", response.getProfileName(), caseType, value(EVENT, INFO_CLIENT_GET_PROFILE_BY_CASE_TYPE_SUCCESS));
+        return response;
+    }
+
+    public UserDto getUserForTeam(UUID teamUUID, UUID userUUID) {
+        UserDto response  = restHelper.get(serviceBaseURL, String.format("/teams/%s/member/%s", teamUUID, userUUID), UserDto.class);
+        log.info("Got User for Team {} for User {}, event: {}", teamUUID, userUUID, value(EVENT, INFO_CLIENT_GET_USER_SUCCESS));
         return response;
     }
 

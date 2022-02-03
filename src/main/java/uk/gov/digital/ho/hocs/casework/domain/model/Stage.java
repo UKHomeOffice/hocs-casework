@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.NoArgsConstructor;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.Entity;

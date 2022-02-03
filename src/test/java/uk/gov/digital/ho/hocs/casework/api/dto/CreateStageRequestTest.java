@@ -14,7 +14,7 @@ public class CreateStageRequestTest {
         String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
         UUID userUUID = UUID.randomUUID();
-        String allocate = "anyAllocation";
+        String allocate = "ALLOCATE_INDIVIDUAL";
         UUID transitionNoteUUID = UUID.randomUUID();
 
         CreateStageRequest createStageRequest = new CreateStageRequest(stageType, teamUUID, allocate, transitionNoteUUID, userUUID);

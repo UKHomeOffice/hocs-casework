@@ -49,7 +49,7 @@ public class StageResourceTest {
     private final UUID stageUUID = UUID.randomUUID();
     private final UUID transitionNoteUUID = UUID.randomUUID();
     private final String stageType = "DCU_MIN_MARKUP";
-    private final String allocationType = "anyAllocation";
+    private final String allocationType = "ALLOCATE_TEAM";
 
     @Autowired
     private MockMvc mockMvc;
@@ -68,16 +68,16 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldCreateStage() {
+    public void testShouldCreateStage() {
 
         Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, transitionNoteUUID, userUUID);
 
-        when(stageService.createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, transitionNoteUUID)).thenReturn(stage);
+        when(stageService.createStage(caseUUID, request)).thenReturn(stage);
 
         ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
 
-        verify(stageService).createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
+        verify(stageService).createStage(caseUUID, request);
 
         checkNoMoreInteractions();
 
@@ -86,16 +86,16 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldCreateStageNoTransitionNote() {
+    public void testShouldCreateStageNoTransitionNote() {
 
         Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, null);
         CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, null, userUUID);
 
-        when(stageService.createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, null)).thenReturn(stage);
+        when(stageService.createStage(caseUUID, request)).thenReturn(stage);
 
         ResponseEntity<CreateStageResponse> response = stageResource.createStage(caseUUID, request);
 
-        verify(stageService).createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, null);
+        verify(stageService).createStage(caseUUID, request);
 
         checkNoMoreInteractions();
 
@@ -104,19 +104,20 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldRecreateStage() {
-        RecreateStageRequest request = new RecreateStageRequest(stageUUID, stageType);
+    public void testShouldRecreateStage() {
+        RecreateStageRequest request = new RecreateStageRequest(stageUUID, stageType, UUID.randomUUID(), UUID.randomUUID());
 
         ResponseEntity response = stageResource.recreateStageTeam(caseUUID, stageUUID, request);
 
-        verify(stageService).recreateStage(caseUUID, stageUUID, stageType);
+        verify(stageService).recreateStage(caseUUID, request);
+
         checkNoMoreInteractions();
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
-    public void shouldGetStage() {
+    public void testShouldGetStage() {
 
         StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
 
@@ -133,7 +134,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldAllocateStage() {
+    public void testShouldAllocateStage() {
 
         doNothing().when(stageService).updateStageUser(caseUUID, stageUUID, userUUID);
 
@@ -150,7 +151,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldAllocateStageNull() {
+    public void testShouldAllocateStageNull() {
 
         doNothing().when(stageService).updateStageUser(caseUUID, stageUUID, null);
 
@@ -167,7 +168,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldGetActiveStagesCaseUUID() {
+    public void testShouldGetActiveStagesCaseUUID() {
         Set<StageWithCaseData> stages = new HashSet<>();
         UUID caseUUID = UUID.randomUUID();
 
@@ -184,7 +185,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldGetActiveStages() {
+    public void testShouldGetActiveStages() {
 
         Set<StageWithCaseData> stages = new HashSet<>();
 
@@ -201,7 +202,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldGetActiveStagesForUser() {
+    public void testShouldGetActiveStagesForUser() {
         Set<StageWithCaseData> stages = new HashSet<>();
 
         when(stageService.getActiveUserStagesWithTeamsForUser(userUUID)).thenReturn(stages);
@@ -217,7 +218,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldGetActiveStagesCaseRef() throws UnsupportedEncodingException {
+    public void testShouldGetActiveStagesCaseRef() throws UnsupportedEncodingException {
         String ref = "MIN/0123456/19";
 
         Set<StageWithCaseData> stages = new HashSet<>();
@@ -239,7 +240,7 @@ public class StageResourceTest {
      * @throws Exception
      */
     @Test
-    public void shouldUseReferenceRegex() throws Exception {
+    public void testShouldUseReferenceRegex() throws Exception {
 
         // given
         // These are all BAD references
@@ -263,7 +264,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldGetActiveStageCaseUUIDsForUserAndTeam() {
+    public void testShouldGetActiveStageCaseUUIDsForUserAndTeam() {
 
         UUID userUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
@@ -279,7 +280,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldSearch() {
+    public void testShouldSearch() {
 
         Set<StageWithCaseData> stages = new HashSet<>();
         SearchRequest searchRequest = new SearchRequest();
@@ -296,7 +297,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void shouldGetStageTypeFromStageData() {
+    public void testShouldGetStageTypeFromStageData() {
 
         UUID userUUID = UUID.randomUUID();
         UUID teamUUID = UUID.randomUUID();
@@ -311,7 +312,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void withdrawCase() {
+    public void testWithdrawCase() {
         WithdrawCaseRequest withdrawCaseRequest = new WithdrawCaseRequest("Note 1", "2019-02-23");
 
         stageResource.withdrawCase(caseUUID, stageUUID, withdrawCaseRequest);
@@ -321,7 +322,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void getUsersForTeamByStage_stageTeamFound() {
+    public void testGetUsersForTeamByStage_stageTeamFound() {
 
         List<UserDto> users = List.of(new UserDto(UUID.randomUUID().toString(), "username", "firstName", "lastName", "email@test.com"));
         UUID teamUUID = UUID.randomUUID();
@@ -340,7 +341,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void getUsersForTeamByStage_stageTeamNotFound() {
+    public void testGetUsersForTeamByStage_stageTeamNotFound() {
 
         List<UserDto> users = List.of(new UserDto(UUID.randomUUID().toString(), "username", "firstName", "lastName", "email@test.com"));
         when(stageService.getStageTeam(caseUUID, stageUUID)).thenReturn(null);
@@ -358,7 +359,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void allocateStageUser() {
+    public void testAllocateStageUser() {
         StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         when(stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID)).thenReturn(stage);
 
@@ -369,7 +370,7 @@ public class StageResourceTest {
     }
 
     @Test
-    public void allocateStageUser_withNoStage() {
+    public void testAllocateStageUser_withNoStage() {
         StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         when(stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID)).thenReturn(null);
 

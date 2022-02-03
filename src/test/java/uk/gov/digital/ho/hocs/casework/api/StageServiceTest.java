@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.assertj.core.util.Sets;
 import org.junit.Assert;
 import org.junit.Before;
@@ -9,20 +8,18 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
-import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
@@ -40,17 +37,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito. verifyNoInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -62,8 +55,9 @@ public class StageServiceTest {
     private final UUID userUUID = UUID.randomUUID();
     private final UUID stageUUID = UUID.randomUUID();
     private final String stageType = "DCU_MIN_MARKUP";
-    private final String allocationType = "anyAllocate";
+    private final String allocationType = "ALLOCATE_TEAM";
     private final UUID transitionNoteUUID = UUID.randomUUID();
+
     private final CaseDataType caseDataType = new CaseDataType(
             "MIN",
             "1a",
@@ -131,197 +125,499 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldCreateStage() {
+    public void testShouldCreateStageWithDefaultStageTeamAndNoUserOverride() {
+        // GIVEN
         LocalDate received = LocalDate.parse("2021-01-04");
         LocalDate deadline = LocalDate.parse("2021-02-01");
         LocalDate deadlineWarning = LocalDate.parse("2021-01-25");
         CaseData caseData = new CaseData(caseDataType, 12344567L, received);
         caseData.setCaseDeadline(deadline);
         caseData.setCaseDeadlineWarning(deadlineWarning);
+
+        TeamDto teamDto = new TeamDto(null, teamUUID, true, null);
+
+        CreateStageRequest request = new CreateStageRequest(stageType, null, allocationType, transitionNoteUUID, null);
+        Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
+        Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
+
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(infoClient.getAllStagesForCaseType(caseData.getType())).thenReturn(Set.of(stageTypeDto));
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
+        when(infoClient.getTeamForStageType(request.getType())).thenReturn(teamDto);
 
-        stageService.createStage(caseData.getUuid(), stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
+        // WHEN
+        stageService.createStage(caseData.getUuid(), request);
 
+        // THEN
+        // -- Always called
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
         verify(caseDataService).getCase(caseData.getUuid());
+        verify(infoClient).getAllStagesForCaseType(caseData.getType());
         verify(deadlineService).calculateWorkingDaysForStage("MIN", received, deadline, stageTypeDto.getSla());
-        verify(stageRepository).save(any(Stage.class));
-        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), eq(caseData.getReference()), eq(allocationType));
+        verify(extensionService).hasExtensions(caseData.getUuid());
+        verify(stageRepository, times(3)).save(any(Stage.class));
+        verify(caseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
+        verify(infoClient).getTeamForStageType(eq(stageType));
+        verify(stageRepository).save(mockExistingStage);
+        verify(auditClient).updateStageTeam(mockExistingStage);
 
-        verifyNoMoreInteractions(stageRepository);
-        verifyNoMoreInteractions(notifyClient);
+        // -- Should be called
+        verify(infoClient).getTeamForStageType(stageType);
+        verify(auditClient).createStage(any(Stage.class));
+        verify(auditClient, times(2)).updateStageTeam(any(Stage.class));
+        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), any(), eq(allocationType.toString()));
 
+        // -- Should NOT be called
+        verify(infoClient, times(0)).getUserForTeam(any(), any());
+        verify(auditClient, times(0)).updateStageUser(any(Stage.class));
+        verify(notifyClient, times(0)).sendUserEmail(eq(caseData.getUuid()), any(UUID.class), any(UUID.class), any(UUID.class), anyString());
+
+        verifyNoMoreInteractions(stageRepository, notifyClient, auditClient, infoClient);
     }
 
     @Test
-    public void shouldCreateStage_ExtendedDeadline() {
-
+    public void testShouldCreateStageWithTeamOverride() {
         // GIVEN
-        Map<String, String> caseDataData = new HashMap<>();
-        LocalDate caseDeadline = LocalDate.now();
-        LocalDate caseDeadlineWarning = caseDeadline.minusDays(2);
+        LocalDate received = LocalDate.parse("2021-01-04");
+        LocalDate deadline = LocalDate.parse("2021-02-01");
+        LocalDate deadlineWarning = LocalDate.parse("2021-01-25");
+        CaseData caseData = new CaseData(caseDataType, 12344567L, received);
+        caseData.setCaseDeadline(deadline);
+        caseData.setCaseDeadlineWarning(deadlineWarning);
 
-        CaseData caseData = new CaseData(caseDataType, 12344567L,caseDeadline);
-        caseData.update(caseDataData);
-        caseData.setCaseDeadline(caseDeadline);
-        caseData.setCaseDeadlineWarning(caseDeadlineWarning);
+        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, transitionNoteUUID, null);
+        Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
+        Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
 
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
-
-        // WHEN
-        Stage stage = stageService.createStage(caseData.getUuid(), stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
-
-        // THEN
-        assertThat(stage.getDeadline()).isEqualTo(caseDeadline);
-        assertThat(stage.getDeadlineWarning()).isEqualTo(caseDeadlineWarning);
-
-    }
-
-    @Test
-    public void shouldCreateStage_stageOverride() throws JsonProcessingException {
-        // GIVEN
-        LocalDate overrideDeadline = LocalDate.of(2021, 12, 31);
-        Map<String, String> caseDataData = new HashMap<>();
-        String overrideKey = String.format("%s_DEADLINE", stageType);
-        caseDataData.put(overrideKey, overrideDeadline.toString());
-        LocalDate caseDeadline = LocalDate.now();
-        LocalDate caseDeadlineWarning = caseDeadline.minusDays(2);
-
-        CaseData caseData = new CaseData(caseDataType, 12344567L,caseDeadline);
-        caseData.update(caseDataData);
-        caseData.setCaseDeadline(caseDeadline);
-        caseData.setCaseDeadlineWarning(caseDeadlineWarning);
-
-        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(infoClient.getAllStagesForCaseType(caseData.getType())).thenReturn(Set.of(stageTypeDto));
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
 
         // WHEN
-        Stage stage = stageService.createStage(caseData.getUuid(), stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
+        stageService.createStage(caseData.getUuid(), request);
 
         // THEN
-        assertThat(stage.getDeadline()).isEqualTo(overrideDeadline);
+        // -- Always called
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
+        verify(caseDataService).getCase(caseData.getUuid());
+        verify(infoClient).getAllStagesForCaseType(caseData.getType());
+        verify(deadlineService).calculateWorkingDaysForStage("MIN", received, deadline, stageTypeDto.getSla());
+        verify(extensionService).hasExtensions(caseData.getUuid());
+        verify(stageRepository, times(3)).save(any(Stage.class));
+        verify(caseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
+        verify(stageRepository).save(mockExistingStage);
+        verify(auditClient).updateStageTeam(mockExistingStage);
+
+        // -- Should be called
+        verify(auditClient).createStage(any(Stage.class));
+        verify(auditClient, times(2)).updateStageTeam(any(Stage.class));
+        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), any(), eq(allocationType));
+
+        // -- Should NOT be called
+        verify(infoClient, times(0)).getTeamForStageType(stageType);
+        verify(infoClient, times(0)).getUserForTeam(any(), any());
+        verify(auditClient, times(0)).updateStageUser(any(Stage.class));
+        verify(notifyClient, times(0)).sendUserEmail(eq(caseData.getUuid()), any(UUID.class), any(UUID.class), any(UUID.class), anyString());
+
+        verifyNoMoreInteractions(stageRepository, notifyClient, auditClient, infoClient);
+    }
+
+    @Test
+    public void testShouldCreateStageWithUserOverride() {
+        // GIVEN
+        LocalDate received = LocalDate.parse("2021-01-04");
+        LocalDate deadline = LocalDate.parse("2021-02-01");
+        LocalDate deadlineWarning = LocalDate.parse("2021-01-25");
+        CaseData caseData = new CaseData(caseDataType, 12344567L, received);
+        caseData.setCaseDeadline(deadline);
+        caseData.setCaseDeadlineWarning(deadlineWarning);
+
+        TeamDto teamDto = new TeamDto(null, teamUUID, true, null);
+        UserDto userDto = new UserDto(userUUID.toString(), null, null, null, null);
+
+        CreateStageRequest request = new CreateStageRequest(stageType, null, allocationType, transitionNoteUUID, userUUID);
+        Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
+        Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
+
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(infoClient.getAllStagesForCaseType(caseData.getType())).thenReturn(Set.of(stageTypeDto));
+        when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
+        when(infoClient.getTeamForStageType(request.getType())).thenReturn(teamDto);
+
+        when(infoClient.getUserForTeam(teamUUID,userUUID)).thenReturn(userDto);
+
+        // WHEN
+        stageService.createStage(caseData.getUuid(), request);
+
+        // THEN
+        // -- Always called
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
+        verify(caseDataService).getCase(caseData.getUuid());
+        verify(infoClient).getAllStagesForCaseType(caseData.getType());
+        verify(deadlineService).calculateWorkingDaysForStage(caseData.getType(), received, deadline, stageTypeDto.getSla());
+        verify(extensionService).hasExtensions(caseData.getUuid());
+        verify(caseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
+        verify(stageRepository, times(3)).save(any(Stage.class));
+        verify(stageRepository).save(mockExistingStage);
+        verify(auditClient).updateStageTeam(mockExistingStage);
+
+        // -- Should be called
+        verify(infoClient).getTeamForStageType(stageType);
+        verify(auditClient).createStage(any(Stage.class));
+        verify(auditClient, times(2)).updateStageTeam(any(Stage.class));
+        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), any(), eq(allocationType.toString()));
+        verify(infoClient).getUserForTeam(teamUUID, userUUID);
+        verify(auditClient).updateStageUser(any(Stage.class));
+        verify(notifyClient).sendUserEmail(eq(caseData.getUuid()), any(UUID.class), any(UUID.class), eq(userUUID), anyString());
+
+        // -- Should NOT be called
+
+        verifyNoMoreInteractions(stageRepository, notifyClient, auditClient, infoClient, caseDataService, deadlineService, extensionService);
+    }
+
+    @Test
+    public void testShouldCreateStageDisregardingUserOverrideWhenUserNotInTeam() {
+        // GIVEN
+        LocalDate received = LocalDate.parse("2021-01-04");
+        LocalDate deadline = LocalDate.parse("2021-02-01");
+        LocalDate deadlineWarning = LocalDate.parse("2021-01-25");
+        CaseData caseData = new CaseData(caseDataType, 12344567L, received);
+        caseData.setCaseDeadline(deadline);
+        caseData.setCaseDeadlineWarning(deadlineWarning);
+
+        TeamDto teamDto = new TeamDto(null, teamUUID, true, null);
+
+        CreateStageRequest request = new CreateStageRequest(stageType, null, allocationType, transitionNoteUUID, userUUID);
+        Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
+        Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
+
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
+        when(infoClient.getTeamForStageType(request.getType())).thenReturn(teamDto);
+
+        when(infoClient.getUserForTeam(teamUUID,userUUID)).thenReturn(null);
+
+        // WHEN
+        stageService.createStage(caseData.getUuid(), request);
+
+        // -- Always called
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
+        verify(caseDataService).getCase(caseData.getUuid());
+        verify(infoClient).getAllStagesForCaseType(caseData.getType());
+        verify(deadlineService).calculateWorkingDaysForStage(caseData.getType(), received, deadline, stageTypeDto.getSla());
+        verify(extensionService).hasExtensions(caseData.getUuid());
+        verify(caseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
+        verify(stageRepository, times(3)).save(any(Stage.class));
+        verify(stageRepository).save(mockExistingStage);
+        verify(auditClient).updateStageTeam(mockExistingStage);
+
+        // -- Should be called
+        verify(infoClient).getTeamForStageType(stageType);
+        verify(auditClient).createStage(any(Stage.class));
+        verify(auditClient, times(2)).updateStageTeam(any(Stage.class));
+        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), any(), eq(allocationType.toString()));
+        verify(infoClient).getUserForTeam(teamUUID, userUUID);
+
+        // -- Should NOT be called
+        verify(auditClient, times(0)).updateStageUser(any(Stage.class));
+        verify(notifyClient, times(0)).sendUserEmail(eq(caseData.getUuid()), any(UUID.class), any(UUID.class), eq(userUUID), anyString());
+
+        verifyNoMoreInteractions(stageRepository, notifyClient, auditClient, infoClient, caseDataService, deadlineService, extensionService);
+    }
+
+    @Test
+    public void testShouldCreateStageWithExtendedDeadline() {
+
+        // GIVEN
+        LocalDate received = LocalDate.parse("2021-01-04");
+        LocalDate deadline = LocalDate.parse("2021-02-01");
+        LocalDate deadlineWarning = LocalDate.parse("2021-01-25");
+        CaseData caseData = new CaseData(caseDataType, 12344567L, received);
+        caseData.setCaseDeadline(deadline);
+        caseData.setCaseDeadlineWarning(deadlineWarning);
+
+        TeamDto teamDto = new TeamDto(null, teamUUID, true, null);
+
+        CreateStageRequest request = new CreateStageRequest(stageType, null, allocationType, transitionNoteUUID, null);
+        Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
+        Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
+
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true); // -- test condition
+        when(infoClient.getTeamForStageType(request.getType())).thenReturn(teamDto);
+
+        // WHEN
+        Stage createdStage = stageService.createStage(caseData.getUuid(), request);
+
+        // THEN
+        assertThat(createdStage.getDeadline()).isEqualTo(caseData.getCaseDeadline());
+        assertThat(createdStage.getDeadlineWarning()).isEqualTo(caseData.getCaseDeadlineWarning());
+
+        // -- Always called
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
+        verify(caseDataService).getCase(caseData.getUuid());
+        verify(infoClient).getAllStagesForCaseType(caseData.getType());
+        verify(deadlineService).calculateWorkingDaysForStage(caseData.getType(), received, deadline, stageTypeDto.getSla());
+        verify(extensionService).hasExtensions(caseData.getUuid());
+        verify(caseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
+        verify(stageRepository, times(3)).save(any(Stage.class));
+        verify(stageRepository).save(mockExistingStage);
+        verify(auditClient).updateStageTeam(mockExistingStage);
+
+        // -- Should be called
+        verify(infoClient).getTeamForStageType(stageType);
+        verify(auditClient).createStage(any(Stage.class));
+        verify(auditClient, times(2)).updateStageTeam(any(Stage.class));
+        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), any(UUID.class), eq(teamUUID), any(), eq(allocationType.toString()));
+
+        // -- Should NOT be called
+        verify(infoClient, times(0)).getUserForTeam(any(), any());
+        verify(auditClient, times(0)).updateStageUser(any(Stage.class));
+        verify(notifyClient, times(0)).sendUserEmail(eq(caseData.getUuid()), any(UUID.class), any(UUID.class), any(UUID.class), anyString());
+
+        verifyNoMoreInteractions(stageRepository, notifyClient, auditClient, infoClient);
+    }
+
+    @Test
+    public void testShouldCreateStageWithStageDeadlineOverride() {
+        // GIVEN
+        String overrideKey = String.format("%s_DEADLINE", stageType);
+        String overrideDeadline = "2021-03-01";
+
+        LocalDate received = LocalDate.parse("2021-01-04");
+        LocalDate deadline = LocalDate.parse("2021-02-01");
+        LocalDate deadlineWarning = LocalDate.parse("2021-01-25");
+        CaseData caseData = new CaseData(caseDataType, 12344567L, received);
+        caseData.setCaseDeadline(deadline);
+        caseData.setCaseDeadlineWarning(deadlineWarning);
+
+        // -- test condition
+        caseData.getDataMap().put(overrideKey,overrideDeadline);
+
+        TeamDto teamDto = new TeamDto(null, teamUUID, true, null);
+
+        CreateStageRequest request = new CreateStageRequest(stageType, null, allocationType, transitionNoteUUID, null);
+        Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
+        Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
+
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(false);
+        when(infoClient.getTeamForStageType(request.getType())).thenReturn(teamDto);
+
+        // WHEN
+        Stage stage = stageService.createStage(caseData.getUuid(), request);
+
+        // THEN
+        assertThat(stage.getDeadline()).isEqualTo(LocalDate.parse(overrideDeadline));
         assertThat(stage.getDeadlineWarning()).isNull();
     }
 
     @Test
-    public void shouldCreateStage_stageOverrideAndLaterExtendedDeadline() {
+    public void testShouldCreateStageWithStageOverrideAndExtendedDeadlineWithOverrideDeadlineApplied() {
         // GIVEN
-        LocalDate overrideDeadline = LocalDate.of(2021, 12, 1);
-        Map<String, String> caseDataData = new HashMap<>();
         String overrideKey = String.format("%s_DEADLINE", stageType);
+
+        // -- test conditions Override after extended deadline.
+        String overrideDeadline = "2021-03-01";
+        LocalDate caseDeadline = LocalDate.of(2021,2,10);
+
+        Map<String, String> caseDataData = new HashMap<>();
         caseDataData.put(overrideKey, overrideDeadline.toString());
-        LocalDate caseDeadline = LocalDate.of(2021,12,10);
         LocalDate caseDeadlineWarning = caseDeadline.minusDays(2);
+
+        TeamDto teamDto = new TeamDto(null, teamUUID, true, null);
 
         CaseData caseData = new CaseData(caseDataType, 12344567L,caseDeadline);
         caseData.update(caseDataData);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setCaseDeadlineWarning(caseDeadlineWarning);
 
+        // -- test condition
+        caseData.getDataMap().put(overrideKey,overrideDeadline);
+
+        CreateStageRequest request = new CreateStageRequest(stageType, null, allocationType, transitionNoteUUID, null);
+        Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
+        Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
+
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
         when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
+        when(infoClient.getTeamForStageType(request.getType())).thenReturn(teamDto);
 
         // WHEN
-        Stage stage = stageService.createStage(caseData.getUuid(), stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
+        Stage stage = stageService.createStage(caseData.getUuid(), request);
+
+        // THEN
+        assertThat(stage.getDeadline()).isEqualTo(LocalDate.parse(overrideDeadline));
+        assertThat(stage.getDeadlineWarning()).isNull();
+    }
+
+    @Test
+    public void testShouldCreateStageWithStageOverrideAndExtendedDeadlineWithOverrideExtendedDeadlineApplied() {
+        // GIVEN
+        String overrideKey = String.format("%s_DEADLINE", stageType);
+
+        // -- test conditions Override after extended deadline.
+        String overrideDeadline = "2021-03-01";
+        LocalDate caseDeadline = LocalDate.of(2021,3,10);
+        LocalDate caseDeadlineWarning = caseDeadline.minusDays(2);
+
+        Map<String, String> caseDataData = new HashMap<>();
+        caseDataData.put(overrideKey, overrideDeadline);
+
+        TeamDto teamDto = new TeamDto(null, teamUUID, true, null);
+
+        CaseData caseData = new CaseData(caseDataType, 12344567L,caseDeadline);
+        caseData.update(caseDataData);
+        caseData.setCaseDeadline(caseDeadline);
+        caseData.setCaseDeadlineWarning(caseDeadlineWarning);
+
+        // -- test condition
+        caseData.getDataMap().put(overrideKey,overrideDeadline);
+
+        CreateStageRequest request = new CreateStageRequest(stageType, null, allocationType, transitionNoteUUID, null);
+        Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
+        Optional<Stage> optionalOfMockExistingStage = Optional.of(mockExistingStage);
+
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfMockExistingStage);
+        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+        when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
+        when(infoClient.getTeamForStageType(request.getType())).thenReturn(teamDto);
+
+        // WHEN
+        Stage stage = stageService.createStage(caseData.getUuid(), request);
 
         // THEN
         assertThat(stage.getDeadline()).isEqualTo(caseDeadline);
         assertThat(stage.getDeadlineWarning()).isEqualTo(caseDeadlineWarning);
     }
 
-    @Test
-    public void shouldCreateStage_stageExtendedDeadlineAndLaterOverride() {
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void testShouldNotCreateStageMissingCaseUUIDException() {
+        CreateStageRequest request = new CreateStageRequest(stageType, null, allocationType, transitionNoteUUID, null);
+
+        stageService.createStage(null, request);
+    }
+
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void testShouldNotCreateStageMissingCaseUUID() {
         // GIVEN
-        LocalDate overrideDeadline = LocalDate.of(2021, 12, 10);
-        Map<String, String> caseDataData = new HashMap<>();
-        String overrideKey = String.format("%s_DEADLINE", stageType);
-        caseDataData.put(overrideKey, overrideDeadline.toString());
-        LocalDate caseDeadline = LocalDate.of(2021,12,1);
-        LocalDate caseDeadlineWarning = caseDeadline.minusDays(2);
-
-        CaseData caseData = new CaseData(caseDataType, 12344567L,caseDeadline);
-        caseData.update(caseDataData);
-        caseData.setCaseDeadline(caseDeadline);
-        caseData.setCaseDeadlineWarning(caseDeadlineWarning);
-
-        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
-        when(extensionService.hasExtensions(caseData.getUuid())).thenReturn(true);
+        CreateStageRequest request = new CreateStageRequest(stageType, null, allocationType, transitionNoteUUID, null);
 
         // WHEN
-        Stage stage = stageService.createStage(caseData.getUuid(), stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
+        stageService.createStage(null, request);
+
+        // THEN - exception test
+    }
+
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void testShouldNotCreateStageMissingTypeException() {
+        // GIVEN
+        CreateStageRequest request = new CreateStageRequest(null, teamUUID, allocationType, transitionNoteUUID, null);
+
+        // WHEN
+        stageService.createStage(caseUUID, request);
+
+        // THEN - exception test
+    }
+
+    @Test
+    public void testShouldRecreateStageWithoutTeamOrUserOverrideActiveStageNotCurrentStage() {
+
+        // GIVEN
+        LocalDate received = LocalDate.parse("2021-01-04");
+        LocalDate deadline = LocalDate.parse("2021-02-01");
+        LocalDate deadlineWarning = LocalDate.parse("2021-01-25");
+        CaseData caseData = new CaseData(caseDataType, 12344567L, received);
+        caseData.setCaseDeadline(deadline);
+        caseData.setCaseDeadlineWarning(deadlineWarning);
+
+        TeamDto teamDto = new TeamDto(null, teamUUID, true, null);
+
+        RecreateStageRequest request = new RecreateStageRequest(stageUUID, stageType, null, null);
+        Stage stageToRecreate = new Stage(caseData.getUuid(),stageType, null, null, null);
+        stageToRecreate.setUuid(stageUUID);
+        Stage currentActiveStage = new Stage(caseData.getUuid(), "ANOTHER_TYPE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
+        currentActiveStage.setUuid(UUID.randomUUID());
+        Optional<Stage> optionalOfCurrentActiveStage = Optional.of(currentActiveStage);
+
+
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(),stageUUID)).thenReturn(stageToRecreate);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfCurrentActiveStage);
+        when(infoClient.getTeamForStageType(stageToRecreate.getStageType())).thenReturn(teamDto);
+        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+
+        // WHEN
+        stageService.recreateStage(caseData.getUuid(), request);
 
         // THEN
-        assertThat(stage.getDeadline()).isEqualTo(overrideDeadline);
-        assertThat(stage.getDeadlineWarning()).isNull();
-    }
+        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(), stageUUID);
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
+        verify(caseDataService).getCase(caseData.getUuid());
+        verify(caseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
 
-    @Test
-    public void shouldAuditCreateStage() {
+        verify(stageRepository).save(stageToRecreate);
+        verify(stageRepository).save(currentActiveStage);
+        verify(auditClient).updateStageTeam(stageToRecreate);
+        verify(auditClient).updateStageTeam(currentActiveStage);
+        verify(auditClient).recreateStage(stageToRecreate);
+        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), eq(stageUUID), eq(teamUUID), any(), eq(allocationType));
 
-        CaseData caseData = new CaseData(caseDataType, 12344567L, LocalDate.now());
-        when(caseDataService.getCase(caseUUID)).thenReturn(caseData);
-
-        stageService.createStage(caseUUID, stageType, teamUUID, userUUID, allocationType, transitionNoteUUID);
-
-        verify(auditClient).createStage(any(BaseStage.class));
-        verifyNoMoreInteractions(auditClient);
-
-    }
-
-    @Test(expected = ApplicationExceptions.EntityCreationException.class)
-    public void shouldNotCreateStageMissingCaseUUIDException() {
-
-        stageService.createStage(null, stageType, teamUUID, userUUID, null, transitionNoteUUID);
-    }
-
-    @Test()
-    public void shouldNotCreateStageMissingCaseUUID() {
-
-        try {
-            stageService.createStage(null, stageType, teamUUID, userUUID, null, transitionNoteUUID);
-        } catch (ApplicationExceptions.EntityCreationException e) {
-            // Do nothing.
-        }
-
-         verifyNoInteractions(stageRepository);
-         verifyNoInteractions(notifyClient);
-
-    }
-
-    @Test(expected = ApplicationExceptions.EntityCreationException.class)
-    public void shouldNotCreateStageMissingTypeException() {
-
-        stageService.createStage(caseUUID, null, teamUUID, userUUID, null, transitionNoteUUID);
-    }
-
-    @Test()
-    public void shouldNotCreateStageMissingType() {
-
-        try {
-            stageService.createStage(caseUUID, null, teamUUID, userUUID, null, transitionNoteUUID);
-        } catch (ApplicationExceptions.EntityCreationException e) {
-            // Do nothing.
-        }
-
-         verifyNoInteractions(stageRepository);
-         verifyNoInteractions(notifyClient);
-
-    }
-
-    @Test
-    public void shouldRecreateStage() {
-        Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
-
-        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID)).thenReturn(stage);
-
-        stageService.recreateStage(caseUUID, stageUUID, stageType);
-
-        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUUID, stageUUID);
-        verify(auditClient).recreateStage(stage);
-
+        verify(auditClient, times(0)).updateStageUser(stageToRecreate);
         verifyNoMoreInteractions(auditClient, stageRepository, notifyClient);
 
+    }
+
+    @Test
+    public void testShouldRecreateStageWithoutTeamOrUserOverrideActiveStageIsCurrentStage() {
+        // GIVEN
+        LocalDate received = LocalDate.parse("2021-01-04");
+        LocalDate deadline = LocalDate.parse("2021-02-01");
+        LocalDate deadlineWarning = LocalDate.parse("2021-01-25");
+        CaseData caseData = new CaseData(caseDataType, 12344567L, received);
+        caseData.setCaseDeadline(deadline);
+        caseData.setCaseDeadlineWarning(deadlineWarning);
+
+        TeamDto teamDto = new TeamDto(null, teamUUID, true, null);
+
+        RecreateStageRequest request = new RecreateStageRequest(stageUUID, stageType, null, null);
+        Stage stageToRecreate = new Stage(caseData.getUuid(),stageType, null, null, null);
+        stageToRecreate.setUuid(stageUUID);
+
+        Optional<Stage> optionalOfCurrentActiveStage = Optional.of(stageToRecreate);
+
+
+        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(),stageUUID)).thenReturn(stageToRecreate);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(optionalOfCurrentActiveStage);
+        when(infoClient.getTeamForStageType(stageToRecreate.getStageType())).thenReturn(teamDto);
+        when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
+
+        // WHEN
+        stageService.recreateStage(caseData.getUuid(), request);
+
+        // THEN
+        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(), stageUUID);
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid());
+        verify(caseDataService).getCase(caseData.getUuid());
+        verify(caseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
+
+        verify(stageRepository).save(stageToRecreate);
+        verify(auditClient).updateStageTeam(stageToRecreate);
+        verify(notifyClient).sendTeamEmail(eq(caseData.getUuid()), eq(stageUUID), eq(teamUUID), any(), eq(allocationType));
+
+        verify(stageRepository, times(1)).save(any(Stage.class));
+        verify(auditClient, times(1)).updateStageTeam(any(Stage.class));
+
+        verify(auditClient, times(0)).recreateStage(stageToRecreate);
+        verify(auditClient, times(0)).updateStageUser(stageToRecreate);
+
+        verifyNoMoreInteractions(auditClient, stageRepository, notifyClient);
     }
 
     @Test
@@ -534,7 +830,7 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldUpdateStageTeam() {
+    public void testShouldUpdateStageTeam() {
 
         StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
@@ -545,7 +841,7 @@ public class StageServiceTest {
         verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
         verify(auditClient).updateStageTeam(stage);
-        verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType));
+        verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null), eq(allocationType.toString()));
 
         checkNoMoreInteraction();
 
@@ -553,21 +849,20 @@ public class StageServiceTest {
 
 
     @Test
-    public void shouldAuditUpdateStageTeam() {
+    public void testShouldAuditUpdateStageTeam() {
 
         StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
 
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, null);
+        stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, "ALLOCATE_TEAM");
 
         verify(auditClient).updateStageTeam(stage);
-        verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
+        verify(stageRepository).findByCaseUuidStageUUID(eq(caseUUID), any());
         verify(stageRepository).save(stage);
-        verify(notifyClient).sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, null, null);
+        verify(notifyClient).sendTeamEmail(caseUUID, stage.getUuid(), teamUUID, null, "ALLOCATE_TEAM");
 
         checkNoMoreInteraction();
-
     }
 
 
@@ -801,16 +1096,24 @@ public class StageServiceTest {
 
     @Test
     public void shouldCheckSendOfflineQAEmail() {
+
+        // GIVEN
         UUID offlineQaUserUUID = UUID.randomUUID();
-        StageWithCaseData stage = createStageOfflineQaData(offlineQaUserUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, StageWithCaseData.DCU_DTEN_INITIAL_DRAFT, teamUUID, userUUID, transitionNoteUUID);
+        stage.putData(StageWithCaseData.OFFLINE_QA_USER, offlineQaUserUUID.toString());
+
         List<String> auditType = new ArrayList<>();
         auditType.add(STAGE_ALLOCATED_TO_USER.name());
         final Set<GetAuditResponse> auditLines = getAuditLines(stage);
+
         when(auditClient.getAuditLinesForCase(caseUUID, auditType)).thenReturn(auditLines);
+
+        // WHEN
         stageService.checkSendOfflineQAEmail(stage);
 
+        // THEN
         verify(auditClient).getAuditLinesForCase(caseUUID, auditType);
-        verify(notifyClient).sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), UUID.fromString(userID), offlineQaUserUUID, stage.getCaseReference());
+        verify(notifyClient).sendOfflineQaEmail(stage.getCaseUUID(), stage.getUuid(), userUUID, offlineQaUserUUID, stage.getCaseReference());
     }
 
     @Test
@@ -1062,7 +1365,7 @@ public class StageServiceTest {
     private Set<GetAuditResponse> getAuditLines(StageWithCaseData stage) {
         Set<GetAuditResponse> linesForCase = new HashSet<>();
         linesForCase.add(new GetAuditResponse(UUID.randomUUID(), caseUUID, stage.getUuid(), UUID.randomUUID().toString(), "",
-                "{}", "", ZonedDateTime.now(), STAGE_ALLOCATED_TO_USER.name(), userID));
+                "{}", "", ZonedDateTime.now(), STAGE_ALLOCATED_TO_USER.name(), stage.getUserUUID().toString()));
         return linesForCase;
     }
 
