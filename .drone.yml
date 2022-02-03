@@ -58,7 +58,6 @@ steps:
       registry: quay.io
       repo: quay.io/ukhomeofficedigital/hocs-casework
       tags:
-        - build_${DRONE_BUILD_NUMBER}
         - ${DRONE_COMMIT_SHA}
         - branch-${DRONE_COMMIT_BRANCH/\//_}
     environment:
@@ -79,7 +78,6 @@ steps:
       registry: quay.io
       repo: quay.io/ukhomeofficedigital/hocs-casework
       tags:
-        - build_${DRONE_BUILD_NUMBER}
         - ${DRONE_COMMIT_SHA}
         - latest
     environment:
@@ -117,6 +115,11 @@ environment:
   DOCKER_HOST: tcp://docker:2375
 
 steps:
+  - name: fetch and checkout
+    image: alpine/git
+    commands:
+      - git fetch --tags
+      - git checkout $${VERSION}
 
   - name: deploy to cs-dev
     image: quay.io/ukhomeofficedigital/kd
@@ -128,7 +131,9 @@ steps:
       KUBE_TOKEN:
         from_secret: hocs_casework_cs_dev
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-      VERSION: build_${DRONE_BUILD_NUMBER}
+      VERSION: "${DRONE_COMMIT_SHA}"
+    depends_on:
+      - fetch and checkout
     when:
       branch:
         - main
@@ -145,7 +150,9 @@ steps:
       KUBE_TOKEN:
         from_secret: hocs_casework_wcs_dev
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
-      VERSION: build_${DRONE_BUILD_NUMBER}
+      VERSION: "${DRONE_COMMIT_SHA}"
+    depends_on:
+      - fetch and checkout
     when:
       branch:
         - main
@@ -186,6 +193,7 @@ steps:
       GITHUB_TOKEN:
         from_secret: GITHUB_TOKEN
     depends_on:
+      - fetch and checkout
       - wait for docker
     when:
       event:
@@ -243,6 +251,8 @@ steps:
       KUBE_TOKEN:
         from_secret: hocs_casework_${DRONE_DEPLOY_TO/-/_}
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
+    depends_on:
+      - fetch and checkout
     when:
       event:
         - promote
@@ -261,10 +271,11 @@ steps:
       KUBE_TOKEN:
         from_secret: hocs_casework_${DRONE_DEPLOY_TO/-/_}
       KUBE_SERVER: https://kube-api-prod.prod.acp.homeoffice.gov.uk
+    depends_on:
+      - fetch and checkout
     when:
       event:
         - promote
       target:
         include:
           - "*-prod"
-          
