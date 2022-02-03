@@ -221,13 +221,13 @@ public class CaseDataResourceTest {
     public void shouldUpdateDateReceived() {
 
         // given
-        doNothing().when(caseDataService).updateDateReceived(uuid, uuid, dateArg, 0);
+        doNothing().when(caseDataService).updateDateReceived_defaultSla(uuid, uuid, dateArg);
 
         // when
         ResponseEntity<Void> response = caseDataResource.updateCaseDateReceived(uuid, uuid, dateArg);
 
         // then
-        verify(caseDataService, times(1)).updateDateReceived(uuid, uuid, dateArg, 0);
+        verify(caseDataService, times(1)).updateDateReceived_defaultSla(uuid, uuid, dateArg);
         verifyNoMoreInteractions(caseDataService);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);

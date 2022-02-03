@@ -43,6 +43,8 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_RETRIEVE
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_SUMMARY_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.GET_CASE_REF_BY_UUID;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.GET_CASE_REF_BY_UUID_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRESPONDENT_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_TOPIC_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
@@ -53,7 +55,6 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 @Slf4j
 @Qualifier("CaseDataService")
 public class CaseDataService {
-
     protected final CaseDataRepository caseDataRepository;
     protected final ActiveCaseViewDataRepository activeCaseViewDataRepository;
     protected final AuditClient auditClient;
@@ -63,10 +64,12 @@ public class CaseDataService {
     private final CaseLinkRepository caseLinkRepository;
     private final CaseActionService caseActionService;
     private final CaseDataTypeService caseDataTypeService;
+    private final DeadlineService deadlineService;
+    private final StageRepository stageRepository;
 
     public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
     public static final Pattern CASE_UUID_PATTERN = Pattern.compile("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b", Pattern.CASE_INSENSITIVE);
-
+    public static final String REFERENCE_NOT_FOUND = "REFERENCE NOT FOUND";
 
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository,
@@ -77,7 +80,9 @@ public class CaseDataService {
                            AuditClient auditClient,
                            CaseCopyFactory caseCopyFactory,
                            CaseActionService caseActionService,
-                           CaseDataTypeService caseDataTypeService) {
+                           CaseDataTypeService caseDataTypeService
+                           DeadlineService deadlineService,
+                           StageRepository stageRepository) {
 
         this.caseDataRepository = caseDataRepository;
         this.activeCaseViewDataRepository = activeCaseViewDataRepository;
@@ -88,6 +93,8 @@ public class CaseDataService {
         this.caseCopyFactory = caseCopyFactory;
         this.caseActionService = caseActionService;
         this.caseDataTypeService = caseDataTypeService;
+        this.deadlineService = deadlineService;
+        this.stageRepository = stageRepository;
     }
 
     public static final List<String> TIMELINE_EVENTS = List.of(
@@ -164,9 +171,13 @@ public class CaseDataService {
     }
 
     public String getCaseRef(UUID caseUUID) {
-        log.debug("Looking up CaseRef for Case: {}", caseUUID);
+        log.info("Looking up CaseRef for Case: {}", caseUUID, value(EVENT, GET_CASE_REF_BY_UUID));
+
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
-        log.debug("CaseRef {} found for Case: {}", caseData.getReference(), caseUUID);
+        if(caseData == null) {
+            log.warn("CaseData not found for Case: {}", caseUUID, value(EVENT, GET_CASE_REF_BY_UUID_FAILURE));
+            return REFERENCE_NOT_FOUND;
+        }
         return caseData.getReference();
     }
 
@@ -243,15 +254,17 @@ public class CaseDataService {
         log.debug("Allocating Ref: {}", caseNumber);
         CaseDataType caseDataType = caseDataTypeService.getCaseDataType(caseType);
         CaseData caseData = new CaseData(caseDataType, caseNumber, data, dateReceived);
-        LocalDate deadline = infoClient.getCaseDeadline(caseType, dateReceived, 0);
+        LocalDate deadline =
+                deadlineService.calculateWorkingDaysForCaseType(caseType, dateReceived, caseDataType.getSla());
+
         caseData.setCaseDeadline(deadline);
-        LocalDate deadlineWarning = infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), 0);
+        LocalDate deadlineWarning = deadlineService.calculateWorkingDaysForCaseType(caseType, caseData.getDateReceived(), caseDataType.getDeadLineWarning());
+
         caseData.setCaseDeadlineWarning(deadlineWarning);
         caseDataRepository.save(caseData);
 
         return caseData;
     }
-
 
     protected Map<String, String> calculateTotals(UUID caseUUID, UUID stageUUID, String listName) {
         log.debug("Calculating totals for Case: {} Stage: {}", caseUUID, stageUUID);
@@ -294,20 +307,39 @@ public class CaseDataService {
         log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
     }
 
-    void updateDateReceived(UUID caseUUID, UUID stageUUID, LocalDate dateReceived, int days) {
+
+    void updateDateReceived_defaultSla(UUID caseUUID, UUID stageUUID, LocalDate dateReceived) {
+        Assert.notNull(caseUUID, "Case UUID is null");
+        Assert.notNull(stageUUID, "Stage UUID is null");
+
+
+        log.debug("Updating DateReceived for Case: {} Date: {}", caseUUID, dateReceived);
+        CaseData caseData = getCaseData(caseUUID);
+        caseData.setDateReceived(dateReceived);
+
+        CaseDataType caseDataType = infoClient.getCaseType(caseData.getType());
+        LocalDate deadline = deadlineService
+                .calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), caseDataType.getSla());
+
+        caseData.setCaseDeadline(deadline);
+
+        updateCaseDeadlines(caseData, stageUUID);
+    }
+
+    void overrideSla(UUID caseUUID, UUID stageUUID, int days) {
 
         Assert.notNull(caseUUID, "Case UUID is null");
         Assert.notNull(stageUUID, "Stage UUID is null");
 
-        log.debug("Updating DateReceived for Case: {} Date: {}", caseUUID, dateReceived);
+        log.debug("Overriding SLA for Case: {} with new SLA: {}", caseUUID, days);
         CaseData caseData = getCaseData(caseUUID);
-        if (dateReceived != null) {
-            caseData.setDateReceived(dateReceived);
-        }
-        LocalDate deadline = infoClient.getCaseDeadline(caseData.getType(), caseData.getDateReceived(), days);
+
+        LocalDate deadline =
+                deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), days);
+
         caseData.setCaseDeadline(deadline);
 
-        updateCaseDeadlines(caseData, stageUUID, dateReceived, days);
+        updateCaseDeadlines(caseData, stageUUID, days);
     }
 
     void updateDispatchDeadlineDate(UUID caseUUID, UUID stageUUID, LocalDate dispatchDeadlineDate) {
@@ -321,17 +353,37 @@ public class CaseDataService {
             caseData.setCaseDeadline(dispatchDeadlineDate);
         }
 
-        updateCaseDeadlines(caseData, stageUUID, dispatchDeadlineDate, 0);
+        updateCaseDeadlines(caseData, stageUUID);
     }
 
+    private void updateCaseDeadlines(CaseData caseData, UUID stageUUID) {
+        log.debug("Updating case deadlines for Case: {} Date: {}", caseData.getUuid(), caseData.getDateReceived());
 
-    private void updateCaseDeadlines(CaseData caseData, UUID stageUUID, LocalDate dateReceived, int days) {
-        log.debug("Updating case deadlines for Case: {} Date: {}", caseData.getUuid(), dateReceived);
+        final CaseDataType caseTypeDto = infoClient.getCaseType(caseData.getType());
+        LocalDate deadlineWarning = deadlineService.calculateWorkingDaysForCaseType(
+                caseData.getType(),
+                caseData.getDateReceived(),
+                caseTypeDto.getDeadLineWarning());
 
-        LocalDate deadlineWarning = infoClient.getCaseDeadlineWarning(caseData.getType(), caseData.getDateReceived(), days);
         if (deadlineWarning.isAfter(LocalDate.now())) {
             caseData.setCaseDeadlineWarning(deadlineWarning);
         }
+
+        updateStageDeadlines(caseData);
+        caseDataRepository.save(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
+    }
+
+    private void updateCaseDeadlines(CaseData caseData, UUID stageUUID, int days) {
+        log.debug("Updating case deadlines for Case: {} Date: {}", caseData.getUuid(), caseData.getDateReceived());
+
+        LocalDate deadlineWarning =
+                deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), days);
+
+        if (deadlineWarning.isAfter(LocalDate.now())) {
+            caseData.setCaseDeadlineWarning(deadlineWarning);
+        }
+
         updateStageDeadlines(caseData);
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);
@@ -344,6 +396,8 @@ public class CaseDataService {
             return;
         }
 
+        final Set<StageTypeDto> stageTypesForCaseType = infoClient.getAllStagesForCaseType(caseData.getType());
+
         for (ActiveStage stage : caseData.getActiveStages()) {
             // Try and overwrite the deadlines with inputted values from the data map.
             String overrideDeadline = caseData.getData(String.format("%s_DEADLINE", stage.getStageType()));
@@ -351,10 +405,28 @@ public class CaseDataService {
                 LocalDate dateReceived = caseData.getDateReceived();
                 LocalDate caseDeadline = caseData.getCaseDeadline();
                 LocalDate caseDeadlineWarning = caseData.getCaseDeadlineWarning();
-                LocalDate deadline = infoClient.getStageDeadline(stage.getStageType(), dateReceived, caseDeadline);
+
+                final StageTypeDto stageDefinition = stageTypesForCaseType.stream()
+                        .filter(element -> element.getType().equals(stage.getStageType())).collect(Collectors.toList())
+                        .get(0);
+
+                LocalDate deadline = deadlineService.calculateWorkingDaysForStage(
+                        caseData.getType(),
+                        caseData.getDateReceived(),
+                        caseData.getCaseDeadline(),
+                        stageDefinition.getSla()
+                );
+
                 stage.setDeadline(deadline);
                 if (caseDeadlineWarning != null) {
-                    LocalDate deadlineWarning = infoClient.getStageDeadlineWarning(stage.getStageType(), dateReceived, caseDeadlineWarning);
+                    LocalDate deadlineWarning = deadlineService
+                            .calculateWorkingDaysForStage(
+                                    caseData.getType(),
+                                    dateReceived,
+                                    caseDeadline,
+                                    stageDefinition.getDeadlineWarning()
+                            );
+
                     stage.setDeadlineWarning(deadlineWarning);
                 }
             } else {
@@ -412,6 +484,17 @@ public class CaseDataService {
         log.debug("Updating completed status Case: {} completed {}", caseUUID, completed);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setCompleted(completed);
+
+        // Complete final stage if active stage exists
+        Optional<Stage> maybeFinalStage = stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseUUID);
+
+        if (maybeFinalStage.isPresent()) {
+            Stage finalStage = maybeFinalStage.get();
+            finalStage.setTeam(null);
+            stageRepository.save(finalStage);
+            log.info("Final active stage: {} for case: {}, completed", finalStage.getUuid(), caseUUID, value(EVENT, STAGE_COMPLETED));
+        }
+
         if (completed) {
             caseData.update(CaseworkConstants.CURRENT_STAGE, "");
         }
@@ -472,11 +555,9 @@ public class CaseDataService {
     }
 
     private void updateDeadlineForStage(CaseData caseData, String stageType, Integer noOfDays) {
-        LocalDate deadline = infoClient.getCaseDeadline(
-                caseData.getType(),
-                caseData.getDateReceived(),
-                noOfDays
-        );
+        LocalDate deadline =
+                deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), noOfDays);
+
         caseData.update(String.format("%s_DEADLINE", stageType), deadline.toString());
 
         if (caseData.getActiveStages() != null) {
@@ -487,7 +568,7 @@ public class CaseDataService {
     }
 
     private Map<String, LocalDate> getStageDeadlines(CaseData caseData, Map<String, String> caseDataMap) {
-        Map<String, LocalDate> stageDeadlinesOrig = infoClient.getStageDeadlines(caseData.getType(), caseData.getDateReceived());
+        Map<String, LocalDate> stageDeadlinesOrig = deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
         // Make a deep copy of the cached map so it isn't modified below
         Map<String, LocalDate> stageDeadlines = new HashMap<>(stageDeadlinesOrig);
         // Try and overwrite the deadlines with inputted values from the data map.

@@ -9,6 +9,7 @@ import org.springframework.core.ParameterizedTypeReference;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -62,6 +63,41 @@ public class InfoClientTest {
         verifyNoMoreInteractions(restHelper);
     }
 
+    @Test(expected = ApplicationExceptions.TeamAllocationException.class)
+    public void shouldThrowExceptionIfNullResponseFromCallForTeam() {
+        // GIVEN
+        String mockStageType = "FAKE_STAGE";
+        String uri = String.format("/stageType/%s/team", mockStageType);
+
+        when(restHelper.get("infoService", uri, TeamDto.class)).thenReturn(null);
+
+        // WHEN
+        infoClient.getTeamForStageType(mockStageType);
+
+        // THEN -- Exception throw test
+    }
+
+    @Test
+    public void shouldReturnTeamDto() {
+        // GIVEN
+        String mockStageType = "FAKE_STAGE";
+        String uri = String.format("/stageType/%s/team", mockStageType);
+
+        TeamDto teamDto = new TeamDto(null,UUID.randomUUID(), true, null);
+
+        when(restHelper.get("infoService", uri, TeamDto.class)).thenReturn(teamDto);
+
+        // WHEN
+        TeamDto output = infoClient.getTeamForStageType(mockStageType);
+
+        // THEN
+
+        assertThat(output).isNotNull();
+
+        verify(restHelper).get(eq("infoService"), eq("/stageType/FAKE_STAGE/team"), eq(TeamDto.class));
+        verifyNoMoreInteractions(restHelper);
+    }
+
     @Test
     public void getTeamByStageAndText() {
 
@@ -86,28 +122,6 @@ public class InfoClientTest {
 
         assertThat(response).isNotNull();
         assertThat(response.size()).isEqualTo(1);
-    }
-
-    @Test
-    public void getCaseDeadlineWarning() {
-        LocalDate expected = LocalDate.of(2020, 5, 13);
-        when(restHelper.get("infoService", "/caseType/TEST/deadlineWarning?received=2020-05-08&days=0", LocalDate.class)).thenReturn(expected);
-
-        LocalDate response = infoClient.getCaseDeadlineWarning("TEST", LocalDate.of(2020, 5, 8), 0);
-
-        assertThat(response).isNotNull();
-        assertThat(response).isEqualTo(expected);
-    }
-
-    @Test
-    public void getStageDeadlineWarning() {
-        LocalDate expected = LocalDate.of(2020, 5, 13);
-        when(restHelper.get("infoService", "/stageType/TEST/deadlineWarning?received=2020-05-08&caseDeadlineWarning=2020-05-09", LocalDate.class)).thenReturn(expected);
-
-        LocalDate response = infoClient.getStageDeadlineWarning("TEST", LocalDate.of(2020, 5, 8), LocalDate.of(2020, 5, 9));
-
-        assertThat(response).isNotNull();
-        assertThat(response).isEqualTo(expected);
     }
 
     @Test
@@ -152,23 +166,6 @@ public class InfoClientTest {
         verifyNoMoreInteractions(restHelper);
 
     }
-
-    @Test
-    public void getWorkingDaysElapsedForCaseType() {
-        String caseType = "CASE_TYPE_A";
-        LocalDate fromDate = LocalDate.parse("2020-05-11");
-        when(restHelper.get("infoService", "/caseType/CASE_TYPE_A/workingDays/2020-05-11", new ParameterizedTypeReference<Integer>() {
-        })).thenReturn(12);
-
-        Integer result = infoClient.getWorkingDaysElapsedForCaseType(caseType, fromDate);
-        assertThat(result).isNotNull();
-        assertThat(result).isEqualTo(12);
-
-        verify(restHelper).get("infoService", "/caseType/CASE_TYPE_A/workingDays/2020-05-11", new ParameterizedTypeReference<Integer>() {
-        });
-        verifyNoMoreInteractions(restHelper);
-    }
-
 
     @Test
     public void getProfileByCaseType() {

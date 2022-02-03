@@ -22,6 +22,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
+
 @Slf4j
 @RestController
 class CaseDataResource {
@@ -84,20 +86,20 @@ class CaseDataResource {
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/dateReceived")
     public ResponseEntity<Void> updateCaseDateReceived(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody LocalDate dateReceived) {
-        caseDataService.updateDateReceived(caseUUID, stageUUID, dateReceived, 0);
+        caseDataService.updateDateReceived_defaultSla(caseUUID, stageUUID, dateReceived);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/deadline")
+    public ResponseEntity<Void> overrideSla(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody int days) {
+        caseDataService.overrideSla(caseUUID, stageUUID, days);
+        return ResponseEntity.ok().build();
+    }
+
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/dispatchDeadlineDate")
     public ResponseEntity<Void> updateCaseDispatchDeadlineDate(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody LocalDate dispatchDate) {
         caseDataService.updateDispatchDeadlineDate(caseUUID, stageUUID, dispatchDate);
-        return ResponseEntity.ok().build();
-    }
-
-    // TODO: Add test
-    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/deadline")
-    public ResponseEntity<Void> updateCaseDeadlineDays(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody int days) {
-        caseDataService.updateDateReceived(caseUUID, stageUUID, null, days);
         return ResponseEntity.ok().build();
     }
 

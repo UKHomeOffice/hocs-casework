@@ -1,5 +1,6 @@
 # hocs-casework
 
+[![CodeQL](https://github.com/UKHomeOffice/hocs-casework/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/UKHomeOffice/hocs-casework/actions/workflows/codeql-analysis.yml)
 
 This is the Home Office Correspondence Service (HOCS) casework service.
 
@@ -41,6 +42,8 @@ In order to stop the containers, run
 ````$xslt
 docker-compose down
 ````
+
+To populate the bank holidays table locally , call ``http://localhost:8082/bankHoliday/refresh``.
 
 ### Running in an IDE
 

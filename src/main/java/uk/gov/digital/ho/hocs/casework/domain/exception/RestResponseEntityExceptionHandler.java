@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -81,6 +82,18 @@ public class RestResponseEntityExceptionHandler {
     public ResponseEntity handle(UnsupportedOperationException e) {
         log.error("UnsupportedOperationException: {}", e.getMessage(), value(EVENT, METHOD_NOT_ALLOWED));
         return new ResponseEntity<>(e.getMessage(), METHOD_NOT_ALLOWED);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity handle(MethodArgumentTypeMismatchException e) {
+        log.error("ConversionFailedException: {}", e.getMessage(), value(EVENT, METHOD_NOT_ALLOWED));
+        return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ApplicationExceptions.TeamAllocationException.class)
+    public ResponseEntity<String> handle(ApplicationExceptions.TeamAllocationException e) {
+        log.error("TeamAllocationException: {}", e.getMessage(), value(EVENT, INTERNAL_SERVER_ERROR));
+        return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)

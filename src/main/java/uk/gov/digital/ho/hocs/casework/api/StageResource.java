@@ -54,14 +54,14 @@ class StageResource {
     @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/case/{caseUUID}/stage")
     ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
-        Stage stage = stageService.createStage(caseUUID, request.getType(), request.getTeamUUID(), request.getUserUUID(), request.getAllocationType(), request.getTransitionNoteUUID());
+        Stage stage = stageService.createStage(caseUUID, request);
         return ResponseEntity.ok(CreateStageResponse.from(stage));
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/recreate")
     ResponseEntity recreateStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody RecreateStageRequest request) {
-        stageService.recreateStage(caseUUID, request.getStageUUID(), request.getStageType());
+        stageService.recreateStage(caseUUID, request);
         return ResponseEntity.ok().build();
     }
 
@@ -97,13 +97,6 @@ class StageResource {
     @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/team")
     ResponseEntity updateStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageTeamRequest request) {
-        stageService.updateStageTeam(caseUUID, stageUUID, request.getTeamUUID(), request.getAllocationType());
-        return ResponseEntity.ok().build();
-    }
-
-    @Authorised(accessLevel = AccessLevel.READ)
-    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/transitionNote")
-    ResponseEntity updateStageTransitionNote(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageTeamRequest request) {
         stageService.updateStageTeam(caseUUID, stageUUID, request.getTeamUUID(), request.getAllocationType());
         return ResponseEntity.ok().build();
     }

@@ -11,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.text.SimpleDateFormat;
+import java.time.Clock;
 
 @Configuration
 public class SpringConfiguration implements WebMvcConfigurer {
@@ -23,6 +24,11 @@ public class SpringConfiguration implements WebMvcConfigurer {
     @Bean
     public RestTemplate createRestTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    public Clock clock() {
+        return Clock.systemDefaultZone();
     }
 
     @Bean

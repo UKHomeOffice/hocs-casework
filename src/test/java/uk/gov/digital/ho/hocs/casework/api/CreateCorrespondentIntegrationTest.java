@@ -409,7 +409,7 @@ public class CreateCorrespondentIntegrationTest {
     private String createBodyUpdateTeam() {
         return "{\n" +
                 " \"teamUUID\" :\"44444444-2222-2222-2222-222222222221\",\n" +
-                "  \"allocationType\": \"None\"\n" +
+                " \"allocationType\": \"None\"\n" +
                 "}";
     }
     private String createBodyUpdateUser() {

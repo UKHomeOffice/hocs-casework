@@ -28,7 +28,9 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
+import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -44,6 +46,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@Sql(scripts = "classpath:case/beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
 @Sql(scripts = "classpath:case/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
 @ActiveProfiles({ "local", "integration" })
 public class CaseDataCreateCaseIntegrationTest {
@@ -194,10 +197,19 @@ public class CaseDataCreateCaseIntegrationTest {
 
     @Test
     public void shouldCreateAValidCaseWithNullData() throws JsonProcessingException {
+        // given
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", 5);
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST",null));
 
+        // when
+        ResponseEntity<CreateCaseResponse> result =
+                getCreateCaseResponse(
+                        createBodyData("TEST",null),
+                        "TEST",
+                        "5");
+
+
+        // then
         CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
 
@@ -297,23 +309,43 @@ public class CaseDataCreateCaseIntegrationTest {
         TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissionDtos);
         teamDtos.add(teamDto);
 
+        Set<String> exemptionDates = Set.of(
+                "2020-01-01",
+                "2020-04-10",
+                "2020-04-13",
+                "2020-05-08",
+                "2020-05-25",
+                "2020-08-31",
+                "2020-12-25",
+                "2020-12-28",
+                "2021-01-01",
+                "2021-04-02",
+                "2021-04-05",
+                "2021-05-03",
+                "2021-05-31",
+                "2021-08-30",
+                "2021-12-27",
+                "2021-12-28",
+                "2022-01-03"
+        );
+
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(Set.of(CaseDataTypeFactory.from("TEST", "a1"))), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(CaseDataTypeFactory.from("TEST", "a1")), MediaType.APPLICATION_JSON));
+
         mockInfoService
                 .expect(requestTo("http://localhost:8085/team"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
-
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/TEST/deadline?received=2018-01-01&days=0"))
+                .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/TEST/deadlineWarning?received=2018-01-01&days=0"))
+                .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess("\"2018-01-29\"", MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {

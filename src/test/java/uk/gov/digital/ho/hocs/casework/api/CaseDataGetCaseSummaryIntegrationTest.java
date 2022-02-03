@@ -113,9 +113,13 @@ public class CaseDataGetCaseSummaryIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/TEST/stageType/deadline?received=2018-01-01"))
+                .expect(requestTo("http://localhost:8085/stages/caseType/TEST"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new HashMap<>()), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(Set.of()), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(times(2), requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))
@@ -124,10 +128,6 @@ public class CaseDataGetCaseSummaryIntegrationTest {
                 .expect(manyTimes(),requestTo("http://localhost:8085/caseType/TEST/actions"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(List.of(MOCK_CASE_TYPE_ACTION_EXTENSION_DTO,MOCK_CASE_TYPE_ACTION_APPEAL_DTO)), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/deadline/2018-01-29/remainingDays"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(10), MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
