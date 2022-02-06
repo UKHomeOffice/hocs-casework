@@ -36,7 +36,7 @@ public class InfoClient {
         return restHelper.get(serviceBaseURL, "/caseType", new ParameterizedTypeReference<>() { });
     }
 
-    @Cacheable(value = "InfoClientGetCorrespondentType", unless = "#result == null")
+    @Cacheable(value = "InfoClientGetAllCorrespondentType", unless = "#result == null")
     public GetCorrespondentTypeResponse getAllCorrespondentType() {
         GetCorrespondentTypeResponse correspondentType = restHelper.get(serviceBaseURL, "/correspondentType", GetCorrespondentTypeResponse.class);
         log.info("Got CorrespondentTypes {}", correspondentType.getCorrespondentTypes().size(), value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
@@ -50,7 +50,7 @@ public class InfoClient {
         return correspondentType;
     }
 
-    @Cacheable(value = "InfoClientGetCorrespondentType", unless = "#result == null", key = "#caseType")
+    @Cacheable(value = "InfoClientGetSelectableCorrespondentType", unless = "#result == null", key = "#caseType")
     public GetCorrespondentTypeResponse getSelectableCorrespondentType(String caseType) {
         GetCorrespondentTypeResponse correspondentType = restHelper.get(serviceBaseURL, String.format("/correspondentType/%s/selectable", caseType), GetCorrespondentTypeResponse.class);
         log.info("Got CorrespondentTypes {}", correspondentType.getCorrespondentTypes().size(), value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
@@ -102,14 +102,6 @@ public class InfoClient {
     @Cacheable(value = "InfoClientGetCaseSummaryFieldsRequest", unless = "#result.size() == 0", key = "#caseType")
     public Set<FieldDto> getCaseSummaryFields(String caseType) {
         Set<FieldDto> response = restHelper.get(serviceBaseURL, String.format("/schema/caseType/%s/summary", caseType), new ParameterizedTypeReference<Set<FieldDto>>() {
-        });
-        log.info("Got {} case summary fields for CaseType {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
-        return response;
-    }
-
-    @Cacheable(value = "InfoAllSomuTypesForCaseTypeRequest", unless = "#result.size() == 0", key = "#caseType")
-    public Set<SomuTypeDto> getAllSomuTypesForCaseType(String caseType) {
-        Set<SomuTypeDto> response = restHelper.get(serviceBaseURL, String.format("/somuType/%s", caseType), new ParameterizedTypeReference<Set<SomuTypeDto>>() {
         });
         log.info("Got {} case summary fields for CaseType {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
         return response;

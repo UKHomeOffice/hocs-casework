@@ -38,7 +38,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -154,7 +153,7 @@ public class CaseDataServiceTest {
                 auditClient,
                 caseCopyFactory,
                 caseActionService,
-                caseDataTypeService
+                caseDataTypeService,
                 deadlineService,
                 stageRepository);
     }
@@ -165,22 +164,22 @@ public class CaseDataServiceTest {
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
         LocalDate expectedDeadline = LocalDate.parse("2020-03-02");
 
-        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(caseDataTypeService.getCaseDataType(caseType.getType())).thenReturn(caseType);
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
         when(deadlineService
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla()))
+                .calculateWorkingDaysForCaseType(caseType.getType(), originalReceivedDate, caseType.getSla()))
                 .thenReturn(expectedDeadline);
 
         // when
         CaseData caseData = caseDataService
-                .createCase(caseType.getDisplayCode(), new HashMap<>(), originalReceivedDate, null);
+                .createCase(caseType.getType(), new HashMap<>(), originalReceivedDate, null);
 
         // then
         verify(caseDataRepository, times(1)).getNextSeriesId();
 
         verify(caseDataRepository, times(1)).save(caseData);
         verify(deadlineService, times(1))
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
+                .calculateWorkingDaysForCaseType(caseType.getType(), originalReceivedDate, caseType.getSla());
 
         assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
 
@@ -231,14 +230,14 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findActiveByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);
         when(deadlineService
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla()))
+                .calculateWorkingDaysForCaseType(caseType.getType(), originalReceivedDate, caseType.getSla()))
                 .thenReturn(expectedDeadline);
 
-        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(comp2);
+        when(caseDataTypeService.getCaseDataType(caseType.getType())).thenReturn(comp2);
         when(caseCopyFactory.getStrategy(any(), any())).thenReturn(Optional.of((fromCase, toCase) -> {}));
 
         // when
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), originalReceivedDate, PREVIOUS_CASE_UUID);
+        CaseData caseData = caseDataService.createCase(caseType.getType(), new HashMap<>(), originalReceivedDate, PREVIOUS_CASE_UUID);
 
         // then
         verify(caseDataRepository, times(1)).findActiveByUuid(PREVIOUS_CASE_UUID);
@@ -266,7 +265,7 @@ public class CaseDataServiceTest {
         assertThat(previousReferenceMatcher.group(1)).isEqualTo(caseReferenceMatcher.group(1));
 
         verify(deadlineService, times(1))
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
+                .calculateWorkingDaysForCaseType(caseType.getType(), originalReceivedDate, caseType.getSla());
 
         // check deadline
         assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
@@ -279,9 +278,9 @@ public class CaseDataServiceTest {
         LocalDate expectedDeadline = LocalDate.parse("2020-03-02");
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(caseDataTypeService.getCaseDataType(caseType.getType())).thenReturn(caseType);
         when(deadlineService
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla()))
+                .calculateWorkingDaysForCaseType(caseType.getType(), originalReceivedDate, caseType.getSla()))
                 .thenReturn(expectedDeadline);
 
         // when
@@ -293,7 +292,7 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).save(caseData);
 
         verify(deadlineService, times(1))
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
+                .calculateWorkingDaysForCaseType(caseType.getType(), originalReceivedDate, caseType.getSla());
 
         assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
 
@@ -822,7 +821,7 @@ public class CaseDataServiceTest {
                 );
 
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
-        when(infoClient.getCaseType(any())).thenReturn(caseDataType);
+        when(caseDataTypeService.getCaseDataType(any())).thenReturn(caseDataType);
         when(deadlineService.calculateWorkingDaysForCaseType(
                 eq(caseDataType.getDisplayName()), eq(updatedReceivedDate), anyInt()))
                 .thenReturn(expectedNewDeadline);
@@ -891,7 +890,7 @@ public class CaseDataServiceTest {
         // given
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
-        when(infoClient.getCaseType(caseType.getDisplayName()))
+        when(caseDataTypeService.getCaseDataType(caseType.getDisplayName()))
                 .thenReturn(new CaseDataType(null, null, null, null, 20, 15));
         when(deadlineService
                 .calculateWorkingDaysForCaseType(any(), any(), eq(15)))
@@ -1050,13 +1049,13 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         LocalDate caseDeadline = LocalDate.now();
         when(deadlineService
-                .calculateWorkingDaysForCaseType(eq(caseType.getDisplayCode()), eq(deadlineDate), eq(9)))
+                .calculateWorkingDaysForCaseType(eq(caseType.getType()), eq(deadlineDate), eq(9)))
                 .thenReturn(caseDeadline);
         when(deadlineService
-                .calculateWorkingDaysForCaseType(eq(caseType.getDisplayCode()), eq(deadlineDate), eq(10)))
+                .calculateWorkingDaysForCaseType(eq(caseType.getType()), eq(deadlineDate), eq(10)))
                 .thenReturn(caseDeadline);
         when(deadlineService
-                .calculateWorkingDaysForCaseType(eq(caseType.getDisplayCode()), eq(deadlineDate), eq(5)))
+                .calculateWorkingDaysForCaseType(eq(caseType.getType()), eq(deadlineDate), eq(5)))
                 .thenReturn(caseDeadline);
 
         caseDataService.updateDeadlineForStages(caseData.getUuid(), stageUUID, stageTypeAndDaysMap);

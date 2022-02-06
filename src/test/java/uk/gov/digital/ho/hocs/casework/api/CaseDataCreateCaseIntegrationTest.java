@@ -28,9 +28,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
-import java.time.LocalDate;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -204,9 +202,7 @@ public class CaseDataCreateCaseIntegrationTest {
         // when
         ResponseEntity<CreateCaseResponse> result =
                 getCreateCaseResponse(
-                        createBodyData("TEST",null),
-                        "TEST",
-                        "5");
+                        createBodyData("TEST",null));
 
 
         // then
@@ -332,7 +328,7 @@ public class CaseDataCreateCaseIntegrationTest {
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CaseDataTypeFactory.from("TEST", "a1")), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(Set.of(CaseDataTypeFactory.from("TEST", "a1"))), MediaType.APPLICATION_JSON));
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/team"))

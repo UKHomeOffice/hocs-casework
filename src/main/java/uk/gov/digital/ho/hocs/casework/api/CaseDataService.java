@@ -80,7 +80,7 @@ public class CaseDataService {
                            AuditClient auditClient,
                            CaseCopyFactory caseCopyFactory,
                            CaseActionService caseActionService,
-                           CaseDataTypeService caseDataTypeService
+                           CaseDataTypeService caseDataTypeService,
                            DeadlineService deadlineService,
                            StageRepository stageRepository) {
 
@@ -317,7 +317,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.setDateReceived(dateReceived);
 
-        CaseDataType caseDataType = infoClient.getCaseType(caseData.getType());
+        CaseDataType caseDataType = caseDataTypeService.getCaseDataType(caseData.getType());
         LocalDate deadline = deadlineService
                 .calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), caseDataType.getSla());
 
@@ -359,11 +359,12 @@ public class CaseDataService {
     private void updateCaseDeadlines(CaseData caseData, UUID stageUUID) {
         log.debug("Updating case deadlines for Case: {} Date: {}", caseData.getUuid(), caseData.getDateReceived());
 
-        final CaseDataType caseTypeDto = infoClient.getCaseType(caseData.getType());
+        final CaseDataType caseDataType = caseDataTypeService.getCaseDataType(caseData.getType());
+
         LocalDate deadlineWarning = deadlineService.calculateWorkingDaysForCaseType(
                 caseData.getType(),
                 caseData.getDateReceived(),
-                caseTypeDto.getDeadLineWarning());
+                caseDataType.getDeadLineWarning());
 
         if (deadlineWarning.isAfter(LocalDate.now())) {
             caseData.setCaseDeadlineWarning(deadlineWarning);

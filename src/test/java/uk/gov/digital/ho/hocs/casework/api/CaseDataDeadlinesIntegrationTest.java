@@ -182,14 +182,9 @@ public class CaseDataDeadlinesIntegrationTest {
         );
 
         mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/type/TEST"))
+                .expect(requestTo("http://localhost:8085/caseType"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CaseDataTypeFactory.from("TEST", "a1")), MediaType.APPLICATION_JSON));
-
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/type/TEST"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CaseDataTypeFactory.from("TEST", "a1")), MediaType.APPLICATION_JSON));
+                .andRespond(withSuccess(mapper.writeValueAsString(Set.of(CaseDataTypeFactory.from("TEST", "a1"))), MediaType.APPLICATION_JSON));
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/team"))

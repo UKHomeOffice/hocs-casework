@@ -66,7 +66,7 @@ public class StageServiceTest {
             20,
             15
     );
-    private final List<CaseDataType> caseDataTypes = List.of(
+    private final Stream<CaseDataType> caseDataTypes = Stream.of(
             CaseDataTypeFactory.from("NXT", "a5", "MIN"), // NXT can be reached through MIN
                 caseDataType);
 

@@ -37,6 +37,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
     private final InfoClient infoClient;
     private final AuditClient auditClient;
     private final DeadlineService deadlineService;
+    private final CaseDataTypeService caseDataTypeService;
     private final Clock clock;
 
     @Autowired
@@ -45,6 +46,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
                                               InfoClient infoClient,
                                               AuditClient auditClient,
                                               DeadlineService deadlineService,
+                                              CaseDataTypeService caseDataTypeService,
                                               Clock clock
     ) {
         this.extensionRepository = extensionRepository;
@@ -52,6 +54,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         this.infoClient = infoClient;
         this.auditClient = auditClient;
         this.deadlineService = deadlineService;
+        this.caseDataTypeService = caseDataTypeService;
         this.clock = clock;
     }
 
@@ -107,7 +110,8 @@ public class ActionDataDeadlineExtensionService implements ActionService {
             extendFromDate = caseData.getCaseDeadline();
         }
 
-        final CaseDataType caseType = infoClient.getCaseType(caseData.getType());
+        final CaseDataType caseType = caseDataTypeService.getCaseDataType(caseData.getType());
+
         final int daysUntilDeadline = deadlineService.daysUntilDeadline(extendByNumberOfDays, caseType);
 
         LocalDate updatedDeadline =

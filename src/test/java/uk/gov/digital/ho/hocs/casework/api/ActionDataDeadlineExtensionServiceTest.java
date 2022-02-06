@@ -61,6 +61,9 @@ public class ActionDataDeadlineExtensionServiceTest {
     @Mock
     private DeadlineService deadlineService;
 
+    @Mock
+    private CaseDataTypeService caseDataTypeService;
+
     @Captor
     private ArgumentCaptor<CaseData> caseDataArgCapture = ArgumentCaptor.forClass(CaseData.class);
 
@@ -119,6 +122,7 @@ public class ActionDataDeadlineExtensionServiceTest {
                 mockInfoClient,
                 mockAuditClient,
                 deadlineService,
+                caseDataTypeService,
                 fixedClock
         );
 
@@ -197,7 +201,7 @@ public class ActionDataDeadlineExtensionServiceTest {
 
         when(mockInfoClient.getCaseTypeActionByUuid(previousCaseData.getType(), extensionDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(previousCaseData);
-        when(mockInfoClient.getCaseType(any())).thenReturn(new CaseDataType(
+        when(caseDataTypeService.getCaseDataType(any())).thenReturn(new CaseDataType(
                 null,
                 null,
                 null,
@@ -220,7 +224,7 @@ public class ActionDataDeadlineExtensionServiceTest {
         verify(mockCaseDataRepository, times(1)).save(caseDataArgCapture.capture());
 
         assertThat(caseDataArgCapture.getValue().getCaseDeadline()).isEqualTo(LocalDate.parse("2020-05-11"));
-        assertThat(caseDataArgCapture.getValue().getDataMap().get("isCaseExtended").contentEquals("True"));
+        assertThat(caseDataArgCapture.getValue().getDataMap().get("isCaseExtended").contentEquals("True")).isTrue();
 
         verify(mockAuditClient, times(1)).updateCaseAudit(any(), any());
 

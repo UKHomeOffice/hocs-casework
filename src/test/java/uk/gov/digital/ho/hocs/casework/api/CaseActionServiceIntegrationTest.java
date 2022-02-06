@@ -17,6 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.api.utils.DateUtils;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 
@@ -32,6 +33,7 @@ import static org.springframework.http.HttpMethod.*;
 import static org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD;
 import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.ISOLATED;
 import static org.springframework.test.web.client.ExpectedCount.manyTimes;
+import static org.springframework.test.web.client.ExpectedCount.times;
 import static org.springframework.test.web.client.MockRestServiceServer.bindTo;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -242,17 +244,17 @@ public class CaseActionServiceIntegrationTest {
                 .andRespond(withSuccess(mapper.writeValueAsString(EXTENSION_REASON_2), MediaType.APPLICATION_JSON));
 
         mockInfoService
-                .expect(manyTimes(), requestTo(
-                        "http://localhost:8085/caseType/type/TEST"))
+                .expect(requestTo(
+                        "http://localhost:8085/caseType"))
                 .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new CaseDataType(
+                .andRespond(withSuccess(mapper.writeValueAsString(Set.of(new CaseDataType(
                         null,
                         null,
                         null,
                         null,
                         20,
                         15
-                )), MediaType.APPLICATION_JSON));
+                ))), MediaType.APPLICATION_JSON));
     }
 
     // EXTENSIONS - CREATE
