@@ -158,7 +158,7 @@ public class StageServiceTest {
         verify(extensionService).hasExtensions(caseData.getUuid());
         verify(stageRepository, times(3)).save(any(Stage.class));
         verify(caseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
-        verify(infoClient).getTeamForStageType(eq(stageType));
+        verify(infoClient).getTeamForStageType(stageType);
         verify(stageRepository).save(mockExistingStage);
         verify(auditClient).updateStageTeam(mockExistingStage);
 
@@ -1329,7 +1329,7 @@ public class StageServiceTest {
 
         var result = stageService.getStageTeam(caseUuid, stageUuid);
         assertThat(result).isNotNull();
-        assertThat(result.toString()).isEqualTo(teamUUID.toString());
+        assertThat(result.toString()).hasToString(teamUUID.toString());
 
         verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseUuid, stageUuid);
 
