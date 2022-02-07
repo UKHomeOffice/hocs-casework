@@ -5,15 +5,14 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
+import uk.gov.digital.ho.hocs.casework.security.filters.AuthFilter;
 
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_PARSE_ERROR;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAUTHORISED;
@@ -25,10 +24,12 @@ public class AuthorisationAspect {
 
     private CaseDataService caseService;
     private UserPermissionsService userService;
+    private final Map<String,AuthFilter> authFilterList = new HashMap<>();
 
-    public AuthorisationAspect(@Qualifier("CaseDataService") CaseDataService caseService, UserPermissionsService userService) {
+    public AuthorisationAspect(@Qualifier("CaseDataService") CaseDataService caseService, UserPermissionsService userService, List<AuthFilter> authFilters) {
         this.caseService = caseService;
         this.userService = userService;
+        authFilters.forEach(filter -> authFilterList.put(filter.getKey(), filter));
     }
 
     @Around("@annotation(authorised)")
@@ -46,8 +47,13 @@ public class AuthorisationAspect {
         }
     }
 
-    private void filterResponseByPermissionLevel(Object unfilteredResponse, int accessLevelAsInt) {
+    private void filterResponseByPermissionLevel(Object objectToFilter, int accessLevelAsInt) {
         log.debug("Filtering out restricted fields");
+
+        AuthFilter filter = authFilterList.get(objectToFilter.getClass().getSimpleName());
+        if (filter != null) {
+            filter.applyFilter(objectToFilter);
+        }
     }
 
     AccessLevel getAccessRequestAccessLevel() {

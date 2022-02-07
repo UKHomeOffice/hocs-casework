@@ -37,14 +37,14 @@ class CaseDataResource {
         this.caseDataService = caseDataService;
     }
 
-    @Authorised(accessLevel = AccessLevel.OWNER)
+    @Authorised(accessLevel = AccessLevel.RESTRICTED_READ)
     @PostMapping(value = "/case")
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getDateRecieved(), request.getFromCaseUUID());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY)
+    @Authorised(accessLevel = AccessLevel.RESTRICTED_READ)
     @GetMapping(value = "/case/{caseUUID}")
     public ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID, @RequestParam("full") Optional<Boolean> full) {
         CaseData caseData = caseDataService.getCase(caseUUID);
@@ -78,7 +78,7 @@ class CaseDataResource {
         return ResponseEntity.ok(totals);
     }
 
-    @Authorised(accessLevel = AccessLevel.WRITE)
+    @Authorised(accessLevel = AccessLevel.RESTRICTED_READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data")
     public ResponseEntity<Void> updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {
         caseDataService.updateCaseData(caseUUID, stageUUID, request.getData());
@@ -141,7 +141,7 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.OWNER)
+    @Authorised(accessLevel = AccessLevel.RESTRICTED_READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/teamTexts")
     public ResponseEntity<UpdateTeamByStageAndTextsResponse> updateTeamByStageAndTexts(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateTeamByStageAndTextsRequest request) {
         Map<String, String> teamMap = caseDataService.updateTeamByStageAndTexts(caseUUID, stageUUID, request.getStageType(), request.getTeamUUIDKey(), request.getTeamNameKey(), request.getTexts());
