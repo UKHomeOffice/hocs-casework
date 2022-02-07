@@ -24,10 +24,12 @@ import java.util.stream.Collectors;
 public class DeadlineService {
 
     private final InfoClient infoClient;
+    private final BankHolidayService bankHolidayService;
 
     @Autowired
-    public DeadlineService(final InfoClient infoClient) {
+    public DeadlineService(final InfoClient infoClient, final BankHolidayService bankHolidayService) {
         this.infoClient = infoClient;
+        this.bankHolidayService = bankHolidayService;
     }
 
     public LocalDate calculateWorkingDaysForStage(final String caseType,
@@ -56,7 +58,16 @@ public class DeadlineService {
     }
 
     private Set<LocalDate> getBankHolidayDatesForCase(String caseType) {
-        return infoClient.getExemptionDatesForType(caseType);
+        // get bank holiday dates
+        Set<BankHoliday.BankHolidayRegion> bankHolidayRegionsForCase =
+                infoClient.getBankHolidayRegionsByCaseType(caseType)
+                        .stream()
+                        .map(BankHoliday.BankHolidayRegion::valueOf)
+                        .collect(Collectors.toSet());
+
+        final Set<LocalDate> bankHolidayDatesForCase =
+                bankHolidayService.getBankHolidayDatesForRegions(bankHolidayRegionsForCase);
+        return bankHolidayDatesForCase;
     }
 
     Map<String, LocalDate> getAllStageDeadlinesForCaseType(String type, LocalDate receivedDate) {

@@ -247,15 +247,10 @@ public class InfoClient {
         return response;
     }
 
-    @Cacheable(value = "InfoClientGetExemptionDatesForType", unless = "#result == null", key = "#caseType")
-    public Set<LocalDate> getExemptionDatesForType(String caseType) {
-        log.debug("Requesting exemption dates for case type: {}", caseType);
-
-        ParameterizedTypeReference<Set<LocalDate>> typeRef = new ParameterizedTypeReference<>() {};
-        Set<LocalDate> exemptionDates =
-                restHelper.get(serviceBaseURL, String.format("/caseType/%s/exemptionDates", caseType), typeRef);
-
-        log.info("Received {} CaseTypeActions", exemptionDates.size(), caseType);
-        return exemptionDates;
+    @Cacheable(value = "InfoGetBankHolidaysByCaseType", unless = "#result == null")
+    public List<String> getBankHolidayRegionsByCaseType(String caseType) {
+        List<String> response = restHelper.get(serviceBaseURL, String.format("/bankHolidayRegion/caseType/%s", caseType), new ParameterizedTypeReference<>() {});
+        log.info("Got {} bank holidays for case type {}, event {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_BANK_HOLIDAYS_BY_CASE_TYPE_SUCCESS));
+        return response;
     }
 }
