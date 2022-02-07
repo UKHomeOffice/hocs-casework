@@ -597,6 +597,7 @@ public class StageService {
         Map<String, String> data = new HashMap<>();
         data.put("Withdrawn", "True");
         data.put("WithdrawalDate", request.getWithdrawalDate());
+        data.put("WithdrawalReason", request.getNotes());
         data.put(CaseworkConstants.CURRENT_STAGE, "");
 
         caseDataService.updateCaseData(caseUUID, stageUUID, data);

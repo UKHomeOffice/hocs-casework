@@ -1196,6 +1196,7 @@ public class StageServiceTest {
         Map<String, String> expectedData = new HashMap<>();
         expectedData.put("Withdrawn", "True");
         expectedData.put("WithdrawalDate", "2010-11-23");
+        expectedData.put("WithdrawalReason", "Note 1");
         expectedData.put("CurrentStage", "");
 
         verify(caseDataService).getCase(caseUUID);
