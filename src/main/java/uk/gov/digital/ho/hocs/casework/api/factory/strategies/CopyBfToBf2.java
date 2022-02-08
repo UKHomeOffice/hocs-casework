@@ -42,6 +42,13 @@ public class CopyBfToBf2 extends AbstractCaseCopyStrategy implements CaseCopyStr
             "ComplainantCompanyName",
             "ComplainantNationality",
             "ComplainantGender",
+            "Region",
+            "BusArea",
+            "EnquiryReason1",
+            "EnquiryReason2",
+            "EnquiryReason3",
+            "LoaRequired",
+            "BusinessAreaOther"
     };
 
     private final CaseDataService caseDataService;
