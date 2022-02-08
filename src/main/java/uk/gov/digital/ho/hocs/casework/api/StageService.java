@@ -540,7 +540,7 @@ public class StageService {
         // map the previous case type on to the cases found
         // only stages with completed cases have the next caseType
         stages.stream()
-                .filter(stage -> stage.getCompleted())
+                .filter(StageWithCaseData::getCompleted)
                 .forEach(stage -> stage.setNextCaseType(caseTypes.get(stage.getCaseDataType())));
 
         log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));
@@ -597,6 +597,7 @@ public class StageService {
         Map<String, String> data = new HashMap<>();
         data.put("Withdrawn", "True");
         data.put("WithdrawalDate", request.getWithdrawalDate());
+        data.put("WithdrawalReason", request.getNotes());
         data.put(CaseworkConstants.CURRENT_STAGE, "");
 
         caseDataService.updateCaseData(caseUUID, stageUUID, data);
