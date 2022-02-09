@@ -134,7 +134,8 @@ public enum LogEvent {
     GET_CASE_REF_BY_UUID,
     GET_CASE_REF_BY_UUID_FAILURE,
     INFO_CLIENT_GET_TEAM_FOR_STAGE_SUCCESS,
-    MISSING_TEAM_FOR_STAGE;
+    MISSING_TEAM_FOR_STAGE,
+    INFO_CLIENT_GET_RESTRICTED_FIELDS;
 
     public static final String EVENT = "event_id";
     public static final String EXCEPTION = "exception";
