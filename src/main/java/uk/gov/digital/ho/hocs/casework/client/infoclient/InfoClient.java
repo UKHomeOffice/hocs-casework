@@ -98,6 +98,7 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientRestrictedCaseDataFields", unless = "#result.size() == 0")
     public List<FieldDto> getRestrictedFields() {
+        log.debug("Requesting list of restricted fields.");
         ParameterizedTypeReference<List<FieldDto>> typeRef = new ParameterizedTypeReference<>() {};
         List<FieldDto> restrictedFieldsList = restHelper.get(serviceBaseURL, "/schema/restricted/fields",typeRef);
         log.info("Received {} restricted fields", restrictedFieldsList.size(), value(EVENT,INFO_CLIENT_GET_RESTRICTED_FIELDS));

@@ -18,7 +18,7 @@ import java.util.*;
 
 import static uk.gov.digital.ho.hocs.casework.api.CaseDataService.CASE_UUID_PATTERN;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class GetCaseResponse {
 
@@ -133,5 +133,7 @@ public class GetCaseResponse {
         return caseData.getDataMap();
     }
 
-
+    protected void replaceDataMap(Map<String, String> dataMap) {
+        this.data = dataMap;
+    }
 }

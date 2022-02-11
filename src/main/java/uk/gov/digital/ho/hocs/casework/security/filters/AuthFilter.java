@@ -1,8 +1,10 @@
 package uk.gov.digital.ho.hocs.casework.security.filters;
 
+import org.springframework.http.ResponseEntity;
+
 public interface AuthFilter {
 
     String getKey();
 
-    void applyFilter(Object filerObject);
+    Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt) throws Exception;
 }

@@ -5,6 +5,7 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -38,22 +39,31 @@ public class AuthorisationAspect {
         if (accessLevelAsInt >= getRequiredAccessLevel(authorised).getLevel()) {
 
             Object response = joinPoint.proceed();
-
-            filterResponseByPermissionLevel(response, accessLevelAsInt);
-
-            return response;
+            return filterResponseByPermissionLevel(response, accessLevelAsInt);
         } else {
             throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource", SECURITY_UNAUTHORISED);
         }
     }
 
-    private void filterResponseByPermissionLevel(Object objectToFilter, int accessLevelAsInt) {
+    private Object filterResponseByPermissionLevel(Object objectToFilter, int accessLevelAsInt) throws Exception {
         log.debug("Filtering out restricted fields");
 
-        AuthFilter filter = authFilterList.get(objectToFilter.getClass().getSimpleName());
-        if (filter != null) {
-            filter.applyFilter(objectToFilter);
+        if (objectToFilter.getClass() != ResponseEntity.class) {
+             return objectToFilter;
         }
+
+        ResponseEntity<?> responseEntityToFilter = (ResponseEntity<?>) objectToFilter;
+
+        if (responseEntityToFilter.getBody() != null) {
+
+            AuthFilter filter = authFilterList.get(responseEntityToFilter.getBody().getClass().getSimpleName());
+            if (filter != null) {
+                return filter.applyFilter(responseEntityToFilter, accessLevelAsInt);
+            }
+        }
+
+        return objectToFilter;
+
     }
 
     AccessLevel getAccessRequestAccessLevel() {
