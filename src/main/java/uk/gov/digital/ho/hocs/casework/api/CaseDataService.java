@@ -49,6 +49,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.GET_CASE_REF_
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.GET_CASE_REF_BY_UUID_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRESPONDENT_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_TOPIC_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.UNCAUGHT_EXCEPTION;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
@@ -213,6 +214,18 @@ public class CaseDataService {
         } else {
             caseData = createCaseFromCaseUUID(caseType, data, dateReceived, fromCaseUUID);
         }
+
+        auditClient.createCaseAudit(caseData);
+
+        return caseData;
+    }
+
+    CaseData migrateCase(String caseType, Map<String, String> data, LocalDate dateReceived, UUID fromCaseUUID) {
+        log.debug("Creating Case of type: {}", caseType);
+
+        CaseData caseData;
+        caseData = createCaseFromCaseUUID(caseType, data, dateReceived, fromCaseUUID);
+
 
         auditClient.createCaseAudit(caseData);
 
