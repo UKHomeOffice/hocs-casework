@@ -54,12 +54,26 @@ public class AuthorisationAspect {
 
         ResponseEntity<?> responseEntityToFilter = (ResponseEntity<?>) objectToFilter;
 
-        if (responseEntityToFilter.getBody() != null) {
+        String simpleName;
+        Object object = responseEntityToFilter.getBody();
+        Object[] collectionAsArray = new Object[0];
 
-            AuthFilter filter = authFilterList.get(responseEntityToFilter.getBody().getClass().getSimpleName());
-            if (filter != null) {
-                return filter.applyFilter(responseEntityToFilter, accessLevelAsInt);
+        if (responseEntityToFilter.getBody() != null && object != null) {
+
+            if (!Collection.class.isAssignableFrom(object.getClass())) {
+                simpleName = object.getClass().getSimpleName();
+            } else {
+                collectionAsArray = ((Collection<?>) object).toArray();
+                simpleName= collectionAsArray[0].getClass().getSimpleName();
             }
+
+            AuthFilter filter = authFilterList.get(simpleName);
+
+            if (filter != null) {
+                return filter.applyFilter(responseEntityToFilter, accessLevelAsInt, userService.getUserId(), collectionAsArray);
+            }
+
+
         }
 
         return objectToFilter;

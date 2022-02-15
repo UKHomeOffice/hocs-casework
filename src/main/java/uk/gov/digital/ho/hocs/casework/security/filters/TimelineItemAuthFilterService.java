@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.TimelineItemDto;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 public class TimelineItemAuthFilterService implements AuthFilter {
@@ -14,7 +16,9 @@ public class TimelineItemAuthFilterService implements AuthFilter {
     }
 
     @Override
-    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt) throws Exception {
+    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt, UUID userUUID, Object[] collectionAsArray) throws Exception {
         return responseEntityToFilter;
     }
+
+
 }

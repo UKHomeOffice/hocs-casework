@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsResponse;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 public class GetDocumentsAuthFilterService implements AuthFilter {
@@ -15,7 +17,8 @@ public class GetDocumentsAuthFilterService implements AuthFilter {
     }
 
     @Override
-    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt) throws Exception {
-        return responseEntityToFilter;
+    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt, UUID userUUID, Object[] collectionAsArray) throws Exception {
+        return null;
     }
+
 }

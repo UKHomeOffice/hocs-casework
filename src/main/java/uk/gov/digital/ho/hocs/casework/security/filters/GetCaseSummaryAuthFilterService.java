@@ -6,12 +6,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.AdditionalFieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -30,14 +33,16 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
     }
 
     @Override
-    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt) throws Exception {
+    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt, UUID userUUID, Object[] collectionAsArray) throws Exception {
 
-        if (responseEntityToFilter.getBody().getClass() != GetCaseSummaryResponse.class) {
+        // collectionsAsArray - not used
+        // userUUID - not used
+
+        if (responseEntityToFilter.getBody() != null && responseEntityToFilter.getBody().getClass() != GetCaseSummaryResponse.class) {
             throw new Exception("There is something wrong with the GetCaseSummaryResponse Auth Filter");
         }
 
         GetCaseSummaryResponse getCaseSummaryResponse  = (GetCaseSummaryResponse) responseEntityToFilter.getBody();
-        List<AdditionalFieldDto> replacementList = new ArrayList<>();
 
         log.debug("Filtering GetCaseSummaryResponse");
 
@@ -54,6 +59,7 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
                 .forEach(additionalFieldDto -> additionalFieldDtoStringMap.put(additionalFieldDto.getName(),additionalFieldDto));
 
 
+        List<AdditionalFieldDto> replacementList = new ArrayList<>();
         restrictedFields.forEach((FieldDto key, String val) -> {
             if (userAccessLevelAsInt == key.getAccessLevel().getLevel() && additionalFieldDtoStringMap.containsKey(val)) {
                 replacementList.add(additionalFieldDtoStringMap.get(val));

@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -29,7 +30,7 @@ public class GetCaseAuthFilterService implements AuthFilter {
     }
 
     @Override
-    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt) throws Exception {
+    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt, UUID userUUID, Object[] collectionAsArray) throws Exception {
         // todo: maybe look to instantiate the list once and then forget... likely that this will not change during a
         //  day regardless. However list is cached on the infoClient call.
 
