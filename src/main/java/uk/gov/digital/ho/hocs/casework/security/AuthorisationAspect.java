@@ -12,6 +12,8 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,11 +35,19 @@ public class AuthorisationAspect {
 
     @Around("@annotation(authorised)")
     public Object validateUserAccess(ProceedingJoinPoint joinPoint, Authorised authorised) throws Throwable {
-        if (getUserAccessLevel(joinPoint).getLevel() >= getRequiredAccessLevel(authorised).getLevel()) {
+        if (isAllowedToProceed(joinPoint, authorised)) {
             return joinPoint.proceed();
         } else {
             throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource", SECURITY_UNAUTHORISED);
         }
+    }
+
+    private boolean isAllowedToProceed(ProceedingJoinPoint joinPoint, Authorised authorised) {
+        return (getUserAccessLevel(joinPoint).getLevel() >= getRequiredAccessLevel(authorised).getLevel()) || getPermittedSpecificLevels(authorised,getUserAccessLevel(joinPoint).getLevel());
+    }
+
+    private boolean getPermittedSpecificLevels(Authorised authorised, int usersLevel) {
+        return Arrays.stream(authorised.allowSpecificLevels()).anyMatch(level -> level.getLevel() == usersLevel);
     }
 
     AccessLevel getAccessRequestAccessLevel() {
