@@ -64,13 +64,18 @@ public class AuthorisationAspect {
                 simpleName = object.getClass().getSimpleName();
             } else {
                 collectionAsArray = ((Collection<?>) object).toArray();
-                simpleName= collectionAsArray[0].getClass().getSimpleName();
+                if (collectionAsArray.length < 1) {
+                    simpleName = "placeHolder";
+                } else {
+
+                    simpleName= collectionAsArray[0].getClass().getSimpleName();
+                }
             }
 
             AuthFilter filter = authFilterList.get(simpleName);
 
             if (filter != null) {
-                return filter.applyFilter(responseEntityToFilter, accessLevelAsInt, userService.getUserId(), collectionAsArray);
+                return filter.applyFilter(responseEntityToFilter, accessLevelAsInt, collectionAsArray);
             }
 
 

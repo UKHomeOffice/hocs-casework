@@ -30,7 +30,7 @@ public class GetCaseAuthFilterService implements AuthFilter {
     }
 
     @Override
-    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt, UUID userUUID, Object[] collectionAsArray) throws Exception {
+    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt, Object[] collectionAsArray) throws Exception {
         // todo: maybe look to instantiate the list once and then forget... likely that this will not change during a
         //  day regardless. However list is cached on the infoClient call.
 

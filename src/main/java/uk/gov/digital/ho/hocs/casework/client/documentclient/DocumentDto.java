@@ -36,6 +36,8 @@ public class DocumentDto {
     @JsonProperty("updated")
     private LocalDateTime updated;
 
+    private UUID uploadOwnerUUID;
+
     @JsonProperty("deleted")
     private Boolean deleted;
 
