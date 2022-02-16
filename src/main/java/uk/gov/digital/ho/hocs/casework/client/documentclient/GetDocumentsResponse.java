@@ -19,4 +19,8 @@ public class GetDocumentsResponse {
     @Setter
     @JsonProperty("documentTags")
     private List<String> documentTags;
+
+    protected void replaceDocumentDtos(Set<DocumentDto> documentDtos) {
+        this.documentDtos = documentDtos;
+    }
 }

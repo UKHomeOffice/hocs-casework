@@ -36,7 +36,6 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
     public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt, Object[] collectionAsArray) throws Exception {
 
         // collectionsAsArray - not used
-        // userUUID - not used
 
         if (responseEntityToFilter.getBody() != null && responseEntityToFilter.getBody().getClass() != GetCaseSummaryResponse.class) {
             throw new Exception("There is something wrong with the GetCaseSummaryResponse Auth Filter");
