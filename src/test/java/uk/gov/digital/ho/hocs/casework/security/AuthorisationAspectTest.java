@@ -15,10 +15,12 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.security.filters.AuthFilter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -52,13 +54,16 @@ public class AuthorisationAspectTest {
     @Mock
     private ProceedingJoinPoint proceedingJoinPoint;
 
+    @Mock
+    private List<AuthFilter> authFilterList;
+
     @Before
     public void setup() {
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.OWNER);
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setMethod("GET");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        aspect = new AuthorisationAspect(caseService, userService);
+        aspect = new AuthorisationAspect(caseService, userService, authFilterList);
     }
 
     @Test

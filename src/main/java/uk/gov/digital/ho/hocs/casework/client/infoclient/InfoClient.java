@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -94,6 +95,16 @@ public class InfoClient {
         });
         log.info("Got {} teams", teams.size(), value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
         return teams;
+    }
+
+    @Cacheable(value = "InfoClientRestrictedCaseDataFields", unless = "#result.size() == 0", key = "#accessLevel")
+    public List<FieldDto> getFieldsByPermissionLevel(AccessLevel accessLevel) {
+        log.debug("Requesting fields by permission level: {}", accessLevel);
+        ParameterizedTypeReference<List<FieldDto>> typeRef = new ParameterizedTypeReference<>() {};
+        String url = String.format("/schema/permission/%s/fields", accessLevel);
+        List<FieldDto> restrictedFieldsList = restHelper.get(serviceBaseURL, url,typeRef);
+        log.info("Received {} fields for permission level {}", restrictedFieldsList.size(), accessLevel, value(EVENT, INFO_CLIENT_GET_FIELDS_BY_PERMISSION_SUCCESS));
+        return restrictedFieldsList;
     }
 
     @Cacheable(value = "InfoClientGetTeamForStageType", unless = "#result == null", key = "#stageType")
