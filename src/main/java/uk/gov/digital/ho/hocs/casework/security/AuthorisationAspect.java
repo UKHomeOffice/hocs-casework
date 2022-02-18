@@ -15,8 +15,8 @@ import uk.gov.digital.ho.hocs.casework.security.filters.AuthFilter;
 
 import java.util.*;
 
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_PARSE_ERROR;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAUTHORISED;
+import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Aspect
 @Component
@@ -35,18 +35,25 @@ public class AuthorisationAspect {
 
     @Around("@annotation(authorised)")
     public Object validateUserAccess(ProceedingJoinPoint joinPoint, Authorised authorised) throws Throwable {
-        int accessLevelAsInt = getUserAccessLevel(joinPoint).getLevel();
-        if (accessLevelAsInt >= getRequiredAccessLevel(authorised).getLevel()) {
+        if (isAllowedToProceed(joinPoint, authorised)) {
 
             Object response = joinPoint.proceed();
-            return filterResponseByPermissionLevel(response, accessLevelAsInt);
+            return filterResponseByPermissionLevel(response, getUserAccessLevel(joinPoint));
         } else {
             throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource", SECURITY_UNAUTHORISED);
         }
     }
 
-    private Object filterResponseByPermissionLevel(Object objectToFilter, int accessLevelAsInt) throws Exception {
-        log.debug("Filtering out restricted fields");
+    private boolean isAllowedToProceed(ProceedingJoinPoint joinPoint, Authorised authorised) {
+        return (getUserAccessLevel(joinPoint).getLevel() >= getRequiredAccessLevel(authorised).getLevel()) || isPermittedLowerLevel(authorised,getUserAccessLevel(joinPoint).getLevel());
+    }
+
+    private boolean isPermittedLowerLevel(Authorised authorised, int usersLevel) {
+        return Arrays.stream(authorised.permittedLowerLevels()).anyMatch(level -> level.getLevel() == usersLevel);
+    }
+
+    private Object filterResponseByPermissionLevel(Object objectToFilter, AccessLevel userAccessLevel) throws Exception {
+        log.debug("Checking if response filtering is required");
 
         if (objectToFilter.getClass() != ResponseEntity.class) {
              return objectToFilter;
@@ -65,9 +72,9 @@ public class AuthorisationAspect {
             } else {
                 collectionAsArray = ((Collection<?>) object).toArray();
                 if (collectionAsArray.length < 1) {
-                    simpleName = "placeHolder";
+                    log.trace("No elements in array, cannot get filter key, setting key to NONE");
+                    simpleName =  "NONE";
                 } else {
-
                     simpleName= collectionAsArray[0].getClass().getSimpleName();
                 }
             }
@@ -75,12 +82,11 @@ public class AuthorisationAspect {
             AuthFilter filter = authFilterList.get(simpleName);
 
             if (filter != null) {
-                return filter.applyFilter(responseEntityToFilter, accessLevelAsInt, collectionAsArray);
+                log.info("Filtering response for {} call.", simpleName, value(EVENT, AUTH_FILTER_SUCCESS));
+                return filter.applyFilter(responseEntityToFilter, userAccessLevel, collectionAsArray);
             }
-
-
         }
-
+        log.trace("The response does not need to be filtered.");
         return objectToFilter;
 
     }

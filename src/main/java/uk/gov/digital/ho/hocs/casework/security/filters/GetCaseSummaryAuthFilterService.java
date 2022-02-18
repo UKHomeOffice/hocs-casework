@@ -6,7 +6,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.AdditionalFieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.util.ArrayList;
@@ -14,7 +18,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+
+import static net.logstash.logback.argument.StructuredArguments.value;
 
 @Slf4j
 @Service
@@ -33,12 +38,13 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
     }
 
     @Override
-    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt, Object[] collectionAsArray) throws Exception {
+    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
+        // todo: expand to filter out Case Action data at later date. See HOCS-4596, not applicable for initial usecase SMC caseType
 
-        // collectionsAsArray - not used
-
-        if (responseEntityToFilter.getBody() != null && responseEntityToFilter.getBody().getClass() != GetCaseSummaryResponse.class) {
-            throw new Exception("There is something wrong with the GetCaseSummaryResponse Auth Filter");
+        if (responseEntityToFilter.getBody().getClass() != GetCaseSummaryResponse.class) {
+            String msg = String.format("The wrong filter has been selected for class %s", responseEntityToFilter.getBody().getClass().getSimpleName());
+            log.error(msg, value(LogEvent.EXCEPTION, LogEvent.AUTH_FILTER_FAILURE));
+            throw new SecurityExceptions.AuthFilterException(msg, LogEvent.AUTH_FILTER_FAILURE);
         }
 
         GetCaseSummaryResponse getCaseSummaryResponse  = (GetCaseSummaryResponse) responseEntityToFilter.getBody();
@@ -46,7 +52,7 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
         log.debug("Filtering GetCaseSummaryResponse");
 
         Map<FieldDto, String> restrictedFields = new HashMap<>();
-        userPermissionsService.getRestrictedFieldNames()
+        userPermissionsService.getFieldsByPermissionLevel(userAccessLevel)
                 .forEach(fieldDto -> restrictedFields.put(fieldDto, fieldDto.getName()));
 
         if (getCaseSummaryResponse == null  || getCaseSummaryResponse.getAdditionalFields() == null) {
@@ -60,7 +66,7 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
 
         List<AdditionalFieldDto> replacementList = new ArrayList<>();
         restrictedFields.forEach((FieldDto key, String val) -> {
-            if (userAccessLevelAsInt == key.getAccessLevel().getLevel() && additionalFieldDtoStringMap.containsKey(val)) {
+            if (additionalFieldDtoStringMap.containsKey(val)) {
                 replacementList.add(additionalFieldDtoStringMap.get(val));
             }
         });
@@ -68,8 +74,6 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
         if (replacementList.isEmpty()) {
             return responseEntityToFilter;
         }
-
-        // todo: filter out Action data as well?
 
         replacementList.sort(Comparator.comparing(AdditionalFieldDto::getLabel));
 

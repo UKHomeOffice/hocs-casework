@@ -116,8 +116,8 @@ public class UserPermissionsService {
         }
     }
 
-    public List<FieldDto> getRestrictedFieldNames() {
+    public List<FieldDto> getFieldsByPermissionLevel(AccessLevel accessLevel) {
         // todo: is a more case_type_schema option required??? I'm not sure screening on name is restrictive enough.
-        return infoClient.getRestrictedFields();
+        return infoClient.getFieldsByPermissionLevel(accessLevel);
     }
 }

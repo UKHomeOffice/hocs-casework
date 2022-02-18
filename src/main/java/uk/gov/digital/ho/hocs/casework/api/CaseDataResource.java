@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
@@ -23,8 +22,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
-
 @Slf4j
 @RestController
 class CaseDataResource {
@@ -37,14 +34,14 @@ class CaseDataResource {
         this.caseDataService = caseDataService;
     }
 
-    @Authorised(accessLevel = AccessLevel.RESTRICTED_READ)
+    @Authorised(accessLevel = AccessLevel.RESTRICTED_OWNER)
     @PostMapping(value = "/case")
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getDateRecieved(), request.getFromCaseUUID());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
-    @Authorised(accessLevel = AccessLevel.RESTRICTED_READ)
+    @Authorised(accessLevel = AccessLevel.RESTRICTED_OWNER)
     @GetMapping(value = "/case/{caseUUID}")
     public ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID, @RequestParam("full") Optional<Boolean> full) {
         CaseData caseData = caseDataService.getCase(caseUUID);
@@ -78,7 +75,7 @@ class CaseDataResource {
         return ResponseEntity.ok(totals);
     }
 
-    @Authorised(accessLevel = AccessLevel.RESTRICTED_READ)
+    @Authorised(accessLevel = AccessLevel.RESTRICTED_OWNER)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data")
     public ResponseEntity<Void> updateCaseData(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateCaseDataRequest request) {
         caseDataService.updateCaseData(caseUUID, stageUUID, request.getData());
@@ -141,7 +138,7 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.RESTRICTED_READ)
+    @Authorised(accessLevel = AccessLevel.RESTRICTED_OWNER)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/teamTexts")
     public ResponseEntity<UpdateTeamByStageAndTextsResponse> updateTeamByStageAndTexts(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateTeamByStageAndTextsRequest request) {
         Map<String, String> teamMap = caseDataService.updateTeamByStageAndTexts(caseUUID, stageUUID, request.getStageType(), request.getTeamUUIDKey(), request.getTeamNameKey(), request.getTexts());

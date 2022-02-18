@@ -5,15 +5,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentDto;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsResponse;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import static net.logstash.logback.argument.StructuredArguments.value;
 
 @Slf4j
 @Service
@@ -32,14 +35,16 @@ public class GetDocumentsAuthFilterService implements AuthFilter {
     }
 
     @Override
-    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, int userAccessLevelAsInt, Object[] collectionAsArray) throws Exception {
+    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
 
-        if (userAccessLevelAsInt != AccessLevel.RESTRICTED_READ.getLevel()) {
+        if (userAccessLevel != AccessLevel.RESTRICTED_OWNER) {
             return responseEntityToFilter;
         }
 
-        if (responseEntityToFilter.getBody() != null && responseEntityToFilter.getBody().getClass() != GetDocumentsResponse.class) {
-            throw new Exception("There is something wrong with the GetDocumentsResponse Auth Filter");
+        if (responseEntityToFilter.getBody().getClass() != GetDocumentsResponse.class) {
+            String msg = String.format("The wrong filter has been selected for class %s", responseEntityToFilter.getBody().getClass().getSimpleName());
+            log.error(msg, value(LogEvent.EXCEPTION, LogEvent.AUTH_FILTER_FAILURE));
+            throw new SecurityExceptions.AuthFilterException(msg, LogEvent.AUTH_FILTER_FAILURE);
         }
 
         GetDocumentsResponse getDocumentsResponse  = (GetDocumentsResponse) responseEntityToFilter.getBody();
