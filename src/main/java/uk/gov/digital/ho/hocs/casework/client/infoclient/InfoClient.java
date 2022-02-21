@@ -97,13 +97,14 @@ public class InfoClient {
         return teams;
     }
 
-    @Cacheable(value = "InfoClientRestrictedCaseDataFields", unless = "#result.size() == 0", key = "#accessLevel")
-    public List<FieldDto> getFieldsByPermissionLevel(AccessLevel accessLevel) {
-        log.debug("Requesting fields by permission level: {}", accessLevel);
+    @Cacheable(value = "InfoClientRestrictedCaseDataFields", unless = "#result.size() == 0", key = "{#caseType, #accessLevel}")
+    public List<FieldDto> getFieldsByPermissionLevel(String caseType, AccessLevel accessLevel) {
+        log.debug("Requesting fields by caseType:{} and permission level: {}", caseType, accessLevel);
         ParameterizedTypeReference<List<FieldDto>> typeRef = new ParameterizedTypeReference<>() {};
-        String url = String.format("/schema/permission/%s/fields", accessLevel);
+        String url = String.format("/schema/caseType/%s/permission/%s/fields", caseType, accessLevel);
         List<FieldDto> restrictedFieldsList = restHelper.get(serviceBaseURL, url,typeRef);
-        log.info("Received {} fields for permission level {}", restrictedFieldsList.size(), accessLevel, value(EVENT, INFO_CLIENT_GET_FIELDS_BY_PERMISSION_SUCCESS));
+        log.info("Received {} fields for caseType: {} and permission level: {}", restrictedFieldsList.size(), caseType,
+                accessLevel, value(EVENT, INFO_CLIENT_GET_FIELDS_BY_PERMISSION_SUCCESS));
         return restrictedFieldsList;
     }
 
