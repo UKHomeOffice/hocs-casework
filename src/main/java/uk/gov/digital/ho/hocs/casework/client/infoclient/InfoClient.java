@@ -98,7 +98,7 @@ public class InfoClient {
     }
 
     @Cacheable(value = "InfoClientRestrictedCaseDataFields", unless = "#result.size() == 0", key = "{#caseType, #accessLevel}")
-    public List<FieldDto> getFieldsByPermissionLevel(String caseType, AccessLevel accessLevel) {
+    public List<FieldDto> getFieldsByCaseTypeAndPermissionLevel(String caseType, AccessLevel accessLevel) {
         log.debug("Requesting fields by caseType:{} and permission level: {}", caseType, accessLevel);
         ParameterizedTypeReference<List<FieldDto>> typeRef = new ParameterizedTypeReference<>() {};
         String url = String.format("/schema/caseType/%s/permission/%s/fields", caseType, accessLevel);
