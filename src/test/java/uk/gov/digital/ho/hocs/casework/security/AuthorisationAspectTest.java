@@ -154,6 +154,7 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.WRITE);
+        when(annotation.allowSpecificLevels()).thenReturn(new AccessLevel[]{});
 
         assertThatThrownBy(() -> { aspect.validateUserAccess(proceedingJoinPoint,annotation);})
                 .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
@@ -191,6 +192,7 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
+        when(annotation.allowSpecificLevels()).thenReturn(new AccessLevel[]{});
         assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
                 .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
                 .hasMessageContaining("ser does not have access to the requested resource");
@@ -213,6 +215,7 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
+        when(annotation.allowSpecificLevels()).thenReturn(new AccessLevel[]{});
         assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
                 .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
                 .hasMessageContaining("User does not have access to the requested resource");

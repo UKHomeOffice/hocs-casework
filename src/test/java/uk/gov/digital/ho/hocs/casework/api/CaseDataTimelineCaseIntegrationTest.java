@@ -100,7 +100,7 @@ public class CaseDataTimelineCaseIntegrationTest {
 
     @Test
     public void shouldReturnCaseTimeline() throws JsonProcessingException {
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         GetAuditListResponse auditResponse = new GetAuditListResponse(Set.of(new GetAuditResponse(UUID.randomUUID(),
         CASE_UUID,
                 null,

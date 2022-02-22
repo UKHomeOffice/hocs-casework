@@ -13,5 +13,5 @@ import static uk.gov.digital.ho.hocs.casework.security.AccessLevel.UNSET;
 public @interface Authorised {
     AccessLevel accessLevel() default UNSET;
 
-    AccessLevel[] allowSpecificLevels() default UNSET;
+    AccessLevel[] allowSpecificLevels() default {};
 }

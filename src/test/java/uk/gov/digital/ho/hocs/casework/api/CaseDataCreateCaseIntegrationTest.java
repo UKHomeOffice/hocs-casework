@@ -74,7 +74,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
 
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
 
         CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
@@ -91,7 +91,7 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelWrite() throws JsonProcessingException {
 
         long numberOfCasesBefore = caseDataRepository.count();
-        setupMockTeams("TEST", 3);
+        setupMockTeams("TEST", AccessLevel.WRITE.getLevel());
 
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "3");
 
@@ -104,7 +104,7 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelRead() throws JsonProcessingException {
 
         long numberOfCasesBefore = caseDataRepository.count();
-        setupMockTeams("TEST", 2);
+        setupMockTeams("TEST", AccessLevel.READ.getLevel());
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "2");
 
         long numberOfCasesAfter = caseDataRepository.count();
@@ -117,7 +117,7 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelSummary() throws JsonProcessingException {
 
         long numberOfCasesBefore = caseDataRepository.count();
-        setupMockTeams("TEST", 1);
+        setupMockTeams("TEST", AccessLevel.SUMMARY.getLevel());
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "1");
 
         long numberOfCasesAfter = caseDataRepository.count();
@@ -130,7 +130,7 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelUnset() throws JsonProcessingException {
 
         long numberOfCasesBefore = caseDataRepository.count();
-        setupMockTeams("TEST", 0);
+        setupMockTeams("TEST", AccessLevel.UNSET.getLevel());
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "0");
 
         long numberOfCasesAfter = caseDataRepository.count();
@@ -143,7 +143,7 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldReturnBadRequestAndNotCreateACaseWhenNoRequestBody() throws JsonProcessingException {
 
         long numberOfCasesBefore = caseDataRepository.count();
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<Void> result = getCreateCaseVoidResponse(null, "TEST", "5");
 
         long numberOfCasesAfter = caseDataRepository.count();
@@ -156,7 +156,7 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldReturnUnauthorisedAndNotCreateACaseWhenInvalidCaseType() throws JsonProcessingException {
 
         long numberOfCasesBefore = caseDataRepository.count();
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody("WRONG"), "TEST", "5");
 
         long numberOfCasesAfter = caseDataRepository.count();
@@ -169,7 +169,7 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldReturnUnauthorisedNotCreateAValidCaseWithNullCaseType() throws JsonProcessingException {
 
         long numberOfCasesBefore = caseDataRepository.count();
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<Void> result = getCreateCaseVoidResponse(createBody(null), "TEST", "5");
 
         long numberOfCasesAfter = caseDataRepository.count();
@@ -182,7 +182,7 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldCreateAValidCaseWithEmptyData() throws JsonProcessingException {
 
         long numberOfCasesBefore = caseDataRepository.count();
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST","{}"), "TEST", "5");
 
         CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
@@ -199,7 +199,7 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldCreateAValidCaseWithNullData() throws JsonProcessingException {
         // given
         long numberOfCasesBefore = caseDataRepository.count();
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
 
         // when
         ResponseEntity<CreateCaseResponse> result =
@@ -223,8 +223,8 @@ public class CaseDataCreateCaseIntegrationTest {
     @Test
     public void shouldCreateTwoValidCasesNumberedSequential() throws JsonProcessingException {
         long numberOfCasesBefore = caseDataRepository.count();
-        setupMockTeams("TEST", 5);
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<CreateCaseResponse> result1 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
 
         ResponseEntity<CreateCaseResponse> result2 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
@@ -250,9 +250,9 @@ public class CaseDataCreateCaseIntegrationTest {
     public void shouldCreateValidCaseInvalidCaseValidCaseAndOnlyValidCasesAreNumberedSequential() throws JsonProcessingException {
 
         long numberOfCasesBefore = caseDataRepository.count();
-        setupMockTeams("TEST", 5);
-        setupMockTeams("TEST", 2);
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
+        setupMockTeams("TEST", AccessLevel.READ.getLevel());
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<CreateCaseResponse> result1 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
         ResponseEntity<Void> result2 = getCreateCaseVoidResponse(createBody("TEST"), "TEST", "2");
         ResponseEntity<CreateCaseResponse> result3 = getCreateCaseResponse(createBody("TEST"), "TEST", "5");

@@ -43,7 +43,8 @@ public class AuthorisationAspect {
     }
 
     private boolean isAllowedToProceed(ProceedingJoinPoint joinPoint, Authorised authorised) {
-        return (getUserAccessLevel(joinPoint).getLevel() >= getRequiredAccessLevel(authorised).getLevel()) || getPermittedSpecificLevels(authorised,getUserAccessLevel(joinPoint).getLevel());
+        int userAccessLevel = getUserAccessLevel(joinPoint).getLevel();
+        return (userAccessLevel >= getRequiredAccessLevel(authorised).getLevel()) || getPermittedSpecificLevels(authorised, userAccessLevel);
     }
 
     private boolean getPermittedSpecificLevels(Authorised authorised, int usersLevel) {
