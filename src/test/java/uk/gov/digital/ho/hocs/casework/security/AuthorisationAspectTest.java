@@ -401,10 +401,107 @@ public class AuthorisationAspectTest {
         when(testAuthFilter.applyFilter(any(),any(),any())).thenReturn(testResponse);
 
         // WHEN
-        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        Object result = aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
         // THEN
         verify(testAuthFilter, times(1)).applyFilter(any(), any(), any());
+
+        assertThat(result).isInstanceOf(ResponseEntity.class);
+
+        ResponseEntity<?> resultResponseEntity = (ResponseEntity<?>) result;
+        assertThat(resultResponseEntity.getBody()).isInstanceOf(TestResponseObject.class);
+
+    }
+
+    @Test
+    public void testShouldInvokeFilterWhenArrayListIsResponseBody() throws Throwable {
+        // GIVEN
+        String type = "ANY";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+
+        ResponseEntity<List<TestResponseObject>> testResponse = ResponseEntity.ok(List.of(new TestResponseObject()));
+
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.RESTRICTED_OWNER);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+        when(proceedingJoinPoint.proceed()).thenReturn(testResponse);
+        when(testAuthFilter.applyFilter(any(),any(),any())).thenReturn(testResponse);
+
+        // WHEN
+        Object result = aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
+        // THEN
+        verify(testAuthFilter, times(1)).applyFilter(any(), any(), any());
+
+        assertThat(result).isInstanceOf(ResponseEntity.class);
+
+        ResponseEntity<?> resultResponseEntity = (ResponseEntity<?>) result;
+        assertThat(resultResponseEntity.getBody()).isInstanceOf(Collection.class);
+        assertThat(Collection.class.isAssignableFrom(resultResponseEntity.getBody().getClass())).isTrue();
+
+        Object[] responseAsArray = ((Collection<?>) resultResponseEntity.getBody()).toArray();
+        assertThat(responseAsArray.length).isEqualTo(1);
+        assertThat(responseAsArray[0]).isInstanceOf(TestResponseObject.class);
+    }
+
+    @Test
+    public void testShouldInvokeFilterWhenSetIsResponseBody() throws Throwable {
+        // GIVEN
+        String type = "ANY";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+
+        ResponseEntity<Set<TestResponseObject>> testResponse = ResponseEntity.ok(Set.of(new TestResponseObject()));
+
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.RESTRICTED_OWNER);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+        when(proceedingJoinPoint.proceed()).thenReturn(testResponse);
+        when(testAuthFilter.applyFilter(any(),any(),any())).thenReturn(testResponse);
+
+        // WHEN
+        Object result = aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
+        // THEN
+        verify(testAuthFilter, times(1)).applyFilter(any(), any(), any());
+
+        assertThat(result).isInstanceOf(ResponseEntity.class);
+
+        ResponseEntity<?> resultResponseEntity = (ResponseEntity<?>) result;
+        assertThat(resultResponseEntity.getBody()).isInstanceOf(Collection.class);
+        assertThat(Collection.class.isAssignableFrom(resultResponseEntity.getBody().getClass())).isTrue();
+
+        Object[] responseAsArray = ((Collection<?>) resultResponseEntity.getBody()).toArray();
+        assertThat(responseAsArray.length).isEqualTo(1);
+        assertThat(responseAsArray[0]).isInstanceOf(TestResponseObject.class);
+    }
+
+    @Test
+    public void testShouldNotInvokeFilterWhenEmptyCollectionIsResponseBody() throws Throwable {
+        // GIVEN
+        String type = "ANY";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+
+        ResponseEntity<Set<TestResponseObject>> testResponse = ResponseEntity.ok(Set.of());
+
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.RESTRICTED_OWNER);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+        when(proceedingJoinPoint.proceed()).thenReturn(testResponse);
+
+        // WHEN
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
+        // THEN
+        verify(testAuthFilter, times(0)).applyFilter(any(), any(), any());
     }
 
 
