@@ -594,7 +594,7 @@ public class CaseDataService {
 
     private Set<AdditionalField> getAdditionalFieldsForSummary(Set<FieldDto> summaryFields, Map<String, String> caseDataMap) {
         Set<AdditionalField> additionalFields = summaryFields.stream()
-                .map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent(), extractChoices(field)))
+                .map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent(), extractChoices(field), field.getName()))
                 .collect(Collectors.toSet());
         return additionalFields;
     }

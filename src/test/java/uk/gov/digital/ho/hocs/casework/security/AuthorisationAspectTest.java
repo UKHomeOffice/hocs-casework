@@ -15,15 +15,18 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.security.filters.AuthFilter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
@@ -52,13 +55,16 @@ public class AuthorisationAspectTest {
     @Mock
     private ProceedingJoinPoint proceedingJoinPoint;
 
+    @Mock
+    private List<AuthFilter> authFilterList;
+
     @Before
     public void setup() {
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.OWNER);
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setMethod("GET");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-        aspect = new AuthorisationAspect(caseService, userService);
+        aspect = new AuthorisationAspect(caseService, userService, authFilterList);
     }
 
     @Test
@@ -71,6 +77,7 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(caseUUID)).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
+        when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
@@ -88,6 +95,7 @@ public class AuthorisationAspectTest {
         args[0] = new CreateCaseRequest(type.getDisplayCode(), new HashMap<>(), LocalDate.now(), null);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
@@ -106,6 +114,7 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
+        when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
@@ -130,6 +139,7 @@ public class AuthorisationAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
         when(caseService.getCaseTeams(caseUUID)).thenReturn(Set.of(teamUUID));
+        when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
@@ -154,6 +164,7 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.WRITE);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[0]);
 
         assertThatThrownBy(() -> { aspect.validateUserAccess(proceedingJoinPoint,annotation);})
                 .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
@@ -191,6 +202,8 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[0]);
+
         assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
                 .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
                 .hasMessageContaining("ser does not have access to the requested resource");
@@ -213,6 +226,8 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[0]);
+
         assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
                 .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
                 .hasMessageContaining("User does not have access to the requested resource");
@@ -254,6 +269,7 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
+        when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
@@ -278,6 +294,7 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.UNSET);
+        when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
         aspect.validateUserAccess(proceedingJoinPoint,annotation);
 
@@ -285,6 +302,27 @@ public class AuthorisationAspectTest {
         verify(caseService, times(1)).getCaseType(caseUUID);
 
         verifyNoMoreInteractions(caseService);
+
+    }
+
+    @Test(expected = SecurityExceptions.PermissionCheckException.class)
+    public void shouldRejectWhenUserLevelIsBelowRequiredAndPermittedLower() throws Throwable {
+
+        // GIVEN
+        String type = "ANY";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.READ);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+
+        // WHEN
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
+        // THEN - expect exception
 
     }
 

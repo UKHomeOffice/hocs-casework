@@ -40,6 +40,15 @@ public interface SecurityExceptions {
         }
     }
 
+    class AuthFilterException extends RuntimeException {
+        final LogEvent event;
 
+        public AuthFilterException(String s, LogEvent event) {
+            super(s);
+            this.event = event;
+        }
+
+        public LogEvent getEvent() {return event;}
+    }
 
 }

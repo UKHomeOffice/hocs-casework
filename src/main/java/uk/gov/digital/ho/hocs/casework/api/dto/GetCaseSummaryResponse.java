@@ -6,13 +6,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.util.ObjectUtils;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummarySomuItems;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class GetCaseSummaryResponse {
     @JsonProperty("type")
@@ -87,5 +91,9 @@ public class GetCaseSummaryResponse {
         );
 
 
+    }
+
+    protected void replaceAdditionalFields(List<AdditionalFieldDto> additionalFieldDtoList) {
+        this.additionalFields = additionalFieldDtoList;
     }
 }
