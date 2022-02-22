@@ -37,7 +37,6 @@ public class AuthorisationAspect {
     public Object validateUserAccess(ProceedingJoinPoint joinPoint, Authorised authorised) throws Throwable {
         AccessLevel userLevel = getUserAccessLevel(joinPoint);
         if (isAllowedToProceed(joinPoint, userLevel.getLevel(), authorised)) {
-
             Object response = joinPoint.proceed();
             return filterResponseByPermissionLevel(response, userLevel);
         } else {

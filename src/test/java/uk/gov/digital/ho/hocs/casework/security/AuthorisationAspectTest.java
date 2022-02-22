@@ -5,7 +5,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -19,14 +21,9 @@ import uk.gov.digital.ho.hocs.casework.security.filters.AuthFilter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
@@ -55,16 +52,30 @@ public class AuthorisationAspectTest {
     @Mock
     private ProceedingJoinPoint proceedingJoinPoint;
 
-    @Mock
-    private List<AuthFilter> authFilterList;
+    private final List<AuthFilter> authFilterList = new ArrayList<>();
+
+    @Spy
+    private AuthFilter testAuthFilter = new TestAuthFilter();
 
     @Before
     public void setup() {
+
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.OWNER);
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setMethod("GET");
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+
+        authFilterList.add(testAuthFilter);
         aspect = new AuthorisationAspect(caseService, userService, authFilterList);
+    }
+
+    @Test
+    public void testShouldLoadFilter() {
+        // GIVEN
+        // WHEN - class loaded in setup method.
+
+        // THEN
+        verify(testAuthFilter, times(1)).getKey();
     }
 
     @Test
@@ -306,7 +317,7 @@ public class AuthorisationAspectTest {
     }
 
     @Test(expected = SecurityExceptions.PermissionCheckException.class)
-    public void shouldRejectWhenUserLevelIsBelowRequiredAndPermittedLower() throws Throwable {
+    public void testShouldRejectWhenUserLevelIsBelowRequiredAndPermittedLower() throws Throwable {
 
         // GIVEN
         String type = "ANY";
@@ -324,6 +335,94 @@ public class AuthorisationAspectTest {
 
         // THEN - expect exception
 
+    }
+
+    @Test
+    public void testShouldAllowWhenUserLevelIsBelowRequiredButIsPermittedLower() throws Throwable {
+
+        // GIVEN
+        String type = "ANY";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.RESTRICTED_OWNER);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+        when(proceedingJoinPoint.proceed()).thenReturn(new Object());
+
+        // WHEN
+        // THEN
+        assertThatNoException().isThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation));
+
+    }
+
+    @Test
+    public void testShouldNotInvokeFilter() throws Throwable {
+
+        // GIVEN
+        String type = "ANY";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+
+        ResponseEntity<TestResponseObjectNoFilter> testResponse = ResponseEntity.ok(new TestResponseObjectNoFilter());
+
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.RESTRICTED_OWNER);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+        when(proceedingJoinPoint.proceed()).thenReturn(testResponse);
+
+        // WHEN
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
+        // THEN
+        verify(testAuthFilter, times(0)).applyFilter(any(), any(), any());
+    }
+
+    @Test
+    public void testShouldInvokeFilter() throws Throwable {
+
+        // GIVEN
+        String type = "ANY";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+
+        ResponseEntity<TestResponseObject> testResponse = ResponseEntity.ok(new TestResponseObject());
+
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.RESTRICTED_OWNER);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+        when(proceedingJoinPoint.proceed()).thenReturn(testResponse);
+        when(testAuthFilter.applyFilter(any(),any(),any())).thenReturn(testResponse);
+
+        // WHEN
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
+        // THEN
+        verify(testAuthFilter, times(1)).applyFilter(any(), any(), any());
+    }
+
+
+    // HELPER CLASSES
+    private static class TestResponseObject {}
+    private static class TestResponseObjectNoFilter {}
+
+    private static class TestAuthFilter implements AuthFilter {
+
+        @Override
+        public String getKey() {
+            return TestResponseObject.class.getSimpleName();
+        }
+
+        @Override
+        public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
+            return responseEntityToFilter;
+        }
     }
 
 }
