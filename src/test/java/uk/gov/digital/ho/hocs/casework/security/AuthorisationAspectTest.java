@@ -226,6 +226,54 @@ public class AuthorisationAspectTest {
     }
 
     @Test
+    public void shouldProceedIfUserIsInAssignedTeamAndPermittedLowerLevelIsMigrate() throws Throwable {
+
+        String type = "MIN";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+        UUID teamUUID = UUID.randomUUID();
+        CaseData caseData = mock(CaseData.class);
+
+        when(userService.getUserTeams()).thenReturn(Set.of(teamUUID));
+        when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.MIGRATE);
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.MIGRATE});
+        when(caseService.getCaseTeams(caseUUID)).thenReturn(Set.of(teamUUID));
+
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
+        verify(proceedingJoinPoint, times(1)).proceed();
+        verify(caseService, times(1)).getCaseType(caseUUID);
+    }
+
+    @Test
+    public void shouldNotProceedIfUserDoesNotHavePermittedLowerLevel() throws Throwable {
+
+        String type = "MIN";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+        UUID teamUUID = UUID.randomUUID();
+        CaseData caseData = mock(CaseData.class);
+
+        when(userService.getUserTeams()).thenReturn(Set.of(teamUUID));
+        when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.READ);
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.MIGRATE});
+        when(caseService.getCaseTeams(caseUUID)).thenReturn(Set.of(teamUUID));
+
+        assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
+                .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
+                .hasMessageContaining("User does not have access to the requested resource");
+
+        verify(proceedingJoinPoint, never()).proceed();
+        verify(caseService, times(1)).getCaseType(caseUUID);
+    }
+
+    @Test
     public void shouldThrowExceptionOnError() throws Throwable {
 
         Object[] args = new Object[1];
