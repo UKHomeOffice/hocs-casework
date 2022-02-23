@@ -226,8 +226,7 @@ public class CaseDataService {
         CaseData caseData;
         caseData = createCaseFromCaseUUID(caseType, data, dateReceived, fromCaseUUID);
 
-
-        auditClient.createCaseAudit(caseData);
+        auditClient.migrateCaseAudit(caseData);
 
         return caseData;
     }

@@ -158,6 +158,15 @@ public class CaseDataGetCaseIntegrationTest {
     }
 
     @Test
+    public void shouldReturnNotFoundWhenGetInValidCaseWithPermissionLevelMigrate() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.MIGRATE.getLevel());
+        ResponseEntity<Void> result = testRestTemplate.exchange(
+                getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders()), Void.class);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
     public void shouldReturnUnauthorisedForInValidCaseWithPermissionLevelUnset() throws JsonProcessingException {
         setupEmptyMockAudit(INVALID_CASE_UUID);
         setupMockTeams("TEST", AccessLevel.UNSET.getLevel());

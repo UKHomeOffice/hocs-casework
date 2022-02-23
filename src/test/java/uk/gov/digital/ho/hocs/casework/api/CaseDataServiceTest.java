@@ -333,6 +333,95 @@ public class CaseDataServiceTest {
     }
 
     @Test
+    public void shouldMigrateCase() throws ApplicationExceptions.EntityCreationException {
+
+        // given
+        LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
+        LocalDate expectedDeadline = LocalDate.parse("2020-03-02");
+
+        CaseDataType newCaseType = new CaseDataType("display_name",
+                "c6", "DISP", PREVIOUS_CASE_TYPE, 20, 15);
+
+        CaseData previousCaseData = new CaseData(
+                1L,
+                PREVIOUS_CASE_UUID,
+                LocalDateTime.now(),
+                PREVIOUS_CASE_TYPE,
+                PREVIOUS_CASE_REFERENCE,
+                false,
+                PREV_DATA_CLOB,
+                UUID.randomUUID(),
+                new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID),
+                UUID.randomUUID(),
+                new Correspondent(PREVIOUS_CASE_UUID,
+                        PREV_CORRESPONDENT_TYPE,
+                        PREV_FULLNAME,
+                        PREV_ORGANISATION,
+                        new Address(PREV_ADDR_1,
+                                PREV_ADDR_2,
+                                PREV_ADDR_3,
+                                PREV_ADDR_4,
+                                PREV_ADDR_5),
+                        PREV_TELEPHONE,
+                        PREV_EMAIL,
+                        PREV_REFERENCE,
+                        PREV_EXTERNAL_KEY),
+                LocalDate.now(),
+                LocalDate.now(),
+                LocalDate.now().minusDays(10),
+                false,
+                Set.of(new ActiveStage(), new ActiveStage()),
+                Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
+
+
+        when(caseDataRepository.findActiveByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);
+        when(deadlineService
+                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla()))
+                .thenReturn(expectedDeadline);
+
+        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(newCaseType);
+        when(caseCopyFactory.getStrategy(any(), any())).thenReturn(Optional.of((fromCase, toCase) -> {}));
+
+        // when
+        CaseData caseData = caseDataService.migrateCase(caseType.getDisplayCode(), new HashMap<>(), originalReceivedDate, PREVIOUS_CASE_UUID);
+
+        // then
+        verify(caseDataRepository, times(1)).findActiveByUuid(PREVIOUS_CASE_UUID);
+        verify(caseDataRepository, times(0)).getNextSeriesId(); // ensure not used
+        verify(caseDataRepository, times(1)).save(caseData);
+        ArgumentCaptor<CaseLink> caseLink = ArgumentCaptor.forClass(CaseLink.class);
+        verify(caseLinkRepository, times(1)).save(caseLink.capture());
+        verifyNoMoreInteractions(caseDataRepository);
+
+        // assert the save link values
+        assertThat(caseLink.getValue()).isNotNull();
+        CaseLink parameterUsed = caseLink.getValue();
+        assertThat(parameterUsed.getPrimaryCase()).isEqualTo(PREVIOUS_CASE_UUID);
+        assertThat(parameterUsed.getSecondaryCase()).isEqualTo(caseData.getUuid());
+
+        // assert the reference matches expectations
+        Matcher previousReferenceMatcher = CaseDataService.CASE_REFERENCE_PATTERN.matcher(PREVIOUS_CASE_REFERENCE);
+        Matcher caseReferenceMatcher = CaseDataService.CASE_REFERENCE_PATTERN.matcher(caseData.getReference());
+
+        // + assert the patterns are valid
+        assertThat(previousReferenceMatcher.find()).isTrue();
+        assertThat(caseReferenceMatcher.find()).isTrue();
+
+        // assert the reference sequence number part is valid
+        assertThat(previousReferenceMatcher.group(1)).isEqualTo(caseReferenceMatcher.group(1));
+
+        verify(deadlineService, times(1))
+                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
+
+        // check deadline
+        assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
+
+        // check audit
+        verify(auditClient, times(1)).migrateCaseAudit(caseData);
+        verifyNoMoreInteractions(auditClient);
+    }
+
+    @Test
     public void shouldGetDocumentTags() {
         UUID caseUUID = UUID.randomUUID();
         when(caseDataRepository.getCaseType(caseUUID)).thenReturn("TEST");

@@ -5,7 +5,6 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -13,7 +12,6 @@ import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -35,20 +33,26 @@ public class AuthorisationAspect {
 
     @Around("@annotation(authorised)")
     public Object validateUserAccess(ProceedingJoinPoint joinPoint, Authorised authorised) throws Throwable {
-        if (isAllowedToProceed(joinPoint, authorised)) {
+
+        AccessLevel userLevel = getUserAccessLevel(joinPoint);
+
+        if(isSufficientLevel(userLevel.getLevel(), authorised)) {
             return joinPoint.proceed();
-        } else {
-            throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource", SECURITY_UNAUTHORISED);
         }
+
+        if (isPermittedLowerLevel(userLevel.getLevel(), authorised)) {
+            return joinPoint.proceed();
+        }
+
+        throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource", SECURITY_UNAUTHORISED);
     }
 
-    private boolean isAllowedToProceed(ProceedingJoinPoint joinPoint, Authorised authorised) {
-        int userAccessLevel = getUserAccessLevel(joinPoint).getLevel();
-        return (userAccessLevel >= getRequiredAccessLevel(authorised).getLevel()) || getPermittedSpecificLevels(authorised, userAccessLevel);
+    private boolean isSufficientLevel(int userLevelAsInt, Authorised authorised) {
+        return userLevelAsInt >= getRequiredAccessLevel(authorised).getLevel();
     }
 
-    private boolean getPermittedSpecificLevels(Authorised authorised, int usersLevel) {
-        return Arrays.stream(authorised.allowSpecificLevels()).anyMatch(level -> level.getLevel() == usersLevel);
+    private boolean isPermittedLowerLevel( int usersLevel, Authorised authorised) {
+        return Arrays.stream(authorised.permittedLowerLevels()).anyMatch(level -> level.getLevel() == usersLevel);
     }
 
     AccessLevel getAccessRequestAccessLevel() {

@@ -232,6 +232,15 @@ public class CaseDataDeleteCaseIntegrationTest {
     }
 
     @Test
+    public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelMigrate() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.MIGRATE.getLevel());
+        ResponseEntity<String> result = testRestTemplate.exchange(
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/false", DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
     public void shouldReturnUnauthorisedWhenDeleteInvalidCaseWithPermissionLevelSummary() throws JsonProcessingException {
         setupMockTeams("TEST", AccessLevel.SUMMARY.getLevel());
         ResponseEntity<String> result = testRestTemplate.exchange(

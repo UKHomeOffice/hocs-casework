@@ -143,6 +143,14 @@ public class GetCorrespondentsIntegrationTest {
     }
 
     @Test
+    public void shouldReturnUnauthorisedWhenGetCorrespondentsForValidCaseWithPermissionLevelMigrate() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.MIGRATE.getLevel(), 1);
+        ResponseEntity<String> result = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
     public void shouldReturnUnauthorisedWhenGetCorrespondentsForValidCaseWithPermissionLevelUnset() throws JsonProcessingException {
         setupEmptyMockAudit(CASE_UUID);
         setupMockTeams("TEST", AccessLevel.UNSET.getLevel(), 1);
@@ -191,6 +199,15 @@ public class GetCorrespondentsIntegrationTest {
     @Test
     public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelSummary() throws JsonProcessingException {
         setupMockTeams("TEST", AccessLevel.SUMMARY.getLevel(), 1);
+        ResponseEntity<String> result = testRestTemplate.exchange(
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+    }
+
+    @Test
+    public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelMigrate() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.MIGRATE.getLevel(), 1);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);

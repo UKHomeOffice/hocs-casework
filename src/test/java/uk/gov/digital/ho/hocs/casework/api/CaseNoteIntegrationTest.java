@@ -128,6 +128,16 @@ public class CaseNoteIntegrationTest {
     }
 
     @Test
+    public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelMigrate() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.MIGRATE.getLevel());
+        long numberOfCasesBefore = caseNoteRepository.count();
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST", "1");
+        long numberOfCasesAfter = caseNoteRepository.count();
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
+    }
+
+    @Test
     public void shouldReturnBadRequestAndNotCreateACaseWhenNoRequestBody() throws JsonProcessingException {
         setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         long numberOfCasesBefore = caseNoteRepository.count();
