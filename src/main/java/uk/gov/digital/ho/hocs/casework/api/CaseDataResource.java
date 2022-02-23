@@ -46,9 +46,9 @@ class CaseDataResource {
 
     @Authorised(accessLevel = AccessLevel.MIGRATE)
     @PostMapping(value = "/migrate")
-    public ResponseEntity<CreateCaseResponse> migrateCase(@RequestBody CreateCaseRequest request) {
+    public ResponseEntity<MigrateCaseResponse> migrateCase(@RequestBody CreateCaseRequest request) {
         CaseData caseData = caseDataService.migrateCase(request.getType(), request.getData(), request.getDateRecieved(), request.getFromCaseUUID());
-        return ResponseEntity.ok(CreateCaseResponse.from(caseData));
+        return ResponseEntity.ok(MigrateCaseResponse.from(caseData));
     }
 
     @Authorised(accessLevel = AccessLevel.SUMMARY)

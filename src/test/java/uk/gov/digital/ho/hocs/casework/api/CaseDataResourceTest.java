@@ -81,7 +81,7 @@ public class CaseDataResourceTest {
 
         when(caseDataService.migrateCase(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID)).thenReturn(caseData);
 
-        ResponseEntity<CreateCaseResponse> response = caseDataResource.migrateCase(request);
+        ResponseEntity<MigrateCaseResponse> response = caseDataResource.migrateCase(request);
 
         verify(caseDataService, times(1)).migrateCase(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID);
 
