@@ -45,22 +45,18 @@ public class GetCaseAuthFilterService implements AuthFilter {
         GetCaseResponse getCaseResponse  = (GetCaseResponse) responseEntityToFilter.getBody();
         Map<String, String> replacementCaseResponseDataMap = new HashMap<>();
 
-        List<FieldDto> restrictedFields = userPermissionsService.getFieldsByCaseTypeAndPermissionLevel(getCaseResponse.getType(), userAccessLevel);
+        List<FieldDto> permittedFields = userPermissionsService.getFieldsByCaseTypeAndPermissionLevel(getCaseResponse.getType(), userAccessLevel);
 
-        restrictedFields.forEach((FieldDto restrictedField) -> {
+        permittedFields.forEach((FieldDto restrictedField) -> {
             if (getCaseResponse.getData().containsKey(restrictedField.getName())) {
                 replacementCaseResponseDataMap.put(
                         restrictedField.getName(),
-                        ((GetCaseResponse) responseEntityToFilter.getBody()).getData().get(restrictedField.getName())
+                        getCaseResponse.getData().get(restrictedField.getName())
                 );
             }
         });
 
-        if (replacementCaseResponseDataMap.isEmpty()) {
-            return responseEntityToFilter;
-        }
-
-        SettableDataMapGetCaseResponse replacementCaseResponse = new SettableDataMapGetCaseResponse((GetCaseResponse) responseEntityToFilter.getBody());
+        SettableDataMapGetCaseResponse replacementCaseResponse = new SettableDataMapGetCaseResponse(getCaseResponse);
         replacementCaseResponse.setDataMap(replacementCaseResponseDataMap);
 
         return new ResponseEntity<GetCaseResponse>(replacementCaseResponse, responseEntityToFilter.getStatusCode());

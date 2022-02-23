@@ -25,35 +25,39 @@ public class AuthorisationAspect {
 
     private CaseDataService caseService;
     private UserPermissionsService userService;
-    private final Map<String,AuthFilter> authFilterList = new HashMap<>();
+    private final Map<String,AuthFilter> authFilterMap = new HashMap<>();
 
     public AuthorisationAspect(@Qualifier("CaseDataService") CaseDataService caseService, UserPermissionsService userService, List<AuthFilter> authFilters) {
         this.caseService = caseService;
         this.userService = userService;
-        authFilters.forEach(filter -> authFilterList.put(filter.getKey(), filter));
+        authFilters.forEach(filter -> authFilterMap.put(filter.getKey(), filter));
     }
 
     @Around("@annotation(authorised)")
     public Object validateUserAccess(ProceedingJoinPoint joinPoint, Authorised authorised) throws Throwable {
+
         AccessLevel userLevel = getUserAccessLevel(joinPoint);
-        if (isAllowedToProceed(joinPoint, userLevel.getLevel(), authorised)) {
-            Object response = joinPoint.proceed();
-            return filterResponseByPermissionLevel(response, userLevel);
-        } else {
-            throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource", SECURITY_UNAUTHORISED);
+
+        if(isSufficientLevel(userLevel.getLevel(), authorised)) {
+            return joinPoint.proceed();
         }
+
+        if (isPermittedLowerLevel(userLevel.getLevel(), authorised)) {
+            return filterResponseByPermissionLevel(joinPoint.proceed(), userLevel);
+        }
+
+        throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource", SECURITY_UNAUTHORISED);
     }
 
-    private boolean isAllowedToProceed(ProceedingJoinPoint joinPoint,int userLevelAsInt, Authorised authorised) {
-        return (userLevelAsInt >= getRequiredAccessLevel(authorised).getLevel()) || isPermittedLowerLevel(authorised, userLevelAsInt);
+    private boolean isSufficientLevel(int userLevelAsInt, Authorised authorised) {
+        return userLevelAsInt >= getRequiredAccessLevel(authorised).getLevel();
     }
 
-    private boolean isPermittedLowerLevel(Authorised authorised, int usersLevel) {
+    private boolean isPermittedLowerLevel( int usersLevel, Authorised authorised) {
         return Arrays.stream(authorised.permittedLowerLevels()).anyMatch(level -> level.getLevel() == usersLevel);
     }
 
     private Object filterResponseByPermissionLevel(Object objectToFilter, AccessLevel userAccessLevel) throws SecurityExceptions.AuthFilterException {
-        log.debug("Checking if response filtering is required");
 
         if (objectToFilter.getClass() != ResponseEntity.class) {
              return objectToFilter;
@@ -74,7 +78,7 @@ public class AuthorisationAspect {
             simpleName = collectionAsArray.length > 0 ? collectionAsArray[0].getClass().getSimpleName() : simpleName;
         }
 
-        AuthFilter filter = authFilterList.get(simpleName);
+        AuthFilter filter = authFilterMap.get(simpleName);
 
         if (filter != null) {
             log.info("Filtering response for {} call.", simpleName, value(EVENT, AUTH_FILTER_SUCCESS));

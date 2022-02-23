@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.AdditionalFieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
@@ -39,7 +38,7 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
 
     @Override
     public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
-        // todo: expand to filter out Case Action data at later date. See HOCS-4596, not applicable for initial usecase SMC caseType
+        // todo: expand to filter out Case Action data at later date. See HOCS-4596, not applicable for initial use case SMC caseType
 
         if (responseEntityToFilter.getBody().getClass() != GetCaseSummaryResponse.class) {
             String msg = String.format("The wrong filter has been selected for class %s", responseEntityToFilter.getBody().getClass().getSimpleName());
@@ -49,31 +48,23 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
 
         GetCaseSummaryResponse getCaseSummaryResponse  = (GetCaseSummaryResponse) responseEntityToFilter.getBody();
 
-        log.debug("Filtering GetCaseSummaryResponse");
-
-        Map<FieldDto, String> restrictedFields = new HashMap<>();
-        userPermissionsService.getFieldsByCaseTypeAndPermissionLevel(getCaseSummaryResponse.getType(), userAccessLevel)
-                .forEach(fieldDto -> restrictedFields.put(fieldDto, fieldDto.getName()));
-
         if (getCaseSummaryResponse == null  || getCaseSummaryResponse.getAdditionalFields() == null) {
             return responseEntityToFilter;
         }
 
-        Map<String, AdditionalFieldDto> additionalFieldDtoStringMap = new HashMap<>();
-        getCaseSummaryResponse.getAdditionalFields()
-                .forEach(additionalFieldDto -> additionalFieldDtoStringMap.put(additionalFieldDto.getName(),additionalFieldDto));
+        log.debug("Filtering GetCaseSummaryResponse");
 
+        Map<String, FieldDto> permittedFields = new HashMap<>();
+        userPermissionsService.getFieldsByCaseTypeAndPermissionLevel(getCaseSummaryResponse.getType(), userAccessLevel)
+                .forEach(fieldDto -> permittedFields.put(fieldDto.getName(),fieldDto));
 
         List<AdditionalFieldDto> replacementList = new ArrayList<>();
-        restrictedFields.forEach((FieldDto key, String val) -> {
-            if (additionalFieldDtoStringMap.containsKey(val)) {
-                replacementList.add(additionalFieldDtoStringMap.get(val));
-            }
-        });
-
-        if (replacementList.isEmpty()) {
-            return responseEntityToFilter;
-        }
+        getCaseSummaryResponse.getAdditionalFields()
+                .forEach((AdditionalFieldDto additionalFieldDto) -> {
+                    if (permittedFields.containsKey(additionalFieldDto.getName())) {
+                        replacementList.add(additionalFieldDto);
+                    }
+                });
 
         replacementList.sort(Comparator.comparing(AdditionalFieldDto::getLabel));
 

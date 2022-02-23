@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentDto;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsResponse;
@@ -37,10 +36,6 @@ public class GetDocumentsAuthFilterService implements AuthFilter {
     @Override
     public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
 
-        if (userAccessLevel != AccessLevel.RESTRICTED_OWNER) {
-            return responseEntityToFilter;
-        }
-
         if (responseEntityToFilter.getBody().getClass() != GetDocumentsResponse.class) {
             String msg = String.format("The wrong filter has been selected for class %s", responseEntityToFilter.getBody().getClass().getSimpleName());
             log.error(msg, value(LogEvent.EXCEPTION, LogEvent.AUTH_FILTER_FAILURE));
@@ -56,7 +51,8 @@ public class GetDocumentsAuthFilterService implements AuthFilter {
 
         if (getDocumentsResponse.getDocumentDtos() != null) {
             getDocumentsResponse.getDocumentDtos().forEach((DocumentDto documentDto) -> {
-                if (documentDto.getUploadOwnerUUID().equals(userUUID)) {
+                if (documentDto.getUploadOwnerUUID() != null &&
+                        documentDto.getUploadOwnerUUID().equals(userUUID)) {
                     docsToReturn.add(documentDto);
                 }
             });

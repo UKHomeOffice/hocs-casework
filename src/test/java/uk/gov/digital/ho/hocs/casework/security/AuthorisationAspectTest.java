@@ -359,7 +359,7 @@ public class AuthorisationAspectTest {
     }
 
     @Test
-    public void testShouldNotInvokeFilter() throws Throwable {
+    public void testShouldNotInvokeFilterWhenSufficientLevel() throws Throwable {
 
         // GIVEN
         String type = "ANY";
@@ -370,9 +370,8 @@ public class AuthorisationAspectTest {
 
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
-        when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.RESTRICTED_OWNER);
+        when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.OWNER);
         when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
         when(proceedingJoinPoint.proceed()).thenReturn(testResponse);
 
         // WHEN
@@ -383,7 +382,7 @@ public class AuthorisationAspectTest {
     }
 
     @Test
-    public void testShouldInvokeFilter() throws Throwable {
+    public void testShouldInvokeFilterWhenPermittedLowerLevel() throws Throwable {
 
         // GIVEN
         String type = "ANY";
@@ -414,7 +413,7 @@ public class AuthorisationAspectTest {
     }
 
     @Test
-    public void testShouldInvokeFilterWhenArrayListIsResponseBody() throws Throwable {
+    public void testShouldInvokeFilterWhenPermittedLowerLevelAndArrayListIsResponseBody() throws Throwable {
         // GIVEN
         String type = "ANY";
         Object[] args = new Object[1];
@@ -448,7 +447,7 @@ public class AuthorisationAspectTest {
     }
 
     @Test
-    public void testShouldInvokeFilterWhenSetIsResponseBody() throws Throwable {
+    public void testShouldInvokeFilterWhenPermittedLowerLevelAndSetIsResponseBody() throws Throwable {
         // GIVEN
         String type = "ANY";
         Object[] args = new Object[1];
@@ -482,7 +481,7 @@ public class AuthorisationAspectTest {
     }
 
     @Test
-    public void testShouldNotInvokeFilterWhenEmptyCollectionIsResponseBody() throws Throwable {
+    public void testShouldNotFilterWhenPermittedLowerLevelAndEmptyCollectionIsResponseBody() throws Throwable {
         // GIVEN
         String type = "ANY";
         Object[] args = new Object[1];
