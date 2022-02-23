@@ -42,19 +42,20 @@ public class TimelineItemAuthFilterServiceTest {
     public void testShouldThrowExceptionIfFilterNotForObjectType() {
 
         // GIVEN
+        GetCaseSummaryResponse testIncorrectResponse = GetCaseSummaryResponse.from(
+                new CaseSummary(
+                        null, null, null,
+                        null, null, null,
+                        null, null, null,
+                        null, null, null)
+        );
         ResponseEntity<?> responseToFilter = ResponseEntity.ok(
-                GetCaseSummaryResponse.from(
-                        new CaseSummary(
-                                null, null, null,
-                                null, null, null,
-                                null, null, null,
-                                null, null, null)
-                ));
+                List.of(testIncorrectResponse));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;
 
         // WHEN
-        timelineItemAuthFilterService.applyFilter(responseToFilter, userAccessLevel, null);
+        timelineItemAuthFilterService.applyFilter(responseToFilter, userAccessLevel, new Object[]{testIncorrectResponse});
 
         // THEN - Expect Exception
     }

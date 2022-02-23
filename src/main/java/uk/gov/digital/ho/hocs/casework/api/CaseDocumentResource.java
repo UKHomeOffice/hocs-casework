@@ -29,7 +29,7 @@ public class CaseDocumentResource {
         this.caseDocumentService = caseDocumentService;
     }
 
-    @Authorised(accessLevel = AccessLevel.READ)
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
     @GetMapping(value = "/case/document/reference/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     ResponseEntity<GetDocumentsResponse> getDocumentsForCase(@PathVariable UUID caseUUID, @RequestParam(name = "type", required = false) String type) {
         return ResponseEntity.ok(caseDocumentService.getDocuments(caseUUID, type));
@@ -42,13 +42,13 @@ public class CaseDocumentResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.READ)
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
     @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<DocumentDto> getDocumentResourceLocation(@PathVariable UUID caseUUID, @PathVariable UUID documentUUID) {
         return ResponseEntity.ok(caseDocumentService.getDocument(documentUUID));
     }
 
-    @Authorised(accessLevel = AccessLevel.READ)
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
     @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}/file", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ByteArrayResource> getCaseDocumentFile(@PathVariable UUID caseUUID, @PathVariable UUID documentUUID) {
         S3Document document = caseDocumentService.getDocumentFile(documentUUID);
@@ -63,7 +63,7 @@ public class CaseDocumentResource {
                 .body(resource);
     }
 
-    @Authorised(accessLevel = AccessLevel.READ)
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
     @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}/pdf", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ByteArrayResource> getCaseDocumentPdf(@PathVariable UUID caseUUID, @PathVariable UUID documentUUID) {
         S3Document document = caseDocumentService.getDocumentPdf(documentUUID);
