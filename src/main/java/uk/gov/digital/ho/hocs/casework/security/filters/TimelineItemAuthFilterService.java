@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 
@@ -50,9 +51,10 @@ public class TimelineItemAuthFilterService implements AuthFilter {
             return responseEntityToFilter;
         }
 
+        String userId = userPermissionsService.getUserId().toString();
         for (Object o : collectionAsArray) {
             TimelineItemDto dto = (TimelineItemDto) o;
-            if (dto.getUserName().equals(userPermissionsService.getUserId().toString())) {
+            if (dto.getUserName().equals(userId)) {
                 returnableDtos.add(dto);
             }
         }

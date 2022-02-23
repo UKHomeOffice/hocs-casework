@@ -6,13 +6,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentDto;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
-import uk.gov.digital.ho.hocs.casework.security.AuthorisationAspectTest;
 import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
