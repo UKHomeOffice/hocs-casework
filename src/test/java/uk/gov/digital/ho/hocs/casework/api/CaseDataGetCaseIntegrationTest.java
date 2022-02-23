@@ -158,12 +158,12 @@ public class CaseDataGetCaseIntegrationTest {
     }
 
     @Test
-    public void shouldReturnNotFoundWhenGetInValidCaseWithPermissionLevelMigrate() throws JsonProcessingException {
+    public void shouldReturnUnauthorisedForInValidCaseWithPermissionLevelMigrate() throws JsonProcessingException {
         setupMockTeams("TEST", AccessLevel.MIGRATE.getLevel());
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID, GET, new HttpEntity(createValidAuthHeaders()), Void.class);
 
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
     @Test
