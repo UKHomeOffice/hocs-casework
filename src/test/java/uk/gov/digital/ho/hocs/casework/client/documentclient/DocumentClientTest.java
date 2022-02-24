@@ -24,6 +24,7 @@ public class DocumentClientTest {
     private DocumentClient documentClient;
     private final String caseType = "MIN";
     private final UUID caseUUID = randomUUID();
+    private final UUID uploaderUUID = UUID.randomUUID();
     private final UUID documentUUID = UUID.randomUUID();
     private final String docType = "DRAFT";
     private final String docDisplayName = "document.doc";
@@ -44,7 +45,7 @@ public class DocumentClientTest {
     @Before
     public void setUp() {
         documentClient = new DocumentClient(restHelper, documentService);
-        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, docDeleted, docLabels);
+        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated,uploaderUUID, docDeleted, docLabels);
         s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);
     }
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.util.UUID;
 
@@ -31,6 +32,8 @@ public class FieldDto {
 
     @JsonProperty("active")
     private boolean active;
+
+    private AccessLevel accessLevel;
 
     private Object props;
 }

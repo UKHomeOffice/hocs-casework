@@ -33,6 +33,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.domain.repository.*;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -625,10 +626,10 @@ public class CaseDataServiceTest {
 
         Set<FieldDto> filterFields = new HashSet<>();
 
-        FieldDto field0 = new FieldDto(UUID.randomUUID(), "TEMPCReference", "what is your TEMPCReference", "Text", new String[]{}, true, true, null);
+        FieldDto field0 = new FieldDto(UUID.randomUUID(), "TEMPCReference", "what is your TEMPCReference", "Text", new String[]{}, true, true, AccessLevel.READ,null);
         filterFields.add(field0);
 
-        FieldDto field1 = new FieldDto(UUID.randomUUID(), "CopyNumberTen", "what is your CopyNumberTen", "Text", new String[]{}, true, true, null);
+        FieldDto field1 = new FieldDto(UUID.randomUUID(), "CopyNumberTen", "what is your CopyNumberTen", "Text", new String[]{}, true, true, AccessLevel.READ,null);
         filterFields.add(field1);
 
 
