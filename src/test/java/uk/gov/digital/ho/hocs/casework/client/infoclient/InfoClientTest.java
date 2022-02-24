@@ -7,9 +7,12 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ParameterizedTypeReference;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
+import uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -261,5 +264,27 @@ public class InfoClientTest {
 
         // THEN
         assertThat(response).isNotNull();
+    }
+
+    @Test
+    public void getFieldsByCaseTypeAndPermissionLevel_shouldReturnListOfFieldDtos() {
+
+        // GIVEN
+
+        String caseType = "CASE_TYPE";
+        ParameterizedTypeReference<List<FieldDto>> typeRef = new ParameterizedTypeReference<>() {};
+        AccessLevel accessLevel = AccessLevel.READ;
+        FieldDto field1 = new FieldDto(UUID.randomUUID(), "field1Name","Field 1 Label", "dropdown",null,true, true, AccessLevel.READ,"{}");
+        FieldDto field2 = new FieldDto(UUID.randomUUID(), "field2Name","Field 2 Label", "dropdown",null,true, true, AccessLevel.READ,"{}");
+
+        List<FieldDto> fieldDtoList = List.of(field1, field2);
+        when(restHelper.get(
+                "infoService", "/schema/caseType/" +  caseType + "/permission/" + accessLevel + "/fields",
+                typeRef)).thenReturn(fieldDtoList);
+
+        List<FieldDto> result = infoClient.getFieldsByCaseTypeAndPermissionLevel(caseType, accessLevel);
+
+        assertThat(result).isNotNull();
+        assertThat(result.size()).isEqualTo(2);
     }
 }
