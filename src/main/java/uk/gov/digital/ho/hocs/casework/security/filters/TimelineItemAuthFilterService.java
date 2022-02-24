@@ -12,7 +12,6 @@ import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 
@@ -27,8 +26,6 @@ public class TimelineItemAuthFilterService implements AuthFilter {
         this.userPermissionsService = userPermissionsService;
     }
 
-
-
     @Override
     public String getKey() {
         return TimelineItemDto.class.getSimpleName();
@@ -36,9 +33,6 @@ public class TimelineItemAuthFilterService implements AuthFilter {
 
     @Override
     public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
-        // fixme: CaseNotes all have a "Type" this could be used to allow users to view "more" if necessary.
-        //  I would however prefer to then set up a database table of case note types that we currently do not have,
-        //  this way we could attach permissions to the note type.
 
         if (collectionAsArray != null && collectionAsArray[0].getClass() != TimelineItemDto.class) {
             String msg = String.format("The wrong filter has been selected for class %s", collectionAsArray[0].getClass().getClass().getSimpleName());
