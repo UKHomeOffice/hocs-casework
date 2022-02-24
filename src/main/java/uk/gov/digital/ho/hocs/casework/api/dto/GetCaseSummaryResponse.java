@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.util.ObjectUtils;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 
 import java.time.LocalDate;
@@ -95,5 +96,9 @@ public class GetCaseSummaryResponse {
 
     protected void replaceAdditionalFields(List<AdditionalFieldDto> additionalFieldDtoList) {
         this.additionalFields = additionalFieldDtoList;
+    }
+
+    protected void replaceActiveStages(Set<ActiveStageDto> activeStageSet) {
+        this.activeStages = activeStageSet;
     }
 }

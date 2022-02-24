@@ -110,6 +110,7 @@ public class GetCaseSummaryAuthFilterServiceTest {
         GetCaseSummaryResponse getCaseSummaryResponse = (GetCaseSummaryResponse) resultResponseEntity.getBody();
 
         assertThat(getCaseSummaryResponse.getAdditionalFields().size()).isEqualTo(0);
+        assertThat(getCaseSummaryResponse.getActiveStages().size()).isEqualTo(0);
     }
 
     @Test
@@ -156,6 +157,7 @@ public class GetCaseSummaryAuthFilterServiceTest {
         GetCaseSummaryResponse getCaseSummaryResponse = (GetCaseSummaryResponse) resultResponseEntity.getBody();
 
         assertThat(getCaseSummaryResponse.getAdditionalFields().size()).isEqualTo(2);
+        assertThat(getCaseSummaryResponse.getActiveStages().size()).isEqualTo(0);
         assertThat(getCaseSummaryResponse.getAdditionalFields().stream().map(AdditionalFieldDto::getName)).contains("field1", "field2");
         assertThat(getCaseSummaryResponse.getAdditionalFields().stream().map(AdditionalFieldDto::getName)).doesNotContain("field3", "field4");
     }
