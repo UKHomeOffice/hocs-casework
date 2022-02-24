@@ -77,7 +77,7 @@ public class CaseDataResourceTest {
     public void shouldMigrateCase() {
 
         CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
-        CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID);
+        MigrateCaseRequest request = new MigrateCaseRequest(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID);
 
         when(caseDataService.migrateCase(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID)).thenReturn(caseData);
 
