@@ -51,6 +51,8 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRE
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_TOPIC_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.DATA_MAPPING_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.DATA_MAPPING_EXCEPTION;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.UNCAUGHT_EXCEPTION;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 
@@ -736,5 +738,32 @@ public class CaseDataService {
 
     public void clearCachedTemplateForCaseType(String caseType) {
         infoClient.clearCachedTemplateForCaseType(caseType);
+    }
+
+    public void mapCaseDataValues(UUID caseUUID, Map<String, String> keyMappings) {
+
+        CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
+        Map<String, String> updatedCaseDataMap = new HashMap<>(caseData.getDataMap());
+
+        if (!updatedCaseDataMap.keySet().containsAll(keyMappings.keySet())) {
+            String msg = "Requested keys to map do not exist in case data for caseUUID %s, requested mapping: %s";
+            log.error(String.format(msg, caseUUID, keyMappings));
+            throw new ApplicationExceptions.DataMappingException(
+                    msg,
+                    null,
+                    DATA_MAPPING_EXCEPTION,
+                    caseUUID, keyMappings.keySet()
+            );
+        }
+
+        keyMappings.forEach((String k, String v) -> {
+            String mappedVal = updatedCaseDataMap.putIfAbsent(v, updatedCaseDataMap.get(k));
+            if (mappedVal != null) {
+                log.warn("Requested key to map of key {} to {} cannot take place as key {} already exists and will not be overwritten.", k, v, v);
+            }
+        });
+
+        this.updateCaseData(caseData, null, updatedCaseDataMap);
+        log.info("Completed mapping of k,v pairs {} for caseUUID {}", keyMappings, caseUUID, value(EVENT, DATA_MAPPING_SUCCESS));
     }
 }

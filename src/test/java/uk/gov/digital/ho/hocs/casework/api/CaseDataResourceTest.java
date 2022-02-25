@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -385,4 +386,22 @@ public class CaseDataResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
+    @Test
+    public void testShouldReturnOkWhenMapCaseDataValuesCalled() {
+
+        // GIVEN
+        Map<String, String> keyMappings = new HashMap<>();
+        keyMappings.put("from1", "to1");
+        keyMappings.put("from2", "to2");
+        UUID caseUUID = UUID.randomUUID();
+
+        // WHEN
+        ResponseEntity<Void> response = caseDataResource.mapCaseDataValues(caseUUID, keyMappings);
+
+        //
+        verify(caseDataService).mapCaseDataValues(eq(caseUUID), eq(keyMappings));
+        verifyNoMoreInteractions(caseDataService);
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);    }
 }

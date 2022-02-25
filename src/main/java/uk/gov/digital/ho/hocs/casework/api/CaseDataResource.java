@@ -198,6 +198,12 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping(value = "/case/{caseUUID}/data/map")
+    public ResponseEntity<Void> mapCaseDataValues(@PathVariable UUID caseUUID, @RequestBody Map<String, String> keyMappings) {
+        caseDataService.mapCaseDataValues(caseUUID, keyMappings);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping(value = "/case/data/{reference}")
     public ResponseEntity<GetCaseResponse> getCaseDataByReference(@PathVariable String reference) throws UnsupportedEncodingException {
         String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8.name());
