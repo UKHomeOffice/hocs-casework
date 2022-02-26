@@ -18,7 +18,7 @@ services:
 
 steps:
   - name: setup localstack
-    image: quay.io/ukhomeofficedigital/localstack # need curl which is not in alpine
+    image: quay.io/ukhomeofficedigital/localstack
     commands:
       - cd config/localstack
       - ./1-setup-sqs.sh
@@ -27,14 +27,14 @@ steps:
       - clone
 
   - name: build project
-    image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
+    image: quay.io/ukhomeofficedigital/hocs-base-image-build
     commands:
       - ./gradlew assemble --no-daemon
     depends_on:
       - setup localstack
 
   - name: test project
-    image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
+    image: quay.io/ukhomeofficedigital/hocs-base-image-build
     environment:
       SPRING_PROFILES_ACTIVE: "local"
       HOCS_DOCUMENT_SERVICE: "http://documents:8080"
