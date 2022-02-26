@@ -29,7 +29,7 @@ steps:
   - name: build project
     image: quay.io/ukhomeofficedigital/hocs-base-image-build
     commands:
-      - ./gradlew clean assemble --no-daemon
+      - ./gradlew clean assemble
     depends_on:
       - setup localstack
 
@@ -41,7 +41,7 @@ steps:
       DB_HOST: "postgres"
       LOCALSTACK_CONFIG_HOST: "localstack"
     commands:
-      - ./gradlew check --no-daemon
+      - ./gradlew check
     depends_on:
       - build project
 
