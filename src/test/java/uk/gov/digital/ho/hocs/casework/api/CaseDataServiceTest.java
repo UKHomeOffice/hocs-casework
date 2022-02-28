@@ -11,6 +11,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.RestClientException;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.MigrateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
@@ -369,7 +370,7 @@ public class CaseDataServiceTest {
                         PREV_EXTERNAL_KEY),
                 LocalDate.now(),
                 LocalDate.now(),
-                LocalDate.now().minusDays(10),
+                originalReceivedDate,
                 false,
                 Set.of(new ActiveStage(), new ActiveStage()),
                 Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
@@ -384,25 +385,26 @@ public class CaseDataServiceTest {
         when(caseCopyFactory.getStrategy(any(), any())).thenReturn(Optional.of((fromCase, toCase) -> {}));
 
         // when
-        CaseData caseData = caseDataService.migrateCase(caseType.getDisplayCode(), new HashMap<>(), originalReceivedDate, PREVIOUS_CASE_UUID);
+        MigrateCaseResponse migrateCaseResponse = caseDataService.migrateCase(caseType.getDisplayCode(), PREVIOUS_CASE_UUID);
 
         // then
         verify(caseDataRepository, times(1)).findActiveByUuid(PREVIOUS_CASE_UUID);
         verify(caseDataRepository, times(0)).getNextSeriesId(); // ensure not used
-        verify(caseDataRepository, times(1)).save(caseData);
         ArgumentCaptor<CaseLink> caseLink = ArgumentCaptor.forClass(CaseLink.class);
+        ArgumentCaptor<CaseData> caseData = ArgumentCaptor.forClass(CaseData.class);
         verify(caseLinkRepository, times(1)).save(caseLink.capture());
+        verify(caseDataRepository, times(1)).save(caseData.capture());
         verifyNoMoreInteractions(caseDataRepository);
 
         // assert the save link values
         assertThat(caseLink.getValue()).isNotNull();
         CaseLink parameterUsed = caseLink.getValue();
         assertThat(parameterUsed.getPrimaryCase()).isEqualTo(PREVIOUS_CASE_UUID);
-        assertThat(parameterUsed.getSecondaryCase()).isEqualTo(caseData.getUuid());
+        assertThat(parameterUsed.getSecondaryCase()).isEqualTo(migrateCaseResponse.getUuid());
 
         // assert the reference matches expectations
         Matcher previousReferenceMatcher = CaseDataService.CASE_REFERENCE_PATTERN.matcher(PREVIOUS_CASE_REFERENCE);
-        Matcher caseReferenceMatcher = CaseDataService.CASE_REFERENCE_PATTERN.matcher(caseData.getReference());
+        Matcher caseReferenceMatcher = CaseDataService.CASE_REFERENCE_PATTERN.matcher(caseData.getValue().getReference());
 
         // + assert the patterns are valid
         assertThat(previousReferenceMatcher.find()).isTrue();
@@ -415,10 +417,10 @@ public class CaseDataServiceTest {
                 .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
 
         // check deadline
-        assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
+        assertThat(caseData.getValue().getCaseDeadline()).isEqualTo(expectedDeadline);
 
         // check audit
-        verify(auditClient, times(1)).migrateCaseAudit(caseData);
+        verify(auditClient, times(1)).migrateCaseAudit(caseData.getValue());
         verifyNoMoreInteractions(auditClient);
     }
 

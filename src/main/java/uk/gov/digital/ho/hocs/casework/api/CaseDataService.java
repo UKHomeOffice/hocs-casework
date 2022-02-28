@@ -220,15 +220,15 @@ public class CaseDataService {
         return caseData;
     }
 
-    CaseData migrateCase(String caseType, Map<String, String> data, LocalDate dateReceived, UUID fromCaseUUID) {
+    public MigrateCaseResponse migrateCase(String caseType, UUID fromCaseUUID) {
         log.debug("Creating Case of type: {}", caseType);
 
         CaseData caseData;
-        caseData = createCaseFromCaseUUID(caseType, data, dateReceived, fromCaseUUID);
+        caseData = migrateCaseFromCaseUUID(caseType, fromCaseUUID);
 
         auditClient.migrateCaseAudit(caseData);
 
-        return caseData;
+        return new MigrateCaseResponse(caseData.getUuid(), caseData.getDataMap());
     }
 
 
@@ -245,6 +245,19 @@ public class CaseDataService {
         // does the previous case exist
         CaseData copyFromCase = getCaseData(fromCaseUUID);
 
+        return createCaseFromCaseUUID(caseType, data, dateReceived, fromCaseUUID, copyFromCase);
+    }
+
+    private CaseData migrateCaseFromCaseUUID(String caseType, UUID fromCaseUUID) {
+
+        CaseData copyFromCase = getCaseData(fromCaseUUID);
+        Map<String, String> data = copyFromCase.getDataMap();
+        LocalDate dateReceived = copyFromCase.getDateReceived();
+
+        return createCaseFromCaseUUID(caseType, data, dateReceived, fromCaseUUID, copyFromCase);
+    }
+
+    private CaseData createCaseFromCaseUUID(String caseType, Map<String, String> data, LocalDate dateReceived, UUID fromCaseUUID, CaseData copyFromCase) {
         // get the existing case number
         Matcher findSerialNumber = CASE_REFERENCE_PATTERN.matcher(copyFromCase.getReference());
         if (!findSerialNumber.find()) {
