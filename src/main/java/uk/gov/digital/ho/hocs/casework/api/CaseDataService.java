@@ -221,7 +221,7 @@ public class CaseDataService {
     }
 
     public MigrateCaseResponse migrateCase(String caseType, UUID fromCaseUUID) {
-        log.debug("Creating Case of type: {}", caseType);
+        log.debug("Migrating Case of type: {}", caseType);
 
         CaseData caseData;
         caseData = migrateCaseFromCaseUUID(caseType, fromCaseUUID);
