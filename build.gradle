@@ -62,7 +62,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.assertj:assertj-core'
     testImplementation 'junit:junit:4.13.2'
-    testImplementation group: 'com.google.guava', name: 'guava', version: '31.0.1-jre'
+    testImplementation group: 'com.google.guava', name: 'guava', version: '31.1-jre'
 }
 
 dependencyManagement {
