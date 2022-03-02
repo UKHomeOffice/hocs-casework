@@ -443,6 +443,18 @@ public class AuditClient {
                 requestData.userId(), requestData.username(), requestData.groups());
     }
 
+    public void migrateCaseAudit(CaseData caseData) {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        String data = "{}";
+        try {
+            data = objectMapper.writeValueAsString(AuditPayload.CreateCaseRequest.from(caseData));
+        } catch (JsonProcessingException e) {
+            logFailedToParseDataPayload(e);
+        }
+        sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_MIGRATED, null, data, requestData.correlationId(),
+                requestData.userId(), requestData.username(), requestData.groups());
+    }
+
     public void updateStageUser(BaseStage stage) {
         LocalDateTime localDateTime = LocalDateTime.now();
         try {

@@ -93,7 +93,7 @@ public class CaseNoteIntegrationTest {
 
     @Test
     public void shouldReturnCaseNotesWhenGetValidCaseWithPermissionLevelOwner() throws JsonProcessingException {
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/note", GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -101,7 +101,7 @@ public class CaseNoteIntegrationTest {
 
     @Test
     public void shouldReturnCaseNoteWhenGetValidCaseNoteWithPermissionLevelOwner() throws JsonProcessingException {
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/note/a2bb3622-b38a-479d-b390-f633bf15f329", GET, new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -109,7 +109,7 @@ public class CaseNoteIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestAndNotCreateACaseNoteWhenNoRequestBody() throws JsonProcessingException {
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST", "5");
         long numberOfCasesAfter = caseNoteRepository.count();
@@ -119,7 +119,17 @@ public class CaseNoteIntegrationTest {
 
     @Test
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelSummary() throws JsonProcessingException {
-        setupMockTeams("TEST", 1);
+        setupMockTeams("TEST", AccessLevel.SUMMARY.getLevel());
+        long numberOfCasesBefore = caseNoteRepository.count();
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST", "1");
+        long numberOfCasesAfter = caseNoteRepository.count();
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
+    }
+
+    @Test
+    public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelMigrate() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.MIGRATE.getLevel());
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST", "1");
         long numberOfCasesAfter = caseNoteRepository.count();
@@ -129,7 +139,7 @@ public class CaseNoteIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestAndNotCreateACaseWhenNoRequestBody() throws JsonProcessingException {
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST", "5");
         long numberOfCasesAfter = caseNoteRepository.count();
@@ -139,7 +149,7 @@ public class CaseNoteIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestAndNotCreateACaseWhenCaseUUIDInvalid() throws JsonProcessingException {
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<Void> result = getCreateCaseNoteInavlidCaseUUIDResponse(createBody(), "TEST", "5");
         long numberOfCasesAfter = caseNoteRepository.count();
@@ -149,7 +159,7 @@ public class CaseNoteIntegrationTest {
 
     @Test
     public void shouldCreateACaseNoteWithPermissionLevelRead() throws JsonProcessingException {
-        setupMockTeams("TEST", 2);
+        setupMockTeams("TEST", AccessLevel.READ.getLevel());
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<UUID> result = getCreateCaseNoteResponse(createBody(), "TEST","2");
         CaseNote caseData = caseNoteRepository.findByUuid(result.getBody());

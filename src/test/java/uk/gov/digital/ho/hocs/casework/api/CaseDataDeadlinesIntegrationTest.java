@@ -73,7 +73,7 @@ public class CaseDataDeadlinesIntegrationTest {
 
     @Test
     public void shouldCreateACaseWithCorrectDeadlines() throws JsonProcessingException {
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
 
         ResponseEntity<CreateCaseResponse> result =
                 getCreateCaseResponse(createBody("TEST"), "TEST", "5");
@@ -88,7 +88,7 @@ public class CaseDataDeadlinesIntegrationTest {
 
     @Test
     public void shouldOverrideCaseAndStageSlas() throws JsonProcessingException {
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/b2e0b71c-d9be-4a0b-8e6c-38d06146f0e0/stage/7c4fd5df-16d9-4304-9ba9-ed01e8c6b133/deadline",
@@ -113,7 +113,7 @@ public class CaseDataDeadlinesIntegrationTest {
 
     @Test
     public void shouldUpdateReceivedDate() throws JsonProcessingException {
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/b2e0b71c-d9be-4a0b-8e6c-38d06146f0e0/stage/7c4fd5df-16d9-4304-9ba9-ed01e8c6b133/dateReceived",

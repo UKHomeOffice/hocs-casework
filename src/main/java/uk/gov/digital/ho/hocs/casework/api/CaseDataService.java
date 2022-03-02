@@ -49,6 +49,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.GET_CASE_REF_
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.GET_CASE_REF_BY_UUID_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRESPONDENT_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_TOPIC_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.UNCAUGHT_EXCEPTION;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
@@ -219,6 +220,17 @@ public class CaseDataService {
         return caseData;
     }
 
+    public MigrateCaseResponse migrateCase(String caseType, UUID fromCaseUUID) {
+        log.debug("Migrating Case of type: {}", caseType);
+
+        CaseData caseData;
+        caseData = migrateCaseFromCaseUUID(caseType, fromCaseUUID);
+
+        auditClient.migrateCaseAudit(caseData);
+
+        return new MigrateCaseResponse(caseData.getUuid(), caseData.getDataMap());
+    }
+
 
     private CaseData createSimpleCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
 
@@ -233,6 +245,19 @@ public class CaseDataService {
         // does the previous case exist
         CaseData copyFromCase = getCaseData(fromCaseUUID);
 
+        return createCaseFromCaseUUID(caseType, data, dateReceived, fromCaseUUID, copyFromCase);
+    }
+
+    private CaseData migrateCaseFromCaseUUID(String caseType, UUID fromCaseUUID) {
+
+        CaseData copyFromCase = getCaseData(fromCaseUUID);
+        Map<String, String> data = copyFromCase.getDataMap();
+        LocalDate dateReceived = copyFromCase.getDateReceived();
+
+        return createCaseFromCaseUUID(caseType, data, dateReceived, fromCaseUUID, copyFromCase);
+    }
+
+    private CaseData createCaseFromCaseUUID(String caseType, Map<String, String> data, LocalDate dateReceived, UUID fromCaseUUID, CaseData copyFromCase) {
         // get the existing case number
         Matcher findSerialNumber = CASE_REFERENCE_PATTERN.matcher(copyFromCase.getReference());
         if (!findSerialNumber.find()) {

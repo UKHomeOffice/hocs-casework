@@ -74,6 +74,24 @@ public class CaseDataResourceTest {
     }
 
     @Test
+    public void shouldMigrateCase() {
+
+        MigrateCaseResponse migrateCaseResponse = new MigrateCaseResponse(UUID.randomUUID(), null);
+        MigrateCaseRequest request = new MigrateCaseRequest(caseDataType.getDisplayCode());
+
+        when(caseDataService.migrateCase(caseDataType.getDisplayCode(), FROM_CASE_UUID)).thenReturn(migrateCaseResponse);
+
+        ResponseEntity<MigrateCaseResponse> response = caseDataResource.migrateCase(FROM_CASE_UUID, request);
+
+        verify(caseDataService, times(1)).migrateCase(caseDataType.getDisplayCode(), FROM_CASE_UUID);
+
+        verifyNoMoreInteractions(caseDataService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
     public void shouldGetCase() {
 
         CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
