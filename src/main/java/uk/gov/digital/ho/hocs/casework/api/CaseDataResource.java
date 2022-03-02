@@ -42,6 +42,13 @@ class CaseDataResource {
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 
+    @Authorised(accessLevel = AccessLevel.MIGRATE)
+    @PostMapping(value = "/case/{caseUUID}/migrate")
+    public ResponseEntity<MigrateCaseResponse> migrateCase(@PathVariable UUID caseUUID, @RequestBody MigrateCaseRequest request) {
+        MigrateCaseResponse migrateCaseResponse = caseDataService.migrateCase(request.getType(), caseUUID);
+        return ResponseEntity.ok(migrateCaseResponse);
+    }
+
     @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
     @GetMapping(value = "/case/{caseUUID}")
     public ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID, @RequestParam("full") Optional<Boolean> full) {

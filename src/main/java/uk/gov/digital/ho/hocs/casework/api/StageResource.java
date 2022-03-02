@@ -51,7 +51,7 @@ class StageResource {
         this.infoClient = infoClient;
     }
 
-    @Authorised(accessLevel = AccessLevel.WRITE, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.WRITE, permittedLowerLevels = {AccessLevel.MIGRATE, AccessLevel.RESTRICTED_OWNER})
     @PostMapping(value = "/case/{caseUUID}/stage")
     ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
         Stage stage = stageService.createStage(caseUUID, request);

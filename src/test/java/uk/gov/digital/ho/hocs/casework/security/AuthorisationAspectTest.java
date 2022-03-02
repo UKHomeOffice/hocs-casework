@@ -176,7 +176,7 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.WRITE);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[0]);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{});
 
         assertThatThrownBy(() -> { aspect.validateUserAccess(proceedingJoinPoint,annotation);})
                 .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
@@ -214,7 +214,7 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[0]);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{});
 
         assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
                 .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
@@ -238,7 +238,7 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[0]);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{});
 
         assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
                 .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
@@ -247,6 +247,46 @@ public class AuthorisationAspectTest {
         verify(proceedingJoinPoint, never()).proceed();
         verify(caseService, times(1)).getCaseType(caseUUID);
         verify(caseService, times(1)).getCaseTeams(caseUUID);
+    }
+
+    @Test
+    public void shouldProceedIfUserIsInAssignedTeamAndPermittedLowerLevelIsMigrate() throws Throwable {
+
+        String type = "MIN";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+
+        when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.MIGRATE);
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.MIGRATE});
+
+        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+
+        verify(proceedingJoinPoint, times(1)).proceed();
+        verify(caseService, times(1)).getCaseType(caseUUID);
+    }
+
+    @Test
+    public void shouldNotProceedIfUserDoesNotHavePermittedLowerLevel() throws Throwable {
+
+        String type = "MIN";
+        Object[] args = new Object[1];
+        args[0] = caseUUID;
+
+        when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.READ);
+        when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.MIGRATE});
+
+        assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
+                .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
+                .hasMessageContaining("User does not have access to the requested resource");
+
+        verify(proceedingJoinPoint, never()).proceed();
+        verify(caseService, times(1)).getCaseType(caseUUID);
     }
 
     @Test

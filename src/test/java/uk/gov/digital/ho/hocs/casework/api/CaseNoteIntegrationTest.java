@@ -93,8 +93,10 @@ public class CaseNoteIntegrationTest {
 
     @Test
     public void shouldReturnCaseNotesWhenGetValidCaseWithPermissionLevelOwner() throws JsonProcessingException {
+
         AccessLevel permissionLevel = AccessLevel.OWNER;
         setupMockTeams("TEST", permissionLevel.getLevel());
+      
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/note", GET, new HttpEntity(createValidAuthHeaders("TEST", Integer.toString(permissionLevel.getLevel()))), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -104,6 +106,7 @@ public class CaseNoteIntegrationTest {
     public void shouldReturnCaseNoteWhenGetValidCaseNoteWithPermissionLevelOwner() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.OWNER;
         setupMockTeams("TEST", permissionLevel.getLevel());
+      
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/note/a2bb3622-b38a-479d-b390-f633bf15f329", GET, new HttpEntity(createValidAuthHeaders("TEST", Integer.toString(permissionLevel.getLevel()))), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -113,6 +116,7 @@ public class CaseNoteIntegrationTest {
     public void shouldReturnBadRequestAndNotCreateACaseNoteWhenNoRequestBody() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.OWNER;
         setupMockTeams("TEST", permissionLevel.getLevel());
+
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST", Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
@@ -124,6 +128,19 @@ public class CaseNoteIntegrationTest {
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelSummary() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.SUMMARY;
         setupMockTeams("TEST", permissionLevel.getLevel());
+      
+        long numberOfCasesBefore = caseNoteRepository.count();
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST", Integer.toString(permissionLevel.getLevel()));
+        long numberOfCasesAfter = caseNoteRepository.count();
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+        assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
+    }
+
+    @Test
+    public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelMigrate() throws JsonProcessingException {
+        AccessLevel permissionLevel = AccessLevel.MIGRATE;  
+        setupMockTeams("TEST", permissionLevel.getLevel());
+      
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST", Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
@@ -135,6 +152,7 @@ public class CaseNoteIntegrationTest {
     public void shouldReturnBadRequestAndNotCreateACaseWhenNoRequestBody() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.OWNER;
         setupMockTeams("TEST", permissionLevel.getLevel());
+
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST", Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
@@ -146,6 +164,7 @@ public class CaseNoteIntegrationTest {
     public void shouldReturnBadRequestAndNotCreateACaseWhenCaseUUIDInvalid() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.OWNER;
         setupMockTeams("TEST", permissionLevel.getLevel());
+
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<Void> result = getCreateCaseNoteInavlidCaseUUIDResponse(createBody(), "TEST", Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
@@ -157,6 +176,7 @@ public class CaseNoteIntegrationTest {
     public void shouldCreateACaseNoteWithPermissionLevelRead() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.READ;
         setupMockTeams("TEST", permissionLevel.getLevel());
+
         long numberOfCasesBefore = caseNoteRepository.count();
         ResponseEntity<UUID> result = getCreateCaseNoteResponse(createBody(), "TEST",Integer.toString(permissionLevel.getLevel()));
         CaseNote caseData = caseNoteRepository.findByUuid(result.getBody());

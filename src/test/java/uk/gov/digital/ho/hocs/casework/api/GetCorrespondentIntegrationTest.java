@@ -103,6 +103,7 @@ public class GetCorrespondentIntegrationTest {
     public void shouldReturnCorrespondentForValidCaseWithPermissionLevelOwner() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.OWNER;
         setupMockTeams("TEST",permissionLevel, 2);
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -113,6 +114,7 @@ public class GetCorrespondentIntegrationTest {
     public void shouldReturnCorrespondentsForValidCaseWithPermissionLevelWrite() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.WRITE;
         setupMockTeams("TEST",permissionLevel, 2);
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -123,6 +125,7 @@ public class GetCorrespondentIntegrationTest {
     public void shouldReturnCorrespondentsForValidCaseWithPermissionLevelRead() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.READ;
         setupMockTeams("TEST",permissionLevel, 2);
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -133,6 +136,19 @@ public class GetCorrespondentIntegrationTest {
     public void shouldReturnUnauthorisedWhenGetCorrespondentsForValidCaseWithPermissionLevelSummary() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.SUMMARY;
         setupMockTeams("TEST",permissionLevel, 2);
+
+        setupMockTeams("TEST", AccessLevel.SUMMARY.getLevel(), 2);
+        ResponseEntity<String> result = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_UUID1 + "/correspondent/" + CORRESPONDENT_UUID,
+                GET, new HttpEntity(createValidAuthHeaders()), String.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+    }
+
+    @Test
+    public void shouldReturnUnauthorisedWhenGetCorrespondentsForValidCaseWithPermissionLevelMigrate() throws JsonProcessingException {
+        AccessLevel permissionLevel = AccessLevel.MIGRATE;
+        setupMockTeams("TEST",permissionLevel, 2);
+      
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -144,6 +160,7 @@ public class GetCorrespondentIntegrationTest {
         AccessLevel permissionLevel = AccessLevel.UNSET;
         setupEmptyMockAudit(CASE_UUID1);
         setupMockTeams("TEST",permissionLevel, 2);
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -154,6 +171,7 @@ public class GetCorrespondentIntegrationTest {
     public void shouldReturnNotFoundSetWhenGetCorrespondentsForInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.OWNER;
         setupMockTeams("TEST",permissionLevel, 2);
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -164,6 +182,7 @@ public class GetCorrespondentIntegrationTest {
     public void shouldReturnNotFoundWhenGetCorrespondentsForInvalidCaseWithPermissionLevelWrite() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.WRITE;
         setupMockTeams("TEST",permissionLevel, 2);
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -174,6 +193,7 @@ public class GetCorrespondentIntegrationTest {
     public void shouldReturnNotFoundWhenGetCorrespondentsForInvalidCaseWithPermissionLevelRead() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.READ;
         setupMockTeams("TEST",permissionLevel, 2);
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -185,7 +205,21 @@ public class GetCorrespondentIntegrationTest {
     public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelSummary() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.SUMMARY;
         setupMockTeams("TEST",permissionLevel, 2);
+        setupMockTeams("TEST", AccessLevel.SUMMARY.getLevel(), 2);
+      
         ResponseEntity<String> result = testRestTemplate.exchange(
+                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent/" + CORRESPONDENT_UUID,
+                GET, new HttpEntity(createValidAuthHeaders()), String.class);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+
+    }
+
+    @Test
+    public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelMigrate() throws JsonProcessingException {
+        AccessLevel permissionLevel = AccessLevel.MIGRATE;
+        setupMockTeams("TEST",permissionLevel, 2);
+
+      ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
@@ -197,6 +231,7 @@ public class GetCorrespondentIntegrationTest {
         AccessLevel permissionLevel = AccessLevel.UNSET;
         setupEmptyMockAudit(INVALID_CASE_UUID);
         setupMockTeams("TEST",permissionLevel, 2);
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -208,6 +243,7 @@ public class GetCorrespondentIntegrationTest {
         AccessLevel permissionLevel = AccessLevel.UNSET;
         setupEmptyMockAudit(INVALID_CASE_UUID);
         setupMockTeams("TEST1",permissionLevel, 2);
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);

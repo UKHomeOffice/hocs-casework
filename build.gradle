@@ -1,12 +1,11 @@
 plugins {
     id 'java'
     id 'jacoco'
-    id 'org.springframework.boot' version '2.6.3'
+    id 'org.springframework.boot' version '2.6.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
 group = 'uk.gov.digital.ho.hocs'
-version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
 repositories {
@@ -52,7 +51,7 @@ dependencies {
     implementation 'com.github.ben-manes.caffeine:caffeine:3.0.5'
     implementation 'org.json:json:20211205'
 
-    implementation 'org.flywaydb:flyway-core:8.5.0'
+    implementation 'org.flywaydb:flyway-core:8.5.1'
     runtimeOnly 'org.postgresql:postgresql:42.3.3'
 
     compileOnly 'org.projectlombok:lombok:1.18.22'

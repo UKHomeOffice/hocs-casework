@@ -116,7 +116,7 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnOKWhenDeleteCorrespondentsForValidCaseWithCaseAllocatedToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         Correspondent correspondentBefore = correspondentRepository.findByUUID(CASE_UUID1, CORRESPONDENT_UUID);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
@@ -130,7 +130,7 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenDeleteCorrespondentsForValidCaseWithCaseNotAllocatedToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         long before = correspondentRepository.findAllByCaseUUID(CASE_UUID2).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -146,7 +146,7 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnNotFoundWhenDeleteCorrespondentForAnInvalidCorrespondentUUIDCaseAllocateToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + UUID.randomUUID(),
                 DELETE, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -156,7 +156,7 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnNotFoundWhenDeleteCorrespondentForAnInvalidCorrespondentUUIDCaseNoAllocateToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + STAGE_UUID_ALLOCATED_TO_TEAM + "/correspondent/" + UUID.randomUUID(),
                 DELETE, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -166,7 +166,7 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnNotFoundWhenDeleteCorrespondentForAnInvalidCaseUUID() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent/" + CORRESPONDENT_UUID,
                 DELETE, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -176,7 +176,7 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnNotFoundWhenDeleteCorrespondentForAnInvalidStageUUID() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + UUID.randomUUID() + "/correspondent/" + CORRESPONDENT_UUID,
                 DELETE, new HttpEntity(createValidAuthHeaders()), Void.class);
@@ -186,7 +186,7 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnOkWhenDeleteACorrespondentForACaseThatIsAllocatedToYouThenReturnForbiddenWhenTheCaseIsAllocatedToAnotherTeam() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 5);
         mockInfoService
                 .expect(requestTo("http://localhost:8085/team/44444444-2222-2222-2222-222222222221/contact"))
                 .andExpect(method(GET))
@@ -218,7 +218,7 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenDeleteACorrespondentForACaseThatIsNotAllocatedToYouThenReturnOkWhenTheCaseIsAllocatedToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 5);
         mockInfoService
                 .expect(requestTo("http://localhost:8085/user/4035d37f-9c1d-436e-99de-1607866634d4"))
                 .andExpect(method(GET))
@@ -253,7 +253,7 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnOKWhenDeleteCorrespondentsAndNotFoundWhenDeleteDameCorrespondentForValidCaseWithCaseAllocatedToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 4);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 4);
         Correspondent correspondentBefore = correspondentRepository.findByUUID(CASE_UUID1, CORRESPONDENT_UUID);
 
         ResponseEntity<String> result1 = testRestTemplate.exchange(
@@ -272,7 +272,7 @@ public class DeleteCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnOkWhenCaseIsDeletedAndThenNotFoundDeleteCorrespondent() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 4);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 4);
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/correspondentType/TEST"))
