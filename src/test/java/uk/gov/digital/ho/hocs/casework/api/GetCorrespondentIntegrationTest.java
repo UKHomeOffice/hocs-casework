@@ -137,7 +137,6 @@ public class GetCorrespondentIntegrationTest {
         AccessLevel permissionLevel = AccessLevel.SUMMARY;
         setupMockTeams("TEST",permissionLevel, 2);
 
-        setupMockTeams("TEST", AccessLevel.SUMMARY.getLevel(), 2);
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -205,8 +204,7 @@ public class GetCorrespondentIntegrationTest {
     public void shouldReturnUnauthorisedWhenGetCorrespondentsForInvalidCaseWithPermissionLevelSummary() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.SUMMARY;
         setupMockTeams("TEST",permissionLevel, 2);
-        setupMockTeams("TEST", AccessLevel.SUMMARY.getLevel(), 2);
-      
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent/" + CORRESPONDENT_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);

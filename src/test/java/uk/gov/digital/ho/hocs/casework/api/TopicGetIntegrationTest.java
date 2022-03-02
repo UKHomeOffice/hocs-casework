@@ -173,8 +173,6 @@ public class TopicGetIntegrationTest {
         AccessLevel permissionLevel = AccessLevel.UNSET;
         setupMockTeams("TEST1", permissionLevel, 1);
 
-        setupMockTeams("TEST1", AccessLevel.OWNER.getLevel(), 1);
-
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/topic/" + TOPIC_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);
@@ -219,7 +217,7 @@ public class TopicGetIntegrationTest {
     public void shouldReturnUnauthorisedWhenGetTopicsForInvalidCaseWithPermissionLevelSummary() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.SUMMARY;
         setupMockTeams("TEST", permissionLevel, 1);
-=======
+
         ResponseEntity<String> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic/" + TOPIC_UUID,
                 GET, new HttpEntity(createValidAuthHeaders()), String.class);

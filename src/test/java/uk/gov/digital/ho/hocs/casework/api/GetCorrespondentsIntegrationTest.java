@@ -174,17 +174,6 @@ public class GetCorrespondentsIntegrationTest {
     }
 
     @Test
-    public void shouldReturnUnauthorisedWhenGetCorrespondentsForValidCaseWithoutPermission() throws JsonProcessingException {
-        setupEmptyMockAudit(CASE_UUID);
-        AccessLevel permissionLevel = AccessLevel.OWNER;
-        setupMockTeams("TEST", permissionLevel, 1);
-
-        ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-    }
-
-    @Test
     public void shouldReturnOkAndEmptySetSetWhenGetCorrespondentsForInvalidCaseWithPermissionLevelOwner() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.OWNER;
         setupMockTeams("TEST", permissionLevel, 1);

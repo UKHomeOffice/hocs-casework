@@ -258,6 +258,7 @@ public class AuthorisationAspectTest {
 
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.MIGRATE);
         when(caseService.getCaseType(any())).thenReturn(type);
+        when(proceedingJoinPoint.proceed()).thenReturn(new Object());
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
         when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.MIGRATE});
