@@ -14,4 +14,5 @@ public @interface Authorised {
     AccessLevel accessLevel() default UNSET;
 
     AccessLevel[] permittedLowerLevels() default {};
+
 }

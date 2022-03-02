@@ -1,17 +1,14 @@
 package uk.gov.digital.ho.hocs.casework.security;
 
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 
 import java.nio.BufferUnderflowException;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -117,5 +114,9 @@ public class UserPermissionsService {
         } catch (BufferUnderflowException e) {
             return null;
         }
+    }
+
+    public List<FieldDto> getFieldsByCaseTypeAndPermissionLevel(String caseType, AccessLevel accessLevel) {
+        return infoClient.getFieldsByCaseTypeAndPermissionLevel(caseType, accessLevel);
     }
 }
