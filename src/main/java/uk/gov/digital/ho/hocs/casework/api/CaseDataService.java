@@ -756,14 +756,14 @@ public class CaseDataService {
             );
         }
 
-        keyMappings.forEach((String k, String v) -> {
-            String mappedVal = updatedCaseDataMap.putIfAbsent(v, updatedCaseDataMap.get(k));
+        keyMappings.forEach((String fromKey, String toKey) -> {
+            String mappedVal = updatedCaseDataMap.putIfAbsent(toKey, updatedCaseDataMap.get(fromKey));
             if (mappedVal != null) {
-                log.warn("Requested key to map of key {} to {} cannot take place as key {} already exists and will not be overwritten.", k, v, v);
+                log.warn("Requested key to map of key {} to {} cannot take place as key {} already exists and will not be overwritten.", fromKey, toKey, toKey);
             }
         });
 
         this.updateCaseData(caseData, null, updatedCaseDataMap);
-        log.info("Completed mapping of k,v pairs {} for caseUUID {}", keyMappings, caseUUID, value(EVENT, DATA_MAPPING_SUCCESS));
+        log.info("Completed mapping of key pairs {} for caseUUID {}", keyMappings, caseUUID, value(EVENT, DATA_MAPPING_SUCCESS));
     }
 }
