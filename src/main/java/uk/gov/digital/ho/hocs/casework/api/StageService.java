@@ -27,6 +27,8 @@ import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -135,11 +137,12 @@ public class StageService {
 
     @Transactional
     public Stage createStage(UUID caseUUID, CreateStageRequest createStageRequest) {
-
+        Instant start = Instant.now();
         log.debug("Creating Stage: {} for case {}", createStageRequest, caseUUID);
 
         // find current active stage to deactivate (assumes 1 or 0)
         Optional<Stage> maybeActiveStage = stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseUUID);
+        Instant maybeActive = Instant.now();
 
         UUID currentUserUUID = null;
         if(maybeActiveStage.isPresent()) {
@@ -151,18 +154,29 @@ public class StageService {
                 null, null, createStageRequest.getTransitionNoteUUID());
 
         CaseData caseData = caseDataService.getCase(caseUUID);
+        Instant getCaseData = Instant.now();
+
         calculateDeadlines(newStage, caseData);
+
+        Instant deadlines = Instant.now();
+
 
         stageRepository.save(newStage);
         log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", newStage.getUuid(), newStage.getStageType(), newStage.getCaseUUID(), value(EVENT, STAGE_CREATED));
 
         caseDataService.updateCaseData(caseData, newStage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, newStage.getStageType()));
 
+        Instant updateCase = Instant.now();
+
         // Update team and user to activate new stage
         assignTeamAndMemberUserToStage(newStage, createStageRequest.getTeamUUID(), createStageRequest.getUserUUID());
 
+        Instant assignNewTeam = Instant.now();
+
         // remove old active stage
         maybeActiveStage.ifPresent(value -> updateStageTeam(maybeActiveStage.get(), caseData.getDataMap(), caseData.getReference(), null, null));
+
+        Instant unassignStage = Instant.now();
 
         // Update audit and timeline - positioned here maintains timeline consistency.
         auditClient.createStage(newStage);
@@ -170,6 +184,19 @@ public class StageService {
         // Issue assignment notifications
         updateAssignmentAudit(newStage);
         sendAssignmentNotifications(caseData, newStage, currentUserUUID);
+
+        Instant auditing = Instant.now();
+
+        log.info("createStage MaybeActive {}ms, GetCase {}ms, CalculateDeadlines {}ms, UpdateCase {}ms, AssignNewTeam {}ms, UnassignStage {}ms, Auditing {}ms. TOTAL: {}ms",
+                Duration.between(start, maybeActive).toMillis(),
+                Duration.between(maybeActive,getCaseData).toMillis(),
+                Duration.between(getCaseData, deadlines),
+                Duration.between(deadlines, updateCase),
+                Duration.between(updateCase, assignNewTeam),
+                Duration.between(assignNewTeam, unassignStage),
+                Duration.between(unassignStage, auditing),
+                Duration.between(start, auditing)
+                );
 
         return newStage;
     }
