@@ -190,12 +190,12 @@ public class StageService {
         log.info("createStage MaybeActive {}ms, GetCase {}ms, CalculateDeadlines {}ms, UpdateCase {}ms, AssignNewTeam {}ms, UnassignStage {}ms, Auditing {}ms. TOTAL: {}ms",
                 Duration.between(start, maybeActive).toMillis(),
                 Duration.between(maybeActive,getCaseData).toMillis(),
-                Duration.between(getCaseData, deadlines),
-                Duration.between(deadlines, updateCase),
-                Duration.between(updateCase, assignNewTeam),
-                Duration.between(assignNewTeam, unassignStage),
-                Duration.between(unassignStage, auditing),
-                Duration.between(start, auditing)
+                Duration.between(getCaseData, deadlines).toMillis(),
+                Duration.between(deadlines, updateCase).toMillis(),
+                Duration.between(updateCase, assignNewTeam).toMillis(),
+                Duration.between(assignNewTeam, unassignStage).toMillis(),
+                Duration.between(unassignStage, auditing).toMillis(),
+                Duration.between(start, auditing).toMillis()
                 );
 
         return newStage;
