@@ -27,7 +27,7 @@ public class CopyBfToBf2Test {
 
     static {
         FROM_CLOB = Map.of(
-                "Channel", "TestValue");
+                "CaseSummary", "TestValue");
     }
 
     private static final UUID TO_CASE_UUID = UUID.randomUUID();
