@@ -18,7 +18,7 @@ services:
 
 steps:
   - name: setup localstack
-    image: quay.io/ukhomeofficedigital/localstack # need curl which is not in alpine
+    image: quay.io/ukhomeofficedigital/localstack
     commands:
       - cd config/localstack
       - ./1-setup-sqs.sh
@@ -27,26 +27,26 @@ steps:
       - clone
 
   - name: build project
-    image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
+    image: quay.io/ukhomeofficedigital/hocs-base-image-build
     commands:
-      - ./gradlew assemble --no-daemon
+      - ./gradlew clean assemble
     depends_on:
       - setup localstack
 
   - name: test project
-    image: quay.io/ukhomeofficedigital/openjdk11:v11.0.5_10
+    image: quay.io/ukhomeofficedigital/hocs-base-image-build
     environment:
       SPRING_PROFILES_ACTIVE: "local"
       HOCS_DOCUMENT_SERVICE: "http://documents:8080"
       DB_HOST: "postgres"
       LOCALSTACK_CONFIG_HOST: "localstack"
     commands:
-      - ./gradlew check --no-daemon
+      - ./gradlew check
     depends_on:
       - build project
 
   - name: sonar scanner
-    image: quay.io/ukhomeofficedigital/sonar-scanner:v4.6
+    image: quay.io/ukhomeofficedigital/sonar-scanner
     commands:
       - sonar-scanner -Dsonar.projectVersion="$(git rev-parse --abbrev-ref HEAD)"
     depends_on:
@@ -59,7 +59,6 @@ steps:
       repo: quay.io/ukhomeofficedigital/hocs-casework
       tags:
         - ${DRONE_COMMIT_SHA}
-        - branch-${DRONE_COMMIT_BRANCH/\//_}
     environment:
       DOCKER_PASSWORD:
         from_secret: QUAY_ROBOT_TOKEN

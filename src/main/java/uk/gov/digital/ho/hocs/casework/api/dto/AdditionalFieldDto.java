@@ -22,7 +22,15 @@ public class AdditionalFieldDto {
     @JsonProperty("choices")
     private Object choices;
 
+    private String name;
+
     public static AdditionalFieldDto from(AdditionalField additionalField) {
-        return new AdditionalFieldDto(additionalField.getLabel(), additionalField.getValue(), additionalField.getType(), additionalField.getChoices());
+        return new AdditionalFieldDto(
+                additionalField.getLabel(),
+                additionalField.getValue(),
+                additionalField.getType(),
+                additionalField.getChoices(),
+                additionalField.getName()
+        );
     }
 }

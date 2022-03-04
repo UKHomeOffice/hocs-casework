@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verify;
 public class CopyBfToBf2Test {
 
     private static final Map<String, String> FROM_CLOB;
+    private static final Map<String, String> TO_CLOB;
 
     static {
         FROM_CLOB = Map.of(
@@ -64,7 +65,7 @@ public class CopyBfToBf2Test {
             FROM_CASE_UUID,
             null,
             null,
-            null,
+            "BF/12345678/01",
             false,
             FROM_CLOB,
             null,
@@ -122,7 +123,8 @@ public class CopyBfToBf2Test {
 
         // clob values were copied - there's a separate test for copying values
         assertThat(toCase.getDataMap()).isNotNull();
-        assertThat(toCase.getDataMap()).isEqualTo(FROM_CASE.getDataMap());
+        assertThat(toCase.getDataMap()).containsAllEntriesOf(FROM_CASE.getDataMap());
+        assertThat(toCase.getDataMap().get("PreviousCaseReference")).isEqualTo("BF/12345678/01");
 
     }
 }

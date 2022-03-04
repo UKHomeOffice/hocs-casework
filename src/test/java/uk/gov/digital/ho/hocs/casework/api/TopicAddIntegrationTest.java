@@ -100,7 +100,7 @@ public class TopicAddIntegrationTest {
 
     @Test
     public void shouldReturnOKWhenAddATopicForACaseThatIsAllocatedToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID1).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -116,7 +116,7 @@ public class TopicAddIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenAddATopicForACaseThatIsNotAllocatedToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID2).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -132,7 +132,7 @@ public class TopicAddIntegrationTest {
 
     @Test
     public void shouldAddATopicForACaseThatIsNotAllocatedToYouButUserCaseAdmin() throws JsonProcessingException {
-        setupMockTeams("TEST", 6, 2);
+        setupMockTeams("TEST", AccessLevel.CASE_ADMIN.getLevel(), 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID2).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -148,7 +148,7 @@ public class TopicAddIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestWhenAddATopicForACaseYouAreAssignedTorWithNullBody() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID1).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -164,7 +164,7 @@ public class TopicAddIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestWhenAddATopicForACaseThatIsNotAssignedToYouButNoRequestBody() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID2).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -180,7 +180,7 @@ public class TopicAddIntegrationTest {
 
     @Test
     public void shouldReturnNotFoundWhenAddATopicForAnInvalidCaseUUID() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/topic",
                 POST, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
@@ -190,7 +190,7 @@ public class TopicAddIntegrationTest {
 
     @Test
     public void shouldReturnNotFoundWhenAddATopicForAnInvalidStageUUID() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + UUID.randomUUID() + "/topic", POST,
                 new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
@@ -200,7 +200,7 @@ public class TopicAddIntegrationTest {
 
     @Test
     public void shouldReturnNotFoundWhenAddATopicForAnInvalidCaseUUIDAndAnInvalidStageUUID() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/stage/" + UUID.randomUUID() + "/topic",
                 POST, new HttpEntity(createBody(), createValidAuthHeaders()), Void.class);
@@ -210,7 +210,7 @@ public class TopicAddIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestWhenAddATopicForACaseThatIsAllocatedToYouWithNullTopicUUID() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID1).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -227,7 +227,7 @@ public class TopicAddIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestWhenAddATopicForACaseThatIsAllocatedToYouWithEmptyTopicUUID() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
         long before = topicRepository.findAllByCaseUUID(CASE_UUID1).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -244,7 +244,7 @@ public class TopicAddIntegrationTest {
     @Test
     public void shouldReturnOkWhenAddATopicForACaseThatIsAllocatedToYouThenReturnForbiddenWhenTheCaseIsAllocatedToAnotherTeam() throws JsonProcessingException {
 
-        setupMockTeams("TEST", 5, 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 5);
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/team/44444444-2222-2222-2222-222222222221/contact"))
@@ -276,7 +276,7 @@ public class TopicAddIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenAddATopicForACaseThatIsNotAllocatedToYouThenReturnOkWhenTheCaseIsAllocatedToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 5);
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/user/4035d37f-9c1d-436e-99de-1607866634d4"))

@@ -51,7 +51,7 @@ class StageResource {
         this.infoClient = infoClient;
     }
 
-    @Authorised(accessLevel = AccessLevel.WRITE)
+    @Authorised(accessLevel = AccessLevel.WRITE, permittedLowerLevels = {AccessLevel.MIGRATE, AccessLevel.RESTRICTED_OWNER})
     @PostMapping(value = "/case/{caseUUID}/stage")
     ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
         Stage stage = stageService.createStage(caseUUID, request);
@@ -65,14 +65,14 @@ class StageResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.READ)
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
     ResponseEntity<GetStageResponse> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
         StageWithCaseData stage = stageService.getActiveStage(caseUUID, stageUUID);
         return ResponseEntity.ok(GetStageResponse.from(stage));
     }
 
-    @Authorised(accessLevel = AccessLevel.READ)
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user")
     ResponseEntity updateStageUser(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageUserRequest request) {
         stageService.updateStageUser(caseUUID, stageUUID, request.getUserUUID());
