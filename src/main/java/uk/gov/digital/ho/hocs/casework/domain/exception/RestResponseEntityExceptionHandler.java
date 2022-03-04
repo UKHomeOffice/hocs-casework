@@ -90,6 +90,11 @@ public class RestResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
+    @ExceptionHandler(ApplicationExceptions.DataMappingException.class)
+    public ResponseEntity handle(ApplicationExceptions.DataMappingException e) {
+        log.error("DataMappingException: {}", e.getMessage(), value(EVENT, DATA_MAPPING_EXCEPTION));
+        return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
+    }
     @ExceptionHandler(ApplicationExceptions.TeamAllocationException.class)
     public ResponseEntity<String> handle(ApplicationExceptions.TeamAllocationException e) {
         log.error("TeamAllocationException: {}", e.getMessage(), value(EVENT, INTERNAL_SERVER_ERROR));
