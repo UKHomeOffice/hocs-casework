@@ -28,12 +28,12 @@ public class CopyBfToBf2Test {
 
     static {
         FROM_CLOB = Map.of(
-                "Channel", "TestValue");
+                "CaseSummary", "TestValue");
     }
 
     static {
         TO_CLOB = Map.of(
-                "Channel", "TestValue", "PreviousCaseReference", "BF/12345678/01");
+                "CaseSummary", "TestValue", "PreviousCaseReference", "BF/12345678/01");
     }
 
     private static final UUID TO_CASE_UUID = UUID.randomUUID();

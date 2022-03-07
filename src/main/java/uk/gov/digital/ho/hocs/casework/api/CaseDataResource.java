@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.annotation.Cacheable;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
@@ -195,6 +195,12 @@ class CaseDataResource {
     @PutMapping(value = "/case/{caseUUID}/data/{variableName}")
     public ResponseEntity<Void> updateCaseDataValue(@PathVariable UUID caseUUID, @PathVariable String variableName, @RequestBody String value) {
         caseDataService.updateCaseData(caseUUID, null, Map.of(variableName, value));
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/case/{caseUUID}/data/map")
+    public ResponseEntity<Void> mapCaseDataValues(@PathVariable UUID caseUUID, @RequestBody Map<String, String> keyMappings) {
+        caseDataService.mapCaseDataValues(caseUUID, keyMappings);
         return ResponseEntity.ok().build();
     }
 

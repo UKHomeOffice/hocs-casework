@@ -2,6 +2,8 @@ package uk.gov.digital.ho.hocs.casework.domain.exception;
 
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 
+import java.util.Set;
+
 public interface ApplicationExceptions {
 
     class EntityCreationException extends RuntimeException {
@@ -68,6 +70,17 @@ public interface ApplicationExceptions {
         }
 
         public TeamAllocationException( String msg, LogEvent event, LogEvent exception, Object... args) {
+            super(String.format(msg, args));
+            this.event = event;
+            this.exception = exception;
+        }
+    }
+
+    class DataMappingException extends RuntimeException {
+        private final LogEvent event;
+        private final LogEvent exception;
+
+        public DataMappingException(String msg, LogEvent event, LogEvent exception, Object... args) {
             super(String.format(msg, args));
             this.event = event;
             this.exception = exception;

@@ -1253,6 +1253,170 @@ public class CaseDataServiceTest {
         caseDataService.getCaseDataByReference(testCaseRef);
 
     }
+
+    @Test
+    public void testShouldMapCaseDataValues() {
+        // GIVEN
+        Map<String, String> keyMappings = new HashMap<>();
+        keyMappings.put("from1", "to1");
+        keyMappings.put("from2", "to2");
+
+        Map<String, String> caseDataMap = new HashMap<>();
+        caseDataMap.put("from1", "val1");
+        caseDataMap.put("from2", "val2");
+        caseDataMap.put("from3", "val3");
+
+        CaseDataType caseType = new CaseDataType("CASE_TYPE", "a9","ct",null,20, 20);
+        long caseNumber = 1L;
+        LocalDate dateReceived = LocalDate.now();
+
+        CaseData caseData = new CaseData(
+                caseType,
+                caseNumber,
+                caseDataMap,
+                dateReceived);
+
+        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+
+        // WHEN
+        caseDataService.mapCaseDataValues(caseUUID, keyMappings);
+        // THEN
+        ArgumentCaptor<CaseData> argCapture = ArgumentCaptor.forClass(CaseData.class);
+        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
+        verify(caseDataRepository, times(1)).save(argCapture.capture());
+        verify(auditClient, times(1)).updateCaseAudit(caseData, null);
+        verifyNoMoreInteractions(caseDataRepository, auditClient);
+
+        assertThat(argCapture.getValue().getDataMap().keySet()).contains("to1", "to2");
+        assertThat(argCapture.getValue().getDataMap().get("to1")).isEqualTo("val1");
+        assertThat(argCapture.getValue().getDataMap().get("to2")).isEqualTo("val2");
+    }
+
+    @Test
+    public void testShouldNotMapIfMapToKeyExistsInCaseDataButShouldMapOthers() {
+        // GIVEN
+        Map<String, String> keyMappings = new HashMap<>();
+        keyMappings.put("from1", "to1");
+        keyMappings.put("from2", "to2");
+        keyMappings.put("from3", "to3");
+
+        Map<String, String> caseDataMap = new HashMap<>();
+        caseDataMap.put("from1", "val1");
+        caseDataMap.put("from2", "val2");
+        caseDataMap.put("from3", "val3");
+
+        // existing requested map to
+        caseDataMap.put("to3", "val3Existing");
+
+        CaseDataType caseType = new CaseDataType("CASE_TYPE", "a9","ct",null,20, 20);
+        long caseNumber = 1L;
+        LocalDate dateReceived = LocalDate.now();
+
+        CaseData caseData = new CaseData(
+                caseType,
+                caseNumber,
+                caseDataMap,
+                dateReceived);
+
+        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+
+        // WHEN
+        caseDataService.mapCaseDataValues(caseUUID, keyMappings);
+        // THEN
+        ArgumentCaptor<CaseData> argCapture = ArgumentCaptor.forClass(CaseData.class);
+        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
+        verify(caseDataRepository, times(1)).save(argCapture.capture());
+        verify(auditClient, times(1)).updateCaseAudit(caseData, null);
+        verifyNoMoreInteractions(caseDataRepository, auditClient);
+
+        assertThat(argCapture.getValue().getDataMap().keySet()).contains("to1", "to2", "to3");
+        assertThat(argCapture.getValue().getDataMap().get("to1")).isEqualTo("val1");
+        assertThat(argCapture.getValue().getDataMap().get("to2")).isEqualTo("val2");
+        assertThat(argCapture.getValue().getDataMap().get("to3")).isEqualTo("val3Existing");
+
+    }
+
+    @Test
+    public void testShouldMapIfMapToKeyExistsInCaseDataButIsNull() {
+        // GIVEN
+        Map<String, String> keyMappings = new HashMap<>();
+        keyMappings.put("from1", "to1");
+        keyMappings.put("from2", "to2");
+        keyMappings.put("from3", "to3");
+
+        Map<String, String> caseDataMap = new HashMap<>();
+        caseDataMap.put("from1", "val1");
+        caseDataMap.put("from2", "val2");
+        caseDataMap.put("from3", "val3");
+
+        // existing requested map to
+        caseDataMap.put("to3", null);
+
+        CaseDataType caseType = new CaseDataType("CASE_TYPE", "a9","ct",null,20, 20);
+        long caseNumber = 1L;
+        LocalDate dateReceived = LocalDate.now();
+
+        CaseData caseData = new CaseData(
+                caseType,
+                caseNumber,
+                caseDataMap,
+                dateReceived);
+
+        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+
+        // WHEN
+        caseDataService.mapCaseDataValues(caseUUID, keyMappings);
+        // THEN
+        ArgumentCaptor<CaseData> argCapture = ArgumentCaptor.forClass(CaseData.class);
+        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
+        verify(caseDataRepository, times(1)).save(argCapture.capture());
+        verify(auditClient, times(1)).updateCaseAudit(caseData, null);
+        verifyNoMoreInteractions(caseDataRepository, auditClient);
+
+        assertThat(argCapture.getValue().getDataMap().keySet()).contains("to1", "to2", "to3");
+        assertThat(argCapture.getValue().getDataMap().get("to1")).isEqualTo("val1");
+        assertThat(argCapture.getValue().getDataMap().get("to2")).isEqualTo("val2");
+        assertThat(argCapture.getValue().getDataMap().get("to3")).isEqualTo("val3");
+
+    }
+
+    @Test(expected = ApplicationExceptions.DataMappingException.class)
+    public void testShouldThrowExceptionIfReqeustedMappingsAreNotInCaseDataValues() {
+        // GIVEN
+        Map<String, String> keyMappings = new HashMap<>();
+        keyMappings.put("from1", "to1");
+        keyMappings.put("from2", "to2");
+
+        Map<String, String> caseDataMap = new HashMap<>();
+        caseDataMap.put("from3", "val3");
+        caseDataMap.put("from4", "val4");
+        caseDataMap.put("from5", "val5");
+
+        CaseDataType caseType = new CaseDataType("CASE_TYPE", "a9","ct",null,20, 20);
+        long caseNumber = 1L;
+        LocalDate dateReceived = LocalDate.now();
+
+        CaseData caseData = new CaseData(
+                caseType,
+                caseNumber,
+                caseDataMap,
+                dateReceived);
+
+        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
+
+        // WHEN
+        caseDataService.mapCaseDataValues(caseUUID, keyMappings);
+        // THEN
+        ArgumentCaptor<CaseData> argCapture = ArgumentCaptor.forClass(CaseData.class);
+        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
+        verify(caseDataRepository, times(0)).save(any());
+        verify(auditClient, times(0)).updateCaseAudit(any(), any());
+
+        verifyNoMoreInteractions(caseDataRepository, auditClient);
+
+    }
+
+    // HELPERS
     private void checkNoMoreInteractions() {
         verifyNoMoreInteractions(auditClient, caseDataRepository, infoClient);
     }
