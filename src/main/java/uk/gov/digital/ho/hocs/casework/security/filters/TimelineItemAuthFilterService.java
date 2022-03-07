@@ -35,16 +35,10 @@ public class TimelineItemAuthFilterService implements AuthFilter {
     @Override
     public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
 
-        // todo: don't actually think this is needed.
-//        if (userAccessLevel != AccessLevel.RESTRICTED_OWNER) {
-//            return responseEntityToFilter;
-//        }
-
         List<TimelineItemDto> currentTimelineDtos = verifyAndReturnAsObjectCollectionType(collectionAsArray, TimelineItemDto.class);
 
         String userId = userPermissionsService.getUserId().toString();
         log.debug("Filtering response by userId {} for Timeline events.", userId);
-
 
         List<TimelineItemDto> returnableDtos = currentTimelineDtos.stream()
                 .filter(dto -> dto.getUserName().equals(userId))
