@@ -13,6 +13,7 @@ public class CopyBFToSMC extends AbstractCaseCopyStrategy implements CaseCopyStr
 
     private static final String[] DATA_CLOB_KEYS = {
             "Channel",
+            "CompType",
             "CaseSummary",
             "PrevCompRef",
             "3rdPartyRef",
@@ -22,14 +23,7 @@ public class CopyBFToSMC extends AbstractCaseCopyStrategy implements CaseCopyStr
             "ComplainantPortRef",
             "ComplainantCompanyName",
             "ComplainantNationality",
-            "ComplainantGender",
-            "Region",
-            "BusArea",
-            "EnquiryReason1",
-            "EnquiryReason2",
-            "EnquiryReason3",
-            "LoaRequired",
-            "BusinessAreaOther"
+            "ComplainantGender"
     };
 
     private final CaseDataService caseDataService;
