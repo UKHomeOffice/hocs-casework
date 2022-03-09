@@ -1021,7 +1021,6 @@ public class CaseDataServiceTest {
 
     @Test
     public void shouldCompleteCaseWhenNoFinalActiveStage() {
-
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
 
         when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(Optional.empty());
@@ -1035,13 +1034,13 @@ public class CaseDataServiceTest {
 
         // Not invoked
         verify(stageRepository, times(0)).save(any(Stage.class));
+        verify(auditClient, times(0)).updateStageTeam(any(Stage.class));
 
         verifyNoMoreInteractions(caseDataRepository, stageRepository);
     }
 
     @Test
     public void shouldCompleteStageAndCaseWhenFinalActiveStage() {
-
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
 
         Stage mockStage = new Stage(caseData.getUuid(), "RANDOM_STAGE_TYPE",UUID.randomUUID(),UUID.randomUUID(),UUID.randomUUID());
@@ -1056,6 +1055,7 @@ public class CaseDataServiceTest {
         verify(caseDataRepository, times(1)).save(caseData);
         verify(stageRepository, times(1)).findFirstByTeamUUIDIsNotNullAndCaseUUID(any(UUID.class));
         verify(stageRepository, times(1)).save(any(Stage.class));
+        verify(auditClient).updateStageTeam(any(Stage.class));
 
         verifyNoMoreInteractions(caseDataRepository, stageRepository);
     }
