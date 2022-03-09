@@ -87,7 +87,7 @@ public class TimelineItemAuthFilterServiceTest {
         assertThat(resultAsResponseEnt.getBody()).isNotNull();
 
         assertThat(resultAsResponseEnt.getBody()).isInstanceOf(Collection.class);
-        Set<?> resultAsCollection =  (Set<?>) resultAsResponseEnt.getBody();
+        List<?> resultAsCollection =  (List<?>) resultAsResponseEnt.getBody();
 
         assertThat(resultAsCollection.size()).isEqualTo(2);
         assertThat(resultAsCollection.toArray()[0]).isExactlyInstanceOf(TimelineItemDto.class);
