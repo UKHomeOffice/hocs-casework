@@ -137,7 +137,9 @@ public enum LogEvent {
     MISSING_TEAM_FOR_STAGE,
     INFO_CLIENT_GET_FIELDS_BY_PERMISSION_SUCCESS,
     AUTH_FILTER_FAILURE,
-    AUTH_FILTER_SUCCESS;
+    AUTH_FILTER_SUCCESS,
+    DATA_MAPPING_EXCEPTION,
+    DATA_MAPPING_SUCCESS;
 
     public static final String EVENT = "event_id";
     public static final String EXCEPTION = "exception";

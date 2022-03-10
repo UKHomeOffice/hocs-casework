@@ -145,7 +145,7 @@ public class CaseDataGetCaseSummaryIntegrationTest {
 
     @Test
     public void shouldReturnCaseSummaryWithActionData() throws JsonProcessingException {
-        setupMockTeams("TEST", 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<GetCaseSummaryResponse> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID + "/summary", GET,
                 new HttpEntity<>(createValidAuthHeaders()),

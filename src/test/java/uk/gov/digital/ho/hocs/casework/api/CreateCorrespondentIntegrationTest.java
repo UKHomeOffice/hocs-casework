@@ -96,7 +96,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnOKWhenCreateACorrespondentForACaseThatIsAllocatedToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
 
         long before = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -112,7 +112,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenCreateACorrespondentForACaseThatIsNotAllocatedToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
 
         long before = correspondentRepository.findAllByCaseUUID(CASE_UUID2).size();
 
@@ -129,7 +129,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldCreateACorrespondentForACaseThatIsNotAllocatedToYouButUserCaseAdmin() throws JsonProcessingException {
-        setupMockTeams("TEST", 6, 2);
+        setupMockTeams("TEST", AccessLevel.CASE_ADMIN.getLevel(), 2);
         long before = correspondentRepository.findAllByCaseUUID(CASE_UUID2).size();
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
@@ -145,7 +145,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestWhenCreateACorrespondentForACaseYouAreAssignedTorWithNullBody() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
 
         long before = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
 
@@ -162,7 +162,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestWhenCreateACorrespondentForACaseThatIsNotAssignedToYouButNoRequestBody() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
 
         long before = correspondentRepository.findAllByCaseUUID(CASE_UUID2).size();
 
@@ -179,7 +179,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnNotFoundWhenCreateACorrespondentForAnInvalidCaseUUID() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/stage/" + STAGE_UUID_ALLOCATED_TO_USER + "/correspondent",
@@ -190,7 +190,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnNotFoundWhenCreateACorrespondentForAnInvalidStageUUID() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_UUID1 + "/stage/" + UUID.randomUUID() + "/correspondent",
@@ -201,7 +201,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnNotFoundWhenCreateACorrespondentForAnInvalidCaseUUIDAndAnInvalidStageUUID() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
 
         ResponseEntity<Void> result = testRestTemplate.exchange(
                 getBasePath() + "/case/" + INVALID_CASE_UUID + "/stage/" + UUID.randomUUID() + "/correspondent",
@@ -212,7 +212,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestWhenCreateACorrespondentForACaseThatIsAllocatedToYouWithNullCorrespondentType() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
 
         long before = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
 
@@ -229,7 +229,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestWhenCreateACorrespondentForACaseThatIsAllocatedToYouWithNullFullName() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 5);
 
         long before = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
 
@@ -246,7 +246,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnBadRequestWhenCreateACorrespondentForACaseThatIsAllocatedToYouWithEmptyFullName() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 2);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 2);
 
         long before = correspondentRepository.findAllByCaseUUID(CASE_UUID1).size();
 
@@ -263,7 +263,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnOkWhenCreateACorrespondentForACaseThatIsAllocatedToYouThenReturnForbiddenWhenTheCaseIsAllocatedToAnotherTeam() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 5);
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/team/44444444-2222-2222-2222-222222222221/contact"))
@@ -295,7 +295,7 @@ public class CreateCorrespondentIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenCreateACorrespondentForACaseThatIsNotAllocatedToYouThenReturnOkWhenTheCaseIsAllocatedToYou() throws JsonProcessingException {
-        setupMockTeams("TEST", 5, 5);
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel(), 5);
 
         mockInfoService
                 .expect(requestTo("http://localhost:8085/user/4035d37f-9c1d-436e-99de-1607866634d4"))

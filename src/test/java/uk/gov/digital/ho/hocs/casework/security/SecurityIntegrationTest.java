@@ -63,7 +63,7 @@ public class SecurityIntegrationTest {
 
     @Test
     public void shouldGetCaseDataWhenInCaseTypeGroup() {
-        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", AccessLevel.OWNER.getLevel()));
         Map<String, String> caseSubData = Map.of("key", "value");
 
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, LocalDate.now());
@@ -80,7 +80,7 @@ public class SecurityIntegrationTest {
 
     @Test
     public void shouldGetCaseDataWhenInCaseTypeGroupIfCaseAdmin() {
-        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 6));
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", AccessLevel.CASE_ADMIN.getLevel()));
         Map<String, String> caseSubData = Map.of("key", "value");
 
         CaseData caseData = new CaseData(caseDataType, 123456L, caseSubData, LocalDate.now());
@@ -97,7 +97,7 @@ public class SecurityIntegrationTest {
 
     @Test
     public void shouldGetCaseDataWhenNoAccessToCaseTypeInTeamPreviouslyAssignedToCase() {
-        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", AccessLevel.OWNER.getLevel()));
         Map<String, String> caseSubData = new HashMap<>() {{
             put("key", "value");
         }};
@@ -117,7 +117,7 @@ public class SecurityIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenNotInCaseTypeAndNotInTeamPreviouslyAssignedToCase() {
-        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", AccessLevel.OWNER.getLevel()));
         UUID caseUUID = UUID.randomUUID();
 
         when(caseDataService.getCaseTeams(caseUUID)).thenReturn(Set.of(UUID.randomUUID()));
@@ -132,7 +132,7 @@ public class SecurityIntegrationTest {
 
     @Test
     public void shouldReturnForbiddenWhenNotInCaseTypeGroup() {
-        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", AccessLevel.OWNER.getLevel()));
         UUID caseUUID = UUID.randomUUID();
 
         when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
@@ -147,7 +147,7 @@ public class SecurityIntegrationTest {
     @Test
     public void shouldReturnForbiddenWhenNotInCaseTypeGroupEvenIfCaseAdmin() {
 
-        when(infoClient.getTeams()).thenReturn(setupMockTeams("SOME_CASE_TYPE", 6));
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("SOME_CASE_TYPE", AccessLevel.CASE_ADMIN.getLevel()));
         Map<String, String> caseSubData = new HashMap<>() {{
             put("key", "value");
         }};
@@ -170,7 +170,7 @@ public class SecurityIntegrationTest {
 
     @Test
     public void shouldReturnNotFoundIfCaseUUIDNotFound() {
-        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 5));
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", AccessLevel.OWNER.getLevel()));
         UUID caseUUID = UUID.randomUUID();
 
         when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
@@ -187,7 +187,7 @@ public class SecurityIntegrationTest {
     public void shouldReturnNotFoundIfCaseUUIDNotFoundWithAdminTeam() {
         UUID caseUUID = UUID.randomUUID();
 
-        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", 6));
+        when(infoClient.getTeams()).thenReturn(setupMockTeams("MIN", AccessLevel.CASE_ADMIN.getLevel()));
         when(caseDataService.getCase(caseUUID)).thenThrow(new ApplicationExceptions.EntityNotFoundException("Not found", LogEvent.CASE_NOT_FOUND));
         when(caseDataService.getCaseType(caseUUID)).thenReturn("MIN");
 

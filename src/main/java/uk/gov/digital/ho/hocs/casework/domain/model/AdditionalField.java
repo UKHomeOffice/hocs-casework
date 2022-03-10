@@ -17,4 +17,7 @@ public class AdditionalField {
 
     @Getter
     private Object choices;
+
+    @Getter
+    private String name;
 }
