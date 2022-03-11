@@ -56,7 +56,7 @@ public class GetDocumentsAuthFilterServiceTest {
     }
 
     @Test
-    public void testShouldReturnOnlyDocsNotUploadedByUser() {
+    public void testShouldReturnOnlyDocsUploadedByUser() {
 
         // GIVEN
         UUID userUUID = UUID.randomUUID();
