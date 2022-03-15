@@ -9,8 +9,8 @@ import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopy;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
 @Service
-@CaseCopy(fromCaseType = "BF", toCaseType = "SMC")
-public class CopyBFToSMC extends AbstractCaseCopyStrategy implements CaseCopyStrategy {
+@CaseCopy(fromCaseType = "BF", toCaseType = "COMP")
+public class CopyBFToCOMP extends AbstractCaseCopyStrategy implements CaseCopyStrategy {
 
     private static final String[] DATA_CLOB_KEYS = {
             "Channel",
@@ -42,7 +42,7 @@ public class CopyBFToSMC extends AbstractCaseCopyStrategy implements CaseCopyStr
     private final CorrespondentService correspondentService;
 
     @Autowired
-    public CopyBFToSMC(CaseDataService caseDataService, CorrespondentService correspondentService, CaseDocumentService caseDocumentService) {
+    public CopyBFToCOMP(CaseDataService caseDataService, CorrespondentService correspondentService, CaseDocumentService caseDocumentService) {
         super();
         this.caseDataService = caseDataService;
         this.correspondentService = correspondentService;
@@ -55,10 +55,10 @@ public class CopyBFToSMC extends AbstractCaseCopyStrategy implements CaseCopyStr
         // copy clob details
         copyClobData(fromCase, toCase, DATA_CLOB_KEYS);
         toCase.update("PreviousCaseReference", fromCase.getReference());
+        toCase.update("CurrentStage", "COMP_CCH_RETURNS");
         caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
 
         caseDocumentService.copyDocuments(fromCase.getUuid(), toCase.getUuid(), DOCUMENT_TYPES);
-
 
         // Correspondents include the primary_correspondent_uuid
         correspondentService.copyCorrespondents(fromCase.getUuid(), toCase.getUuid());

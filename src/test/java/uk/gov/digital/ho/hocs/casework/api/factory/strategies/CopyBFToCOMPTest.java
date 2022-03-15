@@ -24,7 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-public class CopyBFToSMCTest {
+public class CopyBFToCOMPTest {
 
     private static final Map<String, String> FROM_CLOB;
 
@@ -117,10 +117,10 @@ public class CopyBFToSMCTest {
     public void shouldCopyCaseDetails() {
 
         // given
-        var bfToSmc = new CopyBFToSMC(caseDataService, correspondentService, caseDocumentService);
+        var bfToComp = new CopyBFToCOMP(caseDataService, correspondentService, caseDocumentService);
 
         // when
-        bfToSmc.copyCase(FROM_CASE, toCase);
+        bfToComp.copyCase(FROM_CASE, toCase);
 
         // then
         verify(caseDataService, times(1)).updateCaseData(eq(toCase.getUuid()), any(), anyMap());
