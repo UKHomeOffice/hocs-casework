@@ -6,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
@@ -16,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUTH_FILTER_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 
 @Slf4j
 @Service
@@ -36,17 +37,17 @@ public class GetCaseAuthFilterService implements AuthFilter {
     @Override
     public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
 
-        if (responseEntityToFilter.getBody().getClass() != GetCaseResponse.class) {
-            String msg = String.format("The wrong filter has been selected for class %s", responseEntityToFilter.getBody().getClass().getSimpleName());
-            log.error(msg, value(LogEvent.EXCEPTION, LogEvent.AUTH_FILTER_FAILURE));
-            throw new SecurityExceptions.AuthFilterException(msg, LogEvent.AUTH_FILTER_FAILURE);
+        GetCaseResponse getCaseResponse = verifyAndReturnAsObjectType(responseEntityToFilter,GetCaseResponse.class);
+
+        if (getCaseResponse == null  || getCaseResponse.getType() == null) {
+            return responseEntityToFilter;
         }
 
-        GetCaseResponse getCaseResponse  = (GetCaseResponse) responseEntityToFilter.getBody();
-        Map<String, String> replacementCaseResponseDataMap = new HashMap<>();
+        log.debug("Filtering GetCaseResponse for request from userId: {}", userPermissionsService.getUserId());
 
         List<FieldDto> permittedFields = userPermissionsService.getFieldsByCaseTypeAndPermissionLevel(getCaseResponse.getType(), userAccessLevel);
 
+        Map<String, String> replacementCaseResponseDataMap = new HashMap<>();
         permittedFields.forEach((FieldDto restrictedField) -> {
             if (getCaseResponse.getData().containsKey(restrictedField.getName())) {
                 replacementCaseResponseDataMap.put(
@@ -59,6 +60,7 @@ public class GetCaseAuthFilterService implements AuthFilter {
         SettableDataMapGetCaseResponse replacementCaseResponse = new SettableDataMapGetCaseResponse(getCaseResponse);
         replacementCaseResponse.setDataMap(replacementCaseResponseDataMap);
 
+        log.info("Issuing filtered GetCaseResponse for userId: {}", userPermissionsService.getUserId(), value(EVENT, AUTH_FILTER_SUCCESS));
         return new ResponseEntity<GetCaseResponse>(replacementCaseResponse, responseEntityToFilter.getStatusCode());
     }
 

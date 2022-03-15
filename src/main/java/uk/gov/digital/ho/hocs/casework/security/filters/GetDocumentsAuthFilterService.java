@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentDto;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsResponse;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
@@ -16,6 +15,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUTH_FILTER_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 
 @Slf4j
 @Service
@@ -36,30 +37,26 @@ public class GetDocumentsAuthFilterService implements AuthFilter {
     @Override
     public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
 
-        if (responseEntityToFilter.getBody().getClass() != GetDocumentsResponse.class) {
-            String msg = String.format("The wrong filter has been selected for class %s", responseEntityToFilter.getBody().getClass().getSimpleName());
-            log.error(msg, value(LogEvent.EXCEPTION, LogEvent.AUTH_FILTER_FAILURE));
-            throw new SecurityExceptions.AuthFilterException(msg, LogEvent.AUTH_FILTER_FAILURE);
-        }
+        GetDocumentsResponse getDocumentsResponse  = verifyAndReturnAsObjectType(responseEntityToFilter,GetDocumentsResponse.class);
+        UUID userId = userPermissionsService.getUserId();
 
-        GetDocumentsResponse getDocumentsResponse  = (GetDocumentsResponse) responseEntityToFilter.getBody();
-        assert getDocumentsResponse != null;
-        SettableDocumentDtosSetGetDocumentsResponse response  = new SettableDocumentDtosSetGetDocumentsResponse(getDocumentsResponse);
+        log.debug("Filtering response by userId {} for list of documents.", userId);
 
         Set<DocumentDto> docsToReturn = new HashSet<>();
-        UUID userUUID = userPermissionsService.getUserId();
-
         if (getDocumentsResponse.getDocumentDtos() != null) {
             getDocumentsResponse.getDocumentDtos().forEach((DocumentDto documentDto) -> {
                 if (documentDto.getUploadOwnerUUID() != null &&
-                        documentDto.getUploadOwnerUUID().equals(userUUID)) {
+                        documentDto.getUploadOwnerUUID().equals(userId)) {
                     docsToReturn.add(documentDto);
                 }
             });
         }
+
+        SettableDocumentDtosSetGetDocumentsResponse response  = new SettableDocumentDtosSetGetDocumentsResponse(getDocumentsResponse);
         response.setDocumentDtos(docsToReturn);
 
-        return new ResponseEntity<>(response, responseEntityToFilter.getStatusCode());
+        log.info("Issuing filtered GetDocumentsResponse for userId: {}", userPermissionsService.getUserId(), value(EVENT, AUTH_FILTER_SUCCESS));
+        return new ResponseEntity<GetDocumentsResponse>(response, responseEntityToFilter.getStatusCode());
     }
 
     public static class SettableDocumentDtosSetGetDocumentsResponse extends GetDocumentsResponse {

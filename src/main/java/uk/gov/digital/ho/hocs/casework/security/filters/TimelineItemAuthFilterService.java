@@ -5,15 +5,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.TimelineItemDto;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUTH_FILTER_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 
 @Slf4j
 @Service
@@ -34,25 +35,16 @@ public class TimelineItemAuthFilterService implements AuthFilter {
     @Override
     public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
 
-        if (collectionAsArray != null && collectionAsArray[0].getClass() != TimelineItemDto.class) {
-            String msg = String.format("The wrong filter has been selected for class %s", collectionAsArray[0].getClass().getClass().getSimpleName());
-            log.error(msg, value(LogEvent.EXCEPTION, LogEvent.AUTH_FILTER_FAILURE));
-            throw new SecurityExceptions.AuthFilterException(msg, LogEvent.AUTH_FILTER_FAILURE);
-        }
-
-        Set<TimelineItemDto> returnableDtos = new HashSet<>();
-        if (userAccessLevel != AccessLevel.RESTRICTED_OWNER || collectionAsArray.length < 1) {
-            return responseEntityToFilter;
-        }
+        List<TimelineItemDto> currentTimelineDtos = verifyAndReturnAsObjectCollectionType(collectionAsArray, TimelineItemDto.class);
 
         String userId = userPermissionsService.getUserId().toString();
-        for (Object o : collectionAsArray) {
-            TimelineItemDto dto = (TimelineItemDto) o;
-            if (dto.getUserName().equals(userId)) {
-                returnableDtos.add(dto);
-            }
-        }
+        log.debug("Filtering response by userId {} for Timeline events.", userId);
 
+        List<TimelineItemDto> returnableDtos = currentTimelineDtos.stream()
+                .filter(dto -> dto.getUserName().equals(userId))
+                .collect(Collectors.toList());
+
+        log.info("Issuing filtered Timeline events for userId: {}", userId, value(EVENT, AUTH_FILTER_SUCCESS));
         return new ResponseEntity<>(returnableDtos, responseEntityToFilter.getStatusCode());
     }
 
