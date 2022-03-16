@@ -46,7 +46,7 @@ public class CaseDocumentResourceTest {
     @Before
     public void setUp() {
         caseDocumentResource = new CaseDocumentResource(caseDocumentService);
-        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, uploaderUUID, docDeleted, docLabels);
+        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, uploaderUUID, docDeleted, docLabels, true, true);
         s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);
     }
 

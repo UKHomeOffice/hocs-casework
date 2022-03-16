@@ -524,13 +524,12 @@ public class CaseDataService {
 
         // Complete final stage if active stage exists
         Optional<Stage> maybeFinalStage = stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseUUID);
-
-        if (maybeFinalStage.isPresent()) {
-            Stage finalStage = maybeFinalStage.get();
-            finalStage.setTeam(null);
-            stageRepository.save(finalStage);
-            log.info("Final active stage: {} for case: {}, completed", finalStage.getUuid(), caseUUID, value(EVENT, STAGE_COMPLETED));
-        }
+        maybeFinalStage.ifPresent(stage -> {
+            stage.setTeam(null);
+            stageRepository.save(stage);
+            auditClient.updateStageTeam(stage);
+            log.info("Final active stage: {} for case: {}, completed", stage.getUuid(), caseUUID, value(EVENT, STAGE_COMPLETED));
+        });
 
         if (completed) {
             caseData.update(CaseworkConstants.CURRENT_STAGE, "");

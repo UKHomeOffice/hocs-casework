@@ -56,15 +56,15 @@ public class GetDocumentsAuthFilterServiceTest {
     }
 
     @Test
-    public void testShouldReturnOnlyDocsNotUploadedByUser() {
+    public void testShouldReturnOnlyDocsUploadedByUser() {
 
         // GIVEN
         UUID userUUID = UUID.randomUUID();
 
-        DocumentDto document1 = new DocumentDto(UUID.randomUUID(), null, null, "doc1", null, null, null,null, false,null);
-        DocumentDto document2 = new DocumentDto(UUID.randomUUID(), null, null, "doc2", null, null, null,userUUID, false,null);
-        DocumentDto document3 = new DocumentDto(UUID.randomUUID(), null, null, "doc3", null, null, null,null, false,null);
-        DocumentDto document4 = new DocumentDto(UUID.randomUUID(), null, null, "doc4", null, null, null,userUUID, false,null);
+        DocumentDto document1 = new DocumentDto(UUID.randomUUID(), null, null, "doc1", null, null, null,null, false,null, false, false);
+        DocumentDto document2 = new DocumentDto(UUID.randomUUID(), null, null, "doc2", null, null, null,userUUID, false,null, false, false);
+        DocumentDto document3 = new DocumentDto(UUID.randomUUID(), null, null, "doc3", null, null, null,null, false,null, false, false);
+        DocumentDto document4 = new DocumentDto(UUID.randomUUID(), null, null, "doc4", null, null, null,userUUID, false,null, false, false);
 
         Set<DocumentDto> setOfDocumentDtos = Set.of(document1, document2, document3, document4);
         ResponseEntity<?> responseToFilter = ResponseEntity.ok(
@@ -79,8 +79,9 @@ public class GetDocumentsAuthFilterServiceTest {
         Object result = getDocumentAuthFilterService.applyFilter(responseToFilter, userAccessLevel, null);
 
         // THEN
-        assertThat(result).isNotNull();
-        assertThat(result).isExactlyInstanceOf(ResponseEntity.class);
+        assertThat(result)
+                .isNotNull()
+                .isExactlyInstanceOf(ResponseEntity.class);
 
         ResponseEntity<?> resultResponseEntity = (ResponseEntity<?>) result;
 

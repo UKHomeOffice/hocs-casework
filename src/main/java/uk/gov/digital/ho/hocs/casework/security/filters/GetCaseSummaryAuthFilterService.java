@@ -4,18 +4,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActiveStageDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.AdditionalFieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUTH_FILTER_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 
 @Slf4j
 @Service
@@ -37,19 +43,14 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
     public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
         // todo: expand to filter out Case Action data at later date. See HOCS-4596, not applicable for initial use case SMC caseType
 
-        if (responseEntityToFilter.getBody().getClass() != GetCaseSummaryResponse.class) {
-            String msg = String.format("The wrong filter has been selected for class %s", responseEntityToFilter.getBody().getClass().getSimpleName());
-            log.error(msg, value(LogEvent.EXCEPTION, LogEvent.AUTH_FILTER_FAILURE));
-            throw new SecurityExceptions.AuthFilterException(msg, LogEvent.AUTH_FILTER_FAILURE);
-        }
-
-        GetCaseSummaryResponse getCaseSummaryResponse  = (GetCaseSummaryResponse) responseEntityToFilter.getBody();
+        GetCaseSummaryResponse getCaseSummaryResponse = verifyAndReturnAsObjectType(responseEntityToFilter, GetCaseSummaryResponse.class);
 
         if (getCaseSummaryResponse == null  || getCaseSummaryResponse.getAdditionalFields() == null) {
             return responseEntityToFilter;
         }
 
-        log.debug("Filtering GetCaseSummaryResponse");
+        UUID userId = userPermissionsService.getUserId();
+        log.debug("Filtering GetCaseSummaryResponse for request by userId: {}", userId);
 
         Map<String, FieldDto> permittedFields = new HashMap<>();
         userPermissionsService.getFieldsByCaseTypeAndPermissionLevel(getCaseSummaryResponse.getType(), userAccessLevel)
@@ -69,6 +70,7 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
         response.setAdditionalFields(replacementList);
         response.hideActiveStageInfo();
 
+        log.info("Issuing filtered GetCaseSummaryResponse for userId: {}", userId, value(EVENT, AUTH_FILTER_SUCCESS));
         return new ResponseEntity<GetCaseSummaryResponse>(response, responseEntityToFilter.getStatusCode());
     }
 
