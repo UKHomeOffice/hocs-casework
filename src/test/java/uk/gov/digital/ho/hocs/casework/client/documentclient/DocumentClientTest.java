@@ -45,7 +45,7 @@ public class DocumentClientTest {
     @Before
     public void setUp() {
         documentClient = new DocumentClient(restHelper, documentService);
-        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated,uploaderUUID, docDeleted, docLabels);
+        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated,uploaderUUID, docDeleted, docLabels, true, true);
         s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);
     }
 
@@ -150,7 +150,7 @@ public class DocumentClientTest {
         assertThat(result).isNotNull();
         assertThat(result.getFilename()).isEqualTo(docDisplayName);
         assertThat(result.getOriginalFilename()).isEqualTo(docOriginalName);
-        assertThat(result.getData().length).isEqualTo(10);
+        assertThat(result.getData()).hasSize(10);
         assertThat(result.getFileType()).isEqualTo(fileType);
         assertThat(result.getMimeType()).isEqualTo(mimeType);
     }

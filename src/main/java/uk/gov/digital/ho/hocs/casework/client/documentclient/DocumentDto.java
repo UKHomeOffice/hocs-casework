@@ -44,6 +44,10 @@ public class DocumentDto {
     @JsonProperty("labels")
     private Set<String> labels;
 
+    private Boolean hasPdf;
+
+    private Boolean hasOriginalFile;
+
     public void addLabel(String label) {
         if(labels == null){
             this.labels = new LinkedHashSet<>();
