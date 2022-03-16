@@ -15,7 +15,6 @@ public class CopyBFToSMC extends AbstractCaseCopyStrategy implements CaseCopyStr
     private static final String[] DATA_CLOB_KEYS = {
             "Channel",
             "CompType",
-            "CaseSummary",
             "PrevCompRef",
             "3rdPartyRef",
             "OwningCSU",
@@ -55,6 +54,7 @@ public class CopyBFToSMC extends AbstractCaseCopyStrategy implements CaseCopyStr
         // copy clob details
         copyClobData(fromCase, toCase, DATA_CLOB_KEYS);
         toCase.update("PreviousCaseReference", fromCase.getReference());
+        toCase.update("InitCaseSummary", fromCase.getData("CaseSummary"));
         caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
 
         caseDocumentService.copyDocuments(fromCase.getUuid(), toCase.getUuid(), DOCUMENT_TYPES);

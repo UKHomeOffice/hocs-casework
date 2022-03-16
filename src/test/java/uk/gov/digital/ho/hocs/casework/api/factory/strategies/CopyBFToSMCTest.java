@@ -126,10 +126,9 @@ public class CopyBFToSMCTest {
         verify(caseDataService, times(1)).updateCaseData(eq(toCase.getUuid()), any(), anyMap());
         verify(correspondentService, times(1)).copyCorrespondents(FROM_CASE.getUuid(), toCase.getUuid());
 
-        // clob values were copied - there's a separate test for copying values
         assertThat(toCase.getDataMap()).isNotNull();
-        assertThat(toCase.getDataMap()).containsAllEntriesOf(FROM_CASE.getDataMap());
         assertThat(toCase.getDataMap().get("PreviousCaseReference")).isEqualTo("BF/12345678/01");
+        assertThat(toCase.getDataMap().get("InitCaseSummary")).isEqualTo("TestValue");
 
     }
 }
