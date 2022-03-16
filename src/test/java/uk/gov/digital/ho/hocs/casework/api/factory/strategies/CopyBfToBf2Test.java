@@ -23,19 +23,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(SpringJUnit4ClassRunner.class)
 public class CopyBfToBf2Test {
 
-    private static final Map<String, String> FROM_CLOB;
-    private static final Map<String, String> TO_CLOB;
-
-    static {
-        FROM_CLOB = Map.of(
-                "ComplaintReason1", "TestValue");
-    }
-
-    static {
-        TO_CLOB = Map.of(
-                "ComplaintReason1", "TestValue", "PreviousCaseReference", "BF/12345678/01");
-    }
-
+    private static final Map<String, String> FROM_CLOB = new HashMap<>();
     private static final UUID TO_CASE_UUID = UUID.randomUUID();
     private static final UUID FROM_CASE_UUID = UUID.randomUUID();
     private static final String CORRESPONDENT_TYPE = "correspondent_type";
@@ -111,6 +99,28 @@ public class CopyBfToBf2Test {
                 false,
                 null,
                 null);
+
+        FROM_CLOB.put("OwningCSU", "csu");
+        FROM_CLOB.put("ComplainantDOB", "1-1-1980");
+        FROM_CLOB.put("ComplainantHORef", "12345678");
+        FROM_CLOB.put("ComplainantPortRef", "12345678");
+        FROM_CLOB.put("ComplainantCompanyName", "company name");
+        FROM_CLOB.put("ComplainantNationality", "United Kingdom");
+        FROM_CLOB.put("ComplainantGender", "gender");
+        FROM_CLOB.put("Region", "region");
+        FROM_CLOB.put("BusArea", "businessarea");
+        FROM_CLOB.put("ComplaintReason1", "reason one");
+        FROM_CLOB.put("ComplaintReason2", "reason two");
+        FROM_CLOB.put("ComplaintReason3", "reason three");
+        FROM_CLOB.put("ComplaintReason4", "reason four");
+        FROM_CLOB.put("ComplaintReason5", "reason five");
+        FROM_CLOB.put("ComplaintReason1_Other", "reason one other");
+        FROM_CLOB.put("ComplaintReason2_Other", "reason two other");
+        FROM_CLOB.put("ComplaintReason3_Other", "reason three other");
+        FROM_CLOB.put("ComplaintReason4_Other", "reason four other");
+        FROM_CLOB.put("ComplaintReason5_Other", "reason five other");
+        FROM_CLOB.put("LoaRequired", "loa");
+        FROM_CLOB.put("BusinessAreaOther", "areaother");
     }
 
     @Test
@@ -126,10 +136,10 @@ public class CopyBfToBf2Test {
         verify(caseDataService, times(1)).updateCaseData(eq(toCase.getUuid()), any(), anyMap());
         verify(correspondentService, times(1)).copyCorrespondents(FROM_CASE.getUuid(), toCase.getUuid());
 
-        // clob values were copied - there's a separate test for copying values
         assertThat(toCase.getDataMap()).isNotNull();
         assertThat(toCase.getDataMap()).containsAllEntriesOf(FROM_CASE.getDataMap());
-        assertThat(toCase.getDataMap().get("PreviousCaseReference")).isEqualTo("BF/12345678/01");
 
+        // Additional test to check we are adding the previous case reference in the case data for this copy strategy
+        assertThat(toCase.getDataMap()).containsEntry("PreviousCaseReference", "BF/12345678/01");
     }
 }
