@@ -12,9 +12,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 public class CopyBfToBf2 extends AbstractCaseCopyStrategy implements CaseCopyStrategy {
 
     private static final String[] DATA_CLOB_KEYS = {
-            "CaseSummary",
-            "PrevCompRef",
-            "3rdPartyRef",
             "OwningCSU",
             "ComplainantDOB",
             "ComplainantHORef",
