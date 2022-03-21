@@ -29,10 +29,10 @@ public class CopyBFToSMCTest {
     private static final Map<String, String> FROM_CLOB;
 
     static {
-        FROM_CLOB = Map.of(
+        FROM_CLOB = new HashMap<>(Map.of(
                 "CaseSummary", "TestValue",
                 "OwningCSU", "OwningCSU"
-        );
+        ));
     }
 
     private static final UUID TO_CASE_UUID = UUID.randomUUID();
@@ -100,9 +100,9 @@ public class CopyBFToSMCTest {
                 TO_CASE_UUID,
                 null,
                 null,
-                null,
+                "SMC/12345678/01",
                 false,
-                new HashMap<>(Map.of()),
+                new HashMap<>(),
                 null,
                 null,
                 null,
