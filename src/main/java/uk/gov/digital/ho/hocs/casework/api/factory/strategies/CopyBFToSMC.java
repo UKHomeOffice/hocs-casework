@@ -12,12 +12,12 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 @CaseCopy(fromCaseType = "BF", toCaseType = "SMC")
 public class CopyBFToSMC extends AbstractCaseCopyStrategy implements CaseCopyStrategy {
 
+    // For SMC these variables do not map to init vars
     private static final String[] DATA_CLOB_KEYS = {
             "Channel",
             "CompType",
             "PrevCompRef",
             "3rdPartyRef",
-            "OwningCSU",
             "ComplainantDOB",
             "ComplainantHORef",
             "ComplainantPortRef",
@@ -51,16 +51,16 @@ public class CopyBFToSMC extends AbstractCaseCopyStrategy implements CaseCopyStr
     @Override
     public void copyCase(CaseData fromCase, CaseData toCase) {
 
-        // copy clob details
         copyClobData(fromCase, toCase, DATA_CLOB_KEYS);
         toCase.update("PreviousCaseReference", fromCase.getReference());
+        //Mapping to init vars
         toCase.update("InitCaseSummary", fromCase.getData("CaseSummary"));
+        toCase.update("InitOwningCSU", fromCase.getData("OwningCSU"));
+
         caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
 
         caseDocumentService.copyDocuments(fromCase.getUuid(), toCase.getUuid(), DOCUMENT_TYPES);
 
-
-        // Correspondents include the primary_correspondent_uuid
         correspondentService.copyCorrespondents(fromCase.getUuid(), toCase.getUuid());
 
     }

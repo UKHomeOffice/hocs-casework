@@ -52,15 +52,12 @@ public class CopyBFToCOMP extends AbstractCaseCopyStrategy implements CaseCopySt
     @Override
     public void copyCase(CaseData fromCase, CaseData toCase) {
 
-        // copy clob details
         copyClobData(fromCase, toCase, DATA_CLOB_KEYS);
         toCase.update("PreviousCaseReference", fromCase.getReference());
-        toCase.update("CurrentStage", "COMP_CCH_RETURNS");
         caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
 
         caseDocumentService.copyDocuments(fromCase.getUuid(), toCase.getUuid(), DOCUMENT_TYPES);
 
-        // Correspondents include the primary_correspondent_uuid
         correspondentService.copyCorrespondents(fromCase.getUuid(), toCase.getUuid());
 
     }

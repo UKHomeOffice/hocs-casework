@@ -30,7 +30,9 @@ public class CopyBFToSMCTest {
 
     static {
         FROM_CLOB = Map.of(
-                "CaseSummary", "TestValue");
+                "CaseSummary", "TestValue",
+                "OwningCSU", "OwningCSU"
+        );
     }
 
     private static final UUID TO_CASE_UUID = UUID.randomUUID();
@@ -129,6 +131,7 @@ public class CopyBFToSMCTest {
         assertThat(toCase.getDataMap()).isNotNull();
         assertThat(toCase.getDataMap().get("PreviousCaseReference")).isEqualTo("BF/12345678/01");
         assertThat(toCase.getDataMap().get("InitCaseSummary")).isEqualTo("TestValue");
+        assertThat(toCase.getDataMap().get("InitOwningCSU")).isEqualTo("OwningCSU");
 
     }
 }
