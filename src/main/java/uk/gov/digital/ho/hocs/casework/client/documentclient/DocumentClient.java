@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import uk.gov.digital.ho.hocs.casework.api.dto.CopyDocumentsRequest;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
 import java.util.UUID;
@@ -72,5 +73,9 @@ public class DocumentClient {
         );
 
         return documents;
+    }
+
+    public void copyDocuments(CopyDocumentsRequest copyDocumentRequest) {
+        restHelper.post(serviceBaseURL, "/documents/copy", copyDocumentRequest, Void.class);
     }
 }

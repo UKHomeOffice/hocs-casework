@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.dto.CopyDocumentsRequest;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentDto;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsResponse;
@@ -12,6 +13,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
@@ -107,5 +109,10 @@ public class CaseDocumentService {
             }
         }
         getDocumentsResponse.setDocumentTags(infoClient.getDocumentTags(caseType));
+    }
+
+    public void copyDocuments(UUID fromUUID, UUID toUUID, String[] types) {
+        CopyDocumentsRequest copyDocumentsRequest = new CopyDocumentsRequest(fromUUID, toUUID, Set.of(types));
+        documentClient.copyDocuments(copyDocumentsRequest);
     }
 }
