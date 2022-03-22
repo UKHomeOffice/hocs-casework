@@ -51,6 +51,7 @@ public class CopyBfToBf2 extends AbstractCaseCopyStrategy implements CaseCopyStr
         // copy clob details
         copyClobData(fromCase, toCase, DATA_CLOB_KEYS);
         toCase.update("PreviousCaseReference", fromCase.getReference());
+        toCase.update("CompType", "Service");
         caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
 
         // Correspondents include the primary_correspondent_uuid
