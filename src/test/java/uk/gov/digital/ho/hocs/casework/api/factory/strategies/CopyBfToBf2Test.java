@@ -138,6 +138,7 @@ public class CopyBfToBf2Test {
 
         assertThat(toCase.getDataMap()).isNotNull();
         assertThat(toCase.getDataMap()).containsAllEntriesOf(FROM_CASE.getDataMap());
+        assertThat(toCase.getDataMap().get("CompType")).isEqualTo("Service");
 
         // Additional test to check we are adding the previous case reference in the case data for this copy strategy
         assertThat(toCase.getDataMap()).containsEntry("PreviousCaseReference", "BF/12345678/01");
