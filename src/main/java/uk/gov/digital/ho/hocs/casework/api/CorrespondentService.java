@@ -199,13 +199,7 @@ public class CorrespondentService {
         log.info("Deleted Correspondent: {}", caseUUID, value(EVENT, CORRESPONDENT_DELETED));
     }
 
-    /**
-     * Returns the primary correspondent for the new case.
-     * @param fromCase
-     * @param toCase
-     * @return
-     */
-    public CorrespondentWithPrimaryFlag copyCorrespondents(UUID fromCase, UUID toCase) {
+    public void copyCorrespondents(UUID fromCase, UUID toCase) {
 
         // get the case correspondents
         Set<CorrespondentWithPrimaryFlag> correspondents = getCorrespondents(fromCase);
@@ -220,9 +214,6 @@ public class CorrespondentService {
         correspondents.stream()
                 .filter(correspondent -> !correspondent.getIsPrimary())
                 .forEach(correspondent -> createCorrespondent(toCase, correspondent));
-
-        return primaryCorrespondent.orElse(null);
-
 
     }
 }
