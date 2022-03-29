@@ -7,7 +7,6 @@ import uk.gov.digital.ho.hocs.casework.api.CaseDocumentService;
 import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopy;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 
 @Service
 @CaseCopy(fromCaseType = "BF", toCaseType = "SMC")
