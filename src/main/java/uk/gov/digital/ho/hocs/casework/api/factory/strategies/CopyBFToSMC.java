@@ -54,9 +54,12 @@ public class CopyBFToSMC extends AbstractCaseCopyStrategy implements CaseCopyStr
         copyClobData(fromCase, toCase, DATA_CLOB_KEYS);
         toCase.update("PreviousCaseReference", fromCase.getReference());
         fromCase.update("TransferToCaseRef", toCase.getReference());
+
         //Mapping to init vars
-        toCase.update("InitCaseSummary", fromCase.getData("CaseSummary"));
-        toCase.update("InitOwningCSU", fromCase.getData("OwningCSU"));
+        String caseSumVal = fromCase.getData("CaseSummary");
+        String ownCSUVal = fromCase.getData("OwningCSU");
+        toCase.update("InitCaseSummary", caseSumVal != null ? caseSumVal : "");
+        toCase.update("InitOwningCSU", ownCSUVal != null ? ownCSUVal : "");
 
         caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
 

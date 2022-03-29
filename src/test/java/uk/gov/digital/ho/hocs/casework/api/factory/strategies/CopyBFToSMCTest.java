@@ -49,6 +49,7 @@ public class CopyBFToSMCTest {
     private static final String EMAIL = "email";
     private static final String REFERENCE = "reference";
     private static final String EXTERNAL_KEY = "externalKey";
+
     private static final Correspondent PRIMARY_CORRESPONDENT = new Correspondent(FROM_CASE_UUID,
             CORRESPONDENT_TYPE,
             FULLNAME,
@@ -83,6 +84,7 @@ public class CopyBFToSMCTest {
             null,
             null);
 
+
     @Mock
     private CaseDataService caseDataService;
 
@@ -93,6 +95,8 @@ public class CopyBFToSMCTest {
     private CaseDocumentService caseDocumentService;
 
     private CaseData toCase;
+
+    private CopyBFToSMC bfToSmc;
 
     @Before
     public void setUp() {
@@ -113,13 +117,14 @@ public class CopyBFToSMCTest {
                 false,
                 null,
                 null);
+
+        bfToSmc = new CopyBFToSMC(caseDataService, correspondentService, caseDocumentService);
     }
 
     @Test
     public void shouldCopyCaseDetails() {
 
-        // given
-        var bfToSmc = new CopyBFToSMC(caseDataService, correspondentService, caseDocumentService);
+        // given - default FROM_CASE used.
 
         // when
         bfToSmc.copyCase(FROM_CASE, toCase);
@@ -133,5 +138,46 @@ public class CopyBFToSMCTest {
         assertThat(toCase.getDataMap().get("InitCaseSummary")).isEqualTo("TestValue");
         assertThat(toCase.getDataMap().get("InitOwningCSU")).isEqualTo("OwningCSU");
 
+    }
+
+    @Test
+    public void testShouldNotInsertNullValueInCaseDataIfOriginCaseIsAbsent() {
+        // given
+
+        Map<String,String> fromClob = new HashMap<>(Map.of(
+                "CaseSummary", "TestValue"
+        ));
+
+        CaseData oldCase = new CaseData(1L,
+                FROM_CASE_UUID,
+                null,
+                null,
+                "BF/12345678/01",
+                false,
+                fromClob,
+                null,
+                null,
+                PRIMARY_CORRESPONDENT.getUuid(),
+                PRIMARY_CORRESPONDENT,
+                null,
+                null,
+                null,
+                false,
+                null,
+                null);
+
+
+        // when
+        bfToSmc.copyCase(oldCase, toCase);
+
+        // then
+        verify(caseDataService, times(1)).updateCaseData(eq(toCase.getUuid()), any(), anyMap());
+        verify(correspondentService, times(1)).copyCorrespondents(FROM_CASE.getUuid(), toCase.getUuid());
+
+        assertThat(toCase.getDataMap()).isNotNull();
+        assertThat(toCase.getDataMap().get("PreviousCaseReference")).isEqualTo("BF/12345678/01");
+        assertThat(toCase.getDataMap().get("InitCaseSummary")).isEqualTo("TestValue");
+
+        assertThat(toCase.getDataMap().get("InitOwningCSU")).isEqualTo("");
     }
 }

@@ -199,12 +199,6 @@ public class CorrespondentService {
         log.info("Deleted Correspondent: {}", caseUUID, value(EVENT, CORRESPONDENT_DELETED));
     }
 
-    /**
-     * Returns the primary_correspondent_uuid from the copy operation.
-     * @param fromCase
-     * @param toCase
-     * @return
-     */
     public void copyCorrespondents(UUID fromCase, UUID toCase) {
 
         // get the case correspondents
@@ -220,9 +214,6 @@ public class CorrespondentService {
         correspondents.stream()
                 .filter(correspondent -> !correspondent.getIsPrimary())
                 .forEach(correspondent -> createCorrespondent(toCase, correspondent));
-
-        // TODO: Do I need to set the primary in the json data and row?
-
 
     }
 }
