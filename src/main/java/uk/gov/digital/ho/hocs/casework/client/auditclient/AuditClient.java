@@ -21,15 +21,7 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditRes
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
-import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataAppeal;
-import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataDeadlineExtension;
-import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataExternalInterest;
-import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
-import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
+import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 
 import java.time.LocalDateTime;
@@ -358,6 +350,8 @@ public class AuditClient {
         ));
     }
 
+
+
     private void saveActionAudit(AuditPayload.ActionAuditPayload actionAuditPayload) {
         LocalDateTime localDateTime = LocalDateTime.now();
         String data = "{}";
@@ -617,5 +611,35 @@ public class AuditClient {
         }
     }
 
+    public void createSuspensionAudit(ActionDataSuspension suspensionEntity) {
 
+        AuditPayload.ActionAuditPayload payload = new AuditPayload.SuspensionItem(
+                suspensionEntity.getUuid(),
+                suspensionEntity.getCaseTypeActionUuid(),
+                suspensionEntity.getActionSubtype(),
+                suspensionEntity.getCaseTypeActionLabel(),
+                suspensionEntity.getCaseDataType(),
+                suspensionEntity.getCaseDataUuid(),
+                suspensionEntity.getDataSuspensionApplied(),
+                suspensionEntity.getDataSuspensionRemoved(),
+                EventType.CASE_SUSPENSION_APPLIED
+        );
+        saveActionAudit(payload);
+    }
+
+    public void updateSuspensionAudit(ActionDataSuspension suspensionEntity) {
+
+        AuditPayload.ActionAuditPayload payload = new AuditPayload.SuspensionItem(
+                suspensionEntity.getUuid(),
+                suspensionEntity.getCaseTypeActionUuid(),
+                suspensionEntity.getActionSubtype(),
+                suspensionEntity.getCaseTypeActionLabel(),
+                suspensionEntity.getCaseDataType(),
+                suspensionEntity.getCaseDataUuid(),
+                suspensionEntity.getDataSuspensionApplied(),
+                suspensionEntity.getDataSuspensionRemoved(),
+                EventType.CASE_UNSUSPENDED
+        );
+        saveActionAudit(payload);
+    }
 }
