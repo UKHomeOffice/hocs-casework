@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.hocs.casework.api.utils.ActionDataHelpers.updateStageDeadlines;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.ACTION_DATA_CREATE_FAILURE;
@@ -45,12 +46,22 @@ public class ActionDataSuspendService implements ActionService {
 
     @Override
     public String getServiceMapKey() {
-        return null;
+        return "suspensions";
     }
 
     @Override
     public List<ActionDataDto> getAllActionsForCase(UUID caseUUID) {
-        return null;
+        Optional<List<ActionDataSuspension>> maybeSuspensions = suspensionRepository.findAllByCaseDataUuid(caseUUID);
+        if (maybeSuspensions.isEmpty()) return List.of();
+        return maybeSuspensions.get().stream().map(suspension ->
+                        new ActionDataSuspendDto(
+                            suspension.getUuid(),
+                            suspension.getCaseTypeActionUuid(),
+                            suspension.getActionSubtype(),
+                            suspension.getCaseTypeActionLabel(),
+                            suspension.getDateSuspensionApplied(),
+                            suspension.getDateSuspensionRemoved()
+                    )).collect(Collectors.toList());
     }
 
     public void suspend(UUID caseUUID, UUID existingStageUuid, ActionDataSuspendDto suspendDto) {
