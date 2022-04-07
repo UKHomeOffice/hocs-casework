@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static uk.gov.digital.ho.hocs.casework.api.utils.ActionDataHelpers.updateStageDeadlines;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.ACTION_DATA_CREATE_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUND;
 
@@ -136,6 +137,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
 
         caseData.setCaseDeadline(updatedDeadline);
         caseData.setCaseDeadlineWarning(updatedDeadlineWarning);
+
         updateStageDeadlines(caseData);
 
         ActionDataDeadlineExtension createdExtension = extensionRepository.save(extensionEntity);
@@ -169,33 +171,6 @@ public class ActionDataDeadlineExtensionService implements ActionService {
                     extension.getNote()
             )
         ).collect(Collectors.toList());
-    }
-
-    // COPIED FROM CaseDataService to avoid cyclic dependency.
-    private void updateStageDeadlines(CaseData caseData) {
-
-        if (caseData.getActiveStages() == null) {
-            log.warn("Case uuid:{} supplied with null active stages", caseData.getUuid());
-            return;
-        }
-
-        Map<String, String> dataMap = caseData.getDataMap();
-        for (ActiveStage stage : caseData.getActiveStages()) {
-            // Try and overwrite the deadlines with inputted values from the data map.
-            String overrideDeadline = dataMap.get(String.format("%s_DEADLINE", stage.getStageType()));
-            if (overrideDeadline == null) {
-
-                LocalDate caseDeadlineWarning = caseData.getCaseDeadlineWarning();
-                stage.setDeadline(caseData.getCaseDeadline());
-                if (caseDeadlineWarning != null) {
-                    stage.setDeadlineWarning(caseDeadlineWarning);
-                }
-            } else {
-                LocalDate deadline = LocalDate.parse(overrideDeadline);
-                stage.setDeadline(deadline);
-            }
-
-        }
     }
 
     enum ExtendFrom {

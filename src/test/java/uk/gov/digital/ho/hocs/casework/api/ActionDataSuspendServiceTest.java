@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataSuspendDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
@@ -97,16 +98,27 @@ public class ActionDataSuspendServiceTest {
             ACTION_SUSPEND_TYPE_UUID,
             ACTION_SUSPEND_SUBTYPE,
             ACTION_SUSPEND_TYPE_LABEL,
-            DATE_SUSPENSION_SET
+            DATE_SUSPENSION_SET,
+            null
     );
-    private static final UUID EXISTING_SUSPEND_UUID = UUID.fromString("");
+    private static final UUID EXISTING_SUSPEND_UUID = UUID.fromString("78c3e33f-7cef-4693-88b1-b0df6fbebfac");
 
+    private static final ActionDataSuspension ACTIVE_SUSPENSION_ENTITY = new ActionDataSuspension(
+            EXISTING_SUSPEND_UUID,
+            ACTION_SUSPEND_TYPE_UUID,
+            ACTION_SUSPEND_SUBTYPE,
+            ACTION_SUSPEND_TYPE_LABEL,
+            CASE_TYPE,
+            CASE_UUID,
+            DATE_SUSPENSION_SET,
+            null
+    );
 
     private static CaseData EXISTING_CASE;
 
     @Before
     public void setUp() {
-        actionDataSuspendService = new ActionDataSuspendService(caseDataRepository, infoClient, auditClient);
+        actionDataSuspendService = new ActionDataSuspendService(caseDataRepository, suspensionRepository, infoClient, auditClient);
 
         Correspondent primaryCorrespondent = new Correspondent(
                 CASE_UUID,
@@ -174,7 +186,8 @@ public class ActionDataSuspendServiceTest {
                 NON_EXISTENT_ACTION_SUSPEND_TYPE_UUID,
                 ACTION_SUSPEND_SUBTYPE,
                 ACTION_SUSPEND_TYPE_LABEL,
-                DATE_SUSPENSION_SET
+                DATE_SUSPENSION_SET,
+                null
         );
 
         when(caseDataRepository.findActiveByUuid(EXISTING_CASE.getUuid())).thenReturn(EXISTING_CASE);
@@ -188,18 +201,20 @@ public class ActionDataSuspendServiceTest {
     }
 
     @Test
-    public void testSuspendShouldThrowIfSuspensionCurrentlyInPlace() {
+    public void testSuspendShouldThrowIfHasMaxSuspensionCurrentlyInPlace() {
 
         // GIVEN
         when(caseDataRepository.findActiveByUuid(EXISTING_CASE.getUuid())).thenReturn(EXISTING_CASE);
         when(infoClient.getCaseTypeActionByUuid(EXISTING_CASE.getType(), SUSPEND_REQUEST_DTO.getCaseTypeActionUuid())).thenReturn(SUSPENSION_CASE_TYPE_ACTION);
-        when(suspensionRepository.findAllByCaseDataUuid(EXISTING_CASE.getUuid())).thenReturn()
-        // WHEN - // THEN
+        when(suspensionRepository
+                .findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(EXISTING_CASE.getUuid(), SUSPENSION_CASE_TYPE_ACTION.getCaseTypeUuid())
+        ).thenReturn(Optional.of(List.of(ACTIVE_SUSPENSION_ENTITY)));
 
+        // WHEN - // THEN
         assertThrows(
                 "Throw UnsupportedOperationException if suspension already active.",
-                UnsupportedOperationException.class,
-                () -> actionDataSuspendService.suspend(EXISTING_CASE.getUuid(), EXISTING_STAGE_UUID, SUSPEND_REQUEST_DTO)
+                HttpClientErrorException.class,
+                () -> actionDataSuspendService.suspend(CASE_UUID, EXISTING_STAGE_UUID, SUSPEND_REQUEST_DTO)
         );
     }
 
@@ -222,19 +237,19 @@ public class ActionDataSuspendServiceTest {
 
         assertEquals(
                 "Deadline set to specific date",
-                LocalDate.of(9999,12,31),
+                LocalDate.MAX,
                 caseDataArgumentCaptor.getValue().getCaseDeadline()
         );
 
         assertEquals(
                 "Deadline set to specific date",
-                LocalDate.of(9999,12,31),
+                LocalDate.MAX,
                 caseDataArgumentCaptor.getValue().getCaseDeadlineWarning()
         );
 
         LocalDate[] stageDeadlines = caseDataArgumentCaptor.getValue().getActiveStages().stream().map(ActiveStage::getDeadline).toArray(LocalDate[]::new);
         LocalDate[] expectedStageDeadlines = new LocalDate[stageDeadlines.length];
-        Arrays.setAll(expectedStageDeadlines,(idx) -> LocalDate.of(9999,12,31));
+        Arrays.fill(expectedStageDeadlines, LocalDate.MAX);
 
         assertArrayEquals(
                 "Deadline set to specific date",
@@ -246,7 +261,7 @@ public class ActionDataSuspendServiceTest {
         assertTrue("That the case data has suspended flag is true", Boolean.parseBoolean(caseDataArgumentCaptor.getValue().getData("suspended")));
 
         // Verify other calls.
-        verify(auditClient, times(1)).updateCaseAudit(any(CaseData.class),EXISTING_STAGE_UUID);
+        verify(auditClient, times(1)).updateCaseAudit(any(CaseData.class),eq(EXISTING_STAGE_UUID));
         verify(auditClient, times(1)).createSuspensionAudit(any(ActionDataSuspension.class));
         verify(suspensionRepository, times(1)).save(any(ActionDataSuspension.class));
     }
@@ -254,48 +269,50 @@ public class ActionDataSuspendServiceTest {
     @Test
     public void testUnsuspendShouldThrowIfCaseNotFound() {
         // GIVEN
+        UUID existingSuspensionUUID = SUSPEND_REQUEST_DTO.getUuid();
         when(caseDataRepository.findActiveByUuid(NON_EXISTENT_CASE_UUID)).thenReturn(null);
 
         // WHEN - // THEN
         assertThrows("Throw EntityNotFoundException when case found", ApplicationExceptions.EntityNotFoundException.class,
-                () -> actionDataSuspendService.suspend(NON_EXISTENT_CASE_UUID, EXISTING_STAGE_UUID,SUSPEND_REQUEST_DTO)
+                () -> actionDataSuspendService.unsuspend(NON_EXISTENT_CASE_UUID, EXISTING_STAGE_UUID, existingSuspensionUUID)
         );
     }
 
-    @Test
-    public void testUnsuspendShouldThrowIfActionTypeNotFound() {
-
-        // GIVEN
-        ActionDataSuspendDto suspendDto = new ActionDataSuspendDto(
-                null,
-                NON_EXISTENT_ACTION_SUSPEND_TYPE_UUID,
-                ACTION_SUSPEND_SUBTYPE,
-                ACTION_SUSPEND_TYPE_LABEL,
-                DATE_SUSPENSION_SET
-        );
-
-        when(caseDataRepository.findActiveByUuid(EXISTING_CASE.getUuid())).thenReturn(EXISTING_CASE);
-        when(infoClient.getCaseTypeActionByUuid(EXISTING_CASE.getType(),suspendDto.getCaseTypeActionUuid())).thenReturn(null);
-
-        // WHEN - // THEN
-        assertThrows("Throw EntityNotFoundException when case found",
-                ApplicationExceptions.EntityNotFoundException.class,
-                () -> actionDataSuspendService.unsuspend(EXISTING_CASE.getUuid(), EXISTING_STAGE_UUID, suspendDto)
-        );
-    }
+    // todo: don't think we need this one.
+//    @Test
+//    public void testUnsuspendShouldThrowIfActionTypeNotFound() {
+//
+//        // GIVEN
+//        ActionDataSuspendDto suspendDto = new ActionDataSuspendDto(
+//                null,
+//                NON_EXISTENT_ACTION_SUSPEND_TYPE_UUID,
+//                ACTION_SUSPEND_SUBTYPE,
+//                ACTION_SUSPEND_TYPE_LABEL,
+//                DATE_SUSPENSION_SET
+//        );
+//
+//        when(caseDataRepository.findActiveByUuid(EXISTING_CASE.getUuid())).thenReturn(EXISTING_CASE);
+//        when(infoClient.getCaseTypeActionByUuid(EXISTING_CASE.getType(),suspendDto.getCaseTypeActionUuid())).thenReturn(null);
+//
+//        // WHEN - // THEN
+//        assertThrows("Throw EntityNotFoundException when case found",
+//                ApplicationExceptions.EntityNotFoundException.class,
+//                () -> actionDataSuspendService.unsuspend(EXISTING_CASE.getUuid(), EXISTING_STAGE_UUID, suspendDto)
+//        );
+//    }
 
     @Test
     public void testUnsuspendShouldThrowIfSuspendActionNotFound() {
 
         // GIVEN
+        UUID nonExistingSuspendUUID = UUID.fromString("c7b06e66-62b0-49e4-9d06-93dccc2f1dae");
 
         when(caseDataRepository.findActiveByUuid(EXISTING_CASE.getUuid())).thenReturn(EXISTING_CASE);
-        when(infoClient.getCaseTypeActionByUuid(EXISTING_CASE.getType(), SUSPEND_REQUEST_DTO.getCaseTypeActionUuid())).thenReturn(SUSPENSION_CASE_TYPE_ACTION);
-        when(suspensionRepository.findByUuidAndCaseDataUuid(EXISTING_SUSPEND_UUID, EXISTING_CASE.getUuid())).thenReturn(Optional.empty());
+
         // WHEN - // THEN
         assertThrows("Throw EntityNotFoundException when case found",
                 ApplicationExceptions.EntityNotFoundException.class,
-                () -> actionDataSuspendService.unsuspend(EXISTING_CASE.getUuid(), EXISTING_STAGE_UUID, suspendDto)
+                () -> actionDataSuspendService.unsuspend(EXISTING_CASE.getUuid(), EXISTING_STAGE_UUID, nonExistingSuspendUUID)
         );
     }
 
@@ -304,11 +321,11 @@ public class ActionDataSuspendServiceTest {
     public void testUnsuspendShouldUnsuspendCase() {
         // GIVEN
         ArgumentCaptor<CaseData> caseDataArgumentCaptor = ArgumentCaptor.forClass(CaseData.class);
+        ArgumentCaptor<ActionDataSuspension> suspensionArgumentCaptor = ArgumentCaptor.forClass(ActionDataSuspension.class);
         when(caseDataRepository.findActiveByUuid(EXISTING_CASE.getUuid())).thenReturn(EXISTING_CASE);
-        when(infoClient.getCaseTypeActionByUuid(EXISTING_CASE.getType(), SUSPEND_REQUEST_DTO.getCaseTypeActionUuid())).thenReturn(SUSPENSION_CASE_TYPE_ACTION);
-
+        when(suspensionRepository.findByUuidAndCaseDataUuid(EXISTING_SUSPEND_UUID, CASE_UUID)).thenReturn(Optional.of(ACTIVE_SUSPENSION_ENTITY));
         // WHEN
-        actionDataSuspendService.suspend(EXISTING_CASE.getUuid(), EXISTING_STAGE_UUID, SUSPEND_REQUEST_DTO);
+        actionDataSuspendService.unsuspend(EXISTING_CASE.getUuid(), EXISTING_STAGE_UUID, EXISTING_SUSPEND_UUID);
 
         // THEN
 
@@ -316,35 +333,16 @@ public class ActionDataSuspendServiceTest {
         verify(caseDataRepository, times(1))
                 .save(caseDataArgumentCaptor.capture());
 
-        assertEquals(
-                "Deadline set to specific date",
-                LocalDate.of(9999,12,31),
-                caseDataArgumentCaptor.getValue().getCaseDeadline()
-        );
-
-        assertEquals(
-                "Deadline set to specific date",
-                LocalDate.of(9999,12,31),
-                caseDataArgumentCaptor.getValue().getCaseDeadlineWarning()
-        );
-
-        LocalDate[] stageDeadlines = caseDataArgumentCaptor.getValue().getActiveStages().stream().map(ActiveStage::getDeadline).toArray(LocalDate[]::new);
-        LocalDate[] expectedStageDeadlines = new LocalDate[stageDeadlines.length];
-        Arrays.setAll(expectedStageDeadlines,(idx) -> LocalDate.of(9999,12,31));
-
-        assertArrayEquals(
-                "Deadline set to specific date",
-                expectedStageDeadlines,
-                stageDeadlines
-        );
-
         assertTrue("That the case data has suspended flag", caseDataArgumentCaptor.getValue().getDataMap().containsKey("suspended"));
-        assertTrue("That the case data has suspended flag is true", Boolean.parseBoolean(caseDataArgumentCaptor.getValue().getData("suspended")));
+        assertFalse("That the case data has suspended flag is false", Boolean.parseBoolean(caseDataArgumentCaptor.getValue().getData("suspended")));
 
         // Verify other calls.
-        verify(auditClient, times(1)).updateCaseAudit(any(CaseData.class),EXISTING_STAGE_UUID);
-        verify(auditClient, times(1)).createSuspensionAudit(any(ActionDataSuspension.class));
-        verify(suspensionRepository, times(1)).save(any(ActionDataSuspension.class));
+        verify(auditClient, times(1)).updateCaseAudit(any(CaseData.class),eq(EXISTING_STAGE_UUID));
+        verify(auditClient, times(1)).updateSuspensionAudit(any(ActionDataSuspension.class));
+
+        verify(suspensionRepository, times(1)).save(suspensionArgumentCaptor.capture());
+
+        assertNotNull("That entity saved with updated suspension removed value", suspensionArgumentCaptor.getValue().getDateSuspensionRemoved());
     }
 
 }

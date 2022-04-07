@@ -620,8 +620,8 @@ public class AuditClient {
                 suspensionEntity.getCaseTypeActionLabel(),
                 suspensionEntity.getCaseDataType(),
                 suspensionEntity.getCaseDataUuid(),
-                suspensionEntity.getDataSuspensionApplied(),
-                suspensionEntity.getDataSuspensionRemoved(),
+                suspensionEntity.getDateSuspensionApplied(),
+                suspensionEntity.getDateSuspensionRemoved(),
                 EventType.CASE_SUSPENSION_APPLIED
         );
         saveActionAudit(payload);
@@ -636,8 +636,8 @@ public class AuditClient {
                 suspensionEntity.getCaseTypeActionLabel(),
                 suspensionEntity.getCaseDataType(),
                 suspensionEntity.getCaseDataUuid(),
-                suspensionEntity.getDataSuspensionApplied(),
-                suspensionEntity.getDataSuspensionRemoved(),
+                suspensionEntity.getDateSuspensionApplied(),
+                suspensionEntity.getDateSuspensionRemoved(),
                 EventType.CASE_UNSUSPENDED
         );
         saveActionAudit(payload);

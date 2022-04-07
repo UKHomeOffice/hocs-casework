@@ -45,4 +45,18 @@ public class ActionDataSuspension implements Serializable {
 
     @Column(name = "date_suspension_removed")
     private LocalDate dateSuspensionRemoved;
+
+    public ActionDataSuspension(UUID caseTypeActionUuid, String actionSubtype, String caseTypeActionLabel,
+                                String caseDataType, UUID caseDataUuid, LocalDate dateSuspensionApplied,
+                                LocalDate dateSuspensionRemoved) {
+
+        this.uuid = UUID.randomUUID();
+        this.caseTypeActionUuid = caseTypeActionUuid;
+        this.actionSubtype = actionSubtype;
+        this.caseTypeActionLabel = caseTypeActionLabel;
+        this.caseDataType = caseDataType;
+        this.caseDataUuid = caseDataUuid;
+        this.dateSuspensionApplied = dateSuspensionApplied;
+        this.dateSuspensionRemoved = dateSuspensionRemoved;
+    }
 }

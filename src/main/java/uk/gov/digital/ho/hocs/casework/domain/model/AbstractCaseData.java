@@ -150,7 +150,6 @@ public class AbstractCaseData implements Serializable {
 
     public void update(String key, String value) {
         this.dataMap.put(key, value);
-
     }
 
     public String getData(String key) {

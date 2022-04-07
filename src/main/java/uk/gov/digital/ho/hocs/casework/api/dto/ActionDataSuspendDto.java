@@ -18,12 +18,14 @@ import java.util.UUID;
 @NoArgsConstructor
 public class ActionDataSuspendDto extends ActionDataDto {
 
-    private LocalDate dateOfSuspension;
+    private LocalDate dateSuspensionApplied;
+    private LocalDate dateSuspensionRemoved;
 
     public ActionDataSuspendDto(UUID uuid, UUID caseTypeActionUuid, String caseSubtype, String caseTypeActionLabel,
-                                LocalDate dateOfSuspension) {
+                                LocalDate dateSuspensionApplied, LocalDate dateSuspensionRemoved) {
 
         super(uuid, caseTypeActionUuid, caseSubtype, caseTypeActionLabel);
-        this.dateOfSuspension = dateOfSuspension;
+        this.dateSuspensionApplied = dateSuspensionApplied;
+        this.dateSuspensionRemoved = dateSuspensionRemoved;
     }
 }
