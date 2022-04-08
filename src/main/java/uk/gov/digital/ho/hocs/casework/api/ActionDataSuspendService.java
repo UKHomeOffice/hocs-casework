@@ -64,7 +64,7 @@ public class ActionDataSuspendService implements ActionService {
                     )).collect(Collectors.toList());
     }
 
-    public void suspend(UUID caseUUID, UUID existingStageUuid, ActionDataSuspendDto suspendDto) {
+    public String suspend(UUID caseUUID, UUID existingStageUuid, ActionDataSuspendDto suspendDto) {
 
         log.debug("Request to suspend case {} received", caseUUID);
 
@@ -107,9 +107,10 @@ public class ActionDataSuspendService implements ActionService {
         auditClient.updateCaseAudit(caseData, existingStageUuid);
 
         log.info("Case {} has successfully been suspended with type {}", caseUUID, caseTypeActionDto.getUuid());
+        return caseData.getReference();
     }
 
-    public void unsuspend(UUID caseUUID, UUID existingStageUuid, UUID existingSuspensionUUID) {
+    public String unsuspend(UUID caseUUID, UUID existingStageUuid, UUID existingSuspensionUUID) {
         log.debug("Request to un-suspend case {} received", caseUUID);
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
@@ -134,6 +135,9 @@ public class ActionDataSuspendService implements ActionService {
             log.error(msg);
             throw new ApplicationExceptions.EntityNotFoundException(msg, LogEvent.ACTION_DATA_UPDATE_FAILURE);
         });
+
+        log.info("Suspension {} for caseId {} has been removed.", existingSuspensionUUID, caseUUID);
+        return caseData.getReference();
     }
 
     private boolean hasMaxActiveRequests(CaseTypeActionDto caseTypeActionDto, UUID caseUUID) {
