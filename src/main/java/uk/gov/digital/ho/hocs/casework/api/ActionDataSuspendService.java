@@ -100,8 +100,8 @@ public class ActionDataSuspendService implements ActionService {
 
         // update case data
         caseData.getDataMap().put("suspended", "true");
-        caseData.setCaseDeadline(LocalDate.MAX);
-        caseData.setCaseDeadlineWarning(LocalDate.MAX);
+        caseData.setCaseDeadline(LocalDate.EPOCH);
+        caseData.setCaseDeadlineWarning(LocalDate.EPOCH);
         updateStageDeadlines(caseData);
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, existingStageUuid);
@@ -141,7 +141,7 @@ public class ActionDataSuspendService implements ActionService {
     }
 
     private boolean hasMaxActiveRequests(CaseTypeActionDto caseTypeActionDto, UUID caseUUID) {
-        Optional<List<ActionDataSuspension>> caseSuspensions = suspensionRepository.findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(caseUUID, caseTypeActionDto.getCaseTypeUuid());
+        Optional<List<ActionDataSuspension>> caseSuspensions = suspensionRepository.findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(caseUUID, caseTypeActionDto.getUuid());
         return caseSuspensions.isPresent() && caseSuspensions.get().size() >= caseTypeActionDto.getMaxConcurrentEvents();
     }
 }

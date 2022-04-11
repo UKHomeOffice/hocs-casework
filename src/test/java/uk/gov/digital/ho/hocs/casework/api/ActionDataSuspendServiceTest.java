@@ -237,19 +237,19 @@ public class ActionDataSuspendServiceTest {
 
         assertEquals(
                 "Deadline set to specific date",
-                LocalDate.MAX,
+                LocalDate.EPOCH,
                 caseDataArgumentCaptor.getValue().getCaseDeadline()
         );
 
         assertEquals(
                 "Deadline set to specific date",
-                LocalDate.MAX,
+                LocalDate.EPOCH,
                 caseDataArgumentCaptor.getValue().getCaseDeadlineWarning()
         );
 
         LocalDate[] stageDeadlines = caseDataArgumentCaptor.getValue().getActiveStages().stream().map(ActiveStage::getDeadline).toArray(LocalDate[]::new);
         LocalDate[] expectedStageDeadlines = new LocalDate[stageDeadlines.length];
-        Arrays.fill(expectedStageDeadlines, LocalDate.MAX);
+        Arrays.fill(expectedStageDeadlines, LocalDate.EPOCH);
 
         assertArrayEquals(
                 "Deadline set to specific date",
@@ -277,29 +277,6 @@ public class ActionDataSuspendServiceTest {
                 () -> actionDataSuspendService.unsuspend(NON_EXISTENT_CASE_UUID, EXISTING_STAGE_UUID, existingSuspensionUUID)
         );
     }
-
-    // todo: don't think we need this one.
-//    @Test
-//    public void testUnsuspendShouldThrowIfActionTypeNotFound() {
-//
-//        // GIVEN
-//        ActionDataSuspendDto suspendDto = new ActionDataSuspendDto(
-//                null,
-//                NON_EXISTENT_ACTION_SUSPEND_TYPE_UUID,
-//                ACTION_SUSPEND_SUBTYPE,
-//                ACTION_SUSPEND_TYPE_LABEL,
-//                DATE_SUSPENSION_SET
-//        );
-//
-//        when(caseDataRepository.findActiveByUuid(EXISTING_CASE.getUuid())).thenReturn(EXISTING_CASE);
-//        when(infoClient.getCaseTypeActionByUuid(EXISTING_CASE.getType(),suspendDto.getCaseTypeActionUuid())).thenReturn(null);
-//
-//        // WHEN - // THEN
-//        assertThrows("Throw EntityNotFoundException when case found",
-//                ApplicationExceptions.EntityNotFoundException.class,
-//                () -> actionDataSuspendService.unsuspend(EXISTING_CASE.getUuid(), EXISTING_STAGE_UUID, suspendDto)
-//        );
-//    }
 
     @Test
     public void testUnsuspendShouldThrowIfSuspendActionNotFound() {
