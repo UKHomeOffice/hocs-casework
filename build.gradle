@@ -46,7 +46,7 @@ dependencies {
 
     implementation 'com.vladmihalcea:hibernate-types-55:2.16.0'
 
-    implementation 'net.logstash.logback:logstash-logback-encoder:7.1'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.1.1'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.7'
 
     implementation 'com.github.ben-manes.caffeine:caffeine:3.0.6'
