@@ -48,7 +48,7 @@ public class GetCaseAuthFilterServiceTest {
                                 null, null, null,
                                 null, null, null,
                                 null, null, null,
-                                null, null, null)
+                                null, null, null, null)
         ));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;

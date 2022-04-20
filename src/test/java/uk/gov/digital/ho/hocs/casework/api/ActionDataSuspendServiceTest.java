@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataSuspendDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -38,6 +39,7 @@ public class ActionDataSuspendServiceTest {
     @Mock private SuspensionRepository suspensionRepository;
     @Mock private InfoClient infoClient;
     @Mock private AuditClient auditClient;
+    @Mock private CaseNoteService caseNoteService;
 
     private ActionDataSuspendService actionDataSuspendService;
 
@@ -116,9 +118,11 @@ public class ActionDataSuspendServiceTest {
 
     private static CaseData EXISTING_CASE;
 
+    private static final StageTypeDto STAGE_TYPE = new StageTypeDto("Some Stage", "9999","SOME_STAGE",20,18,1);
+
     @Before
     public void setUp() {
-        actionDataSuspendService = new ActionDataSuspendService(caseDataRepository, suspensionRepository, infoClient, auditClient);
+        actionDataSuspendService = new ActionDataSuspendService(caseDataRepository, suspensionRepository, infoClient, auditClient, caseNoteService);
 
         Correspondent primaryCorrespondent = new Correspondent(
                 CASE_UUID,
@@ -206,8 +210,9 @@ public class ActionDataSuspendServiceTest {
         // GIVEN
         when(caseDataRepository.findActiveByUuid(EXISTING_CASE.getUuid())).thenReturn(EXISTING_CASE);
         when(infoClient.getCaseTypeActionByUuid(EXISTING_CASE.getType(), SUSPEND_REQUEST_DTO.getCaseTypeActionUuid())).thenReturn(SUSPENSION_CASE_TYPE_ACTION);
+
         when(suspensionRepository
-                .findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(EXISTING_CASE.getUuid(), SUSPENSION_CASE_TYPE_ACTION.getCaseTypeUuid())
+                .findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(EXISTING_CASE.getUuid(), SUSPENSION_CASE_TYPE_ACTION.getUuid())
         ).thenReturn(Optional.of(List.of(ACTIVE_SUSPENSION_ENTITY)));
 
         // WHEN - // THEN
@@ -225,6 +230,7 @@ public class ActionDataSuspendServiceTest {
         ArgumentCaptor<CaseData> caseDataArgumentCaptor = ArgumentCaptor.forClass(CaseData.class);
         when(caseDataRepository.findActiveByUuid(EXISTING_CASE.getUuid())).thenReturn(EXISTING_CASE);
         when(infoClient.getCaseTypeActionByUuid(EXISTING_CASE.getType(), SUSPEND_REQUEST_DTO.getCaseTypeActionUuid())).thenReturn(SUSPENSION_CASE_TYPE_ACTION);
+        when(infoClient.getAllStagesForCaseType(EXISTING_CASE.getType())).thenReturn(Set.of(STAGE_TYPE));
 
         // WHEN
         actionDataSuspendService.suspend(EXISTING_CASE.getUuid(), EXISTING_STAGE_UUID, SUSPEND_REQUEST_DTO);
@@ -237,19 +243,19 @@ public class ActionDataSuspendServiceTest {
 
         assertEquals(
                 "Deadline set to specific date",
-                LocalDate.EPOCH,
+                LocalDate.of(9999,12,31),
                 caseDataArgumentCaptor.getValue().getCaseDeadline()
         );
 
         assertEquals(
                 "Deadline set to specific date",
-                LocalDate.EPOCH,
+                LocalDate.of(9999,12,31),
                 caseDataArgumentCaptor.getValue().getCaseDeadlineWarning()
         );
 
         LocalDate[] stageDeadlines = caseDataArgumentCaptor.getValue().getActiveStages().stream().map(ActiveStage::getDeadline).toArray(LocalDate[]::new);
         LocalDate[] expectedStageDeadlines = new LocalDate[stageDeadlines.length];
-        Arrays.fill(expectedStageDeadlines, LocalDate.EPOCH);
+        Arrays.fill(expectedStageDeadlines, LocalDate.of(9999,12,31));
 
         assertArrayEquals(
                 "Deadline set to specific date",
@@ -259,11 +265,13 @@ public class ActionDataSuspendServiceTest {
 
         assertTrue("That the case data has suspended flag", caseDataArgumentCaptor.getValue().getDataMap().containsKey("suspended"));
         assertTrue("That the case data has suspended flag is true", Boolean.parseBoolean(caseDataArgumentCaptor.getValue().getData("suspended")));
-
+        assertTrue("That the case data has stage deadline override", caseDataArgumentCaptor.getValue().getDataMap().containsKey("SOME_STAGE_DEADLINE"));
+        assertEquals("That the case data has stage deadline override with correct date", "9999-12-31",caseDataArgumentCaptor.getValue().getDataMap().get("SOME_STAGE_DEADLINE"));
         // Verify other calls.
         verify(auditClient, times(1)).updateCaseAudit(any(CaseData.class),eq(EXISTING_STAGE_UUID));
         verify(auditClient, times(1)).createSuspensionAudit(any(ActionDataSuspension.class));
         verify(suspensionRepository, times(1)).save(any(ActionDataSuspension.class));
+        verify(caseNoteService, times(1)).createCaseNote(eq(EXISTING_CASE.getUuid()), eq("CASE_SUSPENSION_APPLIED"),eq(""));
     }
 
     @Test
@@ -316,7 +324,7 @@ public class ActionDataSuspendServiceTest {
         // Verify other calls.
         verify(auditClient, times(1)).updateCaseAudit(any(CaseData.class),eq(EXISTING_STAGE_UUID));
         verify(auditClient, times(1)).updateSuspensionAudit(any(ActionDataSuspension.class));
-
+        verify(caseNoteService, times(1)).createCaseNote(eq(EXISTING_CASE.getUuid()), eq("CASE_SUSPENSION_REMOVED"),eq(""));
         verify(suspensionRepository, times(1)).save(suspensionArgumentCaptor.capture());
 
         assertNotNull("That entity saved with updated suspension removed value", suspensionArgumentCaptor.getValue().getDateSuspensionRemoved());

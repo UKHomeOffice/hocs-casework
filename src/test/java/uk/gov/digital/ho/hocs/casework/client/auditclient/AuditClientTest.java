@@ -555,8 +555,8 @@ public class AuditClientTest extends BaseAwsTest {
         auditClient.createSuspensionAudit(suspensionEntity);
 
         // THEN
+        verify(auditSearchSnsClient, times(1)).publish(publicRequestCaptor.capture());
         assertSnsValues(caseDataUuid, EventType.CASE_SUSPENSION_APPLIED);
-        verify(auditSearchSnsClient, times(1)).publish(any(PublishRequest.class));
 
     }
 
@@ -584,11 +584,11 @@ public class AuditClientTest extends BaseAwsTest {
         );
 
         // WHEN
-        auditClient.createSuspensionAudit(suspensionEntity);
+        auditClient.updateSuspensionAudit(suspensionEntity);
 
         // THEN
+        verify(auditSearchSnsClient, times(1)).publish(publicRequestCaptor.capture());
         assertSnsValues(caseDataUuid, EventType.CASE_UNSUSPENDED);
-        verify(auditSearchSnsClient, times(1)).publish(any(PublishRequest.class));
 
     }
 

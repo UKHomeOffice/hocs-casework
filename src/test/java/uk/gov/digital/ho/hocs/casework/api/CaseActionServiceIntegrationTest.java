@@ -16,15 +16,7 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataAppealDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDeadlineExtensionInboundDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataExternalInterestInboundDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataSuspendDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseActionDataResponseDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.EntityDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseReferenceResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.api.utils.DateUtils;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 
@@ -174,6 +166,8 @@ public class CaseActionServiceIntegrationTest {
             LocalDate.parse("2020-12-28")
     );
 
+    private static final StageTypeDto STAGE_TYPE = new StageTypeDto("Some Stage", "9999","SOME_STAGE",20,18,1);
+
     @Before
     public void setUp() throws JsonProcessingException {
         MockRestServiceServer mockInfoService = buildMockService(restTemplate);
@@ -306,6 +300,12 @@ public class CaseActionServiceIntegrationTest {
                         20,
                         15
                 )), MediaType.APPLICATION_JSON));
+
+        mockInfoService
+                .expect(manyTimes(), requestTo(
+                        "http://localhost:8085/stages/caseType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(Set.of(STAGE_TYPE)), MediaType.APPLICATION_JSON));
     }
 
     // EXTENSIONS - CREATE

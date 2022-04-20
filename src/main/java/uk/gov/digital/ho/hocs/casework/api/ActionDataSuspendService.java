@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataSuspendDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
@@ -18,9 +19,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.SuspensionRepository;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.hocs.casework.api.utils.ActionDataHelpers.updateStageDeadlines;
@@ -35,13 +34,17 @@ public class ActionDataSuspendService implements ActionService {
     private final SuspensionRepository suspensionRepository;
     private final InfoClient infoClient;
     private final AuditClient auditClient;
+    private final CaseNoteService caseNoteService;
+
+    private static final LocalDate SUSPENSION_DEADLINE = LocalDate.of(9999, 12, 31);
 
     @Autowired
-    public ActionDataSuspendService(CaseDataRepository caseDataRepository, SuspensionRepository suspensionRepository, InfoClient infoClient, AuditClient auditClient) {
+    public ActionDataSuspendService(CaseDataRepository caseDataRepository, SuspensionRepository suspensionRepository, InfoClient infoClient, AuditClient auditClient, CaseNoteService caseNoteService) {
         this.caseDataRepository = caseDataRepository;
         this.suspensionRepository = suspensionRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
+        this.caseNoteService = caseNoteService;
     }
 
     @Override
@@ -86,9 +89,9 @@ public class ActionDataSuspendService implements ActionService {
 
         // Save the suspension event.
         ActionDataSuspension suspensionEntity = new ActionDataSuspension(
-                suspendDto.getCaseTypeActionUuid(),
-                suspendDto.getCaseSubtype(),
-                suspendDto.getCaseTypeActionLabel(),
+                caseTypeActionDto.getUuid(),
+                caseTypeActionDto.getActionSubtype(),
+                caseTypeActionDto.getActionLabel(),
                 caseData.getType(),
                 caseUUID,
                 suspendDto.getDateSuspensionApplied(),
@@ -96,12 +99,20 @@ public class ActionDataSuspendService implements ActionService {
         );
 
         suspensionRepository.save(suspensionEntity);
+        caseNoteService.createCaseNote(caseUUID, "CASE_SUSPENSION_APPLIED", "");
         auditClient.createSuspensionAudit(suspensionEntity);
 
         // update case data
         caseData.getDataMap().put("suspended", "true");
-        caseData.setCaseDeadline(LocalDate.EPOCH);
-        caseData.setCaseDeadlineWarning(LocalDate.EPOCH);
+        caseData.getDataMap().put("hasBeenSuspended", "true");
+        caseData.getDataMap().put("dateOfLatestSuspension",suspensionEntity.getDateSuspensionApplied().toString());
+
+        // Add stage deadline overrides for yet to be created stages
+        Set<StageTypeDto> stagesForCaseType = infoClient.getAllStagesForCaseType(caseData.getType());
+        stagesForCaseType.forEach((StageTypeDto stageTypeDto) -> caseData.getDataMap().put(stageTypeDto.getType()+"_DEADLINE", SUSPENSION_DEADLINE.toString()));
+
+        caseData.setCaseDeadline(SUSPENSION_DEADLINE);
+        caseData.setCaseDeadlineWarning(SUSPENSION_DEADLINE);
         updateStageDeadlines(caseData);
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, existingStageUuid);
@@ -124,6 +135,7 @@ public class ActionDataSuspendService implements ActionService {
 
             suspension.setDateSuspensionRemoved(LocalDate.now());
             suspensionRepository.save(suspension);
+            caseNoteService.createCaseNote(caseUUID, "CASE_SUSPENSION_REMOVED", "");
             auditClient.updateSuspensionAudit(suspension);
 
             caseData.update("suspended", "false");
