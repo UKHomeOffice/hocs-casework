@@ -21,7 +21,16 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditRes
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataAppeal;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataDeadlineExtension;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataExternalInterest;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataSuspension;
+import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
+import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 
 import java.time.LocalDateTime;
