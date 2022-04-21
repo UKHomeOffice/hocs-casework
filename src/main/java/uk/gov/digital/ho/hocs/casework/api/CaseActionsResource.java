@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import java.util.UUID;
 
@@ -32,6 +34,7 @@ public class CaseActionsResource {
         this.caseDataService = caseDataService;
     }
 
+    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
     @GetMapping(path = "/case/{caseId}/actions")
     public ResponseEntity<CaseActionDataResponseDto> getAllCaseActionDataForCase(@PathVariable UUID caseId) {
         CaseActionDataResponseDto caseActionData = caseActionService.getAllCaseActionDataForCase(caseId);
