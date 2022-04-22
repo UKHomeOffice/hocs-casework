@@ -1,6 +1,6 @@
 SET search_path TO casework;
 
-CREATE TABLE action_data_suspensions (
+CREATE TABLE IF NOT EXISTS action_data_suspensions (
     uuid                        UUID PRIMARY KEY,
     action_uuid                 UUID NOT NULL, -- knitted to info.schema case_type_action table entry uuid.
     action_label                TEXT NOT NULL,

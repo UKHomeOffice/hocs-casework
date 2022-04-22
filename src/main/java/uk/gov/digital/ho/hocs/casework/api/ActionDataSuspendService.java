@@ -76,7 +76,7 @@ public class ActionDataSuspendService implements ActionService {
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
         if (caseData == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case with id: %s does not exist.", caseUUID), CASE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case with uuid: %s does not exist.", caseUUID), CASE_NOT_FOUND);
         }
 
         CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(), suspendDto.getCaseTypeActionUuid());

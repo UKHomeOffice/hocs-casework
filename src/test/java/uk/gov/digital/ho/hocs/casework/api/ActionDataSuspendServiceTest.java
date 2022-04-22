@@ -163,7 +163,7 @@ public class ActionDataSuspendServiceTest {
 
         Set<ActiveStage> activeStages = Set.of(stage1, stage2);
 
-        EXISTING_CASE =  new CaseData(
+        EXISTING_CASE = new CaseData(
                 1L,
                 CASE_UUID,
                 LocalDateTime.of(2021, Month.APRIL,1, 0,0),
