@@ -34,7 +34,7 @@ public class CaseActionsResource {
         this.caseDataService = caseDataService;
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @GetMapping(path = "/case/{caseId}/actions")
     public ResponseEntity<CaseActionDataResponseDto> getAllCaseActionDataForCase(@PathVariable UUID caseId) {
         CaseActionDataResponseDto caseActionData = caseActionService.getAllCaseActionDataForCase(caseId);

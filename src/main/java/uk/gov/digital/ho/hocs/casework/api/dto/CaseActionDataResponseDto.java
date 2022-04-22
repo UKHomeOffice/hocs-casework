@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 
 import java.time.LocalDate;
