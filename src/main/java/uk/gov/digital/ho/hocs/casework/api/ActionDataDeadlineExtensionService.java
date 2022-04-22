@@ -15,7 +15,6 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataDeadlineExtension;
-import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.ActionDataDeadlineExtensionRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
@@ -25,7 +24,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static uk.gov.digital.ho.hocs.casework.api.utils.ActionDataHelpers.updateStageDeadlines;
+import static uk.gov.digital.ho.hocs.casework.api.utils.CaseDeadlineHelper.overrideStageDeadlines;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.ACTION_DATA_CREATE_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUND;
 
@@ -138,7 +137,7 @@ public class ActionDataDeadlineExtensionService implements ActionService {
         caseData.setCaseDeadline(updatedDeadline);
         caseData.setCaseDeadlineWarning(updatedDeadlineWarning);
 
-        updateStageDeadlines(caseData);
+        overrideStageDeadlines(caseData);
 
         ActionDataDeadlineExtension createdExtension = extensionRepository.save(extensionEntity);
 

@@ -107,8 +107,8 @@ public class CaseActionsResource {
     }
 
 
-    @DeleteMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/suspension/{suspensionUUID}")
-    public ResponseEntity<GetCaseReferenceResponse> deleteCaseSuspension(@PathVariable UUID caseUUID,
+    @PutMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/suspension/{suspensionUUID}")
+    public ResponseEntity<GetCaseReferenceResponse> updateCaseSuspension(@PathVariable UUID caseUUID,
                                                                          @PathVariable UUID stageUUID,
                                                                          @PathVariable UUID suspensionUUID) {
 

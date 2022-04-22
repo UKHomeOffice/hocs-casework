@@ -588,9 +588,11 @@ public class CaseDataService {
             caseSummary.withSuspended(caseDataMap.get("suspended"));
         }
 
+        CaseSummary builtCaseSummary = caseSummary.build();
+
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
 
-        return caseSummary.build();
+        return builtCaseSummary;
     }
 
     private void updateDeadlineForStage(CaseData caseData, String stageType, Integer noOfDays) {

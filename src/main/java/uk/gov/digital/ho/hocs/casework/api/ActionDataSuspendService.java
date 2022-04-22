@@ -25,7 +25,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static uk.gov.digital.ho.hocs.casework.api.utils.ActionDataHelpers.updateStageDeadlines;
+import static uk.gov.digital.ho.hocs.casework.api.utils.CaseDeadlineHelper.overrideStageDeadlines;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.ACTION_DATA_CREATE_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUND;
 
@@ -116,7 +116,7 @@ public class ActionDataSuspendService implements ActionService {
 
         caseData.setCaseDeadline(SUSPENSION_DEADLINE);
         caseData.setCaseDeadlineWarning(SUSPENSION_DEADLINE);
-        updateStageDeadlines(caseData);
+        overrideStageDeadlines(caseData);
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, existingStageUuid);
 

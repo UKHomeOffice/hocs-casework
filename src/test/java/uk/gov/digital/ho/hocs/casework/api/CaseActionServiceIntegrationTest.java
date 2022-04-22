@@ -857,7 +857,7 @@ public class CaseActionServiceIntegrationTest {
 
         ResponseEntity<Void> response = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_ID_NON_EXISTING + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension/" + SUSPENSION_ENTITY_ID,
-                DELETE,
+                PUT,
                 new HttpEntity<>(createValidAuthHeaders()),
                 Void.class
         );
@@ -869,7 +869,7 @@ public class CaseActionServiceIntegrationTest {
 
         ResponseEntity<Void> response = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_ID + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension/" + SUSPENSION_ENTITY_ID_NON_EXISTING,
-                DELETE,
+                PUT,
                 new HttpEntity<>(createValidAuthHeaders()),
                 Void.class
         );
@@ -881,7 +881,7 @@ public class CaseActionServiceIntegrationTest {
 
         ResponseEntity<Void> response = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_ID + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension/" + SUSPENSION_ENTITY_ID,
-                DELETE,
+                PUT,
                 new HttpEntity<>(createValidAuthHeaders()),
                 Void.class
         );

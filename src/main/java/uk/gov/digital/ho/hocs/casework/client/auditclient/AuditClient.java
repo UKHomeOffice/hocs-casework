@@ -622,23 +622,18 @@ public class AuditClient {
 
     public void createSuspensionAudit(ActionDataSuspension suspensionEntity) {
 
-        AuditPayload.ActionAuditPayload payload = new AuditPayload.SuspensionItem(
-                suspensionEntity.getUuid(),
-                suspensionEntity.getCaseTypeActionUuid(),
-                suspensionEntity.getActionSubtype(),
-                suspensionEntity.getCaseTypeActionLabel(),
-                suspensionEntity.getCaseDataType(),
-                suspensionEntity.getCaseDataUuid(),
-                suspensionEntity.getDateSuspensionApplied(),
-                suspensionEntity.getDateSuspensionRemoved(),
-                EventType.CASE_SUSPENSION_APPLIED
-        );
+        AuditPayload.ActionAuditPayload payload = getActionAuditPayload(suspensionEntity, EventType.CASE_SUSPENSION_APPLIED);
         saveActionAudit(payload);
     }
 
     public void updateSuspensionAudit(ActionDataSuspension suspensionEntity) {
 
-        AuditPayload.ActionAuditPayload payload = new AuditPayload.SuspensionItem(
+        AuditPayload.ActionAuditPayload payload = getActionAuditPayload(suspensionEntity, EventType.CASE_UNSUSPENDED);
+        saveActionAudit(payload);
+    }
+
+    private AuditPayload.ActionAuditPayload getActionAuditPayload(ActionDataSuspension suspensionEntity, EventType suspensionEventType) {
+        return new AuditPayload.SuspensionItem(
                 suspensionEntity.getUuid(),
                 suspensionEntity.getCaseTypeActionUuid(),
                 suspensionEntity.getActionSubtype(),
@@ -647,8 +642,7 @@ public class AuditClient {
                 suspensionEntity.getCaseDataUuid(),
                 suspensionEntity.getDateSuspensionApplied(),
                 suspensionEntity.getDateSuspensionRemoved(),
-                EventType.CASE_UNSUSPENDED
+                suspensionEventType
         );
-        saveActionAudit(payload);
     }
 }
