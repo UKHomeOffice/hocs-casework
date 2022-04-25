@@ -9,10 +9,10 @@ import java.util.UUID;
 
 public interface SuspensionRepository extends CrudRepository<ActionDataSuspension, UUID> {
 
-    Optional<List<ActionDataSuspension>> findAllByCaseDataUuid(UUID caseUUID);
+    List<ActionDataSuspension> findAllByCaseDataUuid(UUID caseUUID);
 
     Optional<ActionDataSuspension> findByUuidAndCaseDataUuid(UUID uuid, UUID caseUUID);
 
-    Optional<List<ActionDataSuspension>> findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(UUID caseUUID, UUID caseActionTypeUUID);
+    List<ActionDataSuspension> findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(UUID caseUUID, UUID caseActionTypeUUID);
 
 }

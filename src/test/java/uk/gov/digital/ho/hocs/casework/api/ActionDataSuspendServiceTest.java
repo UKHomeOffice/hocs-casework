@@ -227,7 +227,7 @@ public class ActionDataSuspendServiceTest {
 
         when(suspensionRepository
                 .findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(EXISTING_CASE.getUuid(), SUSPENSION_CASE_TYPE_ACTION.getUuid())
-        ).thenReturn(Optional.of(List.of(ACTIVE_SUSPENSION_ENTITY)));
+        ).thenReturn(List.of(ACTIVE_SUSPENSION_ENTITY));
 
         // WHEN - // THEN
         assertThrows(

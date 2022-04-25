@@ -57,9 +57,8 @@ public class ActionDataSuspendService implements ActionService {
 
     @Override
     public List<ActionDataDto> getAllActionsForCase(UUID caseUUID) {
-        Optional<List<ActionDataSuspension>> maybeSuspensions = suspensionRepository.findAllByCaseDataUuid(caseUUID);
-        if (maybeSuspensions.isEmpty()) return List.of();
-        return maybeSuspensions.get().stream().map(suspension ->
+        List<ActionDataSuspension> suspensions = suspensionRepository.findAllByCaseDataUuid(caseUUID);
+        return suspensions.stream().map(suspension ->
                         new ActionDataSuspendDto(
                             suspension.getUuid(),
                             suspension.getCaseTypeActionUuid(),
@@ -84,8 +83,8 @@ public class ActionDataSuspendService implements ActionService {
             throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", suspendDto.getCaseTypeActionUuid()), ACTION_DATA_CREATE_FAILURE);
         }
 
-        if (hasMaxActiveRequests(caseTypeActionDto, caseUUID)) {
-            String msg = String.format("The maximum number of 'Pending' requests of type: %s already exist for caseId: %s", caseTypeActionDto.getActionLabel(), caseUUID);
+        if (hasActiveSuspension(caseTypeActionDto, caseUUID)) {
+            String msg = String.format("CaseId: %s is already suspended", caseUUID);
             log.error(msg);
             throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,msg);
         }
@@ -155,8 +154,8 @@ public class ActionDataSuspendService implements ActionService {
         return caseData.getReference();
     }
 
-    private boolean hasMaxActiveRequests(CaseTypeActionDto caseTypeActionDto, UUID caseUUID) {
-        Optional<List<ActionDataSuspension>> caseSuspensions = suspensionRepository.findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(caseUUID, caseTypeActionDto.getUuid());
-        return caseSuspensions.isPresent() && caseSuspensions.get().size() >= caseTypeActionDto.getMaxConcurrentEvents();
+    private boolean hasActiveSuspension(CaseTypeActionDto caseTypeActionDto, UUID caseUUID) {
+        List<ActionDataSuspension> caseSuspensions = suspensionRepository.findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(caseUUID, caseTypeActionDto.getUuid());
+        return !caseSuspensions.isEmpty();
     }
 }
