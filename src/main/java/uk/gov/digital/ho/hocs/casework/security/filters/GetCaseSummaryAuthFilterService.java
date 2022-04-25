@@ -88,7 +88,8 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
                     response.getPrimaryTopic(),
                     response.getActiveStages(),
                     response.getPreviousCase(),
-                    response.getActions()
+                    response.getActions(),
+                    response.getSuspended()
             );
         }
 

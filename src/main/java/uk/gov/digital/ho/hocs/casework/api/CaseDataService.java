@@ -579,15 +579,20 @@ public class CaseDataService {
         auditClient.viewCaseSummaryAudit(caseData);
 
         final ActiveCaseViewData activeCaseViewData = getActiveCaseData(caseUUID);
-        final CaseSummary caseSummary = summaryBuilder
+        final CaseSummary.Builder caseSummary = summaryBuilder
                 .withPreviousCaseReference(activeCaseViewData.getPreviousCaseReference())
                 .withPreviousCaseUUID(activeCaseViewData.getPreviousCaseUUID())
-                .withPreviousCaseStageUUID(activeCaseViewData.getPreviousCaseStageUUID())
-                .build();
+                .withPreviousCaseStageUUID(activeCaseViewData.getPreviousCaseStageUUID());
+
+        if (caseDataMap.containsKey("suspended")) {
+            caseSummary.withSuspended(caseDataMap.get("suspended"));
+        }
+
+        CaseSummary builtCaseSummary = caseSummary.build();
 
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
 
-        return caseSummary;
+        return builtCaseSummary;
     }
 
     private void updateDeadlineForStage(CaseData caseData, String stageType, Integer noOfDays) {
