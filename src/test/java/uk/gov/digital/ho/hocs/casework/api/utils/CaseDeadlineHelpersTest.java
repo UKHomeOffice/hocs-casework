@@ -2,16 +2,25 @@ package uk.gov.digital.ho.hocs.casework.api.utils;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.Address;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
-public class CaseDeadlineHelperTest {
+public class CaseDeadlineHelpersTest {
 
     private static final UUID CASE_UUID = UUID.fromString("f51721df-c533-434c-9455-6dc0b3718ae2");
     private static final String TOPIC_NAME = "topic_name";
@@ -103,7 +112,7 @@ public class CaseDeadlineHelperTest {
         EXISTING_CASE.setCaseDeadlineWarning(newDeadlineWarning);
 
         // WHEN
-        CaseDeadlineHelper.overrideStageDeadlines(EXISTING_CASE);
+        CaseDeadlineHelpers.overrideStageDeadlines(EXISTING_CASE);
 
         // THEN
 

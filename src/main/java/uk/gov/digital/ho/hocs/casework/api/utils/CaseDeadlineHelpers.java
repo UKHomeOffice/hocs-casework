@@ -5,11 +5,10 @@ import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
 import java.time.LocalDate;
-import java.util.Map;
 
 @Slf4j
-public class CaseDeadlineHelper {
-    private CaseDeadlineHelper() {}
+public class CaseDeadlineHelpers {
+    private CaseDeadlineHelpers() {}
 
     public static void overrideStageDeadlines(CaseData caseData) {
 

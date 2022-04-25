@@ -24,7 +24,7 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static uk.gov.digital.ho.hocs.casework.api.utils.CaseDeadlineHelper.overrideStageDeadlines;
+import static uk.gov.digital.ho.hocs.casework.api.utils.CaseDeadlineHelpers.overrideStageDeadlines;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.ACTION_DATA_CREATE_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUND;
 
