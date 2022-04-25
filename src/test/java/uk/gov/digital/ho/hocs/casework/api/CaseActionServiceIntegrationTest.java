@@ -23,6 +23,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -67,6 +68,12 @@ public class CaseActionServiceIntegrationTest {
     private static final UUID NON_EXISTENT_CASE_TYPE_ACTION_ID = UUID.fromString("c3d53309-3be8-4bad-8d9b-b2f7107f6923");
     public static final String EXTENSION_REASON_1_SIMPLE_NAME = "EXTENSION_REASON_1_SIMPLE_NAME";
     public static final String EXTENSION_REASON_2_SIMPLE_NAME = "EXTENSION_REASON_2_SIMPLE_NAME";
+    public static final UUID SUSPEND_CASE_TYPE_ACTION_ID = UUID.fromString("7d3c643e-7ccc-4404-8ec0-271ab803a233");
+    public static final UUID SUSPEND_CASE_TYPE_ACTION_ID_ALT_ID = UUID.fromString("6f011f21-6b8c-40a9-aff1-56e97029c445");
+    private static final UUID SUSPENSION_ENTITY_ID = UUID.fromString("745a149d-b9fb-47b5-bfcd-a192f1bce48e");
+    private static final UUID SUSPENSION_ENTITY_ID_NON_EXISTING = UUID.fromString("d9f8359c-797e-4a44-940b-0d5b821ae842");
+    private static final UUID MOCK_STAGE_UUID = UUID.fromString("ed648084-5ed8-4e3f-866c-ff3c5d9790c8");
+
 
     public static final uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto EXTENSION_REASON_1 = new uk.gov.digital.ho.hocs.casework.client.infoclient.EntityDto(EXTENSION_REASON_1_SIMPLE_NAME,
             Map.of("title", "Extension Reason 1"));
@@ -126,7 +133,33 @@ public class CaseActionServiceIntegrationTest {
             "{}"
     );
 
-    private Set<LocalDate> exemptionDates = Set.of(
+    private static final CaseTypeActionDto MOCK_CASE_TYPE_ACTION_SUSPEND_DTO = new CaseTypeActionDto(
+            SUSPEND_CASE_TYPE_ACTION_ID,
+            UUID.randomUUID(),
+            "CASE_TYPE",
+            "SUSPEND",
+            "SUSPEND_TYPE_1",
+            "SUSPEND 1",
+            1,
+            10,
+            true,
+            "{}"
+    );
+
+    private static final CaseTypeActionDto MOCK_CASE_TYPE_ACTION_SUSPEND_DTO_ALT_ID = new CaseTypeActionDto(
+            SUSPEND_CASE_TYPE_ACTION_ID_ALT_ID,
+            UUID.randomUUID(),
+            "CASE_TYPE",
+            "SUSPEND",
+            "SUSPEND_TYPE_2",
+            "SUSPEND 1",
+            1,
+            10,
+            true,
+            "{}"
+    );
+
+    private final Set<LocalDate> exemptionDates = Set.of(
             LocalDate.parse("2020-01-01"),
             LocalDate.parse("2020-04-10"),
             LocalDate.parse("2020-04-13"),
@@ -136,6 +169,8 @@ public class CaseActionServiceIntegrationTest {
             LocalDate.parse("2020-12-25"),
             LocalDate.parse("2020-12-28")
     );
+
+    private static final StageTypeDto STAGE_TYPE = new StageTypeDto("Some Stage", "9999","SOME_STAGE",20,18,1);
 
     @Before
     public void setUp() throws JsonProcessingException {
@@ -173,7 +208,7 @@ public class CaseActionServiceIntegrationTest {
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(6).toString()), MediaType.APPLICATION_JSON));
         mockInfoService
-                .expect(requestTo(matchesPattern("http:\\/\\/localhost:8085\\/stageType\\/INITIAL_DRAFT\\/deadline\\?received=2018-01-01&caseDeadline=\\d{4}-\\d{2}-\\d{2}&overrideSla=true")))
+                .expect(requestTo(matchesPattern("http://localhost:8085/stageType/INITIAL_DRAFT/deadline\\?received=2018-01-01&caseDeadline=\\d{4}-\\d{2}-\\d{2}&overrideSla=true")))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(LocalDate.now().plusDays(8).toString()), MediaType.APPLICATION_JSON));
         mockInfoService
@@ -184,7 +219,11 @@ public class CaseActionServiceIntegrationTest {
                 .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(List.of(
-                        MOCK_CASE_TYPE_ACTION_EXTENSION_DTO, MOCK_CASE_TYPE_ACTION_APPEAL_DTO, MOCK_CASE_TYPE_ACTION_EXTERNAL_INTEREST_DTO)), MediaType.APPLICATION_JSON));
+                        MOCK_CASE_TYPE_ACTION_EXTENSION_DTO,
+                        MOCK_CASE_TYPE_ACTION_APPEAL_DTO,
+                        MOCK_CASE_TYPE_ACTION_EXTERNAL_INTEREST_DTO,
+                        MOCK_CASE_TYPE_ACTION_SUSPEND_DTO,
+                        MOCK_CASE_TYPE_ACTION_SUSPEND_DTO_ALT_ID)), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions/326eddb3-ba64-4253-ad39-916ccbb59f4e"))
                 .andExpect(method(GET))
@@ -205,6 +244,18 @@ public class CaseActionServiceIntegrationTest {
                 .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions/c3d53309-3be8-4bad-8d9b-b2f7107f6923"))
                 .andExpect(method(GET))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
+        mockInfoService
+                .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions/" + SUSPEND_CASE_TYPE_ACTION_ID_ALT_ID))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(MOCK_CASE_TYPE_ACTION_SUSPEND_DTO_ALT_ID), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions/" + NON_EXISTENT_CASE_TYPE_ACTION_ID))
+                .andExpect(method(GET))
+                .andRespond(withStatus(HttpStatus.NOT_FOUND));
+        mockInfoService
+                .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/actions/" + SUSPEND_CASE_TYPE_ACTION_ID))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(MOCK_CASE_TYPE_ACTION_SUSPEND_DTO), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(manyTimes(), requestTo("http://localhost:8085/caseType/TEST/deadline/2018-01-29/remainingDays"))
                 .andExpect(method(GET))
@@ -253,6 +304,12 @@ public class CaseActionServiceIntegrationTest {
                         20,
                         15
                 )), MediaType.APPLICATION_JSON));
+
+        mockInfoService
+                .expect(manyTimes(), requestTo(
+                        "http://localhost:8085/stages/caseType/TEST"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(Set.of(STAGE_TYPE)), MediaType.APPLICATION_JSON));
     }
 
     // EXTENSIONS - CREATE
@@ -372,8 +429,8 @@ public class CaseActionServiceIntegrationTest {
                 CaseActionDataResponseDto.class
         );
 
-        assertThat(allActionsResponse
-                .getBody()
+        assertThat(Objects.requireNonNull(allActionsResponse
+                        .getBody())
                 .getCaseActionData().get("recordInterest").size()).isEqualTo(2);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -615,7 +672,6 @@ public class CaseActionServiceIntegrationTest {
     @Test
     public void appealUpdate_shouldReturn404WhenCaseDoesNotExist() throws JsonProcessingException {
         UUID stageUUID = UUID.randomUUID();
-        String caseType = "FOI";
         String caseTypeActionLabel = "IR Appeal";
 
         ActionDataDto actionDataDto = new ActionDataAppealDto(
@@ -700,6 +756,135 @@ public class CaseActionServiceIntegrationTest {
                 Void.class
         );
 
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    // - SUSPENSIONS
+    @Test
+    public void testCreateCaseSuspensionShouldReturn404WhenCaseDoesNotExist() throws JsonProcessingException {
+
+        ActionDataSuspendDto actionDataDto = new ActionDataSuspendDto(
+                null,
+                SUSPEND_CASE_TYPE_ACTION_ID,
+                "SUSPEND",
+                "SUSPEND",
+                LocalDate.now(),
+                null
+        );
+
+        String requestBody = mapper.writeValueAsString(actionDataDto);
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID_NON_EXISTING + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension",
+                POST,
+                new HttpEntity<>(requestBody, createValidAuthHeaders()),
+                Void.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void testCreateCaseSuspensionShouldReturn404WhenCaseActionTypeNotFound() throws JsonProcessingException {
+
+        ActionDataSuspendDto actionDataDto = new ActionDataSuspendDto(
+                null,
+                NON_EXISTENT_CASE_TYPE_ACTION_ID,
+                "SUSPEND",
+                "SUSPEND",
+                LocalDate.now(),
+                null
+        );
+
+        String requestBody = mapper.writeValueAsString(actionDataDto);
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension",
+                POST,
+                new HttpEntity<>(requestBody, createValidAuthHeaders()),
+                Void.class
+        );
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void testCreateCaseSuspensionShouldReturn400WhenMaxSuspensionsForTypeExist() throws JsonProcessingException {
+
+        ActionDataSuspendDto actionDataDto = new ActionDataSuspendDto(
+                null,
+                SUSPEND_CASE_TYPE_ACTION_ID_ALT_ID,
+                "SUSPEND",
+                "SUSPEND",
+                LocalDate.now(),
+                null
+        );
+
+        String requestBody = mapper.writeValueAsString(actionDataDto);
+
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension",
+                POST,
+                new HttpEntity<>(requestBody, createValidAuthHeaders()),
+                Void.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
+
+    @Test
+    public void testCreateCaseSuspensionShouldReturn200AndCreateSuspension() throws JsonProcessingException {
+
+        ActionDataSuspendDto actionDataDto = new ActionDataSuspendDto(
+                null,
+                SUSPEND_CASE_TYPE_ACTION_ID,
+                "SUSPEND",
+                "SUSPEND",
+                LocalDate.now(),
+                null
+        );
+
+        String requestBody = mapper.writeValueAsString(actionDataDto);
+
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension",
+                POST,
+                new HttpEntity<>(requestBody, createValidAuthHeaders()),
+                Void.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void testDeleteCaseSuspensionShouldReturn404WhenCaseDoesNotExist() {
+
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID_NON_EXISTING + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension/" + SUSPENSION_ENTITY_ID,
+                PUT,
+                new HttpEntity<>(createValidAuthHeaders()),
+                Void.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void testDeleteCaseSuspensionShouldReturn404WhenSuspensionDoesNotExist() {
+
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension/" + SUSPENSION_ENTITY_ID_NON_EXISTING,
+                PUT,
+                new HttpEntity<>(createValidAuthHeaders()),
+                Void.class
+        );
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void testDeleteCaseSuspensionShouldReturn200AndCreateSuspension() {
+
+        ResponseEntity<Void> response = testRestTemplate.exchange(
+                getBasePath() + "/case/" + CASE_ID + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension/" + SUSPENSION_ENTITY_ID,
+                PUT,
+                new HttpEntity<>(createValidAuthHeaders()),
+                Void.class
+        );
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 

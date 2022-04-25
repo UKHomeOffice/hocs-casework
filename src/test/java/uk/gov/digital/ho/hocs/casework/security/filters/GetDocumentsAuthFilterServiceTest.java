@@ -44,7 +44,7 @@ public class GetDocumentsAuthFilterServiceTest {
                                 null, null, null,
                                 null, null, null,
                                 null, null, null,
-                                null, null, null)
+                                null, null, null, null)
                 ));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;

@@ -88,7 +88,7 @@ public class GetCaseSummaryAuthFilterServiceTest {
                                 caseType, null, null,
                                 null, additionalFields, null,
                                 null, null, null,
-                                null, null, null)
+                                null, null, null, null)
                 ));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;
@@ -132,7 +132,7 @@ public class GetCaseSummaryAuthFilterServiceTest {
                                 caseType, null, null,
                                 null, additionalFields, null,
                                 null, null, null,
-                                null, null, null)
+                                null, null, null, null)
                 ));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;

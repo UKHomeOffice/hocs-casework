@@ -47,6 +47,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -532,6 +533,70 @@ public class AuditClientTest extends BaseAwsTest {
         assertThat(response.size()).isEqualTo(0);
     }
 
+    @Test
+    public void testShouldSendCaseActionSuspendCreateAuditMessage() throws JsonProcessingException {
+        // GIVEN
+        UUID actionUuid = UUID.randomUUID();
+        UUID caseTypeActionUuid = UUID.randomUUID();
+        String actionSubtype = "SUB_TYPE";
+        String caseTypeActionLabel = "Case Suspension";
+        String caseDataType = "SMC";
+        UUID caseDataUuid = UUID.randomUUID();
+        LocalDate dataSuspensionApplied = LocalDate.of(2022, 1, 1);
+        LocalDate dataSuspensionRemoved = null;
+
+        ActionDataSuspension suspensionEntity = new ActionDataSuspension(
+                actionUuid,
+                caseTypeActionUuid,
+                actionSubtype,
+                caseTypeActionLabel,
+                caseDataType,
+                caseDataUuid,
+                dataSuspensionApplied,
+                dataSuspensionRemoved
+        );
+
+        // WHEN
+        auditClient.createSuspensionAudit(suspensionEntity);
+
+        // THEN
+        verify(auditSearchSnsClient, times(1)).publish(publicRequestCaptor.capture());
+        assertSnsValues(caseDataUuid, EventType.CASE_SUSPENSION_APPLIED);
+
+    }
+
+    @Test
+    public void testShouldSendCaseActionSuspendUnsuspendAuditMessage() throws JsonProcessingException {
+        // GIVEN
+        UUID actionUuid = UUID.randomUUID();
+        UUID caseTypeActionUuid = UUID.randomUUID();
+        String actionSubtype = "SUB_TYPE";
+        String caseTypeActionLabel = "Case Suspension";
+        String caseDataType = "SMC";
+        UUID caseDataUuid = UUID.randomUUID();
+        LocalDate dataSuspensionApplied = LocalDate.of(2022, 1, 1);
+        LocalDate dataSuspensionRemoved = LocalDate.of(2022,2,1);
+
+        ActionDataSuspension suspensionEntity = new ActionDataSuspension(
+                actionUuid,
+                caseTypeActionUuid,
+                actionSubtype,
+                caseTypeActionLabel,
+                caseDataType,
+                caseDataUuid,
+                dataSuspensionApplied,
+                dataSuspensionRemoved
+        );
+
+        // WHEN
+        auditClient.updateSuspensionAudit(suspensionEntity);
+
+        // THEN
+        verify(auditSearchSnsClient, times(1)).publish(publicRequestCaptor.capture());
+        assertSnsValues(caseDataUuid, EventType.CASE_UNSUSPENDED);
+
+    }
+
     private void assertSnsValues(UUID caseUuid, EventType event) throws JsonProcessingException {
         assertSnsValues(caseUuid, event, Collections.emptyMap());
     }
@@ -553,5 +618,4 @@ public class AuditClientTest extends BaseAwsTest {
             Assertions.assertTrue(caseCreatedData.entrySet().containsAll(otherValues.entrySet()));
         }
     }
-
 }

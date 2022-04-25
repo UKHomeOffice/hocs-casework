@@ -295,4 +295,20 @@ public interface AuditPayload {
         private String partyType;
         private EventType eventType;
     }
+
+    @AllArgsConstructor
+    @Getter
+    @Builder
+    class SuspensionItem implements ActionAuditPayload {
+
+        private UUID actionUuid;
+        private UUID caseTypeActionUuid;
+        private String actionSubtype;
+        private String caseTypeActionLabel;
+        private String caseDataType;
+        private UUID caseDataUuid;
+        private LocalDate dataSuspensionApplied;
+        private LocalDate dataSuspensionRemoved;
+        private EventType eventType;
+    }
 }
