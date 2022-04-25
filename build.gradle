@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'jacoco'
-    id 'org.springframework.boot' version '2.6.6'
+    id 'org.springframework.boot' version '2.6.7'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
 
@@ -47,12 +47,12 @@ dependencies {
     implementation 'com.vladmihalcea:hibernate-types-55:2.16.1'
 
     implementation 'net.logstash.logback:logstash-logback-encoder:7.1.1'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.7'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.8'
 
     implementation 'com.github.ben-manes.caffeine:caffeine:3.0.6'
     implementation 'org.json:json:20220320'
 
-    implementation 'org.flywaydb:flyway-core:8.5.8'
+    implementation 'org.flywaydb:flyway-core:8.5.9'
     runtimeOnly 'org.postgresql:postgresql:42.3.4'
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
