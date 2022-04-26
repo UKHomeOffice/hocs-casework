@@ -6,11 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.AdditionalFieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.AdditionalField;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
@@ -18,11 +14,8 @@ import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.time.LocalDate;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -82,13 +75,33 @@ public class GetCaseSummaryAuthFilterServiceTest {
 
         Set<AdditionalField> additionalFields = Set.of(additionalField1, additionalField2, additionalField3, additionalField4);
 
+        Map<String, List<ActionDataDto>> caseActionDataMap = new HashMap<>();
+
+        ActionDataAppealDto appealDto = new ActionDataAppealDto(
+                null,
+                null,
+                "TEST_APPEAL",
+                "ACTION_LABEL",
+                null,
+                LocalDate.MAX,
+                null,
+                null,
+                "TEST NOTE - This appeal should be removed by case summary auth filter",
+                "{}",
+                null
+        );
+
+        caseActionDataMap.put("appeals",new ArrayList(List.of(appealDto)));
+
+        CaseActionDataResponseDto caseActionData  = CaseActionDataResponseDto.from(caseActionDataMap,  List.of(), LocalDate.now(), 20);
+
         ResponseEntity<?> responseToFilter = ResponseEntity.ok(
                 GetCaseSummaryResponse.from(
                         new CaseSummary(
                                 caseType, null, null,
                                 null, additionalFields, null,
                                 null, null, null,
-                                null, null, null, null)
+                                null, null, caseActionData, null)
                 ));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;
@@ -111,6 +124,7 @@ public class GetCaseSummaryAuthFilterServiceTest {
 
         assertThat(getCaseSummaryResponse.getAdditionalFields().size()).isEqualTo(0);
         assertThat(getCaseSummaryResponse.getActiveStages().size()).isEqualTo(0);
+        assertThat(getCaseSummaryResponse.getActions().getCaseActionData().size()).isEqualTo(0);
     }
 
     @Test
@@ -126,13 +140,33 @@ public class GetCaseSummaryAuthFilterServiceTest {
 
         Set<AdditionalField> additionalFields = Set.of(additionalField1, additionalField2, additionalField3, additionalField4);
 
+        Map<String, List<ActionDataDto>> caseActionDataMap = new HashMap<>();
+
+        ActionDataAppealDto appealDto = new ActionDataAppealDto(
+                null,
+                null,
+                "TEST_APPEAL",
+                "ACTION_LABEL",
+                null,
+                LocalDate.MAX,
+                null,
+                null,
+                "TEST NOTE - This appeal should be removed by case summary auth filter",
+                "{}",
+                null
+        );
+
+        caseActionDataMap.put("appeals",new ArrayList(List.of(appealDto)));
+
+        CaseActionDataResponseDto caseActionData  = CaseActionDataResponseDto.from(caseActionDataMap,  List.of(), LocalDate.now(), 20);
+
         ResponseEntity<?> responseToFilter = ResponseEntity.ok(
                 GetCaseSummaryResponse.from(
                         new CaseSummary(
                                 caseType, null, null,
                                 null, additionalFields, null,
                                 null, null, null,
-                                null, null, null, null)
+                                null, null, caseActionData, null)
                 ));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;
@@ -160,6 +194,7 @@ public class GetCaseSummaryAuthFilterServiceTest {
         assertThat(getCaseSummaryResponse.getActiveStages().size()).isEqualTo(0);
         assertThat(getCaseSummaryResponse.getAdditionalFields().stream().map(AdditionalFieldDto::getName)).contains("field1", "field2");
         assertThat(getCaseSummaryResponse.getAdditionalFields().stream().map(AdditionalFieldDto::getName)).doesNotContain("field3", "field4");
+        assertThat(getCaseSummaryResponse.getActions().getCaseActionData().size()).isEqualTo(0);
     }
 
 }
