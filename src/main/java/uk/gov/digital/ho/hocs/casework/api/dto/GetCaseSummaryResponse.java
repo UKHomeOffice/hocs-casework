@@ -101,13 +101,14 @@ public class GetCaseSummaryResponse {
 
     protected void clearCaseActionData() {
 
-        Map<String, List<ActionDataDto>> emptyCaseActionDataMap = new HashMap<>();
-
-        this.actions = CaseActionDataResponseDto.from(
-                emptyCaseActionDataMap,
-                this.actions.getCaseTypeActionData(),
-                this.actions.getCurrentCaseDeadline(),
-                this.actions.getRemainingDaysUntilDeadline());
+        if (this.actions != null) {
+            Map<String, List<ActionDataDto>> emptyCaseActionDataMap = new HashMap<>();
+            this.actions = CaseActionDataResponseDto.from(
+                    emptyCaseActionDataMap,
+                    this.actions.getCaseTypeActionData(),
+                    this.actions.getCurrentCaseDeadline(),
+                    this.actions.getRemainingDaysUntilDeadline());
+        }
     }
 
 }
