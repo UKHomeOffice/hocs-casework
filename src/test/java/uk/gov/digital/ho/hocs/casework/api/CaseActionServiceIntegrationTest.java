@@ -17,15 +17,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.api.utils.DateUtils;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.CaseTypeActionDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.PermissionDto;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
+import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.matchesPattern;
@@ -55,6 +56,8 @@ public class CaseActionServiceIntegrationTest {
 
     @LocalServerPort
     int port;
+
+    private MockRestServiceServer mockInfoService = null;
 
     private static final UUID CASE_ID = UUID.fromString("14915b78-6977-42db-b343-0915a7f412a1");
     private static final UUID CASE_ID_NON_EXISTING = UUID.fromString("14915b78-6977-42db-b343-0915a7f412a2");
@@ -172,9 +175,15 @@ public class CaseActionServiceIntegrationTest {
 
     private static final StageTypeDto STAGE_TYPE = new StageTypeDto("Some Stage", "9999","SOME_STAGE",20,18,1);
 
+    private static final CaseDataType CASE_DATA_TYPE = CaseDataTypeFactory.from("TEST", "a1");
+
     @Before
     public void setUp() throws JsonProcessingException {
-        MockRestServiceServer mockInfoService = buildMockService(restTemplate);
+        mockInfoService = buildMockService(restTemplate);
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType/FOI/actions/" + EXTENSION_CASE_TYPE_ACTION_ID))
                 .andExpect(method(GET))
@@ -403,7 +412,7 @@ public class CaseActionServiceIntegrationTest {
     // EXTERNAL INTEREST - CREATE
     @Test
     public void createExternalInterest_shouldCreateExternalInterest() throws JsonProcessingException {
-
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "External Interest";
 
@@ -889,8 +898,8 @@ public class CaseActionServiceIntegrationTest {
     }
 
     @Test
-    public void getAllCaseActionsByCaseId_shouldReturn200AndCaseActionDataResponseDto() {
-
+    public void getAllCaseActionsByCaseId_shouldReturn200AndCaseActionDataResponseDto() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<CaseActionDataResponseDto> response = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_ID + "/actions",
                 GET,
@@ -924,6 +933,19 @@ public class CaseActionServiceIntegrationTest {
         MockRestServiceServer.MockRestServiceServerBuilder infoBuilder = bindTo(restTemplate);
         infoBuilder.ignoreExpectOrder(true);
         return infoBuilder.build();
+    }
+
+    private void setupMockTeams(String caseType, int permission) throws JsonProcessingException {
+        Set<TeamDto> teamDtos = new HashSet<>();
+        Set<PermissionDto> permissionDtos = new HashSet<>();
+        permissionDtos.add(new PermissionDto(caseType, AccessLevel.from(permission)));
+        TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissionDtos);
+        teamDtos.add(teamDto);
+
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/team"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
     }
 
 }
