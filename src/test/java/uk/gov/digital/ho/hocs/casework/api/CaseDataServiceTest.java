@@ -485,7 +485,7 @@ public class CaseDataServiceTest {
 
 
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
-        when(auditClient.getAuditLinesForCase(eq(caseData.getUuid()), any())).thenThrow(new RuntimeException("Error"));
+        when(auditClient.getAuditLinesForCase(eq(caseData.getUuid()), any(), any())).thenThrow(new RuntimeException("Error"));
 
         List<TimelineItem> timeline = caseDataService.getCaseTimeline(caseData.getUuid()).collect(Collectors.toList());
 
@@ -495,7 +495,7 @@ public class CaseDataServiceTest {
         assertThat(timeline).anyMatch(t -> t.getMessage().contains("case note 1"));
         assertThat(timeline).noneMatch(t -> t.getType().equals(CASE_CREATED.toString()));
 
-        verify(auditClient, times(1)).getAuditLinesForCase(eq(caseData.getUuid()), any());
+        verify(auditClient, times(1)).getAuditLinesForCase(eq(caseData.getUuid()), any(), any());
         verifyNoMoreInteractions(auditClient);
     }
 
