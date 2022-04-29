@@ -33,6 +33,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -547,6 +548,18 @@ public class AuditClient {
         try {
             String events = String.join(",", requestedEvents);
             GetAuditListResponse response = restHelper.get(serviceBaseURL, String.format("/audit/case/%s?types=%s", caseUUID, events), GetAuditListResponse.class);
+            log.info("Got {} audits", response.getAudits().size(), value(LogEvent.EVENT, LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
+            return response.getAudits();
+        } catch (RestClientException e) {
+            log.error("Could not get audit lines, event {}, exception: {}", value(LogEvent.EVENT, LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(LogEvent.EXCEPTION, e));
+            return new HashSet<>();
+        }
+    }
+
+    public Set<GetAuditResponse> getAuditLinesForCase(UUID caseUUID, LocalDate fromDate, List<String> requestedEvents) {
+        try {
+            String events = String.join(",", requestedEvents);
+            GetAuditListResponse response = restHelper.get(serviceBaseURL, String.format("/audit/case/%s?fromDate=%s&types=%s", caseUUID, fromDate, events), GetAuditListResponse.class);
             log.info("Got {} audits", response.getAudits().size(), value(LogEvent.EVENT, LogEvent.AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
             return response.getAudits();
         } catch (RestClientException e) {
