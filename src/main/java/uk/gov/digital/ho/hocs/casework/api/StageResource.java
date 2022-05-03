@@ -131,6 +131,7 @@ class StageResource {
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
+    @Authorised(accessLevel = AccessLevel.OWNER, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
     @GetMapping(value = "/stage")
     ResponseEntity<GetStagesResponse> getActiveStages() {
         Set<StageWithCaseData> activeStages = stageService.getActiveStagesForUsersTeams();
@@ -156,6 +157,7 @@ class StageResource {
         return ResponseEntity.ok(caseUUIDs);
     }
 
+    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
     @PostMapping(value = "/search")
     ResponseEntity<GetStagesResponse> search(@Valid @RequestBody SearchRequest request) {
         Set<StageWithCaseData> stages = stageService.search(request);

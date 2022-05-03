@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseConfig;
 import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Allocated;
@@ -75,6 +76,12 @@ class CaseDataResource {
     public ResponseEntity<GetCaseSummaryResponse> getCaseSummary(@PathVariable UUID caseUUID) {
         CaseSummary caseSummary = caseDataService.getCaseSummary(caseUUID);
         return ResponseEntity.ok(GetCaseSummaryResponse.from(caseSummary));
+    }
+
+    @GetMapping(value = "/case/{caseUUID}/config")
+    public ResponseEntity<GetCaseConfigResponse> getCaseConfig(@PathVariable UUID caseUUID) {
+        CaseConfig caseConfig = caseDataService.getCaseConfig(caseUUID);
+        return ResponseEntity.ok(GetCaseConfigResponse.from(caseConfig));
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/calculateTotals")
