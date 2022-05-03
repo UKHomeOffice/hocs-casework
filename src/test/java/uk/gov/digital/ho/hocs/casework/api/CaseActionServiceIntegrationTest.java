@@ -26,7 +26,12 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.matchesPattern;
@@ -277,6 +282,11 @@ public class CaseActionServiceIntegrationTest {
                 .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/case/14915b78-6977-42db-b343-0915a7f412a2/stage//actions/appeal"))
+                .andExpect(method(POST))
+                .andRespond((withStatus(HttpStatus.NOT_FOUND)));
+
         final EntityDto test_interested_party = new EntityDto(
                 "TEST_INTERESTED_PARTY",
                 UUID.randomUUID().toString(),
@@ -325,7 +335,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void extensionCreate_shouldCreateDeadlineExtension() throws JsonProcessingException {
-
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "PIT Extension";
 
@@ -354,7 +364,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void extensionCreate_shouldReturn404whenNoActionWithID() throws JsonProcessingException {
-
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "PIT Extension";
 
@@ -383,7 +393,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void extensionCreate_shouldReturn404whenNoCaseData() throws JsonProcessingException {
-
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "PIT Extension";
 
@@ -447,7 +457,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void createExternalInterest_shouldReturn404whenNoCaseData() throws JsonProcessingException {
-
+      //  setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "External Interest";
 
@@ -470,6 +480,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void updateExternalInterest_shouldReturn200WhenExternalInterestUpdated() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "External Interest";
 
@@ -496,6 +507,7 @@ public class CaseActionServiceIntegrationTest {
     @Test
     public void updateExternalInterestUpdate_shouldReturn404WhenExternalInterestEntityDoesNotExist()
             throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "External Interest";
 
@@ -521,6 +533,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void appealCreate_shouldReturn404WhenActionDoesNotExist() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
@@ -551,6 +564,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void appealCreate_shouldReturn404WhenCaseIdDoesNotExist() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
@@ -581,6 +595,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void appealCreate_shouldReturn200AndCreateAppeal() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
@@ -611,6 +626,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void appealCreate_shouldReturn200ForBothCasesAndCreateAppeal() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID1 = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
         UUID caseUUID2 = UUID.fromString("bb915b78-6977-42db-b343-0915a7f412a1");
@@ -650,6 +666,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void appealUpdate_shouldReturn404WhenAppealEntityDoesNotExist() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
@@ -680,6 +697,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void appealUpdate_shouldReturn404WhenCaseDoesNotExist() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
@@ -710,6 +728,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void appealUpdate_shouldReturn404WhenAppealCaseActionTypeDoesNotExist() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
@@ -740,6 +759,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void appealUpdate_shouldReturn200WhenAppealUpdated() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "IR Appeal";
 
@@ -771,7 +791,7 @@ public class CaseActionServiceIntegrationTest {
     // - SUSPENSIONS
     @Test
     public void testCreateCaseSuspensionShouldReturn404WhenCaseDoesNotExist() throws JsonProcessingException {
-
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ActionDataSuspendDto actionDataDto = new ActionDataSuspendDto(
                 null,
                 SUSPEND_CASE_TYPE_ACTION_ID,
@@ -794,7 +814,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void testCreateCaseSuspensionShouldReturn404WhenCaseActionTypeNotFound() throws JsonProcessingException {
-
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ActionDataSuspendDto actionDataDto = new ActionDataSuspendDto(
                 null,
                 NON_EXISTENT_CASE_TYPE_ACTION_ID,
@@ -817,7 +837,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void testCreateCaseSuspensionShouldReturn400WhenMaxSuspensionsForTypeExist() throws JsonProcessingException {
-
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ActionDataSuspendDto actionDataDto = new ActionDataSuspendDto(
                 null,
                 SUSPEND_CASE_TYPE_ACTION_ID_ALT_ID,
@@ -840,7 +860,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void testCreateCaseSuspensionShouldReturn200AndCreateSuspension() throws JsonProcessingException {
-
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ActionDataSuspendDto actionDataDto = new ActionDataSuspendDto(
                 null,
                 SUSPEND_CASE_TYPE_ACTION_ID,
@@ -862,8 +882,8 @@ public class CaseActionServiceIntegrationTest {
     }
 
     @Test
-    public void testDeleteCaseSuspensionShouldReturn404WhenCaseDoesNotExist() {
-
+    public void testDeleteCaseSuspensionShouldReturn404WhenCaseDoesNotExist() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<Void> response = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_ID_NON_EXISTING + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension/" + SUSPENSION_ENTITY_ID,
                 PUT,
@@ -874,7 +894,8 @@ public class CaseActionServiceIntegrationTest {
     }
 
     @Test
-    public void testDeleteCaseSuspensionShouldReturn404WhenSuspensionDoesNotExist() {
+    public void testDeleteCaseSuspensionShouldReturn404WhenSuspensionDoesNotExist() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
 
         ResponseEntity<Void> response = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_ID + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension/" + SUSPENSION_ENTITY_ID_NON_EXISTING,
@@ -886,8 +907,8 @@ public class CaseActionServiceIntegrationTest {
     }
 
     @Test
-    public void testDeleteCaseSuspensionShouldReturn200AndCreateSuspension() {
-
+    public void testDeleteCaseSuspensionShouldReturn200AndCreateSuspension() throws JsonProcessingException {
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         ResponseEntity<Void> response = testRestTemplate.exchange(
                 getBasePath() + "/case/" + CASE_ID + "/stage/" + MOCK_STAGE_UUID + "/actions/suspension/" + SUSPENSION_ENTITY_ID,
                 PUT,

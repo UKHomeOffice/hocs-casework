@@ -43,7 +43,7 @@ public class CaseActionsResource {
         this.caseDataService = caseDataService;
     }
 
-    @Authorised(accessLevel = AccessLevel.OWNER)
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(path = "/case/{caseId}/actions")
     public ResponseEntity<CaseActionDataResponseDto> getAllCaseActionDataForCase(@PathVariable UUID caseId) {
         CaseActionDataResponseDto caseActionData = caseActionService.getAllCaseActionDataForCase(caseId);
@@ -51,6 +51,7 @@ public class CaseActionsResource {
     }
 
     // ---- Deadline Extensions ----
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @PostMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/extension")
     public ResponseEntity<GetCaseReferenceResponse> createExtension(@PathVariable UUID caseUUID,
                                                                     @PathVariable UUID stageUUID,
@@ -61,6 +62,7 @@ public class CaseActionsResource {
     }
 
     // ---- Case Appeals ----
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @PostMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/appeal")
     public ResponseEntity<CreateActionDataResponse> createAppeal(@PathVariable UUID caseUUID,
                                                                  @PathVariable UUID stageUUID,
@@ -70,6 +72,7 @@ public class CaseActionsResource {
         return ResponseEntity.ok(new CreateActionDataResponse(actionUUID, caseUUID, caseDataService.getCaseRef(caseUUID)));
     }
 
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @PutMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/appeal/{appealUUID}")
     public ResponseEntity<GetCaseReferenceResponse> updateAppeal(@PathVariable UUID caseUUID,
                                                                  @PathVariable UUID stageUUID,
@@ -81,6 +84,7 @@ public class CaseActionsResource {
     }
 
     // ---- Register External Interest ----
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @PostMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/interest")
     public ResponseEntity<GetCaseReferenceResponse> createExternalInterest(@PathVariable UUID caseUUID,
                                                                            @PathVariable UUID stageUUID,
@@ -90,6 +94,7 @@ public class CaseActionsResource {
         return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
     }
 
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @PutMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/interest/{interestUUID}")
     public ResponseEntity<GetCaseReferenceResponse> updateExternalInterest(@PathVariable UUID caseUUID,
                                                                     @PathVariable UUID stageUUID,
@@ -100,6 +105,7 @@ public class CaseActionsResource {
         return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseDataService.getCaseRef(caseUUID)));
     }
 
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @PostMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/suspension")
     public ResponseEntity<GetCaseReferenceResponse> applyCaseSuspension(@PathVariable UUID caseUUID,
                                                                         @PathVariable UUID stageUUID,
@@ -109,7 +115,7 @@ public class CaseActionsResource {
         return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseRef));
     }
 
-
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @PutMapping(path = "/case/{caseUUID}/stage/{stageUUID}/actions/suspension/{suspensionUUID}")
     public ResponseEntity<GetCaseReferenceResponse> updateCaseSuspension(@PathVariable UUID caseUUID,
                                                                          @PathVariable UUID stageUUID,
