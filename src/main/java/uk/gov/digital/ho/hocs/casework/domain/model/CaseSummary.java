@@ -23,6 +23,7 @@ public class CaseSummary {
     private final UUID previousCaseUUID;
     private final UUID previousCaseStageUUID;
     private final CaseActionDataResponseDto actions;
+    private final String suspended;
 
     public static class Builder {
         private String type;
@@ -37,6 +38,7 @@ public class CaseSummary {
         private UUID previousCaseUUID;
         private UUID previousCaseStageUUID;
         private CaseActionDataResponseDto actions;
+        private String suspended;
 
         public Builder withCaseType(final String type) {
             this.type = type;
@@ -110,6 +112,11 @@ public class CaseSummary {
             return this;
         }
 
+        public Builder withSuspended(String suspended) {
+            this.suspended = suspended;
+            return this;
+        }
+
         public CaseSummary build() {
             return new CaseSummary(
                     type,
@@ -123,7 +130,8 @@ public class CaseSummary {
                     previousCaseReference,
                     previousCaseUUID,
                     previousCaseStageUUID,
-                    actions
+                    actions,
+                    suspended
             );
         }
     }

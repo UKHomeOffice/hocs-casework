@@ -47,7 +47,7 @@ public class TimelineItemAuthFilterServiceTest {
                         null, null, null,
                         null, null, null,
                         null, null, null,
-                        null, null, null)
+                        null, null, null, null)
         );
         ResponseEntity<?> responseToFilter = ResponseEntity.ok(
                 List.of(testIncorrectResponse));
