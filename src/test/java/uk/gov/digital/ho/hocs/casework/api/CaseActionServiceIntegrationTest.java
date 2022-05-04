@@ -181,6 +181,7 @@ public class CaseActionServiceIntegrationTest {
     private static final StageTypeDto STAGE_TYPE = new StageTypeDto("Some Stage", "9999","SOME_STAGE",20,18,1);
 
     private static final CaseDataType CASE_DATA_TYPE = CaseDataTypeFactory.from("TEST", "a1");
+    private static final CaseDataType CASE_DATA_TYPE2 = CaseDataTypeFactory.from("TEST", "a2");
 
     @Before
     public void setUp() throws JsonProcessingException {
@@ -189,6 +190,10 @@ public class CaseActionServiceIntegrationTest {
                 .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+        mockInfoService
+                .expect(requestTo("http://localhost:8085/caseType/shortCode/a2"))
+                .andExpect(method(GET))
+                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE2), MediaType.APPLICATION_JSON));
         mockInfoService
                 .expect(requestTo("http://localhost:8085/caseType/FOI/actions/" + EXTENSION_CASE_TYPE_ACTION_ID))
                 .andExpect(method(GET))
@@ -282,10 +287,6 @@ public class CaseActionServiceIntegrationTest {
                 .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
                 .andExpect(method(GET))
                 .andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/case/14915b78-6977-42db-b343-0915a7f412a2/stage//actions/appeal"))
-                .andExpect(method(POST))
-                .andRespond((withStatus(HttpStatus.NOT_FOUND)));
 
         final EntityDto test_interested_party = new EntityDto(
                 "TEST_INTERESTED_PARTY",
@@ -457,7 +458,7 @@ public class CaseActionServiceIntegrationTest {
 
     @Test
     public void createExternalInterest_shouldReturn404whenNoCaseData() throws JsonProcessingException {
-      //  setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
+        setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
         UUID stageUUID = UUID.randomUUID();
         String caseTypeActionLabel = "External Interest";
 
