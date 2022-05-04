@@ -672,7 +672,7 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         Set<GetAuditResponse> audit = new HashSet<>();
         try {
-            audit.addAll(auditClient.getAuditLinesForCase(caseUUID, TIMELINE_EVENTS));
+            audit.addAll(auditClient.getAuditLinesForCase(caseUUID, caseData.getCreated().toLocalDate(), TIMELINE_EVENTS));
             log.debug("Retrieved {} audit lines", audit.size());
         } catch (Exception e) {
             log.error("Failed to retrieve audit lines for case {}", caseUUID, value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
