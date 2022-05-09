@@ -185,7 +185,6 @@ public class StageService {
             auditClient.createStage(stageToActivate);
         }
 
-        // Issue assignment notifications
         updateAssignmentAudit(stageToActivate);
 
         UUID currentUserUUID = null;

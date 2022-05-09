@@ -561,7 +561,6 @@ public class StageServiceTest {
         MOCK_STAGE_LIST.add(stageToRecreate);
         MOCK_STAGE_LIST.add(currentActiveStage);
 
-//        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(),stageUUID)).thenReturn(stageToRecreate);
         when(stageRepository.findAllByCaseUUIDAsStage(caseData.getUuid())).thenReturn(MOCK_STAGE_LIST);
         when(infoClient.getTeamForStageType(stageToRecreate.getStageType())).thenReturn(teamDto);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
@@ -570,7 +569,6 @@ public class StageServiceTest {
         stageService.createStage(caseData.getUuid(), request);
 
         // THEN
-//        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(), stageUUID);
         verify(stageRepository).findAllByCaseUUIDAsStage(caseData.getUuid());
         verify(caseDataService).getCase(caseData.getUuid());
         verify(caseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
@@ -604,7 +602,6 @@ public class StageServiceTest {
         stageToRecreate.setUuid(stageUUID);
         MOCK_STAGE_LIST.add(stageToRecreate);
 
-//        when(stageRepository.findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(),stageUUID)).thenReturn(stageToRecreate);
         when(stageRepository.findAllByCaseUUIDAsStage(caseData.getUuid())).thenReturn(MOCK_STAGE_LIST);
         when(infoClient.getTeamForStageType(stageToRecreate.getStageType())).thenReturn(teamDto);
         when(caseDataService.getCase(caseData.getUuid())).thenReturn(caseData);
@@ -613,7 +610,6 @@ public class StageServiceTest {
         stageService.createStage(caseData.getUuid(), request);
 
         // THEN
-//        verify(stageRepository).findBasicStageByCaseUuidAndStageUuid(caseData.getUuid(), stageUUID);
         verify(stageRepository).findAllByCaseUUIDAsStage(caseData.getUuid());
         verify(caseDataService).getCase(caseData.getUuid());
         verify(caseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
