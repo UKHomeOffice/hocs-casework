@@ -12,10 +12,8 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class GetCaseConfigResponse {
-    @JsonProperty("type")
     String type;
 
-    @JsonProperty("tabs")
     List<CaseTab> tabs;
 
     public static GetCaseConfigResponse from(CaseConfig caseConfig) {
