@@ -1420,9 +1420,11 @@ public class CaseDataServiceTest {
     public void shouldGetCaseConfigFromCaseUUID() {
         UUID uuid = UUID.randomUUID();
         String caseType = "COMP";
+        CaseTab caseTab = new CaseTab("documents", "Documents", "DOCUMENTS");
+
         CaseConfig caseConfig = new CaseConfig(
                 caseType,
-                Arrays.asList("documents", "summary")
+                List.of(caseTab)
         );
 
         when(caseDataRepository.getCaseType(uuid)).thenReturn(caseType);

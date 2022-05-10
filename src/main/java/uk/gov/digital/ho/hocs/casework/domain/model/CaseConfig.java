@@ -17,5 +17,5 @@ public class CaseConfig {
     private final String type;
 
     @Getter
-    private final List<String> tabs;
+    private final List<CaseTab> tabs;
 }

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseConfig;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseTab;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class GetCaseConfigResponse {
     String type;
 
     @JsonProperty("tabs")
-    List<String> tabs;
+    List<CaseTab> tabs;
 
     public static GetCaseConfigResponse from(CaseConfig caseConfig) {
         return new GetCaseConfigResponse(caseConfig.getType(), caseConfig.getTabs());
