@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.util.ObjectUtils;
-import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 
 import java.time.LocalDate;
@@ -50,6 +49,8 @@ public class GetCaseSummaryResponse {
     @JsonProperty("actions")
     private final CaseActionDataResponseDto actions;
 
+    private final String suspended;
+
     public static GetCaseSummaryResponse from(CaseSummary caseSummary) {
         GetCorrespondentResponse getCorrespondentResponse = null;
         if (caseSummary.getPrimaryCorrespondent() != null) {
@@ -88,7 +89,8 @@ public class GetCaseSummaryResponse {
                         .caseUUID(caseSummary.getPreviousCaseUUID())
                         .caseReference(caseSummary.getPreviousCaseReference())
                         .stageUUID(caseSummary.getPreviousCaseStageUUID()).build(),
-                caseSummary.getActions()
+                caseSummary.getActions(),
+                caseSummary.getSuspended()
         );
 
 

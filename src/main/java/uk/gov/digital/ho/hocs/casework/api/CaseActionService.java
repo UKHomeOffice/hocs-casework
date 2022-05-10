@@ -52,8 +52,7 @@ public class CaseActionService {
     }
 
     public void getAllActionsForCaseById(UUID caseId, Map<String, List<ActionDataDto>> caseActionDataMap) {
-        actionServiceList.forEach(actionService -> {
-            caseActionDataMap.put(actionService.getServiceMapKey(), actionService.getAllActionsForCase(caseId));
-        });
+        actionServiceList.forEach( (ActionService actionService) -> caseActionDataMap
+                .put(actionService.getServiceMapKey(), actionService.getAllActionsForCase(caseId)));
     }
 }

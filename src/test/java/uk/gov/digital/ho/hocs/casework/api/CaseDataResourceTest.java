@@ -156,6 +156,7 @@ public class CaseDataResourceTest {
                 PREVIOUS_CASE_REFERENCE,
                 PREVIOUS_CASE_UUID,
                 PREVIOUS_STAGE_UUID,
+                null,
                 null));
 
         ResponseEntity<GetCaseSummaryResponse> response = caseDataResource.getCaseSummary(uuid);

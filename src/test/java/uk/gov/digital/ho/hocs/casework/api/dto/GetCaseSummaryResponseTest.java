@@ -60,7 +60,8 @@ public class GetCaseSummaryResponseTest {
                 PREV_CASE_REF,
                 PREVIOUS_CASE_UUID,
                 PREVIOUS_STAGE_UUID,
-                actions);
+                actions,
+                null);
 
         GetCaseSummaryResponse response = GetCaseSummaryResponse.from(caseSummary);
 

@@ -58,3 +58,6 @@ VALUES (
         now(),
         now()
        ) ON CONFLICT DO NOTHING;
+
+INSERT INTO action_data_suspensions(uuid, action_uuid,action_subtype, action_label, case_data_type, case_data_uuid, date_suspension_applied, date_suspension_removed) VALUES
+('745a149d-b9fb-47b5-bfcd-a192f1bce48e','6f011f21-6b8c-40a9-aff1-56e97029c445','SUSPEND','SUSPEND','CASE_TYPE','14915b78-6977-42db-b343-0915a7f412a1',now(), null);
