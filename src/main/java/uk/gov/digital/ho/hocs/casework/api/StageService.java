@@ -142,7 +142,7 @@ public class StageService {
         Set<Stage> allStages = stageRepository.findAllByCaseUUIDAsStage(caseUUID);
         Set<Stage> activeStages = allStages.stream().filter(stage -> stage.getTeamUUID() != null).collect(Collectors.toSet());
         if (activeStages.size() > 1) {
-            log.warn("More than 1 active stage, all active stages will be deactivated");
+            log.warn("More than 1 active stage for caseUUID: {}, all active stages will be deactivated", caseUUID);
         }
 
         Optional<Stage> existingStageOfRequestedType = allStages.stream().filter(stage -> stage.getStageType().equals(createStageRequest.getType())).findFirst();
@@ -166,7 +166,7 @@ public class StageService {
         calculateDeadlines(stageToActivate.get(), caseData);
 
         stageRepository.save(stageToActivate.get());
-        log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", stageToActivate.get().getUuid(), stageToActivate.get().getStageType(), stageToActivate.get().getCaseUUID(), value(EVENT, STAGE_CREATED));
+        log.info("Created Stage: {}, Type: {}, Case: {}", stageToActivate.get().getUuid(), stageToActivate.get().getStageType(), stageToActivate.get().getCaseUUID(), value(EVENT, STAGE_CREATED));
 
         caseDataService.updateCaseData(caseData, stageToActivate.get().getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageToActivate.get().getStageType()));
 
