@@ -279,6 +279,7 @@ public class StageService {
         log.info("Stage Deadline Updated; Case: {}, Stage: {}", stage.getCaseUUID(), stage.getUuid());
     }
 
+    @Deprecated(forRemoval = true)
     public void recreateStage(UUID caseUUID, RecreateStageRequest request) {
         log.debug("Recreating Stage: {} for Case: {}", request, caseUUID);
 
