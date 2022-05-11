@@ -11,7 +11,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.RecreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -38,6 +37,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -138,40 +139,62 @@ public class StageService {
 
         log.debug("Creating Stage: {} for case {}", createStageRequest, caseUUID);
 
-        // find current active stage to deactivate (assumes 1 or 0)
-        Optional<Stage> maybeActiveStage = stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseUUID);
-
-        UUID currentUserUUID = null;
-        if(maybeActiveStage.isPresent()) {
-            currentUserUUID = maybeActiveStage.get().getUserUUID();
+        Set<Stage> allStages = stageRepository.findAllByCaseUUIDAsStage(caseUUID);
+        Set<Stage> activeStages = allStages.stream().filter(stage -> stage.getTeamUUID() != null).collect(Collectors.toSet());
+        if (activeStages.size() > 1) {
+            log.warn("More than 1 active stage for caseUUID: {}, all active stages will be deactivated", caseUUID);
         }
 
-        // Create new stage
-        Stage newStage = new Stage(caseUUID, createStageRequest.getType(),
-                null, null, createStageRequest.getTransitionNoteUUID());
+        Optional<Stage> existingStageOfRequestedType = allStages.stream().filter(stage -> stage.getStageType().equals(createStageRequest.getType())).findFirst();
+
+        final AtomicBoolean isRecreation = new AtomicBoolean(false);
+        final AtomicBoolean isRecreateOfCurrentlyActive = new AtomicBoolean(false);
+        final AtomicReference<Stage> stageToActivate = new AtomicReference<>(null);
+
+        existingStageOfRequestedType.ifPresentOrElse((Stage stage) -> {
+            log.debug("Stage type of {} exists for caseUUID: {}, recreating stage",createStageRequest.getType(), caseUUID);
+            stageToActivate.set(stage);
+            isRecreation.set(true);
+            isRecreateOfCurrentlyActive.set(activeStages.contains(stage));
+        },() -> {
+            log.debug("Stage type of {} does not currently exist for caseUUID: {}, creating new stage",createStageRequest.getType(), caseUUID);
+            stageToActivate.set(new Stage(caseUUID, createStageRequest.getType(),
+                    null, null, createStageRequest.getTransitionNoteUUID()));
+        });
 
         CaseData caseData = caseDataService.getCase(caseUUID);
-        calculateDeadlines(newStage, caseData);
+        calculateDeadlines(stageToActivate.get(), caseData);
 
-        stageRepository.save(newStage);
-        log.info("Created Stage: {}, Type: {}, Case: {}, event: {}", newStage.getUuid(), newStage.getStageType(), newStage.getCaseUUID(), value(EVENT, STAGE_CREATED));
+        stageRepository.save(stageToActivate.get());
+        log.info("Created Stage: {}, Type: {}, Case: {}", stageToActivate.get().getUuid(), stageToActivate.get().getStageType(), stageToActivate.get().getCaseUUID(), value(EVENT, STAGE_CREATED));
 
-        caseDataService.updateCaseData(caseData, newStage.getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, newStage.getStageType()));
+        caseDataService.updateCaseData(caseData, stageToActivate.get().getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageToActivate.get().getStageType()));
 
-        // Update team and user to activate new stage
-        assignTeamAndMemberUserToStage(newStage, createStageRequest.getTeamUUID(), createStageRequest.getUserUUID());
+        Optional<UUID> maybeCurrentUserUUID = activeStages.stream().map(BaseStage::getUserUUID).findFirst();
+        UUID currentUserUUID = null;
 
-        // remove old active stage
-        maybeActiveStage.ifPresent(value -> updateStageTeam(maybeActiveStage.get(), caseData.getDataMap(), caseData.getReference(), null, null));
+        if (maybeCurrentUserUUID.isPresent()) {
+            currentUserUUID = maybeCurrentUserUUID.get();
+        }
 
-        // Update audit and timeline - positioned here maintains timeline consistency.
-        auditClient.createStage(newStage);
+        assignTeamAndMemberUserToStage(stageToActivate.get(), createStageRequest.getTeamUUID(), createStageRequest.getUserUUID());
 
-        // Issue assignment notifications
-        updateAssignmentAudit(newStage);
-        sendAssignmentNotifications(caseData, newStage, currentUserUUID);
+        // deactivate old active stage/s if new stage not current stage
+        if (!isRecreateOfCurrentlyActive.get()) {
+            activeStages.forEach(value -> updateStageTeam(value, caseData.getDataMap(), caseData.getReference(), null, null));
+        }
 
-        return newStage;
+        // Update audit and timeline unless active and allocated to same user and team - positioned here maintains timeline consistency.
+        if (isRecreation.get() && !isRecreateOfCurrentlyActive.get()) {
+            auditClient.recreateStage(stageToActivate.get());
+        } else if (!isRecreation.get()) {
+            auditClient.createStage(stageToActivate.get());
+        }
+
+        updateAssignmentAudit(stageToActivate.get());
+
+        sendAssignmentNotifications(caseData, stageToActivate.get(), currentUserUUID);
+        return stageToActivate.get();
     }
 
     private void assignTeamAndMemberUserToStage(Stage stage, UUID newTeamUUID, UUID newUserUUID) {
@@ -261,6 +284,7 @@ public class StageService {
         log.info("Stage Deadline Updated; Case: {}, Stage: {}", stage.getCaseUUID(), stage.getUuid());
     }
 
+    @Deprecated(forRemoval = true)
     public void recreateStage(UUID caseUUID, RecreateStageRequest request) {
         log.debug("Recreating Stage: {} for Case: {}", request, caseUUID);
 

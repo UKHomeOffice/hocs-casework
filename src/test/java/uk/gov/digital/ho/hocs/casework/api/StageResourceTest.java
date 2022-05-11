@@ -15,7 +15,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStageResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStagesResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.RecreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageUserRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
@@ -71,7 +70,7 @@ public class StageResourceTest {
     public void testShouldCreateStage() {
 
         Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
-        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, transitionNoteUUID, userUUID);
+        CreateStageRequest request = new CreateStageRequest(stageType,null, teamUUID, allocationType, transitionNoteUUID, userUUID);
 
         when(stageService.createStage(caseUUID, request)).thenReturn(stage);
 
@@ -89,7 +88,7 @@ public class StageResourceTest {
     public void testShouldCreateStageNoTransitionNote() {
 
         Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, null);
-        CreateStageRequest request = new CreateStageRequest(stageType, teamUUID, allocationType, null, userUUID);
+        CreateStageRequest request = new CreateStageRequest(stageType, null, teamUUID, allocationType, null, userUUID);
 
         when(stageService.createStage(caseUUID, request)).thenReturn(stage);
 
@@ -104,15 +103,23 @@ public class StageResourceTest {
     }
 
     @Test
-    public void testShouldRecreateStage() {
-        RecreateStageRequest request = new RecreateStageRequest(stageUUID, stageType, UUID.randomUUID(), UUID.randomUUID());
+    public void testShouldRecreateExistingStage() {
 
-        ResponseEntity response = stageResource.recreateStageTeam(caseUUID, stageUUID, request);
+        // GIVEN
+        Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, null);
 
-        verify(stageService).recreateStage(caseUUID, request);
+        CreateStageRequest request = new CreateStageRequest(stageType,UUID.randomUUID(), null,"RANDOM_ALLOCATION_TYPE",  UUID.randomUUID(), UUID.randomUUID());
+        when(stageService.createStage(caseUUID, request)).thenReturn(stage);
+
+        // WHEN
+        ResponseEntity response = stageResource.createStage(caseUUID, request);
+
+        // THEN
+        verify(stageService).createStage(caseUUID, request);
 
         checkNoMoreInteractions();
         assertThat(response).isNotNull();
+        assertThat(response.getBody()).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
