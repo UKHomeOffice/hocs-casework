@@ -5,11 +5,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -282,6 +278,39 @@ public class StageService {
         }
         log.info("Stage Deadline Updated; Case: {}, Stage: {}", stage.getCaseUUID(), stage.getUuid());
     }
+
+    public void recreateStage(UUID caseUUID, RecreateStageRequest request) {
+        log.debug("Recreating Stage: {} for Case: {}", request, caseUUID);
+
+        // Get stage we want to recreate
+        Stage stageToRecreate = getBasicStage(caseUUID, request.getStageUUID());
+
+        Optional<Stage> maybeCurrentActiveStage = stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseUUID);
+
+        UUID currentUserUUID = null;
+
+        if (maybeCurrentActiveStage.isEmpty()) {
+            log.warn("No active stage for Case: {} discovered when try to recreate a stage. Recreation can continue.", caseUUID);
+        } else {
+            currentUserUUID = maybeCurrentActiveStage.get().getUserUUID();
+        }
+
+        assignTeamAndMemberUserToStage(stageToRecreate, request.getTeamUUID(), request.getUserUUID());
+
+        CaseData caseData = caseDataService.getCase(caseUUID);
+        caseDataService.updateCaseData(caseData, request.getStageUUID(), Map.of(CaseworkConstants.CURRENT_STAGE, request.getStageType()));
+
+        // Close if present and not the stage requested for recreation.
+        if (maybeCurrentActiveStage.isPresent() && !stageToRecreate.getUuid().equals(maybeCurrentActiveStage.get().getUuid())) {
+            updateStageTeam(maybeCurrentActiveStage.get(), caseData.getDataMap(), caseData.getReference(), null, null);
+            auditClient.recreateStage(stageToRecreate);
+        }
+
+        log.info("Recreated Stage {} for Case: {}, event: {}", request.getStageUUID(), caseUUID, value(EVENT, STAGE_RECREATED));
+
+        updateAssignmentAudit(stageToRecreate);
+        sendAssignmentNotifications(caseData, stageToRecreate, currentUserUUID);
+   }
 
     void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
         log.debug("Updating Transition Note for Stage: {}", stageUUID);
