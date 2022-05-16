@@ -58,6 +58,7 @@ class StageResource {
         return ResponseEntity.ok(CreateStageResponse.from(stage));
     }
 
+    @Deprecated(forRemoval = true)
     @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/recreate")
     ResponseEntity recreateStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody RecreateStageRequest request) {

@@ -182,33 +182,33 @@ spec:
             - name: DB_HOST
               valueFrom:
                 secretKeyRef:
-                  name: {{.KUBE_NAMESPACE}}-rds
-                  key: endpoint
+                  name: {{.KUBE_NAMESPACE}}-casework-rds
+                  key: host
             - name: DB_PORT
               valueFrom:
                 secretKeyRef:
-                  name: {{.KUBE_NAMESPACE}}-rds
+                  name: {{.KUBE_NAMESPACE}}-casework-rds
                   key: port
             - name: DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: {{.KUBE_NAMESPACE}}-rds
-                  key: db_name
+                  name: {{.KUBE_NAMESPACE}}-casework-rds
+                  key: name
             - name: DB_SCHEMA_NAME
               valueFrom:
                 secretKeyRef:
-                  name: hocs-casework
-                  key: rds_schema
+                  name: {{.KUBE_NAMESPACE}}-casework-rds
+                  key: schema_name
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: hocs-casework
-                  key: rds_user
+                  name: {{.KUBE_NAMESPACE}}-casework-rds
+                  key: user_name
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: hocs-casework
-                  key: rds_password
+                  name: {{.KUBE_NAMESPACE}}-casework-rds
+                  key: password
             - name: AWS_SNS_AUDIT_SEARCH_TOPIC_NAME
               value: {{.KUBE_NAMESPACE}}-sns
             - name: AWS_SNS_AUDIT_SEARCH_ACCOUNT_ACCESS_KEY

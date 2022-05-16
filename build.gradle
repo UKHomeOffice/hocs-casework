@@ -1,3 +1,5 @@
+import org.gradle.api.JavaVersion
+
 plugins {
     id 'java'
     id 'jacoco'
@@ -6,7 +8,7 @@ plugins {
 }
 
 group = 'uk.gov.digital.ho.hocs'
-sourceCompatibility = '11'
+sourceCompatibility = JavaVersion.VERSION_17
 
 repositories {
     mavenCentral()
@@ -44,7 +46,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.amazonaws:aws-java-sdk-sns:1.12.149'
 
-    implementation 'com.vladmihalcea:hibernate-types-55:2.16.1'
+    implementation 'com.vladmihalcea:hibernate-types-55:2.16.2'
 
     implementation 'net.logstash.logback:logstash-logback-encoder:7.1.1'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.8'
@@ -53,11 +55,11 @@ dependencies {
     implementation 'org.json:json:20220320'
 
     implementation 'org.flywaydb:flyway-core:8.5.10'
-    runtimeOnly 'org.postgresql:postgresql:42.3.4'
+    runtimeOnly 'org.postgresql:postgresql:42.3.5'
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'org.springframework:spring-context-indexer:5.3.19'
+    annotationProcessor 'org.springframework:spring-context-indexer:5.3.20'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
     testImplementation 'com.google.guava:guava:31.1-jre'

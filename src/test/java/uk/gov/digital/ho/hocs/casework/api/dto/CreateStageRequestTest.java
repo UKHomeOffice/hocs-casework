@@ -17,7 +17,7 @@ public class CreateStageRequestTest {
         String allocate = "ALLOCATE_INDIVIDUAL";
         UUID transitionNoteUUID = UUID.randomUUID();
 
-        CreateStageRequest createStageRequest = new CreateStageRequest(stageType, teamUUID, allocate, transitionNoteUUID, userUUID);
+        CreateStageRequest createStageRequest = new CreateStageRequest(stageType, null, teamUUID, allocate, transitionNoteUUID, userUUID);
 
         assertThat(createStageRequest.getType()).isEqualTo(stageType);
         assertThat(createStageRequest.getTeamUUID()).isEqualTo(teamUUID);
@@ -30,7 +30,7 @@ public class CreateStageRequestTest {
     @Test
     public void getCreateStageRequestNull() {
 
-        CreateStageRequest createStageRequest = new CreateStageRequest(null, null, null, null, null);
+        CreateStageRequest createStageRequest = new CreateStageRequest(null, null,null, null, null, null);
 
         assertThat(createStageRequest.getType()).isNull();
         assertThat(createStageRequest.getTeamUUID()).isNull();

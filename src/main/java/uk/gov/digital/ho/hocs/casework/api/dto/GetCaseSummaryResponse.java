@@ -10,6 +10,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,7 @@ public class GetCaseSummaryResponse {
     private CaseSummaryLink previousCase;
 
     @JsonProperty("actions")
-    private final CaseActionDataResponseDto actions;
+    private CaseActionDataResponseDto actions;
 
     private final String suspended;
 
@@ -103,4 +104,17 @@ public class GetCaseSummaryResponse {
     protected void replaceActiveStages(Set<ActiveStageDto> activeStageSet) {
         this.activeStages = activeStageSet;
     }
+
+    protected void clearCaseActionData() {
+
+        if (this.actions != null) {
+            Map<String, List<ActionDataDto>> emptyCaseActionDataMap = new HashMap<>();
+            this.actions = CaseActionDataResponseDto.from(
+                    emptyCaseActionDataMap,
+                    this.actions.getCaseTypeActionData(),
+                    this.actions.getCurrentCaseDeadline(),
+                    this.actions.getRemainingDaysUntilDeadline());
+        }
+    }
+
 }

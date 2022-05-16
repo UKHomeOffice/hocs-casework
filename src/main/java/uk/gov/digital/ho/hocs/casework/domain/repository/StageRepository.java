@@ -19,6 +19,9 @@ public interface StageRepository extends CrudRepository<BaseStage, Long> {
 
     Optional<Stage> findFirstByTeamUUIDIsNotNullAndCaseUUID(UUID caseUUID);
 
+    @Query(value = "SELECT sd.* FROM stage sd WHERE sd.case_uuid = ?1", nativeQuery = true)
+    Set<Stage> findAllByCaseUUIDAsStage(UUID caseUUID);
+
     @Query(value = "SELECT s.* FROM stage s WHERE s.case_uuid = ?1 AND s.uuid = ?2", nativeQuery = true)
     Stage findBasicStageByCaseUuidAndStageUuid(UUID caseUuid, UUID stageUuid);
 

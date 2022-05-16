@@ -69,6 +69,7 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
         SettableAdditionalFieldsGetCaseSummaryResponse response = new SettableAdditionalFieldsGetCaseSummaryResponse(getCaseSummaryResponse);
         response.setAdditionalFields(replacementList);
         response.hideActiveStageInfo();
+        response.hideCaseActionData();
 
         log.info("Issuing filtered GetCaseSummaryResponse for userId: {}", userId, value(EVENT, AUTH_FILTER_SUCCESS));
         return new ResponseEntity<GetCaseSummaryResponse>(response, responseEntityToFilter.getStatusCode());
@@ -98,6 +99,10 @@ public class GetCaseSummaryAuthFilterService implements AuthFilter {
 
         public void hideActiveStageInfo() {
             this.replaceActiveStages(new HashSet<>());
+        }
+
+        public void hideCaseActionData() {
+            this.clearCaseActionData();
         }
 
     }
