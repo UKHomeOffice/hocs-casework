@@ -11,6 +11,8 @@ import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseConfig;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseTab;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.time.LocalDate;
@@ -285,5 +287,22 @@ public class InfoClientTest {
 
         assertThat(result).isNotNull();
         assertThat(result.size()).isEqualTo(2);
+    }
+
+    @Test
+    public void getConfigByCaseType() {
+        String caseType = "COMP";
+        CaseTab caseTab = new CaseTab("documents", "Documents", "DOCUMENTS");
+        CaseConfig caseConfig = new CaseConfig(caseType, List.of(caseTab));
+        String url = String.format("/caseType/%s/config", caseType);
+
+        when(restHelper.get("infoService", url, CaseConfig.class)).thenReturn(caseConfig);
+
+        CaseConfig result = infoClient.getCaseConfig("COMP");
+
+        assertThat(result).isEqualTo(caseConfig);
+
+        verify(restHelper).get("infoService", url, CaseConfig.class);
+        verifyNoMoreInteractions(restHelper);
     }
 }

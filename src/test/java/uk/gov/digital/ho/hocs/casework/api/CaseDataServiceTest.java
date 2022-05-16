@@ -1416,6 +1416,29 @@ public class CaseDataServiceTest {
 
     }
 
+    @Test
+    public void shouldGetCaseConfigFromCaseUUID() {
+        UUID uuid = UUID.randomUUID();
+        String caseType = "COMP";
+        CaseTab caseTab = new CaseTab("documents", "Documents", "DOCUMENTS");
+
+        CaseConfig caseConfig = new CaseConfig(
+                caseType,
+                List.of(caseTab)
+        );
+
+        when(caseDataRepository.getCaseType(uuid)).thenReturn(caseType);
+        when(infoClient.getCaseConfig(caseType)).thenReturn(caseConfig);
+
+        CaseConfig output = caseDataService.getCaseConfig(uuid);
+
+        verify(caseDataRepository, times(1)).getCaseType(uuid);
+        verify(infoClient, times(1)).getCaseConfig(caseType);
+
+        assertThat(output).isEqualTo(caseConfig);
+
+    }
+
     // HELPERS
     private void checkNoMoreInteractions() {
         verifyNoMoreInteractions(auditClient, caseDataRepository, infoClient);

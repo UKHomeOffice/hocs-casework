@@ -595,6 +595,11 @@ public class CaseDataService {
         return builtCaseSummary;
     }
 
+    CaseConfig getCaseConfig(UUID caseUUID) {
+        String caseType = caseDataRepository.getCaseType(caseUUID);
+        return infoClient.getCaseConfig(caseType);
+    }
+
     private void updateDeadlineForStage(CaseData caseData, String stageType, Integer noOfDays) {
         LocalDate deadline =
                 deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), noOfDays);

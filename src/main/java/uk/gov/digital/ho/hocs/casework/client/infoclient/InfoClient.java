@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.*;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseConfig;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.time.LocalDate;
@@ -45,6 +46,13 @@ public class InfoClient {
         CaseDataType caseDataType = restHelper.get(serviceBaseURL, String.format("/caseType/type/%s", type), CaseDataType.class);
         log.info("Got CaseDataType {} for Type {}", caseDataType.getDisplayCode(), type, value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
         return caseDataType;
+    }
+
+    @Cacheable(value = "InfoClientGetCaseConfig", unless = "#result == null", key = "#type")
+    public CaseConfig getCaseConfig(String type) {
+        CaseConfig caseConfig = restHelper.get(serviceBaseURL, String.format("/caseType/%s/config", type), CaseConfig.class);
+        log.info("Got CaseConfig for Type {}", type, value(EVENT, INFO_CLIENT_GET_CASE_CONFIG_SUCCESS));
+        return caseConfig;
     }
 
     public List<CaseDataType> getAllCaseTypes() {
