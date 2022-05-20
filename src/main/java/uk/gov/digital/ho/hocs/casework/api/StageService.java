@@ -170,11 +170,11 @@ public class StageService {
 
         caseDataService.updateCaseData(caseData, stageToActivate.get().getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageToActivate.get().getStageType()));
 
-        Optional<UUID> maybeCurrentUserUUID = activeStages.stream().map(BaseStage::getUserUUID).findFirst();
+        List<UUID> assignedUserUUIDList = activeStages.stream().map(BaseStage::getUserUUID).collect(Collectors.toList());
         UUID currentUserUUID = null;
 
-        if (maybeCurrentUserUUID.isPresent()) {
-            currentUserUUID = maybeCurrentUserUUID.get();
+        if (!assignedUserUUIDList.isEmpty()) {
+            currentUserUUID = assignedUserUUIDList.get(0);
         }
 
         assignTeamAndMemberUserToStage(stageToActivate.get(), createStageRequest.getTeamUUID(), createStageRequest.getUserUUID());
