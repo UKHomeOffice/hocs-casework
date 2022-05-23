@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.domain.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -58,4 +59,7 @@ public interface StageRepository extends CrudRepository<BaseStage, Long> {
     @Query(value = "SELECT sd.* FROM stage_data sd where sd.case_reference = ?1", nativeQuery = true)
     Set<StageWithCaseData> findByCaseReference(String reference);
 
+    @Modifying
+    @Query(value = "UPDATE stage SET team_uuid = null, user_uuid= null WHERE case_uuid = ?1", nativeQuery = true)
+    void unAssignStagesForCase(UUID caseUUID);
 }
