@@ -61,5 +61,5 @@ public interface StageRepository extends CrudRepository<BaseStage, Long> {
 
     @Modifying
     @Query(value = "UPDATE stage SET team_uuid = null, user_uuid= null WHERE case_uuid = ?1", nativeQuery = true)
-    void unAssignStagesForCase(UUID caseUUID);
+    void unassignStagesForCase(UUID caseUUID);
 }
