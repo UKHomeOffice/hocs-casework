@@ -162,7 +162,7 @@ public class StageService {
                     null, null, createStageRequest.getTransitionNoteUUID()));
         });
 
-        CaseData caseData = caseDataService.getCase(caseUUID);
+        CaseData caseData = caseDataService.getCaseData(caseUUID);
         calculateDeadlines(stageToActivate.get(), caseData);
 
         stageRepository.save(stageToActivate.get());
@@ -303,7 +303,7 @@ public class StageService {
 
         assignTeamAndMemberUserToStage(stageToRecreate, request.getTeamUUID(), request.getUserUUID());
 
-        CaseData caseData = caseDataService.getCase(caseUUID);
+        CaseData caseData = caseDataService.getCaseData(caseUUID);
         caseDataService.updateCaseData(caseData, request.getStageUUID(), Map.of(CaseworkConstants.CURRENT_STAGE, request.getStageType()));
 
         // Close if present and not the stage requested for recreation.
@@ -612,7 +612,7 @@ public class StageService {
 
     public void withdrawCase(UUID caseUUID, UUID stageUUID, WithdrawCaseRequest request) {
         log.info("About to withdraw case : {}", caseUUID);
-        CaseData caseData = caseDataService.getCase(caseUUID);
+        CaseData caseData = caseDataService.getCaseData(caseUUID);
 
         for(ActiveStage activeStage : caseData.getActiveStages()){
             updateStageTeam(caseUUID, activeStage.getUuid(), null, null );

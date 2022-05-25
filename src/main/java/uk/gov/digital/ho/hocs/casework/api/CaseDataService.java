@@ -128,7 +128,7 @@ public class CaseDataService {
         return caseData;
     }
 
-    private CaseData getCaseData(UUID caseUUID) {
+    protected CaseData getCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
         if (caseData == null) {
