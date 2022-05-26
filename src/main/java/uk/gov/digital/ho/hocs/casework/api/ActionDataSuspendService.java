@@ -102,7 +102,7 @@ public class ActionDataSuspendService implements ActionService {
 
         suspensionRepository.save(suspensionEntity);
         caseNoteService.createCaseNote(caseUUID, "CASE_SUSPENSION_APPLIED", "");
-        auditClient.createSuspensionAudit(suspensionEntity);
+        auditClient.suspendCaseAudit(suspensionEntity);
 
         // update case data
         caseData.getDataMap().put("suspended", "true");
@@ -138,7 +138,7 @@ public class ActionDataSuspendService implements ActionService {
             suspension.setDateSuspensionRemoved(LocalDate.now());
             suspensionRepository.save(suspension);
             caseNoteService.createCaseNote(caseUUID, "CASE_SUSPENSION_REMOVED", "");
-            auditClient.updateSuspensionAudit(suspension);
+            auditClient.unsuspendCaseAudit(suspension);
 
             caseData.update("suspended", "false");
             caseDataRepository.save(caseData);

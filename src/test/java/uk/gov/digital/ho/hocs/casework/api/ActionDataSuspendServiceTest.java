@@ -283,7 +283,7 @@ public class ActionDataSuspendServiceTest {
         assertEquals("That the case data has stage deadline override with correct date", "9999-12-31",caseDataArgumentCaptor.getValue().getDataMap().get("SOME_STAGE_DEADLINE"));
         // Verify other calls.
         verify(auditClient, times(1)).updateCaseAudit(any(CaseData.class),eq(EXISTING_STAGE_UUID));
-        verify(auditClient, times(1)).createSuspensionAudit(any(ActionDataSuspension.class));
+        verify(auditClient, times(1)).suspendCaseAudit(any(ActionDataSuspension.class));
         verify(suspensionRepository, times(1)).save(any(ActionDataSuspension.class));
         verify(caseNoteService, times(1)).createCaseNote(eq(EXISTING_CASE.getUuid()), eq("CASE_SUSPENSION_APPLIED"),eq(""));
     }
@@ -337,7 +337,7 @@ public class ActionDataSuspendServiceTest {
 
         // Verify other calls.
         verify(auditClient, times(1)).updateCaseAudit(any(CaseData.class),eq(EXISTING_STAGE_UUID));
-        verify(auditClient, times(1)).updateSuspensionAudit(any(ActionDataSuspension.class));
+        verify(auditClient, times(1)).unsuspendCaseAudit(any(ActionDataSuspension.class));
         verify(caseNoteService, times(1)).createCaseNote(eq(EXISTING_CASE.getUuid()), eq("CASE_SUSPENSION_REMOVED"),eq(""));
         verify(suspensionRepository, times(1)).save(suspensionArgumentCaptor.capture());
 
