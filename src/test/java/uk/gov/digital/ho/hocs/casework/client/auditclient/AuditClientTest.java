@@ -593,7 +593,7 @@ public class AuditClientTest extends BaseAwsTest {
 
         // THEN
         verify(auditSearchSnsClient, times(1)).publish(publicRequestCaptor.capture());
-        assertSnsValues(caseDataUuid, EventType.CASE_UNSUSPENDED);
+        assertSnsValues(caseDataUuid, EventType.CASE_SUSPENSION_REMOVED);
 
     }
 

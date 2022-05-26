@@ -639,7 +639,7 @@ public class AuditClient {
     }
 
     public void unsuspendCaseAudit(ActionDataSuspension suspensionEntity) {
-        AuditPayload.ActionAuditPayload payload = getActionAuditPayload(suspensionEntity, EventType.CASE_UNSUSPENDED);
+        AuditPayload.ActionAuditPayload payload = getActionAuditPayload(suspensionEntity, EventType.CASE_SUSPENSION_REMOVED);
         saveActionAudit(payload);
     }
 
