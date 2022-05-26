@@ -633,14 +633,12 @@ public class AuditClient {
         }
     }
 
-    public void createSuspensionAudit(ActionDataSuspension suspensionEntity) {
-
+    public void suspendCaseAudit(ActionDataSuspension suspensionEntity) {
         AuditPayload.ActionAuditPayload payload = getActionAuditPayload(suspensionEntity, EventType.CASE_SUSPENSION_APPLIED);
         saveActionAudit(payload);
     }
 
-    public void updateSuspensionAudit(ActionDataSuspension suspensionEntity) {
-
+    public void unsuspendCaseAudit(ActionDataSuspension suspensionEntity) {
         AuditPayload.ActionAuditPayload payload = getActionAuditPayload(suspensionEntity, EventType.CASE_UNSUSPENDED);
         saveActionAudit(payload);
     }
