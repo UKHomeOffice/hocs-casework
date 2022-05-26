@@ -300,15 +300,14 @@ public interface AuditPayload {
     @Getter
     @Builder
     class SuspensionItem implements ActionAuditPayload {
-
         private UUID actionUuid;
         private UUID caseTypeActionUuid;
         private String actionSubtype;
         private String caseTypeActionLabel;
         private String caseDataType;
         private UUID caseDataUuid;
-        private LocalDate dataSuspensionApplied;
-        private LocalDate dataSuspensionRemoved;
+        private LocalDate dateSuspensionApplied;
+        private LocalDate dateSuspensionRemoved;
         private EventType eventType;
     }
 }
