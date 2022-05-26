@@ -33,7 +33,7 @@ steps:
       - clone
 
   - name: test project
-    image: quay.io/ukhomeofficedigital/hocs-base-image-build:1.0.2
+    image: quay.io/ukhomeofficedigital/hocs-base-image-build:1.0.5
     environment:
       SPRING_PROFILES_ACTIVE: "local"
       HOCS_DOCUMENT_SERVICE: "http://documents:8080"
@@ -181,7 +181,7 @@ steps:
       - clone
 
   - name: test project
-    image: quay.io/ukhomeofficedigital/hocs-base-image-build:1.0.2
+    image: quay.io/ukhomeofficedigital/hocs-base-image-build:1.0.5
     environment:
       SPRING_PROFILES_ACTIVE: "local"
       HOCS_DOCUMENT_SERVICE: "http://documents:8080"
