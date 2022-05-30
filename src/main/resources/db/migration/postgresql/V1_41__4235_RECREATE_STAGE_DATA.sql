@@ -51,5 +51,3 @@ FROM casework.stage s
         ) sc ON TRUE
         LEFT JOIN casework.topic t ON c.primary_topic_uuid = t.uuid
 WHERE NOT c.deleted;
-
-DROP VIEW view_case_data;
