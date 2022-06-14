@@ -77,7 +77,7 @@ public class UserPermissionsService {
         return getUserCaseAdminCaseTypes(teamDtos, userTeams);
     }
 
-    private Set<PermissionDto> getUserPermission() {
+    public Set<PermissionDto> getUserPermission() {
         Set<TeamDto> teamDtos = infoClient.getTeams();
         Set<UUID> userTeams = getUserTeams();
         return teamDtos.stream()

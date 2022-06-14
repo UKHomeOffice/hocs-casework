@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,6 +22,7 @@ import java.util.UUID;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
 
 @NoArgsConstructor
+@AllArgsConstructor
 @TypeDefs({
         @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 })
@@ -132,6 +134,24 @@ public class StageWithCaseData extends BaseStage {
         this.userUUID = userUUID;
     }
 
+    public StageWithCaseData(UUID uuid, UUID transitionNoteUUID, String caseReference, String caseDataType, LocalDateTime caseCreated, String correspondents, String assignedTopic, String somu, ArrayList<String> tag, String dueContribution, String contributions, String nextCaseType, String nextCaseReference, String nextCaseUUID, boolean completed) {
+        this.uuid = uuid;
+        this.transitionNoteUUID = transitionNoteUUID;
+        this.caseReference = caseReference;
+        this.caseDataType = caseDataType;
+        this.caseCreated = caseCreated;
+        this.correspondents = correspondents;
+        this.assignedTopic = assignedTopic;
+        this.somu = somu;
+        this.tag = tag;
+        this.dueContribution = dueContribution;
+        this.contributions = contributions;
+        this.nextCaseType = nextCaseType;
+        this.nextCaseReference = nextCaseReference;
+        this.nextCaseUUID = nextCaseUUID;
+        this.completed = completed;
+    }
+
     public void putData(String key, String value) {
         if (this.data == null) {
             this.data = new HashMap<>();
@@ -141,9 +161,11 @@ public class StageWithCaseData extends BaseStage {
     }
 
     public void putAllData(Map<String,String> data) {
-        if (data != null) {
-            this.data.putAll(data);
+        if (this.data == null) {
+            this.data = new HashMap<>();
         }
+
+        this.data.putAll(data);
     }
 
     public String getData(String key) {

@@ -29,6 +29,7 @@ import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
+import uk.gov.digital.ho.hocs.casework.security.Filter;
 
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
@@ -158,6 +159,7 @@ class StageResource {
     }
 
     @PostMapping(value = "/search")
+    @Filter(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
     ResponseEntity<GetStagesResponse> search(@Valid @RequestBody SearchRequest request) {
         Set<StageWithCaseData> stages = stageService.search(request);
         return ResponseEntity.ok(GetStagesResponse.from(stages));

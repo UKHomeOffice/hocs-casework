@@ -11,6 +11,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
+import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.security.filters.AuthFilter;
 
 import java.util.*;
@@ -49,6 +50,11 @@ public class AuthorisationAspect {
         throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource", SECURITY_UNAUTHORISED);
     }
 
+    @Around("@annotation(filter)")
+    public Object FilterResponse(ProceedingJoinPoint joinPoint, Filter filter) throws Throwable {
+        return filterResponseByPermissionLevel(joinPoint.proceed(), null);
+    }
+
     private boolean isSufficientLevel(int userLevelAsInt, Authorised authorised) {
         return userLevelAsInt >= getRequiredAccessLevel(authorised).getLevel();
     }
@@ -57,7 +63,7 @@ public class AuthorisationAspect {
         return Arrays.stream(authorised.permittedLowerLevels()).anyMatch(level -> level.getLevel() == usersLevel);
     }
 
-    private Object filterResponseByPermissionLevel(Object objectToFilter, AccessLevel userAccessLevel) throws SecurityExceptions.AuthFilterException {
+    public Object filterResponseByPermissionLevel(Object objectToFilter, AccessLevel userAccessLevel) throws SecurityExceptions.AuthFilterException {
 
         if (objectToFilter.getClass() != ResponseEntity.class) {
              return objectToFilter;
