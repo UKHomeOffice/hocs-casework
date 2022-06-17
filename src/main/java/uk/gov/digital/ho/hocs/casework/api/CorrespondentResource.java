@@ -3,8 +3,21 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentOutlinesResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
@@ -14,6 +27,7 @@ import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import javax.validation.Valid;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -29,8 +43,8 @@ public class CorrespondentResource {
     }
 
     @GetMapping(value = "/correspondents")
-    ResponseEntity<GetCorrespondentOutlinesResponse> getAllActiveCorrespondents() {
-        Set<Correspondent> correspondents = correspondentService.getAllActiveCorrespondents();
+    ResponseEntity<GetCorrespondentOutlinesResponse> getAllActiveCorrespondents(@RequestParam(value = "includeDeleted", required = false) Optional<Boolean> includeDeleted) {
+        Set<Correspondent> correspondents = correspondentService.getAllCorrespondents(includeDeleted.orElse(false));
         return ResponseEntity.ok(GetCorrespondentOutlinesResponse.from(correspondents));
     }
 
