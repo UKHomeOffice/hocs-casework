@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
@@ -23,6 +22,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CORRESPONDENTS_RETRIEVED;
@@ -62,13 +62,12 @@ public class CorrespondentService {
         this.correspondentTypeNameDecorator = correspondentTypeNameDecorator;
     }
 
-    Set<Correspondent> getAllActiveCorrespondents() {
+    Set<Correspondent> getAllCorrespondents(boolean includeDeleted) {
         log.debug("Getting all active Correspondents");
-        Set<Correspondent> correspondents = correspondentRepository.findAllActive();
 
-        if (correspondents.size() == 0) {
-            return Collections.emptySet();
-        }
+        Set<Correspondent> correspondents = includeDeleted ?
+                correspondentRepository.findAll() :
+                correspondentRepository.findAllActive();
 
         correspondentTypeNameDecorator
                 .addCorrespondentTypeName(infoClient.getAllCorrespondentType().getCorrespondentTypes(), correspondents);
@@ -80,16 +79,24 @@ public class CorrespondentService {
     Set<CorrespondentWithPrimaryFlag> getCorrespondents(UUID caseUUID) {
         log.debug("Getting all Correspondents for Case: {}", caseUUID);
 
-        Set<CorrespondentWithPrimaryFlag> correspondents = correspondentRepository.findAllByCaseUUID(caseUUID);
+        Set<Correspondent> correspondents = correspondentRepository.findAllByCaseUUID(caseUUID);
 
-        if (correspondents.size() == 0) {
+        if (correspondents.isEmpty()) {
             return Collections.emptySet();
         }
+
+        CaseData caseData = caseDataService.getCaseData(caseUUID);
+
+        var correspondentsWithFlag = correspondents.stream()
+                .map(correspondent -> new
+                        CorrespondentWithPrimaryFlag(correspondent,
+                        correspondent.getUuid().equals(caseData.getPrimaryCorrespondentUUID())))
+                .collect(Collectors.toSet());
 
         correspondentTypeNameDecorator.addCorrespondentTypeName(getCorrespondentTypes(caseUUID), correspondents);
 
         log.info("Got {} Correspondents for Case: {}", correspondents.size(), caseUUID, value(EVENT, CORRESPONDENTS_RETRIEVED));
-        return correspondents;
+        return correspondentsWithFlag;
     }
 
     Correspondent getCorrespondent(UUID caseUUID, UUID correspondentUUID) {
@@ -131,19 +138,19 @@ public class CorrespondentService {
             correspondentRepository.save(correspondent);
             auditClient.createCorrespondentAudit(correspondent);
 
-            Set<CorrespondentWithPrimaryFlag> caseCorrespondents = correspondentRepository.findAllByCaseUUID(caseUUID);
-            if (!CollectionUtils.isEmpty(caseCorrespondents) && caseCorrespondents.size() == 1) {
-                caseDataService.updatePrimaryCorrespondent(caseUUID, stageUUID, caseCorrespondents.iterator().next().getUuid());
-            }
+            Set<Correspondent> caseCorrespondents = correspondentRepository.findAllByCaseUUID(caseUUID);
 
+            if (caseCorrespondents.size() == 1) {
+                caseDataService.updatePrimaryCorrespondent(caseUUID, stageUUID,
+                        caseCorrespondents.stream().findFirst().get().getUuid());
+            }
         } catch (DataIntegrityViolationException e) {
             throw new ApplicationExceptions.EntityCreationException(String.format("Failed to create correspondent %s for Case: %s", correspondent.getUuid(), caseUUID), CORRESPONDENT_CREATE_FAILURE, e);
         }
         log.info("Created Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID, value(EVENT, CORRESPONDENT_CREATED));
     }
 
-    void createCorrespondent(UUID caseUUID, CorrespondentWithPrimaryFlag correspondent) {
-
+    void createCorrespondent(UUID caseUUID, Correspondent correspondent) {
         createCorrespondent(caseUUID, null,
                 correspondent.getCorrespondentType(),
                 correspondent.getFullName(),

@@ -7,7 +7,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
-import uk.gov.digital.ho.hocs.casework.domain.model.BaseCorrespondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
 import java.util.Set;
@@ -36,7 +35,7 @@ public class CorrespondentTypeNameDecoratorTest {
 
     @Test
     public void addCorrespondentTypeName_nullCorrespondentType() {
-        Set<BaseCorrespondent> correspondents = Set.of(correspondent);
+        Set<Correspondent> correspondents = Set.of(correspondent);
 
         Assert.assertEquals(correspondentTypeNameDecorator.addCorrespondentTypeName(null, correspondents), correspondents);
 
@@ -45,27 +44,27 @@ public class CorrespondentTypeNameDecoratorTest {
 
     @Test
     public void addCorrespondentTypeName_correspondentTypeNotPresent() {
-        Set<BaseCorrespondent> correspondents = Set.of(correspondent);
+        Set<Correspondent> correspondents = Set.of(correspondent);
         Set<CorrespondentTypeDto> correspondentTypeDtos = Set.of(new CorrespondentTypeDto(UUID.randomUUID(), "Test", "Test"));
 
-        Set<BaseCorrespondent> correspondentsAfter = correspondentTypeNameDecorator.addCorrespondentTypeName(correspondentTypeDtos, correspondents);
+        Set<Correspondent> correspondentsAfter = correspondentTypeNameDecorator.addCorrespondentTypeName(correspondentTypeDtos, correspondents);
         Assert.assertTrue(correspondentsAfter.contains(correspondent));
 
-        BaseCorrespondent correspondentAfter = correspondentTypeNameDecorator.addCorrespondentTypeName(correspondentTypeDtos, correspondent);
+        Correspondent correspondentAfter = correspondentTypeNameDecorator.addCorrespondentTypeName(correspondentTypeDtos, correspondent);
         Assert.assertEquals(correspondentAfter, correspondent);
     }
 
     @Test
     public void addCorrespondentTypeName_correspondentTypePresent() {
-        Set<BaseCorrespondent> correspondents = Set.of(correspondent);
+        Set<Correspondent> correspondents = Set.of(correspondent);
         Set<CorrespondentTypeDto> correspondentTypeDtos = Set.of(new CorrespondentTypeDto(UUID.randomUUID(), "This is a test.", "Type"));
 
         correspondent.setCorrespondentTypeName("This is a test.");
 
-        Set<BaseCorrespondent> correspondentsAfterDecorated = correspondentTypeNameDecorator.addCorrespondentTypeName(correspondentTypeDtos, correspondents);
+        Set<Correspondent> correspondentsAfterDecorated = correspondentTypeNameDecorator.addCorrespondentTypeName(correspondentTypeDtos, correspondents);
         Assert.assertTrue(correspondentsAfterDecorated.contains(correspondent));
 
-        BaseCorrespondent correspondentAfterDecorated = correspondentTypeNameDecorator.addCorrespondentTypeName(correspondentTypeDtos, correspondent);
+        Correspondent correspondentAfterDecorated = correspondentTypeNameDecorator.addCorrespondentTypeName(correspondentTypeDtos, correspondent);
         Assert.assertEquals(correspondentAfterDecorated, correspondent);
     }
 

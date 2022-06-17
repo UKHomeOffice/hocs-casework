@@ -3,58 +3,33 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.application.LogEvent;
-import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Entity
-@Table(name = "correspondent")
-public class CorrespondentWithPrimaryFlag extends BaseCorrespondent {
+public class CorrespondentWithPrimaryFlag extends Correspondent {
 
     @Getter
-    @Column(name = "is_primary")
     private Boolean isPrimary;
 
     public CorrespondentWithPrimaryFlag(
-            UUID caseUUID,
-            String correspondentType,
-            String fullName,
-            String organisation,
-            Address address,
-            String telephone,
-            String email,
-            String reference,
-            String externalKey,
+            Correspondent correspondent,
             Boolean isPrimary
     ) {
-        if (caseUUID == null || correspondentType == null) {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Correspondent(%s, %s, %s, %s, %s, %s).", caseUUID, correspondentType, fullName, "Address", telephone, email), LogEvent.CORRESPONDENT_CREATE_FAILURE);
-        }
+        this.uuid = correspondent.getUuid();
+        this.created = correspondent.created;
+        this.caseUUID = correspondent.caseUUID;
+        this.correspondentType = correspondent.correspondentType;
+        this.fullName = correspondent.fullName;
+        this.organisation = correspondent.organisation;
+        this.postcode = correspondent.getPostcode();
+        this.address1 = correspondent.getAddress1();
+        this.address2 = correspondent.getAddress2();
+        this.address3 = correspondent.getAddress3();
+        this.country = correspondent.getCountry();
+        this.telephone = correspondent.telephone;
+        this.email = correspondent.email;
+        this.reference = correspondent.reference;
+        this.externalKey = correspondent.externalKey;
 
-        this.uuid = UUID.randomUUID();
-        this.created = LocalDateTime.now();
-        this.caseUUID = caseUUID;
-        this.correspondentType = correspondentType;
-        this.fullName = fullName;
-        this.organisation = organisation;
-        if (address != null) {
-            this.postcode = address.getPostcode();
-            this.address1 = address.getAddress1();
-            this.address2 = address.getAddress2();
-            this.address3 = address.getAddress3();
-            this.country = address.getCountry();
-        }
-        this.telephone = telephone;
-        this.email = email;
-        this.reference = reference;
-        this.externalKey = externalKey;
         this.isPrimary = isPrimary;
     }
 

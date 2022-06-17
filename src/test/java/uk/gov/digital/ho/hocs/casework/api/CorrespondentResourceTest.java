@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,16 +7,29 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentOutlinesResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CorrespondentResourceTest {
@@ -35,19 +47,31 @@ public class CorrespondentResourceTest {
     }
 
     @Test
-    public void getAllActiveCorrespondents(){
-        when(correspondentService.getAllActiveCorrespondents()).thenReturn(new HashSet<>());
+    public void getAllActiveCorrespondents() {
+        when(correspondentService.getAllCorrespondents(false)).thenReturn(new HashSet<>());
 
-        ResponseEntity<GetCorrespondentOutlinesResponse> response = correspondentResource.getAllActiveCorrespondents();
+        ResponseEntity<GetCorrespondentOutlinesResponse> response = correspondentResource.getAllActiveCorrespondents(Optional.empty());
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        verify(correspondentService).getAllActiveCorrespondents();
+        verify(correspondentService).getAllCorrespondents(false);
         verifyNoMoreInteractions(correspondentService);
     }
 
     @Test
-    public void shouldAddCorrespondentToCase() throws JsonProcessingException {
+    public void getAllCorrespondents() {
+        when(correspondentService.getAllCorrespondents(true)).thenReturn(new HashSet<>());
+
+        ResponseEntity<GetCorrespondentOutlinesResponse> response = correspondentResource.getAllActiveCorrespondents(Optional.of(true));
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        verify(correspondentService).getAllCorrespondents(true);
+        verifyNoMoreInteractions(correspondentService);
+    }
+
+    @Test
+    public void shouldAddCorrespondentToCase() {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
 
@@ -56,7 +80,7 @@ public class CorrespondentResourceTest {
         CreateCorrespondentRequest createCorrespondentRequest = new CreateCorrespondentRequest("any", "anyFullName", "organisation", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail", "anyReference", "external key");
         ResponseEntity response = correspondentResource.addCorrespondentToCase(caseUUID, stageUUID, createCorrespondentRequest);
 
-        verify(correspondentService, times(1)).createCorrespondent(eq(caseUUID), eq(stageUUID), eq("any"), eq("anyFullName"), eq("organisation"),  any(Address.class), eq("anyPhone"), eq("anyEmail"), eq("anyReference"), eq("external key"));
+        verify(correspondentService, times(1)).createCorrespondent(eq(caseUUID), eq(stageUUID), eq("any"), eq("anyFullName"), eq("organisation"), any(Address.class), eq("anyPhone"), eq("anyEmail"), eq("anyReference"), eq("external key"));
 
         verifyNoMoreInteractions(correspondentService);
 
