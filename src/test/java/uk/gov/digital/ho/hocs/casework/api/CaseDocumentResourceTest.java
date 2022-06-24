@@ -133,26 +133,4 @@ public class CaseDocumentResourceTest {
         assertThat(response.getHeaders().get(HttpHeaders.CONTENT_TYPE).get(0)).isEqualTo(s3Document.getMimeType());
         assertThat(response.getHeaders().get(HttpHeaders.CONTENT_LENGTH).get(0)).isEqualTo(String.valueOf(s3Document.getData().length));
     }
-
-    @Test
-    public void getDocumentsForAction() {
-        // given
-        UUID actionUuid = UUID.randomUUID();
-
-        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)), new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
-
-        when(caseDocumentService
-                .getDocumentsForAction(caseUUID, actionUuid, "Appeal Information")).thenReturn(documentsResponse);
-
-        // when
-        ResponseEntity<GetDocumentsResponse> response =
-                caseDocumentResource.getDocumentsForAction(caseUUID, actionUuid, "Appeal Information");
-
-        // then
-        verify(caseDocumentService).getDocumentsForAction(caseUUID, actionUuid, "Appeal Information");
-        verifyNoMoreInteractions(caseDocumentService);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
 }

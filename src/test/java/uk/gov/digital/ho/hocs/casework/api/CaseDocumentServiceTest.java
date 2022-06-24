@@ -158,33 +158,4 @@ public class CaseDocumentServiceTest {
         assertThat(result.getFileType()).isEqualTo(fileType);
         assertThat(result.getMimeType()).isEqualTo(mimeType);
     }
-
-    @Test
-    public void getDocumentsForAction() {
-        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Collections.singletonList(documentDto)), new ArrayList<>(Arrays.asList("ORIGINAL", "DRAFT")));
-        CaseDataType type = CaseDataTypeFactory.from("CaseType", "a1");
-        Long caseNumber = 1234L;
-        Map<String, String> data = new HashMap<>();
-        data.put("DraftDocuments", documentUUID.toString());
-        LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, data, caseReceived);
-        UUID actionDataUuid = UUID.randomUUID();
-
-        when(caseDataRepository.findAnyByUuid(caseUUID)).thenReturn(caseData);
-        when(documentClient.getDocumentsForAction(caseUUID, actionDataUuid, "ACTION_DOC")).thenReturn(documentsResponse);
-
-        GetDocumentsResponse result = caseDocumentService.getDocumentsForAction(caseUUID, actionDataUuid, "ACTION_DOC");
-
-        verify(documentClient).getDocumentsForAction(caseUUID, actionDataUuid, "ACTION_DOC");
-        verify(caseDataRepository).findAnyByUuid(caseUUID);
-        verifyNoMoreInteractions(documentClient, caseDataRepository);
-        assertThat(result).isNotNull();
-        assertThat(result.getDocumentDtos()).isNotNull();
-        assertThat(result.getDocumentDtos().size()).isOne();
-        assertThat(result.getDocumentDtos().iterator().next().getLabels()).contains("Primary Draft");
-        assertThat(result.getDocumentTags()).isNotNull();
-        assertThat(result.getDocumentTags().size()).isEqualTo(1);
-        assertThat(result.getDocumentTags().get(0)).isEqualTo("ACTION_DOC");
-        checkDocumentDto(result.getDocumentDtos().iterator().next());
-    }
 }

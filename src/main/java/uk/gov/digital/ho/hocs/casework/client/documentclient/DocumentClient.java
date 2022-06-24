@@ -58,23 +58,6 @@ public class DocumentClient {
         return document;
     }
 
-    public GetDocumentsResponse getDocumentsForAction(UUID caseUUID, UUID actionDataUuid, String type) {
-        String url = String.format("/document/reference/%s/actionDataUuid/%s/type/%s",
-                caseUUID, actionDataUuid, type);
-
-        GetDocumentsResponse documents = restHelper.get(serviceBaseURL, url, GetDocumentsResponse.class);
-        log.info(
-                "Got Documents {} for Case {}, Type {}, and Action {}",
-                documents.getDocumentDtos(),
-                caseUUID,
-                type,
-                actionDataUuid,
-                value(EVENT, DOCUMENT_CLIENT_GET_DOCUMENTS_SUCCESS)
-        );
-
-        return documents;
-    }
-
     public void copyDocuments(CopyDocumentsRequest copyDocumentRequest) {
         restHelper.post(serviceBaseURL, "/documents/copy", copyDocumentRequest, Void.class);
     }
