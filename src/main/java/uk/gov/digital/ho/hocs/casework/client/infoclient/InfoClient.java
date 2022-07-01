@@ -105,20 +105,6 @@ public class InfoClient {
         return teams;
     }
 
-    @Cacheable(value = "InfoClientRestrictedCaseDataFields", unless = "#result.size() == 0", key = "{#caseType, #accessLevel}")
-    public List<FieldDto> getFieldsByCaseTypeAndPermissionLevel(String caseType, AccessLevel accessLevel) {
-        log.debug("Requesting fields by caseType:{} and permission level: {}", caseType, accessLevel);
-
-        ParameterizedTypeReference<List<FieldDto>> typeRef = new ParameterizedTypeReference<>() {};
-        String url = String.format("/schema/caseType/%s/permission/%s/fields", caseType, accessLevel);
-        List<FieldDto> fields = restHelper.get(serviceBaseURL, url,typeRef);
-
-        log.info("Received {} fields for caseType: {} and permission level: {}", fields.size(), caseType,
-                accessLevel, value(EVENT, INFO_CLIENT_GET_FIELDS_BY_PERMISSION_SUCCESS));
-
-        return fields;
-    }
-
     @Cacheable(value = "InfoClientGetTeamForStageType", unless = "#result == null", key = "#stageType")
     public TeamDto getTeamForStageType(String stageType) {
         TeamDto response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/team", stageType), TeamDto.class);
