@@ -59,7 +59,6 @@ public class IedetToComp extends AbstractCaseCopyStrategy implements CaseCopyStr
 
         // copy clob details
         copyClobData(fromCase, toCase, DATA_CLOB_KEYS);
-        toCase.update("CurrentStage", "COMP_CCH_RETURNS");
         caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
 
         // Correspondents include the primary_correspondent_uuid
