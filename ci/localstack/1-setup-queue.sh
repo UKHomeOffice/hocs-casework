@@ -13,3 +13,5 @@ done
 
 awslocal sqs create-queue --queue-name notify-queue-dlq
 awslocal sqs create-queue --queue-name notify-queue --attributes '{"RedrivePolicy": "{\"deadLetterTargetArn\":\"arn:aws:sqs:eu-west-2:000000000000:notify-queue-dlq\",\"maxReceiveCount\":2}"}'
+
+awslocal sns create-topic --name hocs-audit-topic
