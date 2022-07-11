@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.PriorityPolicies;
 import uk.gov.digital.ho.hocs.casework.domain.repository.PriorityPolicyRepository;
 import uk.gov.digital.ho.hocs.casework.priority.policy.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -45,8 +46,9 @@ public class StagePriorityPolicyProviderImplTest {
     public void getPolicies_blank(){
         List<StagePriorityPolicy> results = stagePriorityPolicyProvider.getPolicies(CASE_TYPE);
 
-        assertThat(results).isNotNull();
-        assertThat(results.size()).isZero();
+        assertThat(results)
+                .isNotNull()
+                .isEmpty();
 
         verify(priorityPolicyRepository).getByCaseType(CASE_TYPE);
         verifyNoMoreInteractions(priorityPolicyRepository);
@@ -71,18 +73,22 @@ public class StagePriorityPolicyProviderImplTest {
                 Map.of("propertyName", PROPERTY_NAME_1, "propertyValue", PROPERTY_VALUE_1,
                         "dateFieldName", PROPERTY_NAME_DATE, "dateFormat", DATE_FIELD_FORMAT, "pointsToAwardPerDay", "2",
                         "capNumberOfDays", "7", "capPointsToAward", "12"));
+        PriorityPolicies.PriorityPolicy policy6 = new PriorityPolicies.PriorityPolicy("DeadlinePolicy",
+                Collections.emptyMap());
 
         when(priorityPolicyRepository.getByCaseType(CASE_TYPE))
-                .thenReturn(List.of(policy1, policy2, policy3, policy4, policy5));
+                .thenReturn(List.of(policy1, policy2, policy3, policy4, policy5, policy6));
         List<StagePriorityPolicy> results = stagePriorityPolicyProvider.getPolicies(CASE_TYPE);
 
-        assertThat(results).isNotNull();
-        assertThat(results.size()).isEqualTo(5);
+        assertThat(results)
+                .isNotNull()
+                .hasSize(6);
         assertThat(results.get(0)).isInstanceOf(SimpleStringPropertyPolicy.class);
         assertThat(results.get(1)).isInstanceOf(SimpleStringPropertyPolicy.class);
         assertThat(results.get(2)).isInstanceOf(JoinedStringPropertyPolicy.class);
         assertThat(results.get(3)).isInstanceOf(DaysElapsedPolicy.class);
         assertThat(results.get(4)).isInstanceOf(WorkingDaysElapsedPolicy.class);
+        assertThat(results.get(5)).isInstanceOf(DeadlinePolicy.class);
 
         SimpleStringPropertyPolicy resultPolicy1 = (SimpleStringPropertyPolicy) results.get(0);
         assertThat(resultPolicy1.getPropertyName()).isEqualTo(PROPERTY_NAME_1);
