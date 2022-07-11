@@ -146,31 +146,6 @@ public class InfoClientTest {
         verifyNoMoreInteractions(restHelper);
     }
 
-
-    @Test
-    public void getPriorityPoliciesForCaseType() {
-        String policyType = "POLICYB";
-        String caseType = "CASE_TYPE_A";
-        Map<String, String> config = Map.of("propertyB", "valueB");
-        List<PriorityPolicyDto> priorityPolicyDtos = Collections.singletonList(new PriorityPolicyDto(policyType, caseType, config));
-        when(restHelper.get("infoService", "/priority/policy/" + caseType, new ParameterizedTypeReference<List<PriorityPolicyDto>>() {
-        })).thenReturn(priorityPolicyDtos);
-
-
-        List<PriorityPolicyDto> results = infoClient.getPriorityPoliciesForCaseType(caseType);
-
-        assertThat(results).isNotNull();
-        assertThat(results.size()).isEqualTo(priorityPolicyDtos.size());
-        assertThat(results.get(0).getPolicyType()).isEqualTo(policyType);
-        assertThat(results.get(0).getCaseType()).isEqualTo(caseType);
-        assertThat(results.get(0).getConfig()).isEqualTo(config);
-
-        verify(restHelper).get("infoService", "/priority/policy/" + caseType, new ParameterizedTypeReference<List<PriorityPolicyDto>>() {
-        });
-        verifyNoMoreInteractions(restHelper);
-
-    }
-
     @Test
     public void getProfileByCaseType() {
 

@@ -1,22 +1,15 @@
 package uk.gov.digital.ho.hocs.casework.priority;
 
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.WorkingDaysElapsedProvider;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.PriorityPolicyDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.PriorityPolicies;
+import uk.gov.digital.ho.hocs.casework.domain.repository.PriorityPolicyRepository;
 import uk.gov.digital.ho.hocs.casework.priority.policy.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
-@AllArgsConstructor
-@NoArgsConstructor
 @Service
 public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvider {
     private static final String POLICY_TYPE_SIMPLE_STRING = "SimpleStringPropertyPolicy";
@@ -35,22 +28,25 @@ public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvi
     private static final String PROPERTY_CAP_POINTS_TO_AWARD = "capPointsToAward";
     private static final String PROPERTY_POINTS_TO_AWARD_PER_DAY = "pointsToAwardPerDay";
 
-    @Autowired
-    private InfoClient infoClient;
+    private final PriorityPolicyRepository priorityPolicyRepository;
+    private final WorkingDaysElapsedProvider workingDaysElapsedProvider;
 
-    @Autowired
-    private WorkingDaysElapsedProvider workingDaysElapsedProvider;
+    public StagePriorityPolicyProviderImpl(PriorityPolicyRepository priorityPolicyRepository,
+                                           WorkingDaysElapsedProvider workingDaysElapsedProvider) {
+        this.priorityPolicyRepository = priorityPolicyRepository;
+        this.workingDaysElapsedProvider = workingDaysElapsedProvider;
+    }
 
     @Override
     public List<StagePriorityPolicy> getPolicies(String caseType) {
-        List<PriorityPolicyDto> policies = infoClient.getPriorityPoliciesForCaseType(caseType);
-        return policies.stream().map(this::convert).collect(Collectors.toList());
+        return priorityPolicyRepository.getByCaseType(caseType)
+                .stream().map(this::convert).toList();
     }
 
-
-    private StagePriorityPolicy convert(PriorityPolicyDto policyDto) {
+    private StagePriorityPolicy convert(PriorityPolicies.PriorityPolicy policyDto) {
         Map<String, String> data = policyDto.getConfig();
-        switch (policyDto.getPolicyType()) {
+
+        switch (policyDto.getType()) {
             case POLICY_TYPE_SIMPLE_STRING:
                 return new SimpleStringPropertyPolicy(data.get(PROPERTY_NAME), data.get(PROPERTY_VALUE),
                         Double.parseDouble(data.get(PROPERTY_POINTS_TO_AWARD)));
@@ -71,7 +67,7 @@ public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvi
                         Double.parseDouble(data.get(PROPERTY_CAP_POINTS_TO_AWARD)),
                         Double.parseDouble(data.get(PROPERTY_POINTS_TO_AWARD_PER_DAY)));
             default:
-                throw new ApplicationExceptions.InvalidPriorityTypeException("Cannot map %s priority policy type", policyDto.getPolicyType());
+                throw new ApplicationExceptions.InvalidPriorityTypeException("Cannot map %s priority policy type", policyDto.getType());
         }
     }
 }

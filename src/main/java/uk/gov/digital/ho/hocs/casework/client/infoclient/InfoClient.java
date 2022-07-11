@@ -202,14 +202,6 @@ public class InfoClient {
         log.info("Cache invalidated for Case Type: {}, {}", caseType, value(EVENT, CASE_TYPE_TEMPLATE_CACHE_INVALIDATED));
     }
 
-    @Cacheable(value = "InfoClientGetPriorityPoliciesForCaseType")
-    public List<PriorityPolicyDto> getPriorityPoliciesForCaseType(String caseType) {
-        List<PriorityPolicyDto> policies = restHelper.get(serviceBaseURL, String.format("/priority/policy/%s", caseType), new ParameterizedTypeReference<List<PriorityPolicyDto>>() {
-        });
-        log.info("Got {} policies", policies.size(), value(EVENT, INFO_CLIENT_GET_PRIORITY_POLICIES_SUCCESS));
-        return policies;
-    }
-
     @Cacheable(value = "InfoGetProfileByCaseType", unless = "#result == null")
     public ProfileDto getProfileByCaseType(String caseType) {
         ProfileDto response = restHelper.get(serviceBaseURL, String.format("/profile/forcasetype/%s", caseType), ProfileDto.class);
