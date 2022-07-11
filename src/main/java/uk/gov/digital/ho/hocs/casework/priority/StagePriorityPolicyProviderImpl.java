@@ -16,6 +16,7 @@ public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvi
     private static final String POLICY_TYPE_JOINED_STRING = "JoinedStringPropertyPolicy";
     private static final String POLICY_TYPE_DAYS_ELAPSED = "DaysElapsedPolicy";
     private static final String POLICY_TYPE_WORKING_DAYS_ELAPSED = "WorkingDaysElapsedPolicy";
+    private static final String POLICY_TYPE_DEADLINE = "DeadlinePolicy";
 
     private static final String PROPERTY_NAME = "propertyName";
     private static final String PROPERTY_VALUE = "propertyValue";
@@ -66,6 +67,8 @@ public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvi
                         Integer.parseInt(data.get(PROPERTY_CAP_NUMBER_OF_DAYS)),
                         Double.parseDouble(data.get(PROPERTY_CAP_POINTS_TO_AWARD)),
                         Double.parseDouble(data.get(PROPERTY_POINTS_TO_AWARD_PER_DAY)));
+            case POLICY_TYPE_DEADLINE:
+                return new DeadlinePolicy();
             default:
                 throw new ApplicationExceptions.InvalidPriorityTypeException("Cannot map %s priority policy type", policyDto.getType());
         }
