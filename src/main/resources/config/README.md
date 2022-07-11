@@ -13,10 +13,31 @@ These permissions are applicable to all users that have the permission level and
 
 ```json
 {
- <<CASE_TYPE>>: {
-  <<PERMISSION_LEVEL>>: [
-   <<FIELD_NAMES>>
-  ] 
- }
+  <<CASE_TYPE>>: {
+    <<PERMISSION_LEVEL>>: [
+      <<FIELD_NAMES>>
+    ] 
+  }
+}
+```
+
+### Priority Policies Fields
+
+A list of policies that should be applied for calculating the general priority of a case. 
+
+This is often utilised by the frontend to calculate the default workstack display.
+
+#### Schema
+
+```json
+{
+  <<CASE_TYPE>>: [
+    {
+      "type": <<TYPE_NAME>>,
+      "config": {
+        <<OPTIONS>>...
+      }
+    }
+  ]
 }
 ```
