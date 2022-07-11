@@ -69,6 +69,10 @@
         "pointsToAward": "1000",
         "propertyValue": "Yes"
       }
+    },
+    {
+      "type": "DeadlinePolicy",
+      "config": { }
     }
   ]
 }
