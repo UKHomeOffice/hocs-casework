@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.priority.policy;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.util.Map;
 
@@ -14,7 +15,8 @@ public class SimpleStringPropertyPolicy implements StagePriorityPolicy {
     private double pointsToAward;
 
     @Override
-    public double apply(Map<String, String> data) {
+    public double apply(StageWithCaseData stageWithCaseData) {
+        var data = stageWithCaseData.getData();
 
         if (propertyValue.equals(data.get(propertyName))) {
             return pointsToAward;

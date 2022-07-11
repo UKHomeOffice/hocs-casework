@@ -8,9 +8,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import uk.gov.digital.ho.hocs.casework.priority.policy.StagePriorityPolicy;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,7 +23,6 @@ public class StagePriorityCalculatorImplTest {
     @Mock
     StagePriorityPolicyProvider stagePriorityPolicyProvider;
 
-    @Mock
     StageWithCaseData stage;
 
     private final String caseType = "Test_Case_Type";
@@ -33,39 +30,39 @@ public class StagePriorityCalculatorImplTest {
     @Before
     public void before(){
         stagePriorityCalculator = new StagePriorityCalculatorImpl(stagePriorityPolicyProvider);
+
+        stage = new StageWithCaseData();
     }
 
     @Test
     public void updatePriority_noPolicies(){
-        var data = new HashMap<>(Map.of("PropertyA", "ValueA"));
-        stagePriorityCalculator.updatePriority(data, caseType);
+        stage.putData("PropertyA", "ValueA");
 
-        assertTrue(data.containsKey(SYSTEM_PRIORITY_FIELD_NAME));
-        assertEquals("0.0", data.get(SYSTEM_PRIORITY_FIELD_NAME));
+        stagePriorityCalculator.updatePriority(stage, caseType);
+
+        assertTrue(stage.getData().containsKey(SYSTEM_PRIORITY_FIELD_NAME));
+        assertEquals("0.0", stage.getData().get(SYSTEM_PRIORITY_FIELD_NAME));
     }
 
     @Test
     public void updatePriority_withPolicies(){
-        Map<String, String> dataMap = new HashMap<>(Map.of("PropertyA", "ValueA", StagePriorityPolicy.CASE_TYPE, caseType));
+        stage.putData("PropertyA", "ValueA");
+        stage.putData(StagePriorityPolicy.CASE_TYPE, caseType);
 
         StagePriorityPolicy policyA = mock(StagePriorityPolicy.class);
-        when(policyA.apply(dataMap)).thenReturn(12d);
+        when(policyA.apply(stage)).thenReturn(12d);
         StagePriorityPolicy policyB = mock(StagePriorityPolicy.class);
-        when(policyB.apply(dataMap)).thenReturn(3d);
+        when(policyB.apply(stage)).thenReturn(3d);
 
         when(stagePriorityPolicyProvider.getPolicies(caseType)).thenReturn(List.of(policyA, policyB));
 
-        stagePriorityCalculator.updatePriority(dataMap, caseType);
+        stagePriorityCalculator.updatePriority(stage, caseType);
 
-        assertTrue(dataMap.containsKey(SYSTEM_PRIORITY_FIELD_NAME));
-        assertEquals("15.0", dataMap.get(SYSTEM_PRIORITY_FIELD_NAME));
+        assertTrue(stage.getData().containsKey(SYSTEM_PRIORITY_FIELD_NAME));
+        assertEquals("15.0", stage.getData().get(SYSTEM_PRIORITY_FIELD_NAME));
 
-        verify(policyA).apply(dataMap);
-        verify(policyB).apply(dataMap);
+        verify(policyA).apply(stage);
+        verify(policyB).apply(stage);
 
-    }
-
-    private void checkNoMoreInteraction(){
-        verifyNoMoreInteractions(stagePriorityPolicyProvider, stage);
     }
 }

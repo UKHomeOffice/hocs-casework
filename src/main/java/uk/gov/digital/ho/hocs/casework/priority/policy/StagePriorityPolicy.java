@@ -1,10 +1,9 @@
 package uk.gov.digital.ho.hocs.casework.priority.policy;
 
-import java.util.Map;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 public interface StagePriorityPolicy {
-
     String CASE_TYPE = "CASE_TYPE_MARKER";
 
-    double apply(Map<String, String> data);
+    double apply(StageWithCaseData data);
 }

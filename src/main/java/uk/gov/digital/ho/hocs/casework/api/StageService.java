@@ -426,7 +426,7 @@ public class StageService {
         }
 
         for (StageWithCaseData stage : unassignedStages) {
-            stagePriorityCalculator.updatePriority(stage.getData(), stage.getCaseDataType());
+            stagePriorityCalculator.updatePriority(stage, stage.getCaseDataType());
             daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
         }
 
@@ -487,7 +487,7 @@ public class StageService {
         updateContributions(stages);
 
         for (StageWithCaseData stage : stages) {
-            stagePriorityCalculator.updatePriority(stage.getData(), stage.getCaseDataType());
+            stagePriorityCalculator.updatePriority(stage, stage.getCaseDataType());
             daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
             stage.setTag(stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType()));
         }
