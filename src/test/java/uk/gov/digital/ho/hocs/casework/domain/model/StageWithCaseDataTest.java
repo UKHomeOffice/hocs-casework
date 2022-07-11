@@ -34,7 +34,7 @@ public class StageWithCaseDataTest {
         assertThat(stage.getTransitionNoteUUID()).isEqualTo(transitionNoteUUID);
         assertThat(stage.getCaseReference()).isEqualTo(null);
         assertThat(stage.getCaseDataType()).isEqualTo(null);
-        assertThat(stage.getData()).isEqualTo(null);
+        assertThat(stage.getData()).isEmpty();
     }
 
     @Test
@@ -61,7 +61,7 @@ public class StageWithCaseDataTest {
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
         assertThat(stage.getCaseDataType()).isEqualTo(null);
-        assertThat(stage.getData()).isEqualTo(null);
+        assertThat(stage.getData()).isEmpty();
 
         stage.setTeam(newTeamUUID);
 
@@ -75,7 +75,7 @@ public class StageWithCaseDataTest {
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
         assertThat(stage.getCaseDataType()).isEqualTo(null);
-        assertThat(stage.getData()).isEqualTo(null);
+        assertThat(stage.getData()).isEmpty();
     }
 
     @Test
@@ -101,7 +101,7 @@ public class StageWithCaseDataTest {
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
         assertThat(stage.getCaseDataType()).isEqualTo(null);
-        assertThat(stage.getData()).isEqualTo(null);
+        assertThat(stage.getData()).isEmpty();
 
         stage.setTeam(null);
 
@@ -115,7 +115,7 @@ public class StageWithCaseDataTest {
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
         assertThat(stage.getCaseDataType()).isEqualTo(null);
-        assertThat(stage.getData()).isEqualTo(null);
+        assertThat(stage.getData()).isEmpty();
     }
 
     @Test
@@ -142,7 +142,7 @@ public class StageWithCaseDataTest {
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
         assertThat(stage.getCaseDataType()).isEqualTo(null);
-        assertThat(stage.getData()).isEqualTo(null);
+        assertThat(stage.getData()).isEmpty();
 
         stage.setUserUUID(newuserUUID);
 
@@ -156,7 +156,7 @@ public class StageWithCaseDataTest {
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
         assertThat(stage.getCaseDataType()).isEqualTo(null);
-        assertThat(stage.getData()).isEqualTo(null);
+        assertThat(stage.getData()).isEmpty();
     }
 
     @Test
@@ -182,7 +182,7 @@ public class StageWithCaseDataTest {
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
         assertThat(stage.getCaseDataType()).isEqualTo(null);
-        assertThat(stage.getData()).isEqualTo(null);
+        assertThat(stage.getData()).isEmpty();
 
         stage.setUserUUID(null);
 
@@ -196,16 +196,15 @@ public class StageWithCaseDataTest {
 
         assertThat(stage.getCaseReference()).isEqualTo(null);
         assertThat(stage.getCaseDataType()).isEqualTo(null);
-        assertThat(stage.getData()).isEqualTo(null);
+        assertThat(stage.getData()).isEmpty();
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void getStageNullCaseUUID() {
-
         String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
         UUID userUUID = UUID.randomUUID();
-        LocalDate deadline = LocalDate.now();
+
         UUID transitionNoteUUID = UUID.randomUUID();
         new StageWithCaseData(null, stageType, teamUUID, userUUID, transitionNoteUUID);
 

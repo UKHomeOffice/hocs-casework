@@ -2,6 +2,8 @@ package uk.gov.digital.ho.hocs.casework.priority.policy;
 
 import org.junit.Before;
 import org.junit.Test;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -13,6 +15,8 @@ public class DaysElapsedPolicyTest {
 
     private DaysElapsedPolicy policy;
 
+    private StageWithCaseData stage;
+
     private static final String PROPERTY_NAME = "property1";
     private static final String PROPERTY_VALUE = "value1";
     private static final String DATE_FIELD_NAME = "DateFieldName1";
@@ -23,6 +27,8 @@ public class DaysElapsedPolicyTest {
 
     @Before
     public void before() {
+        stage = new StageWithCaseData();
+
         policy = new DaysElapsedPolicy(PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DATE_FORMAT, CAP_NUMBER_OF_DAYS,
                 CAP_POINTS_TO_AWARD, POINTS_TO_AWARD_PER_DAY);
     }
@@ -30,26 +36,37 @@ public class DaysElapsedPolicyTest {
     @Test
     public void apply_criteriaMatched() {
         LocalDate testDate = LocalDate.now().minusDays(10);
-        double result = policy.apply(Map.of(PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate)));
+
+        stage.putData(PROPERTY_NAME, PROPERTY_VALUE);
+        stage.putData(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
+
+        double result = policy.apply(stage);
         assertThat(result).isEqualTo(20d);
     }
 
     @Test
     public void apply_criteriaMatched_capped() {
         LocalDate testDate = LocalDate.now().minusDays(55);
-        double result = policy.apply(Map.of(PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate)));
+
+        stage.putData(PROPERTY_NAME, PROPERTY_VALUE);
+        stage.putData(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
+
+        double result = policy.apply(stage);
+
         assertThat(result).isEqualTo(35d);
     }
 
     @Test
     public void apply_criteriaNotMatched() {
-        double result = policy.apply(Map.of(PROPERTY_NAME, "C"));
-        assertThat(result).isEqualTo(0);
+        stage.putData(PROPERTY_NAME, "C");
+
+        double result = policy.apply(stage);
+        assertThat(result).isZero();
     }
 
     @Test
     public void apply_propertyMissing() {
-        double result = policy.apply(Map.of());
-        assertThat(result).isEqualTo(0);
+        double result = policy.apply(stage);
+        assertThat(result).isZero();
     }
 }

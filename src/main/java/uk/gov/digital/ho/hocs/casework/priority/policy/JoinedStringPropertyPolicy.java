@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.priority.policy;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.util.Map;
 
@@ -16,7 +17,8 @@ public class JoinedStringPropertyPolicy implements StagePriorityPolicy {
     private double pointsToAward;
 
     @Override
-    public double apply(Map<String, String> data) {
+    public double apply(StageWithCaseData stageWithCaseData) {
+        var data = stageWithCaseData.getData();
 
         if (firstPropertyValue.equals(data.get(firstPropertyName)) && secondPropertyValue.equals(data.get(secondPropertyName))) {
             return pointsToAward;

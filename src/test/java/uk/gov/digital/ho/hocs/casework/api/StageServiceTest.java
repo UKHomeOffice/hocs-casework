@@ -783,7 +783,7 @@ public class StageServiceTest {
 
         verify(userPermissionsService).getExpandedUserTeams();
         verify(stageRepository).findAllActiveByTeamUUID(teams);
-        verify(stagePriorityCalculator).updatePriority(stage.getData(), stage.getCaseDataType());
+        verify(stagePriorityCalculator).updatePriority(stage, stage.getCaseDataType());
         verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
 
         checkNoMoreInteraction();
@@ -1267,7 +1267,7 @@ public class StageServiceTest {
 
         verify(userPermissionsService).getExpandedUserTeams();
         verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
-        verify(stagePriorityCalculator).updatePriority(stage.getData(), stage.getCaseDataType());
+        verify(stagePriorityCalculator).updatePriority(stage, stage.getCaseDataType());
         verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
 
         checkNoMoreInteraction();
@@ -1290,7 +1290,7 @@ public class StageServiceTest {
 
         verify(userPermissionsService).getExpandedUserTeams();
         verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
-        verify(stagePriorityCalculator).updatePriority(stage.getData(), stage.getCaseDataType());
+        verify(stagePriorityCalculator).updatePriority(stage, stage.getCaseDataType());
         verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
         verify(stageTagsDecorator).decorateTags(stage.getData(), stage.getStageType());
 
