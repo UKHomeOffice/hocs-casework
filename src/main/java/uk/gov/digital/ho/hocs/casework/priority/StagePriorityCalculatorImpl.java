@@ -24,7 +24,6 @@ public class StagePriorityCalculatorImpl implements StagePriorityCalculator {
             priority += policy.apply(stageWithCaseData);
         }
 
-        caseData.put(StagePriorityPolicy.CASE_TYPE, caseType);
         caseData.put(SYSTEM_PRIORITY_FIELD_NAME, String.valueOf(priority));
 
     }

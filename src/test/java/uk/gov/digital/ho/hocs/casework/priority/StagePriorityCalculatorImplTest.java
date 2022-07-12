@@ -32,6 +32,8 @@ public class StagePriorityCalculatorImplTest {
         stagePriorityCalculator = new StagePriorityCalculatorImpl(stagePriorityPolicyProvider);
 
         stage = new StageWithCaseData();
+        stage.setCaseDataType(caseType);
+
     }
 
     @Test
@@ -47,7 +49,6 @@ public class StagePriorityCalculatorImplTest {
     @Test
     public void updatePriority_withPolicies(){
         stage.putData("PropertyA", "ValueA");
-        stage.putData(StagePriorityPolicy.CASE_TYPE, caseType);
 
         StagePriorityPolicy policyA = mock(StagePriorityPolicy.class);
         when(policyA.apply(stage)).thenReturn(12d);
