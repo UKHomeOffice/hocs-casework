@@ -37,7 +37,7 @@ public class WorkingDaysElapsedPolicy implements StagePriorityPolicy {
         if (StringUtils.hasText(dateString)) {
             LocalDate dateToCheck = LocalDate.parse(dateString, DateTimeFormatter.ofPattern(dateFormat));
 
-            int daysElapsed = workingDaysElapsedProvider.getWorkingDaysSince(data.get(CASE_TYPE), dateToCheck);
+            int daysElapsed = workingDaysElapsedProvider.getWorkingDaysSince(stageWithCaseData.getCaseDataType(), dateToCheck);
             if (capNumberOfDays > -1 && daysElapsed >= capNumberOfDays) {
                 return capPointsToAward;
             }

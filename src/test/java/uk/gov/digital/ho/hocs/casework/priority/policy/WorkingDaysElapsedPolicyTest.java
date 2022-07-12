@@ -10,11 +10,9 @@ import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static uk.gov.digital.ho.hocs.casework.priority.policy.StagePriorityPolicy.CASE_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkingDaysElapsedPolicyTest {
@@ -38,6 +36,7 @@ public class WorkingDaysElapsedPolicyTest {
     @Before
     public void before() {
         stage = new StageWithCaseData();
+        stage.setCaseDataType(TEST_CASE_TYPE);
 
         policy = new WorkingDaysElapsedPolicy(workingDaysElapsedProvider, PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DATE_FORMAT, CAP_NUMBER_OF_DAYS,
                 CAP_POINTS_TO_AWARD, POINTS_TO_AWARD_PER_DAY);
@@ -49,7 +48,6 @@ public class WorkingDaysElapsedPolicyTest {
 
         when(workingDaysElapsedProvider.getWorkingDaysSince(TEST_CASE_TYPE, testDate)).thenReturn(10);
 
-        stage.putData(CASE_TYPE, TEST_CASE_TYPE);
         stage.putData(PROPERTY_NAME, PROPERTY_VALUE);
         stage.putData(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
 
@@ -66,7 +64,6 @@ public class WorkingDaysElapsedPolicyTest {
 
         when(workingDaysElapsedProvider.getWorkingDaysSince(TEST_CASE_TYPE, testDate)).thenReturn(55);
 
-        stage.putData(CASE_TYPE, TEST_CASE_TYPE);
         stage.putData(PROPERTY_NAME, PROPERTY_VALUE);
         stage.putData(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
 
