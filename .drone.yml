@@ -88,8 +88,6 @@ trigger:
     - tag
   branch:
     - main
-depends_on:
-  - build tag
 
 steps:
   - name: deploy to cs-dev
