@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.SomuItemRepository;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
@@ -104,4 +105,16 @@ public class SomuItemService {
         }
     }
 
+    public void copySomuItems(UUID fromCase, UUID toCase) {
+        log.debug("Copying Somu Items from case: {} to case {}", fromCase, toCase);
+
+        Set<SomuItem> toSomuItems = getItemsByCaseUuid(fromCase);
+        Set<SomuItem> fromSomuItems = toSomuItems.stream().map(item -> addCaseSomuItemBySomuTypeUuid(toCase, item.getSomuUuid(), item.getData())).collect(Collectors.toSet());
+
+        if (toSomuItems.size() == fromSomuItems.size()) {
+            log.debug("Copied Somu Items from case: {} to case {}", fromCase, toCase);
+        } else {
+            log.debug("Failed to copy Somu Items from case: {} to case {}", fromCase, toCase);
+        }
+    }
 }
