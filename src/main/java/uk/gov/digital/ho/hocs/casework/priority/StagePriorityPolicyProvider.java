@@ -7,4 +7,5 @@ import java.util.List;
 public interface StagePriorityPolicyProvider {
 
     List<StagePriorityPolicy> getPolicies(String type);
+
 }

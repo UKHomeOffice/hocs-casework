@@ -20,7 +20,6 @@ import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
 
-@NoArgsConstructor
 @TypeDefs({
         @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 })
@@ -130,6 +129,11 @@ public class StageWithCaseData extends BaseStage {
         this.completed = Boolean.FALSE;
         this.teamUUID = teamUUID;
         this.userUUID = userUUID;
+        this.data = new HashMap<>();
+    }
+
+    public StageWithCaseData() {
+        this.data = new HashMap<>();
     }
 
     public void putData(String key, String value) {
@@ -138,12 +142,6 @@ public class StageWithCaseData extends BaseStage {
         }
 
         this.data.put(key, value);
-    }
-
-    public void putAllData(Map<String,String> data) {
-        if (data != null) {
-            this.data.putAll(data);
-        }
     }
 
     public String getData(String key) {

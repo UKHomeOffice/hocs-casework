@@ -6,19 +6,20 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.WorkingDaysElapsedProvider;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
-import static uk.gov.digital.ho.hocs.casework.priority.policy.StagePriorityPolicy.CASE_TYPE;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkingDaysElapsedPolicyTest {
 
     private WorkingDaysElapsedPolicy policy;
+    private StageWithCaseData stage;
+
 
     private static final String PROPERTY_NAME = "property1";
     private static final String PROPERTY_VALUE = "value1";
@@ -34,6 +35,9 @@ public class WorkingDaysElapsedPolicyTest {
 
     @Before
     public void before() {
+        stage = new StageWithCaseData();
+        stage.setCaseDataType(TEST_CASE_TYPE);
+
         policy = new WorkingDaysElapsedPolicy(workingDaysElapsedProvider, PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DATE_FORMAT, CAP_NUMBER_OF_DAYS,
                 CAP_POINTS_TO_AWARD, POINTS_TO_AWARD_PER_DAY);
     }
@@ -41,8 +45,13 @@ public class WorkingDaysElapsedPolicyTest {
     @Test
     public void apply_criteriaMatched() {
         LocalDate testDate = LocalDate.now().minusDays(10);
+
         when(workingDaysElapsedProvider.getWorkingDaysSince(TEST_CASE_TYPE, testDate)).thenReturn(10);
-        double result = policy.apply(Map.of(CASE_TYPE, TEST_CASE_TYPE, PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate)));
+
+        stage.putData(PROPERTY_NAME, PROPERTY_VALUE);
+        stage.putData(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
+
+        double result = policy.apply(stage);
         assertThat(result).isEqualTo(20d);
 
         verify(workingDaysElapsedProvider).getWorkingDaysSince(TEST_CASE_TYPE, testDate);
@@ -52,8 +61,13 @@ public class WorkingDaysElapsedPolicyTest {
     @Test
     public void apply_criteriaMatched_capped() {
         LocalDate testDate = LocalDate.now().minusDays(74);
+
         when(workingDaysElapsedProvider.getWorkingDaysSince(TEST_CASE_TYPE, testDate)).thenReturn(55);
-        double result = policy.apply(Map.of(CASE_TYPE, TEST_CASE_TYPE, PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate)));
+
+        stage.putData(PROPERTY_NAME, PROPERTY_VALUE);
+        stage.putData(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
+
+        double result = policy.apply(stage);
         assertThat(result).isEqualTo(35d);
 
         verify(workingDaysElapsedProvider).getWorkingDaysSince(TEST_CASE_TYPE, testDate);
@@ -62,16 +76,18 @@ public class WorkingDaysElapsedPolicyTest {
 
     @Test
     public void apply_criteriaNotMatched() {
-        double result = policy.apply(Map.of(PROPERTY_NAME, "C"));
-        assertThat(result).isEqualTo(0);
+        stage.putData(PROPERTY_NAME, "C");
+
+        double result = policy.apply(stage);
+        assertThat(result).isZero();
 
         verifyNoMoreInteractions(workingDaysElapsedProvider);
     }
 
     @Test
     public void apply_propertyMissing() {
-        double result = policy.apply(Map.of());
-        assertThat(result).isEqualTo(0);
+        double result = policy.apply(stage);
+        assertThat(result).isZero();
 
         verifyNoMoreInteractions(workingDaysElapsedProvider);
     }

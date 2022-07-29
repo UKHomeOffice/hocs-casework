@@ -140,10 +140,10 @@ public enum LogEvent {
     AUTH_FILTER_FAILURE,
     AUTH_FILTER_SUCCESS,
     DATA_MAPPING_EXCEPTION,
-    DATA_MAPPING_SUCCESS;
+    DATA_MAPPING_SUCCESS,
+    CONFIG_PARSE_FAILURE;
 
     public static final String EVENT = "event_id";
     public static final String EXCEPTION = "exception";
     public static final String STACKTRACE = "stacktrace";
-
 }

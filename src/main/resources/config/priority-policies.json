@@ -1,0 +1,78 @@
+{
+  "MPAM": [
+    {
+      "type": "SimpleStringPropertyPolicy",
+      "config": {
+        "propertyName": "RefType",
+        "pointsToAward": "1",
+        "propertyValue": "Ministerial"
+      }
+    },
+    {
+      "type": "JoinedStringPropertyPolicy",
+      "config": {
+        "propertyName": "RefType",
+        "pointsToAward": "14",
+        "propertyName2": "Priority",
+        "propertyValue": "Ministerial",
+        "propertyValue2": "Priority"
+      }
+    },
+    {
+      "type": "JoinedStringPropertyPolicy",
+      "config": {
+        "propertyName": "RefType",
+        "pointsToAward": "7",
+        "propertyName2": "Priority",
+        "propertyValue": "Official",
+        "propertyValue2": "Priority"
+      }
+    },
+    {
+      "type": "SimpleStringPropertyPolicy",
+      "config": {
+        "propertyName": "Priority",
+        "pointsToAward": "30",
+        "propertyValue": "Immediate"
+      }
+    },
+    {
+      "type": "WorkingDaysElapsedPolicy",
+      "config": {
+        "dateFormat": "yyyy-MM-dd",
+        "propertyName": "RefType",
+        "dateFieldName": "DateReceived",
+        "propertyValue": "Ministerial",
+        "capNumberOfDays": "21",
+        "capPointsToAward": "15",
+        "pointsToAwardPerDay": "1"
+      }
+    },
+    {
+      "type": "WorkingDaysElapsedPolicy",
+      "config": {
+        "dateFormat": "yyyy-MM-dd",
+        "propertyName": "RefType",
+        "dateFieldName": "DateReceived",
+        "propertyValue": "Official",
+        "capNumberOfDays": "21",
+        "capPointsToAward": "7.5",
+        "pointsToAwardPerDay": "0.5"
+      }
+    }
+  ],
+  "POGR": [
+    {
+      "type": "SimpleStringPropertyPolicy",
+      "config": {
+        "propertyName": "ComplaintPriority",
+        "pointsToAward": "1000",
+        "propertyValue": "Yes"
+      }
+    },
+    {
+      "type": "DeadlinePolicy",
+      "config": { }
+    }
+  ]
+}

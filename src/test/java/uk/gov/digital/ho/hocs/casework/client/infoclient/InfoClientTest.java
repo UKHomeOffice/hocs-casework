@@ -146,31 +146,6 @@ public class InfoClientTest {
         verifyNoMoreInteractions(restHelper);
     }
 
-
-    @Test
-    public void getPriorityPoliciesForCaseType() {
-        String policyType = "POLICYB";
-        String caseType = "CASE_TYPE_A";
-        Map<String, String> config = Map.of("propertyB", "valueB");
-        List<PriorityPolicyDto> priorityPolicyDtos = Collections.singletonList(new PriorityPolicyDto(policyType, caseType, config));
-        when(restHelper.get("infoService", "/priority/policy/" + caseType, new ParameterizedTypeReference<List<PriorityPolicyDto>>() {
-        })).thenReturn(priorityPolicyDtos);
-
-
-        List<PriorityPolicyDto> results = infoClient.getPriorityPoliciesForCaseType(caseType);
-
-        assertThat(results).isNotNull();
-        assertThat(results.size()).isEqualTo(priorityPolicyDtos.size());
-        assertThat(results.get(0).getPolicyType()).isEqualTo(policyType);
-        assertThat(results.get(0).getCaseType()).isEqualTo(caseType);
-        assertThat(results.get(0).getConfig()).isEqualTo(config);
-
-        verify(restHelper).get("infoService", "/priority/policy/" + caseType, new ParameterizedTypeReference<List<PriorityPolicyDto>>() {
-        });
-        verifyNoMoreInteractions(restHelper);
-
-    }
-
     @Test
     public void getProfileByCaseType() {
 
@@ -265,28 +240,6 @@ public class InfoClientTest {
 
         // THEN
         assertThat(response).isNotNull();
-    }
-
-    @Test
-    public void getFieldsByCaseTypeAndPermissionLevel_shouldReturnListOfFieldDtos() {
-
-        // GIVEN
-
-        String caseType = "CASE_TYPE";
-        ParameterizedTypeReference<List<FieldDto>> typeRef = new ParameterizedTypeReference<>() {};
-        AccessLevel accessLevel = AccessLevel.READ;
-        FieldDto field1 = new FieldDto(UUID.randomUUID(), "field1Name","Field 1 Label", "dropdown",null,true, true, AccessLevel.READ,"{}");
-        FieldDto field2 = new FieldDto(UUID.randomUUID(), "field2Name","Field 2 Label", "dropdown",null,true, true, AccessLevel.READ,"{}");
-
-        List<FieldDto> fieldDtoList = List.of(field1, field2);
-        when(restHelper.get(
-                "infoService", "/schema/caseType/" +  caseType + "/permission/" + accessLevel + "/fields",
-                typeRef)).thenReturn(fieldDtoList);
-
-        List<FieldDto> result = infoClient.getFieldsByCaseTypeAndPermissionLevel(caseType, accessLevel);
-
-        assertThat(result).isNotNull();
-        assertThat(result.size()).isEqualTo(2);
     }
 
     @Test

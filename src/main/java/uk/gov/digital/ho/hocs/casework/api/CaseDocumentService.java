@@ -57,24 +57,6 @@ public class CaseDocumentService {
         return getDocumentsResponse;
     }
 
-    public GetDocumentsResponse getDocumentsForAction(UUID caseUUID, UUID actionDataUuid, String type) {
-        log.debug("Getting documents for Case: {}, type {}, and action: {}", caseUUID, type, actionDataUuid);
-        GetDocumentsResponse getDocumentsResponse = documentClient.getDocumentsForAction(caseUUID, actionDataUuid, type);
-
-        CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
-        enrichDocumentsResponse(getDocumentsResponse, caseData.getData(DRAFT_DOCUMENT_FIELD_NAME), caseData.getType());
-        getDocumentsResponse.setDocumentTags(List.of(type));
-
-        log.info("Got {} documents and {} document tags for Case: {}, type: {}, and action: {}",
-                getDocumentsResponse.getDocumentDtos().size(),
-                getDocumentsResponse.getDocumentTags().size(),
-                caseUUID,
-                type,
-                actionDataUuid,
-                value(EVENT, CASE_DOCUMENTS_RETRIEVED));
-        return getDocumentsResponse;
-    }
-
     public DocumentDto getDocument(UUID documentUUID) {
         log.debug("Getting document for id: {}", documentUUID);
         DocumentDto documentDto = documentClient.getDocument(documentUUID);

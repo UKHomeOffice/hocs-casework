@@ -1,0 +1,10 @@
+{
+  "TEST" : {
+    "SUMMARY": [
+      "Field1"
+    ],
+    "RESTRICTED_OWNER" : [
+      "Field2"
+    ]
+  }
+}

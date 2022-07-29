@@ -2,7 +2,7 @@ package uk.gov.digital.ho.hocs.casework.api.utils;
 
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
-import uk.gov.digital.ho.hocs.casework.domain.model.BaseCorrespondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -11,8 +11,8 @@ import java.util.Set;
 @Service
 public class CorrespondentTypeNameDecorator {
 
-    public <T extends BaseCorrespondent> Set<T> addCorrespondentTypeName(Set<CorrespondentTypeDto> correspondentTypes,
-                                                                         Set<T> correspondents) {
+    public Set<Correspondent> addCorrespondentTypeName(Set<CorrespondentTypeDto> correspondentTypes,
+                                                       Set<Correspondent> correspondents) {
         if (correspondentTypes == null) {
             return correspondents;
         }
@@ -22,8 +22,8 @@ public class CorrespondentTypeNameDecorator {
         return correspondents;
     }
 
-    public <T extends BaseCorrespondent> T addCorrespondentTypeName(Set<CorrespondentTypeDto> correspondentTypes,
-                                                                    T correspondent) {
+    public Correspondent addCorrespondentTypeName(Set<CorrespondentTypeDto> correspondentTypes,
+                                                  Correspondent correspondent) {
         if (correspondentTypes == null) {
             return correspondent;
         }

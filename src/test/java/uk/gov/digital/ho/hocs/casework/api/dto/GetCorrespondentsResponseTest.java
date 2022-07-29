@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
 
 import java.util.HashSet;
@@ -12,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GetCorrespondentsResponseTest {
 
-    private final CorrespondentWithPrimaryFlag correspondent = new CorrespondentWithPrimaryFlag(
+    private final Correspondent correspondent = new Correspondent(
             UUID.randomUUID(),
             "CORRESPONDENT",
             "anyFullName",
@@ -21,13 +22,13 @@ public class GetCorrespondentsResponseTest {
             "anyPhone",
             "anyEmail",
             "anyReference",
-            "external key",
-            true
+            "external key"
     );
 
     @Test
     public void getGetCorrespondentsResponse() {
-        Set<CorrespondentWithPrimaryFlag> correspondents = Set.of(correspondent);
+        Set<CorrespondentWithPrimaryFlag> correspondents =
+                Set.of(new CorrespondentWithPrimaryFlag(correspondent, true));
 
         GetCorrespondentsResponse getCorrespondentsResponse = GetCorrespondentsResponse.from(correspondents);
 
@@ -36,7 +37,7 @@ public class GetCorrespondentsResponseTest {
 
     @Test
     public void getGetCorrespondentsResponse_withDisplayName() {
-        CorrespondentWithPrimaryFlag correspondentVal = correspondent;
+        CorrespondentWithPrimaryFlag correspondentVal = new CorrespondentWithPrimaryFlag(correspondent, true);
         String displayName = "Super Awesome Name";
 
         correspondentVal.setCorrespondentTypeName(displayName);
