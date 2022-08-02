@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
-import uk.gov.digital.ho.hocs.casework.api.SomuItemService;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopy;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
@@ -32,14 +31,12 @@ public class CopyPOGRtoPOGR2 extends AbstractCaseCopyStrategy implements CaseCop
 
     private final CaseDataService caseDataService;
     private final CorrespondentService correspondentService;
-    private final SomuItemService somuItemService;
 
     @Autowired
-    public CopyPOGRtoPOGR2(CaseDataService caseDataService, CorrespondentService correspondentService, SomuItemService somuItemService) {
+    public CopyPOGRtoPOGR2(CaseDataService caseDataService, CorrespondentService correspondentService) {
         super();
         this.caseDataService = caseDataService;
         this.correspondentService = correspondentService;
-        this.somuItemService = somuItemService;
     }
 
     @Override

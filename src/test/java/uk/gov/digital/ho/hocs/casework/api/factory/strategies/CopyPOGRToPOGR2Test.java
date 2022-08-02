@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
-import uk.gov.digital.ho.hocs.casework.api.SomuItemService;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
@@ -90,9 +89,6 @@ public class CopyPOGRToPOGR2Test {
     @Mock
     private CorrespondentService correspondentService;
 
-    @Mock
-    private SomuItemService somuItemService;
-
     private CaseData toCase;
 
     @Before
@@ -120,7 +116,7 @@ public class CopyPOGRToPOGR2Test {
     public void shouldCopyCaseDetails() {
 
         // given
-        var pogrToPogr2 = new CopyPOGRtoPOGR2(caseDataService, correspondentService, somuItemService);
+        var pogrToPogr2 = new CopyPOGRtoPOGR2(caseDataService, correspondentService);
 
         // when
         pogrToPogr2.copyCase(FROM_CASE, toCase);
@@ -128,7 +124,6 @@ public class CopyPOGRToPOGR2Test {
         // then
         verify(caseDataService, times(1)).updateCaseData(eq(toCase.getUuid()), any(), anyMap());
         verify(correspondentService, times(1)).copyCorrespondents(FROM_CASE.getUuid(), toCase.getUuid());
-        verify(somuItemService, times(1)).copySomuItems(FROM_CASE.getUuid(), toCase.getUuid());
 
         assertThat(toCase.getDataMap()).isNotNull();
         assertThat(toCase.getDataMap()).isEqualTo(FROM_CASE.getDataMap());
