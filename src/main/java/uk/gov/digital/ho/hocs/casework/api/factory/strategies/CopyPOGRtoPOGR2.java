@@ -48,7 +48,6 @@ public class CopyPOGRtoPOGR2 extends AbstractCaseCopyStrategy implements CaseCop
         caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
 
         correspondentService.copyCorrespondents(fromCase.getUuid(), toCase.getUuid());
-        somuItemService.copySomuItems(fromCase.getUuid(), toCase.getUuid());
     }
 
 }

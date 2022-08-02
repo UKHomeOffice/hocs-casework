@@ -3,8 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateSomuItemRequest;
@@ -144,31 +142,6 @@ public class SomuItemServiceTest {
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldDeleteSomuItem_ThrowsWhenNotFound() {
         somuItemService.deleteSomuItem(uuid);
-    }
-
-    @Captor
-    ArgumentCaptor<SomuItem> somuItemArgumentCaptor;
-
-    @Test
-    public void shouldCopySomuItems() {
-        UUID toCaseUuid = UUID.randomUUID();
-        SomuItem somuItem = new SomuItem(uuid, caseUuid, somuTypeUuid, "{}");
-
-        when(somuItemRepository.findAllByCaseUuid(caseUuid)).thenReturn(Set.of(somuItem));
-
-        somuItemService.copySomuItems(caseUuid, toCaseUuid);
-
-        verify(somuItemRepository, times(1)).findAllByCaseUuid(caseUuid);
-        verify(somuItemRepository, times(1)).save(somuItemArgumentCaptor.capture());
-
-        SomuItem savedSomuItem = somuItemArgumentCaptor.getValue();
-        assertThat(savedSomuItem.getCaseUuid()).isEqualTo(toCaseUuid);
-        assertThat(savedSomuItem.getSomuUuid()).isEqualTo(somuItem.getSomuUuid());
-        assertThat(savedSomuItem.getData()).isEqualTo(somuItem.getData());
-
-        verify(auditClient, times(1)).viewAllSomuItemsAudit(caseUuid);
-        verify(auditClient, times(1)).createCaseSomuItemAudit(savedSomuItem);
-        verifyNoMoreInteractions(somuItemRepository, auditClient);
     }
 
 }
