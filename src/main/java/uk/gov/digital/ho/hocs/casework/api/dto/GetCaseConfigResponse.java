@@ -9,6 +9,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseTab;
 
 import java.util.List;
 
+@Deprecated(forRemoval = true)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class GetCaseConfigResponse {

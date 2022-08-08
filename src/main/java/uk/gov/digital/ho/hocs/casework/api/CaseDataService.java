@@ -595,6 +595,7 @@ public class CaseDataService {
         return builtCaseSummary;
     }
 
+    @Deprecated(forRemoval = true)
     CaseConfig getCaseConfig(UUID caseUUID) {
         String caseType = caseDataRepository.getCaseType(caseUUID);
         return infoClient.getCaseConfig(caseType);

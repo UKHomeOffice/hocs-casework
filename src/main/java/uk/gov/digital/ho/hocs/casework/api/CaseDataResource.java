@@ -78,6 +78,7 @@ class CaseDataResource {
         return ResponseEntity.ok(GetCaseSummaryResponse.from(caseSummary));
     }
 
+    @Deprecated(forRemoval = true)
     @GetMapping(value = "/case/{caseUUID}/config")
     public ResponseEntity<GetCaseConfigResponse> getCaseConfig(@PathVariable UUID caseUUID) {
         CaseConfig caseConfig = caseDataService.getCaseConfig(caseUUID);
