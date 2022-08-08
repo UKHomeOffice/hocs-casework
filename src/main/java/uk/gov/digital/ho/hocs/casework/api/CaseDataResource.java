@@ -223,4 +223,10 @@ class CaseDataResource {
         final String caseRef = caseDataService.getCaseRef(caseUUID);
         return ResponseEntity.ok(GetCaseReferenceResponse.from(caseUUID, caseRef));
     }
+
+    @GetMapping(value = "/case/{caseUUID}/type")
+    public ResponseEntity<GetCaseTypeResponse> getCaseTypeForCase(@PathVariable UUID caseUUID) {
+        String caseRef = caseDataService.getCaseType(caseUUID);
+        return ResponseEntity.ok(GetCaseTypeResponse.from(caseRef));
+    }
 }
