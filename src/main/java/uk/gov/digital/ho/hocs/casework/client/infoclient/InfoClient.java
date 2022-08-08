@@ -48,6 +48,7 @@ public class InfoClient {
         return caseDataType;
     }
 
+    @Deprecated(forRemoval = true)
     @Cacheable(value = "InfoClientGetCaseConfig", unless = "#result == null", key = "#type")
     public CaseConfig getCaseConfig(String type) {
         CaseConfig caseConfig = restHelper.get(serviceBaseURL, String.format("/caseType/%s/config", type), CaseConfig.class);
