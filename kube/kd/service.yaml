@@ -9,6 +9,6 @@ spec:
   ports:
   - name: https
     port: 443
-    targetPort: 10443
+    targetPort: 8443
   selector:
     name: hocs-casework
