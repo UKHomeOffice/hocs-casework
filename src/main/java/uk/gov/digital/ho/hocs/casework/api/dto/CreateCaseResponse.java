@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
+import java.util.Map;
 import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -18,7 +19,11 @@ public class CreateCaseResponse {
     @JsonProperty("reference")
     private final String reference;
 
+    @JsonProperty("data")
+    private Map<String, String> data;
+
+
     public static CreateCaseResponse from(CaseData caseData) {
-        return new CreateCaseResponse(caseData.getUuid(), caseData.getReference());
+        return new CreateCaseResponse(caseData.getUuid(), caseData.getReference(), caseData.getDataMap());
     }
 }
