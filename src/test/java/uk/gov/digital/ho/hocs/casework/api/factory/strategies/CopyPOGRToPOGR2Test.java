@@ -29,7 +29,7 @@ public class CopyPOGRToPOGR2Test {
 
     static {
         FROM_CLOB = Map.of(
-                "BusArea", "BusAreaValue",
+                "BusinessArea", "BusinessAreaValue",
                 "ComplainantLocation","ComplainantLocationValue",
                 "ComplaintChannel","ComplaintChannelValue",
                 "LoaRequired","LoaRequiredValue");

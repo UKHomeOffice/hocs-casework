@@ -12,7 +12,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 public class CopyPOGRtoPOGR2 extends AbstractCaseCopyStrategy implements CaseCopyStrategy {
 
     private static final String[] DATA_CLOB_KEYS = {
-            "BusArea",
+            "BusinessArea",
             "ComplainantDOB",
             "ComplainantGender",
             "ComplainantNationality",
