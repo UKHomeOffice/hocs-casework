@@ -40,6 +40,12 @@ public class SomuItemResource {
         return ResponseEntity.ok(somuItems.stream().map(GetSomuItemResponse::from).collect(Collectors.toSet()));
     }
 
+    @Authorised (accessLevel = AccessLevel.READ)
+    @GetMapping(value = "/case/{caseUuid}/item/{somuTypeUuid}/{somuItemUuid}", produces = APPLICATION_JSON_VALUE)
+    ResponseEntity<GetSomuItemResponse> getSomuItemByUuid(@PathVariable UUID caseUuid, @PathVariable UUID somuItemUuid) {
+        return ResponseEntity.ok(GetSomuItemResponse.from(somuItemService.getItemByUuid(somuItemUuid)));
+    }
+
     @Authorised(accessLevel = AccessLevel.WRITE)
     @DeleteMapping(value = "/item/{somuUuid}")
     ResponseEntity<Void> deleteSomuItem(@PathVariable UUID somuUuid) {

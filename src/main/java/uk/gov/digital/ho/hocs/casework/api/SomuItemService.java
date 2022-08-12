@@ -58,6 +58,10 @@ public class SomuItemService {
         return somuItems;
     }
 
+    public SomuItem getItemByUuid(UUID somuItemUuid) {
+        return somuItemRepository.findByUuid(somuItemUuid);
+    }
+
     public SomuItem upsertCaseSomuItemBySomuType(UUID caseUuid, UUID somuTypeUuid, CreateSomuItemRequest data) {
         log.debug("Upserting Somu Item of Type: {} for Case: {}", somuTypeUuid, caseUuid);
         
