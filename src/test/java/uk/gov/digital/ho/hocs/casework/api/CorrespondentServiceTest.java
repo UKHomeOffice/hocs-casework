@@ -37,7 +37,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-
 @RunWith(MockitoJUnitRunner.class)
 public class CorrespondentServiceTest {
 
@@ -55,8 +54,6 @@ public class CorrespondentServiceTest {
     @Mock
     private CaseDataService caseDataService;
     @Mock
-    private CorrespondentTypeNameDecorator correspondentTypeNameDecorator;
-    @Mock
     private CorrespondentService correspondentService;
 
     @Captor
@@ -65,7 +62,7 @@ public class CorrespondentServiceTest {
 
     @Before
     public void setUp() {
-        correspondentService = Mockito.spy(new CorrespondentService(correspondentRepository, caseDataRepository, auditClient, infoClient, caseDataService, correspondentTypeNameDecorator));
+        correspondentService = Mockito.spy(new CorrespondentService(correspondentRepository, caseDataRepository, auditClient, infoClient, caseDataService, new CorrespondentTypeNameDecorator()));
     }
 
     @Test
@@ -109,8 +106,6 @@ public class CorrespondentServiceTest {
         GetCorrespondentTypeResponse emptyCorrespondentSet = new GetCorrespondentTypeResponse(Collections.emptySet());
 
         when(correspondentRepository.findAllActive()).thenReturn(correspondentsExpected);
-        when(infoClient.getAllCorrespondentType()).thenReturn(emptyCorrespondentSet);
-        when(correspondentTypeNameDecorator.addCorrespondentTypeName(emptyCorrespondentSet.getCorrespondentTypes(), correspondentsExpected)).thenReturn(correspondentsExpected);
 
         Set<Correspondent> correspondents = correspondentService.getAllCorrespondents(false);
 
@@ -128,8 +123,6 @@ public class CorrespondentServiceTest {
         GetCorrespondentTypeResponse emptyCorrespondentSet = new GetCorrespondentTypeResponse(Collections.emptySet());
 
         when(correspondentRepository.findAll()).thenReturn(correspondentsExpected);
-        when(infoClient.getAllCorrespondentType()).thenReturn(emptyCorrespondentSet);
-        when(correspondentTypeNameDecorator.addCorrespondentTypeName(emptyCorrespondentSet.getCorrespondentTypes(), correspondentsExpected)).thenReturn(correspondentsExpected);
 
         Set<Correspondent> correspondents = correspondentService.getAllCorrespondents(true);
 
@@ -171,19 +164,19 @@ public class CorrespondentServiceTest {
         Address address = new Address("postcode", "line1", "line2", "line3", "country");
 
         Correspondent correspondent = new Correspondent(
-                caseUUID, "Type", "full name",
+                caseUUID, "TYPE", "full name",
                 "organisation", address, "01923478393", "email@test.com",
                 "ref", "key"
         );
         Set<Correspondent> correspondents = Set.of(correspondent);
         Set<CorrespondentWithPrimaryFlag> correspondentWithPrimaryFlags =
                 Set.of(new CorrespondentWithPrimaryFlag(correspondent, false));
-        Set<CorrespondentTypeDto> emptyCorrespondentSet = Collections.emptySet();
+        Set<CorrespondentTypeDto> typesSet =
+                Set.of(new CorrespondentTypeDto(UUID.randomUUID(), "Test Type", "TYPE"));
 
         when(caseDataService.getCaseData(caseUUID)).thenReturn(new CaseData());
         when(correspondentRepository.findAllByCaseUUID(caseUUID)).thenReturn(correspondents);
-        doReturn(emptyCorrespondentSet).when(correspondentService).getCorrespondentTypes(caseUUID);
-        when(correspondentTypeNameDecorator.addCorrespondentTypeName(emptyCorrespondentSet, correspondents)).thenReturn(correspondents);
+        doReturn(typesSet).when(correspondentService).getCorrespondentTypes(caseUUID);
 
         Set<CorrespondentWithPrimaryFlag> expectedCorrespondents = correspondentService.getCorrespondents(caseUUID);
 
@@ -211,7 +204,6 @@ public class CorrespondentServiceTest {
         when(correspondentRepository.findByUUID(caseUUID, correspondent.getUuid())).thenReturn(correspondent);
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
         doReturn(emptyCorrespondentSet).when(correspondentService).getCorrespondentTypes(caseUUID);
-        when(correspondentTypeNameDecorator.addCorrespondentTypeName(emptyCorrespondentSet, correspondent)).thenReturn(correspondent);
 
         correspondentService.deleteCorrespondent(caseUUID, stageUUID, correspondent.getUuid());
 
@@ -224,7 +216,6 @@ public class CorrespondentServiceTest {
 
     @Test
     public void shouldDeleteCorrespondentAndRemovePrimaryCorrespondent() {
-
         Address address = new Address("postcode", "line1", "line2", "line3", "country");
         Correspondent correspondent = new Correspondent(
                 caseUUID,
@@ -243,7 +234,6 @@ public class CorrespondentServiceTest {
         when(correspondentRepository.findByUUID(caseUUID, correspondent.getUuid())).thenReturn(correspondent);
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
         doReturn(emptyCorrespondentSet).when(correspondentService).getCorrespondentTypes(caseUUID);
-        when(correspondentTypeNameDecorator.addCorrespondentTypeName(emptyCorrespondentSet, correspondent)).thenReturn(correspondent);
 
         correspondentService.deleteCorrespondent(caseUUID, stageUUID, correspondent.getUuid());
 

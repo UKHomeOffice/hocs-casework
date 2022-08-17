@@ -69,9 +69,6 @@ public class CorrespondentService {
                 correspondentRepository.findAll() :
                 correspondentRepository.findAllActive();
 
-        correspondentTypeNameDecorator
-                .addCorrespondentTypeName(infoClient.getAllCorrespondentType().getCorrespondentTypes(), correspondents);
-
         log.info("Got {} all active Correspondents", correspondents.size(), value(EVENT, CORRESPONDENTS_RETRIEVED));
         return correspondents;
     }
@@ -87,13 +84,14 @@ public class CorrespondentService {
 
         CaseData caseData = caseDataService.getCaseData(caseUUID);
 
+        correspondents = correspondentTypeNameDecorator
+                .addCorrespondentTypeName(getCorrespondentTypes(caseUUID), correspondents);
+
         var correspondentsWithFlag = correspondents.stream()
                 .map(correspondent -> new
                         CorrespondentWithPrimaryFlag(correspondent,
                         correspondent.getUuid().equals(caseData.getPrimaryCorrespondentUUID())))
                 .collect(Collectors.toSet());
-
-        correspondentTypeNameDecorator.addCorrespondentTypeName(getCorrespondentTypes(caseUUID), correspondents);
 
         log.info("Got {} Correspondents for Case: {}", correspondents.size(), caseUUID, value(EVENT, CORRESPONDENTS_RETRIEVED));
         return correspondentsWithFlag;
