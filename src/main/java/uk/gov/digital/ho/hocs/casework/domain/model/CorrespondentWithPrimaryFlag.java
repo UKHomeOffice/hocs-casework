@@ -18,6 +18,7 @@ public class CorrespondentWithPrimaryFlag extends Correspondent {
         this.created = correspondent.created;
         this.caseUUID = correspondent.caseUUID;
         this.correspondentType = correspondent.correspondentType;
+        this.correspondentTypeName = correspondent.correspondentTypeName;
         this.fullName = correspondent.fullName;
         this.organisation = correspondent.organisation;
         this.postcode = correspondent.getPostcode();
