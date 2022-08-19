@@ -72,9 +72,9 @@ public class GetCaseSummaryResponse {
             additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream()
                     .filter(field -> !ObjectUtils.isEmpty(field.getValue()))
                     .map(AdditionalFieldDto::from)
-                    .collect(Collectors.toList()));
+                    .sorted(Comparator.comparing(AdditionalFieldDto::getLabel))
+                    .toList());
         }
-        additionalFieldDtos.sort(Comparator.comparing(AdditionalFieldDto::getLabel));
 
         return new GetCaseSummaryResponse(
                 caseSummary.getType(),
