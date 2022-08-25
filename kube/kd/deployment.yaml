@@ -14,7 +14,7 @@ spec:
       name: hocs-casework
   strategy:
     rollingUpdate:
-      maxUnavailable: 50%
+      maxUnavailable: 0
       maxSurge: 1
     type: RollingUpdate
   template:
