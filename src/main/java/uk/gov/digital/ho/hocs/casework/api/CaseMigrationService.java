@@ -23,7 +23,7 @@ public class CaseMigrationService {
         this.stageService = stageService;
     }
 
-    CaseData createMigrationCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
+    CaseData createMigrationCase(String caseType, String stageType, Map<String, String> data, LocalDate dateReceived) {
         log.debug("Migrating Case of type: {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
         CaseDataType caseDataType = new CaseDataType("migration", "1", caseType, caseType, 0 ,0);
@@ -32,7 +32,7 @@ public class CaseMigrationService {
         caseData.setCaseDeadline(deadline);
         caseDataRepository.save(caseData);
         // create stage for case
-        CreateStageRequest createStageRequest = new CreateStageRequest("MIGRATION", null, null, "", null, null);
+        CreateStageRequest createStageRequest = new CreateStageRequest(stageType, null, null, "", null, null);
         Stage stage = stageService.createStage(caseData.getUuid(), createStageRequest);
         return caseData;
     }
