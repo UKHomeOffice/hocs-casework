@@ -364,7 +364,6 @@ public class CaseDataService {
     }
 
     void overrideSla(UUID caseUUID, UUID stageUUID, int days) {
-
         Assert.notNull(caseUUID, "Case UUID is null");
         Assert.notNull(stageUUID, "Stage UUID is null");
 
@@ -550,49 +549,30 @@ public class CaseDataService {
         log.info("Deleted Case: {} flag: {}", caseUUID, deleted, value(EVENT, CASE_DELETED));
     }
 
-    CaseSummary getCaseSummary(final UUID caseUUID) {
-        log.debug("Building CaseSummary for Case: {}", caseUUID);
+    CaseSummary getCaseSummary(UUID caseUUID) {
+        var caseData = getCaseData(caseUUID);
 
-        final CaseData caseData = getCaseData(caseUUID);
-
-        CaseSummary.Builder summaryBuilder = new CaseSummary.Builder();
-
-        summaryBuilder
-                .withCaseType(caseData.getType())
-                .withCreatedDate(caseData.getCreated().toLocalDate())
-                .withCaseDeadline(caseData.getCaseDeadline())
-                .withPrimaryCorrespondent(caseData.getPrimaryCorrespondent())
+        var summaryBuilder = new CaseSummary(caseData)
+                .withStageDeadlines(getStageDeadlines(caseData, caseData.getDataMap()))
                 .withPrimaryTopic(caseData.getPrimaryTopic())
-                .withActiveStages(caseData.getActiveStages());
+                //TODO: HOCS-5558 suspension reimplementation discussion
+                .withSuspended(caseData.getDataMap().get("suspended"))
+                .withActions(caseActionService.getAllCaseActionDataForCase(caseUUID));
 
-        Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
-
-        CaseActionDataResponseDto caseActionData = caseActionService.getAllCaseActionDataForCase(caseUUID);
-
-        summaryBuilder.withActions(caseActionData);
-
-        Map<String, String> caseDataMap = caseData.getDataMap();
-        summaryBuilder.withAdditionalFields(getAdditionalFieldsForSummary(summaryFields, caseDataMap));
-        summaryBuilder.withStageDeadlines(getStageDeadlines(caseData, caseDataMap));
-
-
-        auditClient.viewCaseSummaryAudit(caseData);
-
-        final ActiveCaseViewData activeCaseViewData = getActiveCaseData(caseUUID);
-        final CaseSummary.Builder caseSummary = summaryBuilder
+        var activeCaseViewData = getActiveCaseData(caseUUID);
+        summaryBuilder = summaryBuilder
                 .withPreviousCaseReference(activeCaseViewData.getPreviousCaseReference())
                 .withPreviousCaseUUID(activeCaseViewData.getPreviousCaseUUID())
                 .withPreviousCaseStageUUID(activeCaseViewData.getPreviousCaseStageUUID());
 
-        if (caseDataMap.containsKey("suspended")) {
-            caseSummary.withSuspended(caseDataMap.get("suspended"));
-        }
+        Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
+        summaryBuilder.withAdditionalFields(getAdditionalFieldsForSummary(summaryFields, caseData.getDataMap()));
 
-        CaseSummary builtCaseSummary = caseSummary.build();
+        auditClient.viewCaseSummaryAudit(caseData);
 
         log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
 
-        return builtCaseSummary;
+        return summaryBuilder;
     }
 
     @Deprecated(forRemoval = true)
