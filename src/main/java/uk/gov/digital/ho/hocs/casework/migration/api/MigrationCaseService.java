@@ -2,9 +2,9 @@ package uk.gov.digital.ho.hocs.casework.migration.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
@@ -14,20 +14,22 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class CaseMigrationService {
+public class MigrationCaseService {
 
     protected final CaseDataRepository caseDataRepository;
     protected final MigrationStageService migrationStageService;
+    protected final InfoClient infoClient;
 
-    public CaseMigrationService(CaseDataRepository caseDataRepository, MigrationStageService migrationStageService) {
+    public MigrationCaseService(CaseDataRepository caseDataRepository, InfoClient infoClient, MigrationStageService migrationStageService) {
         this.caseDataRepository = caseDataRepository;
+        this.infoClient = infoClient;
         this.migrationStageService = migrationStageService;
     }
 
     CaseData createMigrationCase(String caseType, String stageType, Map<String, String> data, LocalDate dateReceived) {
         log.debug("Migrating Case of type: {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
-        CaseDataType caseDataType = new CaseDataType("migration", "1", caseType, caseType, 0 ,0);
+        CaseDataType caseDataType = infoClient.getCaseType(caseType);
         CaseData caseData = new CaseData(caseDataType, caseNumber, data, dateReceived);
         LocalDate deadline = LocalDate.now();
         caseData.setCaseDeadline(deadline);

@@ -12,13 +12,13 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
 @RestController
 @Slf4j
-public class CaseMigrationResource {
+public class MigrationCaseResource {
 
-    private final CaseMigrationService caseMigrationService;
+    private final MigrationCaseService caseMigrationService;
     private final StageService stageService;
 
 
-    public CaseMigrationResource(CaseMigrationService caseMigrationService, StageService stageService) {
+    public MigrationCaseResource(MigrationCaseService caseMigrationService, StageService stageService) {
         this.caseMigrationService = caseMigrationService;
         this.stageService = stageService;
     }

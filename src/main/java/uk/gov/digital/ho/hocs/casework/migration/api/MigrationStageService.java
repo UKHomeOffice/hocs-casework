@@ -101,9 +101,9 @@ public class MigrationStageService {
 //        assignTeamAndMemberUserToStage(stageToActivate.get(), createStageRequest.getTeamUUID(), createStageRequest.getUserUUID());
 
         // deactivate old active stage/s if new stage not current stage
-        if (!isRecreateOfCurrentlyActive.get()) {
-            activeStages.forEach(value -> updateStageTeam(value, caseData.getDataMap(), caseData.getReference(), null, null));
-        }
+//        if (!isRecreateOfCurrentlyActive.get()) {
+//            activeStages.forEach(value -> updateStageTeam(value, caseData.getDataMap(), caseData.getReference(), null, null));
+//        }
 
         // Update audit and timeline unless active and allocated to same user and team - positioned here maintains timeline consistency.
         if (isRecreation.get() && !isRecreateOfCurrentlyActive.get()) {
