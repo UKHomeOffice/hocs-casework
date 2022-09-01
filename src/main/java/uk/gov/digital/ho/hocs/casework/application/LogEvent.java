@@ -141,7 +141,8 @@ public enum LogEvent {
     AUTH_FILTER_SUCCESS,
     DATA_MAPPING_EXCEPTION,
     DATA_MAPPING_SUCCESS,
-    CONFIG_PARSE_FAILURE;
+    CONFIG_PARSE_FAILURE,
+    CONFIG_FOLDER_NOT_FOUND_FAILURE;
 
     public static final String EVENT = "event_id";
     public static final String EXCEPTION = "exception";
