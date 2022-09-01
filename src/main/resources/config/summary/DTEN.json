@@ -1,0 +1,56 @@
+{
+  "type": "DTEN",
+  "fields": [
+    {
+      "type": "date",
+      "name": "DateOfCorrespondence",
+      "label": "When was the correspondence sent?"
+    },
+    {
+      "type": "date",
+      "name": "DateReceived",
+      "label": "When was the correspondence received?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Email",
+          "value": "EMAIL"
+        },
+        {
+          "label": "Post",
+          "value": "POST"
+        },
+        {
+          "label": "Phone",
+          "value": "PHONE"
+        },
+        {
+          "label": "No. 10",
+          "value": "NO10"
+        }
+      ],
+      "name": "OriginalChannel",
+      "label": "How was the correspondence received?"
+    },
+    {
+      "type": "date",
+      "name": "DCU_DTEN_INITIAL_DRAFT_DEADLINE",
+      "label": "What is the drafting deadline?"
+    },
+    {
+      "type": "date",
+      "name": "DCU_DTEN_DISPATCH_DEADLINE",
+      "label": "What is the dispatch deadline?"
+    },
+    {
+      "name": "POTeamName",
+      "label": "Private Office Team"
+    },
+    {
+      "choices": "PRIVATE_OFFICE_TEAMS",
+      "name": "OverridePOTeamUUID",
+      "label": "Override Private Office Team"
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "type": "IEDET",
+  "fields": [
+    {
+      "choices": [
+        {
+          "label": "Not Applicable",
+          "value": "NA"
+        },
+        {
+          "label": "Telephone",
+          "value": "TELEPHONE"
+        },
+        {
+          "label": "Email",
+          "value": "EMAIL"
+        },
+        {
+          "label": "HMPOTRT",
+          "value": "HMPOTRT"
+        },
+        {
+          "label": "Letter",
+          "value": "Letter"
+        },
+        {
+          "label": "Face to Face",
+          "value": "FACE"
+        },
+        {
+          "label": "Webform",
+          "value": "Webform"
+        },
+        {
+          "label": "DCF9 Complaint Form",
+          "value": "DCF9ComplaintForm"
+        }
+      ],
+      "name": "Channel",
+      "label": "Channel"
+    },
+    {
+      "choices": "S_IEDET_CASE_OUTCOME",
+      "name": "CaseOutcome",
+      "label": "Case Outcome"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes - transferred to third party supplier",
+          "value": "YesThirdParty"
+        },
+        {
+          "label": "Yes - transferred to IE Detention Compliance Team",
+          "value": "YesIEDETCompliance"
+        },
+        {
+          "label": "No - no further consideration",
+          "value": "NoFurtherConsideration"
+        },
+        {
+          "label": "No - transfer the complaint to CCH",
+          "value": "NoCch"
+        }
+      ],
+      "label": "Can your team respond to this complaint?"
+    },
+    {
+      "name": "NoFurtherConsideration",
+      "label": "Please provide further details"
+    },
+    {
+      "type": "date",
+      "name": "ResponseDate",
+      "label": "Response date"
+    },
+    {
+      "choices": "S_IEDET_BUS_AREA",
+      "name": "BusArea",
+      "label": "Business Area"
+    },
+    {
+      "choices": "S_IEDET_COMP_ORIGIN",
+      "name": "CompOrigin",
+      "label": "Complaint Origin"
+    },
+    {
+      "name": "OutcomeOther",
+      "label": "Please provide further details"
+    },
+    {
+      "type": "date",
+      "name": "DateReceived",
+      "label": "When was the correspondence received?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Service",
+          "value": "Service"
+        },
+        {
+          "label": "Ex-Gratia",
+          "value": "Ex-Gratia"
+        },
+        {
+          "label": "Minor Misconduct",
+          "value": "MinorMisconduct"
+        }
+      ],
+      "name": "CompType",
+      "label": "Complaint Type"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes",
+          "value": "Yes"
+        },
+        {
+          "label": "No",
+          "value": "No"
+        }
+      ],
+      "name": "LoaRequired",
+      "label": "Is a Letter of Authority required?"
+    },
+    {
+      "name": "CompOriginOther",
+      "label": "Other Complaint Origin"
+    },
+    {
+      "name": "BusAreaOther",
+      "label": "Other Business Area"
+    }
+  ]
+}

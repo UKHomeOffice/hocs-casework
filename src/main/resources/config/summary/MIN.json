@@ -1,0 +1,88 @@
+{
+  "type": "MIN",
+  "fields": [
+    {
+      "type": "date",
+      "name": "DateOfCorrespondence",
+      "label": "When was the correspondence sent?"
+    },
+    {
+      "type": "date",
+      "name": "DateReceived",
+      "label": "When was the correspondence received?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Email",
+          "value": "EMAIL"
+        },
+        {
+          "label": "Post",
+          "value": "POST"
+        },
+        {
+          "label": "Phone",
+          "value": "PHONE"
+        },
+        {
+          "label": "No. 10",
+          "value": "NO10"
+        }
+      ],
+      "name": "OriginalChannel",
+      "label": "How was the correspondence received?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes",
+          "value": "TRUE"
+        },
+        {
+          "label": "No",
+          "value": "FALSE"
+        }
+      ],
+      "name": "CopyNumberTen",
+      "label": "Should the response be copied to Number 10?"
+    },
+    {
+      "name": "POTeamName",
+      "label": "Private Office Team"
+    },
+    {
+      "choices": "PRIVATE_OFFICE_TEAMS",
+      "name": "OverridePOTeamUUID",
+      "label": "Override Private Office Team"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes",
+          "value": "TRUE"
+        },
+        {
+          "label": "No",
+          "value": "FALSE"
+        }
+      ],
+      "name": "HomeSecInterest",
+      "label": "Does the Home Secretary have an interest in this case?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes",
+          "value": "TRUE"
+        },
+        {
+          "label": "No",
+          "value": "FALSE"
+        }
+      ],
+      "name": "HomeSecReply",
+      "label": "Is this a potential Home Secretary Reply case?"
+    }
+  ]
+}

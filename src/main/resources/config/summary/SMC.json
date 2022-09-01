@@ -1,0 +1,109 @@
+{
+  "type": "SMC",
+  "fields": [
+    {
+      "type": "date",
+      "name": "DateReceived",
+      "label": "When was the correspondence received?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Not Applicable",
+          "value": "NA"
+        },
+        {
+          "label": "Telephone",
+          "value": "TELEPHONE"
+        },
+        {
+          "label": "Email",
+          "value": "EMAIL"
+        },
+        {
+          "label": "HMPOTRT",
+          "value": "HMPOTRT"
+        },
+        {
+          "label": "Letter",
+          "value": "Letter"
+        },
+        {
+          "label": "Face to Face",
+          "value": "FACE"
+        },
+        {
+          "label": "Webform",
+          "value": "Webform"
+        }
+      ],
+      "hideConditions": [
+        {
+          "conditionPropertyName": "XOriginatedFrom",
+          "conditionPropertyValue": "Webform"
+        }
+      ],
+      "name": "Channel",
+      "label": "Channel"
+    },
+    {
+      "choices": "S_COMP_CCT_ENQ_REASON",
+      "name": "EnqReason",
+      "label": "Enquiry Reason"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes",
+          "value": "Yes"
+        },
+        {
+          "label": "No",
+          "value": "No"
+        }
+      ],
+      "name": "LoaRequired",
+      "label": "Is a Letter of Authority required?"
+    },
+    {
+      "name": "CaseNote_CompleteReason",
+      "label": "Enter note for case completion"
+    },
+    {
+      "name": "CaseNote_ReferReason",
+      "label": "Enter note for case referral"
+    },
+    {
+      "choices": [
+        {
+          "label": "Substantiated",
+          "value": "Substantiated"
+        },
+        {
+          "label": "Unsubstantiated",
+          "value": "Unsubstantiated"
+        },
+        {
+          "label": "Partially Substantiated",
+          "value": "PartiallySubstantiated"
+        },
+        {
+          "label": "Withdrawn",
+          "value": "Withdrawn"
+        }
+      ],
+      "name": "CctCaseOutcome",
+      "label": "Case Outcome"
+    },
+    {
+      "choices": "S_SMC_BUS_AREA",
+      "name": "BusArea",
+      "label": "Business Area"
+    },
+    {
+      "type": "date",
+      "name": "ResponseDate",
+      "label": "Response date"
+    }
+  ]
+}

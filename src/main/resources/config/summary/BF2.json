@@ -1,0 +1,207 @@
+{
+  "type": "BF2",
+  "fields": [
+    {
+      "type": "date",
+      "name": "DateReceived",
+      "label": "When was the correspondence received?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Not Applicable",
+          "value": "NA"
+        },
+        {
+          "label": "Telephone",
+          "value": "TELEPHONE"
+        },
+        {
+          "label": "Email",
+          "value": "EMAIL"
+        },
+        {
+          "label": "HMPOTRT",
+          "value": "HMPOTRT"
+        },
+        {
+          "label": "Letter",
+          "value": "Letter"
+        },
+        {
+          "label": "Face to Face",
+          "value": "FACE"
+        },
+        {
+          "label": "Webform",
+          "value": "Webform"
+        }
+      ],
+      "name": "Channel",
+      "label": "Channel"
+    },
+    {
+      "choices": "S_BF_REGION",
+      "name": "Region",
+      "label": "Region"
+    },
+    {
+      "conditionChoices": [
+        {
+          "choices": "S_BF_BUS_AREA_NORTH_REGION",
+          "conditionPropertyName": "Region",
+          "conditionPropertyValue": "NorthRegion"
+        },
+        {
+          "choices": "S_BF_BUS_AREA_CENTRAL_REGION",
+          "conditionPropertyName": "Region",
+          "conditionPropertyValue": "CentralRegion"
+        },
+        {
+          "choices": "S_BF_BUS_AREA_HEATHROW_REGION",
+          "conditionPropertyName": "Region",
+          "conditionPropertyValue": "HeathrowRegion"
+        },
+        {
+          "choices": "S_BF_BUS_AREA_SOUTH_REGION",
+          "conditionPropertyName": "Region",
+          "conditionPropertyValue": "SouthRegion"
+        },
+        {
+          "choices": "S_BF_BUS_AREA_SOUTH_EAST_REGION",
+          "conditionPropertyName": "Region",
+          "conditionPropertyValue": "SouthEastRegion"
+        },
+        {
+          "choices": "S_BF_BUS_AREA_EUROPE_REGION",
+          "conditionPropertyName": "Region",
+          "conditionPropertyValue": "EuropeRegion"
+        },
+        {
+          "choices": "S_BF_BUS_AREA_BF_INTEL",
+          "conditionPropertyName": "Region",
+          "conditionPropertyValue": "BFIntel"
+        },
+        {
+          "choices": "S_BF_BUS_AREA_OPS_LOGISTICS",
+          "conditionPropertyName": "Region",
+          "conditionPropertyValue": "OpsLogistics"
+        },
+        {
+          "choices": "S_BF_BUS_AREA_WARNING_INDEX_COMPLAINTS",
+          "conditionPropertyName": "Region",
+          "conditionPropertyValue": "WarningIndexComplaints"
+        },
+        {
+          "choices": "S_BF_BUS_AREA_UNKNOWN",
+          "conditionPropertyName": "Region",
+          "conditionPropertyValue": "Unknown"
+        }
+      ],
+      "name": "BusArea",
+      "label": "Business Area"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes",
+          "value": "Yes"
+        },
+        {
+          "label": "No",
+          "value": "No"
+        }
+      ],
+      "name": "LoaRequired",
+      "label": "Is a Letter of Authority required?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Telephone",
+          "value": "Telephone"
+        },
+        {
+          "label": "Email",
+          "value": "Email"
+        },
+        {
+          "label": "Letter",
+          "value": "Letter"
+        },
+        {
+          "label": "In Person",
+          "value": "InPerson"
+        }
+      ],
+      "name": "ResponseChannel",
+      "label": "Response Channel"
+    },
+    {
+      "type": "date",
+      "name": "DateResponded",
+      "label": "Date of Response"
+    },
+    {
+      "name": "CaseNote_CompleteReason",
+      "label": "Enter note for case completion"
+    },
+    {
+      "choices": "S_BF_COMPLAINT_REASON_FULL",
+      "name": "ComplaintReason1",
+      "label": "Reason for Complaint 1"
+    },
+    {
+      "choices": "S_BF_COMPLAINT_REASON_FULL",
+      "name": "ComplaintReason2",
+      "label": "Reason for Complaint 2"
+    },
+    {
+      "choices": "S_BF_COMPLAINT_REASON_FULL",
+      "name": "ComplaintReason3",
+      "label": "Reason for Complaint 3"
+    },
+    {
+      "choices": "S_BF_COMPLAINT_REASON_FULL",
+      "name": "ComplaintReason4",
+      "label": "Reason for Complaint 4"
+    },
+    {
+      "choices": "S_BF_COMPLAINT_REASON_FULL",
+      "name": "ComplaintReason5",
+      "label": "Reason for Complaint 5"
+    },
+    {
+      "name": "ComplaintReason1_Other",
+      "label": "Other - Details (Complaint Reason 1)"
+    },
+    {
+      "name": "ComplaintReason2_Other",
+      "label": "Other - Details (Complaint Reason 2)"
+    },
+    {
+      "name": "ComplaintReason3_Other",
+      "label": "Other - Details (Complaint Reason 3)"
+    },
+    {
+      "name": "ComplaintReason4_Other",
+      "label": "Other - Details (Complaint Reason 4)"
+    },
+    {
+      "name": "ComplaintReason5_Other",
+      "label": "Other - Details (Complaint Reason 5)"
+    },
+    {
+      "name": "CaseNote_TriageTransfer",
+      "label": "Enter reason for transfer"
+    },
+    {
+      "name": "TransferToCaseRef",
+      "label": "Transferred to case reference"
+    },
+    {
+      "name": "CompType",
+      "label": "Complaint Type"
+    }
+  ]
+}
