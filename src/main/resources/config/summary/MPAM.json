@@ -1,0 +1,206 @@
+{
+  "type": "MPAM",
+  "fields": [
+    {
+      "type": "date",
+      "name": "DateReceived",
+      "label": "When was the correspondence received?"
+    },
+    {
+      "choices": [
+        {
+          "label": "UKVI",
+          "value": "UKVI"
+        },
+        {
+          "label": "BF",
+          "value": "BF"
+        },
+        {
+          "label": "IE",
+          "value": "IE"
+        },
+        {
+          "label": "EUSS",
+          "value": "EUSS"
+        },
+        {
+          "label": "HMPO",
+          "value": "HMPO"
+        },
+        {
+          "label": "Windrush",
+          "value": "Windrush"
+        },
+        {
+          "label": "Coronavirus (COVID-19)",
+          "value": "Coronavirus"
+        },
+        {
+          "label": "Transfer to OGD",
+          "value": "TransferToOgd"
+        },
+        {
+          "label": "Transfer to Other",
+          "value": "TransferToOther"
+        }
+      ],
+      "name": "BusArea",
+      "label": "Business Area"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes (Ministerial)",
+          "value": "Ministerial"
+        },
+        {
+          "label": "No (Official)",
+          "value": "Official"
+        }
+      ],
+      "name": "RefType",
+      "label": "Does this correspondence need a Ministerial response?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Standard",
+          "value": "Standard"
+        },
+        {
+          "label": "Priority",
+          "value": "Priority"
+        },
+        {
+          "label": "Immediate",
+          "value": "Immediate"
+        }
+      ],
+      "name": "Priority",
+      "label": "Urgency"
+    },
+    {
+      "choices": [
+        {
+          "label": "Email",
+          "value": "Email"
+        },
+        {
+          "label": "Post",
+          "value": "Post"
+        },
+        {
+          "label": "Phone - reply given",
+          "value": "Phone-replied"
+        },
+        {
+          "label": "Phone - response required",
+          "value": "Phone-required"
+        },
+        {
+          "label": "Private office referral",
+          "value": "PO"
+        },
+        {
+          "label": "Outreach",
+          "value": "Outreach"
+        }
+      ],
+      "name": "ChannelIn",
+      "label": "Channel received"
+    },
+    {
+      "choices": "S_MPAM_ENQUIRY_SUBJECTS",
+      "name": "EnquirySubject",
+      "label": "Enquiry subject"
+    },
+    {
+      "choices": "MPAM_ENQUIRY_REASONS_ALL",
+      "name": "EnquiryReason",
+      "label": "Enquiry reason"
+    },
+    {
+      "choices": "S_MPAM_BUS_UNITS_ALL",
+      "name": "BusUnit",
+      "label": "Business unit"
+    },
+    {
+      "type": "date",
+      "name": "DueDate",
+      "label": "Follow-up due by"
+    },
+    {
+      "choices": "MPAM_CAMPAIGNS",
+      "name": "CampaignType",
+      "label": "Campaign"
+    },
+    {
+      "choices": [
+        {
+          "label": "Telephone Surgery",
+          "value": "TelephoneSurgery"
+        },
+        {
+          "label": "MP Helpline",
+          "value": "MPHelpline"
+        },
+        {
+          "label": "Other",
+          "value": "Other"
+        }
+      ],
+      "name": "TelephoneContactRoute",
+      "label": "Telephone Contact Route"
+    },
+    {
+      "type": "date",
+      "name": "TransferDueDate",
+      "label": "Update Deadline for Transfer"
+    },
+    {
+      "choices": [
+        {
+          "label": "Education",
+          "value": "Education"
+        },
+        {
+          "label": "Medical Issues",
+          "value": "Medical Issues"
+        },
+        {
+          "label": "Removals",
+          "value": "Removals"
+        },
+        {
+          "label": "Right to rent",
+          "value": "Right to rent"
+        },
+        {
+          "label": "Right to work",
+          "value": "Right to work"
+        },
+        {
+          "label": "Other",
+          "value": "Other"
+        }
+      ],
+      "name": "ComplianceMeasures",
+      "label": "Compliance Measures"
+    },
+    {
+      "name": "ComplianceMeasuresOtherDetails",
+      "label": "Compliance measures other details"
+    },
+    {
+      "type": "date",
+      "name": "ClearanceRequestDate",
+      "label": "Clearance Request Date"
+    },
+    {
+      "type": "date",
+      "name": "ClearanceDueDate",
+      "label": "Clearance Due Date"
+    }
+  ]
+}

@@ -1,0 +1,263 @@
+{
+  "type": "TO",
+  "fields": [
+    {
+      "type": "date",
+      "name": "DateReceived",
+      "label": "Date Received"
+    },
+    {
+      "choices": [
+        {
+          "label": "UKVI",
+          "value": "UKVI"
+        },
+        {
+          "label": "BF",
+          "value": "BF"
+        },
+        {
+          "label": "HMPO",
+          "value": "HMPO"
+        }
+      ],
+      "name": "BusinessArea",
+      "label": "Business Area"
+    },
+    {
+      "choices": [
+        {
+          "label": "Email",
+          "value": "EMAIL"
+        },
+        {
+          "label": "Post",
+          "value": "POST"
+        }
+      ],
+      "name": "ChannelReceived",
+      "label": "Channel Received"
+    },
+    {
+      "conditionChoices": [
+        {
+          "choices": "TO_ENQUIRY_SUBJECTS",
+          "conditionPropertyName": "BusinessArea",
+          "conditionPropertyValue": "UKVI"
+        },
+        {
+          "choices": "TO_BF_ENQUIRY_SUBJECTS",
+          "conditionPropertyName": "BusinessArea",
+          "conditionPropertyValue": "BF"
+        },
+        {
+          "choices": "TO_ENQUIRY_SUBJECTS",
+          "conditionPropertyName": "BusinessArea",
+          "conditionPropertyValue": "HMPO"
+        }
+      ],
+      "name": "EnquirySubject",
+      "label": "Enquiry subject"
+    },
+    {
+      "conditionChoices": [
+        {
+          "choices": "TO_ENQUIRY_REASON_COMP_HAND",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "COMP_HAND"
+        },
+        {
+          "choices": "TO_ENQUIRY_REASON_COMP_REJ",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "COMP_REJ"
+        },
+        {
+          "choices": "TO_ENQUIRY_REASON_DOC",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "DOCUMENTATION"
+        },
+        {
+          "choices": "TO_ENQUIRY_REASON_GUID",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "GUID_POLICY"
+        },
+        {
+          "choices": "TO_ENQUIRY_REASON_IM_HEALTH_SUR",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "IMMIGRATION_HEALTH_SUR"
+        },
+        {
+          "choices": "TO_ENQUIRY_REASON_PERS",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "PERS_LICENSE_SPECIFIC"
+        },
+        {
+          "choices": "TO_ENQUIRY_REASON_TECH",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "TECHNICAL"
+        },
+        {
+          "choices": "TO_ENQUIRY_REASON_SRU",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "SRU"
+        },
+        {
+          "choices": "TO_ENQUIRY_REASON_OTHER",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "OTHER"
+        },
+        {
+          "choices": "TO_BF_ENQUIRY_REASON_CUSTOMS",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "Customs"
+        },
+        {
+          "choices": "TO_BF_ENQUIRY_REASON_IMMIGRATION",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "Immigration"
+        },
+        {
+          "choices": "TO_BF_ENQUIRY_REASON_OUTWARD_BOUND",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "Outward_bound"
+        },
+        {
+          "choices": "TO_BF_ENQUIRY_REASON_OTHER",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "Other"
+        }
+      ],
+      "name": "EnquiryReason",
+      "label": "Enquiry reason"
+    },
+    {
+      "choices": "TO_BUS_UNIT_ALL",
+      "name": "BusUnit",
+      "label": "Business Unit"
+    },
+    {
+      "name": "RejectionNote",
+      "label": "Why are you rejecting the case?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Approved",
+          "value": "Approved"
+        },
+        {
+          "label": "Decision not yet made",
+          "value": "DecisionNotYetMade"
+        },
+        {
+          "label": "Rejected",
+          "value": "Rejected"
+        }
+      ],
+      "name": "ApprovalStatus",
+      "label": "Approval Status"
+    },
+    {
+      "choices": "TROF_CAMPAIGNS",
+      "name": "CampaignType",
+      "label": "Campaign name"
+    },
+    {
+      "type": "date",
+      "name": "DispatchDate",
+      "label": "Date the final response was dispatched"
+    },
+    {
+      "choices": [
+        {
+          "label": "Email",
+          "value": "EMAIL"
+        },
+        {
+          "label": "Post",
+          "value": "POST"
+        }
+      ],
+      "name": "ResponseChannel",
+      "label": "Final response channel"
+    },
+    {
+      "choices": "TO_STOP_LIST",
+      "name": "StopList",
+      "label": "Stop List name"
+    },
+    {
+      "name": "RejectionNoteAtDraft",
+      "label": "Why should this case be returned to Triage?"
+    },
+    {
+      "choices": "TO_RECIPIENTS",
+      "visibilityConditions": [
+        {
+          "conditionPropertyName": "RecipientAdded",
+          "conditionPropertyValue": "YES"
+        }
+      ],
+      "name": "TORecipient",
+      "label": "Recipient"
+    },
+    {
+      "choices": [
+        {
+          "label": "Transferred to different area",
+          "value": "TRANSFERRED_TO_DIFFERENT_AREA"
+        },
+        {
+          "label": "Duplicate Case",
+          "value": "DUPLICATE_CASE"
+        }
+      ],
+      "name": "ClosureReason",
+      "label": "Why should this case be closed?"
+    },
+    {
+      "name": "ClosureFreeText",
+      "label": "Please enter details of why the case is being closed"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes",
+          "value": "Yes"
+        },
+        {
+          "label": "No",
+          "value": "No"
+        }
+      ],
+      "name": "HomeSecInterest",
+      "label": "Home Secretary Interest"
+    },
+    {
+      "name": "HomeSecRejectionNote",
+      "label": "Why are you rejecting the case?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Approved",
+          "value": "Approved"
+        },
+        {
+          "label": "Decision not yet made",
+          "value": "DecisionNotYetMade"
+        },
+        {
+          "label": "Rejected",
+          "value": "Rejected"
+        }
+      ],
+      "name": "HomeSecApprovalStatus",
+      "label": "Approval Status"
+    },
+    {
+      "name": "HomeSecInt",
+      "label": "Does the Home Secretary have an interest in this case?"
+    }
+  ]
+}

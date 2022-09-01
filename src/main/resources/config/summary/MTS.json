@@ -1,0 +1,120 @@
+{
+  "type": "MTS",
+  "fields": [
+    {
+      "type": "date",
+      "name": "DateReceived",
+      "label": "When was the correspondence received?"
+    },
+    {
+      "choices": [
+        {
+          "label": "UKVI",
+          "value": "UKVI"
+        },
+        {
+          "label": "BF",
+          "value": "BF"
+        },
+        {
+          "label": "IE",
+          "value": "IE"
+        },
+        {
+          "label": "EUSS",
+          "value": "EUSS"
+        },
+        {
+          "label": "HMPO",
+          "value": "HMPO"
+        },
+        {
+          "label": "Windrush",
+          "value": "Windrush"
+        }
+      ],
+      "name": "BusArea",
+      "label": "Business Area"
+    },
+    {
+      "choices": "S_MPAM_BUS_UNITS_ALL",
+      "name": "BusUnit",
+      "label": "Business unit"
+    },
+    {
+      "choices": [
+        {
+          "label": "Standard",
+          "value": "Standard"
+        },
+        {
+          "label": "Priority",
+          "value": "Priority"
+        },
+        {
+          "label": "Immediate",
+          "value": "Immediate"
+        }
+      ],
+      "name": "Priority",
+      "label": "Urgency"
+    },
+    {
+      "choices": [
+        {
+          "label": "MPEL – Reply given",
+          "value": "MPEL-Reply-Given"
+        },
+        {
+          "label": "MPEL – Further action",
+          "value": "MPEL-Further-Action"
+        },
+        {
+          "label": "Engagement/Surgery – Reply given",
+          "value": "Engagement-Surgery-Reply-Given"
+        },
+        {
+          "label": "Engagement/Surgery – Further action",
+          "value": "Engagement-Surgery-Further-Action"
+        },
+        {
+          "label": "Outreach",
+          "value": "Outreach"
+        },
+        {
+          "label": "Other",
+          "value": "Other"
+        }
+      ],
+      "name": "ChannelIn",
+      "label": "Channel received"
+    },
+    {
+      "name": "EnquirySubject",
+      "label": "Enquiry subject"
+    },
+    {
+      "choices": "MPAM_ENQUIRY_REASONS_ALL",
+      "name": "EnquiryReason",
+      "label": "Enquiry reason"
+    },
+    {
+      "choices": [
+        {
+          "label": "MPAM",
+          "value": "MPAM"
+        },
+        {
+          "label": "CCC",
+          "value": "CCC"
+        }
+      ],
+      "name": "YourBusArea",
+      "label": "Your Business Area"
+    },
+    {
+      "name": "SupportNote",
+      "label": "Note to support case"
+    }
+  ]
+}

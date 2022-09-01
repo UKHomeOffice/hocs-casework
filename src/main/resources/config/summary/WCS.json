@@ -1,0 +1,262 @@
+{
+  "type": "WCS",
+  "fields": [
+    {
+      "choices": [
+        {
+          "label": "Primary",
+          "value": "Primary"
+        },
+        {
+          "label": "Close family member",
+          "value": "Family"
+        },
+        {
+          "label": "Estate of deceased",
+          "value": "Estate"
+        }
+      ],
+      "name": "ClaimType",
+      "label": "Type of claim"
+    },
+    {
+      "name": "FullName",
+      "label": "Full name"
+    },
+    {
+      "name": "IsVulnerable",
+      "label": "Claimant is vulnerable"
+    },
+    {
+      "name": "IsHighProfile",
+      "label": "Claim is high profile"
+    },
+    {
+      "name": "IsJudicialReview",
+      "label": "Judicial review"
+    },
+    {
+      "name": "LegalFeesClaimed",
+      "label": "Immigration and legal fees"
+    },
+    {
+      "name": "RemovalClaimed",
+      "label": "Detention deportation and removal"
+    },
+    {
+      "name": "EmploymentClaimed",
+      "label": "Employment"
+    },
+    {
+      "name": "TaxCreditClaimed",
+      "label": "Child benefit/tax credits"
+    },
+    {
+      "name": "BenefitsClaimed",
+      "label": "Benefits"
+    },
+    {
+      "name": "HousingClaimed",
+      "label": "Housing"
+    },
+    {
+      "name": "HealthClaimed",
+      "label": "Health"
+    },
+    {
+      "name": "BankingClaimed",
+      "label": "Banking"
+    },
+    {
+      "name": "EducationClaimed",
+      "label": "Education"
+    },
+    {
+      "name": "HomelessClaimed",
+      "label": "Homelessness"
+    },
+    {
+      "name": "ImpactClaimed",
+      "label": "Impact on daily life"
+    },
+    {
+      "name": "DiscretionClaimed",
+      "label": "Discretionary"
+    },
+    {
+      "name": "DrivingClaimed",
+      "label": "Driving licence"
+    },
+    {
+      "name": "UepClaimed",
+      "label": "Urgent Exceptional Payment (UEP)"
+    },
+    {
+      "name": "EligibilityConfirmed",
+      "label": "Can you confirm the claimant's eligibility?"
+    },
+    {
+      "type": "date",
+      "name": "Tier2AdjudicatorsOfficeSentDate",
+      "label": "Date sent to Adjudicator's Office"
+    },
+    {
+      "choices": [
+        {
+          "label": "Upheld",
+          "value": "Upheld"
+        },
+        {
+          "label": "Revised",
+          "value": "Revised"
+        }
+      ],
+      "name": "Tier2AdjudicatorsOfficeDecision",
+      "label": "Tier 2 adjudicator's office decision"
+    },
+    {
+      "type": "date",
+      "name": "Tier2AdjudicatorsOfficeDecisionDate",
+      "label": "Tier 2 adjudicator's office decision date"
+    },
+    {
+      "choices": [
+        {
+          "label": "N/A",
+          "value": "NA"
+        },
+        {
+          "label": "Decision revised",
+          "value": "Revised"
+        },
+        {
+          "label": "Decision upheld",
+          "value": "Upheld"
+        }
+      ],
+      "name": "Tier1OutcomeInterim",
+      "label": "Tier 1 interim first outcome"
+    },
+    {
+      "type": "date",
+      "name": "Tier1OutcomeDateInterim",
+      "label": "Tier 1 interim first decision date"
+    },
+    {
+      "choices": [
+        {
+          "label": "N/A",
+          "value": "NA"
+        },
+        {
+          "label": "Decision revised",
+          "value": "Revised"
+        },
+        {
+          "label": "Decision upheld",
+          "value": "Upheld"
+        }
+      ],
+      "name": "Tier1OutcomeFinal",
+      "label": "Tier 1 full & final first outcome"
+    },
+    {
+      "type": "date",
+      "name": "Tier1OutcomeDateFinal",
+      "label": "Tier 1 full & final first decision date"
+    },
+    {
+      "choices": [
+        {
+          "label": "N/A",
+          "value": "NA"
+        },
+        {
+          "label": "Offer withdrawn",
+          "value": "Withdrawn"
+        }
+      ],
+      "name": "Tier1Withdrawn",
+      "label": "Review/Offer withdrawn at Tier 1"
+    },
+    {
+      "type": "date",
+      "name": "Tier1WithdrawnDate",
+      "label": "Review/Offer withdrawn at Tier 1 date"
+    },
+    {
+      "choices": [
+        {
+          "label": "N/A",
+          "value": "NA"
+        },
+        {
+          "label": "Decision revised",
+          "value": "Revised"
+        },
+        {
+          "label": "Decision upheld",
+          "value": "Upheld"
+        }
+      ],
+      "name": "Tier1OutcomeInterim2",
+      "label": "Tier 1 interim second outcome"
+    },
+    {
+      "type": "date",
+      "name": "Tier1OutcomeDateInterim2",
+      "label": "Tier 1 interim second decision date"
+    },
+    {
+      "choices": [
+        {
+          "label": "N/A",
+          "value": "NA"
+        },
+        {
+          "label": "Decision revised",
+          "value": "Revised"
+        },
+        {
+          "label": "Decision upheld",
+          "value": "Upheld"
+        }
+      ],
+      "name": "Tier1OutcomeFinal2",
+      "label": "Tier 1 full & final second outcome"
+    },
+    {
+      "type": "date",
+      "name": "Tier1OutcomeDateFinal2",
+      "label": "Tier 1 full & final second decision date"
+    },
+    {
+      "choices": [
+        {
+          "label": "N/A",
+          "value": "NA"
+        },
+        {
+          "label": "Offer withdrawn",
+          "value": "Withdrawn"
+        }
+      ],
+      "name": "Tier2Withdrawn",
+      "label": "Review/Offer withdrawn at Tier 2"
+    },
+    {
+      "type": "date",
+      "name": "Tier2WithdrawnDate",
+      "label": "Review/Offer withdrawn at Tier 2 date"
+    },
+    {
+      "type": "date",
+      "name": "Tier1ReviewOutcomeDate",
+      "label": "Tier 1 received date"
+    },
+    {
+      "name": "LivingClaimed",
+      "label": "Living Costs"
+    }
+  ]
+}

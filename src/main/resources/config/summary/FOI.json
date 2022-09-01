@@ -1,0 +1,150 @@
+{
+  "type": "FOI",
+  "fields": [
+    {
+      "type": "date",
+      "name": "DateReceived",
+      "label": "When was the correspondence received?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Email",
+          "value": "EMAIL"
+        },
+        {
+          "label": "Post",
+          "value": "POST"
+        }
+      ],
+      "name": "OriginalChannel",
+      "label": "How was the correspondence received?"
+    },
+    {
+      "name": "RequestQuestion",
+      "label": "Request Question"
+    },
+    {
+      "choices": [
+        {
+          "label": "Valid",
+          "value": "RequestValid-Y"
+        },
+        {
+          "label": "Invalid",
+          "value": "RequestValid-N"
+        }
+      ],
+      "name": "RequestValidity",
+      "label": "Case Validity"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes",
+          "value": "Y"
+        },
+        {
+          "label": "No",
+          "value": "N",
+          "conditionalContent": {
+            "label": "Reason"
+          }
+        }
+      ],
+      "name": "AcceptCase",
+      "label": "Does this case belong in your group?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes",
+          "value": "RequestContrib-Y"
+        },
+        {
+          "label": "No",
+          "value": "RequestContrib-N"
+        }
+      ],
+      "name": "ContributionsRequired",
+      "label": "Do you need to request contributions?"
+    },
+    {
+      "choices": "TOPICS_FOI",
+      "name": "Topics",
+      "label": "FOI Topic"
+    },
+    {
+      "choices": [
+        {
+          "label": "FOI",
+          "value": "FOI"
+        },
+        {
+          "label": "EIR",
+          "value": "EIR"
+        },
+        {
+          "label": "FOI & EIR",
+          "value": "FOI_AND_EIR"
+        }
+      ],
+      "name": "CaseType",
+      "label": "What type of case is this?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Email",
+          "value": "EMAIL"
+        },
+        {
+          "label": "Post",
+          "value": "POST"
+        }
+      ],
+      "name": "ResponseChannel",
+      "label": "How will the response be sent?"
+    },
+    {
+      "choices": "FOI_EXEMPTIONS",
+      "name": "Exemptions",
+      "label": "Select Exemptions"
+    },
+    {
+      "choices": "FOI_EIR_EXCEPTIONS",
+      "name": "Exceptions",
+      "label": "Select Exceptions"
+    },
+    {
+      "type": "date",
+      "name": "dateOfResponse",
+      "label": "What day was the response sent?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Request unclear / advice and assistance provide",
+          "value": "REQ_UNCLEAR"
+        }
+      ],
+      "name": "TransferOutcomeAtDraft",
+      "label": "What was the outcome of this case?"
+    },
+    {
+      "type": "date",
+      "name": "AcknowledgementDate",
+      "label": "When was the acknowledgement response to the valid request issued?"
+    },
+    {
+      "choices": "FOI_ACCOUNT_MANAGERS",
+      "name": "AccountManager",
+      "label": "Account Manager"
+    },
+    {
+      "choices": "S_FOI_ALL_RESP_TEAMS",
+      "name": "ResponsibleTeam",
+      "label": "Responsible Team"
+    }
+  ]
+}

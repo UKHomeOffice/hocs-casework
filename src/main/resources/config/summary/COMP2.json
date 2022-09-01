@@ -1,0 +1,445 @@
+{
+  "type": "COMP2",
+  "fields": [
+    {
+      "type": "date",
+      "name": "DateReceived",
+      "label": "When was the correspondence received?"
+    },
+    {
+      "choices": [
+        {
+          "label": "Service",
+          "value": "Service"
+        },
+        {
+          "label": "Ex-Gratia",
+          "value": "Ex-Gratia"
+        },
+        {
+          "label": "Minor Misconduct",
+          "value": "MinorMisconduct"
+        }
+      ],
+      "name": "CompType",
+      "label": "Complaint Type"
+    },
+    {
+      "choices": [
+        {
+          "label": "Not Applicable",
+          "value": "NA"
+        },
+        {
+          "label": "Telephone",
+          "value": "TELEPHONE"
+        },
+        {
+          "label": "Email",
+          "value": "EMAIL"
+        },
+        {
+          "label": "HMPOTRT",
+          "value": "HMPOTRT"
+        },
+        {
+          "label": "Letter",
+          "value": "Letter"
+        },
+        {
+          "label": "Face to Face",
+          "value": "FACE"
+        },
+        {
+          "label": "Webform",
+          "value": "Webform"
+        }
+      ],
+      "hideConditions": [
+        {
+          "conditionPropertyName": "XOriginatedFrom",
+          "conditionPropertyValue": "Webform"
+        }
+      ],
+      "name": "Channel",
+      "label": "Channel"
+    },
+    {
+      "choices": [
+        {
+          "label": "Very High",
+          "value": "1 Very High"
+        },
+        {
+          "label": "High",
+          "value": "2 High"
+        },
+        {
+          "label": "Medium",
+          "value": "3 Medium"
+        },
+        {
+          "label": "Low",
+          "value": "4 Low"
+        },
+        {
+          "label": "Very Low",
+          "value": "5 Very Low"
+        }
+      ],
+      "name": "Severity",
+      "label": "Severity"
+    },
+    {
+      "choices": "S_COMP_CCT_BUS_AREA",
+      "name": "BusArea",
+      "label": "Business Area"
+    },
+    {
+      "choices": "S_COMP_CCT_ENQ_REASON",
+      "name": "EnqReason",
+      "label": "Enquiry Reason"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes",
+          "value": "Yes"
+        },
+        {
+          "label": "No",
+          "value": "No"
+        }
+      ],
+      "name": "LoaRequired",
+      "label": "Is a Letter of Authority required?"
+    },
+    {
+      "choices": "S_COMP_CCT_CASE_OUTCOME",
+      "name": "CctCaseOutcome",
+      "label": "Case Outcome"
+    },
+    {
+      "choices": [
+        {
+          "label": "Submitting application",
+          "value": "SUBMITTING_APPLICATION"
+        },
+        {
+          "label": "Making appointment",
+          "value": "MAKING_APPOINTMENT"
+        },
+        {
+          "label": "Existing",
+          "value": "EXISTING"
+        },
+        {
+          "label": "Document delays",
+          "value": "DOCUMENT_DELAYS"
+        },
+        {
+          "label": "Immigration decision",
+          "value": "IMMIGRATION_DECISION"
+        },
+        {
+          "label": "Biometric residence permit",
+          "value": "BIOMETRIC_RESIDENCE_PERMIT"
+        },
+        {
+          "label": "Refund",
+          "value": "REFUND"
+        },
+        {
+          "label": "Poor staff behaviour",
+          "value": "POOR_STAFF_BEHAVIOUR"
+        },
+        {
+          "label": "Poor information",
+          "value": "POOR_INFORMATION"
+        },
+        {
+          "label": "Something else",
+          "value": "SOMETHING_ELSE"
+        }
+      ],
+      "name": "ComplaintType",
+      "label": "Complaint Reason"
+    },
+    {
+      "type": "date",
+      "name": "AcceptDate",
+      "label": "Date of Acceptance"
+    },
+    {
+      "choices": [
+        {
+          "label": "Telephone",
+          "value": "Telephone"
+        },
+        {
+          "label": "Email",
+          "value": "Email"
+        },
+        {
+          "label": "Letter",
+          "value": "Letter"
+        },
+        {
+          "label": "In Person",
+          "value": "InPerson"
+        }
+      ],
+      "name": "ResponseChannel",
+      "label": "Response Channel"
+    },
+    {
+      "type": "date",
+      "name": "DateResponded",
+      "label": "Date of Response"
+    },
+    {
+      "conditionChoices": [
+        {
+          "choices": [
+            {
+              "label": "IandP",
+              "value": "IandP"
+            },
+            {
+              "label": "RASI",
+              "value": "RASI"
+            },
+            {
+              "label": "VCIC",
+              "value": "VCIC"
+            },
+            {
+              "label": "VCOS",
+              "value": "VCOS"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            },
+            {
+              "label": "EUSS FP",
+              "value": "EUSSFP"
+            }
+          ],
+          "conditionPropertyName": "OwningCSU",
+          "conditionPropertyValue": "UKVI"
+        },
+        {
+          "choices": [
+            {
+              "label": "CI",
+              "value": "CI"
+            },
+            {
+              "label": "FNORC",
+              "value": "FNORC"
+            },
+            {
+              "label": "Detention",
+              "value": "Detention"
+            },
+            {
+              "label": "ICE Teams",
+              "value": "ICETeams"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            },
+            {
+              "label": "NRC",
+              "value": "NRC"
+            },
+            {
+              "label": "Reporting Centres",
+              "value": "ReportingCentres"
+            },
+            {
+              "label": "Returns Preparation",
+              "value": "ReturnsPreparation"
+            }
+          ],
+          "conditionPropertyName": "OwningCSU",
+          "conditionPropertyValue": "IE"
+        }
+      ],
+      "name": "Directorate",
+      "label": "Directorate"
+    },
+    {
+      "choices": [
+        {
+          "label": "Duplicate Record",
+          "value": "Duplicate Record"
+        },
+        {
+          "label": "Local Resolution",
+          "value": "Local Resolution"
+        },
+        {
+          "label": "Complaint Rejection",
+          "value": "Complaint Rejection"
+        },
+        {
+          "label": "Third Party Rejection",
+          "value": "Third Party Rejection"
+        },
+        {
+          "label": "Withdrawn by Customer",
+          "value": "Withdrawn by Customer"
+        },
+        {
+          "label": "Transferred to Other Department",
+          "value": "Transferred to Other Department"
+        },
+        {
+          "label": "Persistent Author",
+          "value": "Persistent Author"
+        },
+        {
+          "label": "Other",
+          "value": "Other"
+        }
+      ],
+      "visibilityConditions": [
+        {
+          "conditionPropertyName": "CctTriageResult",
+          "conditionPropertyValue": "Complete"
+        }
+      ],
+      "name": "Close Reason",
+      "label": "Close Reason"
+    },
+    {
+      "conditionChoices": [
+        {
+          "choices": "COMP_IANDP_BUS_AREA",
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "IandP"
+        },
+        {
+          "choices": "COMP_RASI_BUS_AREA",
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "RASI"
+        },
+        {
+          "choices": "COMP_VCIC_BUS_AREA",
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "VCIC"
+        },
+        {
+          "choices": "COMP_VCOS_BUS_AREA",
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "VCOS"
+        },
+        {
+          "choices": "COMP_EUSS_FP_BUS_AREA",
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "EUSSFP"
+        },
+        {
+          "choices": [
+            {
+              "label": "",
+              "value": ""
+            }
+          ],
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "VandCInternational"
+        },
+        {
+          "choices": [
+            {
+              "label": "",
+              "value": ""
+            }
+          ],
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "VandCInCountry"
+        },
+        {
+          "choices": [
+            {
+              "label": "Crime Investigations",
+              "value": "CrimeInvestigations"
+            }
+          ],
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "CI"
+        },
+        {
+          "choices": [
+            {
+              "label": "FNORC (IE)",
+              "value": "FNORC(IE)"
+            }
+          ],
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "FNORC"
+        },
+        {
+          "choices": [
+            {
+              "label": "Detention Services",
+              "value": "DetentionServices"
+            }
+          ],
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "Detention"
+        },
+        {
+          "choices": [
+            {
+              "label": "ICE Teams",
+              "value": "ICETeams"
+            }
+          ],
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "ICETeams"
+        },
+        {
+          "choices": "COMP_OTHER_BUS_AREA",
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "Other"
+        },
+        {
+          "choices": [
+            {
+              "label": "NRC (detained removal casework)",
+              "value": "NRC"
+            }
+          ],
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "NRC"
+        },
+        {
+          "choices": [
+            {
+              "label": "Reporting Centres",
+              "value": "ReportingCentres"
+            }
+          ],
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "ReportingCentres"
+        },
+        {
+          "choices": [
+            {
+              "label": "Returns Preparations (non detained removal casework)",
+              "value": "ReturnsPreparations"
+            }
+          ],
+          "conditionPropertyName": "Directorate",
+          "conditionPropertyValue": "ReturnsPreparation"
+        }
+      ],
+      "name": "BusAreaBasedOnDirectorate",
+      "label": "Business Area"
+    }
+  ]
+}
