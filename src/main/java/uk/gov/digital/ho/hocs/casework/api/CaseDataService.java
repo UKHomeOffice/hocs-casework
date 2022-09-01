@@ -639,9 +639,18 @@ public class CaseDataService {
     private Object extractChoices(FieldDto fieldDto) {
         if (fieldDto != null && fieldDto.getProps() != null && fieldDto.getProps() instanceof Map) {
             Map propMap = (Map) fieldDto.getProps();
+            if (propMap.containsKey("conditionChoices")) {
+                ArrayList<Object> conditionChoices = (ArrayList<Object>) propMap.get("conditionChoices");
+                String conditionChoiceString = "";
+                for (int i = 0; i < conditionChoices.size(); i++) {
+                    Map choicesMap = (Map) conditionChoices.get(i);
+                    conditionChoiceString = conditionChoiceString + choicesMap.get("choices").toString() + ", ";
+                }
+                conditionChoiceString = conditionChoiceString.replaceAll(", $", "");
+                return conditionChoiceString;
+            }
             return propMap.get("choices");
         }
-
         return null;
     }
 
