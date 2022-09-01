@@ -1,7 +1,8 @@
-package uk.gov.digital.ho.hocs.casework.api;
+package uk.gov.digital.ho.hocs.casework.migration.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
@@ -16,11 +17,11 @@ import java.util.Map;
 public class CaseMigrationService {
 
     protected final CaseDataRepository caseDataRepository;
-    protected final StageService stageService;
+    protected final MigrationStageService migrationStageService;
 
-    public CaseMigrationService(CaseDataRepository caseDataRepository, StageService stageService) {
+    public CaseMigrationService(CaseDataRepository caseDataRepository, MigrationStageService migrationStageService) {
         this.caseDataRepository = caseDataRepository;
-        this.stageService = stageService;
+        this.migrationStageService = migrationStageService;
     }
 
     CaseData createMigrationCase(String caseType, String stageType, Map<String, String> data, LocalDate dateReceived) {
@@ -33,7 +34,7 @@ public class CaseMigrationService {
         caseDataRepository.save(caseData);
         // create stage for case
         CreateStageRequest createStageRequest = new CreateStageRequest(stageType, null, null, "", null, null);
-        Stage stage = stageService.createStage(caseData.getUuid(), createStageRequest);
+        Stage stage = migrationStageService.createStage(caseData.getUuid(), createStageRequest);
         return caseData;
     }
 }
