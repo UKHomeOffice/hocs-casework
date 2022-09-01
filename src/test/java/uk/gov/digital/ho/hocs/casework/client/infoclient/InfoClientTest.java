@@ -7,16 +7,18 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.core.ParameterizedTypeReference;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.FieldDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseConfig;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseTab;
-import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -87,7 +89,7 @@ public class InfoClientTest {
         String mockStageType = "FAKE_STAGE";
         String uri = String.format("/stageType/%s/team", mockStageType);
 
-        TeamDto teamDto = new TeamDto(null,UUID.randomUUID(), true, null);
+        TeamDto teamDto = new TeamDto(null, UUID.randomUUID(), true, null);
 
         when(restHelper.get("infoService", uri, TeamDto.class)).thenReturn(teamDto);
 

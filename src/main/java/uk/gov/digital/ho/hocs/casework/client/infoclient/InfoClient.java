@@ -125,14 +125,6 @@ public class InfoClient {
         return response;
     }
 
-    @Cacheable(value = "InfoClientGetCaseSummaryFieldsRequest", unless = "#result.size() == 0", key = "#caseType")
-    public Set<FieldDto> getCaseSummaryFields(String caseType) {
-        Set<FieldDto> response = restHelper.get(serviceBaseURL, String.format("/schema/caseType/%s/summary", caseType), new ParameterizedTypeReference<Set<FieldDto>>() {
-        });
-        log.info("Got {} case summary fields for CaseType {}", response.size(), caseType, value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
-        return response;
-    }
-
     @Cacheable(value = "InfoAllSomuTypesForCaseTypeRequest", unless = "#result.size() == 0", key = "#caseType")
     public Set<SomuTypeDto> getAllSomuTypesForCaseType(String caseType) {
         Set<SomuTypeDto> response = restHelper.get(serviceBaseURL, String.format("/somuType/%s", caseType), new ParameterizedTypeReference<Set<SomuTypeDto>>() {
