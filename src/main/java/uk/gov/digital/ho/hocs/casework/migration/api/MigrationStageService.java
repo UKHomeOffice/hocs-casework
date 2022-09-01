@@ -1,38 +1,30 @@
 package uk.gov.digital.ho.hocs.casework.migration.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uk.gov.digital.ho.hocs.casework.api.*;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.ActionDataDeadlineExtensionService;
+import uk.gov.digital.ho.hocs.casework.api.CaseworkConstants;
+import uk.gov.digital.ho.hocs.casework.api.DeadlineService;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
-import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
-import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
-import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
-import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
-import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
-import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @Slf4j
 @Service
@@ -42,7 +34,7 @@ public class MigrationStageService {
     private final NotifyClient notifyClient;
     private final AuditClient auditClient;
     private final InfoClient infoClient;
-    private final CaseDataService caseDataService;
+    private final MigrationCaseDataService migrationCaseDataService;
     private final ActionDataDeadlineExtensionService extensionService;
     private final DeadlineService deadlineService;
 
@@ -51,14 +43,14 @@ public class MigrationStageService {
                                  NotifyClient notifyClient,
                                  AuditClient auditClient,
                                  InfoClient infoClient,
-                                 CaseDataService caseDataService,
+                                 MigrationCaseDataService migrationCaseDataService,
                                  ActionDataDeadlineExtensionService extensionService,
                                  DeadlineService deadlineService) {
         this.stageRepository = stageRepository;
         this.notifyClient = notifyClient;
         this.auditClient = auditClient;
         this.infoClient = infoClient;
-        this.caseDataService = caseDataService;
+        this.migrationCaseDataService = migrationCaseDataService;
         this.extensionService = extensionService;
         this.deadlineService = deadlineService;
     }
@@ -91,13 +83,13 @@ public class MigrationStageService {
                     null, null, createStageRequest.getTransitionNoteUUID()));
         });
 
-        CaseData caseData = caseDataService.getCaseData(caseUUID);
+        CaseData caseData = migrationCaseDataService.getCaseData(caseUUID);
         calculateDeadlines(stageToActivate.get(), caseData);
 
         stageRepository.save(stageToActivate.get());
         log.info("Created Stage: {}, Type: {}, Case: {}", stageToActivate.get().getUuid(), stageToActivate.get().getStageType(), stageToActivate.get().getCaseUUID(), value(EVENT, STAGE_CREATED));
 
-        caseDataService.updateCaseData(caseData, stageToActivate.get().getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageToActivate.get().getStageType()));
+        migrationCaseDataService.updateCaseData(caseData, stageToActivate.get().getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageToActivate.get().getStageType()));
 
         List<UUID> assignedUserUUIDList = activeStages.stream().map(BaseStage::getUserUUID).collect(Collectors.toList());
         UUID currentUserUUID = null;
