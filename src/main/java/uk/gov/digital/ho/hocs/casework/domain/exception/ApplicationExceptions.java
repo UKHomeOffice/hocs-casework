@@ -2,8 +2,6 @@ package uk.gov.digital.ho.hocs.casework.domain.exception;
 
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 
-import java.util.Set;
-
 public interface ApplicationExceptions {
 
     class EntityCreationException extends RuntimeException {
@@ -102,5 +100,22 @@ public interface ApplicationExceptions {
         }
 
         public LogEvent getException() { return  exception; }
+    }
+
+    class ConfigFolderReadException extends RuntimeException {
+        private final LogEvent event;
+        private final LogEvent exception;
+
+        public ConfigFolderReadException( String msg, LogEvent event, Object... args) {
+            super(String.format(msg, args));
+            this.event = event;
+            this.exception = null;
+        }
+
+        public LogEvent getEvent() {
+            return event;
+        }
+
+        public LogEvent getException() { return exception; }
     }
 }

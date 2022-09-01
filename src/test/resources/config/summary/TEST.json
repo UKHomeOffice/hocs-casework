@@ -1,0 +1,46 @@
+{
+  "type": "TEST",
+  "fields": [
+    {
+      "type": "date",
+      "name": "TestDate",
+      "label": "Test Date"
+    },
+    {
+      "choices": [
+        {
+          "label": "Test Choice",
+          "value": "Choice1"
+        }
+      ],
+      "name": "TestWithHardcodedChoice",
+      "label": "Test with Hardcoded Choice"
+    },
+    {
+      "choices": "TEST_STATIC",
+      "name": "TestWithStaticListChoice",
+      "label": "Test with Static List Choice"
+    },
+    {
+      "conditionChoices": [
+        {
+          "choices": "TEST_STATIC",
+          "conditionPropertyName": "TestField",
+          "conditionPropertyValue": "TestValue1"
+        },
+        {
+          "choices": [
+            {
+              "label": "Test Choice",
+              "value": "Choice1"
+            }
+          ],
+          "conditionPropertyName": "TestField",
+          "conditionPropertyValue": "TestValue2"
+        }
+      ],
+      "name": "TestWithConditionalChoices",
+      "label": "Test with ConditionalChoices Area"
+    }
+  ]
+}
