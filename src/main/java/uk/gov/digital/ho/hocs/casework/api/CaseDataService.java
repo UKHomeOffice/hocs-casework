@@ -70,6 +70,7 @@ public class CaseDataService {
     private final CaseActionService caseActionService;
     private final DeadlineService deadlineService;
     private final StageRepository stageRepository;
+    private final CaseDataSummaryService caseDataSummaryService;
 
     public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
     public static final Pattern CASE_UUID_PATTERN = Pattern.compile("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b", Pattern.CASE_INSENSITIVE);
@@ -85,7 +86,8 @@ public class CaseDataService {
                            CaseCopyFactory caseCopyFactory,
                            CaseActionService caseActionService,
                            DeadlineService deadlineService,
-                           StageRepository stageRepository) {
+                           StageRepository stageRepository,
+                           CaseDataSummaryService caseDataSummaryService) {
 
         this.caseDataRepository = caseDataRepository;
         this.activeCaseViewDataRepository = activeCaseViewDataRepository;
@@ -97,6 +99,7 @@ public class CaseDataService {
         this.caseActionService = caseActionService;
         this.deadlineService = deadlineService;
         this.stageRepository = stageRepository;
+        this.caseDataSummaryService = caseDataSummaryService;
     }
 
     public static final List<String> TIMELINE_EVENTS = List.of(
@@ -565,8 +568,8 @@ public class CaseDataService {
                 .withPreviousCaseUUID(activeCaseViewData.getPreviousCaseUUID())
                 .withPreviousCaseStageUUID(activeCaseViewData.getPreviousCaseStageUUID());
 
-        Set<FieldDto> summaryFields = infoClient.getCaseSummaryFields(caseData.getType());
-        summaryBuilder.withAdditionalFields(getAdditionalFieldsForSummary(summaryFields, caseData.getDataMap()));
+        summaryBuilder.withAdditionalFields(caseDataSummaryService
+                        .getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()));
 
         auditClient.viewCaseSummaryAudit(caseData);
 
@@ -607,22 +610,6 @@ public class CaseDataService {
             }
         }
         return stageDeadlines;
-    }
-
-    private Set<AdditionalField> getAdditionalFieldsForSummary(Set<FieldDto> summaryFields, Map<String, String> caseDataMap) {
-        Set<AdditionalField> additionalFields = summaryFields.stream()
-                .map(field -> new AdditionalField(field.getLabel(), caseDataMap.getOrDefault(field.getName(), ""), field.getComponent(), extractChoices(field), field.getName()))
-                .collect(Collectors.toSet());
-        return additionalFields;
-    }
-
-    private Object extractChoices(FieldDto fieldDto) {
-        if (fieldDto != null && fieldDto.getProps() != null && fieldDto.getProps() instanceof Map) {
-            Map propMap = (Map) fieldDto.getProps();
-            return propMap.get("choices");
-        }
-
-        return null;
     }
 
     List<String> getDocumentTags(UUID caseUUID) {

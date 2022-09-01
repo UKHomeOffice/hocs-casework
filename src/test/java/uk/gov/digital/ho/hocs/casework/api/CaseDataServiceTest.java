@@ -130,6 +130,9 @@ public class CaseDataServiceTest {
     @Mock
     private StageRepository stageRepository;
 
+    @Mock
+    private CaseDataSummaryService caseDataSummaryService;
+
     Set<LocalDate> englandAndWalesBankHolidays2020 = Set.of(
             LocalDate.parse("2020-01-01"),
             LocalDate.parse("2020-04-10"),
@@ -157,7 +160,8 @@ public class CaseDataServiceTest {
                 caseCopyFactory,
                 caseActionService,
                 deadlineService,
-                stageRepository);
+                stageRepository,
+                caseDataSummaryService);
     }
 
     @Test
@@ -177,9 +181,9 @@ public class CaseDataServiceTest {
                 .createCase(caseType.getDisplayCode(), new HashMap<>(), originalReceivedDate, null);
 
         // then
-        verify(caseDataRepository, times(1)).getNextSeriesId();
-        verify(caseDataRepository, times(1)).save(caseData);
-        verify(deadlineService, times(1))
+        verify(caseDataRepository).getNextSeriesId();
+        verify(caseDataRepository).save(caseData);
+        verify(deadlineService)
                 .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
 
         assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
@@ -241,11 +245,11 @@ public class CaseDataServiceTest {
         CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), originalReceivedDate, PREVIOUS_CASE_UUID);
 
         // then
-        verify(caseDataRepository, times(1)).findActiveByUuid(PREVIOUS_CASE_UUID);
+        verify(caseDataRepository).findActiveByUuid(PREVIOUS_CASE_UUID);
         verify(caseDataRepository, times(0)).getNextSeriesId(); // ensure not used
-        verify(caseDataRepository, times(1)).save(caseData);
+        verify(caseDataRepository).save(caseData);
         ArgumentCaptor<CaseLink> caseLink = ArgumentCaptor.forClass(CaseLink.class);
-        verify(caseLinkRepository, times(1)).save(caseLink.capture());
+        verify(caseLinkRepository).save(caseLink.capture());
         verifyNoMoreInteractions(caseDataRepository);
 
         // assert the save link values
@@ -265,7 +269,7 @@ public class CaseDataServiceTest {
         // assert the reference sequence number part is valid
         assertThat(previousReferenceMatcher.group(1)).isEqualTo(caseReferenceMatcher.group(1));
 
-        verify(deadlineService, times(1))
+        verify(deadlineService)
                 .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
 
         // check deadline
@@ -289,10 +293,10 @@ public class CaseDataServiceTest {
                 .createCase(caseType.getDisplayName(), null, originalReceivedDate, null);
 
         // then
-        verify(caseDataRepository, times(1)).getNextSeriesId();
-        verify(caseDataRepository, times(1)).save(caseData);
+        verify(caseDataRepository).getNextSeriesId();
+        verify(caseDataRepository).save(caseData);
 
-        verify(deadlineService, times(1))
+        verify(deadlineService)
                 .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
 
         assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
@@ -308,7 +312,7 @@ public class CaseDataServiceTest {
 
         CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), deadlineDate, null);
 
-        verify(auditClient, times(1)).createCaseAudit(caseData);
+        verify(auditClient).createCaseAudit(caseData);
         verifyNoMoreInteractions(auditClient);
     }
 
@@ -329,7 +333,7 @@ public class CaseDataServiceTest {
             // Do nothing.
         }
 
-        verify(caseDataRepository, times(1)).getNextSeriesId();
+        verify(caseDataRepository).getNextSeriesId();
 
         verifyNoMoreInteractions(caseDataRepository);
     }
@@ -388,12 +392,12 @@ public class CaseDataServiceTest {
         MigrateCaseResponse migrateCaseResponse = caseDataService.migrateCase(caseType.getDisplayCode(), PREVIOUS_CASE_UUID);
 
         // then
-        verify(caseDataRepository, times(1)).findActiveByUuid(PREVIOUS_CASE_UUID);
+        verify(caseDataRepository).findActiveByUuid(PREVIOUS_CASE_UUID);
         verify(caseDataRepository, times(0)).getNextSeriesId(); // ensure not used
         ArgumentCaptor<CaseLink> caseLink = ArgumentCaptor.forClass(CaseLink.class);
         ArgumentCaptor<CaseData> caseData = ArgumentCaptor.forClass(CaseData.class);
-        verify(caseLinkRepository, times(1)).save(caseLink.capture());
-        verify(caseDataRepository, times(1)).save(caseData.capture());
+        verify(caseLinkRepository).save(caseLink.capture());
+        verify(caseDataRepository).save(caseData.capture());
         verifyNoMoreInteractions(caseDataRepository);
 
         // assert the save link values
@@ -413,14 +417,14 @@ public class CaseDataServiceTest {
         // assert the reference sequence number part is valid
         assertThat(previousReferenceMatcher.group(1)).isEqualTo(caseReferenceMatcher.group(1));
 
-        verify(deadlineService, times(1))
+        verify(deadlineService)
                 .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
 
         // check deadline
         assertThat(caseData.getValue().getCaseDeadline()).isEqualTo(expectedDeadline);
 
         // check audit
-        verify(auditClient, times(1)).migrateCaseAudit(caseData.getValue());
+        verify(auditClient).migrateCaseAudit(caseData.getValue());
         verifyNoMoreInteractions(auditClient);
     }
 
@@ -470,7 +474,7 @@ public class CaseDataServiceTest {
         assertThat(timeline).anyMatch(t -> t.getMessage().contains("case note 1"));
         assertThat(timeline).anyMatch(t -> t.getType().equals(CASE_CREATED.toString()));
 
-        verify(auditClient, times(1)).getAuditLinesForCase(eq(caseData.getUuid()), any(), any());
+        verify(auditClient).getAuditLinesForCase(eq(caseData.getUuid()), any(), any());
         verifyNoMoreInteractions(auditClient);
     }
 
@@ -495,7 +499,7 @@ public class CaseDataServiceTest {
         assertThat(timeline).anyMatch(t -> t.getMessage().contains("case note 1"));
         assertThat(timeline).noneMatch(t -> t.getType().equals(CASE_CREATED.toString()));
 
-        verify(auditClient, times(1)).getAuditLinesForCase(eq(caseData.getUuid()), any(), any());
+        verify(auditClient).getAuditLinesForCase(eq(caseData.getUuid()), any(), any());
         verifyNoMoreInteractions(auditClient);
     }
 
@@ -548,7 +552,7 @@ public class CaseDataServiceTest {
         assertThat(teams.size()).isEqualTo(1);
         assertThat(teams).contains(teamUUID);
 
-        verify(auditClient, times(1)).getAuditLinesForCase(eq(caseData.getUuid()), any());
+        verify(auditClient).getAuditLinesForCase(eq(caseData.getUuid()), any());
         verifyNoMoreInteractions(auditClient);
     }
 
@@ -563,16 +567,15 @@ public class CaseDataServiceTest {
         ActiveCaseViewData activeCaseViewData = new ActiveCaseViewData(caseType, caseID, deadlineDate);
         activeCaseViewData.setCaseDeadline(caseDeadline);
         activeCaseViewData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-
-        Set<FieldDto> filterFields = new HashSet<>();
-
+        
         Map<String, LocalDate> deadlines = Map.of(
                 "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
                 "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
 
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
-        when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
+        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()))
+                .thenReturn(Set.of());
         when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived()))
                 .thenReturn(deadlines);
 
@@ -582,10 +585,10 @@ public class CaseDataServiceTest {
         assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
-        verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
-        verify(deadlineService, times(1))
+        verify(caseDataSummaryService).getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap());
+        verify(deadlineService)
                 .getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
+        verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
     }
 
     @Test
@@ -599,7 +602,6 @@ public class CaseDataServiceTest {
         ActiveCaseViewData activeCaseViewData = new ActiveCaseViewData(caseType, caseID, data, deadlineDate);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        Set<FieldDto> filterFields = new HashSet<>();
 
         Map<String, LocalDate> deadlines = Map.of(
                 "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
@@ -607,7 +609,8 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
-        when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
+        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()))
+                .thenReturn(Set.of());
         when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
@@ -617,7 +620,7 @@ public class CaseDataServiceTest {
         assertThat(result.getStageDeadlines().get("DCU_DTEN_COPY_NUMBER_TEN")).isEqualTo(overrideDeadline.toString());
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
-        verify(infoClient).getCaseSummaryFields(caseData.getType());
+        verify(caseDataSummaryService).getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap());
         verify(deadlineService).getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
     }
@@ -626,7 +629,6 @@ public class CaseDataServiceTest {
     public void shouldAuditGetCaseSummary() {
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
         ActiveCaseViewData activeCaseViewData = new ActiveCaseViewData(caseType, caseID, deadlineDate);
-        Set<FieldDto> filterFields = new HashSet<>();
 
         Map<String, LocalDate> deadlines = Map.of(
                 "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
@@ -634,12 +636,13 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
-        when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
+        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()))
+                .thenReturn(Set.of());
         when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
 
         CaseSummary caseSummary = caseDataService.getCaseSummary(caseData.getUuid());
 
-        verify(auditClient, times(1)).viewCaseSummaryAudit(caseData);
+        verify(auditClient).viewCaseSummaryAudit(caseData);
         verifyNoMoreInteractions(auditClient);
     }
 
@@ -658,7 +661,8 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
-        when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
+        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()))
+                .thenReturn(Set.of());
         when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived()))
                 .thenReturn(deadlines);
 
@@ -668,10 +672,10 @@ public class CaseDataServiceTest {
         assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
-        verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
-        verify(deadlineService, times(1))
+        verify(caseDataSummaryService).getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap());
+        verify(deadlineService)
                 .getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
+        verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
 
     }
 
@@ -687,16 +691,14 @@ public class CaseDataServiceTest {
         activeCaseViewData.setCaseDeadline(caseDeadline);
         activeCaseViewData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
 
-        Set<FieldDto> filterFields = new HashSet<>();
-
-
         Map<String, LocalDate> deadlines = Map.of(
                 "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
                 "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
 
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
-        when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
+        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()))
+                .thenReturn(Set.of());
         when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived()))
                 .thenReturn(deadlines);
 
@@ -706,68 +708,21 @@ public class CaseDataServiceTest {
         assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
-        verify(infoClient, times(1)).getCaseSummaryFields(caseData.getType());
-        verify(deadlineService, times(1))
+        verify(caseDataSummaryService).getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap());
+        verify(deadlineService)
                 .getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
-    }
-
-    @Test
-    public void shouldGetCaseOnlyFilteredAdditionalData() throws ApplicationExceptions.EntityNotFoundException, IOException {
-
-        Set<FieldDto> filterFields = new HashSet<>();
-
-        FieldDto field0 = new FieldDto(UUID.randomUUID(), "TEMPCReference", "what is your TEMPCReference", "Text", new String[]{}, true, true, AccessLevel.READ,null);
-        filterFields.add(field0);
-
-        FieldDto field1 = new FieldDto(UUID.randomUUID(), "CopyNumberTen", "what is your CopyNumberTen", "Text", new String[]{}, true, true, AccessLevel.READ,null);
-        filterFields.add(field1);
-
-
-        Map<String, String> additionalData = Map.of(
-                "TEMPCReference", "test ref",
-                "CopyNumberTen", "true",
-                "UnfilteredField", "some value"
-        );
-
-        CaseData caseData = new CaseData(caseType, caseID, additionalData, deadlineDate);
-        caseData.setCaseDeadline(caseDeadline);
-        caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-
-        ActiveCaseViewData activeCaseViewData = new ActiveCaseViewData(caseType, caseID, additionalData, deadlineDate);
-        activeCaseViewData.setCaseDeadline(caseDeadline);
-        activeCaseViewData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-
-        Map<String, LocalDate> deadlines = Map.of(
-                "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
-                "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
-
-        when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
-        when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
-        when(infoClient.getCaseSummaryFields(caseData.getType())).thenReturn(filterFields);
-        when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived()))
-                .thenReturn(deadlines);
-
-        CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
-
-        assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
-        assertThat(result.getStageDeadlines()).isEqualTo(deadlines);
-        assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
-        assertThat(result.getAdditionalFields().stream().filter(f -> f.getLabel().equals("what is your TEMPCReference")).findFirst().get().getValue()).isEqualTo("test ref");
-        assertThat(result.getAdditionalFields().stream().filter(f -> f.getLabel().equals("what is your CopyNumberTen")).findFirst().get().getValue()).isEqualTo("true");
-        assertThat(result.getAdditionalFields().stream().noneMatch(f -> f.getLabel().equals("UnfilteredField")));
+        verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
     }
 
     @Test
     public void shouldGetCaseWithValidParams() throws ApplicationExceptions.EntityNotFoundException {
-
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
 
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
 
         caseDataService.getCase(caseData.getUuid());
 
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
+        verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
 
         verifyNoMoreInteractions(caseDataRepository);
 
@@ -792,7 +747,7 @@ public class CaseDataServiceTest {
             // Do nothing.
         }
 
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
 
         verifyNoMoreInteractions(caseDataRepository);
     }
@@ -811,7 +766,7 @@ public class CaseDataServiceTest {
             // Do nothing.
         }
 
-        verify(caseDataRepository, times(1)).findActiveByUuid(null);
+        verify(caseDataRepository).findActiveByUuid(null);
 
         verifyNoMoreInteractions(caseDataRepository);
     }
@@ -830,7 +785,7 @@ public class CaseDataServiceTest {
 
         assertThat(totals).isNotNull();
         verify(caseDataRepository, times(2)).findActiveByUuid(caseData.getUuid());
-        verify(caseDataRepository, times(1)).save(caseData);
+        verify(caseDataRepository).save(caseData);
         verifyNoMoreInteractions(caseDataRepository);
     }
 
@@ -843,8 +798,8 @@ public class CaseDataServiceTest {
 
         caseDataService.updateCaseData(caseData.getUuid(), stageUUID, new HashMap<>());
 
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
-        verify(caseDataRepository, times(1)).save(caseData);
+        verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
+        verify(caseDataRepository).save(caseData);
 
         verifyNoMoreInteractions(caseDataRepository);
     }
@@ -857,7 +812,7 @@ public class CaseDataServiceTest {
 
         caseDataService.updateCaseData(caseData.getUuid(), stageUUID, new HashMap<>());
 
-        verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
+        verify(auditClient).updateCaseAudit(caseData, stageUUID);
         verifyNoMoreInteractions(auditClient);
     }
 
@@ -886,7 +841,7 @@ public class CaseDataServiceTest {
             // Do nothing.
         }
 
-        verify(caseDataRepository, times(1)).findActiveByUuid(null);
+        verify(caseDataRepository).findActiveByUuid(null);
 
         verifyNoMoreInteractions(caseDataRepository);
     }
@@ -922,15 +877,15 @@ public class CaseDataServiceTest {
         ArgumentCaptor<CaseData> caseDataCaptor = ArgumentCaptor.forClass(CaseData.class);
 
         assertThat(caseData.getDateReceived()).isEqualTo(updatedReceivedDate);
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
-        verify(caseDataRepository, times(1)).save(caseDataCaptor.capture());
-        verify(deadlineService, times(1))
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
+        verify(caseDataRepository).save(caseDataCaptor.capture());
+        verify(deadlineService)
                 .calculateWorkingDaysForCaseType(caseDataType.getDisplayName(), updatedReceivedDate, caseType.getSla());
 
         assertThat(caseDataCaptor.getValue().getCaseDeadline()).isEqualTo(expectedNewDeadline);
 
         verifyNoMoreInteractions(caseDataRepository);
-        verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
+        verify(auditClient).updateCaseAudit(caseData, stageUUID);
     }
 
     @Test
@@ -961,8 +916,8 @@ public class CaseDataServiceTest {
         // then
         ArgumentCaptor<CaseData> caseDataCaptor = ArgumentCaptor.forClass(CaseData.class);
 
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
-        verify(caseDataRepository, times(1)).save(caseDataCaptor.capture());
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
+        verify(caseDataRepository).save(caseDataCaptor.capture());
         verify(deadlineService, times(2))
                 .calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), 10);
 
@@ -970,7 +925,7 @@ public class CaseDataServiceTest {
 
         verifyNoMoreInteractions(caseDataRepository);
 
-        verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
+        verify(auditClient).updateCaseAudit(caseData, stageUUID);
     }
 
     @Test
@@ -989,11 +944,11 @@ public class CaseDataServiceTest {
 
         // then
         assertThat(caseData.getCaseDeadline()).isEqualTo(deadlineDate);
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
-        verify(caseDataRepository, times(1)).save(caseData);
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
+        verify(caseDataRepository).save(caseData);
         verifyNoMoreInteractions(caseDataRepository);
         verify(deadlineService).calculateWorkingDaysForCaseType(any(), any(), eq(15));
-        verify(auditClient, times(1)).updateCaseAudit(caseData, stageUUID);
+        verify(auditClient).updateCaseAudit(caseData, stageUUID);
 
     }
 
@@ -1028,9 +983,9 @@ public class CaseDataServiceTest {
 
         caseDataService.completeCase(caseData.getUuid(), true);
 
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
-        verify(stageRepository, times(1)).findFirstByTeamUUIDIsNotNullAndCaseUUID(any(UUID.class));
-        verify(caseDataRepository, times(1)).save(caseData);
+        verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(any(UUID.class));
+        verify(caseDataRepository).save(caseData);
 
         // Not invoked
         verify(stageRepository, times(0)).save(any(Stage.class));
@@ -1051,10 +1006,10 @@ public class CaseDataServiceTest {
 
         caseDataService.completeCase(caseData.getUuid(), true);
 
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseData.getUuid());
-        verify(caseDataRepository, times(1)).save(caseData);
-        verify(stageRepository, times(1)).findFirstByTeamUUIDIsNotNullAndCaseUUID(any(UUID.class));
-        verify(stageRepository, times(1)).save(any(Stage.class));
+        verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
+        verify(caseDataRepository).save(caseData);
+        verify(stageRepository).findFirstByTeamUUIDIsNotNullAndCaseUUID(any(UUID.class));
+        verify(stageRepository).save(any(Stage.class));
         verify(auditClient).updateStageTeam(any(Stage.class));
 
         verifyNoMoreInteractions(caseDataRepository, stageRepository);
@@ -1075,7 +1030,7 @@ public class CaseDataServiceTest {
             // Do nothing.
         }
 
-        verify(caseDataRepository, times(1)).findActiveByUuid(null);
+        verify(caseDataRepository).findActiveByUuid(null);
 
         verifyNoMoreInteractions(caseDataRepository);
     }
@@ -1089,8 +1044,8 @@ public class CaseDataServiceTest {
 
         caseDataService.deleteCase(caseData.getUuid(), true);
 
-        verify(caseDataRepository, times(1)).findAnyByUuid(caseData.getUuid());
-        verify(caseDataRepository, times(1)).save(caseData);
+        verify(caseDataRepository).findAnyByUuid(caseData.getUuid());
+        verify(caseDataRepository).save(caseData);
         verify(auditClient).deleteAuditLinesForCase(eq(caseData.getUuid()), any(), eq(true));
         verifyNoMoreInteractions(caseDataRepository);
     }
@@ -1103,7 +1058,7 @@ public class CaseDataServiceTest {
 
         caseDataService.deleteCase(caseData.getUuid(), true);
 
-        verify(auditClient, times(1)).deleteCaseAudit(caseData, true);
+        verify(auditClient).deleteCaseAudit(caseData, true);
         verify(auditClient).deleteAuditLinesForCase(eq(caseData.getUuid()), any(), eq(true));
         verifyNoMoreInteractions(auditClient);
     }
@@ -1123,7 +1078,7 @@ public class CaseDataServiceTest {
             // Do nothing.
         }
 
-        verify(caseDataRepository, times(1)).findAnyByUuid(null);
+        verify(caseDataRepository).findAnyByUuid(null);
 
         verifyNoMoreInteractions(caseDataRepository);
     }
@@ -1135,7 +1090,7 @@ public class CaseDataServiceTest {
 
         caseDataService.getCaseType(caseUUID);
 
-        verify(infoClient, times(1)).getCaseTypeByShortCode(caseTypeShortCode);
+        verify(infoClient).getCaseTypeByShortCode(caseTypeShortCode);
         verifyNoMoreInteractions(infoClient);
         verifyNoMoreInteractions(caseDataRepository);
 
@@ -1149,9 +1104,9 @@ public class CaseDataServiceTest {
 
         caseDataService.getCaseType(caseUUID);
 
-        verify(infoClient, times(1)).getCaseTypeByShortCode(caseTypeShortCode);
+        verify(infoClient).getCaseTypeByShortCode(caseTypeShortCode);
         verifyNoMoreInteractions(infoClient);
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
         verifyNoMoreInteractions(caseDataRepository);
     }
 
@@ -1169,7 +1124,7 @@ public class CaseDataServiceTest {
 
         caseDataService.clearCachedTemplateForCaseType(caseType.getDisplayName());
 
-        verify(infoClient, times(1)).clearCachedTemplateForCaseType(caseType.getDisplayName());
+        verify(infoClient).clearCachedTemplateForCaseType(caseType.getDisplayName());
         verifyNoMoreInteractions(infoClient);
     }
 
@@ -1282,9 +1237,9 @@ public class CaseDataServiceTest {
         caseDataService.mapCaseDataValues(caseUUID, keyMappings);
         // THEN
         ArgumentCaptor<CaseData> argCapture = ArgumentCaptor.forClass(CaseData.class);
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
-        verify(caseDataRepository, times(1)).save(argCapture.capture());
-        verify(auditClient, times(1)).updateCaseAudit(caseData, null);
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
+        verify(caseDataRepository).save(argCapture.capture());
+        verify(auditClient).updateCaseAudit(caseData, null);
         verifyNoMoreInteractions(caseDataRepository, auditClient);
 
         assertThat(argCapture.getValue().getDataMap().keySet()).contains("to1", "to2");
@@ -1324,9 +1279,9 @@ public class CaseDataServiceTest {
         caseDataService.mapCaseDataValues(caseUUID, keyMappings);
         // THEN
         ArgumentCaptor<CaseData> argCapture = ArgumentCaptor.forClass(CaseData.class);
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
-        verify(caseDataRepository, times(1)).save(argCapture.capture());
-        verify(auditClient, times(1)).updateCaseAudit(caseData, null);
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
+        verify(caseDataRepository).save(argCapture.capture());
+        verify(auditClient).updateCaseAudit(caseData, null);
         verifyNoMoreInteractions(caseDataRepository, auditClient);
 
         assertThat(argCapture.getValue().getDataMap().keySet()).contains("to1", "to2", "to3");
@@ -1368,9 +1323,9 @@ public class CaseDataServiceTest {
         caseDataService.mapCaseDataValues(caseUUID, keyMappings);
         // THEN
         ArgumentCaptor<CaseData> argCapture = ArgumentCaptor.forClass(CaseData.class);
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
-        verify(caseDataRepository, times(1)).save(argCapture.capture());
-        verify(auditClient, times(1)).updateCaseAudit(caseData, null);
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
+        verify(caseDataRepository).save(argCapture.capture());
+        verify(auditClient).updateCaseAudit(caseData, null);
         verifyNoMoreInteractions(caseDataRepository, auditClient);
 
         assertThat(argCapture.getValue().getDataMap().keySet()).contains("to1", "to2", "to3");
@@ -1408,7 +1363,7 @@ public class CaseDataServiceTest {
         caseDataService.mapCaseDataValues(caseUUID, keyMappings);
         // THEN
         ArgumentCaptor<CaseData> argCapture = ArgumentCaptor.forClass(CaseData.class);
-        verify(caseDataRepository, times(1)).findActiveByUuid(caseUUID);
+        verify(caseDataRepository).findActiveByUuid(caseUUID);
         verify(caseDataRepository, times(0)).save(any());
         verify(auditClient, times(0)).updateCaseAudit(any(), any());
 
@@ -1432,8 +1387,8 @@ public class CaseDataServiceTest {
 
         CaseConfig output = caseDataService.getCaseConfig(uuid);
 
-        verify(caseDataRepository, times(1)).getCaseType(uuid);
-        verify(infoClient, times(1)).getCaseConfig(caseType);
+        verify(caseDataRepository).getCaseType(uuid);
+        verify(infoClient).getCaseConfig(caseType);
 
         assertThat(output).isEqualTo(caseConfig);
 
