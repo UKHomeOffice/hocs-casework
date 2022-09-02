@@ -571,10 +571,6 @@ public class CaseDataService {
         summaryBuilder.withAdditionalFields(caseDataSummaryService
                         .getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()));
 
-        auditClient.viewCaseSummaryAudit(caseData);
-
-        log.info("Got Case Summary for Case: {} Ref: {}", caseData.getUuid(), caseData.getReference(), value(EVENT, CASE_SUMMARY_RETRIEVED));
-
         return summaryBuilder;
     }
 

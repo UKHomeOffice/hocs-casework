@@ -626,27 +626,6 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldAuditGetCaseSummary() {
-        CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
-        ActiveCaseViewData activeCaseViewData = new ActiveCaseViewData(caseType, caseID, deadlineDate);
-
-        Map<String, LocalDate> deadlines = Map.of(
-                "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
-                "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
-
-        when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
-        when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
-        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()))
-                .thenReturn(Set.of());
-        when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
-
-        CaseSummary caseSummary = caseDataService.getCaseSummary(caseData.getUuid());
-
-        verify(auditClient).viewCaseSummaryAudit(caseData);
-        verifyNoMoreInteractions(auditClient);
-    }
-
-    @Test
     public void shouldGetCaseSummaryWithValidParamsPrimaryCorrespondentNull() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);

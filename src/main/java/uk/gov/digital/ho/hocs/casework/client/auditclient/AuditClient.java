@@ -103,17 +103,6 @@ public class AuditClient {
         }
     }
 
-    public void viewCaseSummaryAudit(CaseData caseData) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        try {
-            sendAuditMessage(localDateTime, caseData.getUuid(), objectMapper.writeValueAsString(new AuditPayload.CaseReference(caseData.getReference())),
-                    EventType.CASE_SUMMARY_VIEWED, null, requestData.correlationId(), requestData.userId(),
-                    requestData.username(), requestData.groups());
-        } catch (JsonProcessingException e) {
-            logFailedToParseAuditPayload(e);
-        }
-    }
-
     public void viewStandardLineAudit(CaseData caseData) {
         LocalDateTime localDateTime = LocalDateTime.now();
         try {
