@@ -142,19 +142,6 @@ public class AuditClientTest extends BaseAwsTest {
     }
 
     @Test
-    public void viewCaseSummaryAudit() throws IOException {
-        var caseID = 12345L;
-        var caseType = CaseDataTypeFactory.from("TEST", "F0");
-        var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
-
-        auditClient.viewCaseSummaryAudit(caseData);
-
-        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
-
-        assertSnsValues(caseData.getUuid(), EventType.CASE_SUMMARY_VIEWED);
-    }
-
-    @Test
     public void viewStandardLineAudit() throws IOException {
         var caseID = 12345L;
         var caseType = CaseDataTypeFactory.from("TEST", "F0");
