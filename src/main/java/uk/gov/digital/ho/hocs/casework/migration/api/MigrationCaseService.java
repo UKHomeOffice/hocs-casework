@@ -36,7 +36,7 @@ public class MigrationCaseService {
         caseDataRepository.save(caseData);
         // create stage for case
         CreateStageRequest createStageRequest = new CreateStageRequest(stageType, null, null, "", null, null);
-        Stage stage = migrationStageService.createStage(caseData.getUuid(), createStageRequest);
+        Stage stage = migrationStageService.createStageForClosedCase(caseData.getUuid(), createStageRequest);
         return caseData;
     }
 }

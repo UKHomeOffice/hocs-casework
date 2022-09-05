@@ -5,8 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClientException;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -35,7 +33,7 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 
 @Service
 @Slf4j
-@Qualifier("CaseDataService")
+@Qualifier("MigrationCaseDataService")
 public class MigrationCaseDataService {
     protected final CaseDataRepository caseDataRepository;
     protected final ActiveCaseViewDataRepository activeCaseViewDataRepository;
@@ -77,7 +75,6 @@ public class MigrationCaseDataService {
             EXTENSION_APPLIED.toString(),
             EXTERNAL_INTEREST_CREATED.toString(),
             EXTERNAL_INTEREST_UPDATED.toString()
-
     );
 
     protected CaseData getCaseData(UUID caseUUID) {
@@ -91,20 +88,20 @@ public class MigrationCaseDataService {
         return caseData;
     }
 
-    public String getCaseType(UUID caseUUID) {
-        String shortCode = caseUUID.toString().substring(34);
-        log.debug("Looking up CaseType for Case: {} Shortcode: {}", caseUUID, shortCode);
-        String caseType;
-        try {
-            CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(shortCode);
-            caseType = caseDataType.getDisplayCode();
-        } catch (RestClientException e) {
-            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED), value(EXCEPTION, e));
-            caseType = getCaseData(caseUUID).getType();
-        }
-        log.debug("CaseType {} found for Case: {}", caseType, caseUUID);
-        return caseType;
-    }
+//    public String getCaseType(UUID caseUUID) {
+//        String shortCode = caseUUID.toString().substring(34);
+//        log.debug("Looking up CaseType for Case: {} Shortcode: {}", caseUUID, shortCode);
+//        String caseType;
+//        try {
+//            CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(shortCode);
+//            caseType = caseDataType.getDisplayCode();
+//        } catch (RestClientException e) {
+//            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED), value(EXCEPTION, e));
+//            caseType = getCaseData(caseUUID).getType();
+//        }
+//        log.debug("CaseType {} found for Case: {}", caseType, caseUUID);
+//        return caseType;
+//    }
 
 
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
