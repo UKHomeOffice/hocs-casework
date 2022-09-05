@@ -5,9 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.digital.ho.hocs.casework.api.StageService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateMigrationCaseRequest;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
 @RestController
@@ -15,12 +14,9 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 public class MigrationCaseResource {
 
     private final MigrationCaseService migrationCaseService;
-    private final StageService stageService;
 
-
-    public MigrationCaseResource(MigrationCaseService migrationCaseService, StageService stageService) {
+    public MigrationCaseResource(MigrationCaseService migrationCaseService) {
         this.migrationCaseService = migrationCaseService;
-        this.stageService = stageService;
     }
 
     @PostMapping(value = "/migrate")

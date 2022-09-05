@@ -1,8 +1,9 @@
-package uk.gov.digital.ho.hocs.casework.api.dto;
+package uk.gov.digital.ho.hocs.casework.migration.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -11,7 +12,7 @@ import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
-public class CreateMigrationCaseRequest implements CreateCaseRequestInterface {
+public class CreateMigrationCaseRequest {
 
     @JsonProperty("type")
     private String type;
