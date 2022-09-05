@@ -14,18 +14,18 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 @Slf4j
 public class MigrationCaseResource {
 
-    private final MigrationCaseService caseMigrationService;
+    private final MigrationCaseService migrationCaseService;
     private final StageService stageService;
 
 
-    public MigrationCaseResource(MigrationCaseService caseMigrationService, StageService stageService) {
-        this.caseMigrationService = caseMigrationService;
+    public MigrationCaseResource(MigrationCaseService migrationCaseService, StageService stageService) {
+        this.migrationCaseService = migrationCaseService;
         this.stageService = stageService;
     }
 
     @PostMapping(value = "/migrate")
     public ResponseEntity<CreateCaseResponse> createMigrationCase(@RequestBody CreateMigrationCaseRequest request) {
-        CaseData caseData = caseMigrationService.createMigrationCase(request.getType(), request.getStageType(), request.getData(), request.getDateReceived());
+        CaseData caseData = migrationCaseService.createMigrationCase(request.getType(), request.getStageType(), request.getData(), request.getDateReceived());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 }
