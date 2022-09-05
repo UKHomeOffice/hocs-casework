@@ -67,9 +67,10 @@ public class MigrationStageService {
 
         CaseData caseData = migrationCaseDataService.getCaseData(caseUUID);
 
+
         stageRepository.save(stageToActivate.get());
         log.info("Created Stage: {}, Type: {}, Case: {}", stageToActivate.get().getUuid(), stageToActivate.get().getStageType(), stageToActivate.get().getCaseUUID(), value(EVENT, STAGE_CREATED));
-
+        caseData.setCompleted(true);
         migrationCaseDataService.updateCaseData(caseData, stageToActivate.get().getUuid(), Map.of(CaseworkConstants.CURRENT_STAGE, stageToActivate.get().getStageType()));
 
         // Update audit and timeline unless active and allocated to same user and team - positioned here maintains timeline consistency.

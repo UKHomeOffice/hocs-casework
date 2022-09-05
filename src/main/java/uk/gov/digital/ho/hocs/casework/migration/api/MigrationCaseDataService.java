@@ -36,20 +36,17 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 @Qualifier("MigrationCaseDataService")
 public class MigrationCaseDataService {
     protected final CaseDataRepository caseDataRepository;
-    protected final ActiveCaseViewDataRepository activeCaseViewDataRepository;
     protected final AuditClient auditClient;
     protected final ObjectMapper objectMapper;
     protected final InfoClient infoClient;
 
     @Autowired
     public MigrationCaseDataService(CaseDataRepository caseDataRepository,
-                                    ActiveCaseViewDataRepository activeCaseViewDataRepository,
                                     InfoClient infoClient,
                                     ObjectMapper objectMapper,
                                     AuditClient auditClient) {
 
         this.caseDataRepository = caseDataRepository;
-        this.activeCaseViewDataRepository = activeCaseViewDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
         this.objectMapper = objectMapper;
@@ -87,22 +84,6 @@ public class MigrationCaseDataService {
         log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
         return caseData;
     }
-
-//    public String getCaseType(UUID caseUUID) {
-//        String shortCode = caseUUID.toString().substring(34);
-//        log.debug("Looking up CaseType for Case: {} Shortcode: {}", caseUUID, shortCode);
-//        String caseType;
-//        try {
-//            CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(shortCode);
-//            caseType = caseDataType.getDisplayCode();
-//        } catch (RestClientException e) {
-//            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED), value(EXCEPTION, e));
-//            caseType = getCaseData(caseUUID).getType();
-//        }
-//        log.debug("CaseType {} found for Case: {}", caseType, caseUUID);
-//        return caseType;
-//    }
-
 
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         if (data == null) {
