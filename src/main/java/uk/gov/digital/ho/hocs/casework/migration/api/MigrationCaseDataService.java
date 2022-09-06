@@ -27,7 +27,6 @@ public class MigrationCaseDataService {
     protected final AuditClient auditClient;
     protected final InfoClient infoClient;
 
-    @Autowired
     public MigrationCaseDataService(CaseDataRepository caseDataRepository,
                                     InfoClient infoClient,
                                     AuditClient auditClient) {

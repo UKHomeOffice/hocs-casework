@@ -28,7 +28,6 @@ public class MigrationStageService {
     private final AuditClient auditClient;
     private final MigrationCaseDataService migrationCaseDataService;
 
-    @Autowired
     public MigrationStageService(StageRepository stageRepository,
                                  AuditClient auditClient,
                                  MigrationCaseDataService migrationCaseDataService) {
