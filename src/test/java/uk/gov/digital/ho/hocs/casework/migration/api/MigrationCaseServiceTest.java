@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.migration.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,15 +7,15 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
-import uk.gov.digital.ho.hocs.casework.application.SpringConfiguration;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static org.mockito.Mockito.*;
 
@@ -32,58 +31,59 @@ public class MigrationCaseServiceTest {
 
     private final Map<String, String> data = new HashMap<>(0);
 
-    @Mock
-    private CaseDataRepository caseDataRepository;
+    private final CaseDataType caseDataType = new CaseDataType(
+            "MIN",
+            "1a",
+            "MIN",
+            null,
+            20,
+            15
+    );
 
     @Mock
     private MigrationStageService migrationStageService;
 
     @Mock
-    private InfoClient infoClient;
+    private MigrationCaseDataService migrationCaseDataService;
 
     @Before
     public void setUp() {
-        this.migrationCaseService = new MigrationCaseService(caseDataRepository, infoClient, migrationStageService);
+        this.migrationCaseService = new MigrationCaseService(migrationCaseDataService, migrationStageService);
     }
 
     @Test
     public void shouldCreateMigrationCase() throws ApplicationExceptions.EntityCreationException {
         // given
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
+        Map<String, String> data = Collections.emptyMap();
+        CaseData caseData = new CaseData(
+                1L,
+                UUID.randomUUID(),
+                LocalDateTime.now(),
+                "COMP",
+                null,
+                false,
+                data,
+                null,
+                null,
+                null,
+                null,
+                LocalDate.now(),
+                LocalDate.now(),
+                LocalDate.now().minusDays(10),
+                false,
+                null,
+                null);
 
-        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
-        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+        //when
+        when(migrationCaseDataService.createCase(caseDataType.getDisplayName(), data, originalReceivedDate)).thenReturn(caseData);
 
-        // when
-        CaseData caseData = migrationCaseService
-                .createMigrationCase(caseType.getDisplayCode(), STAGE_TYPE, data, originalReceivedDate);
+        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate);
 
         // then
-        verify(caseDataRepository, times(1)).getNextSeriesId();
-        verify(caseDataRepository, times(1)).save(caseData);
-        verifyNoMoreInteractions(caseDataRepository);
-    }
-
-
-    @Test(expected = ApplicationExceptions.EntityCreationException.class)
-    public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
-        LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
-        migrationCaseService.createMigrationCase(null, STAGE_TYPE, new HashMap<>(), originalReceivedDate);
-    }
-
-    @Test()
-    public void shouldNotCreateCaseMissingType() {
-        LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
-        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-
-        try {
-            migrationCaseService.createMigrationCase(null, STAGE_TYPE, new HashMap<>(), originalReceivedDate);
-        } catch (ApplicationExceptions.EntityCreationException e) {
-            // Do nothing.
-        }
-
-        verify(caseDataRepository, times(1)).getNextSeriesId();
-
-        verifyNoMoreInteractions(caseDataRepository);
+        verify(migrationCaseDataService, times(1)).createCase(caseDataType.getDisplayName(), data, originalReceivedDate);
+        verify(migrationStageService, times(1)).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
+        verifyNoMoreInteractions(migrationCaseDataService);
+        verifyNoMoreInteractions(migrationStageService);
     }
 }

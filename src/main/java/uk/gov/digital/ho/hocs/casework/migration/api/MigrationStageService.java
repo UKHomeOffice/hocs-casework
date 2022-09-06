@@ -38,9 +38,10 @@ public class MigrationStageService {
     }
 
     @Transactional
-    public Stage createStageForClosedCase(UUID caseUUID, CreateStageRequest createStageRequest) {
+    public Stage createStageForClosedCase(UUID caseUUID, String stageType) {
 
-        log.debug("Creating Stage: {} for case {}", createStageRequest, caseUUID);
+        log.debug("Creating Stage: {} for case {}", stageType, caseUUID);
+        CreateStageRequest createStageRequest = new CreateStageRequest(stageType, null, null, "", null, null);
 
         Set<Stage> allStages = stageRepository.findAllByCaseUUIDAsStage(caseUUID);
         Set<Stage> activeStages = allStages.stream().filter(stage -> stage.getTeamUUID() != null).collect(Collectors.toSet());

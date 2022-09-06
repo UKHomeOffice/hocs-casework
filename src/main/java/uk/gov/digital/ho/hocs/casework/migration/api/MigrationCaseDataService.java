@@ -1,34 +1,23 @@
 package uk.gov.digital.ho.hocs.casework.migration.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
-import java.util.List;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_COMPLETED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_DELETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.EXTENSION_APPLIED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_COMPLETED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_RECREATED;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 
 @Service
 @Slf4j
@@ -36,42 +25,16 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 public class MigrationCaseDataService {
     protected final CaseDataRepository caseDataRepository;
     protected final AuditClient auditClient;
-    protected final ObjectMapper objectMapper;
     protected final InfoClient infoClient;
 
     @Autowired
     public MigrationCaseDataService(CaseDataRepository caseDataRepository,
                                     InfoClient infoClient,
-                                    ObjectMapper objectMapper,
                                     AuditClient auditClient) {
-
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
-        this.objectMapper = objectMapper;
     }
-
-    public static final List<String> TIMELINE_EVENTS = List.of(
-            CASE_CREATED.toString(),
-            CASE_COMPLETED.toString(),
-            CASE_TOPIC_CREATED.toString(),
-            CASE_TOPIC_DELETED.toString(),
-            STAGE_ALLOCATED_TO_TEAM.toString(),
-            STAGE_CREATED.toString(),
-            STAGE_RECREATED.toString(),
-            STAGE_COMPLETED.toString(),
-            STAGE_ALLOCATED_TO_USER.toString(),
-            CORRESPONDENT_DELETED.toString(),
-            CORRESPONDENT_CREATED.toString(),
-            CORRESPONDENT_UPDATED.toString(),
-            DOCUMENT_CREATED.toString(),
-            DOCUMENT_DELETED.toString(),
-            APPEAL_UPDATED.toString(),
-            APPEAL_CREATED.toString(),
-            EXTENSION_APPLIED.toString(),
-            EXTERNAL_INTEREST_CREATED.toString(),
-            EXTERNAL_INTEREST_UPDATED.toString()
-    );
 
     protected CaseData getCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
@@ -98,11 +61,23 @@ public class MigrationCaseDataService {
             log.warn("Data was null for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
             return;
         }
-
         log.debug("Data size {}", data.size());
         caseData.update(data);
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);
         log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
     }
+
+    CaseData createCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
+        log.debug("Creating Case of type: {}", caseType);
+        Long caseNumber = caseDataRepository.getNextSeriesId();
+        CaseDataType caseDataType = infoClient.getCaseType(caseType);
+        CaseData caseData = new CaseData(caseDataType, caseNumber, data, dateReceived);
+        LocalDate deadline = LocalDate.now();
+        caseData.setCaseDeadline(deadline);
+        caseDataRepository.save(caseData);
+        auditClient.createCaseAudit(caseData);
+        return caseData;
+    }
+
 }

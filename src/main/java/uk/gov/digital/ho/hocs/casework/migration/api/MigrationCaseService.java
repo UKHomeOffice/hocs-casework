@@ -16,27 +16,19 @@ import java.util.Map;
 @Slf4j
 public class MigrationCaseService {
 
-    protected final CaseDataRepository caseDataRepository;
+    protected final MigrationCaseDataService migrationCaseDataService;
     protected final MigrationStageService migrationStageService;
-    protected final InfoClient infoClient;
 
-    public MigrationCaseService(CaseDataRepository caseDataRepository, InfoClient infoClient, MigrationStageService migrationStageService) {
-        this.caseDataRepository = caseDataRepository;
-        this.infoClient = infoClient;
+
+    public MigrationCaseService(MigrationCaseDataService migrationCaseDataService, MigrationStageService migrationStageService) {
+        this.migrationCaseDataService = migrationCaseDataService;
         this.migrationStageService = migrationStageService;
     }
 
     CaseData createMigrationCase(String caseType, String stageType, Map<String, String> data, LocalDate dateReceived) {
         log.debug("Migrating Case of type: {}", caseType);
-        Long caseNumber = caseDataRepository.getNextSeriesId();
-        CaseDataType caseDataType = infoClient.getCaseType(caseType);
-        CaseData caseData = new CaseData(caseDataType, caseNumber, data, dateReceived);
-        LocalDate deadline = LocalDate.now();
-        caseData.setCaseDeadline(deadline);
-        caseDataRepository.save(caseData);
-        // create stage for case
-        CreateStageRequest createStageRequest = new CreateStageRequest(stageType, null, null, "", null, null);
-        Stage stage = migrationStageService.createStageForClosedCase(caseData.getUuid(), createStageRequest);
+        CaseData caseData = migrationCaseDataService.createCase(caseType, data, dateReceived);
+        Stage stage = migrationStageService.createStageForClosedCase(caseData.getUuid(), stageType);
         return caseData;
     }
 }
