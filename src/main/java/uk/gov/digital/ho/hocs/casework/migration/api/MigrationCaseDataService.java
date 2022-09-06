@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.migration.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
@@ -67,7 +66,7 @@ public class MigrationCaseDataService {
         log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
     }
 
-    CaseData createCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
+     CaseData createCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
         log.debug("Creating Case of type: {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
         CaseDataType caseDataType = infoClient.getCaseType(caseType);
