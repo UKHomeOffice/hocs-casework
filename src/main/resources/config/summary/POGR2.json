@@ -59,6 +59,25 @@
       "label": "Letter of Authority Received"
     },
     {
+      "choices": [
+        {
+          "label": "Yes",
+          "value": "Yes"
+        },
+        {
+          "label": "No",
+          "value": "No"
+        }
+      ],
+      "name": "TelephoneResponse",
+      "label": "Was the case resolved by phone call?"
+    },
+    {
+      "name": "TelephoneResponseDateOfCall",
+      "label": "Date of Call",
+      "type": "date"
+    },
+    {
       "name": "LoaRequired",
       "label": "Is a Letter of Authority required?"
     },
