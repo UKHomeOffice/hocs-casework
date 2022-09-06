@@ -74,5 +74,19 @@
       "type": "DeadlinePolicy",
       "config": { }
     }
+  ],
+  "POGR2": [
+    {
+      "type": "SimpleStringPropertyPolicy",
+      "config": {
+        "propertyName": "ComplaintPriority",
+        "pointsToAward": "1000",
+        "propertyValue": "Yes"
+      }
+    },
+    {
+      "type": "DeadlinePolicy",
+      "config": { }
+    }
   ]
 }
