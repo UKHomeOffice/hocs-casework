@@ -1,63 +1,101 @@
 {
   "type": "POGR2",
-  "fields": [ {
-    "name" : "BusinessArea",
-    "label" : "Business Area"
-  }, {
-    "type" : "date",
-    "name" : "DateReceived",
-    "label" : "When was the correspondence received?"
-  }, {
-    "name" : "ComplainantCompanyName",
-    "label" : "Company Name"
-  }, {
-    "name" : "ComplainantCaseAccountNumber",
-    "label" : "Case/Account Number"
-  }, {
-    "choices": "GRO_COMPLAINT_CATEGORIES",
-    "name" : "ComplainantCategory",
-    "label" : "Complaint Category"
-  }, {
-    "name" : "ComplaintDescription",
-    "label" : "Description of Complaint"
-  }, {
-    "type" : "checkbox",
-    "name" : "ComplaintPriority",
-    "label" : "Priority"
-  }, {
-    "name" : "ComplaintThirdPartyReference",
-    "label" : "Third Party Reference"
-  }, {
-    "choices": "HMPO_COMPLAINT_CATEGORIES",
-    "name" : "ComplainantCategory",
-    "label" : "Complaint Category"
-  }, {
-    "name" : "ComplainantApplicationReference",
-    "label" : "Application Reference"
-  }, {
-    "name" : "ComplainantPassportNumber",
-    "label" : "Passport Number"
-  }, {
-    "name" : "InvestigationAccept",
-    "label" : "Can your team respond to this complaint?"
-  }, {
-    "type" : "checkbox",
-    "name" : "LoaReceived",
-    "label" : "Letter of Authority Received"
-  }, {
-    "name" : "LoaRequired",
-    "label" : "Is a Letter of Authority required?"
-  }, {
-    "name" : "DispatchOutcome",
-    "label" : "Dispatch Outcome"
-  }, {
-    "name" : "ComplaintReason",
-    "label" : "Complaint Reason"
-  }, {
-    "name" : "ComplaintReason",
-    "label" : "Complaint Reason"
-  }, {
-    "name" : "DispatchGratisOffered",
-    "label" : "Gratis Offered"
-  } ]
+  "fields": [
+    {
+      "name": "BusinessArea",
+      "label": "Business Area"
+    },
+    {
+      "type": "date",
+      "name": "DateReceived",
+      "label": "When was the correspondence received?"
+    },
+    {
+      "name": "ComplainantCompanyName",
+      "label": "Company Name"
+    },
+    {
+      "name": "ComplainantCaseAccountNumber",
+      "label": "Case/Account Number"
+    },
+    {
+      "choices": "GRO_COMPLAINT_CATEGORIES",
+      "name": "ComplainantCategory",
+      "label": "Complaint Category"
+    },
+    {
+      "name": "ComplaintDescription",
+      "label": "Description of Complaint"
+    },
+    {
+      "type": "checkbox",
+      "name": "ComplaintPriority",
+      "label": "Priority"
+    },
+    {
+      "name": "ComplaintThirdPartyReference",
+      "label": "Third Party Reference"
+    },
+    {
+      "choices": "HMPO_COMPLAINT_CATEGORIES",
+      "name": "ComplainantCategory",
+      "label": "Complaint Category"
+    },
+    {
+      "name": "ComplainantApplicationReference",
+      "label": "Application Reference"
+    },
+    {
+      "name": "ComplainantPassportNumber",
+      "label": "Passport Number"
+    },
+    {
+      "name": "InvestigationAccept",
+      "label": "Can your team respond to this complaint?"
+    },
+    {
+      "type": "checkbox",
+      "name": "LoaReceived",
+      "label": "Letter of Authority Received"
+    },
+    {
+      "choices": [
+        {
+          "label": "Yes",
+          "value": "Yes"
+        },
+        {
+          "label": "No",
+          "value": "No"
+        }
+      ],
+      "name": "TelephoneResponse",
+      "label": "Was the case resolved by phone call?"
+    },
+    {
+      "name": "TelephoneResponseDateOfCall",
+      "label": "Date of Call",
+      "type": "date"
+    },
+    {
+      "name": "LoaRequired",
+      "label": "Is a Letter of Authority required?"
+    },
+    {
+      "name": "DispatchOutcome",
+      "label": "Dispatch Outcome"
+    },
+    {
+      "name": "ComplaintReason",
+      "label": "Complaint Reason"
+    },
+    {
+      "name": "ComplaintReason",
+      "label": "Complaint Reason"
+    },
+    {
+      "name": "DispatchGratisOffered",
+      "label": "Gratis Offered"
+    }
+  ]
 }
