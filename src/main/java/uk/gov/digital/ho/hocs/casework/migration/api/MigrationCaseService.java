@@ -2,12 +2,8 @@ package uk.gov.digital.ho.hocs.casework.migration.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
-import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 
 import java.time.LocalDate;
 import java.util.Map;
