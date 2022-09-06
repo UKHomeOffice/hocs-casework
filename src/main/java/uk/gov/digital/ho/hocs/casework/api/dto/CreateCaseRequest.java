@@ -18,8 +18,8 @@ public class CreateCaseRequest implements CreateCaseRequestInterface {
     @JsonProperty("data")
     private Map<String, String> data;
 
-    @JsonProperty("dateReceived")
-    private LocalDate dateReceived;
+    @JsonProperty("received")
+    private LocalDate dateRecieved;
 
     @JsonProperty("fromCaseUUID")
     private UUID fromCaseUUID;
