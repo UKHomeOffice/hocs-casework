@@ -11,6 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class AbstractCaseCopyStrategyTest {
 
+<<<<<<< HEAD
     private static final Map<String, String> FROM_CLOB = new HashMap<>(
         Map.of("key1", "value1", "key2", "value2", "key3", "value3", "key4", "value4"));
 
@@ -20,6 +21,23 @@ public class AbstractCaseCopyStrategyTest {
     private static final CaseData FROM_CASE = new CaseData(1L, null, null, null, null, false, FROM_CLOB, null, null,
         null, null, null, null, null, false, null, null);
 
+=======
+    private static final Map<String, String> FROM_CLOB;
+
+    private static final Map<String, String> EXISTING_CLOB;
+
+    private static final CaseData FROM_CASE = new CaseData(1L, null, null, null, null, false, FROM_CLOB, null, null,
+        null, null, null, null, null, false, null, null);
+
+    static {
+        Map<String, String> fromCaseValues = new HashMap<>(
+            Map.of("key1", "value1", "key2", "value2", "key3", "value3", "key4", "value4"));
+        Map<String, String> existingTargetValues = new HashMap<>(Map.of("exkey1", "exvalue1", "exkey2", "exvalue2"));
+        FROM_CLOB = fromCaseValues;
+        EXISTING_CLOB = existingTargetValues;
+    }
+
+>>>>>>> 1d091d9f (Reformat code with new editorconfig)
     private CaseData toCase;
 
     private AbstractCaseCopyStrategy abstractStrategy;
