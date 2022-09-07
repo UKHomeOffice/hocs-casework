@@ -13,5 +13,4 @@ public class UpdateStageTransitionNoteRequest {
     @JsonProperty("transitionNoteUUID")
     private UUID transitionNoteUUID;
 
-
 }

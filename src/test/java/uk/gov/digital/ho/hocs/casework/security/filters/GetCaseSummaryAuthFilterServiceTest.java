@@ -7,7 +7,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.api.RestrictedFieldService;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataAppealDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.ActionDataDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.AdditionalFieldDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseActionDataResponseDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.AdditionalField;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
@@ -37,8 +43,8 @@ public class GetCaseSummaryAuthFilterServiceTest {
 
     @Before
     public void setUp() {
-        when(restrictedFieldRepository.getByCaseTypeAndPermissionLevelGreaterThanEqual(any(), eq(AccessLevel.RESTRICTED_OWNER)))
-                .thenReturn(Set.of("Data3", "Data4"));
+        when(restrictedFieldRepository.getByCaseTypeAndPermissionLevelGreaterThanEqual(any(),
+            eq(AccessLevel.RESTRICTED_OWNER))).thenReturn(Set.of("Data3", "Data4"));
 
         var restrictedFieldService = new RestrictedFieldService(restrictedFieldRepository);
 
@@ -61,12 +67,8 @@ public class GetCaseSummaryAuthFilterServiceTest {
         caseDataMap.put("Data3", "Data 3");
         caseDataMap.put("Data4", "Data 4");
 
-        ResponseEntity<?> responseToFilter = ResponseEntity.ok(GetCaseResponse.from(
-                new CaseData(
-                        type, caseNumber, caseDataMap, null
-                ),
-                true
-        ));
+        ResponseEntity<?> responseToFilter = ResponseEntity.ok(
+            GetCaseResponse.from(new CaseData(type, caseNumber, caseDataMap, null), true));
 
         // WHEN
         getCaseSummaryAuthFilterService.applyFilter(responseToFilter, userAccessLevel, null);
@@ -85,36 +87,23 @@ public class GetCaseSummaryAuthFilterServiceTest {
         AdditionalField additionalField3 = new AdditionalField("Field 3", "ValField3", null, null, "field3");
         AdditionalField additionalField4 = new AdditionalField("Field 4", "ValField4", null, null, "field4");
 
-        Set<AdditionalField> additionalFields = Set.of(additionalField1, additionalField2, additionalField3, additionalField4);
+        Set<AdditionalField> additionalFields = Set.of(additionalField1, additionalField2, additionalField3,
+            additionalField4);
 
         Map<String, List<ActionDataDto>> caseActionDataMap = new HashMap<>();
 
-        ActionDataAppealDto appealDto = new ActionDataAppealDto(
-                null,
-                null,
-                "TEST_APPEAL",
-                "ACTION_LABEL",
-                null,
-                LocalDate.MAX,
-                null,
-                null,
-                "TEST NOTE - This appeal should be removed by case summary auth filter",
-                "{}",
-                null
-        );
+        ActionDataAppealDto appealDto = new ActionDataAppealDto(null, null, "TEST_APPEAL", "ACTION_LABEL", null,
+            LocalDate.MAX, null, null, "TEST NOTE - This appeal should be removed by case summary auth filter", "{}",
+            null);
 
-        caseActionDataMap.put("appeals",new ArrayList(List.of(appealDto)));
+        caseActionDataMap.put("appeals", new ArrayList(List.of(appealDto)));
 
-        CaseActionDataResponseDto caseActionData  = CaseActionDataResponseDto.from(caseActionDataMap,  List.of(), LocalDate.now(), 20);
+        CaseActionDataResponseDto caseActionData = CaseActionDataResponseDto.from(caseActionDataMap, List.of(),
+            LocalDate.now(), 20);
 
-        ResponseEntity<?> responseToFilter = ResponseEntity.ok(
-                GetCaseSummaryResponse.from(
-                        new CaseSummary(
-                                caseType, null, null,
-                                null, additionalFields, null,
-                                null, null, null,
-                                null, null, caseActionData, null)
-                ));
+        ResponseEntity<?> responseToFilter = ResponseEntity.ok(GetCaseSummaryResponse.from(
+            new CaseSummary(caseType, null, null, null, additionalFields, null, null, null, null, null, null,
+                caseActionData, null)));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;
 
@@ -122,13 +111,12 @@ public class GetCaseSummaryAuthFilterServiceTest {
         Object result = getCaseSummaryAuthFilterService.applyFilter(responseToFilter, userAccessLevel, null);
 
         // THEN
-        assertThat(result)
-                .isNotNull()
-                .isExactlyInstanceOf(ResponseEntity.class);
+        assertThat(result).isNotNull().isExactlyInstanceOf(ResponseEntity.class);
 
         ResponseEntity<?> resultResponseEntity = (ResponseEntity<?>) result;
 
-        assertThat(resultResponseEntity.getBody()).isInstanceOf(GetCaseSummaryResponse.class); // is actually protected subclass.
+        assertThat(resultResponseEntity.getBody()).isInstanceOf(
+            GetCaseSummaryResponse.class); // is actually protected subclass.
 
         GetCaseSummaryResponse getCaseSummaryResponse = (GetCaseSummaryResponse) resultResponseEntity.getBody();
 
@@ -147,36 +135,23 @@ public class GetCaseSummaryAuthFilterServiceTest {
         AdditionalField additionalField3 = new AdditionalField("Field 3", "ValField3", null, null, "Data3");
         AdditionalField additionalField4 = new AdditionalField("Field 4", "ValField4", null, null, "Data4");
 
-        Set<AdditionalField> additionalFields = Set.of(additionalField1, additionalField2, additionalField3, additionalField4);
+        Set<AdditionalField> additionalFields = Set.of(additionalField1, additionalField2, additionalField3,
+            additionalField4);
 
         Map<String, List<ActionDataDto>> caseActionDataMap = new HashMap<>();
 
-        ActionDataAppealDto appealDto = new ActionDataAppealDto(
-                null,
-                null,
-                "TEST_APPEAL",
-                "ACTION_LABEL",
-                null,
-                LocalDate.MAX,
-                null,
-                null,
-                "TEST NOTE - This appeal should be removed by case summary auth filter",
-                "{}",
-                null
-        );
+        ActionDataAppealDto appealDto = new ActionDataAppealDto(null, null, "TEST_APPEAL", "ACTION_LABEL", null,
+            LocalDate.MAX, null, null, "TEST NOTE - This appeal should be removed by case summary auth filter", "{}",
+            null);
 
-        caseActionDataMap.put("appeals",new ArrayList(List.of(appealDto)));
+        caseActionDataMap.put("appeals", new ArrayList(List.of(appealDto)));
 
-        CaseActionDataResponseDto caseActionData  = CaseActionDataResponseDto.from(caseActionDataMap,  List.of(), LocalDate.now(), 20);
+        CaseActionDataResponseDto caseActionData = CaseActionDataResponseDto.from(caseActionDataMap, List.of(),
+            LocalDate.now(), 20);
 
-        ResponseEntity<?> responseToFilter = ResponseEntity.ok(
-                GetCaseSummaryResponse.from(
-                        new CaseSummary(
-                                caseType, null, null,
-                                null, additionalFields, null,
-                                null, null, null,
-                                null, null, caseActionData, null)
-                ));
+        ResponseEntity<?> responseToFilter = ResponseEntity.ok(GetCaseSummaryResponse.from(
+            new CaseSummary(caseType, null, null, null, additionalFields, null, null, null, null, null, null,
+                caseActionData, null)));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;
 
@@ -184,20 +159,22 @@ public class GetCaseSummaryAuthFilterServiceTest {
         Object result = getCaseSummaryAuthFilterService.applyFilter(responseToFilter, userAccessLevel, null);
 
         // THEN
-        assertThat(result)
-                .isNotNull()
-                .isExactlyInstanceOf(ResponseEntity.class);
+        assertThat(result).isNotNull().isExactlyInstanceOf(ResponseEntity.class);
 
         ResponseEntity<?> resultResponseEntity = (ResponseEntity<?>) result;
 
-        assertThat(resultResponseEntity.getBody()).isInstanceOf(GetCaseSummaryResponse.class); // is actually protected subclass.
+        assertThat(resultResponseEntity.getBody()).isInstanceOf(
+            GetCaseSummaryResponse.class); // is actually protected subclass.
 
         GetCaseSummaryResponse getCaseSummaryResponse = (GetCaseSummaryResponse) resultResponseEntity.getBody();
 
         assertThat(getCaseSummaryResponse.getAdditionalFields().size()).isEqualTo(2);
         assertThat(getCaseSummaryResponse.getActiveStages().size()).isEqualTo(0);
-        assertThat(getCaseSummaryResponse.getAdditionalFields().stream().map(AdditionalFieldDto::getName)).contains("Data1", "Data2");
-        assertThat(getCaseSummaryResponse.getAdditionalFields().stream().map(AdditionalFieldDto::getName)).doesNotContain("Data3", "Data4");
+        assertThat(getCaseSummaryResponse.getAdditionalFields().stream().map(AdditionalFieldDto::getName)).contains(
+            "Data1", "Data2");
+        assertThat(
+            getCaseSummaryResponse.getAdditionalFields().stream().map(AdditionalFieldDto::getName)).doesNotContain(
+            "Data3", "Data4");
         assertThat(getCaseSummaryResponse.getActions().getCaseActionData().size()).isEqualTo(0);
     }
 

@@ -5,7 +5,9 @@ import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 public interface ApplicationExceptions {
 
     class EntityCreationException extends RuntimeException {
+
         private final LogEvent event;
+
         private final LogEvent exception;
 
         public EntityCreationException(String msg, LogEvent event, Object... args) {
@@ -24,11 +26,14 @@ public interface ApplicationExceptions {
             return event;
         }
 
-        public LogEvent getException() { return  exception; }
+        public LogEvent getException() {return exception;}
+
     }
 
     class EntityNotFoundException extends RuntimeException {
+
         private final LogEvent event;
+
         private final LogEvent exception;
 
         public EntityNotFoundException(String msg, LogEvent event, Object... args) {
@@ -47,7 +52,8 @@ public interface ApplicationExceptions {
             return event;
         }
 
-        public LogEvent getException() { return  exception; }
+        public LogEvent getException() {return exception;}
+
     }
 
     class InvalidPriorityTypeException extends RuntimeException {
@@ -55,27 +61,33 @@ public interface ApplicationExceptions {
         public InvalidPriorityTypeException(String msg, Object... args) {
             super(String.format(msg, args));
         }
+
     }
 
     class TeamAllocationException extends RuntimeException {
+
         private final LogEvent event;
+
         private final LogEvent exception;
 
-        public TeamAllocationException( String msg, LogEvent event, Object... args) {
+        public TeamAllocationException(String msg, LogEvent event, Object... args) {
             super(String.format(msg, args));
             this.event = event;
             this.exception = null;
         }
 
-        public TeamAllocationException( String msg, LogEvent event, LogEvent exception, Object... args) {
+        public TeamAllocationException(String msg, LogEvent event, LogEvent exception, Object... args) {
             super(String.format(msg, args));
             this.event = event;
             this.exception = exception;
         }
+
     }
 
     class DataMappingException extends RuntimeException {
+
         private final LogEvent event;
+
         private final LogEvent exception;
 
         public DataMappingException(String msg, LogEvent event, LogEvent exception, Object... args) {
@@ -83,13 +95,16 @@ public interface ApplicationExceptions {
             this.event = event;
             this.exception = exception;
         }
+
     }
 
     class ConfigFileReadException extends RuntimeException {
+
         private final LogEvent event;
+
         private final LogEvent exception;
 
-        public ConfigFileReadException( String msg, LogEvent event, Object... args) {
+        public ConfigFileReadException(String msg, LogEvent event, Object... args) {
             super(String.format(msg, args));
             this.event = event;
             this.exception = null;
@@ -99,14 +114,17 @@ public interface ApplicationExceptions {
             return event;
         }
 
-        public LogEvent getException() { return  exception; }
+        public LogEvent getException() {return exception;}
+
     }
 
     class ConfigFolderReadException extends RuntimeException {
+
         private final LogEvent event;
+
         private final LogEvent exception;
 
-        public ConfigFolderReadException( String msg, LogEvent event, Object... args) {
+        public ConfigFolderReadException(String msg, LogEvent event, Object... args) {
             super(String.format(msg, args));
             this.event = event;
             this.exception = null;
@@ -116,6 +134,8 @@ public interface ApplicationExceptions {
             return event;
         }
 
-        public LogEvent getException() { return exception; }
+        public LogEvent getException() {return exception;}
+
     }
+
 }

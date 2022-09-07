@@ -21,7 +21,10 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InfoClientTest {
@@ -39,8 +42,10 @@ public class InfoClientTest {
     @Test
     public void getAllCorrespondentType() {
         CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();
-        GetCorrespondentTypeResponse getCorrespondentType = new GetCorrespondentTypeResponse(new HashSet<>(Arrays.asList(correspondentTypeDto)));
-        when(restHelper.get("infoService", "/correspondentType", GetCorrespondentTypeResponse.class)).thenReturn(getCorrespondentType);
+        GetCorrespondentTypeResponse getCorrespondentType = new GetCorrespondentTypeResponse(
+            new HashSet<>(Arrays.asList(correspondentTypeDto)));
+        when(restHelper.get("infoService", "/correspondentType", GetCorrespondentTypeResponse.class)).thenReturn(
+            getCorrespondentType);
 
         GetCorrespondentTypeResponse getCorrespondentTypeResponse = infoClient.getAllCorrespondentType();
 
@@ -56,8 +61,10 @@ public class InfoClientTest {
     public void getCorrespondentType() {
 
         CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();
-        GetCorrespondentTypeResponse getCorrespondentType = new GetCorrespondentTypeResponse(new HashSet<>(Arrays.asList(correspondentTypeDto)));
-        when(restHelper.get("infoService", "/correspondentType/CASE_TYPE", GetCorrespondentTypeResponse.class)).thenReturn(getCorrespondentType);
+        GetCorrespondentTypeResponse getCorrespondentType = new GetCorrespondentTypeResponse(
+            new HashSet<>(Arrays.asList(correspondentTypeDto)));
+        when(restHelper.get("infoService", "/correspondentType/CASE_TYPE",
+            GetCorrespondentTypeResponse.class)).thenReturn(getCorrespondentType);
 
         GetCorrespondentTypeResponse getCorrespondentTypeResponse = infoClient.getCorrespondentType("CASE_TYPE");
 
@@ -121,8 +128,8 @@ public class InfoClientTest {
     @Test
     public void getDocumentTags() {
         List<String> tags = new ArrayList(Arrays.asList("tag"));
-        when(restHelper.get("infoService", "/caseType/TEST/documentTags", new ParameterizedTypeReference<List<String>>() {
-        })).thenReturn(tags);
+        when(restHelper.get("infoService", "/caseType/TEST/documentTags",
+            new ParameterizedTypeReference<List<String>>() {})).thenReturn(tags);
 
         List<String> response = infoClient.getDocumentTags("TEST");
 
@@ -136,15 +143,15 @@ public class InfoClientTest {
         EntityDto<EntityTotalDto> entityDto = new EntityDto<EntityTotalDto>("simpleName", entityTotalDto);
         List<EntityDto<EntityTotalDto>> entityListTotals = new ArrayList();
         entityListTotals.add(entityDto);
-        when(restHelper.get("infoService", "/entity/list/listName", new ParameterizedTypeReference<List<EntityDto<EntityTotalDto>>>() {
-        })).thenReturn(entityListTotals);
+        when(restHelper.get("infoService", "/entity/list/listName",
+            new ParameterizedTypeReference<List<EntityDto<EntityTotalDto>>>() {})).thenReturn(entityListTotals);
 
         List<EntityDto<EntityTotalDto>> response = infoClient.getEntityListTotals("listName");
 
         assertThat(response).isNotNull();
         assertThat(response.size()).isEqualTo(1);
-        verify(restHelper).get("infoService", "/entity/list/listName", new ParameterizedTypeReference<List<EntityDto<EntityTotalDto>>>() {
-        });
+        verify(restHelper).get("infoService", "/entity/list/listName",
+            new ParameterizedTypeReference<List<EntityDto<EntityTotalDto>>>() {});
         verifyNoMoreInteractions(restHelper);
     }
 
@@ -164,41 +171,42 @@ public class InfoClientTest {
 
     @Test
     public void getUsersForTeam() {
-        List<UserDto> users = List.of(new UserDto(UUID.randomUUID().toString(), "username", "firstName", "lastName", "email@test.com"));
+        List<UserDto> users = List.of(
+            new UserDto(UUID.randomUUID().toString(), "username", "firstName", "lastName", "email@test.com"));
 
         UUID teamUUID = UUID.randomUUID();
-        when(restHelper.get("infoService", "/teams/" + teamUUID.toString() + "/members", new ParameterizedTypeReference<List<UserDto>>() {
-        })).thenReturn(users);
+        when(restHelper.get("infoService", "/teams/" + teamUUID.toString() + "/members",
+            new ParameterizedTypeReference<List<UserDto>>() {})).thenReturn(users);
 
         List<UserDto> response = infoClient.getUsersForTeam(teamUUID);
 
         assertThat(response).isNotNull();
         assertThat(response).isEqualTo(users);
 
-        verify(restHelper).get("infoService", "/teams/" + teamUUID.toString() + "/members", new ParameterizedTypeReference<List<UserDto>>() {
-        });
+        verify(restHelper).get("infoService", "/teams/" + teamUUID.toString() + "/members",
+            new ParameterizedTypeReference<List<UserDto>>() {});
         verifyNoMoreInteractions(restHelper);
     }
 
     @Test
     public void getUsersForTeamByStage() {
-        List<UserDto> users = List.of(new UserDto(UUID.randomUUID().toString(), "username", "firstName", "lastName", "email@test.com"));
+        List<UserDto> users = List.of(
+            new UserDto(UUID.randomUUID().toString(), "username", "firstName", "lastName", "email@test.com"));
 
         UUID caseUUID = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
-        when(restHelper.get("infoService", "/case/" + caseUUID + "/stage/" + stageUUID + "/team/members", new ParameterizedTypeReference<List<UserDto>>() {
-        })).thenReturn(users);
+        when(restHelper.get("infoService", "/case/" + caseUUID + "/stage/" + stageUUID + "/team/members",
+            new ParameterizedTypeReference<List<UserDto>>() {})).thenReturn(users);
 
         List<UserDto> response = infoClient.getUsersForTeamByStage(caseUUID, stageUUID);
 
         assertThat(response).isNotNull();
         assertThat(response).isEqualTo(users);
 
-        verify(restHelper).get("infoService", "/case/" + caseUUID + "/stage/" + stageUUID + "/team/members", new ParameterizedTypeReference<List<UserDto>>() {
-        });
+        verify(restHelper).get("infoService", "/case/" + caseUUID + "/stage/" + stageUUID + "/team/members",
+            new ParameterizedTypeReference<List<UserDto>>() {});
         verifyNoMoreInteractions(restHelper);
     }
-
 
     @Test
     public void getCaseTypeActionByUuid() {
@@ -207,18 +215,10 @@ public class InfoClientTest {
         UUID actionTypeUuid = UUID.randomUUID();
         String caseDataType = "CT1";
 
-        CaseTypeActionDto mockCaseTypeActionDto =
-                new CaseTypeActionDto(actionTypeUuid,
-                        UUID.randomUUID(),
-                        caseDataType,
-                        null,
-                        null,
-                        null,
-                        1,
-                        10,
-                        true,
-                        null);
-        when(restHelper.get("infoService", "/caseType/" + caseDataType + "/actions/" + actionTypeUuid, CaseTypeActionDto.class)).thenReturn(mockCaseTypeActionDto);
+        CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(actionTypeUuid, UUID.randomUUID(), caseDataType,
+            null, null, null, 1, 10, true, null);
+        when(restHelper.get("infoService", "/caseType/" + caseDataType + "/actions/" + actionTypeUuid,
+            CaseTypeActionDto.class)).thenReturn(mockCaseTypeActionDto);
 
         // WHEN
         CaseTypeActionDto response = infoClient.getCaseTypeActionByUuid(caseDataType, actionTypeUuid);
@@ -260,4 +260,5 @@ public class InfoClientTest {
         verify(restHelper).get("infoService", url, CaseConfig.class);
         verifyNoMoreInteractions(restHelper);
     }
+
 }

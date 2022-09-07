@@ -5,9 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.Objects;
 
 @NoArgsConstructor
@@ -25,7 +32,7 @@ public class CaseDeadlineExtension {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "case_uuid", referencedColumnName="uuid")
+    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
     private CaseData caseData;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -34,7 +41,9 @@ public class CaseDeadlineExtension {
 
     @Getter
     @Column(name = "created")
-    private LocalDateTime created = LocalDateTime.now();;
+    private LocalDateTime created = LocalDateTime.now();
+
+    ;
 
     @Getter
     @Setter
@@ -49,18 +58,18 @@ public class CaseDeadlineExtension {
 
     @Override
     public boolean equals(Object other) {
-        if (this == other) return true;
+        if (this == other) {return true;}
 
-        if (other == null || getClass() != other.getClass())
-            return false;
+        if (other == null || getClass() != other.getClass()) {return false;}
 
         CaseDeadlineExtension otherCaseDeadlineExtension = (CaseDeadlineExtension) other;
-        return Objects.equals(caseData, otherCaseDeadlineExtension.caseData) &&
-                Objects.equals(caseDeadlineExtensionType, otherCaseDeadlineExtension.caseDeadlineExtensionType);
+        return Objects.equals(caseData, otherCaseDeadlineExtension.caseData) && Objects.equals(
+            caseDeadlineExtensionType, otherCaseDeadlineExtension.caseDeadlineExtensionType);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(caseData, caseDeadlineExtensionType);
     }
+
 }

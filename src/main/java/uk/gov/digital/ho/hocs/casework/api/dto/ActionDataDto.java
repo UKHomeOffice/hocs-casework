@@ -10,17 +10,13 @@ import lombok.ToString;
 
 import java.util.UUID;
 
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        property = "actionType")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = ActionDataDeadlineExtensionInboundDto.class, name = "EXTENSION"),
-        @JsonSubTypes.Type(value = ActionDataAppealDto.class, name = "APPEAL"),
-        @JsonSubTypes.Type(value = ActionDataDeadlineExtensionOutboundDto.class, name = "EXTENSION_OUT"),
-        @JsonSubTypes.Type(value = ActionDataExternalInterestInboundDto.class, name = "RECORD_INTEREST"),
-        @JsonSubTypes.Type(value = ActionDataExternalInterestOutboundDto.class, name = "INTEREST_OUT"),
-        @JsonSubTypes.Type(value = ActionDataSuspendDto.class, name = "SUSPEND")
-})
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "actionType")
+@JsonSubTypes({ @JsonSubTypes.Type(value = ActionDataDeadlineExtensionInboundDto.class, name = "EXTENSION"),
+    @JsonSubTypes.Type(value = ActionDataAppealDto.class, name = "APPEAL"),
+    @JsonSubTypes.Type(value = ActionDataDeadlineExtensionOutboundDto.class, name = "EXTENSION_OUT"),
+    @JsonSubTypes.Type(value = ActionDataExternalInterestInboundDto.class, name = "RECORD_INTEREST"),
+    @JsonSubTypes.Type(value = ActionDataExternalInterestOutboundDto.class, name = "INTEREST_OUT"),
+    @JsonSubTypes.Type(value = ActionDataSuspendDto.class, name = "SUSPEND") })
 @Getter
 @Setter
 @ToString
@@ -29,7 +25,11 @@ import java.util.UUID;
 public abstract class ActionDataDto {
 
     private UUID uuid;
+
     private UUID caseTypeActionUuid;
+
     private String caseSubtype;
+
     private String caseTypeActionLabel;
+
 }

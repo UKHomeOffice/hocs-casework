@@ -5,24 +5,38 @@ import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseActionDataResponseDto;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 @AllArgsConstructor
 @Getter
 public class CaseSummary {
 
     private String type;
+
     private LocalDate createdDate;
+
     private LocalDate caseDeadline;
+
     private Map<String, LocalDate> stageDeadlines;
+
     private Set<AdditionalField> additionalFields;
+
     private Correspondent primaryCorrespondent;
+
     private Topic primaryTopic;
+
     private Set<ActiveStage> activeStages;
+
     private String previousCaseReference;
+
     private UUID previousCaseUUID;
+
     private UUID previousCaseStageUUID;
+
     private CaseActionDataResponseDto actions;
+
     private String suspended;
 
     public CaseSummary(CaseData caseData) {

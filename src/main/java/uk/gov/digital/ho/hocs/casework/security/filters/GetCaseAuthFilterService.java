@@ -26,15 +26,17 @@ public class GetCaseAuthFilterService implements AuthFilter {
     }
 
     @Override
-    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
+    public Object applyFilter(ResponseEntity<?> responseEntityToFilter,
+                              AccessLevel userAccessLevel,
+                              Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
         GetCaseResponse response = verifyAndReturnAsObjectType(responseEntityToFilter, GetCaseResponse.class);
 
-        if (response == null  || response.getType() == null) {
+        if (response == null || response.getType() == null) {
             return responseEntityToFilter;
         }
 
-        restrictedFieldService
-                .removeRestrictedFieldsFromCaseData(response.getType(), userAccessLevel, response.getData());
+        restrictedFieldService.removeRestrictedFieldsFromCaseData(response.getType(), userAccessLevel,
+            response.getData());
 
         return new ResponseEntity<>(response, responseEntityToFilter.getStatusCode());
     }

@@ -10,15 +10,17 @@ import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 @EqualsAndHashCode
 public class PermissionDto {
 
-    @JsonCreator
-    public PermissionDto(@JsonProperty("caseTypeCode") String caseTypeCode, @JsonProperty("accessLevel") AccessLevel accessLevel) {
-        this.caseTypeCode = caseTypeCode;
-        this.accessLevel = accessLevel;
-    }
     @JsonProperty("caseTypeCode")
     private String caseTypeCode;
 
     @JsonProperty("accessLevel")
     private AccessLevel accessLevel;
+
+    @JsonCreator
+    public PermissionDto(@JsonProperty("caseTypeCode") String caseTypeCode,
+                         @JsonProperty("accessLevel") AccessLevel accessLevel) {
+        this.caseTypeCode = caseTypeCode;
+        this.accessLevel = accessLevel;
+    }
 
 }

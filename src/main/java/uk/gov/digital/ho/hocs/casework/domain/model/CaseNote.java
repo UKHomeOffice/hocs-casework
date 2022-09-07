@@ -6,7 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -68,7 +73,8 @@ public class CaseNote implements Serializable {
     public CaseNote(UUID caseUUID, String caseNoteType, String text, String author) {
         if (caseUUID == null || caseNoteType == null || text == null) {
             throw new ApplicationExceptions.EntityCreationException(
-                    String.format("Cannot create case note(%s,%s,%s).", caseUUID, caseNoteType, text), CASE_NOTE_CREATE_FAILURE);
+                String.format("Cannot create case note(%s,%s,%s).", caseUUID, caseNoteType, text),
+                CASE_NOTE_CREATE_FAILURE);
         }
 
         this.uuid = UUID.randomUUID();
@@ -79,6 +85,5 @@ public class CaseNote implements Serializable {
         this.author = author;
         this.deleted = false;
     }
-
 
 }

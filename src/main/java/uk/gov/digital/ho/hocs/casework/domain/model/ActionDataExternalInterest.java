@@ -69,7 +69,6 @@ public class ActionDataExternalInterest implements Serializable {
         this.detailsOfInterest = detailsOfInterest;
     }
 
-
     @PrePersist
     private void setCreatedAndLastUpdatedTimestamps() {
         this.createTimestamp = LocalDateTime.now();
@@ -80,4 +79,5 @@ public class ActionDataExternalInterest implements Serializable {
     private void updateLastUpdatedTimestamp() {
         this.lastUpdateTimestamp = LocalDateTime.now();
     }
+
 }

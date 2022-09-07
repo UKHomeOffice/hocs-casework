@@ -28,10 +28,14 @@ import static uk.gov.digital.ho.hocs.casework.contributions.Contribution.Contrib
 public class ContributionsProcessorImpl implements ContributionsProcessor {
 
     private final SomuItemService somuItemService;
+
     private final ObjectMapper objectMapper;
+
     private final InfoClient infoClient;
 
-    public ContributionsProcessorImpl(ObjectMapper objectMapper, SomuItemService somuItemService, InfoClient infoClient) {
+    public ContributionsProcessorImpl(ObjectMapper objectMapper,
+                                      SomuItemService somuItemService,
+                                      InfoClient infoClient) {
         this.somuItemService = somuItemService;
         this.objectMapper = objectMapper;
         this.infoClient = infoClient;
@@ -39,85 +43,68 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
 
     @Override
     public void processContributionsForStages(Set<StageWithCaseData> stages) {
-        Set<SomuItem> allSomuItems =
-                somuItemService.getCaseItemsByCaseUuids(stages.stream().map(BaseStage::getCaseUUID).collect(Collectors.toSet()));
+        Set<SomuItem> allSomuItems = somuItemService.getCaseItemsByCaseUuids(
+            stages.stream().map(BaseStage::getCaseUUID).collect(Collectors.toSet()));
 
         if (allSomuItems.size() == 0) {
             return;
         }
 
-        for (StageWithCaseData stage :
-                stages) {
+        for (StageWithCaseData stage : stages) {
             if (infoClient.getStageContributions(stage.getStageType())) {
-                Set<Contribution> contributions =
-                        allSomuItems.stream()
-                                .filter(somuItem -> somuItem.getCaseUuid().equals(stage.getCaseUUID()))
-                                .map(somuItem -> {
-                                    try {
-                                        return objectMapper.readValue(somuItem.getData(), Contribution.class);
-                                    } catch (JsonProcessingException e) {
-                                        log.error(
-                                                String.format("Failed to process somu item %s for reason: %s",
-                                                    somuItem.getUuid(), e.getMessage()),
-                                                e);
-                                    }
-                                    return null;
-                                })
-                                .filter(Objects::nonNull)
-                                .filter(Contribution::isContribution).collect(Collectors.toSet());
+                Set<Contribution> contributions = allSomuItems.stream().filter(
+                    somuItem -> somuItem.getCaseUuid().equals(stage.getCaseUUID())).map(somuItem -> {
+                    try {
+                        return objectMapper.readValue(somuItem.getData(), Contribution.class);
+                    } catch (JsonProcessingException e) {
+                        log.error(String.format("Failed to process somu item %s for reason: %s", somuItem.getUuid(),
+                            e.getMessage()), e);
+                    }
+                    return null;
+                }).filter(Objects::nonNull).filter(Contribution::isContribution).collect(Collectors.toSet());
 
                 if (contributions.size() == 0) {
                     continue;
                 }
 
-                calculateDueContributionDate(contributions)
-                        .ifPresent(ld -> {
-                            log.info("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
-                            stage.setDueContribution(ld.toString());
-                        });
+                calculateDueContributionDate(contributions).ifPresent(ld -> {
+                    log.info("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
+                    stage.setDueContribution(ld.toString());
+                });
 
-                highestContributionStatus(contributions)
-                        .ifPresent(cs -> {
-                            log.info("Setting contribution status {}, for caseId {}", cs.getDisplayedStatus(), stage.getCaseUUID());
-                            stage.setContributions(cs.getDisplayedStatus());
-                        });
+                highestContributionStatus(contributions).ifPresent(cs -> {
+                    log.info("Setting contribution status {}, for caseId {}", cs.getDisplayedStatus(),
+                        stage.getCaseUUID());
+                    stage.setContributions(cs.getDisplayedStatus());
+                });
             }
         }
     }
 
     Optional<LocalDate> calculateDueContributionDate(Set<Contribution> contributionSomuItems) {
-        return contributionSomuItems
-                .stream()
-                .filter(contribution -> contribution.getStatus() == NONE)
-                .map(Contribution::getDueDate)
-                .sorted()
-                .findFirst();
+        return contributionSomuItems.stream().filter(contribution -> contribution.getStatus() == NONE).map(
+            Contribution::getDueDate).sorted().findFirst();
     }
 
     Optional<Contribution.ContributionStatus> highestContributionStatus(Set<Contribution> contributions) {
         return highestContributionStatus(contributions, LocalDate.now());
     }
 
-    Optional<Contribution.ContributionStatus> highestContributionStatus(Set<Contribution> contributionSomuItems, LocalDate now) {
-        return contributionSomuItems
-                .stream()
-                .map(csi -> {
-                    Contribution.ContributionStatus contributionStatus = csi.getStatus();
-                    if (contributionStatus.equals(CONTRIBUTION_RECEIVED) ||
-                        contributionStatus.equals(CONTRIBUTION_CANCELLED)) {
-                        return contributionStatus;
-                    }
+    Optional<Contribution.ContributionStatus> highestContributionStatus(Set<Contribution> contributionSomuItems,
+                                                                        LocalDate now) {
+        return contributionSomuItems.stream().map(csi -> {
+            Contribution.ContributionStatus contributionStatus = csi.getStatus();
+            if (contributionStatus.equals(CONTRIBUTION_RECEIVED) || contributionStatus.equals(CONTRIBUTION_CANCELLED)) {
+                return contributionStatus;
+            }
 
-                    LocalDate contributionDueDate = csi.getDueDate();
-                    if (contributionDueDate.isBefore(now)) {
-                        return CONTRIBUTION_OVERDUE;
-                    }
+            LocalDate contributionDueDate = csi.getDueDate();
+            if (contributionDueDate.isBefore(now)) {
+                return CONTRIBUTION_OVERDUE;
+            }
 
-                    return CONTRIBUTION_DUE;
-                })
-                .max(Comparator.naturalOrder());
+            return CONTRIBUTION_DUE;
+        }).max(Comparator.naturalOrder());
     }
-
-
 
 }

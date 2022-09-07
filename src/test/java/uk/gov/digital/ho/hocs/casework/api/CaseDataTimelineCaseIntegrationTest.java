@@ -49,45 +49,41 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:notes/beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
-@Sql(scripts = "classpath:notes/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:notes/afterTest.sql",
+     config = @SqlConfig(transactionMode = ISOLATED),
+     executionPhase = AFTER_TEST_METHOD)
 @ActiveProfiles("local")
 public class CaseDataTimelineCaseIntegrationTest {
-    private MockRestServiceServer mockService;
-    TestRestTemplate testRestTemplate = new TestRestTemplate();
 
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-    ObjectMapper mapper = new ObjectMapper();
+    private static final CaseDataType CASE_DATA_TYPE = CaseDataTypeFactory.from("TEST", "a1");
 
     private final UUID CASE_UUID = UUID.fromString("fbdbaeab-6719-4e3a-a221-d061dde469a1");
 
     private final UUID INVALID_CASE_UUID = UUID.fromString("89334528-7769-2db4-b432-456091f132a1");
 
-    private static final CaseDataType CASE_DATA_TYPE = CaseDataTypeFactory.from("TEST", "a1");
+    TestRestTemplate testRestTemplate = new TestRestTemplate();
+
+    @LocalServerPort
+    int port;
+
+    ObjectMapper mapper = new ObjectMapper();
+
+    private MockRestServiceServer mockService;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Before
     public void setup() throws IOException {
         mockService = buildMockService(restTemplate);
-        mockService
-                .expect(requestTo("http://localhost:8085/caseType"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
-        mockService
-                .expect(requestTo("http://localhost:8085/caseType"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
-        mockService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
-        mockService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+        mockService.expect(requestTo("http://localhost:8085/caseType")).andExpect(method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
+        mockService.expect(requestTo("http://localhost:8085/caseType")).andExpect(method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
+        mockService.expect(requestTo("http://localhost:8085/caseType/shortCode/a1")).andExpect(method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+        mockService.expect(requestTo("http://localhost:8085/caseType/shortCode/a1")).andExpect(method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
         mapper.registerModule(new JavaTimeModule());
 
     }
@@ -101,21 +97,15 @@ public class CaseDataTimelineCaseIntegrationTest {
     @Test
     public void shouldReturnCaseTimeline() throws JsonProcessingException {
         setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
-        GetAuditListResponse auditResponse = new GetAuditListResponse(Set.of(new GetAuditResponse(UUID.randomUUID(),
-        CASE_UUID,
-                null,
-                "correlation Id",
-                "hocs-casework","",
-                "namespace", ZonedDateTime.now(), EventType.CASE_CREATED.toString(),
-                "user")));
+        GetAuditListResponse auditResponse = new GetAuditListResponse(Set.of(
+            new GetAuditResponse(UUID.randomUUID(), CASE_UUID, null, "correlation Id", "hocs-casework", "", "namespace",
+                ZonedDateTime.now(), EventType.CASE_CREATED.toString(), "user")));
 
-        mockService
-                .expect(requestTo(new StringStartsWith("http://localhost:8087/")))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(auditResponse), MediaType.APPLICATION_JSON));
+        mockService.expect(requestTo(new StringStartsWith("http://localhost:8087/"))).andExpect(method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(auditResponse), MediaType.APPLICATION_JSON));
 
-        ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/timeline", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+        ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/timeline",
+            GET, new HttpEntity(createValidAuthHeaders()), String.class);
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
@@ -137,12 +127,12 @@ public class CaseDataTimelineCaseIntegrationTest {
         Set<TeamDto> teamDtos = new HashSet<>();
         Set<PermissionDto> permissionDtos = new HashSet<>();
         permissionDtos.add(new PermissionDto(caseType, AccessLevel.from(permission)));
-        TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissionDtos);
+        TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true,
+            permissionDtos);
         teamDtos.add(teamDto);
 
-        mockService
-                .expect(requestTo("http://localhost:8085/team"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
+        mockService.expect(requestTo("http://localhost:8085/team")).andExpect(method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
     }
+
 }

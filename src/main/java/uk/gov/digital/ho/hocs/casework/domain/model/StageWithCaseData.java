@@ -4,14 +4,20 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,23 +26,23 @@ import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
 
-@TypeDefs({
-        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
-})
+@TypeDefs({ @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class) })
 @Entity
 @Table(name = "stage")
 public class StageWithCaseData extends BaseStage {
 
     public static final String DCU_MIN_INITIAL_DRAFT = "DCU_MIN_INITIAL_DRAFT";
+
     public static final String DCU_TRO_INITIAL_DRAFT = "DCU_TRO_INITIAL_DRAFT";
+
     public static final String DCU_DTEN_INITIAL_DRAFT = "DCU_DTEN_INITIAL_DRAFT";
+
     public static final String OFFLINE_QA_USER = "OfflineQaUser";
 
     @Getter
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "transition_note_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
     private CaseNote transitionNote;
-
 
     @Getter
     @Column(name = "case_reference", insertable = false, updatable = false)
@@ -52,7 +58,6 @@ public class StageWithCaseData extends BaseStage {
     @Type(type = "jsonb")
     @Column(name = "data", columnDefinition = "jsonb", insertable = false, updatable = false)
     private Map<String, String> data;
-
 
     @Getter
     @Column(name = "case_created", insertable = false, updatable = false)
@@ -118,7 +123,8 @@ public class StageWithCaseData extends BaseStage {
 
     public StageWithCaseData(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, UUID transitionNoteUUID) {
         if (caseUUID == null || stageType == null) {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
+            throw new ApplicationExceptions.EntityCreationException(
+                String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
         }
 
         this.uuid = UUID.randomUUID();

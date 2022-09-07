@@ -29,6 +29,8 @@ public class GetTopicResponse {
     private UUID topicUUID;
 
     public static GetTopicResponse from(Topic topic) {
-        return new GetTopicResponse(topic.getUuid(), topic.getCreated(), topic.getCaseUUID(), topic.getText(), topic.getTextUUID());
+        return new GetTopicResponse(topic.getUuid(), topic.getCreated(), topic.getCaseUUID(), topic.getText(),
+            topic.getTextUUID());
     }
+
 }

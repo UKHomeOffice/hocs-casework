@@ -4,24 +4,36 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.Summary;
 import uk.gov.digital.ho.hocs.casework.domain.repository.SummaryRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.*;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.OVERDUE_TEAM_CASES;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.UNALLOCATED_TEAM_CASES;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.USERS_OVERDUE_TEAM_CASES;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.USERS_TEAM_CASES;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_EMPTY;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_RETRIEVED;
 
 @Slf4j
 @Service
 public class DashboardService {
 
     private final DashboardSummaryFactory dashboardSummaryFactory;
+
     private final RequestData requestData;
+
     private final SummaryRepository summaryRepository;
+
     private final UserPermissionsService userPermissionsService;
 
     public DashboardService(DashboardSummaryFactory dashboardSummaryFactory,
@@ -51,13 +63,12 @@ public class DashboardService {
         List<Summary> unallocatedCasesSummary = summaryRepository.findUnallocatedCasesByTeam(dashboardTeams);
         List<Summary> overdueCasesSummary = summaryRepository.findOverdueCasesByTeam(dashboardTeams);
         List<Summary> usersCasesSummary = summaryRepository.findUserCasesInTeams(dashboardTeams, requestData.userId());
-        List<Summary> usersOverdueCasesSummary = summaryRepository.findOverdueUserCasesInTeams(dashboardTeams, requestData.userId());
+        List<Summary> usersOverdueCasesSummary = summaryRepository.findOverdueUserCasesInTeams(dashboardTeams,
+            requestData.userId());
 
         var zippedMap = dashboardSummaryFactory.getZippedSummary(casesSummaries,
-                Map.of(UNALLOCATED_TEAM_CASES, unallocatedCasesSummary,
-                        OVERDUE_TEAM_CASES, overdueCasesSummary,
-                        USERS_TEAM_CASES, usersCasesSummary,
-                        USERS_OVERDUE_TEAM_CASES, usersOverdueCasesSummary));
+            Map.of(UNALLOCATED_TEAM_CASES, unallocatedCasesSummary, OVERDUE_TEAM_CASES, overdueCasesSummary,
+                USERS_TEAM_CASES, usersCasesSummary, USERS_OVERDUE_TEAM_CASES, usersOverdueCasesSummary));
 
         log.info("Returning {} Stages", zippedMap.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
 

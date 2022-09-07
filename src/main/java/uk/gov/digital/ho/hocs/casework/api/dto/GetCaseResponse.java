@@ -14,7 +14,11 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.api.CaseDataService.CASE_UUID_PATTERN;
 
@@ -74,21 +78,11 @@ public class GetCaseResponse {
             }
         }
 
-        return new GetCaseResponse(
-                caseData.getUuid(),
-                ZonedDateTime.of(caseData.getCreated(), ZoneOffset.UTC),
-                caseData.getType(),
-                caseData.getReference(),
-                populateFields(caseData, full),
-                caseData.getPrimaryTopicUUID(),
-                populateTopic(caseData.getPrimaryTopic(), full),
-                caseData.getPrimaryCorrespondentUUID(),
-                populateCorrespondent(caseData.getPrimaryCorrespondent(), full),
-                caseData.getCaseDeadline(),
-                caseData.getCaseDeadlineWarning(),
-                caseData.getDateReceived(),
-                stages,
-                caseData.isCompleted());
+        return new GetCaseResponse(caseData.getUuid(), ZonedDateTime.of(caseData.getCreated(), ZoneOffset.UTC),
+            caseData.getType(), caseData.getReference(), populateFields(caseData, full), caseData.getPrimaryTopicUUID(),
+            populateTopic(caseData.getPrimaryTopic(), full), caseData.getPrimaryCorrespondentUUID(),
+            populateCorrespondent(caseData.getPrimaryCorrespondent(), full), caseData.getCaseDeadline(),
+            caseData.getCaseDeadlineWarning(), caseData.getDateReceived(), stages, caseData.isCompleted());
     }
 
     private static GetTopicResponse populateTopic(Topic topic, boolean full) {
@@ -105,15 +99,17 @@ public class GetCaseResponse {
         return null;
     }
 
-    private static Map<String,String> populateFields(CaseData caseData, boolean full) {
+    private static Map<String, String> populateFields(CaseData caseData, boolean full) {
         if (full) {
             Map<String, String> replacementValues = new HashMap<>();
 
             if (caseData.getPrimaryTopic() != null) {
-                replacementValues.put(caseData.getPrimaryTopic().getUuid().toString(), caseData.getPrimaryTopic().getText());
+                replacementValues.put(caseData.getPrimaryTopic().getUuid().toString(),
+                    caseData.getPrimaryTopic().getText());
             }
             if (caseData.getPrimaryCorrespondent() != null) {
-                replacementValues.put(caseData.getPrimaryCorrespondent().getUuid().toString(), caseData.getPrimaryCorrespondent().getFullName());
+                replacementValues.put(caseData.getPrimaryCorrespondent().getUuid().toString(),
+                    caseData.getPrimaryCorrespondent().getFullName());
             }
 
             final Map<String, String> dataMap = caseData.getDataMap();
@@ -136,4 +132,5 @@ public class GetCaseResponse {
     protected void replaceDataMap(Map<String, String> dataMap) {
         this.data = dataMap;
     }
+
 }

@@ -47,18 +47,10 @@ public class GetCorrespondentResponse {
     private String externalKey;
 
     public static GetCorrespondentResponse from(Correspondent correspondent) {
-        return new GetCorrespondentResponse(
-                correspondent.getUuid(),
-                correspondent.getCreated(),
-                correspondent.getCorrespondentType(),
-                correspondent.getCaseUUID(),
-                correspondent.getFullName(),
-                correspondent.getOrganisation(),
-                AddressDto.from(correspondent),
-                correspondent.getTelephone(),
-                correspondent.getEmail(),
-                correspondent.getReference(),
-                correspondent.getExternalKey()
-        );
+        return new GetCorrespondentResponse(correspondent.getUuid(), correspondent.getCreated(),
+            correspondent.getCorrespondentType(), correspondent.getCaseUUID(), correspondent.getFullName(),
+            correspondent.getOrganisation(), AddressDto.from(correspondent), correspondent.getTelephone(),
+            correspondent.getEmail(), correspondent.getReference(), correspondent.getExternalKey());
     }
+
 }

@@ -8,18 +8,23 @@ import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
 
 @AllArgsConstructor
 @Getter
 public class DaysElapsedPolicy implements StagePriorityPolicy {
 
     private String propertyName;
+
     private String propertyValue;
+
     private String dateFieldName;
+
     private String dateFormat;
+
     private int capNumberOfDays;
+
     private double capPointsToAward;
+
     private double pointsToAwardPerDay;
 
     @Override
@@ -33,7 +38,7 @@ public class DaysElapsedPolicy implements StagePriorityPolicy {
                 LocalDate dateToCheck = LocalDate.parse(dateString, DateTimeFormatter.ofPattern(dateFormat));
 
                 int daysElapsed = (int) ChronoUnit.DAYS.between(dateToCheck, now);
-                if(capNumberOfDays > -1 && daysElapsed >= capNumberOfDays){
+                if (capNumberOfDays > -1 && daysElapsed >= capNumberOfDays) {
                     return capPointsToAward;
                 }
                 return pointsToAwardPerDay * daysElapsed;
@@ -41,4 +46,5 @@ public class DaysElapsedPolicy implements StagePriorityPolicy {
         }
         return 0;
     }
+
 }

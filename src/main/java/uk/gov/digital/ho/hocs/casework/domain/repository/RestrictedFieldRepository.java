@@ -32,10 +32,10 @@ public class RestrictedFieldRepository extends JsonConfigFileReader {
             return Set.of();
         }
 
-        return Arrays.stream(AccessLevel.values())
-                .filter(accessLevel -> accessLevel.getLevel() >= userAccessLevel.getLevel())
-                .flatMap(accessLevel -> fieldsForAccessLevel.getFieldsForAccessLevel(accessLevel).stream())
-                .collect(Collectors.toUnmodifiableSet());
+        return Arrays.stream(AccessLevel.values()).filter(
+            accessLevel -> accessLevel.getLevel() >= userAccessLevel.getLevel()).flatMap(
+            accessLevel -> fieldsForAccessLevel.getFieldsForAccessLevel(accessLevel).stream()).collect(
+            Collectors.toUnmodifiableSet());
     }
 
 }

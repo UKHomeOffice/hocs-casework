@@ -13,21 +13,34 @@ import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
 import uk.gov.digital.ho.hocs.casework.security.filters.AuthFilter;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.AUTH_FILTER_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_PARSE_ERROR;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_UNAUTHORISED;
 
 @Aspect
 @Component
 @Slf4j
 public class AuthorisationAspect {
 
-    private CaseDataService caseService;
-    private UserPermissionsService userService;
-    private final Map<String,AuthFilter> authFilterMap = new HashMap<>();
+    private final Map<String, AuthFilter> authFilterMap = new HashMap<>();
 
-    public AuthorisationAspect(@Qualifier("CaseDataService") CaseDataService caseService, UserPermissionsService userService, List<AuthFilter> authFilters) {
+    private CaseDataService caseService;
+
+    private UserPermissionsService userService;
+
+    public AuthorisationAspect(@Qualifier("CaseDataService") CaseDataService caseService,
+                               UserPermissionsService userService,
+                               List<AuthFilter> authFilters) {
         this.caseService = caseService;
         this.userService = userService;
         authFilters.forEach(filter -> authFilterMap.put(filter.getKey(), filter));
@@ -38,7 +51,7 @@ public class AuthorisationAspect {
 
         AccessLevel userLevel = getUserAccessLevel(joinPoint);
 
-        if(isSufficientLevel(userLevel.getLevel(), authorised)) {
+        if (isSufficientLevel(userLevel.getLevel(), authorised)) {
             return joinPoint.proceed();
         }
 
@@ -46,21 +59,23 @@ public class AuthorisationAspect {
             return filterResponseByPermissionLevel(joinPoint.proceed(), userLevel);
         }
 
-        throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource", SECURITY_UNAUTHORISED);
+        throw new SecurityExceptions.PermissionCheckException("User does not have access to the requested resource",
+            SECURITY_UNAUTHORISED);
     }
 
     private boolean isSufficientLevel(int userLevelAsInt, Authorised authorised) {
         return userLevelAsInt >= getRequiredAccessLevel(authorised).getLevel();
     }
 
-    private boolean isPermittedLowerLevel( int usersLevel, Authorised authorised) {
+    private boolean isPermittedLowerLevel(int usersLevel, Authorised authorised) {
         return Arrays.stream(authorised.permittedLowerLevels()).anyMatch(level -> level.getLevel() == usersLevel);
     }
 
-    private Object filterResponseByPermissionLevel(Object objectToFilter, AccessLevel userAccessLevel) throws SecurityExceptions.AuthFilterException {
+    private Object filterResponseByPermissionLevel(Object objectToFilter,
+                                                   AccessLevel userAccessLevel) throws SecurityExceptions.AuthFilterException {
 
         if (objectToFilter.getClass() != ResponseEntity.class) {
-             return objectToFilter;
+            return objectToFilter;
         }
 
         ResponseEntity<?> responseEntityToFilter = (ResponseEntity<?>) objectToFilter;
@@ -100,7 +115,8 @@ public class AuthorisationAspect {
             case "DELETE":
                 return AccessLevel.WRITE;
             default:
-                throw new SecurityExceptions.PermissionCheckException("Unknown access request type " + method, SECURITY_PARSE_ERROR);
+                throw new SecurityExceptions.PermissionCheckException("Unknown access request type " + method,
+                    SECURITY_PARSE_ERROR);
         }
     }
 
@@ -114,7 +130,8 @@ public class AuthorisationAspect {
 
     private AccessLevel getUserAccessLevel(ProceedingJoinPoint joinPoint) {
         if (joinPoint.getArgs().length < 1) {
-            throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without case UUID parameters", SECURITY_PARSE_ERROR);
+            throw new SecurityExceptions.PermissionCheckException(
+                "Unable to check permission of method without case UUID parameters", SECURITY_PARSE_ERROR);
         }
 
         String caseType;
@@ -126,7 +143,9 @@ public class AuthorisationAspect {
             CreateCaseRequestInterface createCaseRequest = (CreateCaseRequestInterface) joinPoint.getArgs()[0];
             caseType = createCaseRequest.getType();
         } else {
-            throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName(), SECURITY_PARSE_ERROR);
+            throw new SecurityExceptions.PermissionCheckException(
+                "Unable parse method parameters for type " + joinPoint.getArgs()[0].getClass().getName(),
+                SECURITY_PARSE_ERROR);
         }
 
         AccessLevel accessLevel = userService.getMaxAccessLevel(caseType);
@@ -141,4 +160,5 @@ public class AuthorisationAspect {
         }
         return accessLevel;
     }
+
 }

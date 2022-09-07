@@ -1,9 +1,14 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Map;
@@ -35,10 +40,7 @@ public class ActiveCaseViewData extends AbstractCaseData implements Serializable
     @Column(name = "secondary_case_reference", insertable = false, updatable = false)
     private String nextCaseReference;
 
-    public ActiveCaseViewData(CaseDataType type,
-                              Long caseNumber,
-                              Map<String, String> data,
-                              LocalDate dateReceived) {
+    public ActiveCaseViewData(CaseDataType type, Long caseNumber, Map<String, String> data, LocalDate dateReceived) {
         this(type, caseNumber, dateReceived);
         this.setDataMap(data);
     }

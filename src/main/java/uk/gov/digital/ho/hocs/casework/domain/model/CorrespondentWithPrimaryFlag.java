@@ -10,10 +10,7 @@ public class CorrespondentWithPrimaryFlag extends Correspondent {
     @Getter
     private Boolean isPrimary;
 
-    public CorrespondentWithPrimaryFlag(
-            Correspondent correspondent,
-            Boolean isPrimary
-    ) {
+    public CorrespondentWithPrimaryFlag(Correspondent correspondent, Boolean isPrimary) {
         this.uuid = correspondent.getUuid();
         this.created = correspondent.created;
         this.caseUUID = correspondent.caseUUID;

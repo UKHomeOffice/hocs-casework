@@ -18,20 +18,35 @@ import java.util.HashSet;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TopicServiceTest {
 
-    private final UUID caseUUID = UUID.randomUUID();
-    private final UUID topicUUID = UUID.randomUUID();
     private static final String topicName = "topicName";
+
+    private final UUID caseUUID = UUID.randomUUID();
+
+    private final UUID topicUUID = UUID.randomUUID();
+
     private final UUID topicNameUUID = UUID.randomUUID();
+
+    @Captor
+    ArgumentCaptor<Topic> topicCaptor;
+
     @Mock
     private TopicRepository topicRepository;
+
     @Mock
     private InfoClient infoClient;
+
     private TopicService topicService;
+
     @Mock
     private AuditClient auditClient;
 
@@ -39,9 +54,6 @@ public class TopicServiceTest {
     public void setUp() {
         topicService = new TopicService(topicRepository, infoClient, auditClient);
     }
-
-    @Captor
-    ArgumentCaptor<Topic> topicCaptor;
 
     @Test
     public void shouldGetTopics() throws ApplicationExceptions.EntityNotFoundException {
@@ -96,7 +108,6 @@ public class TopicServiceTest {
 
         verifyNoMoreInteractions(auditClient);
 
-
     }
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
@@ -113,8 +124,8 @@ public class TopicServiceTest {
             // Do nothing.
         }
 
-         verifyNoInteractions(topicRepository);
-         verifyNoInteractions(infoClient);
+        verifyNoInteractions(topicRepository);
+        verifyNoInteractions(infoClient);
 
     }
 
@@ -196,7 +207,6 @@ public class TopicServiceTest {
         verify(topicRepository, times(1)).findByUUID(topic.getCaseUUID(), topic.getUuid());
         verify(topicRepository, times(1)).save(topic);
 
-
         verifyNoMoreInteractions(topicRepository);
     }
 
@@ -211,7 +221,6 @@ public class TopicServiceTest {
 
         verify(topicRepository, times(1)).findByUUID(topic.getCaseUUID(), topic.getUuid());
         verify(topicRepository, times(1)).save(topic);
-
 
         verifyNoMoreInteractions(topicRepository);
     }
@@ -280,4 +289,5 @@ public class TopicServiceTest {
 
         verifyNoMoreInteractions(topicRepository);
     }
+
 }

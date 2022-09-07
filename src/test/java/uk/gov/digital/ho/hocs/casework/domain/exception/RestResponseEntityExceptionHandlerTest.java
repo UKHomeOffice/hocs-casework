@@ -1,11 +1,13 @@
 package uk.gov.digital.ho.hocs.casework.domain.exception;
 
+import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import ch.qos.logback.classic.Logger;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
@@ -13,14 +15,15 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
+import static junit.framework.TestCase.assertEquals;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.*;
-import static junit.framework.TestCase.assertEquals;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.I_AM_A_TEAPOT;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RunWith(MockitoJUnitRunner.class)
 public class RestResponseEntityExceptionHandlerTest {
@@ -28,11 +31,12 @@ public class RestResponseEntityExceptionHandlerTest {
     @Mock
     MethodArgumentNotValidException methodArgumentNotValidException;
 
-    private RestResponseEntityExceptionHandler restResponseEntityExceptionHandler;
     ListAppender<ILoggingEvent> logMessages;
 
+    private RestResponseEntityExceptionHandler restResponseEntityExceptionHandler;
+
     @Before
-    public void beforeTest(){
+    public void beforeTest() {
         restResponseEntityExceptionHandler = new RestResponseEntityExceptionHandler();
 
         Logger exceptionLogger = (Logger) LoggerFactory.getLogger(RestResponseEntityExceptionHandler.class);
@@ -45,7 +49,7 @@ public class RestResponseEntityExceptionHandlerTest {
     }
 
     @Test
-    public void handleHttpClientErrorExceptionUnauthorized(){
+    public void handleHttpClientErrorExceptionUnauthorized() {
         String message = "Test Error message";
         HttpClientErrorException exception = new HttpClientErrorException(UNAUTHORIZED, message);
 
@@ -56,7 +60,7 @@ public class RestResponseEntityExceptionHandlerTest {
     }
 
     @Test
-    public void handleHttpClientErrorExceptionForbidden(){
+    public void handleHttpClientErrorExceptionForbidden() {
         String message = "Test Error message";
         HttpClientErrorException exception = new HttpClientErrorException(FORBIDDEN, message);
 
@@ -67,7 +71,7 @@ public class RestResponseEntityExceptionHandlerTest {
     }
 
     @Test
-    public void handleHttpClientErrorExceptionNotFound(){
+    public void handleHttpClientErrorExceptionNotFound() {
         String message = "Test Error message";
         HttpClientErrorException exception = new HttpClientErrorException(NOT_FOUND, message);
 
@@ -78,7 +82,7 @@ public class RestResponseEntityExceptionHandlerTest {
     }
 
     @Test
-    public void handleHttpClientErrorExceptionDefault(){
+    public void handleHttpClientErrorExceptionDefault() {
         String message = "Test Error message";
         HttpClientErrorException exception = new HttpClientErrorException(I_AM_A_TEAPOT, message);
 
@@ -91,7 +95,7 @@ public class RestResponseEntityExceptionHandlerTest {
     }
 
     @Test
-    public void handleHttpServerErrorExceptionUnauthorized(){
+    public void handleHttpServerErrorExceptionUnauthorized() {
         String message = "Test Error message";
         HttpServerErrorException exception = new HttpServerErrorException(UNAUTHORIZED, message);
 
@@ -104,12 +108,11 @@ public class RestResponseEntityExceptionHandlerTest {
     }
 
     @Test
-    public void handleEntityCreationException(){
+    public void handleEntityCreationException() {
         String message = "Test Error message";
 
-
-        ApplicationExceptions.EntityCreationException exception =
-                new ApplicationExceptions.EntityCreationException(message, LogEvent.AUDIT_EVENT_CREATED);
+        ApplicationExceptions.EntityCreationException exception = new ApplicationExceptions.EntityCreationException(
+            message, LogEvent.AUDIT_EVENT_CREATED);
 
         ResponseEntity result = restResponseEntityExceptionHandler.handle(exception);
 
@@ -118,12 +121,11 @@ public class RestResponseEntityExceptionHandlerTest {
     }
 
     @Test
-    public void handleEntityNotFoundException(){
+    public void handleEntityNotFoundException() {
         String message = "Test Error message";
 
-
-        ApplicationExceptions.EntityNotFoundException exception =
-                new ApplicationExceptions.EntityNotFoundException(message, LogEvent.AUDIT_EVENT_CREATED);
+        ApplicationExceptions.EntityNotFoundException exception = new ApplicationExceptions.EntityNotFoundException(
+            message, LogEvent.AUDIT_EVENT_CREATED);
 
         ResponseEntity result = restResponseEntityExceptionHandler.handle(exception);
 
@@ -132,7 +134,7 @@ public class RestResponseEntityExceptionHandlerTest {
     }
 
     @Test
-    public void handleMethodArgumentNotValidException(){
+    public void handleMethodArgumentNotValidException() {
         when(methodArgumentNotValidException.getMessage()).thenReturn("Validation failed");
 
         ResponseEntity result = restResponseEntityExceptionHandler.handle(methodArgumentNotValidException);
@@ -142,9 +144,8 @@ public class RestResponseEntityExceptionHandlerTest {
     }
 
     @Test
-    public void handleHttpMessageConversionException(){
+    public void handleHttpMessageConversionException() {
         String message = "Test Error message";
-
 
         HttpMessageConversionException exception = new HttpMessageConversionException(message);
 
@@ -155,7 +156,7 @@ public class RestResponseEntityExceptionHandlerTest {
     }
 
     @Test
-    public void handleHttpMessageUncaughtExceptionResponse(){
+    public void handleHttpMessageUncaughtExceptionResponse() {
         String message = "Test Error message";
 
         Exception exception = new Exception(message);
@@ -167,11 +168,10 @@ public class RestResponseEntityExceptionHandlerTest {
     }
 
     @Test
-    public void handleHttpMessageUncaughtExceptionLogMessage(){
+    public void handleHttpMessageUncaughtExceptionLogMessage() {
         String message = "Test Error message";
 
-        Exception exception =
-                new Exception(message);
+        Exception exception = new Exception(message);
 
         restResponseEntityExceptionHandler.handle(exception);
 
@@ -179,7 +179,8 @@ public class RestResponseEntityExceptionHandlerTest {
         assertEquals(logMessages.list.get(0).getMessage(), "Exception: {}, Event: {}, Stack: {}");
 
         // beginning of stack trace is present
-        assertThat(logMessages.list.get(0).getFormattedMessage(), containsString("Stack: java.lang.Exception: Test Error message"));
+        assertThat(logMessages.list.get(0).getFormattedMessage(),
+            containsString("Stack: java.lang.Exception: Test Error message"));
     }
-}
 
+}

@@ -12,8 +12,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DataTotalTest {
 
     @Test
-    public void calculateWhenEmptyReturnsZero(){
-        Map<String,String> dataMap = new HashMap();
+    public void calculateWhenEmptyReturnsZero() {
+        Map<String, String> dataMap = new HashMap();
         DataTotal dataTotal = new DataTotal();
 
         BigDecimal result = dataTotal.calculate(dataMap, makeAddFields(), makeSubFields());
@@ -22,8 +22,8 @@ public class DataTotalTest {
     }
 
     @Test
-    public void calculateWhenUnclaimedOrUnpopulatedReturnsZero(){
-        Map<String,String> dataMap = new HashMap();
+    public void calculateWhenUnclaimedOrUnpopulatedReturnsZero() {
+        Map<String, String> dataMap = new HashMap();
         dataMap.put("AaCheck", "");
         dataMap.put("AaValue", "1.01");
         dataMap.put("BbCheck", "");
@@ -38,8 +38,8 @@ public class DataTotalTest {
     }
 
     @Test
-    public void calculateWhenNoClaimedGivenReturnsSumIncludingNullClaim(){
-        Map<String,String> dataMap = new HashMap();
+    public void calculateWhenNoClaimedGivenReturnsSumIncludingNullClaim() {
+        Map<String, String> dataMap = new HashMap();
         dataMap.put("AaCheck", "");
         dataMap.put("AaValue", "1.01");
         dataMap.put("BbCheck", "");
@@ -58,8 +58,8 @@ public class DataTotalTest {
     }
 
     @Test
-    public void calculateWhenClaimedAndPopulatedReturnsSum(){
-        Map<String,String> dataMap = new HashMap();
+    public void calculateWhenClaimedAndPopulatedReturnsSum() {
+        Map<String, String> dataMap = new HashMap();
         dataMap.put("AaCheck", "Yes");
         dataMap.put("AaValue", "1.01");
         dataMap.put("BbCheck", "Yes");
@@ -77,8 +77,8 @@ public class DataTotalTest {
     }
 
     @Test
-    public void calculateWhenAddAndDeductReturnsSum(){
-        Map<String,String> dataMap = new HashMap();
+    public void calculateWhenAddAndDeductReturnsSum() {
+        Map<String, String> dataMap = new HashMap();
         dataMap.put("AaCheck", "Yes");
         dataMap.put("AaValue", "1.01");
         dataMap.put("BbCheck", "Yes");
@@ -98,7 +98,7 @@ public class DataTotalTest {
         assertThat(result).isEqualTo(new BigDecimal("2.01"));
     }
 
-    private Map<String, List<String>> makeAddFields(){
+    private Map<String, List<String>> makeAddFields() {
         Map<String, List<String>> addFields = new HashMap();
         addFields.put("AaCheck", List.of("AaValue"));
         addFields.put("BbCheck", List.of("BbValue"));
@@ -106,10 +106,11 @@ public class DataTotalTest {
         return addFields;
     }
 
-    private Map<String, List<String>> makeSubFields(){
+    private Map<String, List<String>> makeSubFields() {
         Map<String, List<String>> subFields = new HashMap();
         subFields.put("DdCheck", List.of("DdMinus"));
         subFields.put("EeCheck", List.of("EeMinus1", "EeMinus2"));
         return subFields;
     }
+
 }

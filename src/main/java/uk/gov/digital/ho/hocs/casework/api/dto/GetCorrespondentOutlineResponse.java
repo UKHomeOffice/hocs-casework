@@ -19,9 +19,7 @@ public class GetCorrespondentOutlineResponse {
     private String fullname;
 
     public static GetCorrespondentOutlineResponse from(Correspondent correspondent) {
-        return new GetCorrespondentOutlineResponse(
-                correspondent.getUuid(),
-                correspondent.getFullName()
-        );
+        return new GetCorrespondentOutlineResponse(correspondent.getUuid(), correspondent.getFullName());
     }
+
 }

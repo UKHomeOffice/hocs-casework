@@ -47,15 +47,26 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:notes/beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
-@Sql(scripts = "classpath:notes/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:notes/afterTest.sql",
+     config = @SqlConfig(transactionMode = ISOLATED),
+     executionPhase = AFTER_TEST_METHOD)
 @ActiveProfiles({ "local", "integration" })
 public class CaseNoteIntegrationTest {
-    private MockRestServiceServer mockInfoService;
+
+    private static final CaseDataType CASE_DATA_TYPE = CaseDataTypeFactory.from("TEST", "a1");
+
+    private final UUID CASE_UUID = UUID.fromString("fbdbaeab-6719-4e3a-a221-d061dde469a1");
+
+    private final UUID INVALID_CASE_UUID = UUID.fromString("89334528-7769-2db4-b432-456091f132a1");
 
     TestRestTemplate testRestTemplate = new TestRestTemplate();
 
     @LocalServerPort
     int port;
+
+    ObjectMapper mapper = new ObjectMapper();
+
+    private MockRestServiceServer mockInfoService;
 
     @Autowired
     private CaseNoteRepository caseNoteRepository;
@@ -63,27 +74,14 @@ public class CaseNoteIntegrationTest {
     @Autowired
     private RestTemplate restTemplate;
 
-    ObjectMapper mapper = new ObjectMapper();
-
-    private final UUID CASE_UUID = UUID.fromString("fbdbaeab-6719-4e3a-a221-d061dde469a1");
-
-    private final UUID INVALID_CASE_UUID = UUID.fromString("89334528-7769-2db4-b432-456091f132a1");
-
-    private static final CaseDataType CASE_DATA_TYPE = CaseDataTypeFactory.from("TEST", "a1");
-
     @Before
     public void setup() throws IOException {
         mockInfoService = buildMockService(restTemplate);
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(requestTo("http://localhost:8085/caseType")).andExpect(method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(requestTo("http://localhost:8085/caseType/shortCode/a1")).andExpect(
+            method(GET)).andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
     }
-
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
         MockRestServiceServer.MockRestServiceServerBuilder infoBuilder = bindTo(restTemplate);
@@ -96,9 +94,9 @@ public class CaseNoteIntegrationTest {
 
         AccessLevel permissionLevel = AccessLevel.OWNER;
         setupMockTeams("TEST", permissionLevel.getLevel());
-      
-        ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/note", GET, new HttpEntity(createValidAuthHeaders("TEST", Integer.toString(permissionLevel.getLevel()))), String.class);
+
+        ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/note", GET,
+            new HttpEntity(createValidAuthHeaders("TEST", Integer.toString(permissionLevel.getLevel()))), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -106,9 +104,10 @@ public class CaseNoteIntegrationTest {
     public void shouldReturnCaseNoteWhenGetValidCaseNoteWithPermissionLevelOwner() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.OWNER;
         setupMockTeams("TEST", permissionLevel.getLevel());
-      
+
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/note/a2bb3622-b38a-479d-b390-f633bf15f329", GET, new HttpEntity(createValidAuthHeaders("TEST", Integer.toString(permissionLevel.getLevel()))), String.class);
+            getBasePath() + "/case/" + CASE_UUID + "/note/a2bb3622-b38a-479d-b390-f633bf15f329", GET,
+            new HttpEntity(createValidAuthHeaders("TEST", Integer.toString(permissionLevel.getLevel()))), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -118,7 +117,8 @@ public class CaseNoteIntegrationTest {
         setupMockTeams("TEST", permissionLevel.getLevel());
 
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST", Integer.toString(permissionLevel.getLevel()));
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST",
+            Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -128,9 +128,10 @@ public class CaseNoteIntegrationTest {
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelSummary() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.SUMMARY;
         setupMockTeams("TEST", permissionLevel.getLevel());
-      
+
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST", Integer.toString(permissionLevel.getLevel()));
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST",
+            Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -138,11 +139,12 @@ public class CaseNoteIntegrationTest {
 
     @Test
     public void shouldReturnUnauthorisedAndNotCreateACaseWithPermissionLevelMigrate() throws JsonProcessingException {
-        AccessLevel permissionLevel = AccessLevel.MIGRATE;  
+        AccessLevel permissionLevel = AccessLevel.MIGRATE;
         setupMockTeams("TEST", permissionLevel.getLevel());
-      
+
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST", Integer.toString(permissionLevel.getLevel()));
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST",
+            Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -154,7 +156,8 @@ public class CaseNoteIntegrationTest {
         setupMockTeams("TEST", permissionLevel.getLevel());
 
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST", Integer.toString(permissionLevel.getLevel()));
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST",
+            Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -166,7 +169,8 @@ public class CaseNoteIntegrationTest {
         setupMockTeams("TEST", permissionLevel.getLevel());
 
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteInavlidCaseUUIDResponse(createBody(), "TEST", Integer.toString(permissionLevel.getLevel()));
+        ResponseEntity<Void> result = getCreateCaseNoteInavlidCaseUUIDResponse(createBody(), "TEST",
+            Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -178,7 +182,8 @@ public class CaseNoteIntegrationTest {
         setupMockTeams("TEST", permissionLevel.getLevel());
 
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<UUID> result = getCreateCaseNoteResponse(createBody(), "TEST",Integer.toString(permissionLevel.getLevel()));
+        ResponseEntity<UUID> result = getCreateCaseNoteResponse(createBody(), "TEST",
+            Integer.toString(permissionLevel.getLevel()));
         CaseNote caseData = caseNoteRepository.findByUuid(result.getBody());
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -187,19 +192,25 @@ public class CaseNoteIntegrationTest {
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore + 1l);
     }
 
-    private ResponseEntity<UUID> getCreateCaseNoteResponse(String body, String caseTypePermission, String permissionLevel) {
-        return testRestTemplate.exchange(
-                getBasePath() + "/case/"+ CASE_UUID +"/note", POST, new HttpEntity(body, createValidAuthHeaders(caseTypePermission, permissionLevel)), UUID.class);
+    private ResponseEntity<UUID> getCreateCaseNoteResponse(String body,
+                                                           String caseTypePermission,
+                                                           String permissionLevel) {
+        return testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/note", POST,
+            new HttpEntity(body, createValidAuthHeaders(caseTypePermission, permissionLevel)), UUID.class);
     }
 
-    private ResponseEntity<Void> getCreateCaseNoteVoidResponse(String body, String caseTypePermission, String permissionLevel) {
-        return testRestTemplate.exchange(
-                getBasePath() + "/case/"+ CASE_UUID +"/note", POST, new HttpEntity(body, createValidAuthHeaders(caseTypePermission, permissionLevel)), Void.class);
+    private ResponseEntity<Void> getCreateCaseNoteVoidResponse(String body,
+                                                               String caseTypePermission,
+                                                               String permissionLevel) {
+        return testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/note", POST,
+            new HttpEntity(body, createValidAuthHeaders(caseTypePermission, permissionLevel)), Void.class);
     }
 
-    private ResponseEntity<Void> getCreateCaseNoteInavlidCaseUUIDResponse(String body, String caseTypePermission, String permissionLevel) {
-        return testRestTemplate.exchange(
-                getBasePath() + "/case/"+ INVALID_CASE_UUID +"/note", POST, new HttpEntity(body, createValidAuthHeaders(caseTypePermission, permissionLevel)), Void.class);
+    private ResponseEntity<Void> getCreateCaseNoteInavlidCaseUUIDResponse(String body,
+                                                                          String caseTypePermission,
+                                                                          String permissionLevel) {
+        return testRestTemplate.exchange(getBasePath() + "/case/" + INVALID_CASE_UUID + "/note", POST,
+            new HttpEntity(body, createValidAuthHeaders(caseTypePermission, permissionLevel)), Void.class);
     }
 
     private String createBody() throws JsonProcessingException {
@@ -224,12 +235,12 @@ public class CaseNoteIntegrationTest {
         Set<TeamDto> teamDtos = new HashSet<>();
         Set<PermissionDto> permissionDtos = new HashSet<>();
         permissionDtos.add(new PermissionDto(caseType, AccessLevel.from(permission)));
-        TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissionDtos);
+        TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true,
+            permissionDtos);
         teamDtos.add(teamDto);
 
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/team"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(requestTo("http://localhost:8085/team")).andExpect(method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
     }
+
 }

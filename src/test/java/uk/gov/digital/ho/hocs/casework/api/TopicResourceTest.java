@@ -16,17 +16,26 @@ import java.util.HashSet;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TopicResourceTest {
 
-    private final UUID caseUUID = UUID.randomUUID();
-    private final UUID stageUUID = UUID.randomUUID();
-    private final UUID topicUUID = UUID.randomUUID();
     private static final String topicName = "topicName";
+
+    private final UUID caseUUID = UUID.randomUUID();
+
+    private final UUID stageUUID = UUID.randomUUID();
+
+    private final UUID topicUUID = UUID.randomUUID();
+
     @Mock
     private TopicService topicService;
+
     private TopicResource topicResource;
 
     @Before
@@ -117,4 +126,5 @@ public class TopicResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
 }

@@ -4,7 +4,14 @@ import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
-import static uk.gov.digital.ho.hocs.casework.security.AccessLevel.*;
+import static uk.gov.digital.ho.hocs.casework.security.AccessLevel.CASE_ADMIN;
+import static uk.gov.digital.ho.hocs.casework.security.AccessLevel.MIGRATE;
+import static uk.gov.digital.ho.hocs.casework.security.AccessLevel.OWNER;
+import static uk.gov.digital.ho.hocs.casework.security.AccessLevel.READ;
+import static uk.gov.digital.ho.hocs.casework.security.AccessLevel.RESTRICTED_OWNER;
+import static uk.gov.digital.ho.hocs.casework.security.AccessLevel.SUMMARY;
+import static uk.gov.digital.ho.hocs.casework.security.AccessLevel.UNSET;
+import static uk.gov.digital.ho.hocs.casework.security.AccessLevel.WRITE;
 
 public class AccessLevelTest {
 

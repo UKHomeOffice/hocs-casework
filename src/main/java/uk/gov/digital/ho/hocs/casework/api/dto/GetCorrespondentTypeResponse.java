@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,4 +18,5 @@ public class GetCorrespondentTypeResponse {
     public static GetCorrespondentTypeResponse from(Set<CorrespondentTypeDto> correspondentTypeSet) {
         return new GetCorrespondentTypeResponse(correspondentTypeSet);
     }
+
 }

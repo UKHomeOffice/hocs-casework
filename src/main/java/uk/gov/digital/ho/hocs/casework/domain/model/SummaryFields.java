@@ -10,11 +10,11 @@ import java.util.List;
 public class SummaryFields implements CaseTypeObject<List<SummaryFields.SummaryField>> {
 
     private final String type;
+
     private final List<SummaryField> fields;
 
     @JsonCreator
-    public SummaryFields(@JsonProperty("type") String type,
-                         @JsonProperty("fields") List<SummaryField> fields) {
+    public SummaryFields(@JsonProperty("type") String type, @JsonProperty("fields") List<SummaryField> fields) {
         this.type = type;
         this.fields = fields;
     }
@@ -33,9 +33,13 @@ public class SummaryFields implements CaseTypeObject<List<SummaryFields.SummaryF
     public static class SummaryField {
 
         private final String name;
+
         private final String label;
+
         private final String type;
+
         private List<ConditionChoices> conditionChoices;
+
         private Object choices;
 
         @JsonCreator
@@ -49,8 +53,7 @@ public class SummaryFields implements CaseTypeObject<List<SummaryFields.SummaryF
             this.type = type;
 
             //TODO: HOCS-5559 raised to discuss implementation of choices with fields and here
-            if (conditionChoices != null &&
-                    choices != null) {
+            if (conditionChoices != null && choices != null) {
                 throw new IllegalArgumentException("conditionChoices and choices cannot both be specified");
             } else if (conditionChoices != null) {
                 this.conditionChoices = conditionChoices;
@@ -61,8 +64,11 @@ public class SummaryFields implements CaseTypeObject<List<SummaryFields.SummaryF
 
         @Getter
         public static class ConditionChoices {
+
             private final Object choices;
+
             private final String conditionPropertyName;
+
             private final String conditionPropertyValue;
 
             @JsonCreator
@@ -73,19 +79,24 @@ public class SummaryFields implements CaseTypeObject<List<SummaryFields.SummaryF
                 this.conditionPropertyValue = conditionPropertyValue;
                 this.choices = choices;
             }
+
         }
 
         @Getter
         public static class Choices {
+
             private final String label;
+
             private final String value;
 
             @JsonCreator
-            public Choices(@JsonProperty("label") String label,
-                           @JsonProperty("value") String value) {
+            public Choices(@JsonProperty("label") String label, @JsonProperty("value") String value) {
                 this.label = label;
                 this.value = value;
             }
+
         }
+
     }
+
 }

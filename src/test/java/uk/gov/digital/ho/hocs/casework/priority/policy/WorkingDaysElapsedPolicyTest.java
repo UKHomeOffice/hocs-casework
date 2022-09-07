@@ -12,23 +12,32 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkingDaysElapsedPolicyTest {
 
-    private WorkingDaysElapsedPolicy policy;
-    private StageWithCaseData stage;
-
-
     private static final String PROPERTY_NAME = "property1";
+
     private static final String PROPERTY_VALUE = "value1";
+
     private static final String DATE_FIELD_NAME = "DateFieldName1";
+
     private static final String DATE_FORMAT = "yyyy-MM-dd";
+
     private static final int CAP_NUMBER_OF_DAYS = 55;
+
     private static final double CAP_POINTS_TO_AWARD = 35d;
+
     private static final double POINTS_TO_AWARD_PER_DAY = 2d;
+
     private static final String TEST_CASE_TYPE = "CASE_TYPE_1";
+
+    private WorkingDaysElapsedPolicy policy;
+
+    private StageWithCaseData stage;
 
     @Mock
     private WorkingDaysElapsedProvider workingDaysElapsedProvider;
@@ -38,8 +47,8 @@ public class WorkingDaysElapsedPolicyTest {
         stage = new StageWithCaseData();
         stage.setCaseDataType(TEST_CASE_TYPE);
 
-        policy = new WorkingDaysElapsedPolicy(workingDaysElapsedProvider, PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DATE_FORMAT, CAP_NUMBER_OF_DAYS,
-                CAP_POINTS_TO_AWARD, POINTS_TO_AWARD_PER_DAY);
+        policy = new WorkingDaysElapsedPolicy(workingDaysElapsedProvider, PROPERTY_NAME, PROPERTY_VALUE,
+            DATE_FIELD_NAME, DATE_FORMAT, CAP_NUMBER_OF_DAYS, CAP_POINTS_TO_AWARD, POINTS_TO_AWARD_PER_DAY);
     }
 
     @Test
@@ -91,4 +100,5 @@ public class WorkingDaysElapsedPolicyTest {
 
         verifyNoMoreInteractions(workingDaysElapsedProvider);
     }
+
 }

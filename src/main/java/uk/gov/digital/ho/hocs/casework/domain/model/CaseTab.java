@@ -6,6 +6,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class CaseTab {
+
     @Getter
     private final String name;
 

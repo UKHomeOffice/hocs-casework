@@ -21,9 +21,11 @@ public class GetCorrespondentOutlineResponseTest {
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email,
+            reference, externalKey);
 
-        GetCorrespondentOutlineResponse getCorrespondentOutlineResponse = GetCorrespondentOutlineResponse.from(correspondent);
+        GetCorrespondentOutlineResponse getCorrespondentOutlineResponse = GetCorrespondentOutlineResponse.from(
+            correspondent);
 
         assertThat(getCorrespondentOutlineResponse.getUuid()).isEqualTo(correspondent.getUuid());
         assertThat(getCorrespondentOutlineResponse.getFullname()).isEqualTo(correspondent.getFullName());
@@ -35,9 +37,11 @@ public class GetCorrespondentOutlineResponseTest {
         String type = "CORRESPONDENT";
         Correspondent correspondent = new Correspondent(caseUUID, type, null, null, null, null, null, null, null);
 
-        GetCorrespondentOutlineResponse getCorrespondentOutlineResponse = GetCorrespondentOutlineResponse.from(correspondent);
+        GetCorrespondentOutlineResponse getCorrespondentOutlineResponse = GetCorrespondentOutlineResponse.from(
+            correspondent);
 
         assertThat(getCorrespondentOutlineResponse.getUuid()).isEqualTo(correspondent.getUuid());
         assertThat(getCorrespondentOutlineResponse.getFullname()).isEqualTo(correspondent.getFullName());
     }
+
 }

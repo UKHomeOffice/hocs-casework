@@ -44,10 +44,10 @@ public class GetCaseResponseTest {
         Long caseNumber = 1234L;
 
         Map<String, String> data = new HashMap<>();
-        data.put("Key1","Description 1");
-        data.put("Key2","2d0904b2-123a-456b-789c-d6dbac804e72");
-        data.put("2d0904b2-123a-456b-789c-d6dbac804e72","Description 2");
-        data.put("Key3","3abcdef3-123a-456b-789c-d6dbac804e73");
+        data.put("Key1", "Description 1");
+        data.put("Key2", "2d0904b2-123a-456b-789c-d6dbac804e72");
+        data.put("2d0904b2-123a-456b-789c-d6dbac804e72", "Description 2");
+        data.put("Key3", "3abcdef3-123a-456b-789c-d6dbac804e73");
 
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
         LocalDate caseReceived = LocalDate.now();
@@ -70,10 +70,10 @@ public class GetCaseResponseTest {
         Long caseNumber = 1234L;
 
         Map<String, String> data = new HashMap<>();
-        data.put("Key1","Description 1");
-        data.put("Key2","2d0904b2-123a-456b-789c-d6dbac804e72");
-        data.put("2d0904b2-123a-456b-789c-d6dbac804e72","Description 2");
-        data.put("Key3","3abcdef3-123a-456b-789c-d6dbac804e73");
+        data.put("Key1", "Description 1");
+        data.put("Key2", "2d0904b2-123a-456b-789c-d6dbac804e72");
+        data.put("2d0904b2-123a-456b-789c-d6dbac804e72", "Description 2");
+        data.put("Key3", "3abcdef3-123a-456b-789c-d6dbac804e73");
 
         LocalDate caseDeadline = LocalDate.now().plusDays(20);
         LocalDate caseReceived = LocalDate.now();
@@ -87,8 +87,6 @@ public class GetCaseResponseTest {
         assertThat("2d0904b2-123a-456b-789c-d6dbac804e72").isEqualTo(dataMap.get("Key2"));
         assertThat("3abcdef3-123a-456b-789c-d6dbac804e73").isEqualTo(dataMap.get("Key3"));
     }
-
-
 
     @Test
     public void getCaseDataDtoNull() {

@@ -33,16 +33,24 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUN
 @Service
 public class ActionDataSuspendService implements ActionService {
 
-    private final CaseDataRepository caseDataRepository;
-    private final SuspensionRepository suspensionRepository;
-    private final InfoClient infoClient;
-    private final AuditClient auditClient;
-    private final CaseNoteService caseNoteService;
-
     private static final LocalDate SUSPENSION_DEADLINE = LocalDate.of(9999, 12, 31);
 
+    private final CaseDataRepository caseDataRepository;
+
+    private final SuspensionRepository suspensionRepository;
+
+    private final InfoClient infoClient;
+
+    private final AuditClient auditClient;
+
+    private final CaseNoteService caseNoteService;
+
     @Autowired
-    public ActionDataSuspendService(CaseDataRepository caseDataRepository, SuspensionRepository suspensionRepository, InfoClient infoClient, AuditClient auditClient, CaseNoteService caseNoteService) {
+    public ActionDataSuspendService(CaseDataRepository caseDataRepository,
+                                    SuspensionRepository suspensionRepository,
+                                    InfoClient infoClient,
+                                    AuditClient auditClient,
+                                    CaseNoteService caseNoteService) {
         this.caseDataRepository = caseDataRepository;
         this.suspensionRepository = suspensionRepository;
         this.infoClient = infoClient;
@@ -58,15 +66,11 @@ public class ActionDataSuspendService implements ActionService {
     @Override
     public List<ActionDataDto> getAllActionsForCase(UUID caseUUID) {
         List<ActionDataSuspension> suspensions = suspensionRepository.findAllByCaseDataUuid(caseUUID);
-        return suspensions.stream().map(suspension ->
-                        new ActionDataSuspendDto(
-                            suspension.getUuid(),
-                            suspension.getCaseTypeActionUuid(),
-                            suspension.getActionSubtype(),
-                            suspension.getCaseTypeActionLabel(),
-                            suspension.getDateSuspensionApplied(),
-                            suspension.getDateSuspensionRemoved()
-                    )).collect(Collectors.toList());
+        return suspensions.stream().map(
+            suspension -> new ActionDataSuspendDto(suspension.getUuid(), suspension.getCaseTypeActionUuid(),
+                suspension.getActionSubtype(), suspension.getCaseTypeActionLabel(),
+                suspension.getDateSuspensionApplied(), suspension.getDateSuspensionRemoved())).collect(
+            Collectors.toList());
     }
 
     public String suspend(UUID caseUUID, UUID existingStageUuid, ActionDataSuspendDto suspendDto) {
@@ -75,30 +79,28 @@ public class ActionDataSuspendService implements ActionService {
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
         if (caseData == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case with uuid: %s does not exist.", caseUUID), CASE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("Case with uuid: %s does not exist.", caseUUID), CASE_NOT_FOUND);
         }
 
-        CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(), suspendDto.getCaseTypeActionUuid());
+        CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(),
+            suspendDto.getCaseTypeActionUuid());
         if (caseTypeActionDto == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", suspendDto.getCaseTypeActionUuid()), ACTION_DATA_CREATE_FAILURE);
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("No Case Type Action found for actionId: %s", suspendDto.getCaseTypeActionUuid()),
+                ACTION_DATA_CREATE_FAILURE);
         }
 
         if (hasActiveSuspension(caseTypeActionDto, caseUUID)) {
             String msg = String.format("CaseId: %s is already suspended", caseUUID);
             log.error(msg);
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,msg);
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, msg);
         }
 
         // Save the suspension event.
-        ActionDataSuspension suspensionEntity = new ActionDataSuspension(
-                caseTypeActionDto.getUuid(),
-                caseTypeActionDto.getActionSubtype(),
-                caseTypeActionDto.getActionLabel(),
-                caseData.getType(),
-                caseUUID,
-                suspendDto.getDateSuspensionApplied(),
-                null
-        );
+        ActionDataSuspension suspensionEntity = new ActionDataSuspension(caseTypeActionDto.getUuid(),
+            caseTypeActionDto.getActionSubtype(), caseTypeActionDto.getActionLabel(), caseData.getType(), caseUUID,
+            suspendDto.getDateSuspensionApplied(), null);
 
         suspensionRepository.save(suspensionEntity);
         caseNoteService.createCaseNote(caseUUID, "CASE_SUSPENSION_APPLIED", "");
@@ -107,11 +109,13 @@ public class ActionDataSuspendService implements ActionService {
         // update case data
         caseData.getDataMap().put("suspended", "true");
         caseData.getDataMap().put("hasBeenSuspended", "true");
-        caseData.getDataMap().put("dateOfLatestSuspension",suspensionEntity.getDateSuspensionApplied().toString());
+        caseData.getDataMap().put("dateOfLatestSuspension", suspensionEntity.getDateSuspensionApplied().toString());
 
         // Add stage deadline overrides for yet to be created stages
         Set<StageTypeDto> stagesForCaseType = infoClient.getAllStagesForCaseType(caseData.getType());
-        stagesForCaseType.forEach((StageTypeDto stageTypeDto) -> caseData.getDataMap().put(stageTypeDto.getType()+"_DEADLINE", SUSPENSION_DEADLINE.toString()));
+        stagesForCaseType.forEach(
+            (StageTypeDto stageTypeDto) -> caseData.getDataMap().put(stageTypeDto.getType() + "_DEADLINE",
+                SUSPENSION_DEADLINE.toString()));
 
         caseData.setCaseDeadline(SUSPENSION_DEADLINE);
         caseData.setCaseDeadlineWarning(SUSPENSION_DEADLINE);
@@ -128,10 +132,12 @@ public class ActionDataSuspendService implements ActionService {
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
         if (caseData == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case with id: %s does not exist.", caseUUID), CASE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("Case with id: %s does not exist.", caseUUID), CASE_NOT_FOUND);
         }
 
-        Optional<ActionDataSuspension> existingSuspension = suspensionRepository.findByUuidAndCaseDataUuid(existingSuspensionUUID, caseUUID);
+        Optional<ActionDataSuspension> existingSuspension = suspensionRepository.findByUuidAndCaseDataUuid(
+            existingSuspensionUUID, caseUUID);
 
         existingSuspension.ifPresentOrElse((ActionDataSuspension suspension) -> {
 
@@ -145,7 +151,8 @@ public class ActionDataSuspendService implements ActionService {
             auditClient.updateCaseAudit(caseData, existingStageUuid);
 
         }, () -> {
-            String msg = String.format("No suspension action exists for id %s in case %s", existingSuspensionUUID, caseUUID);
+            String msg = String.format("No suspension action exists for id %s in case %s", existingSuspensionUUID,
+                caseUUID);
             log.error(msg);
             throw new ApplicationExceptions.EntityNotFoundException(msg, LogEvent.ACTION_DATA_UPDATE_FAILURE);
         });
@@ -155,7 +162,9 @@ public class ActionDataSuspendService implements ActionService {
     }
 
     private boolean hasActiveSuspension(CaseTypeActionDto caseTypeActionDto, UUID caseUUID) {
-        List<ActionDataSuspension> caseSuspensions = suspensionRepository.findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(caseUUID, caseTypeActionDto.getUuid());
+        List<ActionDataSuspension> caseSuspensions = suspensionRepository.findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(
+            caseUUID, caseTypeActionDto.getUuid());
         return !caseSuspensions.isEmpty();
     }
+
 }

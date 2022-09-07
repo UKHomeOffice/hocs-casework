@@ -1,7 +1,11 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
@@ -9,7 +13,15 @@ import org.hibernate.annotations.Where;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,9 +33,7 @@ import java.util.UUID;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
 
 @MappedSuperclass
-@TypeDefs({
-        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
-})
+@TypeDefs({ @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class) })
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AbstractCaseData implements Serializable {
@@ -34,7 +44,7 @@ public class AbstractCaseData implements Serializable {
     private Long id;
 
     @Getter
-    @Column(name = "uuid", columnDefinition ="uuid")
+    @Column(name = "uuid", columnDefinition = "uuid")
     private UUID uuid;
 
     @Getter
@@ -77,7 +87,10 @@ public class AbstractCaseData implements Serializable {
 
     @Getter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "primary_correspondent_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
+    @JoinColumn(name = "primary_correspondent_uuid",
+                referencedColumnName = "uuid",
+                insertable = false,
+                updatable = false)
     private Correspondent primaryCorrespondent;
 
     @Setter
@@ -113,10 +126,7 @@ public class AbstractCaseData implements Serializable {
     @Where(clause = "deleted = false")
     private Set<CaseNote> caseNotes;
 
-    public AbstractCaseData(CaseDataType type,
-                            Long caseNumber,
-                            Map<String, String> data,
-                            LocalDate dateReceived) {
+    public AbstractCaseData(CaseDataType type, Long caseNumber, Map<String, String> data, LocalDate dateReceived) {
         this(type, caseNumber, dateReceived);
         update(data);
     }
@@ -132,7 +142,6 @@ public class AbstractCaseData implements Serializable {
         this.dateReceived = dateReceived;
     }
 
-
     private static UUID randomUUID(String shortCode) {
         if (shortCode != null) {
             String uuid = UUID.randomUUID().toString().substring(0, 33);
@@ -142,7 +151,7 @@ public class AbstractCaseData implements Serializable {
         }
     }
 
-    public void update(Map<String,String> newData) {
+    public void update(Map<String, String> newData) {
         if (newData != null && newData.size() > 0) {
             this.dataMap.putAll(newData);
         }

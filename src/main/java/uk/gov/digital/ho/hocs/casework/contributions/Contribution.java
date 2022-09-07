@@ -9,20 +9,18 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
 
 @Setter
 @AllArgsConstructor
 public class Contribution {
 
     @JsonProperty("contributionDueDate")
-    @JsonAlias({"approvalRequestDueDate"})
+    @JsonAlias({ "approvalRequestDueDate" })
     @Getter
     LocalDate dueDate;
 
     @JsonProperty("contributionStatus")
-    @JsonAlias({"approvalRequestStatus"})
+    @JsonAlias({ "approvalRequestStatus" })
     String status;
 
     public ContributionStatus getStatus() {
@@ -43,6 +41,7 @@ public class Contribution {
         CONTRIBUTION_OVERDUE(List.of("contributionOverdue"), "Overdue"); // highest
 
         private final List<String> status;
+
         private final String displayedStatus;
 
         ContributionStatus(List<String> status, String displayedStatus) {
@@ -55,14 +54,12 @@ public class Contribution {
                 return NONE;
             }
 
-            return Arrays.stream(values())
-                    .filter(cs -> cs.status.contains(status))
-                    .findFirst()
-                    .orElse(NONE);
+            return Arrays.stream(values()).filter(cs -> cs.status.contains(status)).findFirst().orElse(NONE);
         }
 
         public String getDisplayedStatus() {
             return displayedStatus;
         }
     }
+
 }

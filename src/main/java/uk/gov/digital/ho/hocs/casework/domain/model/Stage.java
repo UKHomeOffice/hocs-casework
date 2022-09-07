@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.NoArgsConstructor;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.Entity;
@@ -18,7 +17,8 @@ public class Stage extends BaseStage {
 
     public Stage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, UUID transitionNoteUUID) {
         if (caseUUID == null || stageType == null) {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
+            throw new ApplicationExceptions.EntityCreationException(
+                String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
         }
 
         this.uuid = UUID.randomUUID();

@@ -28,12 +28,12 @@ public class CorrespondentTypeNameDecorator {
             return correspondent;
         }
 
-        Optional<CorrespondentTypeDto> correspondentType = correspondentTypes.stream()
-                .filter(correspondentTypeDto -> Objects.equals(correspondentTypeDto.getType(), correspondent.getCorrespondentType()))
-                .findFirst();
+        Optional<CorrespondentTypeDto> correspondentType = correspondentTypes.stream().filter(
+            correspondentTypeDto -> Objects.equals(correspondentTypeDto.getType(),
+                correspondent.getCorrespondentType())).findFirst();
 
-        correspondentType
-                .ifPresent(correspondentTypeDto -> correspondent.setCorrespondentTypeName(correspondentTypeDto.getDisplayName()));
+        correspondentType.ifPresent(
+            correspondentTypeDto -> correspondent.setCorrespondentTypeName(correspondentTypeDto.getDisplayName()));
 
         return correspondent;
     }

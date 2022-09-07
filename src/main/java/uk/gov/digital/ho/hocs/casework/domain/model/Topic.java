@@ -6,7 +6,12 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -50,7 +55,9 @@ public class Topic implements Serializable {
 
     public Topic(UUID caseUUID, String topicName, UUID topicNameUUID) {
         if (caseUUID == null || topicName == null || topicNameUUID == null) {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Topic(%s, %s, %s).", caseUUID, topicName, topicNameUUID), TOPIC_CREATE_FAILED);
+            throw new ApplicationExceptions.EntityCreationException(
+                String.format("Cannot create Topic(%s, %s, %s).", caseUUID, topicName, topicNameUUID),
+                TOPIC_CREATE_FAILED);
         }
 
         this.uuid = UUID.randomUUID();

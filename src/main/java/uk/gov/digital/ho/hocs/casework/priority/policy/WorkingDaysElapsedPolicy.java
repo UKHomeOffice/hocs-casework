@@ -8,7 +8,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
 
 @AllArgsConstructor
 @Getter
@@ -17,19 +16,24 @@ public class WorkingDaysElapsedPolicy implements StagePriorityPolicy {
     private WorkingDaysElapsedProvider workingDaysElapsedProvider;
 
     private String propertyName;
+
     private String propertyValue;
+
     private String dateFieldName;
+
     private String dateFormat;
+
     private int capNumberOfDays;
+
     private double capPointsToAward;
+
     private double pointsToAwardPerDay;
 
     @Override
     public double apply(StageWithCaseData stageWithCaseData) {
         var data = stageWithCaseData.getData();
 
-        if (propertyName != null && propertyValue != null &&
-                !propertyValue.equals(data.get(propertyName))) {
+        if (propertyName != null && propertyValue != null && !propertyValue.equals(data.get(propertyName))) {
             return 0;
         }
 
@@ -37,7 +41,8 @@ public class WorkingDaysElapsedPolicy implements StagePriorityPolicy {
         if (StringUtils.hasText(dateString)) {
             LocalDate dateToCheck = LocalDate.parse(dateString, DateTimeFormatter.ofPattern(dateFormat));
 
-            int daysElapsed = workingDaysElapsedProvider.getWorkingDaysSince(stageWithCaseData.getCaseDataType(), dateToCheck);
+            int daysElapsed = workingDaysElapsedProvider.getWorkingDaysSince(stageWithCaseData.getCaseDataType(),
+                dateToCheck);
             if (capNumberOfDays > -1 && daysElapsed >= capNumberOfDays) {
                 return capPointsToAward;
             }
@@ -46,4 +51,5 @@ public class WorkingDaysElapsedPolicy implements StagePriorityPolicy {
 
         return 0;
     }
+
 }

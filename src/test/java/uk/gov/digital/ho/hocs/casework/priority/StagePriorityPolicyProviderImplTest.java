@@ -9,19 +9,38 @@ import uk.gov.digital.ho.hocs.casework.api.WorkingDaysElapsedProvider;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.PriorityPolicies;
 import uk.gov.digital.ho.hocs.casework.domain.repository.PriorityPolicyRepository;
-import uk.gov.digital.ho.hocs.casework.priority.policy.*;
+import uk.gov.digital.ho.hocs.casework.priority.policy.DaysElapsedPolicy;
+import uk.gov.digital.ho.hocs.casework.priority.policy.DeadlinePolicy;
+import uk.gov.digital.ho.hocs.casework.priority.policy.JoinedStringPropertyPolicy;
+import uk.gov.digital.ho.hocs.casework.priority.policy.SimpleStringPropertyPolicy;
+import uk.gov.digital.ho.hocs.casework.priority.policy.StagePriorityPolicy;
+import uk.gov.digital.ho.hocs.casework.priority.policy.WorkingDaysElapsedPolicy;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StagePriorityPolicyProviderImplTest {
 
-    private StagePriorityPolicyProviderImpl stagePriorityPolicyProvider;
+    private static final String CASE_TYPE = "TestCaseType";
+
+    private static final String PROPERTY_NAME_1 = "property1";
+
+    private static final String PROPERTY_VALUE_1 = "propertyValue1";
+
+    private static final String PROPERTY_NAME_2 = "property2";
+
+    private static final String PROPERTY_VALUE_2 = "propertyValue2";
+
+    private static final String PROPERTY_NAME_DATE = "DateReceived";
+
+    private static final String DATE_FIELD_FORMAT = "yyyy-MM-dd";
 
     @Mock
     PriorityPolicyRepository priorityPolicyRepository;
@@ -29,60 +48,50 @@ public class StagePriorityPolicyProviderImplTest {
     @Mock
     WorkingDaysElapsedProvider workingDaysElapsedProvider;
 
-    private static final String CASE_TYPE = "TestCaseType";
-    private static final String PROPERTY_NAME_1 = "property1";
-    private static final String PROPERTY_VALUE_1 = "propertyValue1";
-    private static final String PROPERTY_NAME_2 = "property2";
-    private static final String PROPERTY_VALUE_2 = "propertyValue2";
-    private static final String PROPERTY_NAME_DATE = "DateReceived";
-    private static final String DATE_FIELD_FORMAT = "yyyy-MM-dd";
+    private StagePriorityPolicyProviderImpl stagePriorityPolicyProvider;
 
     @Before
-    public void before(){
-        stagePriorityPolicyProvider = new StagePriorityPolicyProviderImpl(priorityPolicyRepository, workingDaysElapsedProvider);
+    public void before() {
+        stagePriorityPolicyProvider = new StagePriorityPolicyProviderImpl(priorityPolicyRepository,
+            workingDaysElapsedProvider);
     }
 
     @Test
-    public void getPolicies_blank(){
+    public void getPolicies_blank() {
         List<StagePriorityPolicy> results = stagePriorityPolicyProvider.getPolicies(CASE_TYPE);
 
-        assertThat(results)
-                .isNotNull()
-                .isEmpty();
+        assertThat(results).isNotNull().isEmpty();
 
         verify(priorityPolicyRepository).getByCaseType(CASE_TYPE);
         verifyNoMoreInteractions(priorityPolicyRepository);
     }
 
-
     @Test
-    public void getPolicies(){
+    public void getPolicies() {
 
         PriorityPolicies.PriorityPolicy policy1 = new PriorityPolicies.PriorityPolicy("SimpleStringPropertyPolicy",
-                Map.of("propertyName", PROPERTY_NAME_1, "propertyValue", PROPERTY_VALUE_1, "pointsToAward", "2"));
+            Map.of("propertyName", PROPERTY_NAME_1, "propertyValue", PROPERTY_VALUE_1, "pointsToAward", "2"));
         PriorityPolicies.PriorityPolicy policy2 = new PriorityPolicies.PriorityPolicy("SimpleStringPropertyPolicy",
-                Map.of("propertyName", PROPERTY_NAME_2, "propertyValue", PROPERTY_VALUE_2, "pointsToAward", "1"));
+            Map.of("propertyName", PROPERTY_NAME_2, "propertyValue", PROPERTY_VALUE_2, "pointsToAward", "1"));
         PriorityPolicies.PriorityPolicy policy3 = new PriorityPolicies.PriorityPolicy("JoinedStringPropertyPolicy",
-                Map.of("propertyName", PROPERTY_NAME_1, "propertyValue", PROPERTY_VALUE_1,
-                        "propertyName2", PROPERTY_NAME_2, "propertyValue2", PROPERTY_VALUE_2, "pointsToAward", "5"));
+            Map.of("propertyName", PROPERTY_NAME_1, "propertyValue", PROPERTY_VALUE_1, "propertyName2", PROPERTY_NAME_2,
+                "propertyValue2", PROPERTY_VALUE_2, "pointsToAward", "5"));
         PriorityPolicies.PriorityPolicy policy4 = new PriorityPolicies.PriorityPolicy("DaysElapsedPolicy",
-                Map.of("propertyName", PROPERTY_NAME_1, "propertyValue", PROPERTY_VALUE_1,
-                        "dateFieldName", PROPERTY_NAME_DATE, "dateFormat", DATE_FIELD_FORMAT, "pointsToAwardPerDay", "3",
-                        "capNumberOfDays", "40", "capPointsToAward", "25"));
+            Map.of("propertyName", PROPERTY_NAME_1, "propertyValue", PROPERTY_VALUE_1, "dateFieldName",
+                PROPERTY_NAME_DATE, "dateFormat", DATE_FIELD_FORMAT, "pointsToAwardPerDay", "3", "capNumberOfDays",
+                "40", "capPointsToAward", "25"));
         PriorityPolicies.PriorityPolicy policy5 = new PriorityPolicies.PriorityPolicy("WorkingDaysElapsedPolicy",
-                Map.of("propertyName", PROPERTY_NAME_1, "propertyValue", PROPERTY_VALUE_1,
-                        "dateFieldName", PROPERTY_NAME_DATE, "dateFormat", DATE_FIELD_FORMAT, "pointsToAwardPerDay", "2",
-                        "capNumberOfDays", "7", "capPointsToAward", "12"));
+            Map.of("propertyName", PROPERTY_NAME_1, "propertyValue", PROPERTY_VALUE_1, "dateFieldName",
+                PROPERTY_NAME_DATE, "dateFormat", DATE_FIELD_FORMAT, "pointsToAwardPerDay", "2", "capNumberOfDays", "7",
+                "capPointsToAward", "12"));
         PriorityPolicies.PriorityPolicy policy6 = new PriorityPolicies.PriorityPolicy("DeadlinePolicy",
-                Collections.emptyMap());
+            Collections.emptyMap());
 
-        when(priorityPolicyRepository.getByCaseType(CASE_TYPE))
-                .thenReturn(List.of(policy1, policy2, policy3, policy4, policy5, policy6));
+        when(priorityPolicyRepository.getByCaseType(CASE_TYPE)).thenReturn(
+            List.of(policy1, policy2, policy3, policy4, policy5, policy6));
         List<StagePriorityPolicy> results = stagePriorityPolicyProvider.getPolicies(CASE_TYPE);
 
-        assertThat(results)
-                .isNotNull()
-                .hasSize(6);
+        assertThat(results).isNotNull().hasSize(6);
         assertThat(results.get(0)).isInstanceOf(SimpleStringPropertyPolicy.class);
         assertThat(results.get(1)).isInstanceOf(SimpleStringPropertyPolicy.class);
         assertThat(results.get(2)).isInstanceOf(JoinedStringPropertyPolicy.class);
@@ -131,10 +140,10 @@ public class StagePriorityPolicyProviderImplTest {
     }
 
     @Test(expected = ApplicationExceptions.InvalidPriorityTypeException.class)
-    public void getPolicies_throwsWhenInvalidType(){
-        PriorityPolicies.PriorityPolicy unsupportedPolicy = new PriorityPolicies.PriorityPolicy("UnsupportedPolicy", Map.of());
-        when(priorityPolicyRepository.getByCaseType(CASE_TYPE))
-                .thenReturn(List.of(unsupportedPolicy));
+    public void getPolicies_throwsWhenInvalidType() {
+        PriorityPolicies.PriorityPolicy unsupportedPolicy = new PriorityPolicies.PriorityPolicy("UnsupportedPolicy",
+            Map.of());
+        when(priorityPolicyRepository.getByCaseType(CASE_TYPE)).thenReturn(List.of(unsupportedPolicy));
 
         stagePriorityPolicyProvider.getPolicies(CASE_TYPE);
 

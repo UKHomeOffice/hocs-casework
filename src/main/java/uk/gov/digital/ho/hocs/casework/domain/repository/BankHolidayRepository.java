@@ -8,6 +8,9 @@ import java.util.Set;
 
 @Repository
 public interface BankHolidayRepository extends CrudRepository<BankHoliday, Long> {
+
     Set<BankHoliday> findAll();
+
     Set<BankHoliday> findByRegionIn(Set<BankHoliday.BankHolidayRegion> regions);
+
 }

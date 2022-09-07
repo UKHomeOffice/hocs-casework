@@ -12,25 +12,28 @@ import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_CLIENT_SEARCH_SUCCESS;
 
 @Slf4j
 @Component
 public class SearchClient {
 
     private final RestHelper restHelper;
+
     private final String serviceBaseURL;
 
     @Autowired
-    public SearchClient(RestHelper restHelper,
-                        @Value("${hocs.search-service}") String searchService) {
+    public SearchClient(RestHelper restHelper, @Value("${hocs.search-service}") String searchService) {
         this.restHelper = restHelper;
         this.serviceBaseURL = searchService;
     }
 
     public Set<UUID> search(SearchRequest searchRequest) {
-        Set<UUID> response = restHelper.post(serviceBaseURL, "/case", searchRequest, new ParameterizedTypeReference<Set<UUID>>() {});
+        Set<UUID> response = restHelper.post(serviceBaseURL, "/case", searchRequest,
+            new ParameterizedTypeReference<Set<UUID>>() {});
         log.info("Got {} caseUUID results", response.size(), value(EVENT, SEARCH_CLIENT_SEARCH_SUCCESS));
         return response;
     }
+
 }

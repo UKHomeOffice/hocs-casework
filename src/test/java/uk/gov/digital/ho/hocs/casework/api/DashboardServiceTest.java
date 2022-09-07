@@ -11,35 +11,51 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Summary;
 import uk.gov.digital.ho.hocs.casework.domain.repository.SummaryRepository;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
-import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.*;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.OVERDUE_TEAM_CASES;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.TEAM_CASES;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.UNALLOCATED_TEAM_CASES;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.USERS_OVERDUE_TEAM_CASES;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.USERS_TEAM_CASES;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DashboardServiceTest {
+
+    private final UUID userTeamUuid = UUID.randomUUID();
+
+    private final UUID userUuid = UUID.randomUUID();
+
+    private final Set<UUID> setUserTeams = Set.of(userTeamUuid);
+
+    private final Set<String> caseTypes = Set.of("");
+
+    private final Set<UUID> collatedUserTeams = Set.of(userTeamUuid);
 
     private DashboardService dashboardService;
 
     @Mock
     private DashboardSummaryFactory dashboardSummaryFactory;
+
     @Mock
     private RequestData requestData;
+
     @Mock
     private SummaryRepository summaryRepository;
+
     @Mock
     private UserPermissionsService userPermissionsService;
 
-    private final UUID userTeamUuid = UUID.randomUUID();
-    private final UUID userUuid = UUID.randomUUID();
-    private final Set<UUID> setUserTeams = Set.of(userTeamUuid);
-    private final Set<String> caseTypes = Set.of("");
-    private final Set<UUID> collatedUserTeams = Set.of(userTeamUuid);
-
     @Before
     public void setUp() {
-        dashboardService = new DashboardService(dashboardSummaryFactory, requestData, summaryRepository, userPermissionsService);
+        dashboardService = new DashboardService(dashboardSummaryFactory, requestData, summaryRepository,
+            userPermissionsService);
     }
 
     @Test
@@ -58,23 +74,24 @@ public class DashboardServiceTest {
         when(summaryRepository.findOverdueCasesByTeam(collatedUserTeams)).thenReturn(teamWithOverdueCaseCount);
         when(summaryRepository.findUnallocatedCasesByTeam(collatedUserTeams)).thenReturn(teamWithUnallocatedCaseCount);
         when(requestData.userId()).thenReturn(userUuid.toString());
-        when(summaryRepository.findUserCasesInTeams(collatedUserTeams, userUuid.toString())).thenReturn(teamWithUserCaseCount);
-        when(summaryRepository.findOverdueUserCasesInTeams(collatedUserTeams, userUuid.toString())).thenReturn(teamWithUserOverdueCaseCount);
+        when(summaryRepository.findUserCasesInTeams(collatedUserTeams, userUuid.toString())).thenReturn(
+            teamWithUserCaseCount);
+        when(summaryRepository.findOverdueUserCasesInTeams(collatedUserTeams, userUuid.toString())).thenReturn(
+            teamWithUserOverdueCaseCount);
 
-        Map<DashboardSummaryFactory.DashboardSummaryHeaders, List<Summary>> statisticMap =
-                Map.of(UNALLOCATED_TEAM_CASES, teamWithUnallocatedCaseCount,
-                        OVERDUE_TEAM_CASES, teamWithOverdueCaseCount,
-                        USERS_TEAM_CASES, teamWithUserCaseCount,
-                        USERS_OVERDUE_TEAM_CASES, teamWithUserOverdueCaseCount);
+        Map<DashboardSummaryFactory.DashboardSummaryHeaders, List<Summary>> statisticMap = Map.of(
+            UNALLOCATED_TEAM_CASES, teamWithUnallocatedCaseCount, OVERDUE_TEAM_CASES, teamWithOverdueCaseCount,
+            USERS_TEAM_CASES, teamWithUserCaseCount, USERS_OVERDUE_TEAM_CASES, teamWithUserOverdueCaseCount);
 
         Map<UUID, Map<String, Integer>> returnedMap = Map.of(teamWithCaseCount.get(0).getTeamUuid(),
-                Map.of(TEAM_CASES.toString(), teamWithCaseCount.get(0).getCount() + teamWithCaseCountCaseTypes.get(0).getCount(),                        UNALLOCATED_TEAM_CASES.toString(), teamWithUnallocatedCaseCount.get(0).getCount(),
-                        OVERDUE_TEAM_CASES.toString(), teamWithOverdueCaseCount.get(0).getCount(),
-                        USERS_TEAM_CASES.toString(), teamWithUserCaseCount.get(0).getCount(),
-                        USERS_OVERDUE_TEAM_CASES.toString(), teamWithUserOverdueCaseCount.get(0).getCount()));
+            Map.of(TEAM_CASES.toString(),
+                teamWithCaseCount.get(0).getCount() + teamWithCaseCountCaseTypes.get(0).getCount(),
+                UNALLOCATED_TEAM_CASES.toString(), teamWithUnallocatedCaseCount.get(0).getCount(),
+                OVERDUE_TEAM_CASES.toString(), teamWithOverdueCaseCount.get(0).getCount(), USERS_TEAM_CASES.toString(),
+                teamWithUserCaseCount.get(0).getCount(), USERS_OVERDUE_TEAM_CASES.toString(),
+                teamWithUserOverdueCaseCount.get(0).getCount()));
 
-        when(dashboardSummaryFactory.getZippedSummary(teamWithCaseCount, statisticMap))
-                .thenReturn(returnedMap);
+        when(dashboardSummaryFactory.getZippedSummary(teamWithCaseCount, statisticMap)).thenReturn(returnedMap);
 
         var result = dashboardService.getDashboard();
 

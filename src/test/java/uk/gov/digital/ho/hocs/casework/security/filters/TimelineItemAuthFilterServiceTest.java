@@ -18,9 +18,7 @@ import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -43,19 +41,14 @@ public class TimelineItemAuthFilterServiceTest {
 
         // GIVEN
         GetCaseSummaryResponse testIncorrectResponse = GetCaseSummaryResponse.from(
-                new CaseSummary(
-                        null, null, null,
-                        null, null, null,
-                        null, null, null,
-                        null, null, null, null)
-        );
-        ResponseEntity<?> responseToFilter = ResponseEntity.ok(
-                List.of(testIncorrectResponse));
+            new CaseSummary(null, null, null, null, null, null, null, null, null, null, null, null, null));
+        ResponseEntity<?> responseToFilter = ResponseEntity.ok(List.of(testIncorrectResponse));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;
 
         // WHEN
-        timelineItemAuthFilterService.applyFilter(responseToFilter, userAccessLevel, new Object[]{testIncorrectResponse});
+        timelineItemAuthFilterService.applyFilter(responseToFilter, userAccessLevel,
+            new Object[] { testIncorrectResponse });
 
         // THEN - Expect Exception
     }
@@ -65,10 +58,18 @@ public class TimelineItemAuthFilterServiceTest {
 
         // GIVEN
         UUID testUserUUID = UUID.randomUUID();
-        TimelineItemDto note1 = TimelineItemDto.from(new TimelineItem(null, null, LocalDateTime.now(), UUID.randomUUID().toString(), null, "Message 1", null,null, null));
-        TimelineItemDto note2 = TimelineItemDto.from(new TimelineItem(null, null, LocalDateTime.now(), testUserUUID.toString(), null, "Message 2", null,null, null));
-        TimelineItemDto note3 = TimelineItemDto.from(new TimelineItem(null, null, LocalDateTime.now(), UUID.randomUUID().toString(), null, "Message 3", null,null, null));
-        TimelineItemDto note4 = TimelineItemDto.from(new TimelineItem(null, null, LocalDateTime.now(), testUserUUID.toString(), null, "Message 4", null,null, null));
+        TimelineItemDto note1 = TimelineItemDto.from(
+            new TimelineItem(null, null, LocalDateTime.now(), UUID.randomUUID().toString(), null, "Message 1", null,
+                null, null));
+        TimelineItemDto note2 = TimelineItemDto.from(
+            new TimelineItem(null, null, LocalDateTime.now(), testUserUUID.toString(), null, "Message 2", null, null,
+                null));
+        TimelineItemDto note3 = TimelineItemDto.from(
+            new TimelineItem(null, null, LocalDateTime.now(), UUID.randomUUID().toString(), null, "Message 3", null,
+                null, null));
+        TimelineItemDto note4 = TimelineItemDto.from(
+            new TimelineItem(null, null, LocalDateTime.now(), testUserUUID.toString(), null, "Message 4", null, null,
+                null));
 
         TimelineItemDto[] collectionOfNotes = Arrays.array(note1, note2, note3, note4);
         ResponseEntity<?> responseToFilter = ResponseEntity.ok(collectionOfNotes);
@@ -83,11 +84,11 @@ public class TimelineItemAuthFilterServiceTest {
         // THEN
         assertThat(result).isExactlyInstanceOf(ResponseEntity.class);
 
-        ResponseEntity<?> resultAsResponseEnt =  (ResponseEntity<?>) result;
+        ResponseEntity<?> resultAsResponseEnt = (ResponseEntity<?>) result;
         assertThat(resultAsResponseEnt.getBody()).isNotNull();
 
         assertThat(resultAsResponseEnt.getBody()).isInstanceOf(Collection.class);
-        List<?> resultAsCollection =  (List<?>) resultAsResponseEnt.getBody();
+        List<?> resultAsCollection = (List<?>) resultAsResponseEnt.getBody();
 
         assertThat(resultAsCollection.size()).isEqualTo(2);
         assertThat(resultAsCollection.toArray()[0]).isExactlyInstanceOf(TimelineItemDto.class);

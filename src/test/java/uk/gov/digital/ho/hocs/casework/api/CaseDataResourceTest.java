@@ -7,7 +7,22 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummaryLink;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.MigrateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.MigrateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCaseDataRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateDeadlineForStagesRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdatePrimaryCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageDeadlineRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsResponse;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
@@ -35,18 +50,26 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class CaseDataResourceTest {
 
-    private static final long caseID = 12345L;
     public static final String PREVIOUS_CASE_REFERENCE = "COMP/1234567/21";
+
     public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
+
     public static final UUID PREVIOUS_STAGE_UUID = UUID.randomUUID();
+
     public static final UUID FROM_CASE_UUID = UUID.randomUUID();
+
+    private static final long caseID = 12345L;
+
     private final CaseDataType caseDataType = CaseDataTypeFactory.from("MIN", "a1");
+
     private final Map<String, String> data = new HashMap<>(0);
+
     private final UUID uuid = UUID.randomUUID();
-    @Mock
-    private CaseDataService caseDataService;
 
     private final LocalDate dateArg = LocalDate.now();
+
+    @Mock
+    private CaseDataService caseDataService;
 
     private CaseDataResource caseDataResource;
 
@@ -62,7 +85,8 @@ public class CaseDataResourceTest {
         CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
         CreateCaseRequest request = new CreateCaseRequest(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID);
 
-        when(caseDataService.createCase(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID)).thenReturn(caseData);
+        when(caseDataService.createCase(caseDataType.getDisplayCode(), data, dateArg, FROM_CASE_UUID)).thenReturn(
+            caseData);
 
         ResponseEntity<CreateCaseResponse> response = caseDataResource.createCase(request);
 
@@ -80,7 +104,8 @@ public class CaseDataResourceTest {
         MigrateCaseResponse migrateCaseResponse = new MigrateCaseResponse(UUID.randomUUID(), null);
         MigrateCaseRequest request = new MigrateCaseRequest(caseDataType.getDisplayCode());
 
-        when(caseDataService.migrateCase(caseDataType.getDisplayCode(), FROM_CASE_UUID)).thenReturn(migrateCaseResponse);
+        when(caseDataService.migrateCase(caseDataType.getDisplayCode(), FROM_CASE_UUID)).thenReturn(
+            migrateCaseResponse);
 
         ResponseEntity<MigrateCaseResponse> response = caseDataResource.migrateCase(FROM_CASE_UUID, request);
 
@@ -144,20 +169,9 @@ public class CaseDataResourceTest {
     @Test
     public void shouldGetCaseSummary() {
 
-        when(caseDataService.getCaseSummary(uuid)).thenReturn(new CaseSummary(
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                PREVIOUS_CASE_REFERENCE,
-                PREVIOUS_CASE_UUID,
-                PREVIOUS_STAGE_UUID,
-                null,
-                null));
+        when(caseDataService.getCaseSummary(uuid)).thenReturn(
+            new CaseSummary(null, null, null, null, null, null, null, null, PREVIOUS_CASE_REFERENCE, PREVIOUS_CASE_UUID,
+                PREVIOUS_STAGE_UUID, null, null));
 
         ResponseEntity<GetCaseSummaryResponse> response = caseDataResource.getCaseSummary(uuid);
 
@@ -182,8 +196,7 @@ public class CaseDataResourceTest {
     public void shouldGetCaseWithCorrespondentAndTopic() {
 
         Correspondent correspondent = new Correspondent(UUID.randomUUID(), "TYPE", "name", "organisation",
-                new Address("postcode", "address1", "address2", "address3", "county"),
-                "phone", "email", "", "");
+            new Address("postcode", "address1", "address2", "address3", "county"), "phone", "email", "", "");
 
         Topic topic = new Topic(UUID.randomUUID(), "name", UUID.randomUUID());
         CaseData caseData = mock(CaseData.class);
@@ -236,7 +249,6 @@ public class CaseDataResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
-
     @Test
     public void shouldUpdateDateReceived() {
 
@@ -284,13 +296,15 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldUpdateTeamByStageAndTexts() {
-        String[] texts = {"Text1"};
-        UpdateTeamByStageAndTextsRequest request = new UpdateTeamByStageAndTextsRequest(
-                uuid, uuid, "stageType", "teamUUIDKey", "teamNameKey", texts);
+        String[] texts = { "Text1" };
+        UpdateTeamByStageAndTextsRequest request = new UpdateTeamByStageAndTextsRequest(uuid, uuid, "stageType",
+            "teamUUIDKey", "teamNameKey", texts);
         Map<String, String> teamMap = new HashMap<>();
-        when(caseDataService.updateTeamByStageAndTexts(uuid, uuid, "stageType", "teamUUIDKey", "teamNameKey", texts)).thenReturn(teamMap);
+        when(caseDataService.updateTeamByStageAndTexts(uuid, uuid, "stageType", "teamUUIDKey", "teamNameKey",
+            texts)).thenReturn(teamMap);
 
-        ResponseEntity<UpdateTeamByStageAndTextsResponse> response = caseDataResource.updateTeamByStageAndTexts(uuid, uuid, request);
+        ResponseEntity<UpdateTeamByStageAndTextsResponse> response = caseDataResource.updateTeamByStageAndTexts(uuid,
+            uuid, request);
 
         verify(caseDataService).updateTeamByStageAndTexts(uuid, uuid, "stageType", "teamUUIDKey", "teamNameKey", texts);
         verifyNoMoreInteractions(caseDataService);
@@ -302,7 +316,7 @@ public class CaseDataResourceTest {
     }
 
     @Test
-    public void shouldGetDocumentTags(){
+    public void shouldGetDocumentTags() {
         UUID caseUUID = UUID.randomUUID();
         List<String> documentTags = List.of("Tag");
         when(caseDataService.getDocumentTags(caseUUID)).thenReturn(documentTags);
@@ -316,7 +330,8 @@ public class CaseDataResourceTest {
 
     @Test
     public void shouldEvictFromTheCache() {
-        ResponseEntity<String> responseEntity = caseDataResource.clearCachedTemplateForCaseType(caseDataType.getDisplayName());
+        ResponseEntity<String> responseEntity = caseDataResource.clearCachedTemplateForCaseType(
+            caseDataType.getDisplayName());
 
         assertThat(responseEntity.getBody()).isEqualTo("Cache Cleared");
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -357,14 +372,11 @@ public class CaseDataResourceTest {
         UUID caseUUID = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
         UUID primaryCorrespondentRequestUUID = UUID.randomUUID();
-        UpdatePrimaryCorrespondentRequest primaryCorrespondentUUID =
-                new UpdatePrimaryCorrespondentRequest(primaryCorrespondentRequestUUID);
+        UpdatePrimaryCorrespondentRequest primaryCorrespondentUUID = new UpdatePrimaryCorrespondentRequest(
+            primaryCorrespondentRequestUUID);
 
-        ResponseEntity<Void> results = caseDataResource.updatePrimaryCorrespondent(
-                caseUUID,
-                stageUUID,
-                primaryCorrespondentUUID
-        );
+        ResponseEntity<Void> results = caseDataResource.updatePrimaryCorrespondent(caseUUID, stageUUID,
+            primaryCorrespondentUUID);
 
         assertThat(results.getStatusCodeValue()).isEqualTo(200);
         verify(caseDataService).updatePrimaryCorrespondent(caseUUID, stageUUID, primaryCorrespondentRequestUUID);
@@ -376,11 +388,11 @@ public class CaseDataResourceTest {
 
         Map<String, Integer> stageTypeAndDaysMap = Map.of("some_stage_type", 7);
 
-        UpdateDeadlineForStagesRequest updateDeadlineForStagesRequest =
-                new UpdateDeadlineForStagesRequest(stageTypeAndDaysMap);
+        UpdateDeadlineForStagesRequest updateDeadlineForStagesRequest = new UpdateDeadlineForStagesRequest(
+            stageTypeAndDaysMap);
 
-
-        ResponseEntity<Void> response = caseDataResource.updateDeadlineForStages(uuid, uuid, updateDeadlineForStagesRequest);
+        ResponseEntity<Void> response = caseDataResource.updateDeadlineForStages(uuid, uuid,
+            updateDeadlineForStagesRequest);
 
         verify(caseDataService).updateDeadlineForStages(uuid, uuid, stageTypeAndDaysMap);
         verifyNoMoreInteractions(caseDataService);
@@ -404,5 +416,7 @@ public class CaseDataResourceTest {
         verify(caseDataService).mapCaseDataValues(eq(caseUUID), eq(keyMappings));
         verifyNoMoreInteractions(caseDataService);
         assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);    }
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
 }

@@ -17,11 +17,10 @@ public class GetTopicsResponse {
     private Set<GetTopicResponse> topics;
 
     public static GetTopicsResponse from(Set<Topic> topicData) {
-        Set<GetTopicResponse> topicsResponses = topicData
-                .stream()
-                .map(GetTopicResponse::from)
-                .collect(Collectors.toSet());
+        Set<GetTopicResponse> topicsResponses = topicData.stream().map(GetTopicResponse::from).collect(
+            Collectors.toSet());
 
         return new GetTopicsResponse(topicsResponses);
     }
+
 }

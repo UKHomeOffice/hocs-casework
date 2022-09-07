@@ -38,15 +38,12 @@ public class TimelineItemDto {
     private String editorName;
 
     public static TimelineItemDto from(TimelineItem timelineItem) {
-        return new TimelineItemDto(
-                timelineItem.getCaseUUID(),
-                timelineItem.getStageUUID(),
-                ZonedDateTime.of(timelineItem.getEventTime(), ZoneOffset.UTC),
-                timelineItem.getUserName(),
-                timelineItem.getType(),
-                timelineItem.getMessage(),
-                timelineItem.getTimelineItemUUID(),
-                timelineItem.getEditedTime() != null ? ZonedDateTime.of(timelineItem.getEditedTime(), ZoneOffset.UTC) : null,
-                timelineItem.getEditorName());
+        return new TimelineItemDto(timelineItem.getCaseUUID(), timelineItem.getStageUUID(),
+            ZonedDateTime.of(timelineItem.getEventTime(), ZoneOffset.UTC), timelineItem.getUserName(),
+            timelineItem.getType(), timelineItem.getMessage(), timelineItem.getTimelineItemUUID(),
+            timelineItem.getEditedTime() != null
+                ? ZonedDateTime.of(timelineItem.getEditedTime(), ZoneOffset.UTC)
+                : null, timelineItem.getEditorName());
     }
+
 }

@@ -43,29 +43,36 @@ public class CorrespondentResource {
     }
 
     @GetMapping(value = "/correspondents")
-    ResponseEntity<GetCorrespondentOutlinesResponse> getAllActiveCorrespondents(@RequestParam(value = "includeDeleted", required = false) Optional<Boolean> includeDeleted) {
+    ResponseEntity<GetCorrespondentOutlinesResponse> getAllActiveCorrespondents(
+        @RequestParam(value = "includeDeleted", required = false) Optional<Boolean> includeDeleted) {
         Set<Correspondent> correspondents = correspondentService.getAllCorrespondents(includeDeleted.orElse(false));
         return ResponseEntity.ok(GetCorrespondentOutlinesResponse.from(correspondents));
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent")
-    ResponseEntity addCorrespondentToCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @Valid @RequestBody CreateCorrespondentRequest request) {
-        Address address = new Address(request.getPostcode(), request.getAddress1(), request.getAddress2(), request.getAddress3(), request.getCountry());
-        correspondentService.createCorrespondent(caseUUID, stageUUID, request.getType(), request.getFullname(), request.getOrganisation(), address, request.getTelephone(), request.getEmail(), request.getReference(), request.getExternalKey());
+    ResponseEntity addCorrespondentToCase(@PathVariable UUID caseUUID,
+                                          @PathVariable UUID stageUUID,
+                                          @Valid @RequestBody CreateCorrespondentRequest request) {
+        Address address = new Address(request.getPostcode(), request.getAddress1(), request.getAddress2(),
+            request.getAddress3(), request.getCountry());
+        correspondentService.createCorrespondent(caseUUID, stageUUID, request.getType(), request.getFullname(),
+            request.getOrganisation(), address, request.getTelephone(), request.getEmail(), request.getReference(),
+            request.getExternalKey());
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
     @GetMapping(value = "/case/{caseUUID}/correspondent")
     ResponseEntity<GetCorrespondentsResponse> getCorrespondents(@PathVariable UUID caseUUID) {
         Set<CorrespondentWithPrimaryFlag> correspondents = correspondentService.getCorrespondents(caseUUID);
         return ResponseEntity.ok(GetCorrespondentsResponse.from(correspondents));
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
     @GetMapping(value = "/case/{caseUUID}/correspondent/{correspondentUUID}")
-    ResponseEntity<GetCorrespondentResponse> getCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID correspondentUUID) {
+    ResponseEntity<GetCorrespondentResponse> getCorrespondent(@PathVariable UUID caseUUID,
+                                                              @PathVariable UUID correspondentUUID) {
         Correspondent correspondent = correspondentService.getCorrespondent(caseUUID, correspondentUUID);
         return ResponseEntity.ok(GetCorrespondentResponse.from(correspondent));
     }
@@ -77,7 +84,7 @@ public class CorrespondentResource {
         return ResponseEntity.ok(GetCorrespondentTypeResponse.from(correspondentTypes));
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
     @GetMapping(value = "/case/{caseUUID}/correspondentType/selectable")
     ResponseEntity<GetCorrespondentTypeResponse> getSelectableCorrespondentTypes(@PathVariable UUID caseUUID) {
         Set<CorrespondentTypeDto> correspondentTypes = correspondentService.getSelectableCorrespondentTypes(caseUUID);
@@ -86,14 +93,19 @@ public class CorrespondentResource {
 
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @DeleteMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent/{correspondentUUID}")
-    ResponseEntity<GetCorrespondentResponse> deleteCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID ,@PathVariable UUID correspondentUUID) {
+    ResponseEntity<GetCorrespondentResponse> deleteCorrespondent(@PathVariable UUID caseUUID,
+                                                                 @PathVariable UUID stageUUID,
+                                                                 @PathVariable UUID correspondentUUID) {
         correspondentService.deleteCorrespondent(caseUUID, stageUUID, correspondentUUID);
         return ResponseEntity.ok().build();
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent/{correspondentUUID}")
-    ResponseEntity updateCorrespondent(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @PathVariable UUID correspondentUUID, @Valid @RequestBody UpdateCorrespondentRequest request) {
+    ResponseEntity updateCorrespondent(@PathVariable UUID caseUUID,
+                                       @PathVariable UUID stageUUID,
+                                       @PathVariable UUID correspondentUUID,
+                                       @Valid @RequestBody UpdateCorrespondentRequest request) {
         correspondentService.updateCorrespondent(caseUUID, correspondentUUID, request);
         return ResponseEntity.ok().build();
     }

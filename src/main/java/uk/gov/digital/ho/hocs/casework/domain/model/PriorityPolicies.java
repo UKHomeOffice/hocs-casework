@@ -26,6 +26,7 @@ public class PriorityPolicies {
     public static class PriorityPolicy {
 
         private final String type;
+
         private final Map<String, String> config;
 
         @JsonCreator
@@ -35,4 +36,5 @@ public class PriorityPolicies {
         }
 
     }
+
 }

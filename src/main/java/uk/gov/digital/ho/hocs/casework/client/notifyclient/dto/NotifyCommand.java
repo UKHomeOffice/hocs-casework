@@ -11,7 +11,9 @@ import java.util.UUID;
 public abstract class NotifyCommand {
 
     private UUID caseUUID;
+
     private UUID stageUUID;
+
     private String caseReference;
 
     public NotifyCommand(UUID caseUUID, UUID stageUUID, String caseReference) {

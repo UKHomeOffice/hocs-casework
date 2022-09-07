@@ -19,8 +19,11 @@ import java.util.UUID;
 public class ActionDataExternalInterestOutboundDto extends ActionDataDto {
 
     private String interestedPartyType;
+
     private Map<String, String> interestedPartyEntity;
+
     private String detailsOfInterest;
+
     private String note;
 
     public ActionDataExternalInterestOutboundDto(UUID uuid,
@@ -36,4 +39,5 @@ public class ActionDataExternalInterestOutboundDto extends ActionDataDto {
         this.interestedPartyEntity = interestedPartyEntity;
         this.detailsOfInterest = detailsOfInterest;
     }
+
 }

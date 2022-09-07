@@ -31,30 +31,27 @@ public abstract class JsonConfigFolderReader {
 
         if (folder == null) {
             throw new ApplicationExceptions.ConfigFolderReadException(
-                    String.format("Configuration folder \"%s\" could not be found.", getFolderPath()),
-                    LogEvent.CONFIG_FOLDER_NOT_FOUND_FAILURE);
+                String.format("Configuration folder \"%s\" could not be found.", getFolderPath()),
+                LogEvent.CONFIG_FOLDER_NOT_FOUND_FAILURE);
         }
 
         try (Stream<Path> paths = Files.walk(Paths.get(folder.toURI()))) {
-            return paths
-                    .filter(Files::isRegularFile)
-                    .map(path -> readValueFromFile(reference, path))
-                    .collect(Collectors.toMap(T::getType, T::getValue));
+            return paths.filter(Files::isRegularFile).map(path -> readValueFromFile(reference, path)).collect(
+                Collectors.toMap(T::getType, T::getValue));
         } catch (IOException | URISyntaxException e) {
             throw new ApplicationExceptions.ConfigFolderReadException(
-                    String.format("Unable to read files from folder: %s for type %s", getFolderName(), reference.getType()),
-                    LogEvent.CONFIG_PARSE_FAILURE);
+                String.format("Unable to read files from folder: %s for type %s", getFolderName(), reference.getType()),
+                LogEvent.CONFIG_PARSE_FAILURE);
         }
     }
 
     private <T> T readValueFromFile(TypeReference<T> reference, Path path) {
-        try (InputStream in =
-                     new FileInputStream(path.toString())) {
+        try (InputStream in = new FileInputStream(path.toString())) {
             return objectMapper.readValue(in, reference);
         } catch (IOException e) {
             throw new ApplicationExceptions.ConfigFileReadException(
-                    String.format("Unable to read file: %s into type %s", path.getFileName(), reference.getType()),
-                    LogEvent.CONFIG_PARSE_FAILURE);
+                String.format("Unable to read file: %s into type %s", path.getFileName(), reference.getType()),
+                LogEvent.CONFIG_PARSE_FAILURE);
         }
     }
 
@@ -65,7 +62,11 @@ public abstract class JsonConfigFolderReader {
     }
 
     public interface CaseTypeObject<V> {
+
         String getType();
+
         V getValue();
+
     }
+
 }

@@ -29,7 +29,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -37,7 +40,9 @@ import static org.mockito.Mockito.*;
 public class NotifyClientTest extends BaseAwsTest {
 
     private static final UUID caseUUID = UUID.randomUUID();
+
     private static final UUID stageUUID = UUID.randomUUID();
+
     private static final String caseRef = "";
 
     @Captor
@@ -98,13 +103,13 @@ public class NotifyClientTest extends BaseAwsTest {
     }
 
     @Test
-    public void shouldSetHeaders()  {
-        Map<String, MessageAttributeValue> expectedHeaders = Map.of(
-                "event_type", new SqsStringMessageAttributeValue(LogEvent.USER_EMAIL_SENT.toString()),
-                RequestData.CORRELATION_ID_HEADER, new SqsStringMessageAttributeValue(requestData.correlationId()),
-                RequestData.USER_ID_HEADER, new SqsStringMessageAttributeValue(requestData.userId()),
-                RequestData.USERNAME_HEADER, new SqsStringMessageAttributeValue(requestData.username()),
-                RequestData.GROUP_HEADER, new SqsStringMessageAttributeValue(requestData.groups()));
+    public void shouldSetHeaders() {
+        Map<String, MessageAttributeValue> expectedHeaders = Map.of("event_type",
+            new SqsStringMessageAttributeValue(LogEvent.USER_EMAIL_SENT.toString()), RequestData.CORRELATION_ID_HEADER,
+            new SqsStringMessageAttributeValue(requestData.correlationId()), RequestData.USER_ID_HEADER,
+            new SqsStringMessageAttributeValue(requestData.userId()), RequestData.USERNAME_HEADER,
+            new SqsStringMessageAttributeValue(requestData.username()), RequestData.GROUP_HEADER,
+            new SqsStringMessageAttributeValue(requestData.groups()));
 
         UUID currentUser = UUID.randomUUID();
         UUID newUser = UUID.randomUUID();

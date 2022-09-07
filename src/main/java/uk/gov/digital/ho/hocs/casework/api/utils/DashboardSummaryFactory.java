@@ -3,14 +3,19 @@ package uk.gov.digital.ho.hocs.casework.api.utils;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.domain.model.Summary;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 public class DashboardSummaryFactory {
 
-    private DashboardSummaryFactory() { }
+    private DashboardSummaryFactory() {}
 
-    public Map<UUID, Map<String, Integer>> getZippedSummary(List<Summary> stageWithCaseSummaries, Map<DashboardSummaryHeaders, List<Summary>> zippableSummaries) {
+    public Map<UUID, Map<String, Integer>> getZippedSummary(List<Summary> stageWithCaseSummaries,
+                                                            Map<DashboardSummaryHeaders, List<Summary>> zippableSummaries) {
         Map<UUID, Map<String, Integer>> dashboardSummary = new HashMap<>(stageWithCaseSummaries.size());
 
         stageWithCaseSummaries.forEach(casesSummary -> {
@@ -20,15 +25,16 @@ public class DashboardSummaryFactory {
 
             dashboardSummary.get(teamUuid).put(DashboardSummaryHeaders.TEAM_CASES.toString(), casesSummary.getCount());
 
-            zippableSummaries.forEach((K, V) ->
-                    dashboardSummary.get(teamUuid).put(K.toString(), getCountFromListByTeamUuid(V, teamUuid)));
+            zippableSummaries.forEach(
+                (K, V) -> dashboardSummary.get(teamUuid).put(K.toString(), getCountFromListByTeamUuid(V, teamUuid)));
         });
 
         return dashboardSummary;
     }
 
     private int getCountFromListByTeamUuid(List<Summary> summaries, UUID uuid) {
-        Optional<Summary> summary = summaries.stream().filter(summaryValue -> summaryValue.getTeamUuid().equals(uuid)).findFirst();
+        Optional<Summary> summary = summaries.stream().filter(
+            summaryValue -> summaryValue.getTeamUuid().equals(uuid)).findFirst();
         if (summary.isPresent()) {
             return summary.get().getCount();
         }

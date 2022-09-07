@@ -2,7 +2,6 @@ package uk.gov.digital.ho.hocs.casework.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
@@ -34,6 +33,7 @@ public class GetCaseNoteResponse {
 
     @JsonProperty("author")
     private String author;
+
     @Getter
 
     @JsonProperty("edited")
@@ -43,14 +43,9 @@ public class GetCaseNoteResponse {
     private String editor;
 
     public static GetCaseNoteResponse from(CaseNote caseNote) {
-        return new GetCaseNoteResponse(
-                caseNote.getUuid(),
-                ZonedDateTime.of(caseNote.getCreated(), ZoneOffset.UTC),
-                caseNote.getCaseNoteType(),
-                caseNote.getCaseUUID(),
-                caseNote.getText(),
-                caseNote.getAuthor(),
-                caseNote.getEdited(),
-                caseNote.getEditor());
+        return new GetCaseNoteResponse(caseNote.getUuid(), ZonedDateTime.of(caseNote.getCreated(), ZoneOffset.UTC),
+            caseNote.getCaseNoteType(), caseNote.getCaseUUID(), caseNote.getText(), caseNote.getAuthor(),
+            caseNote.getEdited(), caseNote.getEditor());
     }
+
 }

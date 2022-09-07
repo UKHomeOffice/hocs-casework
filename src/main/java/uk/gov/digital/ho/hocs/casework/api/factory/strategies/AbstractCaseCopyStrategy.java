@@ -35,4 +35,5 @@ public abstract class AbstractCaseCopyStrategy {
 
         toCase.update(toCaseClobData);
     }
+
 }

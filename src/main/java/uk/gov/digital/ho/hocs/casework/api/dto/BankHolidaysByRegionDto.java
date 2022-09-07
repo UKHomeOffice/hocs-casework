@@ -12,6 +12,7 @@ import java.util.List;
 @Setter
 @Getter
 public class BankHolidaysByRegionDto {
+
     private List<Event> events;
 
     @AllArgsConstructor
@@ -19,6 +20,9 @@ public class BankHolidaysByRegionDto {
     @Setter
     @Getter
     public static class Event {
+
         private String date;
+
     }
+
 }

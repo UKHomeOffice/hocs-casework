@@ -6,15 +6,26 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@TypeDef(name="pgsql_enum", typeClass=org.hibernate.type.EnumType.class)
+@TypeDef(name = "pgsql_enum", typeClass = org.hibernate.type.EnumType.class)
 @Table(name = "bank_holiday")
 public class BankHoliday {
+
+    @Getter
+    @Column(name = "date")
+    LocalDate date;
 
     @Getter
     @Id
@@ -25,16 +36,25 @@ public class BankHoliday {
     @Getter
     @Enumerated(EnumType.STRING)
     @Column(name = "region")
-    @Type (type = "pgsql_enum")
+    @Type(type = "pgsql_enum")
     private BankHolidayRegion region;
-
-    @Getter
-    @Column(name = "date")
-    LocalDate date;
 
     public BankHoliday(String region, LocalDate date) {
         this.region = BankHolidayRegion.fromString(region);
         this.date = date;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
+        BankHoliday that = (BankHoliday) o;
+        return region == that.region && date.equals(that.date);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(region, date);
     }
 
     public enum BankHolidayRegion {
@@ -44,7 +64,7 @@ public class BankHoliday {
         NORTHERN_IRELAND;
 
         public static BankHolidayRegion fromString(String from) {
-            switch(from) {
+            switch (from) {
                 case "united-kingdom":
                     return UNITED_KINGDOM;
                 case "england-and-wales":
@@ -59,16 +79,4 @@ public class BankHoliday {
         }
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BankHoliday that = (BankHoliday) o;
-        return region == that.region && date.equals(that.date);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(region, date);
-    }
 }

@@ -12,35 +12,34 @@ import java.util.UUID;
 @Getter
 public class CreateAuditRequest {
 
-    @JsonProperty(value= "correlation_id", required = true)
+    @JsonProperty(value = "correlation_id", required = true)
     private String correlationID;
 
-    @JsonProperty(value= "caseUUID", required = true)
+    @JsonProperty(value = "caseUUID", required = true)
     private UUID caseUUID;
 
-    @JsonProperty(value= "stageUUID")
+    @JsonProperty(value = "stageUUID")
     private UUID stageUUID;
 
-    @JsonProperty(value= "raising_service", required = true)
+    @JsonProperty(value = "raising_service", required = true)
     private String raisingService;
 
-    @JsonProperty(value= "audit_payload")
+    @JsonProperty(value = "audit_payload")
     private String auditPayload;
 
-    @JsonProperty(value= "data")
+    @JsonProperty(value = "data")
     private String data;
 
-    @JsonProperty(value= "namespace", required = true)
+    @JsonProperty(value = "namespace", required = true)
     private String namespace;
 
-    @JsonProperty(value="audit_timestamp", required = true)
+    @JsonProperty(value = "audit_timestamp", required = true)
     private LocalDateTime auditTimestamp;
 
-    @JsonProperty(value= "type", required = true)
+    @JsonProperty(value = "type", required = true)
     private EventType type;
 
-    @JsonProperty(value= "user_id", required = true)
+    @JsonProperty(value = "user_id", required = true)
     private String userID;
 
 }
-

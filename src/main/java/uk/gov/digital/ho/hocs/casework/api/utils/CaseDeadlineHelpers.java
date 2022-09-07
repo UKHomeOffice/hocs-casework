@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Slf4j
 public class CaseDeadlineHelpers {
+
     private CaseDeadlineHelpers() {}
 
     public static void overrideStageDeadlines(CaseData caseData) {
@@ -25,4 +26,5 @@ public class CaseDeadlineHelpers {
             }
         }
     }
+
 }

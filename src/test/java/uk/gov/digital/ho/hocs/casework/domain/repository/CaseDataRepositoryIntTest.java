@@ -22,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class CaseDataRepositoryIntTest {
 
-
     @Autowired
     private TestEntityManager entityManager;
 
@@ -30,12 +29,13 @@ public class CaseDataRepositoryIntTest {
     private CaseDataRepository repository;
 
     private UUID caseUUID;
+
     private CaseData newCase;
 
     @Before
     public void setup() {
         newCase = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), 101l, LocalDate.of(2018, 1, 1));
-        newCase.setCaseDeadline(LocalDate.of(2018,1,29));
+        newCase.setCaseDeadline(LocalDate.of(2018, 1, 29));
         this.entityManager.persist(newCase);
         caseUUID = newCase.getUuid();
     }
@@ -54,13 +54,13 @@ public class CaseDataRepositoryIntTest {
 
     @Test(expected = PersistenceException.class)
     public void shouldThrowExceptionWhenDuplicateReferenceNumber() {
-        CaseData newCaseDuplicateReference = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), 101l, LocalDate.of(2018, 01, 01));
+        CaseData newCaseDuplicateReference = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), 101l,
+            LocalDate.of(2018, 01, 01));
         this.entityManager.persist(newCaseDuplicateReference);
     }
 
-
     @Test
-    public void shouldGetNextSequenceValueForNumbering(){
+    public void shouldGetNextSequenceValueForNumbering() {
 
         Long firstCall = repository.getNextSeriesId();
         Long secondCall = repository.getNextSeriesId();
@@ -94,5 +94,5 @@ public class CaseDataRepositoryIntTest {
 
         assertThat(caseDataType).isEqualTo("TEST");
     }
-}
 
+}

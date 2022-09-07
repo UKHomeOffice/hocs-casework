@@ -79,4 +79,5 @@ public abstract class BaseStage implements Serializable {
     public boolean isActive() {
         return this.teamUUID != null;
     }
+
 }

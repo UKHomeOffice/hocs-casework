@@ -4,18 +4,19 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class SimpleStringPropertyPolicyTest {
 
-    private SimpleStringPropertyPolicy policy;
-    private StageWithCaseData stage;
-
     private static final String PROPERTY_NAME = "property1";
+
     private static final String PROPERTY_VALUE = "value1";
+
     private static final double POINTS_TO_AWARD = 10d;
+
+    private SimpleStringPropertyPolicy policy;
+
+    private StageWithCaseData stage;
 
     @Before
     public void before() {
@@ -44,4 +45,5 @@ public class SimpleStringPropertyPolicyTest {
         double result = policy.apply(stage);
         assertThat(result).isZero();
     }
+
 }

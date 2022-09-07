@@ -15,23 +15,34 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CaseNoteServiceTest {
 
-    private final UUID caseUUID = UUID.randomUUID();
-    private final String caseNoteType = "MANUAL";
     private static final String text = "CASE_NOTE";
+
+    private final UUID caseUUID = UUID.randomUUID();
+
+    private final String caseNoteType = "MANUAL";
+
     String userId = "any user";
-    @Mock
-    private CaseNoteRepository caseNoteRepository;
-    private CaseNoteService caseNoteService;
+
     @Mock
     AuditClient auditClient;
 
     @Mock
     RequestData requestData;
+
+    @Mock
+    private CaseNoteRepository caseNoteRepository;
+
+    private CaseNoteService caseNoteService;
 
     @Before
     public void setUp() {
@@ -42,8 +53,8 @@ public class CaseNoteServiceTest {
     @Test
     public void shouldGetCaseNotes() throws ApplicationExceptions.EntityNotFoundException {
 
-
-        when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(Set.of(new CaseNote(caseUUID, "MANUAL", text, userId)));
+        when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(
+            Set.of(new CaseNote(caseUUID, "MANUAL", text, userId)));
 
         caseNoteService.getCaseNotes(caseUUID);
 
@@ -149,7 +160,7 @@ public class CaseNoteServiceTest {
             // Do nothing.
         }
 
-         verifyNoInteractions(caseNoteRepository);
+        verifyNoInteractions(caseNoteRepository);
 
     }
 
@@ -167,7 +178,7 @@ public class CaseNoteServiceTest {
             // Do nothing.
         }
 
-         verifyNoInteractions(caseNoteRepository);
+        verifyNoInteractions(caseNoteRepository);
 
     }
 
@@ -185,7 +196,7 @@ public class CaseNoteServiceTest {
             // Do nothing.
         }
 
-         verifyNoInteractions(caseNoteRepository);
+        verifyNoInteractions(caseNoteRepository);
 
     }
 

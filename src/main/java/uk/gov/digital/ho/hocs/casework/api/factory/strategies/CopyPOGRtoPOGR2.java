@@ -11,26 +11,13 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 @CaseCopy(fromCaseType = "POGR", toCaseType = "POGR2")
 public class CopyPOGRtoPOGR2 extends AbstractCaseCopyStrategy implements CaseCopyStrategy {
 
-    private static final String[] DATA_CLOB_KEYS = {
-            "BusinessArea",
-            "ComplainantDOB",
-            "ComplainantGender",
-            "ComplainantNationality",
-            "ComplainantCompanyName",
-            "ComplainantCaseAccountNumber",
-            "ComplainantCategory",
-            "ComplainantNro",
-            "ComplainantLocation",
-            "ComplaintDescription",
-            "ComplaintChannel",
-            "ComplaintNationOrigin",
-            "ComplaintPriority",
-            "ComplaintThirdPartyReference",
-            "LoaRequired",
-            "LoaReceived"
-    };
+    private static final String[] DATA_CLOB_KEYS = { "BusinessArea", "ComplainantDOB", "ComplainantGender",
+        "ComplainantNationality", "ComplainantCompanyName", "ComplainantCaseAccountNumber", "ComplainantCategory",
+        "ComplainantNro", "ComplainantLocation", "ComplaintDescription", "ComplaintChannel", "ComplaintNationOrigin",
+        "ComplaintPriority", "ComplaintThirdPartyReference", "LoaRequired", "LoaReceived" };
 
     private final CaseDataService caseDataService;
+
     private final CorrespondentService correspondentService;
 
     @Autowired

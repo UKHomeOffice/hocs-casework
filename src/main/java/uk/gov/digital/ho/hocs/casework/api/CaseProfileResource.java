@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +21,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 class CaseProfileResource {
 
     private final CaseDataService caseDataService;
+
     private final InfoClient infoClient;
 
     @Autowired
@@ -30,7 +30,7 @@ class CaseProfileResource {
         this.infoClient = infoClient;
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
     @GetMapping(value = "/case/profile/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ProfileDto> getProfileForCase(@PathVariable UUID caseUUID) {
         String caseType = caseDataService.getCaseType(caseUUID);

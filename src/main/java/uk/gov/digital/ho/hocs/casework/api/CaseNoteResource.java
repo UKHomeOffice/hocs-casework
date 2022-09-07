@@ -3,7 +3,13 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseNoteRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseNoteResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseNotesResponse;
@@ -26,31 +32,37 @@ public class CaseNoteResource {
         this.caseNoteService = caseNoteService;
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
     @GetMapping(value = "/case/{caseUUID}/note")
     ResponseEntity<GetCaseNotesResponse> getCaseNotesForCase(@PathVariable UUID caseUUID) {
         Set<CaseNote> caseNoteData = caseNoteService.getCaseNotes(caseUUID);
         return ResponseEntity.ok(GetCaseNotesResponse.from(caseNoteData));
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
     @GetMapping(value = "/case/{caseUUID}/note/{noteUUID}")
     ResponseEntity<GetCaseNoteResponse> getCaseNote(@PathVariable UUID caseUUID, @PathVariable UUID noteUUID) {
         CaseNote caseNoteData = caseNoteService.getCaseNote(noteUUID);
         return ResponseEntity.ok(GetCaseNoteResponse.from(caseNoteData));
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
     @PostMapping(value = "/case/{caseUUID}/note")
-    public ResponseEntity<UUID> createCaseNote(@PathVariable UUID caseUUID,@Valid @RequestBody CreateCaseNoteRequest createCaseNoteRequest) {
-        CaseNote caseNote= caseNoteService.createCaseNote(caseUUID, createCaseNoteRequest.getType(), createCaseNoteRequest.getText());
+    public ResponseEntity<UUID> createCaseNote(@PathVariable UUID caseUUID,
+                                               @Valid @RequestBody CreateCaseNoteRequest createCaseNoteRequest) {
+        CaseNote caseNote = caseNoteService.createCaseNote(caseUUID, createCaseNoteRequest.getType(),
+            createCaseNoteRequest.getText());
         return ResponseEntity.ok(caseNote.getUuid());
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/note/{noteUUID}")
-    ResponseEntity<GetCaseNoteResponse> updateCaseNote(@PathVariable UUID caseUUID, @PathVariable UUID noteUUID, @Valid @RequestBody CreateCaseNoteRequest createCaseNoteRequest) {
-        CaseNote caseNote = caseNoteService.updateCaseNote(noteUUID, createCaseNoteRequest.getType(), createCaseNoteRequest.getText());
+    ResponseEntity<GetCaseNoteResponse> updateCaseNote(@PathVariable UUID caseUUID,
+                                                       @PathVariable UUID noteUUID,
+                                                       @Valid @RequestBody
+                                                           CreateCaseNoteRequest createCaseNoteRequest) {
+        CaseNote caseNote = caseNoteService.updateCaseNote(noteUUID, createCaseNoteRequest.getType(),
+            createCaseNoteRequest.getText());
         return ResponseEntity.ok(GetCaseNoteResponse.from(caseNote));
     }
 
@@ -60,4 +72,5 @@ public class CaseNoteResource {
         CaseNote caseNote = caseNoteService.deleteCaseNote(noteUUID);
         return ResponseEntity.ok(caseNote.getUuid());
     }
+
 }

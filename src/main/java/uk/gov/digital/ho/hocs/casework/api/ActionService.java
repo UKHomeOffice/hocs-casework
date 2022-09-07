@@ -10,4 +10,5 @@ public interface ActionService {
     String getServiceMapKey();
 
     List<ActionDataDto> getAllActionsForCase(UUID caseUUID);
+
 }

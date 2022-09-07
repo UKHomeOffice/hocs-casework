@@ -15,15 +15,13 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@ContextConfiguration(classes = {
-        CaseCopyFactoryTest.StrategyFirst.class,
-        CaseCopyFactoryTest.StrategySecond.class,
-        CaseCopyFactoryTest.StrategyThird.class,
-        CaseCopyFactory.class})
+@ContextConfiguration(classes = { CaseCopyFactoryTest.StrategyFirst.class, CaseCopyFactoryTest.StrategySecond.class,
+    CaseCopyFactoryTest.StrategyThird.class, CaseCopyFactory.class })
 @RunWith(SpringRunner.class)
 public class CaseCopyFactoryTest {
 
     public static final CaseDataType CASE_DATA_TYPE = new CaseDataType("a", "b", "c", "d", 20, 15);
+
     public static final CaseData CASE = new CaseData(CASE_DATA_TYPE, 1L, LocalDate.now());
 
     @Autowired
@@ -50,7 +48,6 @@ public class CaseCopyFactoryTest {
 
     }
 
-
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotAcceptBlankFromCase() {
 
@@ -74,9 +71,7 @@ public class CaseCopyFactoryTest {
         Optional<CaseCopyStrategy> strategy = factory.getStrategy("A", "B");
 
         // then
-        assertThat(strategy)
-                .isNotNull()
-                .isPresent();
+        assertThat(strategy).isNotNull().isPresent();
         assertThat(strategy.get()).isInstanceOf(StrategyFirst.class);
 
     }
@@ -88,9 +83,7 @@ public class CaseCopyFactoryTest {
         Optional<CaseCopyStrategy> strategy = factory.getStrategy("C", "D");
 
         // then
-        assertThat(strategy)
-                .isNotNull()
-                .isPresent();
+        assertThat(strategy).isNotNull().isPresent();
         assertThat(strategy.get()).isInstanceOf(StrategyThird.class);
 
         strategy.get().copyCase(CASE, CASE);
@@ -103,9 +96,7 @@ public class CaseCopyFactoryTest {
         Optional<CaseCopyStrategy> strategy = factory.getStrategy("X", "Y");
 
         // then
-        assertThat(strategy)
-                .isNotNull()
-                .isNotPresent();
+        assertThat(strategy).isNotNull().isNotPresent();
 
     }
 
@@ -116,9 +107,7 @@ public class CaseCopyFactoryTest {
         Optional<CaseCopyStrategy> strategy = factory.getStrategy("A", "Y");
 
         // then
-        assertThat(strategy)
-                .isNotNull()
-                .isNotPresent();
+        assertThat(strategy).isNotNull().isNotPresent();
 
     }
 
@@ -130,6 +119,7 @@ public class CaseCopyFactoryTest {
         public void copyCase(CaseData fromCase, CaseData toCase) {
 
         }
+
     }
 
     // Sample Strategy - intentionally duplicate caseTypes
@@ -140,6 +130,7 @@ public class CaseCopyFactoryTest {
         public void copyCase(CaseData fromCase, CaseData toCase) {
 
         }
+
     }
 
     // Sample Strategy
@@ -150,6 +141,7 @@ public class CaseCopyFactoryTest {
         public void copyCase(CaseData fromCase, CaseData toCase) {
 
         }
+
     }
 
 }

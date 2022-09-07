@@ -10,21 +10,23 @@ import java.util.UUID;
 public class Summary {
 
     private UUID teamUuid;
+
     private Integer count;
+
+    public UUID getTeamUuid() {
+        return teamUuid;
+    }
 
     public void setTeamUuid(UUID teamUuid) {
         this.teamUuid = teamUuid;
+    }
+
+    public Integer getCount() {
+        return count;
     }
 
     public void setCount(Integer count) {
         this.count = count;
     }
 
-    public UUID getTeamUuid() {
-        return teamUuid;
-    }
-
-    public Integer getCount() {
-        return count;
-    }
 }

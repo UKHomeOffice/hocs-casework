@@ -5,8 +5,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.util.UUID;
-
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
 public class GetCaseTypeResponse {

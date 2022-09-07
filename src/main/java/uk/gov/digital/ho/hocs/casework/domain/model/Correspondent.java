@@ -120,7 +120,9 @@ public class Correspondent implements Serializable {
                          String reference,
                          String externalKey) {
         if (caseUUID == null || correspondentType == null) {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Correspondent(%s, %s, %s, %s, %s, %s).", caseUUID, correspondentType, fullName, "Address", telephone, email), LogEvent.CORRESPONDENT_CREATE_FAILURE);
+            throw new ApplicationExceptions.EntityCreationException(
+                String.format("Cannot create Correspondent(%s, %s, %s, %s, %s, %s).", caseUUID, correspondentType,
+                    fullName, "Address", telephone, email), LogEvent.CORRESPONDENT_CREATE_FAILURE);
         }
 
         this.uuid = UUID.randomUUID();
@@ -144,8 +146,8 @@ public class Correspondent implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {return true;}
+        if (o == null || getClass() != o.getClass()) {return false;}
         Correspondent that = (Correspondent) o;
         return uuid.equals(that.uuid);
     }
@@ -154,4 +156,5 @@ public class Correspondent implements Serializable {
     public int hashCode() {
         return Objects.hash(uuid);
     }
+
 }

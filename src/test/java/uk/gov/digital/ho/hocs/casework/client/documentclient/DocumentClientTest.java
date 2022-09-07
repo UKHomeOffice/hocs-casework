@@ -8,50 +8,76 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 import static java.util.UUID.randomUUID;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DocumentClientTest {
 
+    private final String caseType = "MIN";
+
+    private final UUID caseUUID = randomUUID();
+
+    private final UUID uploaderUUID = UUID.randomUUID();
+
+    private final UUID documentUUID = UUID.randomUUID();
+
+    private final String docType = "DRAFT";
+
+    private final String docDisplayName = "document.doc";
+
+    private final String docOriginalName = "documentOriginal.doc";
+
+    private final String docStatus = "UPLOADED";
+
+    private final String fileType = "doc";
+
+    private final String mimeType = "application/octet-stream";
+
+    private final Set<String> docLabels = Set.of("Label1", "Label2");
+
+    private final LocalDateTime docCreated = LocalDateTime.now();
+
+    private final LocalDateTime docUpdated = LocalDateTime.now();
+
+    private final Boolean docDeleted = false;
 
     @Mock
     private RestHelper restHelper;
 
     private DocumentClient documentClient;
-    private final String caseType = "MIN";
-    private final UUID caseUUID = randomUUID();
-    private final UUID uploaderUUID = UUID.randomUUID();
-    private final UUID documentUUID = UUID.randomUUID();
-    private final String docType = "DRAFT";
-    private final String docDisplayName = "document.doc";
-    private final String docOriginalName = "documentOriginal.doc";
-    private final String docStatus = "UPLOADED";
-    private final String fileType = "doc";
-    private final String mimeType = "application/octet-stream";
-    private final Set<String> docLabels = Set.of("Label1", "Label2");
-    private final LocalDateTime docCreated = LocalDateTime.now();
-    private final LocalDateTime docUpdated = LocalDateTime.now();
-    private final Boolean docDeleted = false;
+
     private DocumentDto documentDto;
+
     private S3Document s3Document;
 
     private String documentService = "http://document-service";
+
     ;
 
     @Before
     public void setUp() {
         documentClient = new DocumentClient(restHelper, documentService);
-        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated,uploaderUUID, docDeleted, docLabels, true, true);
+        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated,
+            docUpdated, uploaderUUID, docDeleted, docLabels, true, true);
         s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);
     }
 
     @Test
     public void getDocuments() {
-        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)), new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
+        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)),
+            new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
         String url = "/document/reference/" + caseUUID.toString();
         when(restHelper.get(anyString(), anyString(), any(Class.class))).thenReturn(documentsResponse);
 
@@ -71,7 +97,8 @@ public class DocumentClientTest {
 
     @Test
     public void getDocuments_shouldPopulateType() {
-        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)), new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
+        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Arrays.asList(documentDto)),
+            new ArrayList<String>(Arrays.asList("ORIGINAL", "DRAFT")));
         String url = "/document/reference/" + caseUUID.toString() + "/?type=" + caseType;
         when(restHelper.get(anyString(), anyString(), any(Class.class))).thenReturn(documentsResponse);
 
@@ -134,7 +161,7 @@ public class DocumentClientTest {
         verifyNoMoreInteractions(restHelper);
     }
 
-    private void checkDocumentDto(DocumentDto result){
+    private void checkDocumentDto(DocumentDto result) {
         assertThat(result).isNotNull();
         assertThat(result.getUuid()).isEqualTo(documentUUID);
         assertThat(result.getExternalReferenceUUID()).isEqualTo(caseUUID);
@@ -146,7 +173,7 @@ public class DocumentClientTest {
         assertThat(result.getDeleted()).isEqualTo(docDeleted);
     }
 
-    private void checkS3Document(S3Document result){
+    private void checkS3Document(S3Document result) {
         assertThat(result).isNotNull();
         assertThat(result.getFilename()).isEqualTo(docDisplayName);
         assertThat(result.getOriginalFilename()).isEqualTo(docOriginalName);
@@ -154,4 +181,5 @@ public class DocumentClientTest {
         assertThat(result.getFileType()).isEqualTo(fileType);
         assertThat(result.getMimeType()).isEqualTo(mimeType);
     }
+
 }

@@ -13,7 +13,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @RunWith(SpringRunner.class)
 public class JsonConfigFolderReaderTest {
@@ -67,11 +67,11 @@ public class JsonConfigFolderReaderTest {
     public static class TestClass implements JsonConfigFolderReader.CaseTypeObject<List<String>> {
 
         private final String type;
+
         private final List<String> values;
 
         @JsonCreator
-        public TestClass(@JsonProperty("type") String type,
-                         @JsonProperty("values") List<String> values) {
+        public TestClass(@JsonProperty("type") String type, @JsonProperty("values") List<String> values) {
             this.type = type;
             this.values = values;
         }
@@ -85,6 +85,7 @@ public class JsonConfigFolderReaderTest {
         public List<String> getValue() {
             return values;
         }
+
     }
 
 }

@@ -18,4 +18,5 @@ public class CreateStageResponse {
     public static CreateStageResponse from(BaseStage stage) {
         return new CreateStageResponse(stage.getUuid());
     }
+
 }

@@ -4,25 +4,29 @@ import org.junit.Before;
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
-import java.util.Map;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class JoinedStringPropertyPolicyTest {
 
-    private JoinedStringPropertyPolicy policy;
-    private StageWithCaseData stage;
-
     private static final String PROPERTY_NAME_1 = "property1";
+
     private static final String PROPERTY_VALUE_1 = "value1";
+
     private static final String PROPERTY_NAME_2 = "property2";
+
     private static final String PROPERTY_VALUE_2 = "value2";
+
     private static final double POINTS_TO_AWARD = 10d;
+
+    private JoinedStringPropertyPolicy policy;
+
+    private StageWithCaseData stage;
 
     @Before
     public void before() {
         stage = new StageWithCaseData();
-        policy = new JoinedStringPropertyPolicy(PROPERTY_NAME_1, PROPERTY_VALUE_1, PROPERTY_NAME_2, PROPERTY_VALUE_2, POINTS_TO_AWARD);
+        policy = new JoinedStringPropertyPolicy(PROPERTY_NAME_1, PROPERTY_VALUE_1, PROPERTY_NAME_2, PROPERTY_VALUE_2,
+            POINTS_TO_AWARD);
     }
 
     @Test
@@ -49,4 +53,5 @@ public class JoinedStringPropertyPolicyTest {
         double result = policy.apply(stage);
         assertThat(result).isZero();
     }
+
 }

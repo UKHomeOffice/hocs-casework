@@ -19,16 +19,7 @@ public class SearchRequest {
     @JsonProperty("reference")
     private String reference;
 
-    @JsonProperty("caseType")
-    @JsonSetter
-    private void caseTypeDeserialize(String caseType) {
-        this.caseTypes = Arrays.asList(caseType.split(","));
-    }
-
     private List<String> caseTypes;
-
-    @JsonGetter
-    public List<String> getCaseType() { return caseTypes; }
 
     @JsonProperty("dateReceived")
     private DateRangeDto dateReceived;
@@ -65,5 +56,14 @@ public class SearchRequest {
 
     @JsonProperty("activeOnly")
     private Boolean activeOnly;
+
+    @JsonProperty("caseType")
+    @JsonSetter
+    private void caseTypeDeserialize(String caseType) {
+        this.caseTypes = Arrays.asList(caseType.split(","));
+    }
+
+    @JsonGetter
+    public List<String> getCaseType() {return caseTypes;}
 
 }

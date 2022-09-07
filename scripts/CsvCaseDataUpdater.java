@@ -15,12 +15,12 @@ import java.util.logging.Logger;
 
 /**
  * Takes a CSV file and is used to update the case values for specific cases.
- *
+ * <p>
  * Format of the csvs must be as follows: {caseUUID, [fields]+}, with the first
  * row being the column headers.
- *
+ * <p>
  * Fields that hold no value within the CSV are ignored when it comes to updating.
- *
+ * <p>
  * To use this file you first need to add the CSV file to the K8 hocs-casework
  * container through {@code kubectl cp [CSVFilePath] [PodName]:. -c hocs-casework}.
  * You can then invoke this java file through the containers command line by running
@@ -32,17 +32,18 @@ public class CsvCaseDataUpdater {
      * We inject this variable through deployment, so that the spring boot application knows what to run on.
      * Default to the spring boot 8080, incase it's not present.
      */
-    private static final String SERVER_PORT =
-            getEnvironmentVariableOrDefault("SERVER_PORT", "8080");
+    private static final String SERVER_PORT = getEnvironmentVariableOrDefault("SERVER_PORT", "8080");
+
     private static final String BASE_URL_FORMAT = "http://localhost:" + SERVER_PORT + "/case/%s/data/%s";
+
     private static final Logger LOGGER = Logger.getLogger(CsvCaseDataUpdater.class.getName());
 
     private static boolean shouldUpdate = false;
+
     private static String csvFilePath = "";
 
     public static void main(String[] args) throws IOException {
-        System.setProperty("java.util.logging.SimpleFormatter.format",
-                "[%1$tF %1$tT] [%4$-7s] %5$s %n");
+        System.setProperty("java.util.logging.SimpleFormatter.format", "[%1$tF %1$tT] [%4$-7s] %5$s %n");
 
         parseArgs(args);
 
@@ -76,6 +77,7 @@ public class CsvCaseDataUpdater {
      * This check is case-insensitive.
      *
      * @param updateArg the string you want to compare
+     *
      * @return true if the text matches case-insentive 'update'
      */
     private static boolean parseUpdate(final String updateArg) {
@@ -87,7 +89,9 @@ public class CsvCaseDataUpdater {
      * a value is present, the file has a CSV extension and also exists as a file.
      *
      * @param filePath the absolute path to the CSV file
+     *
      * @return A list of parsed case data
+     *
      * @throws IOException if the reading of the file doesn't succeed.
      */
     private static List<CaseData> parseCsvFile(final String filePath) throws IOException {
@@ -109,14 +113,14 @@ public class CsvCaseDataUpdater {
     /**
      * Checks to see if the file path provided has a specified extension.
      *
-     * @param filePath the filepath to check the extension on
+     * @param filePath          the filepath to check the extension on
      * @param requiredExtension the extension that the file should have
+     *
      * @return true if the extension matches, else false.
      */
     private static boolean fileHasExtension(final String filePath, final String requiredExtension) {
-        Optional<String> extension = Optional.ofNullable(filePath)
-                .filter(path -> path.contains("."))
-                .map(path -> path.substring(filePath.lastIndexOf(".") + 1));
+        Optional<String> extension = Optional.ofNullable(filePath).filter(path -> path.contains(".")).map(
+            path -> path.substring(filePath.lastIndexOf(".") + 1));
 
         if (extension.isEmpty()) {
             throw new IllegalArgumentException("File path must have an extension.");
@@ -130,6 +134,7 @@ public class CsvCaseDataUpdater {
      * Checks whether an inputted file exists and if so isn't a directory.
      *
      * @param file the file to check if it exists
+     *
      * @return true if the file exists and is not an directory, else false
      */
     private static boolean fileExists(final File file) {
@@ -141,7 +146,9 @@ public class CsvCaseDataUpdater {
      * to a specific case.
      *
      * @param csvFile the CSV file that will be read
+     *
      * @return a list of CaseData's containing the required changes
+     *
      * @throws IOException if the reading of the file doesn't succeed.
      */
     private static List<CaseData> readFile(final File csvFile) throws IOException {
@@ -158,7 +165,7 @@ public class CsvCaseDataUpdater {
                     // [0] is the case UUID
                     CaseData data = new CaseData(values[0]);
 
-                    for(int i = 1; i < values.length; i++) {
+                    for (int i = 1; i < values.length; i++) {
                         String value = values[i];
                         if (!value.equals("")) {
                             // Header and the value will correspond to the same index
@@ -180,6 +187,7 @@ public class CsvCaseDataUpdater {
      * Splits by the comma delimiter.
      *
      * @param headerLine the first line in the CSV that represents the fields
+     *
      * @return String[] of the headers
      */
     private static String[] parseHeaders(final String headerLine) {
@@ -204,7 +212,7 @@ public class CsvCaseDataUpdater {
     private static void updateCases(List<CaseData> allCaseData) {
         final HttpClient client = HttpClient.newHttpClient();
 
-        for (CaseData caseData: allCaseData) {
+        for (CaseData caseData : allCaseData) {
             final List<HttpRequest> requests = generateUpdateRequestForCase(caseData);
 
             // Loop round each request and send to the casework service
@@ -218,10 +226,7 @@ public class CsvCaseDataUpdater {
 
                     // Report if the service does not return a 200 code
                     if (response.statusCode() != 200) {
-                        LOGGER.log(Level.SEVERE, "FAILED: "
-                                + caseData.uuid
-                                + " with url: "
-                                + request.uri());
+                        LOGGER.log(Level.SEVERE, "FAILED: " + caseData.uuid + " with url: " + request.uri());
                     } else {
                         LOGGER.log(Level.INFO, "SUCCESS: " + request.uri().toString());
                     }
@@ -238,6 +243,7 @@ public class CsvCaseDataUpdater {
      *
      * @param caseData the individual cases data that we are going to be updating the
      *                 fields for
+     *
      * @return a list of HttpRequests that represent a specific cases updates
      */
     private static List<HttpRequest> generateUpdateRequestForCase(CaseData caseData) {
@@ -247,10 +253,8 @@ public class CsvCaseDataUpdater {
         for (Map.Entry<String, String> entry : caseData.fieldsToChange.entrySet()) {
             String url = String.format(BASE_URL_FORMAT, caseData.uuid.toString(), entry.getKey());
 
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .PUT(variableValue(entry.getValue()))
-                    .build();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).PUT(
+                variableValue(entry.getValue())).build();
 
             LOGGER.log(Level.INFO, "Request: " + request.uri().toString() + " Value: " + entry.getValue());
 
@@ -264,6 +268,7 @@ public class CsvCaseDataUpdater {
      * Helper for the creating a Body for the PUT request.
      *
      * @param value the value to put into the database
+     *
      * @return the body publisher for the HttpRequest
      */
     private static HttpRequest.BodyPublisher variableValue(final String value) {
@@ -275,7 +280,8 @@ public class CsvCaseDataUpdater {
      * specified value if it's not found.
      *
      * @param environmentVariable the variable name you are looking for
-     * @param defaultValue the default value you want if the variable isn't found
+     * @param defaultValue        the default value you want if the variable isn't found
+     *
      * @return the environent variable value if found, else the default specified
      */
     private static String getEnvironmentVariableOrDefault(final String environmentVariable, final String defaultValue) {
@@ -285,7 +291,9 @@ public class CsvCaseDataUpdater {
     }
 
     static class CaseData {
+
         private final UUID uuid;
+
         private final Map<String, String> fieldsToChange;
 
         public CaseData(final String caseUuid) {
@@ -296,5 +304,7 @@ public class CsvCaseDataUpdater {
         public void addToMap(final String key, final String value) {
             this.fieldsToChange.put(key, value);
         }
+
     }
+
 }

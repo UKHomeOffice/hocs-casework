@@ -23,7 +23,8 @@ public class GetCorrespondentResponseTest {
         String reference = "anyReference";
         String externalKey = "external key";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email,
+            reference, externalKey);
 
         GetCorrespondentResponse getCorrespondentResponse = GetCorrespondentResponse.from(correspondent);
 
@@ -43,7 +44,6 @@ public class GetCorrespondentResponseTest {
         assertThat(getCorrespondentResponse.getEmail()).isEqualTo(correspondent.getEmail());
         assertThat(getCorrespondentResponse.getReference()).isEqualTo(correspondent.getReference());
         assertThat(getCorrespondentResponse.getExternalKey()).isEqualTo(correspondent.getExternalKey());
-
 
     }
 

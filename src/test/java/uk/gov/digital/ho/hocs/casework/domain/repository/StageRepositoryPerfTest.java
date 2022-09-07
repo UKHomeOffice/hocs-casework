@@ -13,9 +13,9 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseLink;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
@@ -31,11 +31,14 @@ import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.IS
 @RunWith(SpringRunner.class)
 @DataJpaTest(showSql = false)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(scripts = "classpath:stage/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:stage/afterTest.sql",
+     config = @SqlConfig(transactionMode = ISOLATED),
+     executionPhase = AFTER_TEST_METHOD)
 @ActiveProfiles("test")
 public class StageRepositoryPerfTest {
 
     private static final long TEN_SECONDS = 10000L;
+
     private static final UUID TEAM_UUID = UUID.randomUUID();
 
     @Autowired
@@ -124,7 +127,8 @@ public class StageRepositoryPerfTest {
 
         // Add cases
         for (int i = 0; i < howManyCases; i++) {
-            CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), (long) i, LocalDate.of(2000, 12, 31));
+            CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), (long) i,
+                LocalDate.of(2000, 12, 31));
             caseData.setCaseDeadline(LocalDate.of(9999, 12, 31));
             entityManager.persist(caseData);
 
@@ -135,7 +139,8 @@ public class StageRepositoryPerfTest {
             // add some stage data to parent case
             for (int y = 0; y < 10; y++) {
                 String stageType = "stage" + y;
-                StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType, y == 5 ? TEAM_UUID : null, null, null);
+                StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType,
+                    y == 5 ? TEAM_UUID : null, null, null);
 
                 entityManager.persist(stage);
                 //log.debug("Added case: {}, stage: {}", caseData.getUuid(), stageType);
@@ -159,14 +164,16 @@ public class StageRepositoryPerfTest {
 
         // Add cases
         for (int i = 0; i < caseAmount; i++) {
-            CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), (long) i, LocalDate.of(2000, 12, 31));
+            CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), (long) i,
+                LocalDate.of(2000, 12, 31));
             caseData.setCaseDeadline(LocalDate.of(9999, 12, 31));
             entityManager.persist(caseData);
 
             // add some stage data to parent case
             for (int y = 0; y < 3; y++) {
                 String stageType = "stage" + y;
-                StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType, y == 2 ? TEAM_UUID : null, null, null);
+                StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType,
+                    y == 2 ? TEAM_UUID : null, null, null);
 
                 entityManager.persist(stage);
 
@@ -178,4 +185,5 @@ public class StageRepositoryPerfTest {
 
         return listAddedStages;
     }
+
 }

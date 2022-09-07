@@ -53,21 +53,11 @@ public class GetCorrespondentWithPrimaryFlagResponse {
     private Boolean isPrimary;
 
     public static GetCorrespondentWithPrimaryFlagResponse from(CorrespondentWithPrimaryFlag correspondent) {
-        return new GetCorrespondentWithPrimaryFlagResponse(
-                correspondent.getUuid(),
-                correspondent.getCreated(),
-                correspondent.getCorrespondentType(),
-                correspondent.getCorrespondentTypeName(),
-                correspondent.getCaseUUID(),
-                correspondent.getFullName(),
-                correspondent.getOrganisation(),
-                AddressDto.from(correspondent),
-                correspondent.getTelephone(),
-                correspondent.getEmail(),
-                correspondent.getReference(),
-                correspondent.getExternalKey(),
-                correspondent.getIsPrimary()
-        );
+        return new GetCorrespondentWithPrimaryFlagResponse(correspondent.getUuid(), correspondent.getCreated(),
+            correspondent.getCorrespondentType(), correspondent.getCorrespondentTypeName(), correspondent.getCaseUUID(),
+            correspondent.getFullName(), correspondent.getOrganisation(), AddressDto.from(correspondent),
+            correspondent.getTelephone(), correspondent.getEmail(), correspondent.getReference(),
+            correspondent.getExternalKey(), correspondent.getIsPrimary());
     }
 
 }

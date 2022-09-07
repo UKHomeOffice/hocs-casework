@@ -10,13 +10,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class GetSomuItemResponseTest {
 
     private final UUID SOMU_ITEM_UUID = UUID.randomUUID();
+
     private final UUID SOMU_ITEM_CASE_UUID = UUID.randomUUID();
+
     private final UUID SOMU_ITEM_TYPE_UUID = UUID.randomUUID();
-    
+
     @Test
     public void getSomuItemResponseTest() {
         SomuItem somuItem = new SomuItem(SOMU_ITEM_UUID, SOMU_ITEM_CASE_UUID, SOMU_ITEM_TYPE_UUID, "TEST");
-        
+
         GetSomuItemResponse getSomuItemResponse = GetSomuItemResponse.from(somuItem);
 
         assertThat(getSomuItemResponse.getUuid()).isEqualTo(somuItem.getUuid());
@@ -38,5 +40,5 @@ public class GetSomuItemResponseTest {
         assertThat(getSomuItemResponse.getData()).isEqualTo(somuItem.getData());
         assertThat(getSomuItemResponse.isDeleted()).isTrue();
     }
-    
+
 }

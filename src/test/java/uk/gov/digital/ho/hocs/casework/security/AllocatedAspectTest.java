@@ -18,10 +18,16 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.atLeast;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AllocatedAspectTest {
+
+    @Mock
+    Allocated annotation;
 
     @Mock
     private StageService stageService;
@@ -32,16 +38,16 @@ public class AllocatedAspectTest {
     @Mock
     private CaseDataService caseDataService;
 
-    @Mock
-    Allocated annotation;
-
     private AllocatedAspect aspect;
 
     private UUID stageUUID = UUID.randomUUID();
+
     private UUID caseUUID = UUID.randomUUID();
 
     private UUID userId = UUID.randomUUID();
+
     private UUID teamId = UUID.randomUUID();
+
     private UUID transitionNoteUUID = UUID.randomUUID();
 
     @Mock
@@ -234,4 +240,5 @@ public class AllocatedAspectTest {
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
         verify(proceedingJoinPoint).proceed();
     }
+
 }

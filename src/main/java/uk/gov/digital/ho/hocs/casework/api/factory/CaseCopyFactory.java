@@ -31,9 +31,7 @@ public class CaseCopyFactory {
         }
 
         // search the annotated strategies
-        return copyStrategies.stream()
-                .filter(isCopyStrategyForTypes(fromCaseType, toCaseType))
-                .findFirst();
+        return copyStrategies.stream().filter(isCopyStrategyForTypes(fromCaseType, toCaseType)).findFirst();
 
     }
 
@@ -52,4 +50,5 @@ public class CaseCopyFactory {
             return false;
         };
     }
+
 }

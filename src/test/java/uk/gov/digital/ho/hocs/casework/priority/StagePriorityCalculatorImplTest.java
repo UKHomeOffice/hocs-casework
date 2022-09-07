@@ -12,23 +12,25 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator.SYSTEM_PRIORITY_FIELD_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StagePriorityCalculatorImplTest {
 
-    private StagePriorityCalculatorImpl stagePriorityCalculator;
+    private final String caseType = "Test_Case_Type";
 
     @Mock
     StagePriorityPolicyProvider stagePriorityPolicyProvider;
 
     StageWithCaseData stage;
 
-    private final String caseType = "Test_Case_Type";
+    private StagePriorityCalculatorImpl stagePriorityCalculator;
 
     @Before
-    public void before(){
+    public void before() {
         stagePriorityCalculator = new StagePriorityCalculatorImpl(stagePriorityPolicyProvider);
 
         stage = new StageWithCaseData();
@@ -37,7 +39,7 @@ public class StagePriorityCalculatorImplTest {
     }
 
     @Test
-    public void updatePriority_noPolicies(){
+    public void updatePriority_noPolicies() {
         stage.putData("PropertyA", "ValueA");
 
         stagePriorityCalculator.updatePriority(stage, caseType);
@@ -47,7 +49,7 @@ public class StagePriorityCalculatorImplTest {
     }
 
     @Test
-    public void updatePriority_withPolicies(){
+    public void updatePriority_withPolicies() {
         stage.putData("PropertyA", "ValueA");
 
         StagePriorityPolicy policyA = mock(StagePriorityPolicy.class);
@@ -66,4 +68,5 @@ public class StagePriorityCalculatorImplTest {
         verify(policyB).apply(stage);
 
     }
+
 }

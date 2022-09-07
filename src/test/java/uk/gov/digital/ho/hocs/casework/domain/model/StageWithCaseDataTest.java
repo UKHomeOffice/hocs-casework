@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
-
 import org.junit.Test;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 

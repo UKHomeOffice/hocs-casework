@@ -41,28 +41,37 @@ import static org.mockito.Mockito.when;
 public class CorrespondentServiceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
+
     private final UUID stageUUID = UUID.randomUUID();
+
     private final CaseDataType caseDataType = new CaseDataType("TEST", "1a", "TEST", "Testfield", 20, 15);
+
     @Mock
     private CorrespondentRepository correspondentRepository;
+
     @Mock
     private CaseDataRepository caseDataRepository;
+
     @Mock
     private AuditClient auditClient;
+
     @Mock
     private InfoClient infoClient;
+
     @Mock
     private CaseDataService caseDataService;
+
     @Mock
     private CorrespondentService correspondentService;
 
     @Captor
     private ArgumentCaptor<Correspondent> correspondentRepoCapture = ArgumentCaptor.forClass(Correspondent.class);
 
-
     @Before
     public void setUp() {
-        correspondentService = Mockito.spy(new CorrespondentService(correspondentRepository, caseDataRepository, auditClient, infoClient, caseDataService, new CorrespondentTypeNameDecorator()));
+        correspondentService = Mockito.spy(
+            new CorrespondentService(correspondentRepository, caseDataRepository, auditClient, infoClient,
+                caseDataService, new CorrespondentTypeNameDecorator()));
     }
 
     @Test
@@ -96,7 +105,7 @@ public class CorrespondentServiceTest {
         assertThat(auditCaptureCorrespondent.getValue().getCaseUUID()).isEqualTo(caseUUID);
 
         verify(correspondentRepository).findAllByCaseUUID(caseUUID);
-        verify(caseDataService).updatePrimaryCorrespondent( eq(caseUUID),any(), any());
+        verify(caseDataService).updatePrimaryCorrespondent(eq(caseUUID), any(), any());
     }
 
     @Test
@@ -132,22 +141,21 @@ public class CorrespondentServiceTest {
         verifyNoMoreInteractions(correspondentRepository);
     }
 
-
     private Correspondent getCorrespondent(boolean deleted) {
         Correspondent correspondent = new Correspondent(caseUUID, "CORRESPONDENT", "anyFullName",
-                "A Large Organisation", new Address("anyPostcode", "any1", "any2", "any3", "anyCountry"),
-                "anyPhone", "anyEmail", "anyReference", "external key");
+            "A Large Organisation", new Address("anyPostcode", "any1", "any2", "any3", "anyCountry"), "anyPhone",
+            "anyEmail", "anyReference", "external key");
         correspondent.setDeleted(deleted);
         return correspondent;
     }
-
 
     @Test
     public void shouldGetCorrespondentTypes() {
 
         when(caseDataRepository.getCaseType(caseUUID)).thenReturn("TEST");
         CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();
-        GetCorrespondentTypeResponse getCorrespondentTypeResponse = new GetCorrespondentTypeResponse(Set.of(correspondentTypeDto));
+        GetCorrespondentTypeResponse getCorrespondentTypeResponse = new GetCorrespondentTypeResponse(
+            Set.of(correspondentTypeDto));
         when(infoClient.getCorrespondentType("TEST")).thenReturn(getCorrespondentTypeResponse);
 
         Set<CorrespondentTypeDto> CorrespondentTypeDtos = correspondentService.getCorrespondentTypes(caseUUID);
@@ -163,16 +171,12 @@ public class CorrespondentServiceTest {
     public void shouldGetCorrespondents() {
         Address address = new Address("postcode", "line1", "line2", "line3", "country");
 
-        Correspondent correspondent = new Correspondent(
-                caseUUID, "TYPE", "full name",
-                "organisation", address, "01923478393", "email@test.com",
-                "ref", "key"
-        );
+        Correspondent correspondent = new Correspondent(caseUUID, "TYPE", "full name", "organisation", address,
+            "01923478393", "email@test.com", "ref", "key");
         Set<Correspondent> correspondents = Set.of(correspondent);
-        Set<CorrespondentWithPrimaryFlag> correspondentWithPrimaryFlags =
-                Set.of(new CorrespondentWithPrimaryFlag(correspondent, false));
-        Set<CorrespondentTypeDto> typesSet =
-                Set.of(new CorrespondentTypeDto(UUID.randomUUID(), "Test Type", "TYPE"));
+        Set<CorrespondentWithPrimaryFlag> correspondentWithPrimaryFlags = Set.of(
+            new CorrespondentWithPrimaryFlag(correspondent, false));
+        Set<CorrespondentTypeDto> typesSet = Set.of(new CorrespondentTypeDto(UUID.randomUUID(), "Test Type", "TYPE"));
 
         when(caseDataService.getCaseData(caseUUID)).thenReturn(new CaseData());
         when(correspondentRepository.findAllByCaseUUID(caseUUID)).thenReturn(correspondents);
@@ -188,16 +192,8 @@ public class CorrespondentServiceTest {
     @Test
     public void shouldDeleteCorrespondent() {
         Address address = new Address("postcode", "line1", "line2", "line3", "country");
-        Correspondent correspondent = new Correspondent(
-                caseUUID,
-                "Type",
-                "full name",
-                "organisation",
-                address,
-                "01923478393",
-                "email@test.com",
-                "ref",
-                "key");
+        Correspondent correspondent = new Correspondent(caseUUID, "Type", "full name", "organisation", address,
+            "01923478393", "email@test.com", "ref", "key");
         CaseData caseData = new CaseData(caseDataType, 1L, null);
         Set<CorrespondentTypeDto> emptyCorrespondentSet = Collections.emptySet();
 
@@ -217,16 +213,8 @@ public class CorrespondentServiceTest {
     @Test
     public void shouldDeleteCorrespondentAndRemovePrimaryCorrespondent() {
         Address address = new Address("postcode", "line1", "line2", "line3", "country");
-        Correspondent correspondent = new Correspondent(
-                caseUUID,
-                "Type",
-                "full name",
-                "organisation",
-                address,
-                "01923478393",
-                "email@test.com",
-                "ref",
-                "key");
+        Correspondent correspondent = new Correspondent(caseUUID, "Type", "full name", "organisation", address,
+            "01923478393", "email@test.com", "ref", "key");
         CaseData caseData = new CaseData(caseDataType, 1L, null);
         caseData.setPrimaryCorrespondentUUID(correspondent.getUuid());
         Set<CorrespondentTypeDto> emptyCorrespondentSet = Collections.emptySet();
@@ -262,25 +250,16 @@ public class CorrespondentServiceTest {
         String testReference = "TestRef";
         String testEmail = "test@test.com";
 
-        UpdateCorrespondentRequest  testRequest = new UpdateCorrespondentRequest(
-                testFullname,
-                testOrganisation,
-                testPostcode,
-                testAdd1,
-                testAdd2,
-                testAdd3,
-                testCountry,
-                testTelephone,
-                testEmail,
-                testReference
-        );
+        UpdateCorrespondentRequest testRequest = new UpdateCorrespondentRequest(testFullname, testOrganisation,
+            testPostcode, testAdd1, testAdd2, testAdd3, testCountry, testTelephone, testEmail, testReference);
 
-
-        Correspondent mockDBResponse = new Correspondent(testCaseUUID, "SomeType" ,testFullname, null, null, null, null, null, null);
+        Correspondent mockDBResponse = new Correspondent(testCaseUUID, "SomeType", testFullname, null, null, null, null,
+            null, null);
         when(correspondentRepository.findByUUID(testCaseUUID, testCorrespondenceUUID)).thenReturn(mockDBResponse);
         when(caseDataRepository.getCaseType(testCaseUUID)).thenReturn("TEST");
         CorrespondentTypeDto correspondentTypeDto = new CorrespondentTypeDto();
-        GetCorrespondentTypeResponse getCorrespondentTypeResponse = new GetCorrespondentTypeResponse(Set.of(correspondentTypeDto));
+        GetCorrespondentTypeResponse getCorrespondentTypeResponse = new GetCorrespondentTypeResponse(
+            Set.of(correspondentTypeDto));
         when(infoClient.getCorrespondentType("TEST")).thenReturn(getCorrespondentTypeResponse);
 
         // WHEN
@@ -308,4 +287,5 @@ public class CorrespondentServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
 
     }
+
 }

@@ -4,14 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
-import java.util.Map;
-
 @AllArgsConstructor
 @Getter
 public class SimpleStringPropertyPolicy implements StagePriorityPolicy {
 
     private String propertyName;
+
     private String propertyValue;
+
     private double pointsToAward;
 
     @Override
@@ -23,4 +23,5 @@ public class SimpleStringPropertyPolicy implements StagePriorityPolicy {
         }
         return 0;
     }
+
 }

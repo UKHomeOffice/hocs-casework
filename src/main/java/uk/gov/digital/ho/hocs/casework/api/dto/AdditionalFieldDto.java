@@ -25,12 +25,8 @@ public class AdditionalFieldDto {
     private String name;
 
     public static AdditionalFieldDto from(AdditionalField additionalField) {
-        return new AdditionalFieldDto(
-                additionalField.getLabel(),
-                additionalField.getValue(),
-                additionalField.getType(),
-                additionalField.getChoices(),
-                additionalField.getName()
-        );
+        return new AdditionalFieldDto(additionalField.getLabel(), additionalField.getValue(), additionalField.getType(),
+            additionalField.getChoices(), additionalField.getName());
     }
+
 }

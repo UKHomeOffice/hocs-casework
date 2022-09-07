@@ -10,20 +10,22 @@ import java.util.function.BiFunction;
 public class DataTotal {
 
     // This iterates over the fields provided, extracts their values from 'dataMap', then flattens them, before summing them
-    BiFunction<Map<String,String>, Map<String, List<String>>, BigDecimal> sumFields = (dataMap, fields) -> {
+    BiFunction<Map<String, String>, Map<String, List<String>>, BigDecimal> sumFields = (dataMap, fields) -> {
         return fields.entrySet().stream().flatMap(field -> {
             return field.getValue().stream().map(valueField -> parseCurrency(dataMap, field.getKey(), valueField));
         }).reduce(BigDecimal.ZERO, BigDecimal::add);
     };
 
-    public BigDecimal calculate(Map<String,String> dataMap, Map<String, List<String>> addFields, Map<String, List<String>> subFields){
+    public BigDecimal calculate(Map<String, String> dataMap,
+                                Map<String, List<String>> addFields,
+                                Map<String, List<String>> subFields) {
         BigDecimal toAdd = sumFields.apply(dataMap, addFields);
         BigDecimal toSubtract = sumFields.apply(dataMap, subFields);
 
         return toAdd.subtract(toSubtract);
     }
 
-    private BigDecimal parseCurrency(Map<String,String> dataMap, String claimedKey, String valueKey){
+    private BigDecimal parseCurrency(Map<String, String> dataMap, String claimedKey, String valueKey) {
         try {
             if (StringUtils.isBlank(claimedKey) || dataMap.getOrDefault(claimedKey, "").equalsIgnoreCase("YES")) {
                 return new BigDecimal(dataMap.getOrDefault(valueKey, "0"));
@@ -33,4 +35,5 @@ public class DataTotal {
             return BigDecimal.ZERO;
         }
     }
+
 }

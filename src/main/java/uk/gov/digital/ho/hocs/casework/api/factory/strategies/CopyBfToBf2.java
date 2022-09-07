@@ -11,31 +11,14 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 @CaseCopy(fromCaseType = "BF", toCaseType = "BF2")
 public class CopyBfToBf2 extends AbstractCaseCopyStrategy implements CaseCopyStrategy {
 
-    private static final String[] DATA_CLOB_KEYS = {
-            "OwningCSU",
-            "ComplainantDOB",
-            "ComplainantHORef",
-            "ComplainantPortRef",
-            "ComplainantCompanyName",
-            "ComplainantNationality",
-            "ComplainantGender",
-            "Region",
-            "BusArea",
-            "ComplaintReason1",
-            "ComplaintReason2",
-            "ComplaintReason3",
-            "ComplaintReason4",
-            "ComplaintReason5",
-            "ComplaintReason1_Other",
-            "ComplaintReason2_Other",
-            "ComplaintReason3_Other",
-            "ComplaintReason4_Other",
-            "ComplaintReason5_Other",
-            "LoaRequired",
-            "BusinessAreaOther"
-    };
+    private static final String[] DATA_CLOB_KEYS = { "OwningCSU", "ComplainantDOB", "ComplainantHORef",
+        "ComplainantPortRef", "ComplainantCompanyName", "ComplainantNationality", "ComplainantGender", "Region",
+        "BusArea", "ComplaintReason1", "ComplaintReason2", "ComplaintReason3", "ComplaintReason4", "ComplaintReason5",
+        "ComplaintReason1_Other", "ComplaintReason2_Other", "ComplaintReason3_Other", "ComplaintReason4_Other",
+        "ComplaintReason5_Other", "LoaRequired", "BusinessAreaOther" };
 
     private final CaseDataService caseDataService;
+
     private final CorrespondentService correspondentService;
 
     @Autowired

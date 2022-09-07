@@ -13,4 +13,5 @@ public class UpdateStageDeadlineRequest {
 
     @JsonProperty("days")
     private Integer days;
+
 }

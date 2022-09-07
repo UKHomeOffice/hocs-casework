@@ -19,6 +19,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class GetCaseSummaryResponse {
+
+    private final String suspended;
+
     @JsonProperty("type")
     String type;
 
@@ -49,8 +52,6 @@ public class GetCaseSummaryResponse {
     @JsonProperty("actions")
     private CaseActionDataResponseDto actions;
 
-    private final String suspended;
-
     public static GetCaseSummaryResponse from(CaseSummary caseSummary) {
         GetCorrespondentResponse getCorrespondentResponse = null;
         if (caseSummary.getPrimaryCorrespondent() != null) {
@@ -64,34 +65,23 @@ public class GetCaseSummaryResponse {
 
         Set<ActiveStageDto> activeStageDtos = new HashSet<>();
         if (caseSummary.getActiveStages() != null) {
-            activeStageDtos.addAll(caseSummary.getActiveStages().stream().map(ActiveStageDto::from).collect(Collectors.toSet()));
+            activeStageDtos.addAll(
+                caseSummary.getActiveStages().stream().map(ActiveStageDto::from).collect(Collectors.toSet()));
         }
 
         List<AdditionalFieldDto> additionalFieldDtos = new ArrayList<>();
         if (caseSummary.getAdditionalFields() != null) {
-            additionalFieldDtos.addAll(caseSummary.getAdditionalFields().stream()
-                    .filter(field -> !ObjectUtils.isEmpty(field.getValue()))
-                    .map(AdditionalFieldDto::from)
-                    .sorted(Comparator.comparing(AdditionalFieldDto::getLabel))
-                    .toList());
+            additionalFieldDtos.addAll(
+                caseSummary.getAdditionalFields().stream().filter(field -> !ObjectUtils.isEmpty(field.getValue())).map(
+                    AdditionalFieldDto::from).sorted(Comparator.comparing(AdditionalFieldDto::getLabel)).toList());
         }
 
-        return new GetCaseSummaryResponse(
-                caseSummary.getType(),
-                caseSummary.getCreatedDate(),
-                caseSummary.getCaseDeadline(),
-                caseSummary.getStageDeadlines(),
-                additionalFieldDtos,
-                getCorrespondentResponse,
-                getTopicsResponse,
-                activeStageDtos,
-                CaseSummaryLink.builder()
-                        .caseUUID(caseSummary.getPreviousCaseUUID())
-                        .caseReference(caseSummary.getPreviousCaseReference())
-                        .stageUUID(caseSummary.getPreviousCaseStageUUID()).build(),
-                caseSummary.getActions(),
-                caseSummary.getSuspended()
-        );
+        return new GetCaseSummaryResponse(caseSummary.getType(), caseSummary.getCreatedDate(),
+            caseSummary.getCaseDeadline(), caseSummary.getStageDeadlines(), additionalFieldDtos,
+            getCorrespondentResponse, getTopicsResponse, activeStageDtos,
+            CaseSummaryLink.builder().caseUUID(caseSummary.getPreviousCaseUUID()).caseReference(
+                caseSummary.getPreviousCaseReference()).stageUUID(caseSummary.getPreviousCaseStageUUID()).build(),
+            caseSummary.getActions(), caseSummary.getSuspended());
     }
 
 }

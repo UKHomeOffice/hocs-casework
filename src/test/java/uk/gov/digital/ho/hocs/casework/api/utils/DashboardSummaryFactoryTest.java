@@ -14,11 +14,13 @@ import java.util.Map;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.*;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.OVERDUE_TEAM_CASES;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.TEAM_CASES;
+import static uk.gov.digital.ho.hocs.casework.api.utils.DashboardSummaryFactory.DashboardSummaryHeaders.UNALLOCATED_TEAM_CASES;
 
 @SpringBootTest
 @RunWith(SpringRunner.class)
-@ActiveProfiles({"test", "local"})
+@ActiveProfiles({ "test", "local" })
 public class DashboardSummaryFactoryTest {
 
     @Autowired
@@ -26,16 +28,15 @@ public class DashboardSummaryFactoryTest {
 
     @Test
     public void emptyCaseSummary_returnsEmptyMap() {
-        assertThat(dashboardSummaryFactory.getZippedSummary(Collections.emptyList(), null))
-                .isEqualTo(Collections.emptyMap());
+        assertThat(dashboardSummaryFactory.getZippedSummary(Collections.emptyList(), null)).isEqualTo(
+            Collections.emptyMap());
     }
 
     @Test
     public void caseSummary_noZippableSummaries_returnsOnlyCaseCount() {
         Summary summary = new Summary(UUID.randomUUID(), 2);
 
-        var zippedSummary =
-                dashboardSummaryFactory.getZippedSummary(List.of(summary), Collections.emptyMap());
+        var zippedSummary = dashboardSummaryFactory.getZippedSummary(List.of(summary), Collections.emptyMap());
 
         assertThat(zippedSummary).isNotNull();
         assertThat(zippedSummary.size()).isEqualTo(1);
@@ -47,10 +48,9 @@ public class DashboardSummaryFactoryTest {
     public void caseSummary_withOtherSummaries_returnsZipped() {
         Summary summary = new Summary(UUID.randomUUID(), 2);
         Map<DashboardSummaryFactory.DashboardSummaryHeaders, List<Summary>> otherSummaries = Map.of(OVERDUE_TEAM_CASES,
-                        List.of(new Summary(summary.getTeamUuid(), 3)));
+            List.of(new Summary(summary.getTeamUuid(), 3)));
 
-        var zippedSummary =
-                dashboardSummaryFactory.getZippedSummary(List.of(summary), otherSummaries);
+        var zippedSummary = dashboardSummaryFactory.getZippedSummary(List.of(summary), otherSummaries);
 
         assertThat(zippedSummary).isNotNull();
         assertThat(zippedSummary.size()).isEqualTo(1);
@@ -62,11 +62,10 @@ public class DashboardSummaryFactoryTest {
     @Test
     public void caseSummary_withOtherSummariesNotPartOfCase_returns0ForOtherSummary() {
         Summary summary = new Summary(UUID.randomUUID(), 2);
-        Map<DashboardSummaryFactory.DashboardSummaryHeaders, List<Summary>> otherSummaries = Map.of(UNALLOCATED_TEAM_CASES,
-                List.of(new Summary(UUID.randomUUID(), 3)));
+        Map<DashboardSummaryFactory.DashboardSummaryHeaders, List<Summary>> otherSummaries = Map.of(
+            UNALLOCATED_TEAM_CASES, List.of(new Summary(UUID.randomUUID(), 3)));
 
-        var zippedSummary =
-                dashboardSummaryFactory.getZippedSummary(List.of(summary), otherSummaries);
+        var zippedSummary = dashboardSummaryFactory.getZippedSummary(List.of(summary), otherSummaries);
 
         assertThat(zippedSummary).isNotNull();
         assertThat(zippedSummary.size()).isEqualTo(1);
@@ -78,11 +77,10 @@ public class DashboardSummaryFactoryTest {
     @Test
     public void caseSummary_withOtherSummariesIncludingCase_returnsZipped() {
         Summary summary = new Summary(UUID.randomUUID(), 2);
-        Map<DashboardSummaryFactory.DashboardSummaryHeaders, List<Summary>> otherSummaries = Map.of(UNALLOCATED_TEAM_CASES,
-                List.of(new Summary(UUID.randomUUID(), 3), new Summary(summary.getTeamUuid(), 4)));
+        Map<DashboardSummaryFactory.DashboardSummaryHeaders, List<Summary>> otherSummaries = Map.of(
+            UNALLOCATED_TEAM_CASES, List.of(new Summary(UUID.randomUUID(), 3), new Summary(summary.getTeamUuid(), 4)));
 
-        var zippedSummary =
-                dashboardSummaryFactory.getZippedSummary(List.of(summary), otherSummaries);
+        var zippedSummary = dashboardSummaryFactory.getZippedSummary(List.of(summary), otherSummaries);
 
         assertThat(zippedSummary).isNotNull();
         assertThat(zippedSummary.size()).isEqualTo(1);
@@ -91,4 +89,5 @@ public class DashboardSummaryFactoryTest {
         assertThat(zippedSummary.get(summary.getTeamUuid()).get(UNALLOCATED_TEAM_CASES.toString())).isEqualTo(4);
 
     }
+
 }

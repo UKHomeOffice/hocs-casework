@@ -34,6 +34,7 @@ public class RestrictedFieldPermissions {
         public Set<String> getFieldsForAccessLevel(AccessLevel accessLevel) {
             return fieldLevels.getOrDefault(accessLevel, Set.of());
         }
+
     }
 
 }

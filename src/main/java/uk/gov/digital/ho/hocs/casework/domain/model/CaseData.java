@@ -3,7 +3,8 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import lombok.AllArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -16,10 +17,7 @@ import java.util.UUID;
 @Table(name = "case_data")
 public class CaseData extends AbstractCaseData implements Serializable {
 
-    public CaseData(CaseDataType type,
-                    Long caseNumber,
-                    Map<String, String> data,
-                    LocalDate dateReceived) {
+    public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, LocalDate dateReceived) {
         super(type, caseNumber, data, dateReceived);
     }
 
@@ -33,7 +31,7 @@ public class CaseData extends AbstractCaseData implements Serializable {
                     String type,
                     String reference,
                     boolean deleted,
-                    Map<String,String> data,
+                    Map<String, String> data,
                     UUID primaryTopicUUID,
                     Topic primaryTopic,
                     UUID primaryCorrespondentUUID,
@@ -44,24 +42,9 @@ public class CaseData extends AbstractCaseData implements Serializable {
                     boolean completed,
                     Set<ActiveStage> activeStages,
                     Set<CaseNote> caseNotes) {
-        super(
-                id,
-                uuid,
-                created,
-                type,
-                reference,
-                deleted,
-                data,
-                primaryTopicUUID,
-                primaryTopic,
-                primaryCorrespondentUUID,
-                primaryCorrespondent,
-                caseDeadline,
-                caseDeadlineWarning,
-                dateReceived,
-                completed,
-                activeStages,
-                caseNotes
-        );
+        super(id, uuid, created, type, reference, deleted, data, primaryTopicUUID, primaryTopic,
+            primaryCorrespondentUUID, primaryCorrespondent, caseDeadline, caseDeadlineWarning, dateReceived, completed,
+            activeStages, caseNotes);
     }
+
 }

@@ -14,17 +14,24 @@ import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOTE_CREATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOTE_DELETED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOTE_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOTE_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOTE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 
 @Service
 @Slf4j
 public class CaseNoteService {
 
-    private final CaseNoteRepository caseNoteRepository;
-    private final AuditClient auditClient;
-    private final RequestData requestData;
-
     private static final String NOTE_NOT_FOUND_MESSAGE = "CaseNote for UUID: %s not found!";
+
+    private final CaseNoteRepository caseNoteRepository;
+
+    private final AuditClient auditClient;
+
+    private final RequestData requestData;
 
     @Autowired
     public CaseNoteService(CaseNoteRepository caseNoteRepository, AuditClient auditClient, RequestData requestData) {
@@ -47,9 +54,9 @@ public class CaseNoteService {
             log.info("Got CaseNote for UUID: {}", caseNoteUUID, value(EVENT, CASE_NOTE_RETRIEVED));
             auditClient.viewCaseNoteAudit(caseNote);
             return caseNote;
-        }
-        else {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format(NOTE_NOT_FOUND_MESSAGE, caseNoteUUID), CASE_NOTE_NOT_FOUND);
+        } else {
+            throw new ApplicationExceptions.EntityNotFoundException(String.format(NOTE_NOT_FOUND_MESSAGE, caseNoteUUID),
+                CASE_NOTE_NOT_FOUND);
         }
     }
 
@@ -65,7 +72,7 @@ public class CaseNoteService {
     public CaseNote updateCaseNote(UUID caseNoteUUID, String caseNoteType, String text) {
         log.debug("Updating CaseNote: {}", caseNoteUUID);
         CaseNote caseNote = caseNoteRepository.findByUuid(caseNoteUUID);
-        if (caseNote != null){
+        if (caseNote != null) {
             String prevCaseNoteType = caseNote.getCaseNoteType();
             String prevText = caseNote.getText();
             caseNote.setCaseNoteType(caseNoteType);
@@ -73,10 +80,12 @@ public class CaseNoteService {
             caseNote.setEdited(LocalDateTime.now());
             caseNote.setEditor(requestData.userId());
             caseNoteRepository.save(caseNote);
-            log.info("Updated CaseNote: {} for Case: {}", caseNote.getUuid(), caseNote.getCaseUUID(), value(EVENT, CASE_NOTE_UPDATED));
+            log.info("Updated CaseNote: {} for Case: {}", caseNote.getUuid(), caseNote.getCaseUUID(),
+                value(EVENT, CASE_NOTE_UPDATED));
             auditClient.updateCaseNoteAudit(caseNote, prevCaseNoteType, prevText);
         } else {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format(NOTE_NOT_FOUND_MESSAGE, caseNoteUUID), CASE_NOTE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format(NOTE_NOT_FOUND_MESSAGE, caseNoteUUID),
+                CASE_NOTE_NOT_FOUND);
         }
         return caseNote;
     }
@@ -84,14 +93,17 @@ public class CaseNoteService {
     public CaseNote deleteCaseNote(UUID caseNoteUUID) {
         log.debug("Deleting CaseNote: {}", caseNoteUUID);
         CaseNote caseNote = caseNoteRepository.findByUuid(caseNoteUUID);
-        if (caseNote != null){
+        if (caseNote != null) {
             caseNote.setDeleted(true);
             caseNoteRepository.save(caseNote);
-            log.info("Deleted CaseNote: {} for Case: {}", caseNote.getUuid(), caseNote.getCaseUUID(), value(EVENT, CASE_NOTE_DELETED));
+            log.info("Deleted CaseNote: {} for Case: {}", caseNote.getUuid(), caseNote.getCaseUUID(),
+                value(EVENT, CASE_NOTE_DELETED));
             auditClient.deleteCaseNoteAudit(caseNote);
         } else {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format(NOTE_NOT_FOUND_MESSAGE, caseNoteUUID), CASE_NOTE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format(NOTE_NOT_FOUND_MESSAGE, caseNoteUUID),
+                CASE_NOTE_NOT_FOUND);
         }
         return caseNote;
     }
+
 }

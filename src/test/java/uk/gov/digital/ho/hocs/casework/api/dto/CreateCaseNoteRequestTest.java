@@ -16,6 +16,4 @@ public class CreateCaseNoteRequestTest {
         assertThat(createCaseNoteRequest.getText()).isEqualTo(text);
     }
 
-
-
 }

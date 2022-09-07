@@ -5,7 +5,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.UUID;
 
@@ -14,13 +19,6 @@ import java.util.UUID;
 @Entity
 @Table(name = "somu_item")
 public class SomuItem implements Serializable {
-
-    public SomuItem(UUID uuid, UUID caseUuid, UUID somuUuid, String data) {
-        this.uuid = uuid;
-        this.caseUuid = caseUuid;
-        this.somuUuid = somuUuid;
-        this.data = data;
-    }
 
     @Id
     @Column(name = "id")
@@ -45,7 +43,14 @@ public class SomuItem implements Serializable {
     @Setter
     @Column(name = "data")
     private String data;
-    
+
+    public SomuItem(UUID uuid, UUID caseUuid, UUID somuUuid, String data) {
+        this.uuid = uuid;
+        this.caseUuid = caseUuid;
+        this.somuUuid = somuUuid;
+        this.data = data;
+    }
+
     public boolean isDeleted() {
         return (data == null);
     }

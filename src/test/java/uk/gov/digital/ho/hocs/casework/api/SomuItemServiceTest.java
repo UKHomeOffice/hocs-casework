@@ -16,20 +16,26 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class SomuItemServiceTest {
 
     private final UUID uuid = UUID.randomUUID();
+
     private final UUID caseUuid = UUID.randomUUID();
+
     private final UUID somuTypeUuid = UUID.randomUUID();
-    
+
     @Mock
     private SomuItemRepository somuItemRepository;
-   
+
     private SomuItemService somuItemService;
-   
+
     @Mock
     private AuditClient auditClient;
 
@@ -41,9 +47,9 @@ public class SomuItemServiceTest {
     @Test
     public void shouldGetSomuItems() {
         SomuItem somuItem = new SomuItem(uuid, caseUuid, somuTypeUuid, "{}");
-        
+
         when(somuItemRepository.findAllByCaseUuid(any())).thenReturn(Set.of(somuItem));
-        
+
         somuItemService.getItemsByCaseUuid(caseUuid);
 
         verify(somuItemRepository, times(1)).findAllByCaseUuid(caseUuid);
@@ -63,7 +69,7 @@ public class SomuItemServiceTest {
         verify(auditClient, times(1)).viewCaseSomuItemsBySomuTypeAudit(caseUuid, somuTypeUuid);
         verifyNoMoreInteractions(somuItemRepository, auditClient);
     }
-   
+
     @Test()
     public void shouldGetSomuItem_EmptySetReturnedWhenNoneExist() throws ApplicationExceptions.EntityNotFoundException {
         when(somuItemRepository.findByCaseUuidAndSomuUuid(any(), any())).thenReturn(Collections.emptySet());
@@ -80,7 +86,8 @@ public class SomuItemServiceTest {
 
     @Test
     public void shouldCreateSomuItem() {
-        SomuItem somuItem = somuItemService.upsertCaseSomuItemBySomuType(caseUuid, somuTypeUuid, new CreateSomuItemRequest(null, "{}"));
+        SomuItem somuItem = somuItemService.upsertCaseSomuItemBySomuType(caseUuid, somuTypeUuid,
+            new CreateSomuItemRequest(null, "{}"));
 
         verify(somuItemRepository, times(1)).save(somuItem);
         verify(auditClient, times(1)).createCaseSomuItemAudit(somuItem);
@@ -97,7 +104,8 @@ public class SomuItemServiceTest {
 
         when(somuItemRepository.findByUuid(uuid)).thenReturn(somuItem);
 
-        SomuItem somuItem1 = somuItemService.upsertCaseSomuItemBySomuType(caseUuid, somuTypeUuid, new CreateSomuItemRequest(uuid, "{\"Test\": 1}"));
+        SomuItem somuItem1 = somuItemService.upsertCaseSomuItemBySomuType(caseUuid, somuTypeUuid,
+            new CreateSomuItemRequest(uuid, "{\"Test\": 1}"));
 
         verify(somuItemRepository, times(1)).findByUuid(uuid);
         verify(somuItemRepository, times(1)).save(somuItem);
@@ -113,7 +121,8 @@ public class SomuItemServiceTest {
     public void shouldCreateItem_IfItemCannotBeFound() {
         when(somuItemRepository.findByUuid(uuid)).thenReturn(null);
 
-        SomuItem somuItem1 = somuItemService.upsertCaseSomuItemBySomuType(caseUuid, somuTypeUuid, new CreateSomuItemRequest(uuid, "{\"Test\": 1}"));
+        SomuItem somuItem1 = somuItemService.upsertCaseSomuItemBySomuType(caseUuid, somuTypeUuid,
+            new CreateSomuItemRequest(uuid, "{\"Test\": 1}"));
 
         verify(somuItemRepository, times(1)).findByUuid(uuid);
         verify(somuItemRepository, times(1)).save(somuItem1);
@@ -130,7 +139,7 @@ public class SomuItemServiceTest {
         SomuItem somuItem = new SomuItem(uuid, caseUuid, somuTypeUuid, "{}");
 
         when(somuItemRepository.findByUuid(uuid)).thenReturn(somuItem);
-        
+
         somuItemService.deleteSomuItem(uuid);
 
         verify(somuItemRepository, times(1)).findByUuid(uuid);
@@ -138,7 +147,7 @@ public class SomuItemServiceTest {
         verify(auditClient, times(1)).deleteSomuItemAudit(somuItem);
         verifyNoMoreInteractions(somuItemRepository, auditClient);
     }
-    
+
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldDeleteSomuItem_ThrowsWhenNotFound() {
         somuItemService.deleteSomuItem(uuid);

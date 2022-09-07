@@ -27,7 +27,14 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActionDataSuspension;
+import uk.gov.digital.ho.hocs.casework.domain.model.Address;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 import uk.gov.digital.ho.hocs.casework.utils.BaseAwsTest;
 
@@ -76,7 +83,6 @@ public class AuditClientTest extends BaseAwsTest {
     @Value("${hocs.audit-service}")
     private String auditService;
 
-
     @Before
     public void setUp() {
         when(requestData.correlationId()).thenReturn(UUID.randomUUID().toString());
@@ -106,7 +112,7 @@ public class AuditClientTest extends BaseAwsTest {
         var caseID = 12345L;
         var caseType = CaseDataTypeFactory.from("TEST", "F0");
         var stageUUID = UUID.randomUUID();
-        var caseData = new CaseData(caseType, caseID, new HashMap<>(),  LocalDate.now());
+        var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
 
         auditClient.updateCaseAudit(caseData, stageUUID);
 
@@ -170,9 +176,8 @@ public class AuditClientTest extends BaseAwsTest {
     @Test
     public void createCorrespondentAudit() throws IOException {
         var address = new Address("TEST", "some street", "some town", "some count", "UK");
-        var correspondent = new Correspondent(UUID.randomUUID(), "MP", "John Smith",
-                "An Organisation", address, "123456789","test@test.com",
-                "1234", "external key" );
+        var correspondent = new Correspondent(UUID.randomUUID(), "MP", "John Smith", "An Organisation", address,
+            "123456789", "test@test.com", "1234", "external key");
 
         auditClient.createCorrespondentAudit(correspondent);
 
@@ -184,9 +189,8 @@ public class AuditClientTest extends BaseAwsTest {
     @Test
     public void deleteCorrespondentAudit() throws IOException {
         var address = new Address("TEST", "some street", "some town", "some count", "UK");
-        var correspondent = new Correspondent(UUID.randomUUID(), "MP", "John Smith",
-                "An Organisation", address, "123456789","test@test.com",
-                "1234", "external key" );
+        var correspondent = new Correspondent(UUID.randomUUID(), "MP", "John Smith", "An Organisation", address,
+            "123456789", "test@test.com", "1234", "external key");
 
         auditClient.deleteCorrespondentAudit(correspondent);
 
@@ -198,9 +202,8 @@ public class AuditClientTest extends BaseAwsTest {
     @Test
     public void updateCorrespondentAudit() throws IOException {
         var address = new Address("TEST", "some street", "some town", "some count", "UK");
-        var correspondent = new Correspondent(UUID.randomUUID(), "MP", "John Smith",
-                "An Organisation", address, "123456789","test@test.com",
-                "1234", "external key" );
+        var correspondent = new Correspondent(UUID.randomUUID(), "MP", "John Smith", "An Organisation", address,
+            "123456789", "test@test.com", "1234", "external key");
 
         auditClient.updateCorrespondentAudit(correspondent);
 
@@ -212,7 +215,7 @@ public class AuditClientTest extends BaseAwsTest {
     @Test
     public void createTopicAudit() throws IOException {
         var caseUUID = UUID.randomUUID();
-        var topic = new Topic(caseUUID,"topic name", UUID.randomUUID());
+        var topic = new Topic(caseUUID, "topic name", UUID.randomUUID());
 
         auditClient.createTopicAudit(topic);
 
@@ -224,7 +227,7 @@ public class AuditClientTest extends BaseAwsTest {
     @Test
     public void deleteTopicAudit() throws IOException {
         var caseUUID = UUID.randomUUID();
-        var topic = new Topic(caseUUID,"topic name", UUID.randomUUID());
+        var topic = new Topic(caseUUID, "topic name", UUID.randomUUID());
 
         auditClient.deleteTopicAudit(topic);
 
@@ -266,8 +269,7 @@ public class AuditClientTest extends BaseAwsTest {
         verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
 
         assertSnsValues(caseNote.getCaseUUID(), EventType.CASE_NOTE_CREATED,
-                Map.of("caseNoteType", "ORIGINAL",
-                        "text", "some note"));
+            Map.of("caseNoteType", "ORIGINAL", "text", "some note"));
     }
 
     @Test
@@ -280,10 +282,8 @@ public class AuditClientTest extends BaseAwsTest {
         verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
 
         assertSnsValues(caseNote.getCaseUUID(), EventType.CASE_NOTE_UPDATED,
-                Map.of("prevCaseNoteType", "ORIGINAL",
-                        "prevText", "pre-text",
-                        "caseNoteType", "DRAFT",
-                        "text", "post-text"));
+            Map.of("prevCaseNoteType", "ORIGINAL", "prevText", "pre-text", "caseNoteType", "DRAFT", "text",
+                "post-text"));
     }
 
     @Test
@@ -301,7 +301,7 @@ public class AuditClientTest extends BaseAwsTest {
     @Test
     public void auditStageUserAllocate() throws IOException {
         var caseUUID = UUID.randomUUID();
-        var stage = new Stage(caseUUID,"SOME_STAGE", UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
+        var stage = new Stage(caseUUID, "SOME_STAGE", UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
 
         auditClient.updateStageUser(stage);
 
@@ -313,7 +313,7 @@ public class AuditClientTest extends BaseAwsTest {
     @Test
     public void auditStageUserUnallocate() throws IOException {
         var caseUUID = UUID.randomUUID();
-        var stage = new Stage(caseUUID,"SOME_STAGE", UUID.randomUUID(), null, null);
+        var stage = new Stage(caseUUID, "SOME_STAGE", UUID.randomUUID(), null, null);
 
         auditClient.updateStageUser(stage);
 
@@ -325,7 +325,7 @@ public class AuditClientTest extends BaseAwsTest {
     @Test
     public void auditStageTeamAllocate() throws IOException {
         var caseUUID = UUID.randomUUID();
-        var stage = new Stage(caseUUID,"SOME_STAGE", UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
+        var stage = new Stage(caseUUID, "SOME_STAGE", UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
 
         auditClient.updateStageTeam(stage);
 
@@ -337,7 +337,7 @@ public class AuditClientTest extends BaseAwsTest {
     @Test
     public void auditStageTeamUnallocate() throws IOException {
         var caseUUID = UUID.randomUUID();
-        var stage = new Stage(caseUUID,"SOME_STAGE", null, null, null);
+        var stage = new Stage(caseUUID, "SOME_STAGE", null, null, null);
 
         auditClient.updateStageTeam(stage);
 
@@ -349,7 +349,7 @@ public class AuditClientTest extends BaseAwsTest {
     @Test
     public void auditStageCreated() throws IOException {
         var caseUUID = UUID.randomUUID();
-        var stage = new Stage(caseUUID,"SOME_STAGE", null, null, null);
+        var stage = new Stage(caseUUID, "SOME_STAGE", null, null, null);
 
         auditClient.createStage(stage);
 
@@ -358,12 +358,10 @@ public class AuditClientTest extends BaseAwsTest {
         assertSnsValues(stage.getCaseUUID(), EventType.STAGE_CREATED);
     }
 
-
-
     @Test
     public void shouldRecreateStage() throws IOException {
         var caseUUID = UUID.randomUUID();
-        var stage = new Stage(caseUUID,"SOME_STAGE", UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
+        var stage = new Stage(caseUUID, "SOME_STAGE", UUID.randomUUID(), UUID.randomUUID(), UUID.randomUUID());
 
         auditClient.recreateStage(stage);
 
@@ -371,8 +369,6 @@ public class AuditClientTest extends BaseAwsTest {
 
         assertSnsValues(stage.getCaseUUID(), EventType.STAGE_RECREATED);
     }
-
-
 
     @Test
     public void viewSomuItemsAudit() throws IOException {
@@ -434,24 +430,23 @@ public class AuditClientTest extends BaseAwsTest {
     }
 
     @Test
-    public void shouldSetHeaders()  {
+    public void shouldSetHeaders() {
         var caseID = 12345L;
         var caseType = CaseDataTypeFactory.from("TEST", "F0");
-        var caseData = new CaseData(caseType, caseID, new HashMap<>(),  LocalDate.now());
-        Map<String, MessageAttributeValue> expectedHeaders = Map.of(
-                "event_type", new SnsStringMessageAttributeValue(EventType.CASE_CREATED.toString()),
-                RequestData.CORRELATION_ID_HEADER, new SnsStringMessageAttributeValue(requestData.correlationId()),
-                RequestData.USER_ID_HEADER, new SnsStringMessageAttributeValue(requestData.userId()),
-                RequestData.USERNAME_HEADER, new SnsStringMessageAttributeValue(requestData.username()),
-                RequestData.GROUP_HEADER, new SnsStringMessageAttributeValue(requestData.groups()));
+        var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
+        Map<String, MessageAttributeValue> expectedHeaders = Map.of("event_type",
+            new SnsStringMessageAttributeValue(EventType.CASE_CREATED.toString()), RequestData.CORRELATION_ID_HEADER,
+            new SnsStringMessageAttributeValue(requestData.correlationId()), RequestData.USER_ID_HEADER,
+            new SnsStringMessageAttributeValue(requestData.userId()), RequestData.USERNAME_HEADER,
+            new SnsStringMessageAttributeValue(requestData.username()), RequestData.GROUP_HEADER,
+            new SnsStringMessageAttributeValue(requestData.groups()));
 
         auditClient.createCaseAudit(caseData);
 
         verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
 
-        Assertions.assertTrue(publicRequestCaptor
-                .getValue().getMessageAttributes().entrySet()
-                .containsAll(expectedHeaders.entrySet()));
+        Assertions.assertTrue(
+            publicRequestCaptor.getValue().getMessageAttributes().entrySet().containsAll(expectedHeaders.entrySet()));
     }
 
     @Test
@@ -470,21 +465,17 @@ public class AuditClientTest extends BaseAwsTest {
     public void shouldGetCaseHistory() {
         var caseUUID = UUID.randomUUID();
         var auditResponseUUID = UUID.randomUUID();
-        var restResponse = new GetAuditListResponse(Set.of(new GetAuditResponse(auditResponseUUID,
-                caseUUID,
-                null,
-                "correlation Id",
-                "hocs-casework","",
-                "namespace", ZonedDateTime.now(),EventType.CASE_CREATED.toString(),
-                "user")));
+        var restResponse = new GetAuditListResponse(Set.of(
+            new GetAuditResponse(auditResponseUUID, caseUUID, null, "correlation Id", "hocs-casework", "", "namespace",
+                ZonedDateTime.now(), EventType.CASE_CREATED.toString(), "user")));
         var events = String.join(",", CaseDataService.TIMELINE_EVENTS);
 
         when(restHelper.get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
-                GetAuditListResponse.class)).thenReturn(restResponse);
+            GetAuditListResponse.class)).thenReturn(restResponse);
 
         Set<GetAuditResponse> response = auditClient.getAuditLinesForCase(caseUUID, CaseDataService.TIMELINE_EVENTS);
         verify(restHelper).get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
-                GetAuditListResponse.class);
+            GetAuditListResponse.class);
         assertThat(response.size()).isEqualTo(1);
     }
 
@@ -493,15 +484,13 @@ public class AuditClientTest extends BaseAwsTest {
         var caseUUID = UUID.randomUUID();
         var restResponse = new DeleteCaseAuditResponse("C", caseUUID, false, 1);
 
-        when(restHelper.post(eq(auditService), eq(String.format("/audit/case/%s/delete", caseUUID)),
-                any(),
-                eq(DeleteCaseAuditResponse.class))).thenReturn(restResponse);
+        when(restHelper.post(eq(auditService), eq(String.format("/audit/case/%s/delete", caseUUID)), any(),
+            eq(DeleteCaseAuditResponse.class))).thenReturn(restResponse);
 
         DeleteCaseAuditResponse response = auditClient.deleteAuditLinesForCase(caseUUID, "C", false);
 
-        verify(restHelper).post(eq(auditService), eq(String.format("/audit/case/%s/delete", caseUUID)),
-                any(),
-                eq(DeleteCaseAuditResponse.class));
+        verify(restHelper).post(eq(auditService), eq(String.format("/audit/case/%s/delete", caseUUID)), any(),
+            eq(DeleteCaseAuditResponse.class));
         assertThat(response.getAuditCount()).isEqualTo(1);
     }
 
@@ -511,12 +500,12 @@ public class AuditClientTest extends BaseAwsTest {
         var events = String.join(",", CaseDataService.TIMELINE_EVENTS);
 
         when(restHelper.get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
-                GetAuditListResponse.class)).thenThrow(RestClientException.class);
+            GetAuditListResponse.class)).thenThrow(RestClientException.class);
 
         Set<GetAuditResponse> response = auditClient.getAuditLinesForCase(caseUUID, CaseDataService.TIMELINE_EVENTS);
 
         verify(restHelper).get(auditService, String.format("/audit/case/%s?types=%s", caseUUID, events),
-                GetAuditListResponse.class);
+            GetAuditListResponse.class);
         assertThat(response.size()).isEqualTo(0);
     }
 
@@ -532,16 +521,8 @@ public class AuditClientTest extends BaseAwsTest {
         LocalDate dataSuspensionApplied = LocalDate.of(2022, 1, 1);
         LocalDate dataSuspensionRemoved = null;
 
-        ActionDataSuspension suspensionEntity = new ActionDataSuspension(
-                actionUuid,
-                caseTypeActionUuid,
-                actionSubtype,
-                caseTypeActionLabel,
-                caseDataType,
-                caseDataUuid,
-                dataSuspensionApplied,
-                dataSuspensionRemoved
-        );
+        ActionDataSuspension suspensionEntity = new ActionDataSuspension(actionUuid, caseTypeActionUuid, actionSubtype,
+            caseTypeActionLabel, caseDataType, caseDataUuid, dataSuspensionApplied, dataSuspensionRemoved);
 
         // WHEN
         auditClient.suspendCaseAudit(suspensionEntity);
@@ -562,18 +543,10 @@ public class AuditClientTest extends BaseAwsTest {
         String caseDataType = "SMC";
         UUID caseDataUuid = UUID.randomUUID();
         LocalDate dataSuspensionApplied = LocalDate.of(2022, 1, 1);
-        LocalDate dataSuspensionRemoved = LocalDate.of(2022,2,1);
+        LocalDate dataSuspensionRemoved = LocalDate.of(2022, 2, 1);
 
-        ActionDataSuspension suspensionEntity = new ActionDataSuspension(
-                actionUuid,
-                caseTypeActionUuid,
-                actionSubtype,
-                caseTypeActionLabel,
-                caseDataType,
-                caseDataUuid,
-                dataSuspensionApplied,
-                dataSuspensionRemoved
-        );
+        ActionDataSuspension suspensionEntity = new ActionDataSuspension(actionUuid, caseTypeActionUuid, actionSubtype,
+            caseTypeActionLabel, caseDataType, caseDataUuid, dataSuspensionApplied, dataSuspensionRemoved);
 
         // WHEN
         auditClient.unsuspendCaseAudit(suspensionEntity);
@@ -588,9 +561,10 @@ public class AuditClientTest extends BaseAwsTest {
         assertSnsValues(caseUuid, event, Collections.emptyMap());
     }
 
-    private void assertSnsValues(UUID caseUuid, EventType event, @NotNull Map<String, String> otherValues) throws JsonProcessingException {
-        var caseCreated =
-                objectMapper.readValue(publicRequestCaptor.getValue().getMessage(), CreateAuditRequest.class);
+    private void assertSnsValues(UUID caseUuid,
+                                 EventType event,
+                                 @NotNull Map<String, String> otherValues) throws JsonProcessingException {
+        var caseCreated = objectMapper.readValue(publicRequestCaptor.getValue().getMessage(), CreateAuditRequest.class);
 
         Assertions.assertNotNull(snsPublishResult.getResult());
         Assertions.assertNotNull(snsPublishResult.getResult().getMessageId());
@@ -599,10 +573,10 @@ public class AuditClientTest extends BaseAwsTest {
         Assertions.assertEquals(caseCreated.getType(), event);
 
         if (!otherValues.isEmpty()) {
-            var caseCreatedData =
-                    objectMapper.readValue(caseCreated.getAuditPayload(), Map.class);
+            var caseCreatedData = objectMapper.readValue(caseCreated.getAuditPayload(), Map.class);
 
             Assertions.assertTrue(caseCreatedData.entrySet().containsAll(otherValues.entrySet()));
         }
     }
+
 }

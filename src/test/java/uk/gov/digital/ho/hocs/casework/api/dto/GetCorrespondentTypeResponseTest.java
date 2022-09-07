@@ -15,8 +15,10 @@ public class GetCorrespondentTypeResponseTest {
         Set<CorrespondentTypeDto> correspondentTypes = new HashSet<>();
         correspondentTypes.add(correspondentType);
 
-        GetCorrespondentTypeResponse getCorrespondentTypeResponse = GetCorrespondentTypeResponse.from(correspondentTypes);
+        GetCorrespondentTypeResponse getCorrespondentTypeResponse = GetCorrespondentTypeResponse.from(
+            correspondentTypes);
 
         assertThat(getCorrespondentTypeResponse.getCorrespondentTypes()).hasSize(1);
     }
+
 }

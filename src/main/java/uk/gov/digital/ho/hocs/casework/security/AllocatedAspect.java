@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.StageService;
@@ -13,7 +12,9 @@ import uk.gov.digital.ho.hocs.casework.api.StageService;
 import java.util.Set;
 import java.util.UUID;
 
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_CASE_NOT_ALLOCATED_TO_TEAM;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_CASE_NOT_ALLOCATED_TO_USER;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_PARSE_ERROR;
 
 @Aspect
 @Component
@@ -22,7 +23,9 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 public class AllocatedAspect {
 
     private final StageService stageService;
+
     private final UserPermissionsService userService;
+
     private final CaseDataService caseDataService;
 
     @Around("@annotation(allocated)")
@@ -34,10 +37,13 @@ public class AllocatedAspect {
                 caseUUID = (UUID) joinPoint.getArgs()[0];
                 stageUUID = (UUID) joinPoint.getArgs()[1];
             } else {
-                throw new SecurityExceptions.PermissionCheckException("Unable parse method parameters for type " + joinPoint.getArgs()[1].getClass().getName(), SECURITY_PARSE_ERROR);
+                throw new SecurityExceptions.PermissionCheckException(
+                    "Unable parse method parameters for type " + joinPoint.getArgs()[1].getClass().getName(),
+                    SECURITY_PARSE_ERROR);
             }
         } else {
-            throw new SecurityExceptions.PermissionCheckException("Unable to check permission of method without stage UUID parameter", SECURITY_PARSE_ERROR);
+            throw new SecurityExceptions.PermissionCheckException(
+                "Unable to check permission of method without stage UUID parameter", SECURITY_PARSE_ERROR);
         }
 
         if (proceedIfUserTeamIsAdminForCaseType(caseUUID)) {
@@ -71,8 +77,8 @@ public class AllocatedAspect {
         UUID assignedUser = stageService.getStageUser(caseUUID, stageUUID);
         if (!userId.equals(assignedUser)) {
             throw new SecurityExceptions.StageNotAssignedToLoggedInUserException(
-                    String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedUser),
-                    SECURITY_CASE_NOT_ALLOCATED_TO_USER);
+                String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedUser),
+                SECURITY_CASE_NOT_ALLOCATED_TO_USER);
         }
     }
 
@@ -82,8 +88,8 @@ public class AllocatedAspect {
 
         if (assignedTeam == null || !teams.contains(assignedTeam)) {
             throw new SecurityExceptions.StageNotAssignedToUserTeamException(
-                    String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedTeam),
-                    SECURITY_CASE_NOT_ALLOCATED_TO_TEAM);
+                String.format("Stage %s is assigned to %s", stageUUID.toString(), assignedTeam),
+                SECURITY_CASE_NOT_ALLOCATED_TO_TEAM);
         }
     }
 
@@ -92,4 +98,5 @@ public class AllocatedAspect {
         Set<String> caseTypesForCaseTypeAdmin = userService.getCaseTypesIfUserTeamIsCaseTypeAdmin();
         return caseTypesForCaseTypeAdmin.contains(stageType);
     }
+
 }
