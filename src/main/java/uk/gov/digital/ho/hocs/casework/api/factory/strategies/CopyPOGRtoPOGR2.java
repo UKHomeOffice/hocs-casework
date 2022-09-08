@@ -21,13 +21,17 @@ public class CopyPOGRtoPOGR2 extends AbstractCaseCopyStrategy implements CaseCop
             "ComplainantCategory",
             "ComplainantNro",
             "ComplainantLocation",
+            "ComplainantApplicationReference",
+            "ComplainantPassportNumber",
             "ComplaintDescription",
             "ComplaintChannel",
             "ComplaintNationOrigin",
             "ComplaintPriority",
             "ComplaintThirdPartyReference",
+            "ComplaintReason",
             "LoaRequired",
-            "LoaReceived"
+            "LoaReceived",
+            "LoaDateReceived"
     };
 
     private final CaseDataService caseDataService;
