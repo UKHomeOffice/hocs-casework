@@ -26,7 +26,6 @@ public class CreateMigrationCaseRequest {
     @JsonProperty("fromCaseUUID")
     private UUID fromCaseUUID;
 
-    @NotNull
     @JsonProperty("stageType")
     private String stageType;
 }
