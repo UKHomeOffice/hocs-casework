@@ -23,7 +23,6 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_
 
 @Service
 @Slf4j
-@Qualifier("MigrationCaseDataService")
 public class MigrationCaseDataService {
     protected final CaseDataRepository caseDataRepository;
     protected final AuditClient auditClient;
