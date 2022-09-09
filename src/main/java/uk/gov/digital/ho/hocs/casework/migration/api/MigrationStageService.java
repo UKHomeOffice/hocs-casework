@@ -21,15 +21,9 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATED
 public class MigrationStageService {
 
     private final StageRepository stageRepository;
-    private final AuditClient auditClient;
-    private final MigrationCaseDataService migrationCaseDataService;
 
-    public MigrationStageService(StageRepository stageRepository,
-                                 AuditClient auditClient,
-                                 MigrationCaseDataService migrationCaseDataService) {
+    public MigrationStageService(StageRepository stageRepository) {
         this.stageRepository = stageRepository;
-        this.auditClient = auditClient;
-        this.migrationCaseDataService = migrationCaseDataService;
     }
 
     @Transactional
