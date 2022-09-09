@@ -44,11 +44,7 @@ public class MigrationStageServiceTest {
     @Mock
     private StageRepository stageRepository;
     @Mock
-    private UserPermissionsService userPermissionsService;
-    @Mock
     private AuditClient auditClient;
-    @Mock
-    private SearchClient searchClient;
     @Mock
     private MigrationCaseDataService migrationCaseDataService;
 
