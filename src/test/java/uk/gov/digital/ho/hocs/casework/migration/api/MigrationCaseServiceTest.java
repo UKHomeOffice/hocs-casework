@@ -76,12 +76,12 @@ public class MigrationCaseServiceTest {
                 null);
 
         //when
-        when(migrationCaseDataService.createCase(caseDataType.getDisplayName(), data, originalReceivedDate)).thenReturn(caseData);
+        when(migrationCaseDataService.createCompletedCase(caseDataType.getDisplayName(), data, originalReceivedDate)).thenReturn(caseData);
 
         migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate);
 
         // then
-        verify(migrationCaseDataService, times(1)).createCase(caseDataType.getDisplayName(), data, originalReceivedDate);
+        verify(migrationCaseDataService, times(1)).createCompletedCase(caseDataType.getDisplayName(), data, originalReceivedDate);
         verify(migrationStageService, times(1)).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
         verifyNoMoreInteractions(migrationCaseDataService);
         verifyNoMoreInteractions(migrationStageService);

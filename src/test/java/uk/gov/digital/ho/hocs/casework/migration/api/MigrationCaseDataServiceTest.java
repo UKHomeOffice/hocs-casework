@@ -54,7 +54,7 @@ public class MigrationCaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         // when
-        CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data, originalReceivedDate);
+        CaseData caseData = migrationCaseDataService.createCompletedCase(caseType.getDisplayCode(), data, originalReceivedDate);
 
         // then
         verify(caseDataRepository, times(1)).getNextSeriesId();
@@ -66,7 +66,7 @@ public class MigrationCaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
-        migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate);
+        migrationCaseDataService.createCompletedCase(null, new HashMap<>(), originalReceivedDate);
     }
 
     @Test()
@@ -75,7 +75,7 @@ public class MigrationCaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         try {
-            migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate);
+            migrationCaseDataService.createCompletedCase(null, new HashMap<>(), originalReceivedDate);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
