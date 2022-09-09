@@ -73,21 +73,14 @@ public class MigrationStageServiceTest {
         String stageType = "COMP_MIGRATION_END";
         Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
 
-        when(stageRepository.findAllByCaseUUIDAsStage(caseData.getUuid())).thenReturn(Collections.emptySet());
         when(migrationCaseDataService.getCaseData(caseData.getUuid())).thenReturn(caseData);
 
         // when
         Stage stage = migrationStageService.createStageForClosedCase(caseData.getUuid(), stageType);
 
         // then
-        verify(stageRepository).findAllByCaseUUIDAsStage(caseData.getUuid());
-        verify(migrationCaseDataService).getCaseData(caseData.getUuid());
         verify(stageRepository, times(1)).save(any(Stage.class));
-        verify(migrationCaseDataService).updateCaseData(eq(caseData), any(UUID.class), anyMap());
         verify(stageRepository).save(stage);
-        verify(auditClient).updateStageTeam(stage);
-        verify(auditClient).createStage(any(Stage.class));
-        verify(auditClient, times(1)).updateStageTeam(any(Stage.class));
 
         verifyNoMoreInteractions(stageRepository, auditClient);
     }
