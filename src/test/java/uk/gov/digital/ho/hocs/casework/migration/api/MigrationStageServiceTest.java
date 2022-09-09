@@ -7,20 +7,19 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
-import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
-import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 @RunWith(MockitoJUnitRunner.class)
 @ActiveProfiles("local")
@@ -43,10 +42,6 @@ public class MigrationStageServiceTest {
 
     @Mock
     private StageRepository stageRepository;
-    @Mock
-    private AuditClient auditClient;
-    @Mock
-    private MigrationCaseDataService migrationCaseDataService;
 
     private String ALLOCATION_TYPE = "ALLOCATION_TYPE";
     private final Set<Stage> MOCK_STAGE_LIST = new HashSet<>();
@@ -54,11 +49,11 @@ public class MigrationStageServiceTest {
 
     @Before
     public void setUp() {
-        this.migrationStageService = new MigrationStageService(stageRepository, auditClient, migrationCaseDataService);
+        this.migrationStageService = new MigrationStageService(stageRepository);
     }
 
     @Test
-    public void testShouldCreateStageWithDefaultStageTeamAndNoUserOverride() {
+    public void testShouldCreateMigrationStage() {
         // given
         LocalDate received = LocalDate.parse("2021-01-04");
         LocalDate deadline = LocalDate.parse("2021-02-01");
@@ -67,9 +62,6 @@ public class MigrationStageServiceTest {
         caseData.setCaseDeadline(deadline);
         caseData.setCaseDeadlineWarning(deadlineWarning);
         String stageType = "COMP_MIGRATION_END";
-        Stage mockExistingStage = new Stage(caseData.getUuid(), "ANOTHER_STAGE", UUID.randomUUID(), UUID.randomUUID(), transitionNoteUUID);
-
-        when(migrationCaseDataService.getCaseData(caseData.getUuid())).thenReturn(caseData);
 
         // when
         Stage stage = migrationStageService.createStageForClosedCase(caseData.getUuid(), stageType);
@@ -78,7 +70,7 @@ public class MigrationStageServiceTest {
         verify(stageRepository, times(1)).save(any(Stage.class));
         verify(stageRepository).save(stage);
 
-        verifyNoMoreInteractions(stageRepository, auditClient);
+        verifyNoMoreInteractions(stageRepository);
     }
 
 }
