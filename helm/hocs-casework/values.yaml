@@ -1,0 +1,13 @@
+---
+hocs-backend-service:
+  nameOverride: hocs-casework
+
+  app:
+    image:
+      repository: quay.io/ukhomeofficedigital/hocs-casework
+    resources:
+       limits:
+         cpu: 2000m
+         memory: 2048Mi
+       requests:
+         memory: 2048Mi
