@@ -14,11 +14,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUND;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_UPDATED_NULL_DATA;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MIGRATION_CASE_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MIGRATION_CASE_NOT_UPDATED_NULL_DATA;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MIGRATION_CASE_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MIGRATION_CASE_UPDATED;
 
 @Service
 @Slf4j
@@ -39,16 +39,16 @@ public class MigrationCaseDataService {
         log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
         if (caseData == null) {
-            log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
+            log.error("Migration Case: {}, not found!", caseUUID, value(EVENT, MIGRATION_CASE_NOT_FOUND));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), MIGRATION_CASE_NOT_FOUND);
         }
-        log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
+        log.info("Got Migration Case: {}", caseData.getUuid(), value(EVENT, MIGRATION_CASE_RETRIEVED));
         return caseData;
     }
 
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         if (data == null) {
-            log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
+            log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, MIGRATION_CASE_NOT_UPDATED_NULL_DATA));
             return;
         }
         updateCaseData(getCaseData(caseUUID), stageUUID, data);
@@ -57,14 +57,14 @@ public class MigrationCaseDataService {
     public void updateCaseData(CaseData caseData, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseData.getUuid());
         if (data == null) {
-            log.warn("Data was null for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
+            log.warn("Data was null for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, MIGRATION_CASE_NOT_UPDATED_NULL_DATA));
             return;
         }
         log.debug("Data size {}", data.size());
         caseData.update(data);
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);
-        log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
+        log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, MIGRATION_CASE_UPDATED));
     }
 
      CaseData createCompletedCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
