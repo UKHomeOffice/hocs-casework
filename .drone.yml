@@ -9,18 +9,18 @@ trigger:
     - main
 
 steps:
-  - name: cs-dev
+  - name: dev deploy
     image: quay.io/ukhomeofficedigital/helm:v3.5.4
     environment:
+      CHART_NAME: hocs-casework
       KUBE_CLUSTER_NAME: acp-notprod
       KUBE_NAMESPACE: cs-dev
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
       KUBE_TOKEN:
         from_secret: cs_notprod
-      VALUES_FILE: '--values ./helm/values-notprod.yaml'
       VERSION: ${DRONE_TAG}
     commands:
-      - ./helm/helm-deploy.sh
+      - ./helm/helm-deploy.sh --values ./helm/values-notprod.yaml --values ./helm/values-dev.yaml
     depends_on:
       - clone
 
@@ -42,6 +42,7 @@ steps:
   - name: prod deploy
     image: quay.io/ukhomeofficedigital/helm:v3.5.4
     environment:
+      CHART_NAME: hocs-casework
       KUBE_CLUSTER_NAME: acp-prod
       KUBE_NAMESPACE: ${DRONE_DEPLOY_TO}
       KUBE_SERVER: https://kube-api-prod.prod.acp.homeoffice.gov.uk
@@ -54,40 +55,76 @@ steps:
     when:
       target:
         - '*-prod'
+
+  - name: preprod deploy
+    image: quay.io/ukhomeofficedigital/helm:v3.5.4
+    environment:
+      CHART_NAME: hocs-casework
+      KUBE_CLUSTER_NAME: acp-prod
+      KUBE_NAMESPACE: ${DRONE_DEPLOY_TO}
+      KUBE_SERVER: https://kube-api-prod.prod.acp.homeoffice.gov.uk
+      KUBE_TOKEN:
+        from_secret: cs_prod
+    commands:
+      - ./helm/helm-deploy.sh --values ./helm/values-preprod.yaml
+    depends_on:
+      - checkout
+    when:
+      target:
         - '*-preprod'
 
   - &deploy
-    name: notprod deploy
+    name: dev deploy
     image: quay.io/ukhomeofficedigital/helm:v3.5.4
     environment:
+      CHART_NAME: hocs-casework
       KUBE_CLUSTER_NAME: acp-notprod
       KUBE_NAMESPACE: ${DRONE_DEPLOY_TO}
       KUBE_SERVER: https://kube-api-notprod.notprod.acp.homeoffice.gov.uk
       KUBE_TOKEN:
         from_secret: cs_notprod
-      VALUES_FILE: '--values ./helm/values-notprod.yaml'
     commands:
-      - ./helm/helm-deploy.sh
+      - ./helm/helm-deploy.sh --values ./helm/values-notprod.yaml --values ./helm/values-dev.yaml
     depends_on:
       - checkout
     when:
       target:
-        exclude:
-          - '*-prod'
-          - '*-preprod'
+        - '*-dev'
 
   - <<: *deploy
-    name: wcs-qa
-    environment:
-      KUBE_NAMESPACE: wcs-qa
-    when:
-      target:
-        - release
-
-  - <<: *deploy
-    name: cs-qa
+    name: cs-qa deploy
     environment:
       KUBE_NAMESPACE: cs-qa
+    commands:
+      - ./helm/helm-deploy.sh --values ./helm/values-notprod.yaml --values ./helm/values-qa.yaml
     when:
       target:
-        - release
+        - 'cs-qa'
+        - 'release'
+
+  - <<: *deploy
+    name: wcs-qa deploy
+    environment:
+      KUBE_NAMESPACE: wcs-qa
+    commands:
+      - ./helm/helm-deploy.sh --values ./helm/values-notprod.yaml --values ./helm/values-qa.yaml
+    when:
+      target:
+        - 'wcs-qa'
+        - 'release'
+
+  - <<: *deploy
+    name: demo deploy
+    commands:
+      - ./helm/helm-deploy.sh --values ./helm/values-notprod.yaml --values ./helm/values-demo.yaml
+    when:
+      target:
+        - '*-demo'
+
+  - <<: *deploy
+    name: qax deploy
+    commands:
+      - ./helm/helm-deploy.sh --values ./helm/values-notprod.yaml --values ./helm/values-qax.yaml
+    when:
+      target:
+        - 'hocs-qax'

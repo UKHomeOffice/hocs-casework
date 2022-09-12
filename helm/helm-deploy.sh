@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-helm upgrade hocs-casework \
- ./hocs-casework \
+helm upgrade ${CHART_NAME} \
+ ./helm/${CHART_NAME} \
 --atomic \
 --cleanup-on-fail \
 --install \
@@ -9,5 +9,4 @@ helm upgrade hocs-casework \
 --timeout 3m \
 --history-max 3 \
 --namespace ${KUBE_NAMESPACE} \
---set version=${VERSION} $\
-{VALUES_FILE}
+--set version=${VERSION} $*
