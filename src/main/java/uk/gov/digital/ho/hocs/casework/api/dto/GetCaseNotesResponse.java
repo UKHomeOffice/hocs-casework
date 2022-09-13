@@ -17,11 +17,10 @@ public class GetCaseNotesResponse {
     private Set<GetCaseNoteResponse> caseNotes;
 
     public static GetCaseNotesResponse from(Set<CaseNote> caseNoteData) {
-        Set<GetCaseNoteResponse> caseNotesResponses = caseNoteData
-                .stream()
-                .map(GetCaseNoteResponse::from)
-                .collect(Collectors.toSet());
+        Set<GetCaseNoteResponse> caseNotesResponses = caseNoteData.stream().map(GetCaseNoteResponse::from).collect(
+            Collectors.toSet());
 
         return new GetCaseNotesResponse(caseNotesResponses);
     }
+
 }

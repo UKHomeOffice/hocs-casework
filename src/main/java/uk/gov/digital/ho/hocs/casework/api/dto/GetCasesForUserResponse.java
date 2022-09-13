@@ -15,10 +15,9 @@ public class GetCasesForUserResponse {
     @JsonProperty("uuid")
     private UUID uuid;
 
-
     public static GetCasesForUserResponse from(CaseData caseData) {
 
-        return new GetCasesForUserResponse(
-                caseData.getUuid());
+        return new GetCasesForUserResponse(caseData.getUuid());
     }
+
 }

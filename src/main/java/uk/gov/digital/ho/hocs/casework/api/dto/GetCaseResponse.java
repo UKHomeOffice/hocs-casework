@@ -74,46 +74,38 @@ public class GetCaseResponse {
             }
         }
 
-        return new GetCaseResponse(
-                caseData.getUuid(),
-                ZonedDateTime.of(caseData.getCreated(), ZoneOffset.UTC),
-                caseData.getType(),
-                caseData.getReference(),
-                populateFields(caseData, full),
-                caseData.getPrimaryTopicUUID(),
-                populateTopic(caseData.getPrimaryTopic(), full),
-                caseData.getPrimaryCorrespondentUUID(),
-                populateCorrespondent(caseData.getPrimaryCorrespondent(), full),
-                caseData.getCaseDeadline(),
-                caseData.getCaseDeadlineWarning(),
-                caseData.getDateReceived(),
-                stages,
-                caseData.isCompleted());
+        return new GetCaseResponse(caseData.getUuid(), ZonedDateTime.of(caseData.getCreated(), ZoneOffset.UTC),
+            caseData.getType(), caseData.getReference(), populateFields(caseData, full), caseData.getPrimaryTopicUUID(),
+            populateTopic(caseData.getPrimaryTopic(), full), caseData.getPrimaryCorrespondentUUID(),
+            populateCorrespondent(caseData.getPrimaryCorrespondent(), full), caseData.getCaseDeadline(),
+            caseData.getCaseDeadlineWarning(), caseData.getDateReceived(), stages, caseData.isCompleted());
     }
 
     private static GetTopicResponse populateTopic(Topic topic, boolean full) {
-        if (topic != null && full) {
+        if (topic!=null && full) {
             return GetTopicResponse.from(topic);
         }
         return null;
     }
 
     private static GetCorrespondentResponse populateCorrespondent(Correspondent correspondent, boolean full) {
-        if (correspondent != null && full) {
+        if (correspondent!=null && full) {
             return GetCorrespondentResponse.from(correspondent);
         }
         return null;
     }
 
-    private static Map<String,String> populateFields(CaseData caseData, boolean full) {
+    private static Map<String, String> populateFields(CaseData caseData, boolean full) {
         if (full) {
             Map<String, String> replacementValues = new HashMap<>();
 
-            if (caseData.getPrimaryTopic() != null) {
-                replacementValues.put(caseData.getPrimaryTopic().getUuid().toString(), caseData.getPrimaryTopic().getText());
+            if (caseData.getPrimaryTopic()!=null) {
+                replacementValues.put(caseData.getPrimaryTopic().getUuid().toString(),
+                    caseData.getPrimaryTopic().getText());
             }
-            if (caseData.getPrimaryCorrespondent() != null) {
-                replacementValues.put(caseData.getPrimaryCorrespondent().getUuid().toString(), caseData.getPrimaryCorrespondent().getFullName());
+            if (caseData.getPrimaryCorrespondent()!=null) {
+                replacementValues.put(caseData.getPrimaryCorrespondent().getUuid().toString(),
+                    caseData.getPrimaryCorrespondent().getFullName());
             }
 
             final Map<String, String> dataMap = caseData.getDataMap();
@@ -136,4 +128,5 @@ public class GetCaseResponse {
     protected void replaceDataMap(Map<String, String> dataMap) {
         this.data = dataMap;
     }
+
 }

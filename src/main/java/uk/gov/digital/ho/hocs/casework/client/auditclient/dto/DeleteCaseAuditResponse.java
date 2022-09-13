@@ -21,4 +21,5 @@ public class DeleteCaseAuditResponse {
 
     @JsonProperty("auditCount")
     private Integer auditCount;
+
 }

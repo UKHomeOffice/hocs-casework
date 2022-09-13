@@ -9,11 +9,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 public class CreateSomuItemRequest {
-    
+
     @JsonProperty("uuid")
     private final UUID uuid;
-    
+
     @JsonProperty("data")
     private final String data;
-    
+
 }

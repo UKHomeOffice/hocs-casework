@@ -12,17 +12,29 @@ import java.util.*;
 public class CaseSummary {
 
     private String type;
+
     private LocalDate createdDate;
+
     private LocalDate caseDeadline;
+
     private Map<String, LocalDate> stageDeadlines;
+
     private Set<AdditionalField> additionalFields;
+
     private Correspondent primaryCorrespondent;
+
     private Topic primaryTopic;
+
     private Set<ActiveStage> activeStages;
+
     private String previousCaseReference;
+
     private UUID previousCaseUUID;
+
     private UUID previousCaseStageUUID;
+
     private CaseActionDataResponseDto actions;
+
     private String suspended;
 
     public CaseSummary(CaseData caseData) {

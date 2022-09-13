@@ -18,7 +18,8 @@ public class GetStagesResponseTest {
         UUID teamUUID = UUID.randomUUID();
         UUID userUUID = UUID.randomUUID();
         UUID transitionNoteUUID = UUID.randomUUID();
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID,
+            transitionNoteUUID);
 
         Set<StageWithCaseData> stages = new HashSet<>();
         stages.add(stage);

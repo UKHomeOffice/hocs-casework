@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.api.utils;
 
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.Set;
@@ -9,11 +8,11 @@ import java.util.stream.Collectors;
 public final class DateUtils {
 
     private static boolean isWeekend(LocalDate date) {
-        return date.getDayOfWeek() == DayOfWeek.SATURDAY || date.getDayOfWeek() == DayOfWeek.SUNDAY;
+        return date.getDayOfWeek()==DayOfWeek.SATURDAY || date.getDayOfWeek()==DayOfWeek.SUNDAY;
     }
 
     public static boolean isDateNonWorkingDay(LocalDate date, Set<LocalDate> holidayDates) {
-        if (date == null || holidayDates == null) {
+        if (date==null || holidayDates==null) {
             return false;
         }
 
@@ -23,12 +22,13 @@ public final class DateUtils {
     /**
      * Returns the date after a number of working days after the startDate. If the startDate, is not a working day
      * the calculation begins from the next first working day.
-     *
+     * <p>
      * Non-working days are considered as weekends and dates in the holidays set
      *
-     * @param startDate the start date
+     * @param startDate   the start date
      * @param workingDays the number of days to add
-     * @param holidays a set of days to be considered as non-working
+     * @param holidays    a set of days to be considered as non-working
+     *
      * @return
      */
     public static LocalDate addWorkingDays(LocalDate startDate, int workingDays, Set<LocalDate> holidays) {
@@ -54,7 +54,7 @@ public final class DateUtils {
 
         int daysRemaining = 0;
 
-        while(today.isBefore(deadline.plusDays(1))) {
+        while (today.isBefore(deadline.plusDays(1))) {
             if (!DateUtils.isDateNonWorkingDay(today, holidays)) {
                 daysRemaining++;
             }
@@ -65,8 +65,8 @@ public final class DateUtils {
     }
 
     public static int calculateWorkingDaysElapsedSinceDate(LocalDate fromDate,
-                                                    LocalDate today,
-                                                    Set<LocalDate> bankHolidayDatesForCase) {
+                                                           LocalDate today,
+                                                           Set<LocalDate> bankHolidayDatesForCase) {
         LocalDate date = fromDate;
         int workingDays = 0;
         while (date.isBefore(today)) {
@@ -79,4 +79,5 @@ public final class DateUtils {
 
         return workingDays;
     }
+
 }

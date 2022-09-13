@@ -60,22 +60,39 @@ public class ActionDataAppealsServiceTest {
     private ArgumentCaptor<ActionDataAppeal> appealArgumentCaptor = ArgumentCaptor.forClass(ActionDataAppeal.class);
 
     public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
+
     public static final String TOPIC_NAME = "topic_name";
+
     public static final UUID TOPIC_NAME_UUID = UUID.randomUUID();
+
     public static final String PREVIOUS_CASE_REFERENCE = "COMP/1234567/21";
+
     public static final String PREVIOUS_CASE_TYPE = "COMP";
+
     public static final String PREV_CORRESPONDENT_TYPE = "correspondent_type";
+
     public static final String PREV_FULLNAME = "fullname";
+
     public static final String PREV_ORGANISATION = "organisation";
+
     public static final String PREV_ADDR_1 = "addr1";
+
     public static final String PREV_ADDR_2 = "addr2";
+
     public static final String PREV_ADDR_3 = "addr3";
+
     public static final String PREV_ADDR_4 = "add4";
+
     public static final String PREV_ADDR_5 = "addr5";
+
     public static final String PREV_TELEPHONE = "string 1";
+
     public static final String PREV_EMAIL = "string 2";
+
     public static final String PREV_REFERENCE = "string 3";
+
     public static final String PREV_EXTERNAL_KEY = "string 4";
+
     public static final Map<String, String> PREV_DATA_CLOB = new HashMap<>() {{
         put("key1", "value1");
         put("key2", "value2");
@@ -84,12 +101,8 @@ public class ActionDataAppealsServiceTest {
     @Before
     public void setUp() throws Exception {
 
-        actionDataAppealsService = new ActionDataAppealsService(
-                mockAppealRepository,
-                mockCaseDataRepository,
-                mockInfoClient,
-                mockAuditClient
-        );
+        actionDataAppealsService = new ActionDataAppealsService(mockAppealRepository, mockCaseDataRepository,
+            mockInfoClient, mockAuditClient);
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
@@ -98,19 +111,8 @@ public class ActionDataAppealsServiceTest {
         UUID actionTypeUuid = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
 
-        ActionDataAppealDto appealDto = new ActionDataAppealDto(
-                null,
-                actionTypeUuid,
-                "TEST_APPEAL",
-                "ACTION_LABEL",
-                null,
-                LocalDate.MAX,
-                null,
-                null,
-                "TEST NOTE",
-                "{}",
-                null
-        );
+        ActionDataAppealDto appealDto = new ActionDataAppealDto(null, actionTypeUuid, "TEST_APPEAL", "ACTION_LABEL",
+            null, LocalDate.MAX, null, null, "TEST NOTE", "{}", null);
 
         // WHEN
         actionDataAppealsService.createAppeal(caseUUID, stageUUID, appealDto);
@@ -125,19 +127,8 @@ public class ActionDataAppealsServiceTest {
         UUID actionTypeUuid = UUID.randomUUID();
         UUID stageUUID = UUID.randomUUID();
 
-        ActionDataAppealDto appealDto = new ActionDataAppealDto(
-                null,
-                actionTypeUuid,
-                "TEST_APPEAL",
-                "ACTION_LABEL",
-                null,
-                LocalDate.MAX,
-                null,
-                null,
-                "TEST NOTE",
-                "{}",
-                null
-        );
+        ActionDataAppealDto appealDto = new ActionDataAppealDto(null, actionTypeUuid, "TEST_APPEAL", "ACTION_LABEL",
+            null, LocalDate.MAX, null, null, "TEST NOTE", "{}", null);
 
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
 
@@ -154,71 +145,29 @@ public class ActionDataAppealsServiceTest {
         UUID stageUUID = UUID.randomUUID();
         String caseType = "TEST_CASE_TYPE";
 
-        LocalDate originalCaseDeadline = LocalDate.of(2021, Month.APRIL,30);
-        LocalDate originalDeadlineWarning = LocalDate.of(2021, Month.APRIL,28);
+        LocalDate originalCaseDeadline = LocalDate.of(2021, Month.APRIL, 30);
+        LocalDate originalDeadlineWarning = LocalDate.of(2021, Month.APRIL, 28);
 
-        ActionDataAppealDto appealDto = new ActionDataAppealDto(
-                null,
-                actionTypeUuid,
-                "TEST_APPEAL",
-                "ACTION_LABEL",
-                null,
-                LocalDate.MAX,
-                null,
-                null,
-                "TEST NOTE",
-                "{}",
-                null
-        );
+        ActionDataAppealDto appealDto = new ActionDataAppealDto(null, actionTypeUuid, "TEST_APPEAL", "ACTION_LABEL",
+            null, LocalDate.MAX, null, null, "TEST NOTE", "{}", null);
 
-        CaseData caseData = new CaseData(
-                1L,
-                PREVIOUS_CASE_UUID,
-                LocalDateTime.of(2021, Month.APRIL,1, 0,0),
-                PREVIOUS_CASE_TYPE,
-                PREVIOUS_CASE_REFERENCE,
-                false,
-                PREV_DATA_CLOB,
-                UUID.randomUUID(),
-                new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID),
-                UUID.randomUUID(),
-                new Correspondent(PREVIOUS_CASE_UUID,
-                        PREV_CORRESPONDENT_TYPE,
-                        PREV_FULLNAME,
-                        PREV_ORGANISATION,
-                        new Address(PREV_ADDR_1,
-                                PREV_ADDR_2,
-                                PREV_ADDR_3,
-                                PREV_ADDR_4,
-                                PREV_ADDR_5),
-                        PREV_TELEPHONE,
-                        PREV_EMAIL,
-                        PREV_REFERENCE,
-                        PREV_EXTERNAL_KEY),
-                originalCaseDeadline,
-                originalDeadlineWarning,
-                LocalDate.now().minusDays(10),
-                false,
-                Set.of(new ActiveStage(), new ActiveStage()),
-                Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
+        CaseData caseData = new CaseData(1L, PREVIOUS_CASE_UUID, LocalDateTime.of(2021, Month.APRIL, 1, 0, 0),
+            PREVIOUS_CASE_TYPE, PREVIOUS_CASE_REFERENCE, false, PREV_DATA_CLOB, UUID.randomUUID(),
+            new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID), UUID.randomUUID(),
+            new Correspondent(PREVIOUS_CASE_UUID, PREV_CORRESPONDENT_TYPE, PREV_FULLNAME, PREV_ORGANISATION,
+                new Address(PREV_ADDR_1, PREV_ADDR_2, PREV_ADDR_3, PREV_ADDR_4, PREV_ADDR_5), PREV_TELEPHONE,
+                PREV_EMAIL, PREV_REFERENCE, PREV_EXTERNAL_KEY), originalCaseDeadline, originalDeadlineWarning,
+            LocalDate.now().minusDays(10), false, Set.of(new ActiveStage(), new ActiveStage()),
+            Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
 
-        CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
-                actionTypeUuid,
-                null,
-                caseType,
-                null,
-                "TEST_APPEAL",
-                appealDto.getCaseTypeActionLabel(),
-                1,
-                10,
-                true,
-                null
-        );
+        CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(actionTypeUuid, null, caseType, null,
+            "TEST_APPEAL", appealDto.getCaseTypeActionLabel(), 1, 10, true, null);
 
         ActionDataAppeal createdActionDataAppeal = new ActionDataAppeal();
         createdActionDataAppeal.setUuid(UUID.randomUUID());
 
-        when(mockInfoClient.getCaseTypeActionByUuid(caseData.getType(), appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
+        when(mockInfoClient.getCaseTypeActionByUuid(caseData.getType(), appealDto.getCaseTypeActionUuid())).thenReturn(
+            mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
         when(mockAppealRepository.save((any()))).thenReturn(createdActionDataAppeal);
 
@@ -241,19 +190,8 @@ public class ActionDataAppealsServiceTest {
         UUID actionTypeUuid = UUID.randomUUID();
         UUID actionEntityId = UUID.randomUUID();
 
-        ActionDataAppealDto appealDto = new ActionDataAppealDto(
-                actionEntityId,
-                actionTypeUuid,
-                "ACTION_LABEL",
-                "TEST_APPEAL",
-                null,
-                LocalDate.MAX,
-                null,
-                null,
-                "TEST NOTE",
-                "{}",
-                null
-        );
+        ActionDataAppealDto appealDto = new ActionDataAppealDto(actionEntityId, actionTypeUuid, "ACTION_LABEL",
+            "TEST_APPEAL", null, LocalDate.MAX, null, null, "TEST NOTE", "{}", null);
 
         // WHEN
         actionDataAppealsService.updateAppeal(caseUUID, actionEntityId, appealDto);
@@ -267,19 +205,8 @@ public class ActionDataAppealsServiceTest {
         UUID actionTypeUuid = UUID.randomUUID();
         UUID actionEntityId = UUID.randomUUID();
 
-        ActionDataAppealDto appealDto = new ActionDataAppealDto(
-                actionEntityId,
-                actionTypeUuid,
-                "ACTION_LABEL",
-                "TEST_APPEAL",
-                null,
-                LocalDate.MAX,
-                null,
-                null,
-                "TEST NOTE",
-                "{}",
-                null
-        );
+        ActionDataAppealDto appealDto = new ActionDataAppealDto(actionEntityId, actionTypeUuid, "ACTION_LABEL",
+            "TEST_APPEAL", null, LocalDate.MAX, null, null, "TEST NOTE", "{}", null);
 
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(null);
 
@@ -295,53 +222,20 @@ public class ActionDataAppealsServiceTest {
         UUID actionTypeUuid = UUID.randomUUID();
         UUID actionEntityId = UUID.randomUUID();
 
-        LocalDate originalCaseDeadline = LocalDate.of(2021, Month.APRIL,30);
-        LocalDate originalDeadlineWarning = LocalDate.of(2021, Month.APRIL,28);
+        LocalDate originalCaseDeadline = LocalDate.of(2021, Month.APRIL, 30);
+        LocalDate originalDeadlineWarning = LocalDate.of(2021, Month.APRIL, 28);
 
-        ActionDataAppealDto appealDto = new ActionDataAppealDto(
-                actionEntityId,
-                actionTypeUuid,
-                "ACTION_LABEL",
-                "TEST_APPEAL",
-                null,
-                LocalDate.MAX,
-                null,
-                null,
-                "TEST NOTE",
-                "{}",
-                null
-        );
+        ActionDataAppealDto appealDto = new ActionDataAppealDto(actionEntityId, actionTypeUuid, "ACTION_LABEL",
+            "TEST_APPEAL", null, LocalDate.MAX, null, null, "TEST NOTE", "{}", null);
 
-        CaseData caseData = new CaseData(
-                1L,
-                PREVIOUS_CASE_UUID,
-                LocalDateTime.of(2021, Month.APRIL,1, 0,0),
-                PREVIOUS_CASE_TYPE,
-                PREVIOUS_CASE_REFERENCE,
-                false,
-                PREV_DATA_CLOB,
-                UUID.randomUUID(),
-                new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID),
-                UUID.randomUUID(),
-                new Correspondent(PREVIOUS_CASE_UUID,
-                        PREV_CORRESPONDENT_TYPE,
-                        PREV_FULLNAME,
-                        PREV_ORGANISATION,
-                        new Address(PREV_ADDR_1,
-                                PREV_ADDR_2,
-                                PREV_ADDR_3,
-                                PREV_ADDR_4,
-                                PREV_ADDR_5),
-                        PREV_TELEPHONE,
-                        PREV_EMAIL,
-                        PREV_REFERENCE,
-                        PREV_EXTERNAL_KEY),
-                originalCaseDeadline,
-                originalDeadlineWarning,
-                LocalDate.now().minusDays(10),
-                false,
-                Set.of(new ActiveStage(), new ActiveStage()),
-                Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
+        CaseData caseData = new CaseData(1L, PREVIOUS_CASE_UUID, LocalDateTime.of(2021, Month.APRIL, 1, 0, 0),
+            PREVIOUS_CASE_TYPE, PREVIOUS_CASE_REFERENCE, false, PREV_DATA_CLOB, UUID.randomUUID(),
+            new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID), UUID.randomUUID(),
+            new Correspondent(PREVIOUS_CASE_UUID, PREV_CORRESPONDENT_TYPE, PREV_FULLNAME, PREV_ORGANISATION,
+                new Address(PREV_ADDR_1, PREV_ADDR_2, PREV_ADDR_3, PREV_ADDR_4, PREV_ADDR_5), PREV_TELEPHONE,
+                PREV_EMAIL, PREV_REFERENCE, PREV_EXTERNAL_KEY), originalCaseDeadline, originalDeadlineWarning,
+            LocalDate.now().minusDays(10), false, Set.of(new ActiveStage(), new ActiveStage()),
+            Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
 
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
@@ -360,108 +254,37 @@ public class ActionDataAppealsServiceTest {
         String actionTypeLabel = "A LABEL";
         String updatedDataField = "{\"update\": \"true\"}";
 
-        LocalDate originalCaseDeadline = LocalDate.of(2021, Month.APRIL,30);
-        LocalDate originalDeadlineWarning = LocalDate.of(2021, Month.APRIL,28);
+        LocalDate originalCaseDeadline = LocalDate.of(2021, Month.APRIL, 30);
+        LocalDate originalDeadlineWarning = LocalDate.of(2021, Month.APRIL, 28);
 
-        ActionDataAppealDto appealDto = new ActionDataAppealDto(
-                actionEntityId,
-                actionTypeUuid,
-                "ACTION_LABEL",
-                "TEST_APPEAL",
-                null,
-                LocalDate.MAX,
-                null,
-                null,
-                "TEST NOTE",
-                updatedDataField,
-                null
-        );
+        ActionDataAppealDto appealDto = new ActionDataAppealDto(actionEntityId, actionTypeUuid, "ACTION_LABEL",
+            "TEST_APPEAL", null, LocalDate.MAX, null, null, "TEST NOTE", updatedDataField, null);
 
-        CaseData caseData = new CaseData(
-                1L,
-                caseUUID,
-                LocalDateTime.of(2021, Month.APRIL,1, 0,0),
-                PREVIOUS_CASE_TYPE,
-                PREVIOUS_CASE_REFERENCE,
-                false,
-                PREV_DATA_CLOB,
-                UUID.randomUUID(),
-                new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID),
-                UUID.randomUUID(),
-                new Correspondent(PREVIOUS_CASE_UUID,
-                        PREV_CORRESPONDENT_TYPE,
-                        PREV_FULLNAME,
-                        PREV_ORGANISATION,
-                        new Address(PREV_ADDR_1,
-                                PREV_ADDR_2,
-                                PREV_ADDR_3,
-                                PREV_ADDR_4,
-                                PREV_ADDR_5),
-                        PREV_TELEPHONE,
-                        PREV_EMAIL,
-                        PREV_REFERENCE,
-                        PREV_EXTERNAL_KEY),
-                originalCaseDeadline,
-                originalDeadlineWarning,
-                LocalDate.now().minusDays(10),
-                false,
-                Set.of(new ActiveStage(), new ActiveStage()),
-                Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
+        CaseData caseData = new CaseData(1L, caseUUID, LocalDateTime.of(2021, Month.APRIL, 1, 0, 0), PREVIOUS_CASE_TYPE,
+            PREVIOUS_CASE_REFERENCE, false, PREV_DATA_CLOB, UUID.randomUUID(),
+            new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID), UUID.randomUUID(),
+            new Correspondent(PREVIOUS_CASE_UUID, PREV_CORRESPONDENT_TYPE, PREV_FULLNAME, PREV_ORGANISATION,
+                new Address(PREV_ADDR_1, PREV_ADDR_2, PREV_ADDR_3, PREV_ADDR_4, PREV_ADDR_5), PREV_TELEPHONE,
+                PREV_EMAIL, PREV_REFERENCE, PREV_EXTERNAL_KEY), originalCaseDeadline, originalDeadlineWarning,
+            LocalDate.now().minusDays(10), false, Set.of(new ActiveStage(), new ActiveStage()),
+            Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
 
-        CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(
-                actionTypeUuid,
-                null,
-                caseType,
-                null,
-                "TEST_APPEAL",
-                null,
-                1,
-                10,
-                true,
-                null
-        );
+        CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(actionTypeUuid, null, caseType, null,
+            "TEST_APPEAL", null, 1, 10, true, null);
 
-        ActionDataAppeal existingAppealEntity = new ActionDataAppeal(
-                actionEntityId,
-                actionTypeUuid,
-                "TEST_APPEAL",
-                actionTypeLabel,
-                caseType,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                "{}",
-                LocalDateTime.MIN,
-                LocalDateTime.MIN,
-                null
-        );
+        ActionDataAppeal existingAppealEntity = new ActionDataAppeal(actionEntityId, actionTypeUuid, "TEST_APPEAL",
+            actionTypeLabel, caseType, null, null, null, null, null, null, "{}", LocalDateTime.MIN, LocalDateTime.MIN,
+            null);
 
-        ActionDataAppeal updatedAppealEntity = new ActionDataAppeal(
-                actionEntityId,
-                actionTypeUuid,
-                "TEST_APPEAL",
-                actionTypeLabel,
-                caseType,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                updatedDataField,
-                LocalDateTime.MIN,
-                LocalDateTime.MIN,
-                null
-        );
+        ActionDataAppeal updatedAppealEntity = new ActionDataAppeal(actionEntityId, actionTypeUuid, "TEST_APPEAL",
+            actionTypeLabel, caseType, null, null, null, null, null, null, updatedDataField, LocalDateTime.MIN,
+            LocalDateTime.MIN, null);
 
-
-
-        when(mockInfoClient.getCaseTypeActionByUuid(caseData.getType(), appealDto.getCaseTypeActionUuid())).thenReturn(mockCaseTypeActionDto);
+        when(mockInfoClient.getCaseTypeActionByUuid(caseData.getType(), appealDto.getCaseTypeActionUuid())).thenReturn(
+            mockCaseTypeActionDto);
         when(mockCaseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
-        when(mockAppealRepository.findByUuidAndCaseDataUuid(appealDto.getUuid(), caseUUID)).thenReturn(existingAppealEntity);
+        when(mockAppealRepository.findByUuidAndCaseDataUuid(appealDto.getUuid(), caseUUID)).thenReturn(
+            existingAppealEntity);
         when(mockAppealRepository.save(any(ActionDataAppeal.class))).thenReturn(updatedAppealEntity);
 
         // WHEN
@@ -476,4 +299,5 @@ public class ActionDataAppealsServiceTest {
         verify(mockAuditClient, times(1)).updateAppealAudit(any(), any());
 
     }
+
 }

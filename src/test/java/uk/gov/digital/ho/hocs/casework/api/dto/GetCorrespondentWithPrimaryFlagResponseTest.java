@@ -24,34 +24,36 @@ public class GetCorrespondentWithPrimaryFlagResponseTest {
         String reference = "anyReference";
         String externalKey = "external key";
 
-        Correspondent correspondent = new Correspondent(
-                caseUUID, type, fullName,
-                organisation, address, phone,
-                email, reference, externalKey
-        );
-        CorrespondentWithPrimaryFlag correspondentWithPrimaryFlag =
-                new CorrespondentWithPrimaryFlag(correspondent, true);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email,
+            reference, externalKey);
+        CorrespondentWithPrimaryFlag correspondentWithPrimaryFlag = new CorrespondentWithPrimaryFlag(correspondent,
+            true);
 
-        GetCorrespondentWithPrimaryFlagResponse getCorrespondentResponse =
-                GetCorrespondentWithPrimaryFlagResponse.from(correspondentWithPrimaryFlag);
+        GetCorrespondentWithPrimaryFlagResponse getCorrespondentResponse = GetCorrespondentWithPrimaryFlagResponse.from(
+            correspondentWithPrimaryFlag);
 
         assertThat(getCorrespondentResponse.getUuid()).isEqualTo(correspondentWithPrimaryFlag.getUuid());
         assertThat(getCorrespondentResponse.getCreated()).isEqualTo(correspondentWithPrimaryFlag.getCreated());
         assertThat(getCorrespondentResponse.getType()).isEqualTo(correspondentWithPrimaryFlag.getCorrespondentType());
         assertThat(getCorrespondentResponse.getCaseUUID()).isEqualTo(correspondentWithPrimaryFlag.getCaseUUID());
         assertThat(getCorrespondentResponse.getFullname()).isEqualTo(correspondentWithPrimaryFlag.getFullName());
-        assertThat(getCorrespondentResponse.getOrganisation()).isEqualTo(correspondentWithPrimaryFlag.getOrganisation());
-        assertThat(getCorrespondentResponse.getAddress().getPostcode()).isEqualTo(correspondentWithPrimaryFlag.getPostcode());
-        assertThat(getCorrespondentResponse.getAddress().getAddress1()).isEqualTo(correspondentWithPrimaryFlag.getAddress1());
-        assertThat(getCorrespondentResponse.getAddress().getAddress2()).isEqualTo(correspondentWithPrimaryFlag.getAddress2());
-        assertThat(getCorrespondentResponse.getAddress().getAddress3()).isEqualTo(correspondentWithPrimaryFlag.getAddress3());
-        assertThat(getCorrespondentResponse.getAddress().getCountry()).isEqualTo(correspondentWithPrimaryFlag.getCountry());
+        assertThat(getCorrespondentResponse.getOrganisation()).isEqualTo(
+            correspondentWithPrimaryFlag.getOrganisation());
+        assertThat(getCorrespondentResponse.getAddress().getPostcode()).isEqualTo(
+            correspondentWithPrimaryFlag.getPostcode());
+        assertThat(getCorrespondentResponse.getAddress().getAddress1()).isEqualTo(
+            correspondentWithPrimaryFlag.getAddress1());
+        assertThat(getCorrespondentResponse.getAddress().getAddress2()).isEqualTo(
+            correspondentWithPrimaryFlag.getAddress2());
+        assertThat(getCorrespondentResponse.getAddress().getAddress3()).isEqualTo(
+            correspondentWithPrimaryFlag.getAddress3());
+        assertThat(getCorrespondentResponse.getAddress().getCountry()).isEqualTo(
+            correspondentWithPrimaryFlag.getCountry());
         assertThat(getCorrespondentResponse.getTelephone()).isEqualTo(correspondentWithPrimaryFlag.getTelephone());
         assertThat(getCorrespondentResponse.getEmail()).isEqualTo(correspondentWithPrimaryFlag.getEmail());
         assertThat(getCorrespondentResponse.getReference()).isEqualTo(correspondentWithPrimaryFlag.getReference());
         assertThat(getCorrespondentResponse.getExternalKey()).isEqualTo(correspondentWithPrimaryFlag.getExternalKey());
         assertThat(getCorrespondentResponse.getIsPrimary()).isEqualTo(correspondentWithPrimaryFlag.getIsPrimary());
-
 
     }
 
@@ -61,28 +63,30 @@ public class GetCorrespondentWithPrimaryFlagResponseTest {
         UUID caseUUID = UUID.randomUUID();
         String type = "CORRESPONDENT";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type,
-                null, null, null,
-                null, null, null,
-                null
-        );
-        CorrespondentWithPrimaryFlag correspondentWithPrimaryFlag =
-                new CorrespondentWithPrimaryFlag(correspondent, null);
+        Correspondent correspondent = new Correspondent(caseUUID, type, null, null, null, null, null, null, null);
+        CorrespondentWithPrimaryFlag correspondentWithPrimaryFlag = new CorrespondentWithPrimaryFlag(correspondent,
+            null);
 
-        GetCorrespondentWithPrimaryFlagResponse getCorrespondentResponse =
-                GetCorrespondentWithPrimaryFlagResponse.from(correspondentWithPrimaryFlag);
+        GetCorrespondentWithPrimaryFlagResponse getCorrespondentResponse = GetCorrespondentWithPrimaryFlagResponse.from(
+            correspondentWithPrimaryFlag);
 
         assertThat(getCorrespondentResponse.getUuid()).isEqualTo(correspondentWithPrimaryFlag.getUuid());
         assertThat(getCorrespondentResponse.getCreated()).isEqualTo(correspondentWithPrimaryFlag.getCreated());
         assertThat(getCorrespondentResponse.getType()).isEqualTo(correspondentWithPrimaryFlag.getCorrespondentType());
         assertThat(getCorrespondentResponse.getCaseUUID()).isEqualTo(correspondentWithPrimaryFlag.getCaseUUID());
         assertThat(getCorrespondentResponse.getFullname()).isEqualTo(correspondentWithPrimaryFlag.getFullName());
-        assertThat(getCorrespondentResponse.getOrganisation()).isEqualTo(correspondentWithPrimaryFlag.getOrganisation());
-        assertThat(getCorrespondentResponse.getAddress().getPostcode()).isEqualTo(correspondentWithPrimaryFlag.getPostcode());
-        assertThat(getCorrespondentResponse.getAddress().getAddress1()).isEqualTo(correspondentWithPrimaryFlag.getAddress1());
-        assertThat(getCorrespondentResponse.getAddress().getAddress2()).isEqualTo(correspondentWithPrimaryFlag.getAddress2());
-        assertThat(getCorrespondentResponse.getAddress().getAddress3()).isEqualTo(correspondentWithPrimaryFlag.getAddress3());
-        assertThat(getCorrespondentResponse.getAddress().getCountry()).isEqualTo(correspondentWithPrimaryFlag.getCountry());
+        assertThat(getCorrespondentResponse.getOrganisation()).isEqualTo(
+            correspondentWithPrimaryFlag.getOrganisation());
+        assertThat(getCorrespondentResponse.getAddress().getPostcode()).isEqualTo(
+            correspondentWithPrimaryFlag.getPostcode());
+        assertThat(getCorrespondentResponse.getAddress().getAddress1()).isEqualTo(
+            correspondentWithPrimaryFlag.getAddress1());
+        assertThat(getCorrespondentResponse.getAddress().getAddress2()).isEqualTo(
+            correspondentWithPrimaryFlag.getAddress2());
+        assertThat(getCorrespondentResponse.getAddress().getAddress3()).isEqualTo(
+            correspondentWithPrimaryFlag.getAddress3());
+        assertThat(getCorrespondentResponse.getAddress().getCountry()).isEqualTo(
+            correspondentWithPrimaryFlag.getCountry());
         assertThat(getCorrespondentResponse.getTelephone()).isEqualTo(correspondentWithPrimaryFlag.getTelephone());
         assertThat(getCorrespondentResponse.getEmail()).isEqualTo(correspondentWithPrimaryFlag.getEmail());
         assertThat(getCorrespondentResponse.getReference()).isEqualTo(correspondentWithPrimaryFlag.getReference());

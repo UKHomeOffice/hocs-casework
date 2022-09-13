@@ -25,7 +25,7 @@ public class SomuTypeDto {
 
     @JsonProperty("uuid")
     private UUID uuid;
-    
+
     @JsonProperty("caseType")
     private String caseType;
 
@@ -40,8 +40,8 @@ public class SomuTypeDto {
     private Map<String, Object> schema;
 
     public void setSchema(String schema) throws IOException {
-        if(schema != null && !schema.isEmpty()) {
-            this.schema = new ObjectMapper().readValue(schema, new TypeReference<>(){});
+        if (schema!=null && !schema.isEmpty()) {
+            this.schema = new ObjectMapper().readValue(schema, new TypeReference<>() {});
         } else {
             this.schema = Map.of();
         }
@@ -51,7 +51,9 @@ public class SomuTypeDto {
 
         @Override
         public Map<String, Object> deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
-            return (new ObjectMapper()).readValue(p.getValueAsString(), new TypeReference<>(){});
+            return (new ObjectMapper()).readValue(p.getValueAsString(), new TypeReference<>() {});
         }
+
     }
+
 }

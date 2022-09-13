@@ -22,8 +22,8 @@ public class CreateCaseResponse {
     @JsonProperty("data")
     private Map<String, String> data;
 
-
     public static CreateCaseResponse from(CaseData caseData) {
         return new CreateCaseResponse(caseData.getUuid(), caseData.getReference(), caseData.getDataMap());
     }
+
 }

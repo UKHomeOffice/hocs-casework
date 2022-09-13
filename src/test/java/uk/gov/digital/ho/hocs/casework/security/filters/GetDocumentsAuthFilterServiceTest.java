@@ -38,14 +38,8 @@ public class GetDocumentsAuthFilterServiceTest {
     public void testShouldThrowExceptionIfFilterNotForObjectType() {
 
         // GIVEN
-        ResponseEntity<?> responseToFilter = ResponseEntity.ok(
-                GetCaseSummaryResponse.from(
-                        new CaseSummary(
-                                null, null, null,
-                                null, null, null,
-                                null, null, null,
-                                null, null, null, null)
-                ));
+        ResponseEntity<?> responseToFilter = ResponseEntity.ok(GetCaseSummaryResponse.from(
+            new CaseSummary(null, null, null, null, null, null, null, null, null, null, null, null, null)));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;
 
@@ -61,15 +55,17 @@ public class GetDocumentsAuthFilterServiceTest {
         // GIVEN
         UUID userUUID = UUID.randomUUID();
 
-        DocumentDto document1 = new DocumentDto(UUID.randomUUID(), null, null, "doc1", null, null, null,null, false,null, false, false);
-        DocumentDto document2 = new DocumentDto(UUID.randomUUID(), null, null, "doc2", null, null, null,userUUID, false,null, false, false);
-        DocumentDto document3 = new DocumentDto(UUID.randomUUID(), null, null, "doc3", null, null, null,null, false,null, false, false);
-        DocumentDto document4 = new DocumentDto(UUID.randomUUID(), null, null, "doc4", null, null, null,userUUID, false,null, false, false);
+        DocumentDto document1 = new DocumentDto(UUID.randomUUID(), null, null, "doc1", null, null, null, null, false,
+            null, false, false);
+        DocumentDto document2 = new DocumentDto(UUID.randomUUID(), null, null, "doc2", null, null, null, userUUID,
+            false, null, false, false);
+        DocumentDto document3 = new DocumentDto(UUID.randomUUID(), null, null, "doc3", null, null, null, null, false,
+            null, false, false);
+        DocumentDto document4 = new DocumentDto(UUID.randomUUID(), null, null, "doc4", null, null, null, userUUID,
+            false, null, false, false);
 
         Set<DocumentDto> setOfDocumentDtos = Set.of(document1, document2, document3, document4);
-        ResponseEntity<?> responseToFilter = ResponseEntity.ok(
-                new GetDocumentsResponse(setOfDocumentDtos, null)
-        );
+        ResponseEntity<?> responseToFilter = ResponseEntity.ok(new GetDocumentsResponse(setOfDocumentDtos, null));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;
 
@@ -79,19 +75,21 @@ public class GetDocumentsAuthFilterServiceTest {
         Object result = getDocumentAuthFilterService.applyFilter(responseToFilter, userAccessLevel, null);
 
         // THEN
-        assertThat(result)
-                .isNotNull()
-                .isExactlyInstanceOf(ResponseEntity.class);
+        assertThat(result).isNotNull().isExactlyInstanceOf(ResponseEntity.class);
 
         ResponseEntity<?> resultResponseEntity = (ResponseEntity<?>) result;
 
-        assertThat(resultResponseEntity.getBody()).isInstanceOf(GetDocumentsResponse.class); // is actually protected subclass.
+        assertThat(resultResponseEntity.getBody()).isInstanceOf(
+            GetDocumentsResponse.class); // is actually protected subclass.
 
         GetDocumentsResponse getDocumentsResponse = (GetDocumentsResponse) resultResponseEntity.getBody();
 
         assertThat(getDocumentsResponse.getDocumentDtos().size()).isEqualTo(2);
-        assertThat(getDocumentsResponse.getDocumentDtos().stream().map(DocumentDto::getDisplayName)).containsAll(Arrays.asList(document2.getDisplayName(), document4.getDisplayName()));
-        assertThat(getDocumentsResponse.getDocumentDtos().stream().map(DocumentDto::getDisplayName)).doesNotContainAnyElementsOf(Arrays.asList(document3.getDisplayName(), document1.getDisplayName()));
+        assertThat(getDocumentsResponse.getDocumentDtos().stream().map(DocumentDto::getDisplayName)).containsAll(
+            Arrays.asList(document2.getDisplayName(), document4.getDisplayName()));
+        assertThat(getDocumentsResponse.getDocumentDtos().stream().map(
+            DocumentDto::getDisplayName)).doesNotContainAnyElementsOf(
+            Arrays.asList(document3.getDisplayName(), document1.getDisplayName()));
 
     }
 

@@ -10,7 +10,9 @@ import java.util.List;
 public class ProfileDto {
 
     private String profileName;
+
     private boolean summaryDeadlineEnabled;
+
     private List<Object> searchFields;
 
 }

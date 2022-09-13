@@ -109,7 +109,7 @@ public class CaseDataTest {
         CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
         Map<String, String> data = new HashMap<>();
         LocalDate caseReceived = LocalDate.now();
-        new CaseData(type, null, data,caseReceived);
+        new CaseData(type, null, data, caseReceived);
     }
 
     @Test
@@ -148,7 +148,6 @@ public class CaseDataTest {
         assertThat(caseData.getCaseDeadline()).isNull();
         assertThat(caseData.getDateReceived()).isEqualTo(caseReceived);
     }
-
 
     @Test
     public void updateWithExistingData() {
@@ -225,7 +224,6 @@ public class CaseDataTest {
         assertThat(caseData.getDataMap().containsKey("new")).isTrue();
         assertThat(caseData.getDataMap().containsValue("anyOldValue")).isTrue();
     }
-
 
     @Test
     public void shouldComplete() {
@@ -358,6 +356,5 @@ public class CaseDataTest {
         assertThat(caseData.getCaseDeadline()).isNull();
 
     }
-
 
 }

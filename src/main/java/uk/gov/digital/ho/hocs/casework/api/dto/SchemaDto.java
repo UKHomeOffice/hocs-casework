@@ -29,4 +29,5 @@ public class SchemaDto {
 
     @JsonProperty("fields")
     private Set<FieldDto> fields;
+
 }

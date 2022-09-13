@@ -27,4 +27,5 @@ public class UpdateTeamByStageAndTextsRequest {
 
     @JsonProperty("texts")
     private String[] texts;
+
 }

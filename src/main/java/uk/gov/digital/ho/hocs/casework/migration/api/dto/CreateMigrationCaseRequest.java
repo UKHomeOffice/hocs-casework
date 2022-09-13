@@ -28,4 +28,5 @@ public class CreateMigrationCaseRequest {
 
     @JsonProperty("stageType")
     private String stageType;
+
 }

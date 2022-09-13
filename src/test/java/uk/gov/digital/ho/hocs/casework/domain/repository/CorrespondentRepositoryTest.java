@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 public class CorrespondentRepositoryTest {
 
@@ -36,7 +36,6 @@ public class CorrespondentRepositoryTest {
 
     private UUID correspondentUUID;
 
-
     private Address address;
 
     @Before
@@ -48,17 +47,8 @@ public class CorrespondentRepositoryTest {
 
         address = new Address("some_postcode", "line1", "line2", "line3", "country");
 
-        Correspondent correspondent = new Correspondent(
-                caseUUID,
-                "some_type",
-                "full name",
-                "organisation",
-                address,
-                "01923478393",
-                "email@test.com",
-                "ref",
-                "key"
-        );
+        Correspondent correspondent = new Correspondent(caseUUID, "some_type", "full name", "organisation", address,
+            "01923478393", "email@test.com", "ref", "key");
 
         this.entityManager.persist(correspondent);
         correspondentUUID = correspondent.getUuid();

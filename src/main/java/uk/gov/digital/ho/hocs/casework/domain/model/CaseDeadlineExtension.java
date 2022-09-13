@@ -25,7 +25,7 @@ public class CaseDeadlineExtension {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "case_uuid", referencedColumnName="uuid")
+    @JoinColumn(name = "case_uuid", referencedColumnName = "uuid")
     private CaseData caseData;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -34,7 +34,9 @@ public class CaseDeadlineExtension {
 
     @Getter
     @Column(name = "created")
-    private LocalDateTime created = LocalDateTime.now();;
+    private LocalDateTime created = LocalDateTime.now();
+
+    ;
 
     @Getter
     @Setter
@@ -49,18 +51,18 @@ public class CaseDeadlineExtension {
 
     @Override
     public boolean equals(Object other) {
-        if (this == other) return true;
+        if (this==other) {return true;}
 
-        if (other == null || getClass() != other.getClass())
-            return false;
+        if (other==null || getClass()!=other.getClass()) {return false;}
 
         CaseDeadlineExtension otherCaseDeadlineExtension = (CaseDeadlineExtension) other;
-        return Objects.equals(caseData, otherCaseDeadlineExtension.caseData) &&
-                Objects.equals(caseDeadlineExtensionType, otherCaseDeadlineExtension.caseDeadlineExtensionType);
+        return Objects.equals(caseData, otherCaseDeadlineExtension.caseData) && Objects.equals(
+            caseDeadlineExtensionType, otherCaseDeadlineExtension.caseDeadlineExtensionType);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(caseData, caseDeadlineExtensionType);
     }
+
 }

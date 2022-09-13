@@ -12,18 +12,18 @@ public class CreateStageTest {
     @Test
     public void getCreateStageResponse() {
 
-
         UUID caseUUID = UUID.randomUUID();
         String stageType = "DCU_MIN_MARKUP";
         UUID teamUUID = UUID.randomUUID();
         UUID userUUID = UUID.randomUUID();
         UUID transitionNoteUUID = UUID.randomUUID();
 
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID,transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
 
         CreateStageResponse createStageResponse = CreateStageResponse.from(stage);
 
         assertThat(createStageResponse.getUuid()).isEqualTo(stage.getUuid());
 
     }
+
 }

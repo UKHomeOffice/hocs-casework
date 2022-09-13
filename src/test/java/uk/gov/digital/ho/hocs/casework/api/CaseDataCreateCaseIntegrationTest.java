@@ -47,11 +47,16 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:case/beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
-@Sql(scripts = "classpath:case/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:case/afterTest.sql",
+     config = @SqlConfig(transactionMode = ISOLATED),
+     executionPhase = AFTER_TEST_METHOD)
 @ActiveProfiles({ "local", "integration" })
 public class CaseDataCreateCaseIntegrationTest {
+
     private MockRestServiceServer mockInfoService;
+
     private TestRestTemplate testRestTemplate = new TestRestTemplate();
+
     ObjectMapper mapper = new ObjectMapper();
 
     @LocalServerPort
@@ -67,7 +72,6 @@ public class CaseDataCreateCaseIntegrationTest {
     public void setup() {
         mockInfoService = buildMockService(restTemplate);
     }
-
 
     @Test
     public void shouldCreateACaseWithPermissionLevelOwner() throws JsonProcessingException {
@@ -198,7 +202,7 @@ public class CaseDataCreateCaseIntegrationTest {
 
         long numberOfCasesBefore = caseDataRepository.count();
         setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST","{}"));
+        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST", "{}"));
 
         CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
         long numberOfCasesAfter = caseDataRepository.count();
@@ -217,9 +221,7 @@ public class CaseDataCreateCaseIntegrationTest {
         setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
 
         // when
-        ResponseEntity<CreateCaseResponse> result =
-                getCreateCaseResponse(createBodyData("TEST",null));
-
+        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBodyData("TEST", null));
 
         // then
         CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
@@ -285,20 +287,22 @@ public class CaseDataCreateCaseIntegrationTest {
         assertThat(caseData2).isNotNull();
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore + 2L);
 
-        int r1 = Integer.parseInt(result1.getBody().getReference().substring(5, result1.getBody().getReference().length() - 3));
-        int r3 = Integer.parseInt(result3.getBody().getReference().substring(5, result3.getBody().getReference().length() - 3));
+        int r1 = Integer.parseInt(
+            result1.getBody().getReference().substring(5, result1.getBody().getReference().length() - 3));
+        int r3 = Integer.parseInt(
+            result3.getBody().getReference().substring(5, result3.getBody().getReference().length() - 3));
 
         assertThat(r3).isEqualTo(r1 + 1);
     }
 
     private ResponseEntity<CreateCaseResponse> getCreateCaseResponse(String body) {
-        return testRestTemplate.exchange(
-                getBasePath() + "/case", POST, new HttpEntity(body, createValidAuthHeaders()), CreateCaseResponse.class);
+        return testRestTemplate.exchange(getBasePath() + "/case", POST, new HttpEntity(body, createValidAuthHeaders()),
+            CreateCaseResponse.class);
     }
 
     private ResponseEntity<Void> getCreateCaseVoidResponse(String body) {
-        return testRestTemplate.exchange(
-                getBasePath() + "/case", POST, new HttpEntity(body, createValidAuthHeaders()), Void.class);
+        return testRestTemplate.exchange(getBasePath() + "/case", POST, new HttpEntity(body, createValidAuthHeaders()),
+            Void.class);
     }
 
     private String getBasePath() {
@@ -318,46 +322,23 @@ public class CaseDataCreateCaseIntegrationTest {
         Set<TeamDto> teamDtos = new HashSet<>();
         Set<PermissionDto> permissionDtos = new HashSet<>();
         permissionDtos.add(new PermissionDto(caseType, AccessLevel.from(permission)));
-        TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissionDtos);
+        TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true,
+            permissionDtos);
         teamDtos.add(teamDto);
 
-        Set<String> exemptionDates = Set.of(
-                "2020-01-01",
-                "2020-04-10",
-                "2020-04-13",
-                "2020-05-08",
-                "2020-05-25",
-                "2020-08-31",
-                "2020-12-25",
-                "2020-12-28",
-                "2021-01-01",
-                "2021-04-02",
-                "2021-04-05",
-                "2021-05-03",
-                "2021-05-31",
-                "2021-08-30",
-                "2021-12-27",
-                "2021-12-28",
-                "2022-01-03"
-        );
+        Set<String> exemptionDates = Set.of("2020-01-01", "2020-04-10", "2020-04-13", "2020-05-08", "2020-05-25",
+            "2020-08-31", "2020-12-25", "2020-12-28", "2021-01-01", "2021-04-02", "2021-04-05", "2021-05-03",
+            "2021-05-31", "2021-08-30", "2021-12-27", "2021-12-28", "2022-01-03");
 
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/type/TEST"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CaseDataTypeFactory.from("TEST", "a1")), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(requestTo("http://localhost:8085/caseType/type/TEST")).andExpect(method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(CaseDataTypeFactory.from("TEST", "a1")), MediaType.APPLICATION_JSON));
 
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/team"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(requestTo("http://localhost:8085/team")).andExpect(method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates")).andExpect(
+            method(GET)).andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(requestTo("http://localhost:8085/caseType/TEST/exemptionDates")).andExpect(
+            method(GET)).andRespond(withSuccess(mapper.writeValueAsString(exemptionDates), MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
@@ -367,18 +348,11 @@ public class CaseDataCreateCaseIntegrationTest {
     }
 
     private String createBody(String caseType) {
-        return "{\n" +
-                "  \"type\": \"" + caseType + "\",\n" +
-                "  \"data\": {\"DateReceived\":\"2018-01-01\"},\n" +
-                "  \"received\":\"2018-01-01\"\n" +
-                "}";
+        return "{\n" + "  \"type\": \"" + caseType + "\",\n" + "  \"data\": {\"DateReceived\":\"2018-01-01\"},\n" + "  \"received\":\"2018-01-01\"\n" + "}";
     }
 
     private String createBodyData(String caseType, String data) {
-        return "{\n" +
-                "  \"type\": \"" + caseType + "\",\n" +
-                "  \"data\": " + data + ",\n" +
-                "  \"received\":\"2018-01-01\"\n" +
-                "}";
+        return "{\n" + "  \"type\": \"" + caseType + "\",\n" + "  \"data\": " + data + ",\n" + "  \"received\":\"2018-01-01\"\n" + "}";
     }
+
 }

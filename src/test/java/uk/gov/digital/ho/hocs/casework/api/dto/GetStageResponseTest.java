@@ -18,7 +18,8 @@ public class GetStageResponseTest {
         UUID userUUID = UUID.randomUUID();
         LocalDate deadline = LocalDate.now();
         UUID transitionNoteUUID = UUID.randomUUID();
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID,
+            transitionNoteUUID);
         stage.setDeadline(deadline);
         stage.setDeadlineWarning(LocalDate.now());
         stage.setAssignedTopic("Mock assigned topic");
@@ -63,4 +64,5 @@ public class GetStageResponseTest {
         assertThat(getStageResponse.getCaseDataType()).isEqualTo(stage.getCaseDataType());
         assertThat(getStageResponse.getData()).isEqualTo(stage.getData());
     }
+
 }

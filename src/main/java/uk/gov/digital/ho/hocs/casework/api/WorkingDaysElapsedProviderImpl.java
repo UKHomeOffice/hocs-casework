@@ -21,4 +21,5 @@ public class WorkingDaysElapsedProviderImpl implements WorkingDaysElapsedProvide
     public Integer getWorkingDaysSince(String caseType, LocalDate fromDate) {
         return deadlineService.calculateWorkingDaysElapsedForCaseType(caseType, fromDate, LocalDate.now());
     }
+
 }

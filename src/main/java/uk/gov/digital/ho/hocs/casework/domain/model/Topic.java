@@ -49,8 +49,10 @@ public class Topic implements Serializable {
     private boolean deleted;
 
     public Topic(UUID caseUUID, String topicName, UUID topicNameUUID) {
-        if (caseUUID == null || topicName == null || topicNameUUID == null) {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Topic(%s, %s, %s).", caseUUID, topicName, topicNameUUID), TOPIC_CREATE_FAILED);
+        if (caseUUID==null || topicName==null || topicNameUUID==null) {
+            throw new ApplicationExceptions.EntityCreationException(
+                String.format("Cannot create Topic(%s, %s, %s).", caseUUID, topicName, topicNameUUID),
+                TOPIC_CREATE_FAILED);
         }
 
         this.uuid = UUID.randomUUID();

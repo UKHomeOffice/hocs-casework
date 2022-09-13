@@ -24,10 +24,12 @@ public class GetCorrespondentOutlinesResponseTest {
         String email = "anyEmail";
         String reference = "anyReference";
         String externalKey = "external key";
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email,
+            reference, externalKey);
         Set<Correspondent> correspondents = Set.of(correspondent);
 
-        GetCorrespondentOutlinesResponse getCorrespondentOutlinesResponse = GetCorrespondentOutlinesResponse.from(correspondents);
+        GetCorrespondentOutlinesResponse getCorrespondentOutlinesResponse = GetCorrespondentOutlinesResponse.from(
+            correspondents);
 
         assertThat(getCorrespondentOutlinesResponse.getCorrespondents()).hasSize(1);
     }
@@ -36,8 +38,10 @@ public class GetCorrespondentOutlinesResponseTest {
     public void getGetCorrespondentOutlinesResponseEmpty() {
         Set<Correspondent> correspondents = new HashSet<>();
 
-        GetCorrespondentOutlinesResponse getCorrespondentOutlinesResponse = GetCorrespondentOutlinesResponse.from(correspondents);
+        GetCorrespondentOutlinesResponse getCorrespondentOutlinesResponse = GetCorrespondentOutlinesResponse.from(
+            correspondents);
 
         assertThat(getCorrespondentOutlinesResponse.getCorrespondents()).hasSize(0);
     }
+
 }

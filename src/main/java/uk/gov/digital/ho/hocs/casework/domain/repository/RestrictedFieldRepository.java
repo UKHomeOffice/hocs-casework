@@ -28,14 +28,14 @@ public class RestrictedFieldRepository extends JsonConfigFileReader {
 
     public Set<String> getByCaseTypeAndPermissionLevelGreaterThanEqual(String type, AccessLevel userAccessLevel) {
         var fieldsForAccessLevel = restrictedFieldPermissions.getFieldsForAccessLevel(type);
-        if (fieldsForAccessLevel == null) {
+        if (fieldsForAccessLevel==null) {
             return Set.of();
         }
 
-        return Arrays.stream(AccessLevel.values())
-                .filter(accessLevel -> accessLevel.getLevel() >= userAccessLevel.getLevel())
-                .flatMap(accessLevel -> fieldsForAccessLevel.getFieldsForAccessLevel(accessLevel).stream())
-                .collect(Collectors.toUnmodifiableSet());
+        return Arrays.stream(AccessLevel.values()).filter(
+            accessLevel -> accessLevel.getLevel() >= userAccessLevel.getLevel()).flatMap(
+            accessLevel -> fieldsForAccessLevel.getFieldsForAccessLevel(accessLevel).stream()).collect(
+            Collectors.toUnmodifiableSet());
     }
 
 }

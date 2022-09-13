@@ -33,20 +33,21 @@ public class TimelineItemAuthFilterService implements AuthFilter {
     }
 
     @Override
-    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
+    public Object applyFilter(ResponseEntity<?> responseEntityToFilter,
+                              AccessLevel userAccessLevel,
+                              Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
 
-        List<TimelineItemDto> currentTimelineDtos = verifyAndReturnAsObjectCollectionType(collectionAsArray, TimelineItemDto.class);
+        List<TimelineItemDto> currentTimelineDtos = verifyAndReturnAsObjectCollectionType(collectionAsArray,
+            TimelineItemDto.class);
 
         String userId = userPermissionsService.getUserId().toString();
         log.debug("Filtering response by userId {} for Timeline events.", userId);
 
-        List<TimelineItemDto> returnableDtos = currentTimelineDtos.stream()
-                .filter(dto -> dto.getUserName().equals(userId))
-                .collect(Collectors.toList());
+        List<TimelineItemDto> returnableDtos = currentTimelineDtos.stream().filter(
+            dto -> dto.getUserName().equals(userId)).collect(Collectors.toList());
 
         log.info("Issuing filtered Timeline events for userId: {}", userId, value(EVENT, AUTH_FILTER_SUCCESS));
         return new ResponseEntity<>(returnableDtos, responseEntityToFilter.getStatusCode());
     }
-
 
 }

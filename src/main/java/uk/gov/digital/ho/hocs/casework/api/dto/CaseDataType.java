@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@EqualsAndHashCode(of = {"shortCode"})
+@EqualsAndHashCode(of = { "shortCode" })
 public class CaseDataType {
 
     @JsonProperty("displayName")
@@ -27,4 +27,5 @@ public class CaseDataType {
 
     @JsonProperty("deadLineWarning")
     private int deadLineWarning;
+
 }

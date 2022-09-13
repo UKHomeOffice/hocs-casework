@@ -28,7 +28,7 @@ public class SearchRequest {
     private List<String> caseTypes;
 
     @JsonGetter
-    public List<String> getCaseType() { return caseTypes; }
+    public List<String> getCaseType() {return caseTypes;}
 
     @JsonProperty("dateReceived")
     private DateRangeDto dateReceived;

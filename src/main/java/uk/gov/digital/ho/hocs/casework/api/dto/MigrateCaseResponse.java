@@ -17,4 +17,5 @@ public class MigrateCaseResponse {
     private final UUID uuid;
 
     private final Map<String, String> caseDataMap;
+
 }

@@ -13,7 +13,7 @@ public class CorrespondentTypeNameDecorator {
 
     public Set<Correspondent> addCorrespondentTypeName(Set<CorrespondentTypeDto> correspondentTypes,
                                                        Set<Correspondent> correspondents) {
-        if (correspondentTypes == null) {
+        if (correspondentTypes==null) {
             return correspondents;
         }
 
@@ -24,16 +24,16 @@ public class CorrespondentTypeNameDecorator {
 
     public Correspondent addCorrespondentTypeName(Set<CorrespondentTypeDto> correspondentTypes,
                                                   Correspondent correspondent) {
-        if (correspondentTypes == null) {
+        if (correspondentTypes==null) {
             return correspondent;
         }
 
-        Optional<CorrespondentTypeDto> correspondentType = correspondentTypes.stream()
-                .filter(correspondentTypeDto -> Objects.equals(correspondentTypeDto.getType(), correspondent.getCorrespondentType()))
-                .findFirst();
+        Optional<CorrespondentTypeDto> correspondentType = correspondentTypes.stream().filter(
+            correspondentTypeDto -> Objects.equals(correspondentTypeDto.getType(),
+                correspondent.getCorrespondentType())).findFirst();
 
-        correspondentType
-                .ifPresent(correspondentTypeDto -> correspondent.setCorrespondentTypeName(correspondentTypeDto.getDisplayName()));
+        correspondentType.ifPresent(
+            correspondentTypeDto -> correspondent.setCorrespondentTypeName(correspondentTypeDto.getDisplayName()));
 
         return correspondent;
     }

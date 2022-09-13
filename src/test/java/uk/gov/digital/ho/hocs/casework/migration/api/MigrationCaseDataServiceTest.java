@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MigrationCaseDataServiceTest {
+
     private static final long caseID = 12345L;
 
     private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
@@ -54,14 +55,14 @@ public class MigrationCaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         // when
-        CaseData caseData = migrationCaseDataService.createCompletedCase(caseType.getDisplayCode(), data, originalReceivedDate);
+        CaseData caseData = migrationCaseDataService.createCompletedCase(caseType.getDisplayCode(), data,
+            originalReceivedDate);
 
         // then
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
         verifyNoMoreInteractions(caseDataRepository);
     }
-
 
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
@@ -84,4 +85,5 @@ public class MigrationCaseDataServiceTest {
 
         verifyNoMoreInteractions(caseDataRepository);
     }
+
 }

@@ -16,57 +16,58 @@ import java.util.UUID;
 public class CorrespondentTypeNameDecoratorTest {
 
     private final CorrespondentTypeNameDecorator correspondentTypeNameDecorator = new CorrespondentTypeNameDecorator();
+
     private final Address address = new Address("postcode", "line1", "line2", "line3", "country");
+
     private Correspondent correspondent;
 
     @Before
     public void setup() {
-        correspondent = new Correspondent(
-                UUID.randomUUID(),
-                "Type",
-                "full name",
-                "organisation",
-                address,
-                "01923478393",
-                "email@test.com",
-                "ref",
-                "key");
+        correspondent = new Correspondent(UUID.randomUUID(), "Type", "full name", "organisation", address,
+            "01923478393", "email@test.com", "ref", "key");
     }
 
     @Test
     public void addCorrespondentTypeName_nullCorrespondentType() {
         Set<Correspondent> correspondents = Set.of(correspondent);
 
-        Assert.assertEquals(correspondentTypeNameDecorator.addCorrespondentTypeName(null, correspondents), correspondents);
+        Assert.assertEquals(correspondentTypeNameDecorator.addCorrespondentTypeName(null, correspondents),
+            correspondents);
 
-        Assert.assertEquals(correspondentTypeNameDecorator.addCorrespondentTypeName(null, correspondent), correspondent);
+        Assert.assertEquals(correspondentTypeNameDecorator.addCorrespondentTypeName(null, correspondent),
+            correspondent);
     }
 
     @Test
     public void addCorrespondentTypeName_correspondentTypeNotPresent() {
         Set<Correspondent> correspondents = Set.of(correspondent);
-        Set<CorrespondentTypeDto> correspondentTypeDtos = Set.of(new CorrespondentTypeDto(UUID.randomUUID(), "Test", "Test"));
+        Set<CorrespondentTypeDto> correspondentTypeDtos = Set.of(
+            new CorrespondentTypeDto(UUID.randomUUID(), "Test", "Test"));
 
-        Set<Correspondent> correspondentsAfter = correspondentTypeNameDecorator.addCorrespondentTypeName(correspondentTypeDtos, correspondents);
+        Set<Correspondent> correspondentsAfter = correspondentTypeNameDecorator.addCorrespondentTypeName(
+            correspondentTypeDtos, correspondents);
         Assert.assertTrue(correspondentsAfter.contains(correspondent));
 
-        Correspondent correspondentAfter = correspondentTypeNameDecorator.addCorrespondentTypeName(correspondentTypeDtos, correspondent);
+        Correspondent correspondentAfter = correspondentTypeNameDecorator.addCorrespondentTypeName(
+            correspondentTypeDtos, correspondent);
         Assert.assertEquals(correspondentAfter, correspondent);
     }
 
     @Test
     public void addCorrespondentTypeName_correspondentTypePresent() {
         Set<Correspondent> correspondents = Set.of(correspondent);
-        Set<CorrespondentTypeDto> correspondentTypeDtos = Set.of(new CorrespondentTypeDto(UUID.randomUUID(), "This is a test.", "Type"));
+        Set<CorrespondentTypeDto> correspondentTypeDtos = Set.of(
+            new CorrespondentTypeDto(UUID.randomUUID(), "This is a test.", "Type"));
 
         correspondent.setCorrespondentTypeName("This is a test.");
 
-        Set<Correspondent> correspondentsAfterDecorated = correspondentTypeNameDecorator.addCorrespondentTypeName(correspondentTypeDtos, correspondents);
+        Set<Correspondent> correspondentsAfterDecorated = correspondentTypeNameDecorator.addCorrespondentTypeName(
+            correspondentTypeDtos, correspondents);
         Assert.assertTrue(correspondentsAfterDecorated.contains(correspondent));
 
-        Correspondent correspondentAfterDecorated = correspondentTypeNameDecorator.addCorrespondentTypeName(correspondentTypeDtos, correspondent);
+        Correspondent correspondentAfterDecorated = correspondentTypeNameDecorator.addCorrespondentTypeName(
+            correspondentTypeDtos, correspondent);
         Assert.assertEquals(correspondentAfterDecorated, correspondent);
     }
-
 
 }

@@ -26,7 +26,7 @@ public class PriorityPolicyRepository extends JsonConfigFileReader {
     public List<PriorityPolicies.PriorityPolicy> getByCaseType(String caseType) {
         var casePriorities = priorityPolicies.getPoliciesForCaseType(caseType);
 
-        if (casePriorities == null) {
+        if (casePriorities==null) {
             return List.of();
         }
         return casePriorities;

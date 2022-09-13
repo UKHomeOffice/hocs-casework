@@ -13,6 +13,7 @@ public interface SuspensionRepository extends CrudRepository<ActionDataSuspensio
 
     Optional<ActionDataSuspension> findByUuidAndCaseDataUuid(UUID uuid, UUID caseUUID);
 
-    List<ActionDataSuspension> findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(UUID caseUUID, UUID caseActionTypeUUID);
+    List<ActionDataSuspension> findAllByCaseDataUuidAndCaseTypeActionUuidAndDateSuspensionRemovedIsNull(UUID caseUUID,
+                                                                                                        UUID caseActionTypeUUID);
 
 }

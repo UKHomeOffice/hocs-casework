@@ -109,13 +109,12 @@ public class AuthorisationAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
-        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         verify(caseService, never()).getCase(caseUUID);
         verify(userService, times(1)).getMaxAccessLevel(type.getDisplayCode());
         verify(proceedingJoinPoint, atLeast(1)).getArgs();
     }
-
 
     @Test
     public void shouldProceedIfUserHasPermission() throws Throwable {
@@ -128,7 +127,7 @@ public class AuthorisationAspectTest {
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
         when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
-        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         verify(proceedingJoinPoint, times(1)).proceed();
         verify(caseService, times(1)).getCaseType(caseUUID);
@@ -153,7 +152,7 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseTeams(caseUUID)).thenReturn(Set.of(teamUUID));
         when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
-        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         verify(proceedingJoinPoint, times(1)).proceed();
         verify(caseService, times(1)).getCaseType(caseUUID);
@@ -169,24 +168,23 @@ public class AuthorisationAspectTest {
 
         CaseData caseData = mock(CaseData.class);
 
-        UUID teamUUID =UUID.randomUUID();
+        UUID teamUUID = UUID.randomUUID();
 
         when(userService.getUserTeams()).thenReturn(Set.of(teamUUID));
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.UNSET);
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.WRITE);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{});
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[] { });
 
-        assertThatThrownBy(() -> { aspect.validateUserAccess(proceedingJoinPoint,annotation);})
-                .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
-                .hasMessageContaining("User does not have access to the requested resource");
+        assertThatThrownBy(() -> {aspect.validateUserAccess(proceedingJoinPoint, annotation);}).isInstanceOf(
+            SecurityExceptions.PermissionCheckException.class).hasMessageContaining(
+            "User does not have access to the requested resource");
 
         verify(proceedingJoinPoint, never()).proceed();
         verify(caseService, times(1)).getCaseType(caseUUID);
         verify(caseService, times(1)).getCaseTeams(caseUUID);
     }
-
 
     @Test
     public void shouldNotProceedIfUserIsNotInAssignedTeamAndRequiredPermissionIsRead() throws Throwable {
@@ -197,28 +195,20 @@ public class AuthorisationAspectTest {
 
         CaseData caseData = mock(CaseData.class);
 
-        UUID teamUUID =UUID.randomUUID();
-        ActiveStage activeStage = new ActiveStage(1L,
-                UUID.randomUUID(),
-                LocalDateTime.now(),
-                "MIN",
-                LocalDate.now(),
-                LocalDate.now(),
-                UUID.randomUUID(),
-                caseUUID,
-                teamUUID,
-                UUID.randomUUID());
+        UUID teamUUID = UUID.randomUUID();
+        ActiveStage activeStage = new ActiveStage(1L, UUID.randomUUID(), LocalDateTime.now(), "MIN", LocalDate.now(),
+            LocalDate.now(), UUID.randomUUID(), caseUUID, teamUUID, UUID.randomUUID());
 
         when(userService.getUserTeams()).thenReturn(Set.of(UUID.randomUUID()));
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.UNSET);
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{});
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[] { });
 
-        assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
-                .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
-                .hasMessageContaining("ser does not have access to the requested resource");
+        assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint, annotation)).isInstanceOf(
+            SecurityExceptions.PermissionCheckException.class).hasMessageContaining(
+            "ser does not have access to the requested resource");
 
         verify(proceedingJoinPoint, never()).proceed();
         verify(caseService, times(1)).getCaseType(caseUUID);
@@ -238,11 +228,11 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{});
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[] { });
 
-        assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
-                .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
-                .hasMessageContaining("User does not have access to the requested resource");
+        assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint, annotation)).isInstanceOf(
+            SecurityExceptions.PermissionCheckException.class).hasMessageContaining(
+            "User does not have access to the requested resource");
 
         verify(proceedingJoinPoint, never()).proceed();
         verify(caseService, times(1)).getCaseType(caseUUID);
@@ -261,9 +251,9 @@ public class AuthorisationAspectTest {
         when(proceedingJoinPoint.proceed()).thenReturn(new Object());
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.MIGRATE});
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[] { AccessLevel.MIGRATE });
 
-        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         verify(proceedingJoinPoint, times(1)).proceed();
         verify(caseService, times(1)).getCaseType(caseUUID);
@@ -280,11 +270,11 @@ public class AuthorisationAspectTest {
         when(caseService.getCaseType(any())).thenReturn(type);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.MIGRATE});
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[] { AccessLevel.MIGRATE });
 
-        assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation))
-                .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
-                .hasMessageContaining("User does not have access to the requested resource");
+        assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint, annotation)).isInstanceOf(
+            SecurityExceptions.PermissionCheckException.class).hasMessageContaining(
+            "User does not have access to the requested resource");
 
         verify(proceedingJoinPoint, never()).proceed();
         verify(caseService, times(1)).getCaseType(caseUUID);
@@ -297,13 +287,12 @@ public class AuthorisationAspectTest {
         args[0] = "bad UUID";
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
-        assertThatThrownBy(() -> { aspect.validateUserAccess(proceedingJoinPoint,annotation);})
-                .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
-                .hasMessageContaining("Unable parse method parameters for type java.lang.String");
+        assertThatThrownBy(() -> {aspect.validateUserAccess(proceedingJoinPoint, annotation);}).isInstanceOf(
+            SecurityExceptions.PermissionCheckException.class).hasMessageContaining(
+            "Unable parse method parameters for type java.lang.String");
 
         verify(proceedingJoinPoint, never()).proceed();
     }
-
 
     @Test
     public void shouldGetRequestedPermissionTypeFromRequestWhenAnnotationIsNull() {
@@ -324,7 +313,7 @@ public class AuthorisationAspectTest {
         when(annotation.accessLevel()).thenReturn(AccessLevel.READ);
         when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
-        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         verify(annotation, times(2)).accessLevel();
         verify(caseService, times(1)).getCaseType(caseUUID);
@@ -349,7 +338,7 @@ public class AuthorisationAspectTest {
         when(annotation.accessLevel()).thenReturn(AccessLevel.UNSET);
         when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
-        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         verify(annotation, times(1)).accessLevel();
         verify(caseService, times(1)).getCaseType(caseUUID);
@@ -370,10 +359,10 @@ public class AuthorisationAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.READ);
         when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[] { AccessLevel.RESTRICTED_OWNER });
 
         // WHEN
-        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         // THEN - expect exception
 
@@ -391,12 +380,12 @@ public class AuthorisationAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.RESTRICTED_OWNER);
         when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[] { AccessLevel.RESTRICTED_OWNER });
         when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
         // WHEN
         // THEN
-        assertThatNoException().isThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint,annotation));
+        assertThatNoException().isThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint, annotation));
 
     }
 
@@ -417,7 +406,7 @@ public class AuthorisationAspectTest {
         when(proceedingJoinPoint.proceed()).thenReturn(testResponse);
 
         // WHEN
-        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         // THEN
         verify(testAuthFilter, times(0)).applyFilter(any(), any(), any());
@@ -437,12 +426,12 @@ public class AuthorisationAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.RESTRICTED_OWNER);
         when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[] { AccessLevel.RESTRICTED_OWNER });
         when(proceedingJoinPoint.proceed()).thenReturn(testResponse);
-        when(testAuthFilter.applyFilter(any(),any(),any())).thenReturn(testResponse);
+        when(testAuthFilter.applyFilter(any(), any(), any())).thenReturn(testResponse);
 
         // WHEN
-        Object result = aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        Object result = aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         // THEN
         verify(testAuthFilter, times(1)).applyFilter(any(), any(), any());
@@ -467,12 +456,12 @@ public class AuthorisationAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.RESTRICTED_OWNER);
         when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[] { AccessLevel.RESTRICTED_OWNER });
         when(proceedingJoinPoint.proceed()).thenReturn(testResponse);
-        when(testAuthFilter.applyFilter(any(),any(),any())).thenReturn(testResponse);
+        when(testAuthFilter.applyFilter(any(), any(), any())).thenReturn(testResponse);
 
         // WHEN
-        Object result = aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        Object result = aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         // THEN
         verify(testAuthFilter, times(1)).applyFilter(any(), any(), any());
@@ -501,12 +490,12 @@ public class AuthorisationAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.RESTRICTED_OWNER);
         when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[] { AccessLevel.RESTRICTED_OWNER });
         when(proceedingJoinPoint.proceed()).thenReturn(testResponse);
-        when(testAuthFilter.applyFilter(any(),any(),any())).thenReturn(testResponse);
+        when(testAuthFilter.applyFilter(any(), any(), any())).thenReturn(testResponse);
 
         // WHEN
-        Object result = aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        Object result = aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         // THEN
         verify(testAuthFilter, times(1)).applyFilter(any(), any(), any());
@@ -535,19 +524,19 @@ public class AuthorisationAspectTest {
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
         when(userService.getMaxAccessLevel(type)).thenReturn(AccessLevel.RESTRICTED_OWNER);
         when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
-        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[]{AccessLevel.RESTRICTED_OWNER});
+        when(annotation.permittedLowerLevels()).thenReturn(new AccessLevel[] { AccessLevel.RESTRICTED_OWNER });
         when(proceedingJoinPoint.proceed()).thenReturn(testResponse);
 
         // WHEN
-        aspect.validateUserAccess(proceedingJoinPoint,annotation);
+        aspect.validateUserAccess(proceedingJoinPoint, annotation);
 
         // THEN
         verify(testAuthFilter, times(0)).applyFilter(any(), any(), any());
     }
 
-
     // HELPER CLASSES
     private static class TestResponseObject {}
+
     private static class TestResponseObjectNoFilter {}
 
     private static class TestAuthFilter implements AuthFilter {
@@ -558,9 +547,12 @@ public class AuthorisationAspectTest {
         }
 
         @Override
-        public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
+        public Object applyFilter(ResponseEntity<?> responseEntityToFilter,
+                                  AccessLevel userAccessLevel,
+                                  Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
             return responseEntityToFilter;
         }
+
     }
 
 }

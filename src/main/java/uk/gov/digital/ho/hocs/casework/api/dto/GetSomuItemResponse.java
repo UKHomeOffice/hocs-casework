@@ -10,7 +10,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import java.util.UUID;
 
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@EqualsAndHashCode(of = {"uuid"})
+@EqualsAndHashCode(of = { "uuid" })
 @Getter
 public class GetSomuItemResponse {
 
@@ -25,16 +25,13 @@ public class GetSomuItemResponse {
 
     @JsonProperty("data")
     private String data;
-    
+
     @JsonProperty("deleted")
     private boolean deleted;
-    
+
     public static GetSomuItemResponse from(SomuItem somuItem) {
-        return new GetSomuItemResponse(somuItem.getUuid(), 
-                somuItem.getCaseUuid(), 
-                somuItem.getSomuUuid(), 
-                somuItem.getData(),
-                somuItem.isDeleted());
+        return new GetSomuItemResponse(somuItem.getUuid(), somuItem.getCaseUuid(), somuItem.getSomuUuid(),
+            somuItem.getData(), somuItem.isDeleted());
     }
-    
+
 }

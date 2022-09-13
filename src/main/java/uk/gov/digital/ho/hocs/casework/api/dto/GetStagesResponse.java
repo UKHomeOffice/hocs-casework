@@ -17,11 +17,10 @@ public class GetStagesResponse {
     private Set<GetStageResponse> stages;
 
     public static GetStagesResponse from(Set<StageWithCaseData> stages) {
-        Set<GetStageResponse> stageDataResponses = stages
-                .stream()
-                .map(GetStageResponse::from)
-                .collect(Collectors.toSet());
+        Set<GetStageResponse> stageDataResponses = stages.stream().map(GetStageResponse::from).collect(
+            Collectors.toSet());
 
         return new GetStagesResponse(stageDataResponses);
     }
+
 }

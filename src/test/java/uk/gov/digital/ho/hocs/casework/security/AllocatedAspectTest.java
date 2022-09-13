@@ -38,10 +38,13 @@ public class AllocatedAspectTest {
     private AllocatedAspect aspect;
 
     private UUID stageUUID = UUID.randomUUID();
+
     private UUID caseUUID = UUID.randomUUID();
 
     private UUID userId = UUID.randomUUID();
+
     private UUID teamId = UUID.randomUUID();
+
     private UUID transitionNoteUUID = UUID.randomUUID();
 
     @Mock
@@ -234,4 +237,5 @@ public class AllocatedAspectTest {
         aspect.validateUserAccess(proceedingJoinPoint, annotation);
         verify(proceedingJoinPoint).proceed();
     }
+
 }

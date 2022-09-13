@@ -21,8 +21,11 @@ import java.util.UUID;
 public class CaseActionService {
 
     private final CaseDataRepository caseDataRepository;
+
     private final InfoClient infoClient;
+
     private final List<ActionService> actionServiceList;
+
     private final DeadlineService deadlineService;
 
     public CaseActionService(final CaseDataRepository caseDataRepository,
@@ -43,16 +46,19 @@ public class CaseActionService {
         getAllActionsForCaseById(caseId, actions);
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseId);
-        List<CaseTypeActionDto> caseTypeActionDtoList =  infoClient.getCaseTypeActionForCaseType(caseData.getType());
-        int remainingDays = deadlineService
-                .calculateRemainingWorkingDaysForCaseType(caseData.getType(), caseData.getCaseDeadline(), LocalDate.now());
+        List<CaseTypeActionDto> caseTypeActionDtoList = infoClient.getCaseTypeActionForCaseType(caseData.getType());
+        int remainingDays = deadlineService.calculateRemainingWorkingDaysForCaseType(caseData.getType(),
+            caseData.getCaseDeadline(), LocalDate.now());
 
         log.info("Returning case action data for caseId: {}", caseId);
-        return CaseActionDataResponseDto.from(actions, caseTypeActionDtoList, caseData.getCaseDeadline(), remainingDays);
+        return CaseActionDataResponseDto.from(actions, caseTypeActionDtoList, caseData.getCaseDeadline(),
+            remainingDays);
     }
 
     public void getAllActionsForCaseById(UUID caseId, Map<String, List<ActionDataDto>> caseActionDataMap) {
-        actionServiceList.forEach( (ActionService actionService) -> caseActionDataMap
-                .put(actionService.getServiceMapKey(), actionService.getAllActionsForCase(caseId)));
+        actionServiceList.forEach(
+            (ActionService actionService) -> caseActionDataMap.put(actionService.getServiceMapKey(),
+                actionService.getAllActionsForCase(caseId)));
     }
+
 }

@@ -9,7 +9,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SomuItemTest {
 
     private final UUID SOMU_ITEM_UUID = UUID.randomUUID();
+
     private final UUID SOMU_ITEM_CASE_UUID = UUID.randomUUID();
+
     private final UUID SOMU_ITEM_TYPE_UUID = UUID.randomUUID();
 
     @Test
@@ -22,7 +24,7 @@ public class SomuItemTest {
         assertThat(somuItem.getData()).isEqualTo("Test");
         assertThat(somuItem.isDeleted()).isFalse();
     }
-    
+
     @Test
     public void getSomuItem_NullDataIsDeleted() {
         SomuItem somuItem = new SomuItem(SOMU_ITEM_UUID, SOMU_ITEM_CASE_UUID, SOMU_ITEM_TYPE_UUID, null);

@@ -17,8 +17,9 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_
 public class Stage extends BaseStage {
 
     public Stage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, UUID transitionNoteUUID) {
-        if (caseUUID == null || stageType == null) {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
+        if (caseUUID==null || stageType==null) {
+            throw new ApplicationExceptions.EntityCreationException(
+                String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
         }
 
         this.uuid = UUID.randomUUID();

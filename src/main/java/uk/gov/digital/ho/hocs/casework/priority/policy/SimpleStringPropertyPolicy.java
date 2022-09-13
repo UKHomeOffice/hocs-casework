@@ -11,7 +11,9 @@ import java.util.Map;
 public class SimpleStringPropertyPolicy implements StagePriorityPolicy {
 
     private String propertyName;
+
     private String propertyValue;
+
     private double pointsToAward;
 
     @Override
@@ -23,4 +25,5 @@ public class SimpleStringPropertyPolicy implements StagePriorityPolicy {
         }
         return 0;
     }
+
 }

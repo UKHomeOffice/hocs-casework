@@ -37,8 +37,11 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 public class ActionDataAppealsService implements ActionService {
 
     private final ActionDataAppealsRepository appealsRepository;
+
     private final CaseDataRepository caseDataRepository;
+
     private final InfoClient infoClient;
+
     private final AuditClient auditClient;
 
     @Autowired
@@ -63,40 +66,35 @@ public class ActionDataAppealsService implements ActionService {
         UUID appealUuid = appealDto.getCaseTypeActionUuid();
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUuid);
-        if (caseData == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case with id: %s does not exist.", caseUuid), CASE_NOT_FOUND);
+        if (caseData==null) {
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("Case with id: %s does not exist.", caseUuid), CASE_NOT_FOUND);
         }
 
-        CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(), appealDto.getCaseTypeActionUuid());
-        if (caseTypeActionDto == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", appealUuid), ACTION_DATA_CREATE_FAILURE);
+        CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(),
+            appealDto.getCaseTypeActionUuid());
+        if (caseTypeActionDto==null) {
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("No Case Type Action found for actionId: %s", appealUuid), ACTION_DATA_CREATE_FAILURE);
         }
 
         if (hasMaxActiveRequests(caseTypeActionDto, caseUuid)) {
-            String msg = String.format("The maximum number of 'Pending' requests of type: %s already exist for caseId: %s", caseTypeActionDto.getActionLabel(), caseUuid);
+            String msg = String.format(
+                "The maximum number of 'Pending' requests of type: %s already exist for caseId: %s",
+                caseTypeActionDto.getActionLabel(), caseUuid);
             log.error(msg);
-            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST,msg);
+            throw new HttpClientErrorException(HttpStatus.BAD_REQUEST, msg);
         }
 
-
-        ActionDataAppeal appealEntity = new ActionDataAppeal(
-                appealDto.getCaseTypeActionUuid(),
-                caseTypeActionDto.getActionLabel(),
-                caseTypeActionDto.getActionSubtype(),
-                caseData.getType(),
-                caseUuid,
-                appealDto.getStatus(),
-                appealDto.getDateSentRMS(),
-                appealDto.getOutcome(),
-                appealDto.getComplexCase(),
-                appealDto.getNote(),
-                appealDto.getAppealOfficerData(),
-                appealDto.getDocument()
-        );
+        ActionDataAppeal appealEntity = new ActionDataAppeal(appealDto.getCaseTypeActionUuid(),
+            caseTypeActionDto.getActionLabel(), caseTypeActionDto.getActionSubtype(), caseData.getType(), caseUuid,
+            appealDto.getStatus(), appealDto.getDateSentRMS(), appealDto.getOutcome(), appealDto.getComplexCase(),
+            appealDto.getNote(), appealDto.getAppealOfficerData(), appealDto.getDocument());
 
         ActionDataAppeal createdAppealEntity = appealsRepository.save(appealEntity);
         auditClient.createAppealAudit(createdAppealEntity, caseTypeActionDto);
-        log.info("Created Action: {}  for Case: {}", createdAppealEntity, caseData.getUuid(), value(EVENT, ACTION_DATA_CREATE_SUCCESS) );
+        log.info("Created Action: {}  for Case: {}", createdAppealEntity, caseData.getUuid(),
+            value(EVENT, ACTION_DATA_CREATE_SUCCESS));
 
         return createdAppealEntity.getUuid();
     }
@@ -106,19 +104,24 @@ public class ActionDataAppealsService implements ActionService {
         log.debug("Received request to update Appeal: {} for case: {}", appealDto, caseUuid);
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUuid);
-        if (caseData == null) {
+        if (caseData==null) {
             // Should have exited from the getCase call if no case with ID, however put here for safety to stop orphaned records.
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case with id: %s does not exist.", caseUuid), CASE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("Case with id: %s does not exist.", caseUuid), CASE_NOT_FOUND);
         }
 
-        CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(), appealDto.getCaseTypeActionUuid());
-        if (caseTypeActionDto == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("No Case Type Action found for actionId: %s", actionEntityId), ACTION_DATA_UPDATE_FAILURE);
+        CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(),
+            appealDto.getCaseTypeActionUuid());
+        if (caseTypeActionDto==null) {
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("No Case Type Action found for actionId: %s", actionEntityId),
+                ACTION_DATA_UPDATE_FAILURE);
         }
 
         ActionDataAppeal existingAppealData = appealsRepository.findByUuidAndCaseDataUuid(actionEntityId, caseUuid);
-        if (existingAppealData == null) {
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Action with id:  %s does not exist.", actionEntityId), ACTION_DATA_UPDATE_FAILURE);
+        if (existingAppealData==null) {
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("Action with id:  %s does not exist.", actionEntityId), ACTION_DATA_UPDATE_FAILURE);
         }
 
         existingAppealData.setStatus(appealDto.getStatus());
@@ -132,36 +135,31 @@ public class ActionDataAppealsService implements ActionService {
         ActionDataAppeal updatedAppealEntity = appealsRepository.save(existingAppealData);
 
         auditClient.updateAppealAudit(updatedAppealEntity, caseTypeActionDto);
-        log.info("Updated Action: {}  for Case: {}", appealDto, caseData.getUuid(), value(EVENT, ACTION_DATA_UPDATE_SUCCESS) );
+        log.info("Updated Action: {}  for Case: {}", appealDto, caseData.getUuid(),
+            value(EVENT, ACTION_DATA_UPDATE_SUCCESS));
 
     }
 
     /**
      * @param caseUUID
+     *
      * @return
      */
     @Override
     public List<ActionDataDto> getAllActionsForCase(UUID caseUUID) {
         List<ActionDataAppeal> appeals = appealsRepository.findAllByCaseDataUuid(caseUUID);
         log.info("Returning {} Appeals for caseId: {}", appeals.size(), caseUUID);
-        return appeals.stream().map(appeal -> new ActionDataAppealDto(
-                appeal.getUuid(),
-                appeal.getCaseTypeActionUuid(),
-                appeal.getActionSubtype(),
-                appeal.getCaseTypeActionLabel(),
-                appeal.getStatus(),
-                appeal.getDateSentRMS(),
-                appeal.getOutcome(),
-                appeal.getComplexCase(),
-                appeal.getNote(),
-                appeal.getAppealOfficerData(),
-                appeal.getDocument()
-        )).collect(Collectors.toList());
+        return appeals.stream().map(appeal -> new ActionDataAppealDto(appeal.getUuid(), appeal.getCaseTypeActionUuid(),
+            appeal.getActionSubtype(), appeal.getCaseTypeActionLabel(), appeal.getStatus(), appeal.getDateSentRMS(),
+            appeal.getOutcome(), appeal.getComplexCase(), appeal.getNote(), appeal.getAppealOfficerData(),
+            appeal.getDocument())).collect(Collectors.toList());
     }
 
     private boolean hasMaxActiveRequests(CaseTypeActionDto caseTypeActionDto, UUID caseUUID) {
-        List<ActionDataAppeal> existing = appealsRepository.findAllByCaseTypeActionUuidAndCaseDataUuid(caseTypeActionDto.getUuid(), caseUUID);
-        return existing.stream()
-                .filter(appeal -> !appeal.getStatus().equals("Complete")).count() >= caseTypeActionDto.getMaxConcurrentEvents();
+        List<ActionDataAppeal> existing = appealsRepository.findAllByCaseTypeActionUuidAndCaseDataUuid(
+            caseTypeActionDto.getUuid(), caseUUID);
+        return existing.stream().filter(
+            appeal -> !appeal.getStatus().equals("Complete")).count() >= caseTypeActionDto.getMaxConcurrentEvents();
     }
+
 }

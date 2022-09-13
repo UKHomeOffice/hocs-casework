@@ -28,8 +28,10 @@ import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.IS
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
-@Sql(scripts = "classpath:stage/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@Sql(scripts = "classpath:stage/afterTest.sql",
+     config = @SqlConfig(transactionMode = ISOLATED),
+     executionPhase = AFTER_TEST_METHOD)
 @ActiveProfiles("test")
 public class StageRepositoryTest {
 
@@ -43,7 +45,8 @@ public class StageRepositoryTest {
     public void findActiveBasicStageByCaseUuidStageUUID() {
         Stage stage = createActiveStageWithActiveCase();
 
-        var returnedStage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+        var returnedStage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(stage.getCaseUUID(),
+            stage.getUuid());
 
         assertNotNull(returnedStage);
         assertEquals(returnedStage, stage);
@@ -53,7 +56,8 @@ public class StageRepositoryTest {
     public void findActiveBasicStageByCaseUuidStageUUID_InactiveStage() {
         Stage stage = createInactiveStageWithActiveCase();
 
-        var returnedStage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+        var returnedStage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(stage.getCaseUUID(),
+            stage.getUuid());
 
         assertNull(returnedStage);
     }
@@ -62,7 +66,8 @@ public class StageRepositoryTest {
     public void findActiveBasicStageByCaseUuidStageUUID_DeletedCase() {
         Stage stage = createActiveStageWithDeletedCase();
 
-        var returnedStage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+        var returnedStage = stageRepository.findActiveBasicStageByCaseUuidStageUUID(stage.getCaseUUID(),
+            stage.getUuid());
 
         assertNull(returnedStage);
     }
@@ -71,7 +76,7 @@ public class StageRepositoryTest {
     public void findBasicStageByCaseUuidStageUUID() {
         Stage stage = createActiveStageWithActiveCase();
 
-        var returnedStage = stageRepository.findBasicStageByCaseUuidAndStageUuid(stage.getCaseUUID(),stage.getUuid());
+        var returnedStage = stageRepository.findBasicStageByCaseUuidAndStageUuid(stage.getCaseUUID(), stage.getUuid());
 
         assertNotNull(returnedStage);
         assertEquals(returnedStage, stage);
@@ -81,7 +86,7 @@ public class StageRepositoryTest {
     public void findBasicStageByCaseUuidStageUUID_InactiveStage() {
         Stage stage = createInactiveStageWithActiveCase();
 
-        var returnedStage = stageRepository.findBasicStageByCaseUuidAndStageUuid(stage.getCaseUUID(),stage.getUuid());
+        var returnedStage = stageRepository.findBasicStageByCaseUuidAndStageUuid(stage.getCaseUUID(), stage.getUuid());
 
         assertNotNull(returnedStage);
         assertEquals(returnedStage, stage);
@@ -91,7 +96,7 @@ public class StageRepositoryTest {
     public void findBasicStageByCaseUuidStageUUID_DeletedCase() {
         Stage stage = createActiveStageWithDeletedCase();
 
-        var returnedStage = stageRepository.findBasicStageByCaseUuidAndStageUuid(stage.getCaseUUID(),stage.getUuid());
+        var returnedStage = stageRepository.findBasicStageByCaseUuidAndStageUuid(stage.getCaseUUID(), stage.getUuid());
 
         assertNotNull(returnedStage);
         assertEquals(returnedStage, stage);
@@ -101,7 +106,7 @@ public class StageRepositoryTest {
     public void findActiveByCaseUuidStageUUID() {
         Stage stage = createActiveStageWithActiveCase();
 
-        var returnedStage = stageRepository.findActiveByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+        var returnedStage = stageRepository.findActiveByCaseUuidStageUUID(stage.getCaseUUID(), stage.getUuid());
 
         assertNotNull(returnedStage);
         assertEquals(stage.getUuid(), returnedStage.getUuid());
@@ -111,7 +116,7 @@ public class StageRepositoryTest {
     public void findActiveByCaseUuidStageUUID_InactiveStage() {
         Stage stage = createInactiveStageWithActiveCase();
 
-        var returnedStage = stageRepository.findActiveByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+        var returnedStage = stageRepository.findActiveByCaseUuidStageUUID(stage.getCaseUUID(), stage.getUuid());
 
         assertNull(returnedStage);
     }
@@ -120,7 +125,7 @@ public class StageRepositoryTest {
     public void findActiveByCaseUuidStageUUID_DeletedCase() {
         Stage stage = createActiveStageWithDeletedCase();
 
-        var returnedStage = stageRepository.findActiveByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+        var returnedStage = stageRepository.findActiveByCaseUuidStageUUID(stage.getCaseUUID(), stage.getUuid());
 
         assertNull(returnedStage);
     }
@@ -129,7 +134,7 @@ public class StageRepositoryTest {
     public void findByCaseUuidStageUUID() {
         Stage stage = createActiveStageWithActiveCase();
 
-        var returnedStage = stageRepository.findByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+        var returnedStage = stageRepository.findByCaseUuidStageUUID(stage.getCaseUUID(), stage.getUuid());
 
         assertNotNull(returnedStage);
         assertEquals(stage.getUuid(), returnedStage.getUuid());
@@ -139,7 +144,7 @@ public class StageRepositoryTest {
     public void findByCaseUuidStageUUID_InactiveStage() {
         Stage stage = createInactiveStageWithActiveCase();
 
-        var returnedStage = stageRepository.findByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+        var returnedStage = stageRepository.findByCaseUuidStageUUID(stage.getCaseUUID(), stage.getUuid());
 
         assertNotNull(returnedStage);
         assertEquals(stage.getUuid(), returnedStage.getUuid());
@@ -149,7 +154,7 @@ public class StageRepositoryTest {
     public void findByCaseUuidStageUUID_DeletedCase() {
         Stage stage = createActiveStageWithDeletedCase();
 
-        var returnedStage = stageRepository.findByCaseUuidStageUUID(stage.getCaseUUID(),stage.getUuid());
+        var returnedStage = stageRepository.findByCaseUuidStageUUID(stage.getCaseUUID(), stage.getUuid());
 
         assertNull(returnedStage);
     }
@@ -321,8 +326,9 @@ public class StageRepositoryTest {
         Stage stage = createActiveStageWithActiveCase();
         stage.setUserUUID(UUID.randomUUID());
         stageRepository.save(stage);
-        
-        var returnedStages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(stage.getUserUUID(), stage.getTeamUUID());
+
+        var returnedStages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(stage.getUserUUID(),
+            stage.getTeamUUID());
 
         assertEquals(1, returnedStages.size());
         assertEquals(stage.getUuid(), returnedStages.stream().findFirst().get().getUuid());
@@ -331,7 +337,6 @@ public class StageRepositoryTest {
     @Test
     public void findStageCaseUUIDsByUserUUIDTeamUUID_InactiveStage() {
         createInactiveStageWithActiveCase();
-
 
         var returnedStages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(UUID.randomUUID(), UUID.randomUUID());
 
@@ -344,7 +349,8 @@ public class StageRepositoryTest {
         stage.setUserUUID(UUID.randomUUID());
         stageRepository.save(stage);
 
-        var returnedStages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(stage.getUserUUID(), stage.getTeamUUID());
+        var returnedStages = stageRepository.findStageCaseUUIDsByUserUUIDTeamUUID(stage.getUserUUID(),
+            stage.getTeamUUID());
 
         assertEquals(0, returnedStages.size());
     }
@@ -406,7 +412,7 @@ public class StageRepositoryTest {
 
         String stageType = "TEST";
         UUID teamUUID = UUID.randomUUID();
-        var stage = new Stage(caseData.getUuid(), stageType, teamUUID, null, null );
+        var stage = new Stage(caseData.getUuid(), stageType, teamUUID, null, null);
         caseDataRepository.save(caseData);
         return stageRepository.save(stage);
     }
@@ -420,7 +426,7 @@ public class StageRepositoryTest {
         caseData.setCaseDeadline(LocalDate.now().plusDays(2));
 
         String stageType = "TEST";
-        var stage = new Stage(caseData.getUuid(), stageType, null, null, null );
+        var stage = new Stage(caseData.getUuid(), stageType, null, null, null);
         caseDataRepository.save(caseData);
         return stageRepository.save(stage);
     }
@@ -436,7 +442,7 @@ public class StageRepositoryTest {
 
         String stageType = "TEST";
         UUID teamUUID = UUID.randomUUID();
-        var stage = new Stage(caseData.getUuid(), stageType, teamUUID, null, null );
+        var stage = new Stage(caseData.getUuid(), stageType, teamUUID, null, null);
         caseDataRepository.save(caseData);
         return stageRepository.save(stage);
     }

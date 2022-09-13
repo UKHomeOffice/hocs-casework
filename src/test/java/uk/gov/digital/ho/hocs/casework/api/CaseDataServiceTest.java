@@ -59,7 +59,7 @@ import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito. verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
@@ -68,39 +68,66 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE
 public class CaseDataServiceTest {
 
     public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
+
     public static final String TOPIC_NAME = "topic_name";
+
     public static final UUID TOPIC_NAME_UUID = UUID.randomUUID();
+
     public static final String PREVIOUS_CASE_REFERENCE = "COMP/1234567/21";
+
     public static final String PREVIOUS_CASE_TYPE = "COMP";
+
     public static final String PREV_CORRESPONDENT_TYPE = "correspondent_type";
+
     public static final String PREV_FULLNAME = "fullname";
+
     public static final String PREV_ORGANISATION = "organisation";
+
     public static final String PREV_ADDR_1 = "addr1";
+
     public static final String PREV_ADDR_2 = "addr2";
+
     public static final String PREV_ADDR_3 = "addr3";
+
     public static final String PREV_ADDR_4 = "add4";
+
     public static final String PREV_ADDR_5 = "addr5";
+
     public static final String PREV_TELEPHONE = "string 1";
+
     public static final String PREV_EMAIL = "string 2";
+
     public static final String PREV_REFERENCE = "string 3";
+
     public static final String PREV_EXTERNAL_KEY = "string 4";
-    public static final Map<String,String> PREV_DATA_CLOB = new HashMap<>() {{
+
+    public static final Map<String, String> PREV_DATA_CLOB = new HashMap<>() {{
         put("key1", "value1");
         put("key2", "value2");
     }};
+
     private static final long caseID = 12345L;
 
     private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
+
     private final UUID caseUUID = UUID.randomUUID();
+
     private final UUID stageUUID = UUID.randomUUID();
+
     private final UUID primaryCorrespondentUUID = UUID.randomUUID();
+
     private final String caseRef = "TestRef";
+
     private final LocalDate caseDeadline = LocalDate.now().plusDays(20);
+
     private final LocalDate caseDeadlineWarning = LocalDate.now().plusDays(15);
+
     private final LocalDate deadlineDate = LocalDate.now();
 
     private CaseDataService caseDataService;
+
     private ObjectMapper objectMapper;
+
     private SpringConfiguration configuration;
 
     @Mock
@@ -133,35 +160,22 @@ public class CaseDataServiceTest {
     @Mock
     private CaseDataSummaryService caseDataSummaryService;
 
-    Set<LocalDate> englandAndWalesBankHolidays2020 = Set.of(
-            LocalDate.parse("2020-01-01"),
-            LocalDate.parse("2020-04-10"),
-            LocalDate.parse("2020-04-13"),
-            LocalDate.parse("2020-05-08"),
-            LocalDate.parse("2020-05-25"),
-            LocalDate.parse("2020-08-31"),
-            LocalDate.parse("2020-12-25"),
-            LocalDate.parse("2020-12-28")
-    );
+    Set<LocalDate> englandAndWalesBankHolidays2020 = Set.of(LocalDate.parse("2020-01-01"),
+        LocalDate.parse("2020-04-10"), LocalDate.parse("2020-04-13"), LocalDate.parse("2020-05-08"),
+        LocalDate.parse("2020-05-25"), LocalDate.parse("2020-08-31"), LocalDate.parse("2020-12-25"),
+        LocalDate.parse("2020-12-28"));
 
     Set<BankHoliday.BankHolidayRegion> bankHolidayRegions = Set.of(BankHoliday.BankHolidayRegion.ENGLAND_AND_WALES);
+
     List<String> bankHolidayRegionsAsString = List.of("ENGLAND_AND_WALES");
 
     @Before
     public void setUp() {
         configuration = new SpringConfiguration();
         objectMapper = configuration.initialiseObjectMapper();
-        this.caseDataService = new CaseDataService(caseDataRepository,
-                activeCaseViewDataRepository,
-                caseLinkRepository,
-                infoClient,
-                objectMapper,
-                auditClient,
-                caseCopyFactory,
-                caseActionService,
-                deadlineService,
-                stageRepository,
-                caseDataSummaryService);
+        this.caseDataService = new CaseDataService(caseDataRepository, activeCaseViewDataRepository, caseLinkRepository,
+            infoClient, objectMapper, auditClient, caseCopyFactory, caseActionService, deadlineService, stageRepository,
+            caseDataSummaryService);
     }
 
     @Test
@@ -172,19 +186,18 @@ public class CaseDataServiceTest {
 
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
-        when(deadlineService
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla()))
-                .thenReturn(expectedDeadline);
+        when(deadlineService.calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate,
+            caseType.getSla())).thenReturn(expectedDeadline);
 
         // when
-        CaseData caseData = caseDataService
-                .createCase(caseType.getDisplayCode(), new HashMap<>(), originalReceivedDate, null);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), originalReceivedDate,
+            null);
 
         // then
         verify(caseDataRepository).getNextSeriesId();
         verify(caseDataRepository).save(caseData);
-        verify(deadlineService)
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
+        verify(deadlineService).calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate,
+            caseType.getSla());
 
         assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
 
@@ -198,51 +211,27 @@ public class CaseDataServiceTest {
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
         LocalDate expectedDeadline = LocalDate.parse("2020-03-02");
 
-        CaseDataType comp2 = new CaseDataType("display_name",
-                "c6", "DISP", PREVIOUS_CASE_TYPE, 20, 15);
+        CaseDataType comp2 = new CaseDataType("display_name", "c6", "DISP", PREVIOUS_CASE_TYPE, 20, 15);
 
-        CaseData previousCaseData = new CaseData(
-                1L,
-                PREVIOUS_CASE_UUID,
-                LocalDateTime.now(),
-                PREVIOUS_CASE_TYPE,
-                PREVIOUS_CASE_REFERENCE,
-                false,
-                PREV_DATA_CLOB,
-                UUID.randomUUID(),
-                new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID),
-                UUID.randomUUID(),
-                new Correspondent(PREVIOUS_CASE_UUID,
-                PREV_CORRESPONDENT_TYPE,
-                PREV_FULLNAME,
-                PREV_ORGANISATION,
-                new Address(PREV_ADDR_1,
-                        PREV_ADDR_2,
-                        PREV_ADDR_3,
-                        PREV_ADDR_4,
-                        PREV_ADDR_5),
-                PREV_TELEPHONE,
-                PREV_EMAIL,
-                PREV_REFERENCE,
-                PREV_EXTERNAL_KEY),
-                LocalDate.now(),
-                LocalDate.now(),
-                LocalDate.now().minusDays(10),
-                false,
-                Set.of(new ActiveStage(), new ActiveStage()),
-                Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
-
+        CaseData previousCaseData = new CaseData(1L, PREVIOUS_CASE_UUID, LocalDateTime.now(), PREVIOUS_CASE_TYPE,
+            PREVIOUS_CASE_REFERENCE, false, PREV_DATA_CLOB, UUID.randomUUID(),
+            new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID), UUID.randomUUID(),
+            new Correspondent(PREVIOUS_CASE_UUID, PREV_CORRESPONDENT_TYPE, PREV_FULLNAME, PREV_ORGANISATION,
+                new Address(PREV_ADDR_1, PREV_ADDR_2, PREV_ADDR_3, PREV_ADDR_4, PREV_ADDR_5), PREV_TELEPHONE,
+                PREV_EMAIL, PREV_REFERENCE, PREV_EXTERNAL_KEY), LocalDate.now(), LocalDate.now(),
+            LocalDate.now().minusDays(10), false, Set.of(new ActiveStage(), new ActiveStage()),
+            Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
 
         when(caseDataRepository.findActiveByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);
-        when(deadlineService
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla()))
-                .thenReturn(expectedDeadline);
+        when(deadlineService.calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate,
+            caseType.getSla())).thenReturn(expectedDeadline);
 
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(comp2);
         when(caseCopyFactory.getStrategy(any(), any())).thenReturn(Optional.of((fromCase, toCase) -> {}));
 
         // when
-        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), originalReceivedDate, PREVIOUS_CASE_UUID);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayCode(), new HashMap<>(), originalReceivedDate,
+            PREVIOUS_CASE_UUID);
 
         // then
         verify(caseDataRepository).findActiveByUuid(PREVIOUS_CASE_UUID);
@@ -269,8 +258,8 @@ public class CaseDataServiceTest {
         // assert the reference sequence number part is valid
         assertThat(previousReferenceMatcher.group(1)).isEqualTo(caseReferenceMatcher.group(1));
 
-        verify(deadlineService)
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
+        verify(deadlineService).calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate,
+            caseType.getSla());
 
         // check deadline
         assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
@@ -284,20 +273,18 @@ public class CaseDataServiceTest {
 
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
-        when(deadlineService
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla()))
-                .thenReturn(expectedDeadline);
+        when(deadlineService.calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate,
+            caseType.getSla())).thenReturn(expectedDeadline);
 
         // when
-        CaseData caseData = caseDataService
-                .createCase(caseType.getDisplayName(), null, originalReceivedDate, null);
+        CaseData caseData = caseDataService.createCase(caseType.getDisplayName(), null, originalReceivedDate, null);
 
         // then
         verify(caseDataRepository).getNextSeriesId();
         verify(caseDataRepository).save(caseData);
 
-        verify(deadlineService)
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
+        verify(deadlineService).calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate,
+            caseType.getSla());
 
         assertThat(caseData.getCaseDeadline()).isEqualTo(expectedDeadline);
 
@@ -345,51 +332,27 @@ public class CaseDataServiceTest {
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
         LocalDate expectedDeadline = LocalDate.parse("2020-03-02");
 
-        CaseDataType newCaseType = new CaseDataType("display_name",
-                "c6", "DISP", PREVIOUS_CASE_TYPE, 20, 15);
+        CaseDataType newCaseType = new CaseDataType("display_name", "c6", "DISP", PREVIOUS_CASE_TYPE, 20, 15);
 
-        CaseData previousCaseData = new CaseData(
-                1L,
-                PREVIOUS_CASE_UUID,
-                LocalDateTime.now(),
-                PREVIOUS_CASE_TYPE,
-                PREVIOUS_CASE_REFERENCE,
-                false,
-                PREV_DATA_CLOB,
-                UUID.randomUUID(),
-                new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID),
-                UUID.randomUUID(),
-                new Correspondent(PREVIOUS_CASE_UUID,
-                        PREV_CORRESPONDENT_TYPE,
-                        PREV_FULLNAME,
-                        PREV_ORGANISATION,
-                        new Address(PREV_ADDR_1,
-                                PREV_ADDR_2,
-                                PREV_ADDR_3,
-                                PREV_ADDR_4,
-                                PREV_ADDR_5),
-                        PREV_TELEPHONE,
-                        PREV_EMAIL,
-                        PREV_REFERENCE,
-                        PREV_EXTERNAL_KEY),
-                LocalDate.now(),
-                LocalDate.now(),
-                originalReceivedDate,
-                false,
-                Set.of(new ActiveStage(), new ActiveStage()),
-                Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
-
+        CaseData previousCaseData = new CaseData(1L, PREVIOUS_CASE_UUID, LocalDateTime.now(), PREVIOUS_CASE_TYPE,
+            PREVIOUS_CASE_REFERENCE, false, PREV_DATA_CLOB, UUID.randomUUID(),
+            new Topic(PREVIOUS_CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID), UUID.randomUUID(),
+            new Correspondent(PREVIOUS_CASE_UUID, PREV_CORRESPONDENT_TYPE, PREV_FULLNAME, PREV_ORGANISATION,
+                new Address(PREV_ADDR_1, PREV_ADDR_2, PREV_ADDR_3, PREV_ADDR_4, PREV_ADDR_5), PREV_TELEPHONE,
+                PREV_EMAIL, PREV_REFERENCE, PREV_EXTERNAL_KEY), LocalDate.now(), LocalDate.now(), originalReceivedDate,
+            false, Set.of(new ActiveStage(), new ActiveStage()),
+            Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
 
         when(caseDataRepository.findActiveByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);
-        when(deadlineService
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla()))
-                .thenReturn(expectedDeadline);
+        when(deadlineService.calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate,
+            caseType.getSla())).thenReturn(expectedDeadline);
 
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(newCaseType);
         when(caseCopyFactory.getStrategy(any(), any())).thenReturn(Optional.of((fromCase, toCase) -> {}));
 
         // when
-        MigrateCaseResponse migrateCaseResponse = caseDataService.migrateCase(caseType.getDisplayCode(), PREVIOUS_CASE_UUID);
+        MigrateCaseResponse migrateCaseResponse = caseDataService.migrateCase(caseType.getDisplayCode(),
+            PREVIOUS_CASE_UUID);
 
         // then
         verify(caseDataRepository).findActiveByUuid(PREVIOUS_CASE_UUID);
@@ -408,7 +371,8 @@ public class CaseDataServiceTest {
 
         // assert the reference matches expectations
         Matcher previousReferenceMatcher = CaseDataService.CASE_REFERENCE_PATTERN.matcher(PREVIOUS_CASE_REFERENCE);
-        Matcher caseReferenceMatcher = CaseDataService.CASE_REFERENCE_PATTERN.matcher(caseData.getValue().getReference());
+        Matcher caseReferenceMatcher = CaseDataService.CASE_REFERENCE_PATTERN.matcher(
+            caseData.getValue().getReference());
 
         // + assert the patterns are valid
         assertThat(previousReferenceMatcher.find()).isTrue();
@@ -417,8 +381,8 @@ public class CaseDataServiceTest {
         // assert the reference sequence number part is valid
         assertThat(previousReferenceMatcher.group(1)).isEqualTo(caseReferenceMatcher.group(1));
 
-        verify(deadlineService)
-                .calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
+        verify(deadlineService).calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate,
+            caseType.getSla());
 
         // check deadline
         assertThat(caseData.getValue().getCaseDeadline()).isEqualTo(expectedDeadline);
@@ -447,26 +411,19 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseTimeline() {
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
-        Set<CaseNote> caseNoteData = Set.of(
-                new CaseNote(caseUUID, "MANUAL", "case note 1", "a user"),
-                new CaseNote(caseUUID, "MANUAL", "case note 2", "a user"));
+        Set<CaseNote> caseNoteData = Set.of(new CaseNote(caseUUID, "MANUAL", "case note 1", "a user"),
+            new CaseNote(caseUUID, "MANUAL", "case note 2", "a user"));
         caseData.setCaseNotes(caseNoteData);
 
         UUID auditResponseUUID = UUID.randomUUID();
-        Set<GetAuditResponse> auditResponse = Set.of(new GetAuditResponse(auditResponseUUID,
-                caseUUID,
-                null,
-                "correlation Id",
-                "hocs-casework", "",
-                "namespace", ZonedDateTime.now(), CASE_CREATED.toString(),
-                "user"));
-
+        Set<GetAuditResponse> auditResponse = Set.of(
+            new GetAuditResponse(auditResponseUUID, caseUUID, null, "correlation Id", "hocs-casework", "", "namespace",
+                ZonedDateTime.now(), CASE_CREATED.toString(), "user"));
 
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(auditClient.getAuditLinesForCase(eq(caseData.getUuid()), any(), any())).thenReturn(auditResponse);
 
         List<TimelineItem> timeline = caseDataService.getCaseTimeline(caseData.getUuid()).collect(Collectors.toList());
-
 
         assertThat(timeline.size()).isEqualTo(3);
 
@@ -478,18 +435,16 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(auditClient);
     }
 
-
     @Test
     public void shouldGetCaseNotesOnlyTimelineOnAuditFailure() {
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
-        Set<CaseNote> caseNoteData = Set.of(
-                new CaseNote(caseUUID, "MANUAL", "case note 1", "a user"),
-                new CaseNote(caseUUID, "MANUAL", "case note 2", "a user"));
+        Set<CaseNote> caseNoteData = Set.of(new CaseNote(caseUUID, "MANUAL", "case note 1", "a user"),
+            new CaseNote(caseUUID, "MANUAL", "case note 2", "a user"));
         caseData.setCaseNotes(caseNoteData);
 
-
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
-        when(auditClient.getAuditLinesForCase(eq(caseData.getUuid()), any(), any())).thenThrow(new RuntimeException("Error"));
+        when(auditClient.getAuditLinesForCase(eq(caseData.getUuid()), any(), any())).thenThrow(
+            new RuntimeException("Error"));
 
         List<TimelineItem> timeline = caseDataService.getCaseTimeline(caseData.getUuid()).collect(Collectors.toList());
 
@@ -514,10 +469,10 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         TeamDto teamDto = new TeamDto("Team", UUID.randomUUID(), true, null);
         when(infoClient.getTeamByStageAndText("stageType", "Value1_Value2_Value3")).thenReturn(teamDto);
-        String[] texts = {"Key1", "Key2", "Key3"};
+        String[] texts = { "Key1", "Key2", "Key3" };
 
-        Map<String, String> teamMap = caseDataService.updateTeamByStageAndTexts(
-                caseData.getUuid(), stageUUID, "stageType", "teamUUIDKey", "teamNameKey", texts);
+        Map<String, String> teamMap = caseDataService.updateTeamByStageAndTexts(caseData.getUuid(), stageUUID,
+            "stageType", "teamUUIDKey", "teamNameKey", texts);
 
         assertThat(teamMap).isNotNull();
         assertThat(teamMap.size()).isEqualTo(2);
@@ -533,17 +488,12 @@ public class CaseDataServiceTest {
         LocalDate deadline = LocalDate.of(2019, 1, 1);
         LocalDate deadlineWarning = LocalDate.of(2020, 2, 1);
 
-        String payload = objectMapper.writeValueAsString(new AuditPayload.StageAllocation(stageUUID, teamUUID, "STAGE_TYPE", deadline, deadlineWarning));
+        String payload = objectMapper.writeValueAsString(
+            new AuditPayload.StageAllocation(stageUUID, teamUUID, "STAGE_TYPE", deadline, deadlineWarning));
 
-        Set<GetAuditResponse> auditResponse = Set.of(new GetAuditResponse(auditResponseUUID,
-                caseUUID,
-                UUID.randomUUID(),
-                "correlation Id",
-                "hocs-casework",
-                payload,
-                "namespace", ZonedDateTime.now(),
-                STAGE_ALLOCATED_TO_TEAM.toString(),
-                "user"));
+        Set<GetAuditResponse> auditResponse = Set.of(
+            new GetAuditResponse(auditResponseUUID, caseUUID, UUID.randomUUID(), "correlation Id", "hocs-casework",
+                payload, "namespace", ZonedDateTime.now(), STAGE_ALLOCATED_TO_TEAM.toString(), "user"));
 
         when(auditClient.getAuditLinesForCase(eq(caseData.getUuid()), any())).thenReturn(auditResponse);
 
@@ -556,7 +506,6 @@ public class CaseDataServiceTest {
         verifyNoMoreInteractions(auditClient);
     }
 
-
     @Test
     public void shouldGetCaseSummaryWithValidParams() throws ApplicationExceptions.EntityNotFoundException, IOException {
 
@@ -567,17 +516,17 @@ public class CaseDataServiceTest {
         ActiveCaseViewData activeCaseViewData = new ActiveCaseViewData(caseType, caseID, deadlineDate);
         activeCaseViewData.setCaseDeadline(caseDeadline);
         activeCaseViewData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
-        
-        Map<String, LocalDate> deadlines = Map.of(
-                "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
-                "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
+
+        Map<String, LocalDate> deadlines = Map.of("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
+            "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
 
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
-        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()))
-                .thenReturn(Set.of());
-        when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived()))
-                .thenReturn(deadlines);
+        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(),
+            caseData.getDataMap())).thenReturn(Set.of());
+        when(
+            deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived())).thenReturn(
+            deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -586,8 +535,7 @@ public class CaseDataServiceTest {
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
         verify(caseDataSummaryService).getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap());
-        verify(deadlineService)
-                .getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
+        verify(deadlineService).getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
     }
 
@@ -598,20 +546,21 @@ public class CaseDataServiceTest {
         Map<String, String> data = new HashMap<>();
         data.put("DCU_DTEN_COPY_NUMBER_TEN_DEADLINE", overrideDeadline.toString());
 
-        CaseData caseData = new CaseData(caseType, caseID, data,  deadlineDate);
+        CaseData caseData = new CaseData(caseType, caseID, data, deadlineDate);
         ActiveCaseViewData activeCaseViewData = new ActiveCaseViewData(caseType, caseID, data, deadlineDate);
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
 
-        Map<String, LocalDate> deadlines = Map.of(
-                "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
-                "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
+        Map<String, LocalDate> deadlines = Map.of("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
+            "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
 
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
-        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()))
-                .thenReturn(Set.of());
-        when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived())).thenReturn(deadlines);
+        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(),
+            caseData.getDataMap())).thenReturn(Set.of());
+        when(
+            deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived())).thenReturn(
+            deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -634,16 +583,16 @@ public class CaseDataServiceTest {
         caseData.setPrimaryCorrespondentUUID(null);
         Set<FieldDto> filterFields = new HashSet<>();
 
-        Map<String, LocalDate> deadlines = Map.of(
-                "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
-                "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
+        Map<String, LocalDate> deadlines = Map.of("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
+            "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
 
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
-        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()))
-                .thenReturn(Set.of());
-        when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived()))
-                .thenReturn(deadlines);
+        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(),
+            caseData.getDataMap())).thenReturn(Set.of());
+        when(
+            deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived())).thenReturn(
+            deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -652,8 +601,7 @@ public class CaseDataServiceTest {
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
         verify(caseDataSummaryService).getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap());
-        verify(deadlineService)
-                .getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
+        verify(deadlineService).getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
 
     }
@@ -665,21 +613,20 @@ public class CaseDataServiceTest {
         caseData.setCaseDeadline(caseDeadline);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
 
-        ActiveCaseViewData activeCaseViewData =
-                new ActiveCaseViewData(caseType, caseID, deadlineDate);
+        ActiveCaseViewData activeCaseViewData = new ActiveCaseViewData(caseType, caseID, deadlineDate);
         activeCaseViewData.setCaseDeadline(caseDeadline);
         activeCaseViewData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
 
-        Map<String, LocalDate> deadlines = Map.of(
-                "DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
-                "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
+        Map<String, LocalDate> deadlines = Map.of("DCU_DTEN_COPY_NUMBER_TEN", LocalDate.now().plusDays(10),
+            "DCU_DTEN_DATA_INPUT", LocalDate.now().plusDays(20));
 
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         when(activeCaseViewDataRepository.findByUuid(caseData.getUuid())).thenReturn(activeCaseViewData);
-        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()))
-                .thenReturn(Set.of());
-        when(deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived()))
-                .thenReturn(deadlines);
+        when(caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(),
+            caseData.getDataMap())).thenReturn(Set.of());
+        when(
+            deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived())).thenReturn(
+            deadlines);
 
         CaseSummary result = caseDataService.getCaseSummary(caseData.getUuid());
 
@@ -688,8 +635,7 @@ public class CaseDataServiceTest {
         assertThat(result.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
 
         verify(caseDataSummaryService).getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap());
-        verify(deadlineService)
-                .getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
+        verify(deadlineService).getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
         verify(caseDataRepository).findActiveByUuid(caseData.getUuid());
     }
 
@@ -802,20 +748,20 @@ public class CaseDataServiceTest {
 
         caseDataService.updateCaseData(caseData.getUuid(), stageUUID, null);
 
-         verifyNoInteractions(caseDataRepository);
+        verifyNoInteractions(caseDataRepository);
     }
 
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void shouldNotUpdateCaseMissingCaseUUIDException() throws ApplicationExceptions.EntityCreationException {
 
-        caseDataService.updateCaseData((UUID)null, stageUUID, new HashMap<>());
+        caseDataService.updateCaseData((UUID) null, stageUUID, new HashMap<>());
     }
 
     @Test()
     public void shouldNotUpdateCaseMissingCaseUUID() throws JsonProcessingException {
 
         try {
-            caseDataService.updateCaseData((UUID)null, stageUUID, new HashMap<>());
+            caseDataService.updateCaseData((UUID) null, stageUUID, new HashMap<>());
         } catch (ApplicationExceptions.EntityNotFoundException e) {
             // Do nothing.
         }
@@ -833,21 +779,12 @@ public class CaseDataServiceTest {
         LocalDate expectedNewDeadline = LocalDate.parse("2020-02-03");
 
         CaseData caseData = new CaseData(caseType, caseID, originalReceivedDate);
-        CaseDataType caseDataType =
-                new CaseDataType(
-                        "MIN",
-                        "TT",
-                        "TEST_TYPE",
-                        null,
-                        20,
-                        15
-                );
+        CaseDataType caseDataType = new CaseDataType("MIN", "TT", "TEST_TYPE", null, 20, 15);
 
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
         when(infoClient.getCaseType(any())).thenReturn(caseDataType);
-        when(deadlineService.calculateWorkingDaysForCaseType(
-                eq(caseDataType.getDisplayName()), eq(updatedReceivedDate), anyInt()))
-                .thenReturn(expectedNewDeadline);
+        when(deadlineService.calculateWorkingDaysForCaseType(eq(caseDataType.getDisplayName()), eq(updatedReceivedDate),
+            anyInt())).thenReturn(expectedNewDeadline);
 
         // when
         caseDataService.updateDateReceived_defaultSla(caseUUID, stageUUID, updatedReceivedDate);
@@ -858,8 +795,8 @@ public class CaseDataServiceTest {
         assertThat(caseData.getDateReceived()).isEqualTo(updatedReceivedDate);
         verify(caseDataRepository).findActiveByUuid(caseUUID);
         verify(caseDataRepository).save(caseDataCaptor.capture());
-        verify(deadlineService)
-                .calculateWorkingDaysForCaseType(caseDataType.getDisplayName(), updatedReceivedDate, caseType.getSla());
+        verify(deadlineService).calculateWorkingDaysForCaseType(caseDataType.getDisplayName(), updatedReceivedDate,
+            caseType.getSla());
 
         assertThat(caseDataCaptor.getValue().getCaseDeadline()).isEqualTo(expectedNewDeadline);
 
@@ -874,20 +811,11 @@ public class CaseDataServiceTest {
         LocalDate expectedNewDeadline = LocalDate.parse("2020-02-17");
 
         CaseData caseData = new CaseData(caseType, caseID, originalReceivedDate);
-        CaseDataType caseDataType =
-                new CaseDataType(
-                        "MIN",
-                        "TT",
-                        "TEST_TYPE",
-                        null,
-                        20,
-                        15
-                );
+        CaseDataType caseDataType = new CaseDataType("MIN", "TT", "TEST_TYPE", null, 20, 15);
 
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
-        when(deadlineService
-                .calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), 10))
-                .thenReturn(expectedNewDeadline);
+        when(deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(),
+            10)).thenReturn(expectedNewDeadline);
 
         // when
         caseDataService.overrideSla(caseUUID, stageUUID, 10);
@@ -897,8 +825,8 @@ public class CaseDataServiceTest {
 
         verify(caseDataRepository).findActiveByUuid(caseUUID);
         verify(caseDataRepository).save(caseDataCaptor.capture());
-        verify(deadlineService, times(2))
-                .calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), 10);
+        verify(deadlineService, times(2)).calculateWorkingDaysForCaseType(caseData.getType(),
+            caseData.getDateReceived(), 10);
 
         assertThat(caseDataCaptor.getValue().getCaseDeadline()).isEqualTo(expectedNewDeadline);
 
@@ -913,11 +841,9 @@ public class CaseDataServiceTest {
         // given
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
-        when(infoClient.getCaseType(caseType.getDisplayName()))
-                .thenReturn(new CaseDataType(null, null, null, null, 20, 15));
-        when(deadlineService
-                .calculateWorkingDaysForCaseType(any(), any(), eq(15)))
-                .thenReturn(LocalDate.now());
+        when(infoClient.getCaseType(caseType.getDisplayName())).thenReturn(
+            new CaseDataType(null, null, null, null, 20, 15));
+        when(deadlineService.calculateWorkingDaysForCaseType(any(), any(), eq(15))).thenReturn(LocalDate.now());
         // when
         caseDataService.updateDispatchDeadlineDate(caseUUID, stageUUID, deadlineDate);
 
@@ -931,7 +857,6 @@ public class CaseDataServiceTest {
 
     }
 
-
     @Test
     public void shouldUpdateStageDeadline() {
 
@@ -939,9 +864,7 @@ public class CaseDataServiceTest {
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         LocalDate caseDeadline = LocalDate.now();
 
-        when(deadlineService
-                .calculateWorkingDaysForCaseType(any(), any(), eq(7)))
-                .thenReturn(LocalDate.now());
+        when(deadlineService.calculateWorkingDaysForCaseType(any(), any(), eq(7))).thenReturn(LocalDate.now());
 
         caseDataService.updateStageDeadline(caseData.getUuid(), stageUUID, "TEST", 7);
 
@@ -977,10 +900,12 @@ public class CaseDataServiceTest {
     public void shouldCompleteStageAndCaseWhenFinalActiveStage() {
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
 
-        Stage mockStage = new Stage(caseData.getUuid(), "RANDOM_STAGE_TYPE",UUID.randomUUID(),UUID.randomUUID(),UUID.randomUUID());
+        Stage mockStage = new Stage(caseData.getUuid(), "RANDOM_STAGE_TYPE", UUID.randomUUID(), UUID.randomUUID(),
+            UUID.randomUUID());
         Optional<Stage> mockOptionalOfStage = Optional.of(mockStage);
 
-        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(mockOptionalOfStage);
+        when(stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseData.getUuid())).thenReturn(
+            mockOptionalOfStage);
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
 
         caseDataService.completeCase(caseData.getUuid(), true);
@@ -1065,7 +990,8 @@ public class CaseDataServiceTest {
     @Test
     public void shouldGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
-        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(CaseDataTypeFactory.from("MIN", "a1", "COMP"));
+        when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenReturn(
+            CaseDataTypeFactory.from("MIN", "a1", "COMP"));
 
         caseDataService.getCaseType(caseUUID);
 
@@ -1079,7 +1005,8 @@ public class CaseDataServiceTest {
     public void shouldReturnCaseTypeWhenNullReturnedFromInfoClientAndButCaseInCaseDataOnGetCaseType() {
         String caseTypeShortCode = caseUUID.toString().substring(34);
         when(infoClient.getCaseTypeByShortCode(caseTypeShortCode)).thenThrow(RestClientException.class);
-        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(new CaseData(CaseDataTypeFactory.from("", ""), 1L, null));
+        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(
+            new CaseData(CaseDataTypeFactory.from("", ""), 1L, null));
 
         caseDataService.getCaseType(caseUUID);
 
@@ -1110,21 +1037,18 @@ public class CaseDataServiceTest {
     @Test
     public void updateDeadlineForStages() {
 
-        Map<String, Integer> stageTypeAndDaysMap = Map.ofEntries(Map.entry("type1", 5),
-                Map.entry("type2", 10), Map.entry("type3", 9));
+        Map<String, Integer> stageTypeAndDaysMap = Map.ofEntries(Map.entry("type1", 5), Map.entry("type2", 10),
+            Map.entry("type3", 9));
 
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
         LocalDate caseDeadline = LocalDate.now();
-        when(deadlineService
-                .calculateWorkingDaysForCaseType(eq(caseType.getDisplayCode()), eq(deadlineDate), eq(9)))
-                .thenReturn(caseDeadline);
-        when(deadlineService
-                .calculateWorkingDaysForCaseType(eq(caseType.getDisplayCode()), eq(deadlineDate), eq(10)))
-                .thenReturn(caseDeadline);
-        when(deadlineService
-                .calculateWorkingDaysForCaseType(eq(caseType.getDisplayCode()), eq(deadlineDate), eq(5)))
-                .thenReturn(caseDeadline);
+        when(deadlineService.calculateWorkingDaysForCaseType(eq(caseType.getDisplayCode()), eq(deadlineDate),
+            eq(9))).thenReturn(caseDeadline);
+        when(deadlineService.calculateWorkingDaysForCaseType(eq(caseType.getDisplayCode()), eq(deadlineDate),
+            eq(10))).thenReturn(caseDeadline);
+        when(deadlineService.calculateWorkingDaysForCaseType(eq(caseType.getDisplayCode()), eq(deadlineDate),
+            eq(5))).thenReturn(caseDeadline);
 
         caseDataService.updateDeadlineForStages(caseData.getUuid(), stageUUID, stageTypeAndDaysMap);
 
@@ -1178,7 +1102,6 @@ public class CaseDataServiceTest {
         checkNoMoreInteractions();
     }
 
-
     @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
     public void getCaseDataByReference_forNullResult() {
         String testCaseRef = "TestReference";
@@ -1200,15 +1123,11 @@ public class CaseDataServiceTest {
         caseDataMap.put("from2", "val2");
         caseDataMap.put("from3", "val3");
 
-        CaseDataType caseType = new CaseDataType("CASE_TYPE", "a9","ct",null,20, 20);
+        CaseDataType caseType = new CaseDataType("CASE_TYPE", "a9", "ct", null, 20, 20);
         long caseNumber = 1L;
         LocalDate dateReceived = LocalDate.now();
 
-        CaseData caseData = new CaseData(
-                caseType,
-                caseNumber,
-                caseDataMap,
-                dateReceived);
+        CaseData caseData = new CaseData(caseType, caseNumber, caseDataMap, dateReceived);
 
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
@@ -1242,15 +1161,11 @@ public class CaseDataServiceTest {
         // existing requested map to
         caseDataMap.put("to3", "val3Existing");
 
-        CaseDataType caseType = new CaseDataType("CASE_TYPE", "a9","ct",null,20, 20);
+        CaseDataType caseType = new CaseDataType("CASE_TYPE", "a9", "ct", null, 20, 20);
         long caseNumber = 1L;
         LocalDate dateReceived = LocalDate.now();
 
-        CaseData caseData = new CaseData(
-                caseType,
-                caseNumber,
-                caseDataMap,
-                dateReceived);
+        CaseData caseData = new CaseData(caseType, caseNumber, caseDataMap, dateReceived);
 
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
@@ -1286,15 +1201,11 @@ public class CaseDataServiceTest {
         // existing requested map to
         caseDataMap.put("to3", null);
 
-        CaseDataType caseType = new CaseDataType("CASE_TYPE", "a9","ct",null,20, 20);
+        CaseDataType caseType = new CaseDataType("CASE_TYPE", "a9", "ct", null, 20, 20);
         long caseNumber = 1L;
         LocalDate dateReceived = LocalDate.now();
 
-        CaseData caseData = new CaseData(
-                caseType,
-                caseNumber,
-                caseDataMap,
-                dateReceived);
+        CaseData caseData = new CaseData(caseType, caseNumber, caseDataMap, dateReceived);
 
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
@@ -1326,15 +1237,11 @@ public class CaseDataServiceTest {
         caseDataMap.put("from4", "val4");
         caseDataMap.put("from5", "val5");
 
-        CaseDataType caseType = new CaseDataType("CASE_TYPE", "a9","ct",null,20, 20);
+        CaseDataType caseType = new CaseDataType("CASE_TYPE", "a9", "ct", null, 20, 20);
         long caseNumber = 1L;
         LocalDate dateReceived = LocalDate.now();
 
-        CaseData caseData = new CaseData(
-                caseType,
-                caseNumber,
-                caseDataMap,
-                dateReceived);
+        CaseData caseData = new CaseData(caseType, caseNumber, caseDataMap, dateReceived);
 
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
 
@@ -1356,10 +1263,7 @@ public class CaseDataServiceTest {
         String caseType = "COMP";
         CaseTab caseTab = new CaseTab("documents", "Documents", "DOCUMENTS");
 
-        CaseConfig caseConfig = new CaseConfig(
-                caseType,
-                List.of(caseTab)
-        );
+        CaseConfig caseConfig = new CaseConfig(caseType, List.of(caseTab));
 
         when(caseDataRepository.getCaseType(uuid)).thenReturn(caseType);
         when(infoClient.getCaseConfig(caseType)).thenReturn(caseConfig);
@@ -1377,4 +1281,5 @@ public class CaseDataServiceTest {
     private void checkNoMoreInteractions() {
         verifyNoMoreInteractions(auditClient, caseDataRepository, infoClient);
     }
+
 }

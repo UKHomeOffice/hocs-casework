@@ -99,7 +99,6 @@ public class ActionDataAppeal implements Serializable {
         this.document = document;
     }
 
-
     @PrePersist
     private void setCreatedAndLastUpdatedTimestamps() {
         this.createTimestamp = LocalDateTime.now();
@@ -110,4 +109,5 @@ public class ActionDataAppeal implements Serializable {
     private void updateLastUpdatedTimestamp() {
         this.lastUpdateTimestamp = LocalDateTime.now();
     }
+
 }

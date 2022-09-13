@@ -49,13 +49,13 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @Sql(scripts = "classpath:case/beforeTest.sql", config = @SqlConfig(transactionMode = ISOLATED))
-@Sql(scripts = "classpath:case/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:case/afterTest.sql",
+     config = @SqlConfig(transactionMode = ISOLATED),
+     executionPhase = AFTER_TEST_METHOD)
 @ActiveProfiles({ "local", "integration" })
 public class GetCorrespondentsIntegrationTest {
 
-    private final String EMPTY_CORRESPONDENTS_EXPECTED_RESULT = "{\n " +
-            " \"correspondents\" : [ ]\n" +
-            "}";
+    private final String EMPTY_CORRESPONDENTS_EXPECTED_RESULT = "{\n " + " \"correspondents\" : [ ]\n" + "}";
 
     private TestRestTemplate testRestTemplate = new TestRestTemplate();
 
@@ -71,29 +71,30 @@ public class GetCorrespondentsIntegrationTest {
     private ObjectMapper mapper = new ObjectMapper();
 
     private final UUID CASE_UUID = UUID.fromString("14915b78-6977-42db-b343-0915a7f412a1");
+
     private final UUID STAGE_UUID = UUID.fromString("e9151b83-7602-4419-be83-bff1c924c80d");
+
     private final UUID CORRESPONDENT_UUID = UUID.fromString("2c9e1eb9-ee78-4f57-a626-b8b75cf3b937");
 
     private final UUID INVALID_CASE_UUID = UUID.fromString("89334528-7769-2db4-b432-456091f132a1");
 
     private static final CaseDataType CASE_DATA_TYPE = CaseDataTypeFactory.from("TEST", "a1");
+
     private MockRestServiceServer mockInfoService;
 
     @Before
     public void setup() throws IOException {
         mockInfoService = buildMockService(restTemplate);
-        mockInfoService
-                .expect(ExpectedCount.times(2), requestTo("http://localhost:8085/caseType"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(ExpectedCount.times(3), requestTo("http://localhost:8085/caseType/shortCode/a1"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
-        mockInfoService
-                .expect(requestTo("http://localhost:8085/correspondentType/TEST"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(GetCorrespondentTypeResponse.from(Collections.emptySet())), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(ExpectedCount.times(2), requestTo("http://localhost:8085/caseType")).andExpect(
+            method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(new HashSet<>()), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(ExpectedCount.times(3),
+            requestTo("http://localhost:8085/caseType/shortCode/a1")).andExpect(method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(CASE_DATA_TYPE), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(requestTo("http://localhost:8085/correspondentType/TEST")).andExpect(
+            method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(GetCorrespondentTypeResponse.from(Collections.emptySet())),
+                MediaType.APPLICATION_JSON));
     }
 
     private MockRestServiceServer buildMockService(RestTemplate restTemplate) {
@@ -108,7 +109,8 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()),
+            String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -118,7 +120,8 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()),
+            String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -128,7 +131,8 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()),
+            String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -138,7 +142,8 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()),
+            String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -148,7 +153,8 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()),
+            String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -158,7 +164,8 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()),
+            String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -169,7 +176,8 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()),
+            String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -179,7 +187,8 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET,
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(EMPTY_CORRESPONDENTS_EXPECTED_RESULT);
     }
@@ -190,7 +199,8 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET,
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(EMPTY_CORRESPONDENTS_EXPECTED_RESULT);
     }
@@ -201,7 +211,8 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET,
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(EMPTY_CORRESPONDENTS_EXPECTED_RESULT);
 
@@ -213,7 +224,8 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET,
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
     }
@@ -224,7 +236,8 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET,
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
     }
@@ -236,29 +249,32 @@ public class GetCorrespondentsIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(
-                getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + INVALID_CASE_UUID + "/correspondent", GET,
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
-
 
     @Test
     public void shouldReturnOkWhenGetCorrespondentAndThenOkAndEmptySetWhenCorrespondentsDeleted() throws JsonProcessingException {
         AccessLevel permissionLevel = AccessLevel.OWNER;
         setupMockTeams("TEST", permissionLevel, 4);
 
-        mockInfoService
-                .expect(ExpectedCount.times(2), requestTo("http://localhost:8085/correspondentType/TEST"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(GetCorrespondentTypeResponse.from(Collections.emptySet())), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(ExpectedCount.times(2),
+            requestTo("http://localhost:8085/correspondentType/TEST")).andExpect(method(GET)).andRespond(
+            withSuccess(mapper.writeValueAsString(GetCorrespondentTypeResponse.from(Collections.emptySet())),
+                MediaType.APPLICATION_JSON));
 
         ResponseEntity<String> result1 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()),
+            String.class);
         assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.OK);
         ResponseEntity<String> result2 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/stage/" + STAGE_UUID + "/correspondent/" + CORRESPONDENT_UUID, DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + CASE_UUID + "/stage/" + STAGE_UUID + "/correspondent/" + CORRESPONDENT_UUID,
+            DELETE, new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result2.getStatusCode()).isEqualTo(HttpStatus.OK);
         ResponseEntity<String> result3 = testRestTemplate.exchange(
-                getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()), String.class);
+            getBasePath() + "/case/" + CASE_UUID + "/correspondent", GET, new HttpEntity(createValidAuthHeaders()),
+            String.class);
         assertThat(result3.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result3.getBody()).isEqualTo(EMPTY_CORRESPONDENTS_EXPECTED_RESULT);
     }
@@ -280,22 +296,20 @@ public class GetCorrespondentsIntegrationTest {
         Set<TeamDto> teamDtos = new HashSet<>();
         Set<PermissionDto> permissionDtos = new HashSet<>();
         permissionDtos.add(new PermissionDto(caseType, permission));
-        TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true, permissionDtos);
+        TeamDto teamDto = new TeamDto("TEAM 1", UUID.fromString("44444444-2222-2222-2222-222222222222"), true,
+            permissionDtos);
         teamDtos.add(teamDto);
 
-        mockInfoService
-                .expect(ExpectedCount.times(noOfCalls), requestTo("http://localhost:8085/team"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(ExpectedCount.times(noOfCalls), requestTo("http://localhost:8085/team")).andExpect(
+            method(GET)).andRespond(withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
     }
 
     private void setupEmptyMockAudit(UUID caseUUID) throws JsonProcessingException {
         GetAuditListResponse restResponse = new GetAuditListResponse(new HashSet<>());
 
-        mockInfoService
-                .expect(requestTo("http://localhost:8087/audit/case/" + caseUUID + "?types=STAGE_ALLOCATED_TO_TEAM,STAGE_CREATED"))
-                .andExpect(method(GET))
-                .andRespond(withSuccess(mapper.writeValueAsString(restResponse), MediaType.APPLICATION_JSON));
+        mockInfoService.expect(requestTo(
+            "http://localhost:8087/audit/case/" + caseUUID + "?types=STAGE_ALLOCATED_TO_TEAM,STAGE_CREATED")).andExpect(
+            method(GET)).andRespond(withSuccess(mapper.writeValueAsString(restResponse), MediaType.APPLICATION_JSON));
     }
 
 }

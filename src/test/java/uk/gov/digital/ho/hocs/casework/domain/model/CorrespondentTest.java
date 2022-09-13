@@ -23,7 +23,8 @@ public class CorrespondentTest {
         String reference = "anyReference";
         String externalKey = "external key";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email,
+            reference, externalKey);
 
         assertThat(correspondent.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(correspondent.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -56,7 +57,8 @@ public class CorrespondentTest {
         String reference = "anyReference";
         String externalKey = "external key";
 
-        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email, reference, externalKey);
+        Correspondent correspondent = new Correspondent(caseUUID, type, fullName, organisation, address, phone, email,
+            reference, externalKey);
 
         assertThat(correspondent.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(correspondent.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());

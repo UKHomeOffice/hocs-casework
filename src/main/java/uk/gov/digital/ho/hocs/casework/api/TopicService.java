@@ -21,7 +21,9 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 public class TopicService {
 
     private final TopicRepository topicRepository;
+
     private final InfoClient infoClient;
+
     private final AuditClient auditClient;
 
     @Autowired
@@ -31,7 +33,7 @@ public class TopicService {
         this.auditClient = auditClient;
     }
 
-     Set<Topic> getTopics(UUID caseUUID) {
+    Set<Topic> getTopics(UUID caseUUID) {
         log.debug("Getting all Topics for Case: {}", caseUUID);
         Set<Topic> topics = topicRepository.findAllByCaseUUID(caseUUID);
         log.info("Got {} Topics for Case: {}", topics.size(), caseUUID, value(EVENT, CASE_TOPICS_RETRIEVED));
@@ -41,25 +43,28 @@ public class TopicService {
     Topic getTopic(UUID caseUUID, UUID topicUUID) {
         log.debug("Getting Topic: {} for Case: {}", topicUUID, caseUUID);
         Topic topic = topicRepository.findByUUID(caseUUID, topicUUID);
-        if (topic != null) {
+        if (topic!=null) {
             log.info("Got Topic: {} for Case: {}", topicUUID, caseUUID, value(EVENT, CASE_TOPIC_RETRIEVED));
             return topic;
         } else {
-            log.error("topic: {} for Case UUID: {} not found!", topicUUID, caseUUID, value(EVENT, CASE_TOPIC_NOT_FOUND));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Topic %s not found for Case: %s", topicUUID, caseUUID), CASE_TOPIC_NOT_FOUND);
+            log.error("topic: {} for Case UUID: {} not found!", topicUUID, caseUUID,
+                value(EVENT, CASE_TOPIC_NOT_FOUND));
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("Topic %s not found for Case: %s", topicUUID, caseUUID), CASE_TOPIC_NOT_FOUND);
         }
     }
 
     void createTopic(UUID caseUUID, UUID topicUUID) {
         log.debug("Creating Topic of Type: {} for Case: {}", topicUUID, caseUUID);
-        if (topicUUID != null) {
+        if (topicUUID!=null) {
             InfoTopic infoTopic = infoClient.getTopic(topicUUID);
             Topic topic = new Topic(caseUUID, infoTopic.getLabel(), topicUUID);
             topicRepository.save(topic);
             auditClient.createTopicAudit(topic);
             log.info("Created Topic: {} for Case: {}", topic.getUuid(), caseUUID, value(EVENT, CASE_TOPIC_CREATE));
         } else {
-            throw new ApplicationExceptions.EntityCreationException(String.format("No TopicUUID given for Case: %s", caseUUID), CASE_TOPIC_UUID_NOT_GIVEN);
+            throw new ApplicationExceptions.EntityCreationException(
+                String.format("No TopicUUID given for Case: %s", caseUUID), CASE_TOPIC_UUID_NOT_GIVEN);
         }
     }
 
@@ -82,4 +87,5 @@ public class TopicService {
         log.info("Got {} Topics", topics.size(), value(EVENT, ALL_CASE_TOPICS_RETRIEVED));
         return topics;
     }
+
 }

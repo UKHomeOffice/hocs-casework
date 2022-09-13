@@ -10,15 +10,15 @@ public abstract class AbstractCaseCopyStrategy {
 
     protected void copyClobData(CaseData fromCase, CaseData toCase, String[] dataClobKeys) {
 
-        if (fromCase == null) {
+        if (fromCase==null) {
             throw new IllegalArgumentException("Parameter fromCase cannot be null");
         }
 
-        if (toCase == null) {
+        if (toCase==null) {
             throw new IllegalArgumentException("Parameter fromCase cannot be null");
         }
 
-        if (dataClobKeys == null) {
+        if (dataClobKeys==null) {
             throw new IllegalArgumentException("Parameter dataClobKeys cannot be null");
         }
 
@@ -35,4 +35,5 @@ public abstract class AbstractCaseCopyStrategy {
 
         toCase.update(toCaseClobData);
     }
+
 }

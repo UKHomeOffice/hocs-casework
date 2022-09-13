@@ -16,4 +16,5 @@ public class UpdateTeamByStageAndTextsResponse {
     public static UpdateTeamByStageAndTextsResponse from(Map<String, String> teamMap) {
         return new UpdateTeamByStageAndTextsResponse(teamMap);
     }
+
 }

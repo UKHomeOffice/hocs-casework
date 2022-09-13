@@ -7,6 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class StageTypeDto {
+
     @JsonProperty("displayName")
     private String displayName;
 
@@ -24,4 +25,5 @@ public class StageTypeDto {
 
     @JsonProperty("sortOrder")
     private int sortOrder;
+
 }

@@ -7,7 +7,6 @@ import org.springframework.lang.NonNull;
 
 import javax.validation.constraints.NotEmpty;
 
-
 @AllArgsConstructor
 @Getter
 public class CreateCorrespondentRequest {
@@ -50,4 +49,5 @@ public class CreateCorrespondentRequest {
 
     @JsonProperty("externalKey")
     String externalKey;
+
 }

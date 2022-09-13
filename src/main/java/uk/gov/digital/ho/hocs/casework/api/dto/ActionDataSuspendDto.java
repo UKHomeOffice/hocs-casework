@@ -19,13 +19,19 @@ import java.util.UUID;
 public class ActionDataSuspendDto extends ActionDataDto {
 
     private LocalDate dateSuspensionApplied;
+
     private LocalDate dateSuspensionRemoved;
 
-    public ActionDataSuspendDto(UUID uuid, UUID caseTypeActionUuid, String caseSubtype, String caseTypeActionLabel,
-                                LocalDate dateSuspensionApplied, LocalDate dateSuspensionRemoved) {
+    public ActionDataSuspendDto(UUID uuid,
+                                UUID caseTypeActionUuid,
+                                String caseSubtype,
+                                String caseTypeActionLabel,
+                                LocalDate dateSuspensionApplied,
+                                LocalDate dateSuspensionRemoved) {
 
         super(uuid, caseTypeActionUuid, caseSubtype, caseTypeActionLabel);
         this.dateSuspensionApplied = dateSuspensionApplied;
         this.dateSuspensionRemoved = dateSuspensionRemoved;
     }
+
 }

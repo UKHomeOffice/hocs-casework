@@ -33,6 +33,7 @@ public class UserPermissionsServiceTest {
     private UserPermissionsService service;
 
     private static final List<String> teamBase64 = new ArrayList<>();
+
     private static final List<TeamDto> teamDtos = new ArrayList<>();
 
     @BeforeClass
@@ -63,8 +64,7 @@ public class UserPermissionsServiceTest {
         service = new UserPermissionsService(requestData, infoClient);
 
         assertThat(service.getUserTeams()).containsExactlyInAnyOrderElementsOf(
-                teamDtos.stream().map(TeamDto::getUuid).collect(Collectors.toList())
-        );
+            teamDtos.stream().map(TeamDto::getUuid).collect(Collectors.toList()));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class UserPermissionsServiceTest {
         service = new UserPermissionsService(requestData, infoClient);
 
         assertThat(service.getUserTeams()).containsExactlyInAnyOrder(teamDtos.get(0).getUuid(),
-                teamDtos.get(1).getUuid());
+            teamDtos.get(1).getUuid());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class UserPermissionsServiceTest {
         service = new UserPermissionsService(requestData, infoClient);
 
         assertThat(service.getExpandedUserTeams()).containsExactlyInAnyOrderElementsOf(
-                teamDtos.stream().limit(2).map(TeamDto::getUuid).collect(Collectors.toList()));
+            teamDtos.stream().limit(2).map(TeamDto::getUuid).collect(Collectors.toList()));
     }
 
     @Test
@@ -129,7 +129,7 @@ public class UserPermissionsServiceTest {
         service = new UserPermissionsService(requestData, infoClient);
 
         assertThat(service.getExpandedUserTeams()).containsExactlyInAnyOrderElementsOf(
-                teamDtos.stream().map(TeamDto::getUuid).collect(Collectors.toList()));
+            teamDtos.stream().map(TeamDto::getUuid).collect(Collectors.toList()));
     }
 
     @Test

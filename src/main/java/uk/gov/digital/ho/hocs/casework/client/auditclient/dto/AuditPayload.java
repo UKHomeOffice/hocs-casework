@@ -19,66 +19,93 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface AuditPayload {
+
     @AllArgsConstructor
     @Getter
     class CaseReference {
+
         private String caseReference;
+
     }
 
     @AllArgsConstructor
     @Getter
     class Case {
+
         private UUID caseUUID;
+
     }
 
     @AllArgsConstructor
     @Getter
     class CaseDeleted {
+
         private UUID caseUUID;
+
         private Boolean deleted;
+
     }
 
     @AllArgsConstructor
     @Getter
     class Topic {
+
         private UUID topicUuid;
+
         private String topicName;
+
     }
 
     @AllArgsConstructor
     @Getter
     class StageAllocation {
+
         private UUID stageUUID;
+
         private UUID allocatedToUUID;
+
         private String stage;
+
         private LocalDate deadline;
+
         private LocalDate deadlineWarning;
+
     }
 
     @AllArgsConstructor
     @Getter
     class CaseNote {
+
         private String caseNote;
+
     }
 
     @AllArgsConstructor
     @Getter
     class CaseNoteUpdate {
+
         private String prevCaseNoteType;
+
         private String prevText;
+
         private String caseNoteType;
+
         private String text;
+
     }
 
     @AllArgsConstructor
     @Getter
     class SomuItem {
+
         @JsonProperty("somuTypeUuid")
         private UUID somuUuid;
+
     }
 
     @Getter
     class SomuItemWithData extends SomuItem {
+
         @JsonProperty("uuid")
         private UUID uuid;
 
@@ -90,6 +117,7 @@ public interface AuditPayload {
             this.uuid = uuid;
             this.data = data;
         }
+
     }
 
     @AllArgsConstructor
@@ -109,7 +137,7 @@ public interface AuditPayload {
         private String reference;
 
         @JsonProperty("data")
-        private Map<String,String> data;
+        private Map<String, String> data;
 
         @JsonProperty("caseDeadline")
         private LocalDate caseDeadline;
@@ -118,14 +146,10 @@ public interface AuditPayload {
         private LocalDate dateReceived;
 
         public static AuditPayload.CreateCaseRequest from(CaseData caseData) {
-            return new AuditPayload.CreateCaseRequest(caseData.getUuid(),
-                    caseData.getCreated(),
-                    caseData.getType(),
-                    caseData.getReference(),
-                    caseData.getDataMap(),
-                    caseData.getCaseDeadline(),
-                    caseData.getDateReceived());
+            return new AuditPayload.CreateCaseRequest(caseData.getUuid(), caseData.getCreated(), caseData.getType(),
+                caseData.getReference(), caseData.getDataMap(), caseData.getCaseDeadline(), caseData.getDateReceived());
         }
+
     }
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -166,20 +190,12 @@ public interface AuditPayload {
         private String externalKey;
 
         public static AuditPayload.CreateCorrespondentRequest from(Correspondent correspondent) {
-            return new AuditPayload.CreateCorrespondentRequest(
-                    correspondent.getUuid(),
-                    correspondent.getCreated(),
-                    correspondent.getCorrespondentType(),
-                    correspondent.getCaseUUID(),
-                    correspondent.getFullName(),
-                    correspondent.getOrganisation(),
-                    AddressDto.from(correspondent),
-                    correspondent.getTelephone(),
-                    correspondent.getEmail(),
-                    correspondent.getReference(),
-                    correspondent.getExternalKey()
-            );
+            return new AuditPayload.CreateCorrespondentRequest(correspondent.getUuid(), correspondent.getCreated(),
+                correspondent.getCorrespondentType(), correspondent.getCaseUUID(), correspondent.getFullName(),
+                correspondent.getOrganisation(), AddressDto.from(correspondent), correspondent.getTelephone(),
+                correspondent.getEmail(), correspondent.getReference(), correspondent.getExternalKey());
         }
+
     }
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -187,24 +203,26 @@ public interface AuditPayload {
     class CreateExtensionRequest {
 
         private UUID uuid;
+
         private UUID caseTypeActionUuid;
+
         private LocalDate originalDeadline;
+
         private LocalDate updatedDeadline;
+
         private String note;
+
         private LocalDateTime createTimestamp;
+
         private String reasons;
 
         public static AuditPayload.CreateExtensionRequest from(ActionDataDeadlineExtension actionDataDeadlineExtension) {
-            return new AuditPayload.CreateExtensionRequest(
-                    actionDataDeadlineExtension.getUuid(),
-                    actionDataDeadlineExtension.getCaseTypeActionUuid(),
-                    actionDataDeadlineExtension.getOriginalDeadline(),
-                    actionDataDeadlineExtension.getUpdatedDeadline(),
-                    actionDataDeadlineExtension.getNote(),
-                    actionDataDeadlineExtension.getCreateTimestamp(),
-                    actionDataDeadlineExtension.getReasons()
-            );
+            return new AuditPayload.CreateExtensionRequest(actionDataDeadlineExtension.getUuid(),
+                actionDataDeadlineExtension.getCaseTypeActionUuid(), actionDataDeadlineExtension.getOriginalDeadline(),
+                actionDataDeadlineExtension.getUpdatedDeadline(), actionDataDeadlineExtension.getNote(),
+                actionDataDeadlineExtension.getCreateTimestamp(), actionDataDeadlineExtension.getReasons());
         }
+
     }
 
     @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -224,7 +242,7 @@ public interface AuditPayload {
         private String reference;
 
         @JsonProperty("data")
-        private Map<String,String> data;
+        private Map<String, String> data;
 
         @JsonProperty("primaryTopic")
         private UUID primaryTopic;
@@ -240,17 +258,11 @@ public interface AuditPayload {
 
         public static UpdateCaseRequest from(CaseData caseData) {
 
-            return new UpdateCaseRequest(
-                    caseData.getUuid(),
-                    caseData.getCreated(),
-                    caseData.getType(),
-                    caseData.getReference(),
-                    caseData.getDataMap(),
-                    caseData.getPrimaryTopicUUID(),
-                    caseData.getPrimaryCorrespondentUUID(),
-                    caseData.getCaseDeadline(),
-                    caseData.getDateReceived());
+            return new UpdateCaseRequest(caseData.getUuid(), caseData.getCreated(), caseData.getType(),
+                caseData.getReference(), caseData.getDataMap(), caseData.getPrimaryTopicUUID(),
+                caseData.getPrimaryCorrespondentUUID(), caseData.getCaseDeadline(), caseData.getDateReceived());
         }
+
     }
 
     @AllArgsConstructor
@@ -267,21 +279,35 @@ public interface AuditPayload {
     class AppealItem {
 
         private UUID uuid;
+
         private UUID caseTypeActionUuid;
+
         private String status;
+
         private LocalDate dateSentRMS;
+
         private String outcome;
+
         private String complexCase;
+
         private String note;
+
         private String officerType;
+
         private String officerName;
+
         private String officerDirectorate;
+
         private LocalDateTime created;
+
     }
 
     interface ActionAuditPayload {
+
         UUID getCaseDataUuid();
+
         EventType getEventType();
+
     }
 
     @AllArgsConstructor
@@ -289,25 +315,42 @@ public interface AuditPayload {
     class ExternalInterestItem implements ActionAuditPayload {
 
         private UUID uuid;
+
         private UUID caseDataUuid;
+
         private String caseType;
+
         private String interestDetails;
+
         private String partyType;
+
         private EventType eventType;
+
     }
 
     @AllArgsConstructor
     @Getter
     @Builder
     class SuspensionItem implements ActionAuditPayload {
+
         private UUID actionUuid;
+
         private UUID caseTypeActionUuid;
+
         private String actionSubtype;
+
         private String caseTypeActionLabel;
+
         private String caseDataType;
+
         private UUID caseDataUuid;
+
         private LocalDate dateSuspensionApplied;
+
         private LocalDate dateSuspensionRemoved;
+
         private EventType eventType;
+
     }
+
 }

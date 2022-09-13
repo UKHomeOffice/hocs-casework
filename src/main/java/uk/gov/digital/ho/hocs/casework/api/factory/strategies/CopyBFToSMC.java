@@ -13,35 +13,23 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 public class CopyBFToSMC extends AbstractCaseCopyStrategy implements CaseCopyStrategy {
 
     // For SMC these variables do not map to init vars
-    private static final String[] DATA_CLOB_KEYS = {
-            "Channel",
-            "CompType",
-            "PrevCompRef",
-            "3rdPartyRef",
-            "ComplainantDOB",
-            "ComplainantHORef",
-            "ComplainantPortRef",
-            "ComplainantCompanyName",
-            "ComplainantNationality",
-            "ComplainantGender"
-    };
+    private static final String[] DATA_CLOB_KEYS = { "Channel", "CompType", "PrevCompRef", "3rdPartyRef",
+        "ComplainantDOB", "ComplainantHORef", "ComplainantPortRef", "ComplainantCompanyName", "ComplainantNationality",
+        "ComplainantGender" };
 
-    private static final String[] DOCUMENT_TYPES = {
-            "To document",
-            "Complaint leaflet",
-            "Complaint letter",
-            "Public correspondence",
-            "Email",
-            "CRF",
-            "DRAFT"
-    };
+    private static final String[] DOCUMENT_TYPES = { "To document", "Complaint leaflet", "Complaint letter",
+        "Public correspondence", "Email", "CRF", "DRAFT" };
 
     private final CaseDataService caseDataService;
+
     private final CaseDocumentService caseDocumentService;
+
     private final CorrespondentService correspondentService;
 
     @Autowired
-    public CopyBFToSMC(CaseDataService caseDataService, CorrespondentService correspondentService, CaseDocumentService caseDocumentService) {
+    public CopyBFToSMC(CaseDataService caseDataService,
+                       CorrespondentService correspondentService,
+                       CaseDocumentService caseDocumentService) {
         super();
         this.caseDataService = caseDataService;
         this.correspondentService = correspondentService;
@@ -58,8 +46,8 @@ public class CopyBFToSMC extends AbstractCaseCopyStrategy implements CaseCopyStr
         //Mapping to init vars
         String caseSumVal = fromCase.getData("CaseSummary");
         String ownCSUVal = fromCase.getData("OwningCSU");
-        toCase.update("InitCaseSummary", caseSumVal != null ? caseSumVal : "");
-        toCase.update("InitOwningCSU", ownCSUVal != null ? ownCSUVal : "");
+        toCase.update("InitCaseSummary", caseSumVal!=null ? caseSumVal:"");
+        toCase.update("InitOwningCSU", ownCSUVal!=null ? ownCSUVal:"");
 
         caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
 

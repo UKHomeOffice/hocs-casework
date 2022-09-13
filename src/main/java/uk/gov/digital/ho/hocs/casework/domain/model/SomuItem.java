@@ -45,9 +45,9 @@ public class SomuItem implements Serializable {
     @Setter
     @Column(name = "data")
     private String data;
-    
+
     public boolean isDeleted() {
-        return (data == null);
+        return (data==null);
     }
 
 }

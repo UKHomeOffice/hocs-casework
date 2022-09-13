@@ -26,8 +26,11 @@ public class MigrationCaseResourceTest {
     private static final long caseID = 12345L;
 
     public static final String STAGE_TYPE = "Migration";
+
     private final CaseDataType caseDataType = CaseDataTypeFactory.from("MIN", "a1");
+
     private final Map<String, String> data = new HashMap<>(0);
+
     @Mock
     private MigrationCaseService migrationCaseService;
 
@@ -45,16 +48,20 @@ public class MigrationCaseResourceTest {
 
         //given
         CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
-        CreateMigrationCaseRequest request = new CreateMigrationCaseRequest(caseDataType.getDisplayCode(), data, dateArg, null, STAGE_TYPE);
-        when(migrationCaseService.createMigrationCase(caseDataType.getDisplayCode(), STAGE_TYPE, data, dateArg)).thenReturn(caseData);
+        CreateMigrationCaseRequest request = new CreateMigrationCaseRequest(caseDataType.getDisplayCode(), data,
+            dateArg, null, STAGE_TYPE);
+        when(migrationCaseService.createMigrationCase(caseDataType.getDisplayCode(), STAGE_TYPE, data,
+            dateArg)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = migrationCaseResource.createMigrationCase(request);
 
-        verify(migrationCaseService, times(1)).createMigrationCase(caseDataType.getDisplayCode(), STAGE_TYPE, data, dateArg);
+        verify(migrationCaseService, times(1)).createMigrationCase(caseDataType.getDisplayCode(), STAGE_TYPE, data,
+            dateArg);
 
         verifyNoMoreInteractions(migrationCaseService);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
 }

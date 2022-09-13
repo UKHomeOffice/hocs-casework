@@ -23,7 +23,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest
-@AutoConfigureTestDatabase(replace= AutoConfigureTestDatabase.Replace.NONE)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ActiveProfiles("test")
 public class SomuItemRepositoryTest {
 
@@ -70,14 +70,16 @@ public class SomuItemRepositoryTest {
     public void shouldFindSomuItemsByCaseUuids() {
         var secondSomuItem = setUpCaseDataAndSomuItem(2L);
 
-        Set<SomuItem> somuItems = repository.findAllByCaseUuidIn(Set.of(somuItem.getCaseUuid(), secondSomuItem.getCaseUuid()));
+        Set<SomuItem> somuItems = repository.findAllByCaseUuidIn(
+            Set.of(somuItem.getCaseUuid(), secondSomuItem.getCaseUuid()));
 
-        assertEquals(somuItems.size(),2);
+        assertEquals(somuItems.size(), 2);
         assertTrue(somuItems.containsAll(Set.of(somuItem, secondSomuItem)));
     }
 
     private SomuItem setUpCaseDataAndSomuItem(long caseNumber) {
-        CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), caseNumber, LocalDate.of(2000, 12, 31));
+        CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), caseNumber,
+            LocalDate.of(2000, 12, 31));
         caseData.setCaseDeadline(LocalDate.of(9999, 12, 31));
         this.entityManager.persist(caseData);
 
@@ -88,4 +90,5 @@ public class SomuItemRepositoryTest {
         SomuItem somuItem = new SomuItem(UUID.randomUUID(), caseUuid, UUID.randomUUID(), "{}");
         return entityManager.persist(somuItem);
     }
+
 }

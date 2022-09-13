@@ -13,10 +13,11 @@ import java.util.Map;
 public class MigrationCaseService {
 
     protected final MigrationCaseDataService migrationCaseDataService;
+
     protected final MigrationStageService migrationStageService;
 
-
-    public MigrationCaseService(MigrationCaseDataService migrationCaseDataService, MigrationStageService migrationStageService) {
+    public MigrationCaseService(MigrationCaseDataService migrationCaseDataService,
+                                MigrationStageService migrationStageService) {
         this.migrationCaseDataService = migrationCaseDataService;
         this.migrationStageService = migrationStageService;
     }
@@ -27,4 +28,5 @@ public class MigrationCaseService {
         Stage stage = migrationStageService.createStageForClosedCase(caseData.getUuid(), stageType);
         return caseData;
     }
+
 }

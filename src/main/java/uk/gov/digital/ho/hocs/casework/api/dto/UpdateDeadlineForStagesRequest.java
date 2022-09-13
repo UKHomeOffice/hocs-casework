@@ -6,11 +6,11 @@ import lombok.Getter;
 
 import java.util.Map;
 
-
 @AllArgsConstructor
 @Getter
 public class UpdateDeadlineForStagesRequest {
 
     @JsonProperty("stageTypeAndDaysMap")
     private Map<String, Integer> stageTypeAndDaysMap;
+
 }

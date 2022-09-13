@@ -66,9 +66,10 @@ public class CaseNote implements Serializable {
     private String editor;
 
     public CaseNote(UUID caseUUID, String caseNoteType, String text, String author) {
-        if (caseUUID == null || caseNoteType == null || text == null) {
+        if (caseUUID==null || caseNoteType==null || text==null) {
             throw new ApplicationExceptions.EntityCreationException(
-                    String.format("Cannot create case note(%s,%s,%s).", caseUUID, caseNoteType, text), CASE_NOTE_CREATE_FAILURE);
+                String.format("Cannot create case note(%s,%s,%s).", caseUUID, caseNoteType, text),
+                CASE_NOTE_CREATE_FAILURE);
         }
 
         this.uuid = UUID.randomUUID();
@@ -79,6 +80,5 @@ public class CaseNote implements Serializable {
         this.author = author;
         this.deleted = false;
     }
-
 
 }

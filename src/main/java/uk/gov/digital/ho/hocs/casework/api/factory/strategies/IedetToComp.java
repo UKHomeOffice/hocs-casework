@@ -11,40 +11,14 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 @CaseCopy(fromCaseType = "IEDET", toCaseType = "COMP")
 public class IedetToComp extends AbstractCaseCopyStrategy implements CaseCopyStrategy {
 
-    private static final String[] DATA_CLOB_KEYS = {
-            "CatLost",
-            "CatRude",
-            "Channel",
-            "CatCCPhy",
-            "CatDamBF",
-            "CatDelay",
-            "CatFraud",
-            "CatTheft",
-            "CompType",
-            "CatRacism",
-            "CatUnfair",
-            "OwningCSU",
-            "CatAssault",
-            "CatCCAvail",
-            "3rdPartyRef",
-            "CaseSummary",
-            "CatAdminErr",
-            "CatCCHandle",
-            "CatPoorComm",
-            "CatCustodyBF",
-            "CatWrongInfo",
-            "CatSexAssault",
-            "CatCCProvMinor",
-            "CatOtherUnprof",
-            "ComplainantDOB",
-            "ComplainantHORef",
-            "ComplainantGender",
-            "ComplainantPortRef",
-            "ComplainantCompanyName",
-            "ComplainantNationality"
-    };
+    private static final String[] DATA_CLOB_KEYS = { "CatLost", "CatRude", "Channel", "CatCCPhy", "CatDamBF",
+        "CatDelay", "CatFraud", "CatTheft", "CompType", "CatRacism", "CatUnfair", "OwningCSU", "CatAssault",
+        "CatCCAvail", "3rdPartyRef", "CaseSummary", "CatAdminErr", "CatCCHandle", "CatPoorComm", "CatCustodyBF",
+        "CatWrongInfo", "CatSexAssault", "CatCCProvMinor", "CatOtherUnprof", "ComplainantDOB", "ComplainantHORef",
+        "ComplainantGender", "ComplainantPortRef", "ComplainantCompanyName", "ComplainantNationality" };
 
     private final CaseDataService caseDataService;
+
     private final CorrespondentService correspondentService;
 
     @Autowired

@@ -12,37 +12,23 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 @CaseCopy(fromCaseType = "BF", toCaseType = "COMP")
 public class CopyBFToCOMP extends AbstractCaseCopyStrategy implements CaseCopyStrategy {
 
-    private static final String[] DATA_CLOB_KEYS = {
-            "Channel",
-            "CompType",
-            "CaseSummary",
-            "PrevCompRef",
-            "3rdPartyRef",
-            "OwningCSU",
-            "ComplainantDOB",
-            "ComplainantHORef",
-            "ComplainantPortRef",
-            "ComplainantCompanyName",
-            "ComplainantNationality",
-            "ComplainantGender"
-    };
+    private static final String[] DATA_CLOB_KEYS = { "Channel", "CompType", "CaseSummary", "PrevCompRef", "3rdPartyRef",
+        "OwningCSU", "ComplainantDOB", "ComplainantHORef", "ComplainantPortRef", "ComplainantCompanyName",
+        "ComplainantNationality", "ComplainantGender" };
 
-    private static final String[] DOCUMENT_TYPES = {
-            "To document",
-            "Complaint leaflet",
-            "Complaint letter",
-            "Public correspondence",
-            "Email",
-            "CRF",
-            "DRAFT"
-    };
+    private static final String[] DOCUMENT_TYPES = { "To document", "Complaint leaflet", "Complaint letter",
+        "Public correspondence", "Email", "CRF", "DRAFT" };
 
     private final CaseDataService caseDataService;
+
     private final CaseDocumentService caseDocumentService;
+
     private final CorrespondentService correspondentService;
 
     @Autowired
-    public CopyBFToCOMP(CaseDataService caseDataService, CorrespondentService correspondentService, CaseDocumentService caseDocumentService) {
+    public CopyBFToCOMP(CaseDataService caseDataService,
+                        CorrespondentService correspondentService,
+                        CaseDocumentService caseDocumentService) {
         super();
         this.caseDataService = caseDataService;
         this.correspondentService = correspondentService;

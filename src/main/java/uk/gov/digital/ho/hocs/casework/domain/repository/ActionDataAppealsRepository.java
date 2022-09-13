@@ -17,4 +17,5 @@ public interface ActionDataAppealsRepository extends CrudRepository<ActionDataAp
     ActionDataAppeal findByUuidAndCaseDataUuid(UUID uuid, UUID caseUuid);
 
     List<ActionDataAppeal> findAllByCaseTypeActionUuidAndCaseDataUuid(UUID caseTypeUuid, UUID caseUUID);
+
 }

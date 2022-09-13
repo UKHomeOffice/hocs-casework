@@ -60,20 +60,34 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
 @Slf4j
 @Qualifier("CaseDataService")
 public class CaseDataService {
+
     protected final CaseDataRepository caseDataRepository;
+
     protected final ActiveCaseViewDataRepository activeCaseViewDataRepository;
+
     protected final AuditClient auditClient;
+
     protected final ObjectMapper objectMapper;
+
     protected final InfoClient infoClient;
+
     private final CaseCopyFactory caseCopyFactory;
+
     private final CaseLinkRepository caseLinkRepository;
+
     private final CaseActionService caseActionService;
+
     private final DeadlineService deadlineService;
+
     private final StageRepository stageRepository;
+
     private final CaseDataSummaryService caseDataSummaryService;
 
     public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
-    public static final Pattern CASE_UUID_PATTERN = Pattern.compile("\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b", Pattern.CASE_INSENSITIVE);
+
+    public static final Pattern CASE_UUID_PATTERN = Pattern.compile(
+        "\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b", Pattern.CASE_INSENSITIVE);
+
     public static final String REFERENCE_NOT_FOUND = "REFERENCE NOT FOUND";
 
     @Autowired
@@ -102,28 +116,15 @@ public class CaseDataService {
         this.caseDataSummaryService = caseDataSummaryService;
     }
 
-    public static final List<String> TIMELINE_EVENTS = List.of(
-            CASE_CREATED.toString(),
-            CASE_COMPLETED.toString(),
-            CASE_TOPIC_CREATED.toString(),
-            CASE_TOPIC_DELETED.toString(),
-            STAGE_ALLOCATED_TO_TEAM.toString(),
-            STAGE_CREATED.toString(),
-            STAGE_RECREATED.toString(),
-            STAGE_COMPLETED.toString(),
-            STAGE_ALLOCATED_TO_USER.toString(),
-            CORRESPONDENT_DELETED.toString(),
-            CORRESPONDENT_CREATED.toString(),
-            CORRESPONDENT_UPDATED.toString(),
-            DOCUMENT_CREATED.toString(),
-            DOCUMENT_DELETED.toString(),
-            APPEAL_UPDATED.toString(),
-            APPEAL_CREATED.toString(),
-            EXTENSION_APPLIED.toString(),
-            EXTERNAL_INTEREST_CREATED.toString(),
-            EXTERNAL_INTEREST_UPDATED.toString()
+    public static final List<String> TIMELINE_EVENTS = List.of(CASE_CREATED.toString(), CASE_COMPLETED.toString(),
+        CASE_TOPIC_CREATED.toString(), CASE_TOPIC_DELETED.toString(), STAGE_ALLOCATED_TO_TEAM.toString(),
+        STAGE_CREATED.toString(), STAGE_RECREATED.toString(), STAGE_COMPLETED.toString(),
+        STAGE_ALLOCATED_TO_USER.toString(), CORRESPONDENT_DELETED.toString(), CORRESPONDENT_CREATED.toString(),
+        CORRESPONDENT_UPDATED.toString(), DOCUMENT_CREATED.toString(), DOCUMENT_DELETED.toString(),
+        APPEAL_UPDATED.toString(), APPEAL_CREATED.toString(), EXTENSION_APPLIED.toString(),
+        EXTERNAL_INTEREST_CREATED.toString(), EXTERNAL_INTEREST_UPDATED.toString()
 
-    );
+                                                              );
 
     public CaseData getCase(UUID caseUUID) {
         CaseData caseData = getCaseData(caseUUID);
@@ -134,9 +135,10 @@ public class CaseDataService {
     protected CaseData getCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
-        if (caseData == null) {
+        if (caseData==null) {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID),
+                CASE_NOT_FOUND);
         }
         log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
         return caseData;
@@ -145,9 +147,10 @@ public class CaseDataService {
     private ActiveCaseViewData getActiveCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         ActiveCaseViewData caseData = activeCaseViewDataRepository.findByUuid(caseUUID);
-        if (caseData == null) {
+        if (caseData==null) {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID),
+                CASE_NOT_FOUND);
         }
         log.info("Got Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
         return caseData;
@@ -156,9 +159,10 @@ public class CaseDataService {
     public CaseData getCaseDataByReference(String reference) {
         log.debug("Getting Case by reference: {}", reference);
         CaseData caseData = caseDataRepository.findByReference(reference);
-        if (caseData == null) {
+        if (caseData==null) {
             log.error("Case: {}, not found!", reference, value(EVENT, CASE_NOT_FOUND));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", reference), CASE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", reference),
+                CASE_NOT_FOUND);
         }
         log.info("Got Case by reference: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
         return caseData;
@@ -167,9 +171,10 @@ public class CaseDataService {
     private CaseData getAnyCaseData(UUID caseUUID) {
         log.debug("Getting any Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
-        if (caseData == null) {
+        if (caseData==null) {
             log.error("Any Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Any Case: %s, not found!", caseUUID), CASE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Any Case: %s, not found!", caseUUID),
+                CASE_NOT_FOUND);
         }
         log.info("Got any Case: {}", caseData.getUuid(), value(EVENT, CASE_RETRIEVED));
         return caseData;
@@ -179,7 +184,7 @@ public class CaseDataService {
         log.info("Looking up CaseRef for Case: {}", caseUUID, value(EVENT, GET_CASE_REF_BY_UUID));
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
-        if(caseData == null) {
+        if (caseData==null) {
             log.warn("CaseData not found for Case: {}", caseUUID, value(EVENT, GET_CASE_REF_BY_UUID_FAILURE));
             return REFERENCE_NOT_FOUND;
         }
@@ -203,7 +208,8 @@ public class CaseDataService {
             CaseDataType caseDataType = infoClient.getCaseTypeByShortCode(shortCode);
             caseType = caseDataType.getDisplayCode();
         } catch (RestClientException e) {
-            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID, value(EVENT, CASE_TYPE_LOOKUP_FAILED), value(EXCEPTION, e));
+            log.warn("Cannot determine type of caseUUID {} falling back to database lookup", caseUUID,
+                value(EVENT, CASE_TYPE_LOOKUP_FAILED), value(EXCEPTION, e));
             caseType = getCaseData(caseUUID).getType();
         }
         log.debug("CaseType {} found for Case: {}", caseType, caseUUID);
@@ -214,7 +220,7 @@ public class CaseDataService {
         log.debug("Creating Case of type: {}", caseType);
 
         CaseData caseData;
-        if (fromCaseUUID == null) {
+        if (fromCaseUUID==null) {
             caseData = createSimpleCase(caseType, data, dateReceived);
         } else {
             caseData = createCaseFromCaseUUID(caseType, data, dateReceived, fromCaseUUID);
@@ -236,16 +242,19 @@ public class CaseDataService {
         return new MigrateCaseResponse(caseData.getUuid(), caseData.getDataMap());
     }
 
-
     private CaseData createSimpleCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
 
         Long caseNumber = caseDataRepository.getNextSeriesId();
         CaseData caseData = createCaseBaseData(caseType, data, dateReceived, caseNumber);
-        log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
+        log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(),
+            value(EVENT, CASE_CREATED));
         return caseData;
     }
 
-    private CaseData createCaseFromCaseUUID(String caseType, Map<String, String> data, LocalDate dateReceived, UUID fromCaseUUID) {
+    private CaseData createCaseFromCaseUUID(String caseType,
+                                            Map<String, String> data,
+                                            LocalDate dateReceived,
+                                            UUID fromCaseUUID) {
 
         // does the previous case exist
         CaseData copyFromCase = getCaseData(fromCaseUUID);
@@ -262,11 +271,17 @@ public class CaseDataService {
         return createCaseFromCaseUUID(caseType, data, dateReceived, fromCaseUUID, copyFromCase);
     }
 
-    private CaseData createCaseFromCaseUUID(String caseType, Map<String, String> data, LocalDate dateReceived, UUID fromCaseUUID, CaseData copyFromCase) {
+    private CaseData createCaseFromCaseUUID(String caseType,
+                                            Map<String, String> data,
+                                            LocalDate dateReceived,
+                                            UUID fromCaseUUID,
+                                            CaseData copyFromCase) {
         // get the existing case number
         Matcher findSerialNumber = CASE_REFERENCE_PATTERN.matcher(copyFromCase.getReference());
         if (!findSerialNumber.find()) {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot extract case sequence number! Failed to create Case: %s", caseType), CASE_CREATE_FAILURE);
+            throw new ApplicationExceptions.EntityCreationException(
+                String.format("Cannot extract case sequence number! Failed to create Case: %s", caseType),
+                CASE_CREATE_FAILURE);
         }
         Long caseNumber = Long.parseLong(findSerialNumber.group(1));
 
@@ -283,22 +298,29 @@ public class CaseDataService {
         if (strategy.isPresent()) {
             strategy.get().copyCase(copyFromCase, caseData);
         } else {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot find a copy strategy from:%s to :%s", copyFromCase.getType(), caseType), CASE_CREATE_FAILURE);
+            throw new ApplicationExceptions.EntityCreationException(
+                String.format("Cannot find a copy strategy from:%s to :%s", copyFromCase.getType(), caseType),
+                CASE_CREATE_FAILURE);
         }
 
-        log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(), value(EVENT, CASE_CREATED));
+        log.info("Created Case: {} Ref: {} UUID: {}", caseData.getUuid(), caseData.getReference(), caseData.getUuid(),
+            value(EVENT, CASE_CREATED));
         return caseData;
     }
 
-    private CaseData createCaseBaseData(String caseType, Map<String, String> data, LocalDate dateReceived, Long caseNumber) {
+    private CaseData createCaseBaseData(String caseType,
+                                        Map<String, String> data,
+                                        LocalDate dateReceived,
+                                        Long caseNumber) {
         log.debug("Allocating Ref: {}", caseNumber);
         CaseDataType caseDataType = infoClient.getCaseType(caseType);
         CaseData caseData = new CaseData(caseDataType, caseNumber, data, dateReceived);
-        LocalDate deadline =
-                deadlineService.calculateWorkingDaysForCaseType(caseType, dateReceived, caseDataType.getSla());
+        LocalDate deadline = deadlineService.calculateWorkingDaysForCaseType(caseType, dateReceived,
+            caseDataType.getSla());
 
         caseData.setCaseDeadline(deadline);
-        LocalDate deadlineWarning = deadlineService.calculateWorkingDaysForCaseType(caseType, caseData.getDateReceived(), caseDataType.getDeadLineWarning());
+        LocalDate deadlineWarning = deadlineService.calculateWorkingDaysForCaseType(caseType,
+            caseData.getDateReceived(), caseDataType.getDeadLineWarning());
 
         caseData.setCaseDeadlineWarning(deadlineWarning);
         caseDataRepository.save(caseData);
@@ -315,19 +337,22 @@ public class CaseDataService {
             for (EntityDto<EntityTotalDto> entityDto : entityList) {
                 EntityTotalDto total = entityDto.getData();
                 DataTotal dataTotal = new DataTotal();
-                newDataMap.put(entityDto.getSimpleName(), dataTotal.calculate(dataMap, total.getAddFields(), total.getSubFields()).toString());
+                newDataMap.put(entityDto.getSimpleName(),
+                    dataTotal.calculate(dataMap, total.getAddFields(), total.getSubFields()).toString());
             }
             updateCaseData(caseUUID, stageUUID, newDataMap);
             log.info("Calculated totals for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CALCULATED_TOTALS));
         } catch (Exception e) {
-            log.error("Failed to calculate totals for Case: {}", caseUUID, value(EVENT, CALCULATED_TOTALS), value(EXCEPTION, e));
+            log.error("Failed to calculate totals for Case: {}", caseUUID, value(EVENT, CALCULATED_TOTALS),
+                value(EXCEPTION, e));
         }
         return newDataMap;
     }
 
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
-        if (data == null) {
-            log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
+        if (data==null) {
+            log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID,
+                value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
             return;
         }
         updateCaseData(getCaseData(caseUUID), stageUUID, data);
@@ -335,8 +360,9 @@ public class CaseDataService {
 
     public void updateCaseData(CaseData caseData, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseData.getUuid());
-        if (data == null) {
-            log.warn("Data was null for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
+        if (data==null) {
+            log.warn("Data was null for Case: {} Stage: {}", caseData.getUuid(), stageUUID,
+                value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
             return;
         }
 
@@ -347,19 +373,17 @@ public class CaseDataService {
         log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
     }
 
-
     void updateDateReceived_defaultSla(UUID caseUUID, UUID stageUUID, LocalDate dateReceived) {
         Assert.notNull(caseUUID, "Case UUID is null");
         Assert.notNull(stageUUID, "Stage UUID is null");
-
 
         log.debug("Updating DateReceived for Case: {} Date: {}", caseUUID, dateReceived);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setDateReceived(dateReceived);
 
         CaseDataType caseDataType = infoClient.getCaseType(caseData.getType());
-        LocalDate deadline = deadlineService
-                .calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), caseDataType.getSla());
+        LocalDate deadline = deadlineService.calculateWorkingDaysForCaseType(caseData.getType(),
+            caseData.getDateReceived(), caseDataType.getSla());
 
         caseData.setCaseDeadline(deadline);
 
@@ -373,8 +397,8 @@ public class CaseDataService {
         log.debug("Overriding SLA for Case: {} with new SLA: {}", caseUUID, days);
         CaseData caseData = getCaseData(caseUUID);
 
-        LocalDate deadline =
-                deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), days);
+        LocalDate deadline = deadlineService.calculateWorkingDaysForCaseType(caseData.getType(),
+            caseData.getDateReceived(), days);
 
         caseData.setCaseDeadline(deadline);
 
@@ -386,9 +410,10 @@ public class CaseDataService {
         Assert.notNull(caseUUID, "Case UUID is null");
         Assert.notNull(stageUUID, "Stage UUID is null");
 
-        log.debug("Updating dispatch deadline date for Case: {} Stage: {} Date: {}", caseUUID, stageUUID, dispatchDeadlineDate);
+        log.debug("Updating dispatch deadline date for Case: {} Stage: {} Date: {}", caseUUID, stageUUID,
+            dispatchDeadlineDate);
         CaseData caseData = getCaseData(caseUUID);
-        if (dispatchDeadlineDate != null) {
+        if (dispatchDeadlineDate!=null) {
             caseData.setCaseDeadline(dispatchDeadlineDate);
         }
 
@@ -399,10 +424,8 @@ public class CaseDataService {
         log.debug("Updating case deadlines for Case: {} Date: {}", caseData.getUuid(), caseData.getDateReceived());
 
         final CaseDataType caseTypeDto = infoClient.getCaseType(caseData.getType());
-        LocalDate deadlineWarning = deadlineService.calculateWorkingDaysForCaseType(
-                caseData.getType(),
-                caseData.getDateReceived(),
-                caseTypeDto.getDeadLineWarning());
+        LocalDate deadlineWarning = deadlineService.calculateWorkingDaysForCaseType(caseData.getType(),
+            caseData.getDateReceived(), caseTypeDto.getDeadLineWarning());
 
         if (deadlineWarning.isAfter(LocalDate.now())) {
             caseData.setCaseDeadlineWarning(deadlineWarning);
@@ -416,8 +439,8 @@ public class CaseDataService {
     private void updateCaseDeadlines(CaseData caseData, UUID stageUUID, int days) {
         log.debug("Updating case deadlines for Case: {} Date: {}", caseData.getUuid(), caseData.getDateReceived());
 
-        LocalDate deadlineWarning =
-                deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), days);
+        LocalDate deadlineWarning = deadlineService.calculateWorkingDaysForCaseType(caseData.getType(),
+            caseData.getDateReceived(), days);
 
         if (deadlineWarning.isAfter(LocalDate.now())) {
             caseData.setCaseDeadlineWarning(deadlineWarning);
@@ -430,7 +453,7 @@ public class CaseDataService {
 
     public void updateStageDeadlines(CaseData caseData) {
 
-        if (caseData.getActiveStages() == null) {
+        if (caseData.getActiveStages()==null) {
             log.warn("Case uuid:{} supplied with null active stages", caseData.getUuid());
             return;
         }
@@ -440,31 +463,21 @@ public class CaseDataService {
         for (ActiveStage stage : caseData.getActiveStages()) {
             // Try and overwrite the deadlines with inputted values from the data map.
             String overrideDeadline = caseData.getData(String.format("%s_DEADLINE", stage.getStageType()));
-            if (overrideDeadline == null) {
+            if (overrideDeadline==null) {
                 LocalDate dateReceived = caseData.getDateReceived();
                 LocalDate caseDeadline = caseData.getCaseDeadline();
                 LocalDate caseDeadlineWarning = caseData.getCaseDeadlineWarning();
 
-                final StageTypeDto stageDefinition = stageTypesForCaseType.stream()
-                        .filter(element -> element.getType().equals(stage.getStageType())).collect(Collectors.toList())
-                        .get(0);
+                final StageTypeDto stageDefinition = stageTypesForCaseType.stream().filter(
+                    element -> element.getType().equals(stage.getStageType())).collect(Collectors.toList()).get(0);
 
-                LocalDate deadline = deadlineService.calculateWorkingDaysForStage(
-                        caseData.getType(),
-                        caseData.getDateReceived(),
-                        caseData.getCaseDeadline(),
-                        stageDefinition.getSla()
-                );
+                LocalDate deadline = deadlineService.calculateWorkingDaysForStage(caseData.getType(),
+                    caseData.getDateReceived(), caseData.getCaseDeadline(), stageDefinition.getSla());
 
                 stage.setDeadline(deadline);
-                if (caseDeadlineWarning != null) {
-                    LocalDate deadlineWarning = deadlineService
-                            .calculateWorkingDaysForStage(
-                                    caseData.getType(),
-                                    dateReceived,
-                                    caseDeadline,
-                                    stageDefinition.getDeadlineWarning()
-                            );
+                if (caseDeadlineWarning!=null) {
+                    LocalDate deadlineWarning = deadlineService.calculateWorkingDaysForStage(caseData.getType(),
+                        dateReceived, caseDeadline, stageDefinition.getDeadlineWarning());
 
                     stage.setDeadlineWarning(deadlineWarning);
                 }
@@ -482,23 +495,23 @@ public class CaseDataService {
 
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);
-        log.info("Updated Stage Deadline for Case: {} Stage: {} Days: {}", caseUUID, stageType, days, value(EVENT, STAGE_DEADLINE_UPDATED));
+        log.info("Updated Stage Deadline for Case: {} Stage: {} Days: {}", caseUUID, stageType, days,
+            value(EVENT, STAGE_DEADLINE_UPDATED));
     }
 
     void updateDeadlineForStages(UUID caseUUID, UUID stageUUID, Map<String, Integer> stageTypeAndDaysMap) {
 
         CaseData caseData = getCaseData(caseUUID);
 
-        stageTypeAndDaysMap.forEach(
-                (stageType, noOfDays) -> {
-                    log.debug("Updating deadline for Case: {} Stage: {} Days: {}", caseUUID, stageType, noOfDays);
-                    updateDeadlineForStage(caseData, stageType, noOfDays);
-                }
-        );
+        stageTypeAndDaysMap.forEach((stageType, noOfDays) -> {
+            log.debug("Updating deadline for Case: {} Stage: {} Days: {}", caseUUID, stageType, noOfDays);
+            updateDeadlineForStage(caseData, stageType, noOfDays);
+        });
 
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);
-        log.info("Updated {} stage deadlines for Case: {}", caseUUID, stageTypeAndDaysMap.size(), value(EVENT, STAGE_DEADLINE_UPDATED));
+        log.info("Updated {} stage deadlines for Case: {}", caseUUID, stageTypeAndDaysMap.size(),
+            value(EVENT, STAGE_DEADLINE_UPDATED));
     }
 
     void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) {
@@ -507,7 +520,8 @@ public class CaseDataService {
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);
-        log.info("Updated Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID, value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
+        log.info("Updated Primary Correspondent for Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID,
+            value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
     }
 
     void updatePrimaryTopic(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID) {
@@ -516,7 +530,8 @@ public class CaseDataService {
         caseData.setPrimaryTopicUUID(primaryTopicUUID);
         caseDataRepository.save(caseData);
         auditClient.updateCaseAudit(caseData, stageUUID);
-        log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID, value(EVENT, PRIMARY_TOPIC_UPDATED));
+        log.info("Updated Primary Topic for Case: {} Correspondent: {}", caseUUID, primaryTopicUUID,
+            value(EVENT, PRIMARY_TOPIC_UPDATED));
     }
 
     void completeCase(UUID caseUUID, boolean completed) {
@@ -530,7 +545,8 @@ public class CaseDataService {
             stage.setTeam(null);
             stageRepository.save(stage);
             auditClient.updateStageTeam(stage);
-            log.info("Final active stage: {} for case: {}, completed", stage.getUuid(), caseUUID, value(EVENT, STAGE_COMPLETED));
+            log.info("Final active stage: {} for case: {}, completed", stage.getUuid(), caseUUID,
+                value(EVENT, STAGE_COMPLETED));
         });
 
         if (completed) {
@@ -555,21 +571,20 @@ public class CaseDataService {
     CaseSummary getCaseSummary(UUID caseUUID) {
         var caseData = getCaseData(caseUUID);
 
-        var summaryBuilder = new CaseSummary(caseData)
-                .withStageDeadlines(getStageDeadlines(caseData, caseData.getDataMap()))
-                .withPrimaryTopic(caseData.getPrimaryTopic())
-                //TODO: HOCS-5558 suspension reimplementation discussion
-                .withSuspended(caseData.getDataMap().get("suspended"))
-                .withActions(caseActionService.getAllCaseActionDataForCase(caseUUID));
+        var summaryBuilder = new CaseSummary(caseData).withStageDeadlines(
+                getStageDeadlines(caseData, caseData.getDataMap())).withPrimaryTopic(caseData.getPrimaryTopic())
+            //TODO: HOCS-5558 suspension reimplementation discussion
+            .withSuspended(caseData.getDataMap().get("suspended")).withActions(
+                caseActionService.getAllCaseActionDataForCase(caseUUID));
 
         var activeCaseViewData = getActiveCaseData(caseUUID);
-        summaryBuilder = summaryBuilder
-                .withPreviousCaseReference(activeCaseViewData.getPreviousCaseReference())
-                .withPreviousCaseUUID(activeCaseViewData.getPreviousCaseUUID())
-                .withPreviousCaseStageUUID(activeCaseViewData.getPreviousCaseStageUUID());
+        summaryBuilder = summaryBuilder.withPreviousCaseReference(
+            activeCaseViewData.getPreviousCaseReference()).withPreviousCaseUUID(
+            activeCaseViewData.getPreviousCaseUUID()).withPreviousCaseStageUUID(
+            activeCaseViewData.getPreviousCaseStageUUID());
 
-        summaryBuilder.withAdditionalFields(caseDataSummaryService
-                        .getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()));
+        summaryBuilder.withAdditionalFields(
+            caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()));
 
         return summaryBuilder;
     }
@@ -581,20 +596,21 @@ public class CaseDataService {
     }
 
     private void updateDeadlineForStage(CaseData caseData, String stageType, Integer noOfDays) {
-        LocalDate deadline =
-                deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(), noOfDays);
+        LocalDate deadline = deadlineService.calculateWorkingDaysForCaseType(caseData.getType(),
+            caseData.getDateReceived(), noOfDays);
 
         caseData.update(String.format("%s_DEADLINE", stageType), deadline.toString());
 
-        if (caseData.getActiveStages() != null) {
+        if (caseData.getActiveStages()!=null) {
             caseData.getActiveStages().stream().filter(
-                    stage -> stage.getStageType().equals(stageType)
-            ).findFirst().ifPresent(activeStage -> activeStage.setDeadline(deadline));
+                stage -> stage.getStageType().equals(stageType)).findFirst().ifPresent(
+                activeStage -> activeStage.setDeadline(deadline));
         }
     }
 
     private Map<String, LocalDate> getStageDeadlines(CaseData caseData, Map<String, String> caseDataMap) {
-        Map<String, LocalDate> stageDeadlinesOrig = deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(), caseData.getDateReceived());
+        Map<String, LocalDate> stageDeadlinesOrig = deadlineService.getAllStageDeadlinesForCaseType(caseData.getType(),
+            caseData.getDateReceived());
         // Make a deep copy of the cached map so it isn't modified below
         Map<String, LocalDate> stageDeadlines = new HashMap<>(stageDeadlinesOrig);
         // Try and overwrite the deadlines with inputted values from the data map.
@@ -618,7 +634,8 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         auditClient.viewStandardLineAudit(caseData);
         try {
-            GetStandardLineResponse getStandardLineResponse = infoClient.getStandardLine(caseData.getPrimaryTopic().getTextUUID());
+            GetStandardLineResponse getStandardLineResponse = infoClient.getStandardLine(
+                caseData.getPrimaryTopic().getTextUUID());
             return Set.of(getStandardLineResponse);
         } catch (HttpClientErrorException e) {
             return Set.of();
@@ -641,34 +658,42 @@ public class CaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         Set<GetAuditResponse> audit = new HashSet<>();
         try {
-            audit.addAll(auditClient.getAuditLinesForCase(caseUUID, caseData.getCreated().toLocalDate(), TIMELINE_EVENTS));
+            audit.addAll(
+                auditClient.getAuditLinesForCase(caseUUID, caseData.getCreated().toLocalDate(), TIMELINE_EVENTS));
             log.debug("Retrieved {} audit lines", audit.size());
         } catch (Exception e) {
-            log.error("Failed to retrieve audit lines for case {}", caseUUID, value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
+            log.error("Failed to retrieve audit lines for case {}", caseUUID,
+                value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
         }
 
         Set<CaseNote> notes = caseData.getCaseNotes();
 
         log.debug("Retrieved {} case notes", notes.size());
 
-        Stream<TimelineItem> auditTimeline = audit.stream().map(a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(),
-                a.getAuditTimestamp().toLocalDateTime(), a.getUserID(), a.getType(), a.getAuditPayload(), a.getUuid(),
-                null, null));
+        Stream<TimelineItem> auditTimeline = audit.stream().map(
+            a -> new TimelineItem(a.getCaseUUID(), a.getStageUUID(), a.getAuditTimestamp().toLocalDateTime(),
+                a.getUserID(), a.getType(), a.getAuditPayload(), a.getUuid(), null, null));
         Stream<TimelineItem> notesTimeline = notes.stream().map(n -> {
             String auditPayload = "";
             try {
                 auditPayload = objectMapper.writeValueAsString(new AuditPayload.CaseNote(n.getText()));
             } catch (JsonProcessingException e) {
-                log.error("Failed to parse case note text for note {}", n.getUuid(), value(EVENT, UNCAUGHT_EXCEPTION), value(EXCEPTION, e));
+                log.error("Failed to parse case note text for note {}", n.getUuid(), value(EVENT, UNCAUGHT_EXCEPTION),
+                    value(EXCEPTION, e));
             }
             return new TimelineItem(n.getCaseUUID(), null, n.getCreated(), n.getAuthor(), n.getCaseNoteType(),
-                    auditPayload, n.getUuid(), n.getEdited(), n.getEditor());
+                auditPayload, n.getUuid(), n.getEdited(), n.getEditor());
         });
 
         return Stream.concat(auditTimeline, notesTimeline);
     }
 
-    public Map<String, String> updateTeamByStageAndTexts(UUID caseUUID, UUID stageUUID, String stageType, String teamUUIDKey, String teamNameKey, String[] texts) {
+    public Map<String, String> updateTeamByStageAndTexts(UUID caseUUID,
+                                                         UUID stageUUID,
+                                                         String stageType,
+                                                         String teamUUIDKey,
+                                                         String teamNameKey,
+                                                         String[] texts) {
         log.debug("Updating Team by Stage: {} {}", stageUUID, stageType);
         Map<String, String> dataMap = getCaseData(caseUUID).getDataMap();
         // build the linkValue text string used to search the team link table by converting "text" key to the case's data value
@@ -676,7 +701,7 @@ public class CaseDataService {
         for (String text : texts) {
             String value = dataMap.getOrDefault(text, "");
             if (!value.isEmpty()) {
-                if (linkValue != null) {
+                if (linkValue!=null) {
                     linkValue.append("_");
                     linkValue.append(value);
                 } else {
@@ -696,14 +721,17 @@ public class CaseDataService {
     public Set<UUID> getCaseTeams(UUID caseUUID) {
         log.debug("Retrieving previous teams for : {}", caseUUID);
 
-        Set<GetAuditResponse> auditLines = auditClient.getAuditLinesForCase(caseUUID, List.of(STAGE_ALLOCATED_TO_TEAM.toString(), STAGE_CREATED.toString()));
+        Set<GetAuditResponse> auditLines = auditClient.getAuditLinesForCase(caseUUID,
+            List.of(STAGE_ALLOCATED_TO_TEAM.toString(), STAGE_CREATED.toString()));
         log.info("Got {} audits", auditLines.size(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_SUCCESS));
 
         return auditLines.stream().map(a -> {
             try {
-                return objectMapper.readValue(a.getAuditPayload(), AuditPayload.StageAllocation.class).getAllocatedToUUID();
+                return objectMapper.readValue(a.getAuditPayload(),
+                    AuditPayload.StageAllocation.class).getAllocatedToUUID();
             } catch (IOException e) {
-                log.error("Unable to parse audit payload for reason {}", e.getMessage(), value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
+                log.error("Unable to parse audit payload for reason {}", e.getMessage(),
+                    value(EVENT, AUDIT_CLIENT_GET_AUDITS_FOR_CASE_FAILURE), value(EXCEPTION, e));
                 return null;
             }
         }).filter(Objects::nonNull).collect(Collectors.toSet());
@@ -721,22 +749,22 @@ public class CaseDataService {
         if (!updatedCaseDataMap.keySet().containsAll(keyMappings.keySet())) {
             String msg = "Requested keys to map do not exist in case data for caseUUID %s, requested mapping: %s";
             log.error(String.format(msg, caseUUID, keyMappings));
-            throw new ApplicationExceptions.DataMappingException(
-                    msg,
-                    null,
-                    DATA_MAPPING_EXCEPTION,
-                    caseUUID, keyMappings.keySet()
-            );
+            throw new ApplicationExceptions.DataMappingException(msg, null, DATA_MAPPING_EXCEPTION, caseUUID,
+                keyMappings.keySet());
         }
 
         keyMappings.forEach((String fromKey, String toKey) -> {
             String mappedVal = updatedCaseDataMap.putIfAbsent(toKey, updatedCaseDataMap.get(fromKey));
-            if (mappedVal != null) {
-                log.warn("Requested key to map of key {} to {} cannot take place as key {} already exists and will not be overwritten.", fromKey, toKey, toKey);
+            if (mappedVal!=null) {
+                log.warn(
+                    "Requested key to map of key {} to {} cannot take place as key {} already exists and will not be overwritten.",
+                    fromKey, toKey, toKey);
             }
         });
 
         this.updateCaseData(caseData, null, updatedCaseDataMap);
-        log.info("Completed mapping of key pairs {} for caseUUID {}", keyMappings, caseUUID, value(EVENT, DATA_MAPPING_SUCCESS));
+        log.info("Completed mapping of key pairs {} for caseUUID {}", keyMappings, caseUUID,
+            value(EVENT, DATA_MAPPING_SUCCESS));
     }
+
 }

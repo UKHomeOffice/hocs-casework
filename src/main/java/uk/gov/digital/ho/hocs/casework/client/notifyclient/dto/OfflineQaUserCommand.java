@@ -11,10 +11,16 @@ import java.util.UUID;
 public class OfflineQaUserCommand extends NotifyCommand {
 
     private String command = "offline_qa_user";
+
     private UUID offlineQaUserUUID;
+
     private UUID currentUserUUID;
 
-    public OfflineQaUserCommand(UUID caseUUID, UUID stageUUID, String caseReference, UUID offlineQaUserUUID, UUID currentUserUUID){
+    public OfflineQaUserCommand(UUID caseUUID,
+                                UUID stageUUID,
+                                String caseReference,
+                                UUID offlineQaUserUUID,
+                                UUID currentUserUUID) {
         super(caseUUID, stageUUID, caseReference);
         this.offlineQaUserUUID = offlineQaUserUUID;
         this.currentUserUUID = currentUserUUID;

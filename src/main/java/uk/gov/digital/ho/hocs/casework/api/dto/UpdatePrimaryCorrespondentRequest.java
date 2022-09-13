@@ -6,11 +6,11 @@ import lombok.Getter;
 
 import java.util.UUID;
 
-
 @AllArgsConstructor
 @Getter
 public class UpdatePrimaryCorrespondentRequest {
 
     @JsonProperty("primaryCorrespondentUUID")
     private UUID primaryCorrespondentUUID;
+
 }

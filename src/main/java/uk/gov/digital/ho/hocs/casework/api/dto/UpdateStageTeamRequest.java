@@ -15,4 +15,5 @@ public class UpdateStageTeamRequest {
 
     @JsonProperty("allocationType")
     private String allocationType;
+
 }

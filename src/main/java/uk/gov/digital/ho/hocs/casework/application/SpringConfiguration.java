@@ -47,4 +47,5 @@ public class SpringConfiguration implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(createRequestData());
     }
+
 }

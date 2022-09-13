@@ -13,6 +13,7 @@ import java.util.UUID;
 public class CaseLinkId implements Serializable {
 
     private UUID primaryCase;
+
     private UUID secondaryCase;
 
 }

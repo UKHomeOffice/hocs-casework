@@ -22,6 +22,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 class CaseProfileResource {
 
     private final CaseDataService caseDataService;
+
     private final InfoClient infoClient;
 
     @Autowired
@@ -30,7 +31,7 @@ class CaseProfileResource {
         this.infoClient = infoClient;
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
     @GetMapping(value = "/case/profile/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<ProfileDto> getProfileForCase(@PathVariable UUID caseUUID) {
         String caseType = caseDataService.getCaseType(caseUUID);

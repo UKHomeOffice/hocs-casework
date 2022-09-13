@@ -29,57 +29,45 @@ public class CopyBFToCOMPTest {
     private static final Map<String, String> FROM_CLOB;
 
     static {
-        FROM_CLOB = Map.of(
-                "CaseSummary", "TestValue");
+        FROM_CLOB = Map.of("CaseSummary", "TestValue");
     }
 
     private static final UUID TO_CASE_UUID = UUID.randomUUID();
-    private static final UUID FROM_CASE_UUID = UUID.randomUUID();
-    private static final String CORRESPONDENT_TYPE = "correspondent_type";
-    private static final String FULLNAME = "fullname";
-    private static final String ORGANISATION = "organisation";
-    private static final String ADDRESS_1 = "address1";
-    private static final String ADDRESS_2 = "address2";
-    private static final String ADDRESS_3 = "address3";
-    private static final String POSTCODE = "postcode";
-    private static final String COUNTRY = "country";
-    private static final String TELEPHONE = "telephone";
-    private static final String EMAIL = "email";
-    private static final String REFERENCE = "reference";
-    private static final String EXTERNAL_KEY = "externalKey";
-    private static final Correspondent PRIMARY_CORRESPONDENT = new Correspondent(FROM_CASE_UUID,
-            CORRESPONDENT_TYPE,
-            FULLNAME,
-            ORGANISATION,
-            Address.builder()
-                    .address1(ADDRESS_1)
-                    .address2(ADDRESS_2)
-                    .address3(ADDRESS_3)
-                    .postcode(POSTCODE)
-                    .country(COUNTRY)
-                    .build(),
-            TELEPHONE,
-            EMAIL,
-            REFERENCE,
-            EXTERNAL_KEY);
 
-    private static final CaseData FROM_CASE = new CaseData(1L,
-            FROM_CASE_UUID,
-            null,
-            null,
-            "BF/12345678/01",
-            false,
-            FROM_CLOB,
-            null,
-            null,
-            PRIMARY_CORRESPONDENT.getUuid(),
-            PRIMARY_CORRESPONDENT,
-            null,
-            null,
-            null,
-            false,
-            null,
-            null);
+    private static final UUID FROM_CASE_UUID = UUID.randomUUID();
+
+    private static final String CORRESPONDENT_TYPE = "correspondent_type";
+
+    private static final String FULLNAME = "fullname";
+
+    private static final String ORGANISATION = "organisation";
+
+    private static final String ADDRESS_1 = "address1";
+
+    private static final String ADDRESS_2 = "address2";
+
+    private static final String ADDRESS_3 = "address3";
+
+    private static final String POSTCODE = "postcode";
+
+    private static final String COUNTRY = "country";
+
+    private static final String TELEPHONE = "telephone";
+
+    private static final String EMAIL = "email";
+
+    private static final String REFERENCE = "reference";
+
+    private static final String EXTERNAL_KEY = "externalKey";
+
+    private static final Correspondent PRIMARY_CORRESPONDENT = new Correspondent(FROM_CASE_UUID, CORRESPONDENT_TYPE,
+        FULLNAME, ORGANISATION,
+        Address.builder().address1(ADDRESS_1).address2(ADDRESS_2).address3(ADDRESS_3).postcode(POSTCODE).country(
+            COUNTRY).build(), TELEPHONE, EMAIL, REFERENCE, EXTERNAL_KEY);
+
+    private static final CaseData FROM_CASE = new CaseData(1L, FROM_CASE_UUID, null, null, "BF/12345678/01", false,
+        FROM_CLOB, null, null, PRIMARY_CORRESPONDENT.getUuid(), PRIMARY_CORRESPONDENT, null, null, null, false, null,
+        null);
 
     @Mock
     private CaseDataService caseDataService;
@@ -94,23 +82,8 @@ public class CopyBFToCOMPTest {
 
     @Before
     public void setUp() {
-        toCase = new CaseData(2L,
-                TO_CASE_UUID,
-                null,
-                null,
-                null,
-                false,
-                new HashMap<>(Map.of()),
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                false,
-                null,
-                null);
+        toCase = new CaseData(2L, TO_CASE_UUID, null, null, null, false, new HashMap<>(Map.of()), null, null, null,
+            null, null, null, null, false, null, null);
     }
 
     @Test
@@ -132,4 +105,5 @@ public class CopyBFToCOMPTest {
         assertThat(toCase.getDataMap().get("PreviousCaseReference")).isEqualTo("BF/12345678/01");
 
     }
+
 }

@@ -17,11 +17,10 @@ public class GetCorrespondentOutlinesResponse {
     Set<GetCorrespondentOutlineResponse> correspondents;
 
     public static GetCorrespondentOutlinesResponse from(Set<Correspondent> correspondentData) {
-        Set<GetCorrespondentOutlineResponse> correspondents = correspondentData
-                .stream()
-                .map(GetCorrespondentOutlineResponse::from)
-                .collect(Collectors.toSet());
+        Set<GetCorrespondentOutlineResponse> correspondents = correspondentData.stream().map(
+            GetCorrespondentOutlineResponse::from).collect(Collectors.toSet());
 
         return new GetCorrespondentOutlinesResponse(correspondents);
     }
+
 }

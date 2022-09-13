@@ -19,4 +19,5 @@ public class TemplateDto {
 
     @JsonProperty("caseType")
     private String caseType;
+
 }

@@ -24,4 +24,5 @@ public class CaseDeadlineExtensionType {
     @Getter
     @Column(name = "working_days")
     int workingDays;
+
 }

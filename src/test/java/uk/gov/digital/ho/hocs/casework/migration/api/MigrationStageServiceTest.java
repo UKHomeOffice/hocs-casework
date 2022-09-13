@@ -27,14 +27,7 @@ public class MigrationStageServiceTest {
 
     private final UUID transitionNoteUUID = UUID.randomUUID();
 
-    private final CaseDataType caseDataType = new CaseDataType(
-            "MIN",
-            "1a",
-            "MIN",
-            null,
-            20,
-            15
-    );
+    private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN", null, 20, 15);
 
     private final String userID = UUID.randomUUID().toString();
 
@@ -44,7 +37,9 @@ public class MigrationStageServiceTest {
     private StageRepository stageRepository;
 
     private String ALLOCATION_TYPE = "ALLOCATION_TYPE";
+
     private final Set<Stage> MOCK_STAGE_LIST = new HashSet<>();
+
     private final UUID CASE_UUID = UUID.fromString("5a2e121f-f0c8-4725-870d-c8134a0f1e6b");
 
     @Before

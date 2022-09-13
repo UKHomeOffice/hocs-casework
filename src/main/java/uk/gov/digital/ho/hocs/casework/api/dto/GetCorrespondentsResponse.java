@@ -17,10 +17,8 @@ public class GetCorrespondentsResponse {
     Set<GetCorrespondentWithPrimaryFlagResponse> correspondents;
 
     public static GetCorrespondentsResponse from(Set<CorrespondentWithPrimaryFlag> correspondentData) {
-        Set<GetCorrespondentWithPrimaryFlagResponse> correspondents = correspondentData
-                .stream()
-                .map(GetCorrespondentWithPrimaryFlagResponse::from)
-                .collect(Collectors.toSet());
+        Set<GetCorrespondentWithPrimaryFlagResponse> correspondents = correspondentData.stream().map(
+            GetCorrespondentWithPrimaryFlagResponse::from).collect(Collectors.toSet());
 
         return new GetCorrespondentsResponse(correspondents);
     }

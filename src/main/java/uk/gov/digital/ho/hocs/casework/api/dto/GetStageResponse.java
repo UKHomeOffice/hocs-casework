@@ -91,30 +91,13 @@ public class GetStageResponse {
 
     public static GetStageResponse from(StageWithCaseData stage) {
 
-        return new GetStageResponse(
-                stage.getUuid(),
-                stage.getCreated(),
-                stage.getStageType(),
-                stage.getDeadline(),
-                stage.getDeadlineWarning(),
-                stage.getCaseUUID(),
-                stage.getTeamUUID(),
-                stage.getUserUUID(),
-                stage.getCaseReference(),
-                stage.getCaseDataType(),
-                stage.getTransitionNoteUUID(),
-                stage.getData(),
-                stage.getSomu(),
-                stage.getCorrespondents(),
-                stage.getCaseCreated(),
-                stage.isActive(),
-                stage.getAssignedTopic(),
-                stage.getTag(),
-                stage.getDueContribution(),
-                stage.getContributions(),
-                stage.getNextCaseType(),
-                stage.getNextCaseReference(),
-                stage.getNextCaseUUID(),
-                stage.getNextCaseStageUUID());
+        return new GetStageResponse(stage.getUuid(), stage.getCreated(), stage.getStageType(), stage.getDeadline(),
+            stage.getDeadlineWarning(), stage.getCaseUUID(), stage.getTeamUUID(), stage.getUserUUID(),
+            stage.getCaseReference(), stage.getCaseDataType(), stage.getTransitionNoteUUID(), stage.getData(),
+            stage.getSomu(), stage.getCorrespondents(), stage.getCaseCreated(), stage.isActive(),
+            stage.getAssignedTopic(), stage.getTag(), stage.getDueContribution(), stage.getContributions(),
+            stage.getNextCaseType(), stage.getNextCaseReference(), stage.getNextCaseUUID(),
+            stage.getNextCaseStageUUID());
     }
+
 }

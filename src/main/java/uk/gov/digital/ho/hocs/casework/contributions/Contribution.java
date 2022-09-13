@@ -17,12 +17,12 @@ import java.util.function.Predicate;
 public class Contribution {
 
     @JsonProperty("contributionDueDate")
-    @JsonAlias({"approvalRequestDueDate"})
+    @JsonAlias({ "approvalRequestDueDate" })
     @Getter
     LocalDate dueDate;
 
     @JsonProperty("contributionStatus")
-    @JsonAlias({"approvalRequestStatus"})
+    @JsonAlias({ "approvalRequestStatus" })
     String status;
 
     public ContributionStatus getStatus() {
@@ -30,7 +30,7 @@ public class Contribution {
     }
 
     public boolean isContribution() {
-        return !(dueDate == null && status == null);
+        return !(dueDate==null && status==null);
     }
 
     enum ContributionStatus {
@@ -43,6 +43,7 @@ public class Contribution {
         CONTRIBUTION_OVERDUE(List.of("contributionOverdue"), "Overdue"); // highest
 
         private final List<String> status;
+
         private final String displayedStatus;
 
         ContributionStatus(List<String> status, String displayedStatus) {
@@ -51,18 +52,16 @@ public class Contribution {
         }
 
         public static ContributionStatus getContributionStatus(String status) {
-            if (status == null) {
+            if (status==null) {
                 return NONE;
             }
 
-            return Arrays.stream(values())
-                    .filter(cs -> cs.status.contains(status))
-                    .findFirst()
-                    .orElse(NONE);
+            return Arrays.stream(values()).filter(cs -> cs.status.contains(status)).findFirst().orElse(NONE);
         }
 
         public String getDisplayedStatus() {
             return displayedStatus;
         }
     }
+
 }

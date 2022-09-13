@@ -19,4 +19,5 @@ public class EntityTotalDto {
     @JsonProperty("subFields")
     @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private Map<String, List<String>> subFields;
+
 }

@@ -31,4 +31,5 @@ public class CreateStageRequest {
 
     @JsonProperty("userUUID")
     private UUID userUUID;
+
 }

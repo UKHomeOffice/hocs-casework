@@ -49,10 +49,11 @@ public class DocumentDto {
     private Boolean hasOriginalFile;
 
     public void addLabel(String label) {
-        if(labels == null){
+        if (labels==null) {
             this.labels = new LinkedHashSet<>();
         }
 
         labels.add(label);
     }
+
 }
