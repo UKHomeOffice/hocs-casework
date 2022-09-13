@@ -11,7 +11,9 @@ import java.util.Map;
 
 @Getter
 public class CaseSummarySomuItems {
+
     private Map<String, Object> schema;
+
     private List<Map<String, String>> items;
 
     public CaseSummarySomuItems(Map<String, Object> schema) {
@@ -21,7 +23,7 @@ public class CaseSummarySomuItems {
     }
 
     public void addItem(String item) throws JsonProcessingException {
-        this.items.add(new ObjectMapper().readValue(item, new TypeReference<Map<String, String>>() {
-        }));
+        this.items.add(new ObjectMapper().readValue(item, new TypeReference<Map<String, String>>() {}));
     }
+
 }

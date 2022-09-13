@@ -26,10 +26,8 @@ public class SimpleStageDto {
 
     public static SimpleStageDto from(ActiveStage activeStage) {
 
-        return new SimpleStageDto(
-                activeStage.getUuid(),
-                activeStage.getStageType(),
-                activeStage.getTeamUUID(),
-                activeStage.getUserUUID());
+        return new SimpleStageDto(activeStage.getUuid(), activeStage.getStageType(), activeStage.getTeamUUID(),
+            activeStage.getUserUUID());
     }
+
 }

@@ -20,4 +20,5 @@ public class CorrespondentTypeDto {
 
     @JsonProperty("type")
     private String type;
+
 }

@@ -11,10 +11,16 @@ import java.util.UUID;
 public class TeamAssignChangeCommand extends NotifyCommand {
 
     private String command = "team_assign_change";
+
     private UUID teamUUID;
+
     private String allocationType;
 
-    public TeamAssignChangeCommand(UUID caseUUID, UUID stageUUID, String caseReference, UUID teamUUID, String allocationType){
+    public TeamAssignChangeCommand(UUID caseUUID,
+                                   UUID stageUUID,
+                                   String caseReference,
+                                   UUID teamUUID,
+                                   String allocationType) {
         super(caseUUID, stageUUID, caseReference);
         this.teamUUID = teamUUID;
         this.allocationType = allocationType;

@@ -35,25 +35,41 @@ import static org.mockito.Mockito.when;
 public class CaseDocumentServiceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
+
     private final UUID uploaderUUID = UUID.randomUUID();
+
     private final UUID documentUUID = UUID.randomUUID();
+
     private final String docType = "DRAFT";
+
     private final String docDisplayName = "document.doc";
+
     private final String docOriginalName = "documentOriginal.doc";
+
     private final String docStatus = "UPLOADED";
+
     private final String fileType = "doc";
+
     private final String mimeType = "application/octet-stream";
+
     private final Set<String> docLabels = new HashSet<>(Set.of("Label1", "Label2"));
+
     private final LocalDateTime docCreated = LocalDateTime.now();
+
     private final LocalDateTime docUpdated = LocalDateTime.now();
+
     private final Boolean docDeleted = false;
+
     private DocumentDto documentDto;
+
     private S3Document s3Document;
 
     @Mock
     private CaseDataRepository caseDataRepository;
+
     @Mock
     private DocumentClient documentClient;
+
     @Mock
     private InfoClient infoClient;
 
@@ -62,13 +78,15 @@ public class CaseDocumentServiceTest {
     @Before
     public void setUp() {
         caseDocumentService = new CaseDocumentService(caseDataRepository, documentClient, infoClient);
-        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated, docUpdated, uploaderUUID, docDeleted, docLabels, true, true);
+        documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated,
+            docUpdated, uploaderUUID, docDeleted, docLabels, true, true);
         s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);
     }
 
     @Test
     public void getDocuments() {
-        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(new HashSet<>(Collections.singletonList(documentDto)), new ArrayList<>(Arrays.asList("ORIGINAL", "DRAFT")));
+        GetDocumentsResponse documentsResponse = new GetDocumentsResponse(
+            new HashSet<>(Collections.singletonList(documentDto)), new ArrayList<>(Arrays.asList("ORIGINAL", "DRAFT")));
         CaseDataType type = CaseDataTypeFactory.from("CaseType", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
@@ -158,4 +176,5 @@ public class CaseDocumentServiceTest {
         assertThat(result.getFileType()).isEqualTo(fileType);
         assertThat(result.getMimeType()).isEqualTo(mimeType);
     }
+
 }

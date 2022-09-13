@@ -1,6 +1,6 @@
 {
-  "SMC" : {
-    "RESTRICTED_OWNER" : [
+  "SMC": {
+    "RESTRICTED_OWNER": [
       "SeriousAccordian",
       "BusContributions",
       "PSURef",
@@ -54,6 +54,7 @@
       "Minor",
       "ServiceAccordion",
       "LoaDate",
-      "ScmTriageResult" ]
+      "ScmTriageResult"
+    ]
   }
 }

@@ -30,7 +30,9 @@ public class TopicResource {
 
     @Allocated(allocatedTo = AllocationLevel.USER)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/topic")
-    ResponseEntity addTopicToCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @Valid @RequestBody CreateTopicRequest request) {
+    ResponseEntity addTopicToCase(@PathVariable UUID caseUUID,
+                                  @PathVariable UUID stageUUID,
+                                  @Valid @RequestBody CreateTopicRequest request) {
         topicService.createTopic(caseUUID, request.getTopicUUID());
         return ResponseEntity.ok().build();
     }
@@ -51,7 +53,9 @@ public class TopicResource {
 
     @Allocated(allocatedTo = AllocationLevel.USER)
     @DeleteMapping(value = "/case/{caseUUID}/stage/{stageUUID}/topic/{topicUUID}")
-    ResponseEntity deleteTopic(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @PathVariable UUID topicUUID) {
+    ResponseEntity deleteTopic(@PathVariable UUID caseUUID,
+                               @PathVariable UUID stageUUID,
+                               @PathVariable UUID topicUUID) {
         topicService.deleteTopic(caseUUID, topicUUID);
         return ResponseEntity.ok().build();
     }
@@ -67,4 +71,5 @@ public class TopicResource {
         Set<Topic> topics = topicService.getAllTopics();
         return ResponseEntity.ok(GetTopicsResponse.from(topics));
     }
+
 }

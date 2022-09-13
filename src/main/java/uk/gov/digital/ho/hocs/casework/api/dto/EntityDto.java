@@ -11,7 +11,10 @@ import lombok.NoArgsConstructor;
 public class EntityDto {
 
     private String simpleName;
+
     private String uuid;
+
     @JsonRawValue
     private String data;
+
 }

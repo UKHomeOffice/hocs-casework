@@ -31,16 +31,14 @@ public class CaseCopyFactory {
         }
 
         // search the annotated strategies
-        return copyStrategies.stream()
-                .filter(isCopyStrategyForTypes(fromCaseType, toCaseType))
-                .findFirst();
+        return copyStrategies.stream().filter(isCopyStrategyForTypes(fromCaseType, toCaseType)).findFirst();
 
     }
 
     private Predicate<CaseCopyStrategy> isCopyStrategyForTypes(String fromCaseType, String toCaseType) {
 
-        assert fromCaseType != null;
-        assert toCaseType != null;
+        assert fromCaseType!=null;
+        assert toCaseType!=null;
 
         return caseCopyStrategy -> {
             // check annotation is present and contains the requested from & to
@@ -52,4 +50,5 @@ public class CaseCopyFactory {
             return false;
         };
     }
+
 }

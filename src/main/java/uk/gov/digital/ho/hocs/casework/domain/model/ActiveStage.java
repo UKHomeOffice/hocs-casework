@@ -59,4 +59,5 @@ public class ActiveStage implements Serializable {
     @Getter
     @Column(name = "user_uuid", columnDefinition = "uuid")
     private UUID userUUID;
+
 }

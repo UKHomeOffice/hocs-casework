@@ -19,11 +19,17 @@ import java.util.UUID;
 public class ActionDataAppealDto extends ActionDataDto {
 
     private String status;
+
     private LocalDate dateSentRMS;
+
     private String outcome;
+
     private String complexCase;
+
     private String note;
+
     private String appealOfficerData;
+
     private UUID document;
 
     public ActionDataAppealDto(UUID uuid,
@@ -48,4 +54,5 @@ public class ActionDataAppealDto extends ActionDataDto {
         this.document = document;
 
     }
+
 }

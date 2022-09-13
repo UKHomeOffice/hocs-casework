@@ -24,17 +24,19 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 public class CaseDocumentService {
 
     private final CaseDataRepository caseDataRepository;
+
     private final DocumentClient documentClient;
+
     protected final InfoClient infoClient;
 
     private static final String DRAFT_DOCUMENT_FIELD_NAME = "DraftDocuments";
+
     private static final String PRIMARY_DRAFT_LABEL = "Primary Draft";
 
     @Autowired
-    public CaseDocumentService(
-            CaseDataRepository caseDataRepository,
-            DocumentClient documentClient,
-            InfoClient infoClient) {
+    public CaseDocumentService(CaseDataRepository caseDataRepository,
+                               DocumentClient documentClient,
+                               InfoClient infoClient) {
         this.caseDataRepository = caseDataRepository;
         this.documentClient = documentClient;
         this.infoClient = infoClient;
@@ -49,11 +51,8 @@ public class CaseDocumentService {
         getDocumentsResponse.setDocumentTags(infoClient.getDocumentTags(caseData.getType()));
 
         log.info("Got {} documents and {} document tags for Case: {} with type: {}",
-                getDocumentsResponse.getDocumentDtos().size(),
-                getDocumentsResponse.getDocumentTags().size(),
-                caseUUID,
-                type,
-                value(EVENT, CASE_DOCUMENTS_RETRIEVED));
+            getDocumentsResponse.getDocumentDtos().size(), getDocumentsResponse.getDocumentTags().size(), caseUUID,
+            type, value(EVENT, CASE_DOCUMENTS_RETRIEVED));
         return getDocumentsResponse;
     }
 
@@ -97,4 +96,5 @@ public class CaseDocumentService {
         CopyDocumentsRequest copyDocumentsRequest = new CopyDocumentsRequest(fromUUID, toUUID, Set.of(types));
         documentClient.copyDocuments(copyDocumentsRequest);
     }
+
 }

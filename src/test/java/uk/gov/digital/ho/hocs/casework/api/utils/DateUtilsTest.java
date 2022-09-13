@@ -9,72 +9,67 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class DateUtilsTest {
+
     private final Set<LocalDate> nonWorkingDateFriday = Set.of(LocalDate.parse("2020-01-01"));
+
     private final Set<LocalDate> nonWorkingDateOther = Set.of(LocalDate.parse("2020-01-02"));
 
-    private final Set<LocalDate> bankHolidays = Set.of(
-            LocalDate.parse("2020-01-01"),
-            LocalDate.parse("2020-04-10"),
-            LocalDate.parse("2020-04-13"),
-            LocalDate.parse("2020-05-08"),
-            LocalDate.parse("2020-05-25"),
-            LocalDate.parse("2020-08-31"),
-            LocalDate.parse("2020-12-25"),
-            LocalDate.parse("2020-12-28")
-    );
+    private final Set<LocalDate> bankHolidays = Set.of(LocalDate.parse("2020-01-01"), LocalDate.parse("2020-04-10"),
+        LocalDate.parse("2020-04-13"), LocalDate.parse("2020-05-08"), LocalDate.parse("2020-05-25"),
+        LocalDate.parse("2020-08-31"), LocalDate.parse("2020-12-25"), LocalDate.parse("2020-12-28"));
 
     @Test
-    public void isDateNonWorkingDay_dateNull(){
+    public void isDateNonWorkingDay_dateNull() {
         assertThat(DateUtils.isDateNonWorkingDay(null, Collections.emptySet())).isFalse();
     }
 
     @Test
-    public void isDateNonWorkingDay_exemptionsNull(){
+    public void isDateNonWorkingDay_exemptionsNull() {
         assertThat(DateUtils.isDateNonWorkingDay(LocalDate.parse("2020-01-01"), null)).isFalse();
     }
 
     @Test
-    public void isDateNonWorkingDay_mondayDate_emptyExemption(){
+    public void isDateNonWorkingDay_mondayDate_emptyExemption() {
         assertThat(DateUtils.isDateNonWorkingDay(LocalDate.parse("2020-05-11"), Collections.emptySet())).isFalse();
     }
 
     @Test
-    public void isDateNonWorkingDay_tuesdayDate_emptyExemption(){
+    public void isDateNonWorkingDay_tuesdayDate_emptyExemption() {
         assertThat(DateUtils.isDateNonWorkingDay(LocalDate.parse("2020-05-12"), Collections.emptySet())).isFalse();
     }
 
     @Test
-    public void isDateNonWorkingDay_wednesdayDate_emptyExemption(){
+    public void isDateNonWorkingDay_wednesdayDate_emptyExemption() {
         assertThat(DateUtils.isDateNonWorkingDay(LocalDate.parse("2020-05-13"), Collections.emptySet())).isFalse();
     }
 
     @Test
-    public void isDateNonWorkingDay_thursdayDate_emptyExemption(){
+    public void isDateNonWorkingDay_thursdayDate_emptyExemption() {
         assertThat(DateUtils.isDateNonWorkingDay(LocalDate.parse("2020-05-14"), Collections.emptySet())).isFalse();
     }
 
     @Test
-    public void isDateNonWorkingDay_fridayDate_emptyExemption(){
+    public void isDateNonWorkingDay_fridayDate_emptyExemption() {
         assertThat(DateUtils.isDateNonWorkingDay(LocalDate.parse("2020-05-15"), Collections.emptySet())).isFalse();
     }
 
     @Test
-    public void isDateNonWorkingDay_saturdayDate_emptyExemption(){
+    public void isDateNonWorkingDay_saturdayDate_emptyExemption() {
         assertThat(DateUtils.isDateNonWorkingDay(LocalDate.parse("2020-05-16"), Collections.emptySet())).isTrue();
     }
 
     @Test
-    public void isDateNonWorkingDay_sundayDate_emptyExemption(){
+    public void isDateNonWorkingDay_sundayDate_emptyExemption() {
         assertThat(DateUtils.isDateNonWorkingDay(LocalDate.parse("2020-05-17"), Collections.emptySet())).isTrue();
     }
 
     @Test
-    public void isDateNonWorkingDay_fridayDate_exempt(){
+    public void isDateNonWorkingDay_fridayDate_exempt() {
         assertThat(DateUtils.isDateNonWorkingDay(LocalDate.parse("2020-01-01"), nonWorkingDateFriday)).isTrue();
     }
 
     @Test
-    public void isDateNonWorkingDay_fridayDate_exemptOther(){
+    public void isDateNonWorkingDay_fridayDate_exemptOther() {
         assertThat(DateUtils.isDateNonWorkingDay(LocalDate.parse("2020-01-01"), nonWorkingDateOther)).isFalse();
     }
 
@@ -173,4 +168,5 @@ public class DateUtilsTest {
         // then
         assertThat(result).isEqualTo(20);
     }
+
 }

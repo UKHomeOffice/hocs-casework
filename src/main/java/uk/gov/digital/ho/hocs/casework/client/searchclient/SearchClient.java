@@ -19,18 +19,20 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 public class SearchClient {
 
     private final RestHelper restHelper;
+
     private final String serviceBaseURL;
 
     @Autowired
-    public SearchClient(RestHelper restHelper,
-                        @Value("${hocs.search-service}") String searchService) {
+    public SearchClient(RestHelper restHelper, @Value("${hocs.search-service}") String searchService) {
         this.restHelper = restHelper;
         this.serviceBaseURL = searchService;
     }
 
     public Set<UUID> search(SearchRequest searchRequest) {
-        Set<UUID> response = restHelper.post(serviceBaseURL, "/case", searchRequest, new ParameterizedTypeReference<Set<UUID>>() {});
+        Set<UUID> response = restHelper.post(serviceBaseURL, "/case", searchRequest,
+            new ParameterizedTypeReference<Set<UUID>>() {});
         log.info("Got {} caseUUID results", response.size(), value(EVENT, SEARCH_CLIENT_SEARCH_SUCCESS));
         return response;
     }
+
 }

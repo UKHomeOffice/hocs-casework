@@ -13,4 +13,5 @@ public class EntityDto<T> {
 
     @JsonProperty("data")
     private T data;
+
 }

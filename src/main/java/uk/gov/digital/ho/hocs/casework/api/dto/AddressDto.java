@@ -26,24 +26,14 @@ public class AddressDto {
     @JsonProperty("country")
     private String country;
 
-
     public static AddressDto from(Correspondent correspondent) {
-        return new AddressDto(
-                correspondent.getPostcode(),
-                correspondent.getAddress1(),
-                correspondent.getAddress2(),
-                correspondent.getAddress3(),
-                correspondent.getCountry()
-        );
+        return new AddressDto(correspondent.getPostcode(), correspondent.getAddress1(), correspondent.getAddress2(),
+            correspondent.getAddress3(), correspondent.getCountry());
     }
 
     public static AddressDto from(CorrespondentWithPrimaryFlag correspondent) {
-        return new AddressDto(
-                correspondent.getPostcode(),
-                correspondent.getAddress1(),
-                correspondent.getAddress2(),
-                correspondent.getAddress3(),
-                correspondent.getCountry()
-        );
+        return new AddressDto(correspondent.getPostcode(), correspondent.getAddress1(), correspondent.getAddress2(),
+            correspondent.getAddress3(), correspondent.getCountry());
     }
+
 }

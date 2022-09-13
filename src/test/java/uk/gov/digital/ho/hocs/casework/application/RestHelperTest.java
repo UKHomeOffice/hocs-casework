@@ -21,8 +21,10 @@ public class RestHelperTest {
 
     @Mock
     private RestTemplate restTemplate;
+
     @Mock
     private RequestData requestData;
+
     private String basicAuth = "auth";
 
     private RestHelper restHelper;
@@ -33,7 +35,7 @@ public class RestHelperTest {
     }
 
     @Test
-    public void getFile(){
+    public void getFile() {
         String root = "localhost:8080";
         String url = "/getFile";
         String fullUrl = root + url;
@@ -43,7 +45,8 @@ public class RestHelperTest {
         ResponseEntity<ByteArrayResource> response = mock(ResponseEntity.class);
         when(response.getBody()).thenReturn(new ByteArrayResource(new byte[10]));
         when(response.getHeaders()).thenReturn(httpHeaders);
-        when(restTemplate.exchange(eq(fullUrl), eq(HttpMethod.GET), any(), eq(ByteArrayResource.class))).thenReturn(response);
+        when(restTemplate.exchange(eq(fullUrl), eq(HttpMethod.GET), any(), eq(ByteArrayResource.class))).thenReturn(
+            response);
 
         S3Document document = restHelper.getFile(root, url);
 
@@ -57,7 +60,6 @@ public class RestHelperTest {
         assertThat(document.getFileType()).isEqualTo("doc");
         assertThat(document.getMimeType()).isEqualTo("application/octet-stream");
         assertThat(document.getData().length).isEqualTo(10);
-
 
     }
 

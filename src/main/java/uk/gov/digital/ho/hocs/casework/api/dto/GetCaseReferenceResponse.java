@@ -20,4 +20,5 @@ public class GetCaseReferenceResponse {
     public static GetCaseReferenceResponse from(UUID uuid, String reference) {
         return new GetCaseReferenceResponse(uuid, reference);
     }
+
 }

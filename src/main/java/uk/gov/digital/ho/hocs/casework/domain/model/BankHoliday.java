@@ -12,7 +12,7 @@ import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@TypeDef(name="pgsql_enum", typeClass=org.hibernate.type.EnumType.class)
+@TypeDef(name = "pgsql_enum", typeClass = org.hibernate.type.EnumType.class)
 @Table(name = "bank_holiday")
 public class BankHoliday {
 
@@ -25,7 +25,7 @@ public class BankHoliday {
     @Getter
     @Enumerated(EnumType.STRING)
     @Column(name = "region")
-    @Type (type = "pgsql_enum")
+    @Type(type = "pgsql_enum")
     private BankHolidayRegion region;
 
     @Getter
@@ -44,7 +44,7 @@ public class BankHoliday {
         NORTHERN_IRELAND;
 
         public static BankHolidayRegion fromString(String from) {
-            switch(from) {
+            switch (from) {
                 case "united-kingdom":
                     return UNITED_KINGDOM;
                 case "england-and-wales":
@@ -61,14 +61,15 @@ public class BankHoliday {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this==o) {return true;}
+        if (o==null || getClass()!=o.getClass()) {return false;}
         BankHoliday that = (BankHoliday) o;
-        return region == that.region && date.equals(that.date);
+        return region==that.region && date.equals(that.date);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(region, date);
     }
+
 }

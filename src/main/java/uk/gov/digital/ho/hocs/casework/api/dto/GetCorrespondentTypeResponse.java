@@ -19,4 +19,5 @@ public class GetCorrespondentTypeResponse {
     public static GetCorrespondentTypeResponse from(Set<CorrespondentTypeDto> correspondentTypeSet) {
         return new GetCorrespondentTypeResponse(correspondentTypeSet);
     }
+
 }

@@ -19,7 +19,7 @@ public class CreateCaseResponseTest {
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         LocalDate caseReceived = LocalDate.now();
-        CaseData caseData = new CaseData(type, caseNumber, data,caseReceived);
+        CaseData caseData = new CaseData(type, caseNumber, data, caseReceived);
 
         CreateCaseResponse createCaseResponse = CreateCaseResponse.from(caseData);
 

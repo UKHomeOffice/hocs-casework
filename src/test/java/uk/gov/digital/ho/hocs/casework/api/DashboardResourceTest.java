@@ -6,6 +6,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
+
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,7 +36,8 @@ public class DashboardResourceTest {
         var response = dashboardResource.getDashboard();
 
         assertThat(response).isNotNull();
-        assertThat(Objects.requireNonNull(response.getBody()).getDashboardSummaries().get(0).getTeamUuid()).isEqualTo(caseUuid);
+        assertThat(Objects.requireNonNull(response.getBody()).getDashboardSummaries().get(0).getTeamUuid()).isEqualTo(
+            caseUuid);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -48,4 +50,5 @@ public class DashboardResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
 }

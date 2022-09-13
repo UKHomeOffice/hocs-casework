@@ -25,24 +25,20 @@ public class CaseDataSummaryServiceTest {
     @Test
     public void caseTypeNotWithinConfigurationReturnsEmptySet() {
         assertTrue(
-                caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType("UNKNOWN", Collections.emptyMap())
-                        .isEmpty());
+            caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType("UNKNOWN", Collections.emptyMap()).isEmpty());
     }
 
     @Test
     public void emptyValuesReturnedWithNoMatchingCaseData() {
         assertTrue(
-                caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType("TEST", Collections.emptyMap())
-                        .isEmpty());
+            caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType("TEST", Collections.emptyMap()).isEmpty());
     }
 
     @Test
     public void partialValuesReturnedWithPartialMatch() {
         var caseDataMap = Map.of("TestDate", "Test", "TestWithHardcodedChoice", "Test");
 
-        assertEquals(
-                2,
-                caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType("TEST", caseDataMap).size());
+        assertEquals(2, caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType("TEST", caseDataMap).size());
     }
 
     @Test
@@ -52,10 +48,7 @@ public class CaseDataSummaryServiceTest {
         var values = caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType("TEST", caseDataMap);
 
         assertEquals(1, values.size());
-        assertEquals(
-                "TEST_STATIC",
-                values.stream().findFirst().orElseThrow(AssertionError::new).getChoices()
-        );
+        assertEquals("TEST_STATIC", values.stream().findFirst().orElseThrow(AssertionError::new).getChoices());
     }
 
     @Test
@@ -65,9 +58,7 @@ public class CaseDataSummaryServiceTest {
         var values = caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType("TEST", caseDataMap);
 
         assertEquals(1, values.size());
-        assertNull(
-                values.stream().findFirst().orElseThrow(AssertionError::new).getChoices()
-        );
+        assertNull(values.stream().findFirst().orElseThrow(AssertionError::new).getChoices());
     }
 
 }

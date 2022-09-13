@@ -149,6 +149,8 @@ public enum LogEvent {
     CONFIG_FOLDER_NOT_FOUND_FAILURE;
 
     public static final String EVENT = "event_id";
+
     public static final String EXCEPTION = "exception";
+
     public static final String STACKTRACE = "stacktrace";
 }

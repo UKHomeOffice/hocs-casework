@@ -8,7 +8,6 @@ import lombok.Setter;
 import java.util.List;
 import java.util.Set;
 
-
 @AllArgsConstructor()
 @Getter
 public class GetDocumentsResponse {
@@ -23,4 +22,5 @@ public class GetDocumentsResponse {
     protected void replaceDocumentDtos(Set<DocumentDto> documentDtos) {
         this.documentDtos = documentDtos;
     }
+
 }

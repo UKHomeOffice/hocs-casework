@@ -7,4 +7,5 @@ public interface StagePriorityCalculator {
     String SYSTEM_PRIORITY_FIELD_NAME = "systemCalculatedPriority";
 
     void updatePriority(StageWithCaseData stage, String caseType);
+
 }

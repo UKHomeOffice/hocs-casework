@@ -119,8 +119,10 @@ public class Correspondent implements Serializable {
                          String email,
                          String reference,
                          String externalKey) {
-        if (caseUUID == null || correspondentType == null) {
-            throw new ApplicationExceptions.EntityCreationException(String.format("Cannot create Correspondent(%s, %s, %s, %s, %s, %s).", caseUUID, correspondentType, fullName, "Address", telephone, email), LogEvent.CORRESPONDENT_CREATE_FAILURE);
+        if (caseUUID==null || correspondentType==null) {
+            throw new ApplicationExceptions.EntityCreationException(
+                String.format("Cannot create Correspondent(%s, %s, %s, %s, %s, %s).", caseUUID, correspondentType,
+                    fullName, "Address", telephone, email), LogEvent.CORRESPONDENT_CREATE_FAILURE);
         }
 
         this.uuid = UUID.randomUUID();
@@ -129,7 +131,7 @@ public class Correspondent implements Serializable {
         this.correspondentType = correspondentType;
         this.fullName = fullName;
         this.organisation = organisation;
-        if (address != null) {
+        if (address!=null) {
             this.postcode = address.getPostcode();
             this.address1 = address.getAddress1();
             this.address2 = address.getAddress2();
@@ -144,8 +146,8 @@ public class Correspondent implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this==o) {return true;}
+        if (o==null || getClass()!=o.getClass()) {return false;}
         Correspondent that = (Correspondent) o;
         return uuid.equals(that.uuid);
     }
@@ -154,4 +156,5 @@ public class Correspondent implements Serializable {
     public int hashCode() {
         return Objects.hash(uuid);
     }
+
 }

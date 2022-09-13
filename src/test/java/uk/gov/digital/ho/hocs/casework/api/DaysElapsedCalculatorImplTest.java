@@ -22,6 +22,7 @@ public class DaysElapsedCalculatorImplTest {
     private DaysElapsedCalculatorImpl daysElapsedCalculator;
 
     private static final String SYSTEM_DAYS_ELAPSED_FIELD_NAME = "systemDaysElapsed";
+
     private static final String DATE_RECEIVED_FIELD_NAME = "DateReceived";
 
     @Before
@@ -33,7 +34,7 @@ public class DaysElapsedCalculatorImplTest {
     public void updateDaysElapsed_nullDateReceived() {
         var data = new HashMap<String, String>(0);
 
-        daysElapsedCalculator.updateDaysElapsed(data , "AnyType");
+        daysElapsedCalculator.updateDaysElapsed(data, "AnyType");
 
         assertTrue(data.containsKey(SYSTEM_DAYS_ELAPSED_FIELD_NAME));
         assertEquals("0", data.get(SYSTEM_DAYS_ELAPSED_FIELD_NAME));
@@ -58,7 +59,6 @@ public class DaysElapsedCalculatorImplTest {
         var data = new HashMap<String, String>(0);
         data.put(DATE_RECEIVED_FIELD_NAME, "2020-06-14");
 
-
         LocalDate localDate = LocalDate.of(2020, 6, 14);
         when(workingDaysElapsedProvider.getWorkingDaysSince(dummyCaseType, localDate)).thenReturn(35);
 
@@ -75,4 +75,5 @@ public class DaysElapsedCalculatorImplTest {
     private void checkNoMoreInteractions() {
         verifyNoMoreInteractions(workingDaysElapsedProvider);
     }
+
 }

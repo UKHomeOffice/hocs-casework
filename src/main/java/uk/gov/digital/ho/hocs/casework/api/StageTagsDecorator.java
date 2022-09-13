@@ -4,5 +4,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public interface StageTagsDecorator {
-    ArrayList<String> decorateTags(Map<String,String> data, String stageType);
+
+    ArrayList<String> decorateTags(Map<String, String> data, String stageType);
+
 }

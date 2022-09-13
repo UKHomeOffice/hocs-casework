@@ -22,11 +22,16 @@ import static org.mockito.Mockito.*;
 public class TopicResourceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
+
     private final UUID stageUUID = UUID.randomUUID();
+
     private final UUID topicUUID = UUID.randomUUID();
+
     private static final String topicName = "topicName";
+
     @Mock
     private TopicService topicService;
+
     private TopicResource topicResource;
 
     @Before
@@ -117,4 +122,5 @@ public class TopicResourceTest {
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
+
 }

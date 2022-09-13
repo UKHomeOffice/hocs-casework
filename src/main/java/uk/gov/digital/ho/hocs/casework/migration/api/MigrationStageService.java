@@ -31,7 +31,8 @@ public class MigrationStageService {
         log.debug("Creating Stage: {} for case {}", stageType, caseUUID);
         Stage stage = new Stage(caseUUID, stageType, null, null, null);
         stageRepository.save(stage);
-        log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stageType, stage.getCaseUUID(), value(EVENT, STAGE_CREATED));
+        log.info("Created Stage: {}, Type: {}, Case: {}", stage.getUuid(), stageType, stage.getCaseUUID(),
+            value(EVENT, STAGE_CREATED));
         return stage;
     }
 

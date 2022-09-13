@@ -25,6 +25,7 @@ public class ActiveStageDto {
     private UUID assignedToTeamUUID;
 
     public static ActiveStageDto from(ActiveStage stage) {
-        return new ActiveStageDto(stage.getUuid(), stage.getStageType(),stage.getUserUUID(), stage.getTeamUUID());
+        return new ActiveStageDto(stage.getUuid(), stage.getStageType(), stage.getUserUUID(), stage.getTeamUUID());
     }
+
 }

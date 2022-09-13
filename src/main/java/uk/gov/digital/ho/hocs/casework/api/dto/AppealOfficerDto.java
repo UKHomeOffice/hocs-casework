@@ -12,6 +12,7 @@ public class AppealOfficerDto {
     public static class OfficerData {
 
         OfficerFieldSchemaDto appealOfficerData;
+
     }
 
     @Getter
@@ -20,15 +21,22 @@ public class AppealOfficerDto {
     public static class OfficerFieldSchemaDto {
 
         private Field officer;
+
         private Field directorate;
+
     }
 
     @AllArgsConstructor
     @NoArgsConstructor
     @Getter
     public static class Field {
+
         private String label;
+
         private String value;
+
         private String choices;
+
     }
+
 }

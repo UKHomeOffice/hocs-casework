@@ -28,4 +28,5 @@ public class TimelineItem {
     private LocalDateTime editedTime;
 
     private String editorName;
+
 }

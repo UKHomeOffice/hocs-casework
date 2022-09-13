@@ -23,32 +23,28 @@ public class CaseDataSummaryService {
         this.caseSummaryRepository = caseSummaryRepository;
     }
 
-    public Set<AdditionalField> getAdditionalCaseDataFieldsByCaseType(String caseType, Map<String, String> caseDataItems) {
+    public Set<AdditionalField> getAdditionalCaseDataFieldsByCaseType(String caseType,
+                                                                      Map<String, String> caseDataItems) {
         var fields = caseSummaryRepository.getSummaryFieldsByCaseType(caseType);
 
-        return fields.stream()
-                .filter(field -> caseDataItems.containsKey(field.getName()))
-                .map(field -> toAdditionalField(field, caseDataItems))
-                .collect(Collectors.toSet());
+        return fields.stream().filter(field -> caseDataItems.containsKey(field.getName())).map(
+            field -> toAdditionalField(field, caseDataItems)).collect(Collectors.toSet());
     }
 
     private AdditionalField toAdditionalField(SummaryField field, Map<String, String> caseDataItems) {
-        return new AdditionalField(field.getLabel(),
-                caseDataItems.get(field.getName()),
-                field.getType(),
-                reducesChoices(field.getConditionChoices(), field.getChoices(), caseDataItems),
-                field.getName());
+        return new AdditionalField(field.getLabel(), caseDataItems.get(field.getName()), field.getType(),
+            reducesChoices(field.getConditionChoices(), field.getChoices(), caseDataItems), field.getName());
     }
 
-    private Object reducesChoices(List<ConditionChoices> conditionChoices, Object choices, Map<String, String> caseDataItems) {
-        if (conditionChoices != null) {
-            var foundChoices = conditionChoices.stream()
-                    .filter(choice -> Objects.equals(caseDataItems.get(choice.getConditionPropertyName()),
-                            choice.getConditionPropertyValue()))
-                    .findFirst()
-                    .orElse(null);
+    private Object reducesChoices(List<ConditionChoices> conditionChoices,
+                                  Object choices,
+                                  Map<String, String> caseDataItems) {
+        if (conditionChoices!=null) {
+            var foundChoices = conditionChoices.stream().filter(
+                choice -> Objects.equals(caseDataItems.get(choice.getConditionPropertyName()),
+                    choice.getConditionPropertyValue())).findFirst().orElse(null);
 
-            return foundChoices == null ? null : foundChoices.getChoices();
+            return foundChoices==null ? null:foundChoices.getChoices();
         }
 
         return choices;

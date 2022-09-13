@@ -11,12 +11,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class DeadlinePolicyTest {
 
     private DeadlinePolicy policy;
+
     private StageWithCaseData stage;
 
     @Before
     public void before() {
         stage = new StageWithCaseData();
-        policy = new DeadlinePolicy();;
+        policy = new DeadlinePolicy();
+        ;
     }
 
     @Test
@@ -45,4 +47,5 @@ public class DeadlinePolicyTest {
 
         assertThat(result).isEqualTo(1);
     }
+
 }

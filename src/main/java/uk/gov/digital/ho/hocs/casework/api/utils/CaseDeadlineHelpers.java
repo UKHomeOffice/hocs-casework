@@ -8,11 +8,12 @@ import java.time.LocalDate;
 
 @Slf4j
 public class CaseDeadlineHelpers {
+
     private CaseDeadlineHelpers() {}
 
     public static void overrideStageDeadlines(CaseData caseData) {
 
-        if (caseData.getActiveStages() == null) {
+        if (caseData.getActiveStages()==null) {
             log.warn("Case uuid:{} supplied with null active stages", caseData.getUuid());
             return;
         }
@@ -20,9 +21,10 @@ public class CaseDeadlineHelpers {
         for (ActiveStage stage : caseData.getActiveStages()) {
             LocalDate caseDeadlineWarning = caseData.getCaseDeadlineWarning();
             stage.setDeadline(caseData.getCaseDeadline());
-            if (caseDeadlineWarning != null) {
+            if (caseDeadlineWarning!=null) {
                 stage.setDeadlineWarning(caseDeadlineWarning);
             }
         }
     }
+
 }

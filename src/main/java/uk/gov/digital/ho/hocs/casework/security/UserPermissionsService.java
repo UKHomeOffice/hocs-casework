@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 public class UserPermissionsService {
 
     private final RequestData requestData;
+
     private final InfoClient infoClient;
 
     public UserPermissionsService(RequestData requestData, InfoClient infoClient) {
@@ -28,21 +29,15 @@ public class UserPermissionsService {
 
     public AccessLevel getMaxAccessLevel(String caseType) {
         Set<PermissionDto> permissionDtos = getUserPermission();
-        Optional<PermissionDto> maxPermission = permissionDtos.stream()
-                .filter(e -> e.getCaseTypeCode().equals(caseType))
-                .max(Comparator.comparing(PermissionDto::getAccessLevel));
-        return maxPermission.orElse(
-                new PermissionDto("", AccessLevel.UNSET)
-        ).getAccessLevel();
+        Optional<PermissionDto> maxPermission = permissionDtos.stream().filter(
+            e -> e.getCaseTypeCode().equals(caseType)).max(Comparator.comparing(PermissionDto::getAccessLevel));
+        return maxPermission.orElse(new PermissionDto("", AccessLevel.UNSET)).getAccessLevel();
     }
 
     public Set<UUID> getUserTeams() {
         String[] groups = requestData.groupsArray();
 
-        return Stream.of(groups)
-                .map(this::getUUIDFromBase64)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toSet());
+        return Stream.of(groups).map(this::getUUIDFromBase64).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
     public boolean isUserInTeam(UUID teamUuid) {
@@ -79,29 +74,22 @@ public class UserPermissionsService {
     private Set<PermissionDto> getUserPermission() {
         Set<TeamDto> teamDtos = infoClient.getTeams();
         Set<UUID> userTeams = getUserTeams();
-        return teamDtos.stream()
-                .filter(t -> userTeams.contains(t.getUuid()))
-                .flatMap(t -> t.getPermissionDtos().stream())
-                .collect(Collectors.toSet());
+        return teamDtos.stream().filter(t -> userTeams.contains(t.getUuid())).flatMap(
+            t -> t.getPermissionDtos().stream()).collect(Collectors.toSet());
     }
 
     private Set<UUID> getTeamsWithCaseAdminPermissions(Set<TeamDto> allTeams, Set<String> userCaseAdminCaseTypes) {
-        return allTeams.stream()
-                .filter(team -> team.getPermissionDtos().stream()
-                        .anyMatch(permissionDto -> userCaseAdminCaseTypes.contains(permissionDto.getCaseTypeCode())))
-                .map(TeamDto::getUuid)
-                .collect(Collectors.toSet());
+        return allTeams.stream().filter(team -> team.getPermissionDtos().stream().anyMatch(
+            permissionDto -> userCaseAdminCaseTypes.contains(permissionDto.getCaseTypeCode()))).map(
+            TeamDto::getUuid).collect(Collectors.toSet());
     }
 
     private Set<String> getUserCaseAdminCaseTypes(Set<TeamDto> allTeams, Set<UUID> uuids) {
-        var userTeamsPermissions = allTeams.stream()
-                .filter(team -> uuids.contains(team.getUuid()))
-                .flatMap(team -> team.getPermissionDtos().stream());
+        var userTeamsPermissions = allTeams.stream().filter(team -> uuids.contains(team.getUuid())).flatMap(
+            team -> team.getPermissionDtos().stream());
 
-        return userTeamsPermissions
-                .filter(permission -> permission.getAccessLevel() == AccessLevel.CASE_ADMIN)
-                .map(PermissionDto::getCaseTypeCode)
-                .collect(Collectors.toSet());
+        return userTeamsPermissions.filter(permission -> permission.getAccessLevel()==AccessLevel.CASE_ADMIN).map(
+            PermissionDto::getCaseTypeCode).collect(Collectors.toSet());
     }
 
     private UUID getUUIDFromBase64(String uuid) {
@@ -114,4 +102,5 @@ public class UserPermissionsService {
             return null;
         }
     }
+
 }

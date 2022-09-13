@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MigrationCaseServiceTest {
+
     private static final long caseID = 12345L;
 
     private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
@@ -31,14 +32,7 @@ public class MigrationCaseServiceTest {
 
     private final Map<String, String> data = new HashMap<>(0);
 
-    private final CaseDataType caseDataType = new CaseDataType(
-            "MIN",
-            "1a",
-            "MIN",
-            null,
-            20,
-            15
-    );
+    private final CaseDataType caseDataType = new CaseDataType("MIN", "1a", "MIN", null, 20, 15);
 
     @Mock
     private MigrationStageService migrationStageService;
@@ -56,34 +50,21 @@ public class MigrationCaseServiceTest {
         // given
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
         Map<String, String> data = Collections.emptyMap();
-        CaseData caseData = new CaseData(
-                1L,
-                UUID.randomUUID(),
-                LocalDateTime.now(),
-                "COMP",
-                null,
-                false,
-                data,
-                null,
-                null,
-                null,
-                null,
-                LocalDate.now(),
-                LocalDate.now(),
-                LocalDate.now().minusDays(10),
-                false,
-                null,
-                null);
+        CaseData caseData = new CaseData(1L, UUID.randomUUID(), LocalDateTime.now(), "COMP", null, false, data, null,
+            null, null, null, LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(10), false, null, null);
 
         //when
-        when(migrationCaseDataService.createCompletedCase(caseDataType.getDisplayName(), data, originalReceivedDate)).thenReturn(caseData);
+        when(migrationCaseDataService.createCompletedCase(caseDataType.getDisplayName(), data,
+            originalReceivedDate)).thenReturn(caseData);
 
         migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate);
 
         // then
-        verify(migrationCaseDataService, times(1)).createCompletedCase(caseDataType.getDisplayName(), data, originalReceivedDate);
+        verify(migrationCaseDataService, times(1)).createCompletedCase(caseDataType.getDisplayName(), data,
+            originalReceivedDate);
         verify(migrationStageService, times(1)).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
         verifyNoMoreInteractions(migrationCaseDataService);
         verifyNoMoreInteractions(migrationStageService);
     }
+
 }

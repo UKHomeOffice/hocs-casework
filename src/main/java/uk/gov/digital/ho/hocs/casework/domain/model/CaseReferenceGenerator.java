@@ -11,4 +11,5 @@ public class CaseReferenceGenerator {
     public static String generateCaseReference(String type, Long caseNumber, LocalDateTime createdDateTime) {
         return String.format("%S/%07d/%ty", type, caseNumber, createdDateTime);
     }
+
 }

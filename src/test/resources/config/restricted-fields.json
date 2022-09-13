@@ -1,9 +1,9 @@
 {
-  "TEST" : {
+  "TEST": {
     "SUMMARY": [
       "Field1"
     ],
-    "RESTRICTED_OWNER" : [
+    "RESTRICTED_OWNER": [
       "Field2"
     ]
   }

@@ -13,22 +13,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class GetCorrespondentsResponseTest {
 
-    private final Correspondent correspondent = new Correspondent(
-            UUID.randomUUID(),
-            "CORRESPONDENT",
-            "anyFullName",
-            "anyOrganisation",
-            new Address("anyPostcode", "any1", "any2", "any3", "anyCountry"),
-            "anyPhone",
-            "anyEmail",
-            "anyReference",
-            "external key"
-    );
+    private final Correspondent correspondent = new Correspondent(UUID.randomUUID(), "CORRESPONDENT", "anyFullName",
+        "anyOrganisation", new Address("anyPostcode", "any1", "any2", "any3", "anyCountry"), "anyPhone", "anyEmail",
+        "anyReference", "external key");
 
     @Test
     public void getGetCorrespondentsResponse() {
-        Set<CorrespondentWithPrimaryFlag> correspondents =
-                Set.of(new CorrespondentWithPrimaryFlag(correspondent, true));
+        Set<CorrespondentWithPrimaryFlag> correspondents = Set.of(
+            new CorrespondentWithPrimaryFlag(correspondent, true));
 
         GetCorrespondentsResponse getCorrespondentsResponse = GetCorrespondentsResponse.from(correspondents);
 
@@ -48,8 +40,9 @@ public class GetCorrespondentsResponseTest {
 
         assertThat(getCorrespondentsResponse.getCorrespondents()).hasSize(1);
         //noinspection OptionalGetWithoutIsPresent
-        assertThat(getCorrespondentsResponse.getCorrespondents().stream().findFirst().get().getTypeDisplayName())
-                .isEqualTo(displayName);
+        assertThat(
+            getCorrespondentsResponse.getCorrespondents().stream().findFirst().get().getTypeDisplayName()).isEqualTo(
+            displayName);
     }
 
     @Test
@@ -60,4 +53,5 @@ public class GetCorrespondentsResponseTest {
 
         assertThat(getCorrespondentsResponse.getCorrespondents()).hasSize(0);
     }
+
 }

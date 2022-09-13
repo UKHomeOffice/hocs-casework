@@ -11,8 +11,7 @@ public class DeadlinePolicy implements StagePriorityPolicy {
     public double apply(StageWithCaseData stageWithCaseData) {
         var deadline = stageWithCaseData.getDeadline();
 
-        return Duration.between(deadline.atStartOfDay(),
-                LocalDate.now().atStartOfDay()).toDays();
+        return Duration.between(deadline.atStartOfDay(), LocalDate.now().atStartOfDay()).toDays();
     }
 
 }

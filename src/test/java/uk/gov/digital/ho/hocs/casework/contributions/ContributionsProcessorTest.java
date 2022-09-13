@@ -26,11 +26,17 @@ import static org.mockito.Mockito.*;
 @RunWith(SpringRunner.class)
 @ActiveProfiles("local")
 public class ContributionsProcessorTest {
+
     private final UUID caseUuid = UUID.randomUUID();
+
     private final UUID somuUuid = UUID.randomUUID();
+
     private final UUID somuTypeUuid = UUID.randomUUID();
+
     private final UUID teamUuid = UUID.randomUUID();
+
     private final UUID userUuid = UUID.randomUUID();
+
     private final UUID transitionNoteUuid = UUID.randomUUID();
 
     @Autowired
@@ -77,8 +83,10 @@ public class ContributionsProcessorTest {
 
     @Test
     public void shouldReturnDataWithValidDueContribution() {
-        StageWithCaseData stage = spy(new StageWithCaseData(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
-        SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-12-31\"}");
+        StageWithCaseData stage = spy(
+            new StageWithCaseData(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
+        SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid,
+            "{ \"contributionDueDate\" : \"9999-12-31\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
@@ -100,8 +108,10 @@ public class ContributionsProcessorTest {
 
     @Test
     public void shouldReturnDataWithValidOverdueContribution() {
-        StageWithCaseData stage = spy(new StageWithCaseData(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
-        SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"0000-12-31\"}");
+        StageWithCaseData stage = spy(
+            new StageWithCaseData(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
+        SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid,
+            "{ \"contributionDueDate\" : \"0000-12-31\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
@@ -118,13 +128,16 @@ public class ContributionsProcessorTest {
         verifyNoMoreInteractions(contributionsProcessor, somuItemService);
 
         assertEquals(stage.getDueContribution(), "0000-12-31");
-        assertEquals(stage.getContributions(), Contribution.ContributionStatus.CONTRIBUTION_OVERDUE.getDisplayedStatus());
+        assertEquals(stage.getContributions(),
+            Contribution.ContributionStatus.CONTRIBUTION_OVERDUE.getDisplayedStatus());
     }
 
     @Test
     public void shouldReturnDataWithValidReceivedContribution() {
-        StageWithCaseData stage = spy(new StageWithCaseData(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
-        SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-12-31\", \"contributionStatus\": \"contributionReceived\"}");
+        StageWithCaseData stage = spy(
+            new StageWithCaseData(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
+        SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid,
+            "{ \"contributionDueDate\" : \"9999-12-31\", \"contributionStatus\": \"contributionReceived\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
@@ -141,13 +154,16 @@ public class ContributionsProcessorTest {
         verifyNoMoreInteractions(contributionsProcessor, somuItemService);
 
         assertNull(stage.getDueContribution());
-        assertEquals(stage.getContributions(), Contribution.ContributionStatus.CONTRIBUTION_RECEIVED.getDisplayedStatus());
+        assertEquals(stage.getContributions(),
+            Contribution.ContributionStatus.CONTRIBUTION_RECEIVED.getDisplayedStatus());
     }
 
     @Test
     public void shouldReturnDataWithValidCancelledContribution() {
-        StageWithCaseData stage = spy(new StageWithCaseData(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
-        SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid, "{ \"contributionDueDate\" : \"9999-12-31\", \"contributionStatus\": \"contributionCancelled\"}");
+        StageWithCaseData stage = spy(
+            new StageWithCaseData(caseUuid, "COMP_SERVICE_TRIAGE", teamUuid, userUuid, transitionNoteUuid));
+        SomuItem somuItem = new SomuItem(somuUuid, caseUuid, somuTypeUuid,
+            "{ \"contributionDueDate\" : \"9999-12-31\", \"contributionStatus\": \"contributionCancelled\"}");
 
         when(somuItemService.getCaseItemsByCaseUuids(Set.of(caseUuid))).thenReturn(Set.of(somuItem));
         when(stage.getCaseDataType()).thenReturn("COMP");
@@ -164,7 +180,8 @@ public class ContributionsProcessorTest {
         verifyNoMoreInteractions(contributionsProcessor, somuItemService);
 
         assertNull(stage.getDueContribution());
-        assertEquals(stage.getContributions(), Contribution.ContributionStatus.CONTRIBUTION_CANCELLED.getDisplayedStatus());
+        assertEquals(stage.getContributions(),
+            Contribution.ContributionStatus.CONTRIBUTION_CANCELLED.getDisplayedStatus());
     }
 
     @Test
@@ -172,7 +189,8 @@ public class ContributionsProcessorTest {
         Contribution contribution1 = new Contribution(LocalDate.parse("2020-10-10"), null);
         Contribution contribution2 = new Contribution(LocalDate.parse("2020-09-10"), null);
 
-        LocalDate dueContributionDate = contributionsProcessor.calculateDueContributionDate(Set.of(contribution1, contribution2)).orElseThrow();
+        LocalDate dueContributionDate = contributionsProcessor.calculateDueContributionDate(
+            Set.of(contribution1, contribution2)).orElseThrow();
         assertEquals("2020-09-10", dueContributionDate.toString());
     }
 
@@ -181,10 +199,10 @@ public class ContributionsProcessorTest {
         Contribution contribution1 = new Contribution(LocalDate.parse("2020-10-10"), null);
         Contribution contribution2 = new Contribution(LocalDate.parse("2020-09-10"), "contributionReceived");
 
-        LocalDate dueContributionDate = contributionsProcessor.calculateDueContributionDate(Set.of(contribution1, contribution2)).orElseThrow();
+        LocalDate dueContributionDate = contributionsProcessor.calculateDueContributionDate(
+            Set.of(contribution1, contribution2)).orElseThrow();
         assertEquals("2020-10-10", dueContributionDate.toString());
     }
-
 
     @Test
     public void shouldNotCalculateDueContributionWithStatus() {
@@ -199,7 +217,8 @@ public class ContributionsProcessorTest {
         Contribution contribution1 = new Contribution(LocalDate.parse("2020-10-10"), "contributionReceived");
         Contribution contribution2 = new Contribution(LocalDate.parse("2020-09-10"), "contributionCancelled");
 
-        Contribution.ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(Set.of(contribution1, contribution2), LocalDate.of(2020, 10, 10)).orElse(null);
+        Contribution.ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(
+            Set.of(contribution1, contribution2), LocalDate.of(2020, 10, 10)).orElse(null);
         assertEquals(Contribution.ContributionStatus.CONTRIBUTION_CANCELLED, contributionStatus);
     }
 
@@ -208,7 +227,8 @@ public class ContributionsProcessorTest {
         Contribution contribution1 = new Contribution(LocalDate.parse("2020-10-11"), "");
         Contribution contribution2 = new Contribution(LocalDate.parse("2020-09-10"), "contributionCancelled");
 
-        Contribution.ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(Set.of(contribution1, contribution2), LocalDate.of(2020, 10, 10)).orElse(null);
+        Contribution.ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(
+            Set.of(contribution1, contribution2), LocalDate.of(2020, 10, 10)).orElse(null);
         assertEquals(Contribution.ContributionStatus.CONTRIBUTION_DUE, contributionStatus);
     }
 
@@ -217,7 +237,8 @@ public class ContributionsProcessorTest {
         Contribution contribution1 = new Contribution(LocalDate.parse("2020-10-10"), "");
         Contribution contribution2 = new Contribution(LocalDate.parse("2020-09-10"), null);
 
-        Contribution.ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(Set.of(contribution1, contribution2), LocalDate.of(2020, 10, 10)).orElse(null);
+        Contribution.ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(
+            Set.of(contribution1, contribution2), LocalDate.of(2020, 10, 10)).orElse(null);
         assertEquals(Contribution.ContributionStatus.CONTRIBUTION_OVERDUE, contributionStatus);
     }
 
@@ -227,7 +248,8 @@ public class ContributionsProcessorTest {
         Contribution contribution2 = new Contribution(LocalDate.parse("2020-09-10"), "contributionCancelled");
         Contribution contribution3 = new Contribution(LocalDate.parse("2020-11-10"), null);
 
-        Contribution.ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(Set.of(contribution1, contribution2, contribution3), LocalDate.of(2020, 10, 10)).orElse(null);
+        Contribution.ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(
+            Set.of(contribution1, contribution2, contribution3), LocalDate.of(2020, 10, 10)).orElse(null);
         assertEquals(Contribution.ContributionStatus.CONTRIBUTION_DUE, contributionStatus);
     }
 
@@ -235,7 +257,8 @@ public class ContributionsProcessorTest {
     public void shouldReturnDueForDueFutureDueDate() {
         Contribution contribution1 = new Contribution(LocalDate.parse("2020-11-10"), null);
 
-        Contribution.ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(Set.of(contribution1), LocalDate.of(2020, 10, 10)).orElse(null);
+        Contribution.ContributionStatus contributionStatus = contributionsProcessor.highestContributionStatus(
+            Set.of(contribution1), LocalDate.of(2020, 10, 10)).orElse(null);
         assertEquals(Contribution.ContributionStatus.CONTRIBUTION_DUE, contributionStatus);
     }
 

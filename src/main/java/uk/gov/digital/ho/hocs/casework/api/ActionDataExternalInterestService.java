@@ -26,9 +26,13 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.ACTION_DATA_U
 @Service
 @Slf4j
 public class ActionDataExternalInterestService implements ActionService {
+
     private final ActionDataExternalInterestRepository actionDataExternalInterestRepository;
+
     private final CaseDataRepository caseDataRepository;
+
     private final InfoClient infoClient;
+
     private final AuditClient auditClient;
 
     @Autowired
@@ -47,37 +51,34 @@ public class ActionDataExternalInterestService implements ActionService {
         return "recordInterest";
     }
 
-    public void createExternalInterest(UUID caseUuid, UUID stageUuid, ActionDataExternalInterestInboundDto interestDto) {
+    public void createExternalInterest(UUID caseUuid,
+                                       UUID stageUuid,
+                                       ActionDataExternalInterestInboundDto interestDto) {
 
-        log.debug("Received request to create external " +
-                "interest: {} for case: {}, stage: {}", interestDto, caseUuid, stageUuid);
-
+        log.debug("Received request to create external " + "interest: {} for case: {}, stage: {}", interestDto,
+            caseUuid, stageUuid);
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUuid);
-        if (caseData == null) {
+        if (caseData==null) {
             // Should have exited from the getCase call if no case with ID, however put here for safety to stop orphaned records.
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case with id: %s does not exist.", caseUuid), CASE_NOT_FOUND);
-        }
-
-        CaseTypeActionDto caseTypeActionDto
-                = infoClient.getCaseTypeActionByUuid(caseData.getType(), interestDto.getCaseTypeActionUuid());
-        if (caseTypeActionDto == null) {
             throw new ApplicationExceptions.EntityNotFoundException(
-                    String.format("No Case Type Action found for actionId: %s", interestDto.getUuid())
-                    , ACTION_DATA_CREATE_FAILURE);
+                String.format("Case with id: %s does not exist.", caseUuid), CASE_NOT_FOUND);
         }
 
+        CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(),
+            interestDto.getCaseTypeActionUuid());
+        if (caseTypeActionDto==null) {
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("No Case Type Action found for actionId: %s", interestDto.getUuid()),
+                ACTION_DATA_CREATE_FAILURE);
+        }
 
         ActionDataExternalInterest actionDataExternalInterest = new ActionDataExternalInterest(
-                interestDto.getCaseTypeActionUuid(),
-                interestDto.getCaseTypeActionLabel(),
-                caseData.getType(),
-                caseUuid,
-                interestDto.getInterestedPartyType(),
-                interestDto.getDetailsOfInterest()
-        );
+            interestDto.getCaseTypeActionUuid(), interestDto.getCaseTypeActionLabel(), caseData.getType(), caseUuid,
+            interestDto.getInterestedPartyType(), interestDto.getDetailsOfInterest());
 
-        EntityDto<Map<String, String>> partyType = infoClient.getEntityBySimpleName(actionDataExternalInterest.getPartyType());
+        EntityDto<Map<String, String>> partyType = infoClient.getEntityBySimpleName(
+            actionDataExternalInterest.getPartyType());
         String partyTitle = partyType.getData().get("title");
 
         actionDataExternalInterestRepository.save(actionDataExternalInterest);
@@ -87,33 +88,39 @@ public class ActionDataExternalInterestService implements ActionService {
         log.info("Created action:  {} for case: {}", interestDto, caseUuid);
     }
 
-    public void updateExternalInterest(UUID caseUuid, UUID actionEntityId, ActionDataExternalInterestInboundDto updateExternalInterestDto) {
+    public void updateExternalInterest(UUID caseUuid,
+                                       UUID actionEntityId,
+                                       ActionDataExternalInterestInboundDto updateExternalInterestDto) {
         log.debug("Received request to update external interest: {} for case: {}", updateExternalInterestDto, caseUuid);
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUuid);
-        if (caseData == null) {
+        if (caseData==null) {
             // Should have exited from the getCase call if no case with ID, however put here for safety to stop orphaned records.
-            throw new ApplicationExceptions.EntityNotFoundException(String.format("Case with id: %s does not exist.", caseUuid), CASE_NOT_FOUND);
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("Case with id: %s does not exist.", caseUuid), CASE_NOT_FOUND);
         }
 
-        CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(), updateExternalInterestDto.getCaseTypeActionUuid());
-        if (caseTypeActionDto == null) {
-            throw new ApplicationExceptions.EntityNotFoundException
-                    (String.format("No Case Type Action found for actionId: %s", actionEntityId), ACTION_DATA_UPDATE_FAILURE);
+        CaseTypeActionDto caseTypeActionDto = infoClient.getCaseTypeActionByUuid(caseData.getType(),
+            updateExternalInterestDto.getCaseTypeActionUuid());
+        if (caseTypeActionDto==null) {
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("No Case Type Action found for actionId: %s", actionEntityId),
+                ACTION_DATA_UPDATE_FAILURE);
         }
 
-        ActionDataExternalInterest existingExternalInterestData =
-                actionDataExternalInterestRepository.findByUuidAndCaseDataUuid(actionEntityId, caseUuid);
+        ActionDataExternalInterest existingExternalInterestData = actionDataExternalInterestRepository.findByUuidAndCaseDataUuid(
+            actionEntityId, caseUuid);
 
-        if (existingExternalInterestData == null) {
-            throw new ApplicationExceptions.EntityNotFoundException
-                    (String.format("Action with id: %s does not exist.", actionEntityId), ACTION_DATA_UPDATE_FAILURE);
+        if (existingExternalInterestData==null) {
+            throw new ApplicationExceptions.EntityNotFoundException(
+                String.format("Action with id: %s does not exist.", actionEntityId), ACTION_DATA_UPDATE_FAILURE);
         }
 
         existingExternalInterestData.setDetailsOfInterest(updateExternalInterestDto.getDetailsOfInterest());
         existingExternalInterestData.setPartyType(updateExternalInterestDto.getInterestedPartyType());
 
-        EntityDto<Map<String, String>> partyType = infoClient.getEntityBySimpleName(existingExternalInterestData.getPartyType());
+        EntityDto<Map<String, String>> partyType = infoClient.getEntityBySimpleName(
+            existingExternalInterestData.getPartyType());
         String partyTitle = partyType.getData().get("title");
 
         actionDataExternalInterestRepository.save(existingExternalInterestData);
@@ -123,24 +130,18 @@ public class ActionDataExternalInterestService implements ActionService {
 
     @Override
     public List<ActionDataDto> getAllActionsForCase(UUID caseUUID) {
-        List<ActionDataExternalInterest> externalInterests =
-                actionDataExternalInterestRepository.findAllByCaseDataUuid(caseUUID);
+        List<ActionDataExternalInterest> externalInterests = actionDataExternalInterestRepository.findAllByCaseDataUuid(
+            caseUUID);
         log.info("Returning {} Extensions for caseIsd: {}", externalInterests.size(), caseUUID);
 
-        return externalInterests.stream().map(interest ->
-                {
-                    Map<String, String> interestedPartyEntity =
-                            infoClient.getEntityBySimpleName(interest.getPartyType()).getData();
+        return externalInterests.stream().map(interest -> {
+            Map<String, String> interestedPartyEntity = infoClient.getEntityBySimpleName(
+                interest.getPartyType()).getData();
 
-                    return new ActionDataExternalInterestOutboundDto(
-                            interest.getUuid(),
-                            interest.getCaseTypeActionUuid(),
-                            interest.getAction_subtype(),
-                            interest.getCaseTypeActionLabel(),
-                            interest.getPartyType(),
-                            interestedPartyEntity,
-                            interest.getDetailsOfInterest());
-                }
-        ).collect(Collectors.toList());
+            return new ActionDataExternalInterestOutboundDto(interest.getUuid(), interest.getCaseTypeActionUuid(),
+                interest.getAction_subtype(), interest.getCaseTypeActionLabel(), interest.getPartyType(),
+                interestedPartyEntity, interest.getDetailsOfInterest());
+        }).collect(Collectors.toList());
     }
+
 }

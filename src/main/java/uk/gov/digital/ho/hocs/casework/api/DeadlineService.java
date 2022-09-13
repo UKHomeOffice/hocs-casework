@@ -36,7 +36,7 @@ public class DeadlineService {
                                                   final int workingDays) {
         // -2 is a magic number denoting that the case deadline should be used for the stage, rather than calculating
         // an individual deadline for the stage
-        if(workingDays == -2) {
+        if (workingDays==-2) {
             return caseDeadline;
         }
 
@@ -65,11 +65,10 @@ public class DeadlineService {
         final Set<StageTypeDto> allStagesForCaseType = infoClient.getAllStagesForCaseType(type);
         final Set<LocalDate> bankHolidayDatesForCase = getBankHolidayDatesForCase(type);
 
-        Map<String, LocalDate> deadlines = allStagesForCaseType.stream().filter(st -> st.getSla() >= 0)
-                .sorted(Comparator.comparingInt(StageTypeDto::getSortOrder))
-                .collect(Collectors.toMap(StageTypeDto::getType,
-                        stageType -> DateUtils.addWorkingDays(receivedDate, stageType.getSla(), bankHolidayDatesForCase),
-                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+        Map<String, LocalDate> deadlines = allStagesForCaseType.stream().filter(st -> st.getSla() >= 0).sorted(
+            Comparator.comparingInt(StageTypeDto::getSortOrder)).collect(Collectors.toMap(StageTypeDto::getType,
+            stageType -> DateUtils.addWorkingDays(receivedDate, stageType.getSla(), bankHolidayDatesForCase),
+            (oldValue, newValue) -> oldValue, LinkedHashMap::new));
         log.info("Got {} deadlines for caseType {} with received date of {} ", deadlines.size(), type, receivedDate);
         return deadlines;
     }
@@ -77,7 +76,7 @@ public class DeadlineService {
     public int calculateWorkingDaysElapsedForCaseType(String caseType, LocalDate fromDate, LocalDate today) {
         final Set<LocalDate> bankHolidayDatesForCase = getBankHolidayDatesForCase(caseType);
 
-        if (fromDate == null || today.isBefore(fromDate) || today.isEqual(fromDate)) {
+        if (fromDate==null || today.isBefore(fromDate) || today.isEqual(fromDate)) {
             return 0;
         }
 
@@ -86,16 +85,18 @@ public class DeadlineService {
 
     /**
      * Returns the number of days until the deadline warning should be displayed.
-     *
+     * <p>
      * When an SLA is manually overridden, ie when a deadline is overridden to an arbitrary date and number of days,
      * such as in extensions, this method is necessary to deduce how many days before the deadline
      * to place the deadline warning.
      *
      * @param extendByNumberOfDays
      * @param caseType
+     *
      * @return days until deadline
      */
     public int daysUntilDeadline(int extendByNumberOfDays, CaseDataType caseType) {
         return extendByNumberOfDays - (caseType.getSla() - caseType.getDeadLineWarning());
     }
+
 }

@@ -56,7 +56,6 @@ public class ActionDataDeadlineExtension implements Serializable {
     @Column(name = "reasons")
     private String reasons;
 
-
     @Column(name = "created_timestamp")
     private LocalDateTime createTimestamp;
 
@@ -65,8 +64,10 @@ public class ActionDataDeadlineExtension implements Serializable {
 
     public ActionDataDeadlineExtension(UUID caseTypeActionUuid,
                                        String caseTypeActionLabel,
-                                       String caseDataType, UUID caseDataUuid,
-                                       LocalDate originalDeadline, LocalDate updatedDeadline,
+                                       String caseDataType,
+                                       UUID caseDataUuid,
+                                       LocalDate originalDeadline,
+                                       LocalDate updatedDeadline,
                                        String note,
                                        String reasons) {
         this.uuid = UUID.randomUUID();
@@ -90,4 +91,5 @@ public class ActionDataDeadlineExtension implements Serializable {
     private void updateLastUpdatedTimestamp() {
         this.lastUpdateTimestamp = LocalDateTime.now();
     }
+
 }

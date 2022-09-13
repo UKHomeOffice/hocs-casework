@@ -43,6 +43,7 @@ import java.util.UUID;
 class StageResource {
 
     private final StageService stageService;
+
     private final InfoClient infoClient;
 
     @Autowired
@@ -51,9 +52,11 @@ class StageResource {
         this.infoClient = infoClient;
     }
 
-    @Authorised(accessLevel = AccessLevel.WRITE, permittedLowerLevels = {AccessLevel.MIGRATE, AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.WRITE,
+                permittedLowerLevels = { AccessLevel.MIGRATE, AccessLevel.RESTRICTED_OWNER })
     @PostMapping(value = "/case/{caseUUID}/stage")
-    ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID, @RequestBody CreateStageRequest request) {
+    ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID,
+                                                    @RequestBody CreateStageRequest request) {
         Stage stage = stageService.createStage(caseUUID, request);
         return ResponseEntity.ok(CreateStageResponse.from(stage));
     }
@@ -61,29 +64,34 @@ class StageResource {
     @Deprecated(forRemoval = true)
     @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/recreate")
-    ResponseEntity recreateStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody RecreateStageRequest request) {
+    ResponseEntity recreateStageTeam(@PathVariable UUID caseUUID,
+                                     @PathVariable UUID stageUUID,
+                                     @RequestBody RecreateStageRequest request) {
         stageService.recreateStage(caseUUID, request);
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}")
     ResponseEntity<GetStageResponse> getStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
         StageWithCaseData stage = stageService.getActiveStage(caseUUID, stageUUID);
         return ResponseEntity.ok(GetStageResponse.from(stage));
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = {AccessLevel.RESTRICTED_OWNER})
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/user")
-    ResponseEntity updateStageUser(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageUserRequest request) {
+    ResponseEntity updateStageUser(@PathVariable UUID caseUUID,
+                                   @PathVariable UUID stageUUID,
+                                   @RequestBody UpdateStageUserRequest request) {
         stageService.updateStageUser(caseUUID, stageUUID, request.getUserUUID());
         return ResponseEntity.ok().build();
     }
 
     @PutMapping(value = "/case/team/{teamUUID}/allocate/user/next")
-    ResponseEntity allocateStageUser(@PathVariable UUID teamUUID, @RequestHeader(RequestData.USER_ID_HEADER) UUID userUUID) {
+    ResponseEntity allocateStageUser(@PathVariable UUID teamUUID,
+                                     @RequestHeader(RequestData.USER_ID_HEADER) UUID userUUID) {
         StageWithCaseData stage = stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID);
-        if (stage == null) {
+        if (stage==null) {
             return ResponseEntity.ok(stage);
         }
         return ResponseEntity.ok(GetStageResponse.from(stage));
@@ -97,7 +105,9 @@ class StageResource {
 
     @Authorised(accessLevel = AccessLevel.READ)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/team")
-    ResponseEntity updateStageTeam(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody UpdateStageTeamRequest request) {
+    ResponseEntity updateStageTeam(@PathVariable UUID caseUUID,
+                                   @PathVariable UUID stageUUID,
+                                   @RequestBody UpdateStageTeamRequest request) {
         stageService.updateStageTeam(caseUUID, stageUUID, request.getTeamUUID(), request.getAllocationType());
         return ResponseEntity.ok().build();
     }
@@ -109,10 +119,11 @@ class StageResource {
     }
 
     @GetMapping(value = "/case/{caseUUID}/stage/{stageUUID}/team/members")
-    public ResponseEntity<List<UserDto>> getUsersForTeamByStage(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID) {
+    public ResponseEntity<List<UserDto>> getUsersForTeamByStage(@PathVariable UUID caseUUID,
+                                                                @PathVariable UUID stageUUID) {
         UUID teamUUID = stageService.getStageTeam(caseUUID, stageUUID);
         List<UserDto> users;
-        if (teamUUID != null) {
+        if (teamUUID!=null) {
             users = infoClient.getUsersForTeam(teamUUID);
         } else {
             users = infoClient.getUsersForTeamByStage(caseUUID, stageUUID);
@@ -145,14 +156,16 @@ class StageResource {
     }
 
     @GetMapping(value = "/case/{reference:[a-zA-Z0-9]{2,}%2F[0-9]{7}%2F[0-9]{2}}/stage")
-    ResponseEntity<GetStagesResponse> getActiveStagesForCase(@PathVariable String reference) throws UnsupportedEncodingException {
+    ResponseEntity<GetStagesResponse> getActiveStagesForCase(
+        @PathVariable String reference) throws UnsupportedEncodingException {
         String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8.name());
         Set<StageWithCaseData> activeStages = stageService.getActiveStagesByCaseReference(decodedRef);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
     @GetMapping(value = "/stage/team/{teamUUID}/user/{userUUID}")
-    ResponseEntity<Set<UUID>> getActiveStageCaseUUIDsForUserAndTeam(@PathVariable UUID userUUID, @PathVariable UUID teamUUID) {
+    ResponseEntity<Set<UUID>> getActiveStageCaseUUIDsForUserAndTeam(@PathVariable UUID userUUID,
+                                                                    @PathVariable UUID teamUUID) {
         Set<UUID> caseUUIDs = stageService.getActiveStageCaseUUIDsForUserAndTeam(userUUID, teamUUID);
         return ResponseEntity.ok(caseUUIDs);
     }
@@ -177,8 +190,11 @@ class StageResource {
 
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/withdraw")
-    ResponseEntity withdrawCase(@PathVariable UUID caseUUID, @PathVariable UUID stageUUID, @RequestBody WithdrawCaseRequest request) {
+    ResponseEntity withdrawCase(@PathVariable UUID caseUUID,
+                                @PathVariable UUID stageUUID,
+                                @RequestBody WithdrawCaseRequest request) {
         stageService.withdrawCase(caseUUID, stageUUID, request);
         return ResponseEntity.ok("Case withdrawn successfully");
     }
+
 }

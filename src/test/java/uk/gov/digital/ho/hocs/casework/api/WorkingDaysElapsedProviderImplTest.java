@@ -22,14 +22,13 @@ public class WorkingDaysElapsedProviderImplTest {
 
     private static final String CASE_TYPE = "CASE_TYPE_A";
 
-
     @Before
-    public void before(){
+    public void before() {
         workingDaysElapsedProvider = new WorkingDaysElapsedProviderImpl(deadlineService);
     }
 
     @Test
-    public void getWorkingDaysSince(){
+    public void getWorkingDaysSince() {
         LocalDate fromDate = LocalDate.parse("2020-05-11");
         LocalDate today = LocalDate.now();
         when(deadlineService.calculateWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate, today)).thenReturn(25);
@@ -40,4 +39,5 @@ public class WorkingDaysElapsedProviderImplTest {
         verify(deadlineService).calculateWorkingDaysElapsedForCaseType(CASE_TYPE, fromDate, today);
         verifyNoMoreInteractions(deadlineService);
     }
+
 }

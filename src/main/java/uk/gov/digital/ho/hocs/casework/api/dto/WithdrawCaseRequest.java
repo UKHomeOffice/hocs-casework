@@ -13,4 +13,5 @@ public class WithdrawCaseRequest {
 
     @JsonProperty("withdrawalDate")
     private String withdrawalDate;
+
 }

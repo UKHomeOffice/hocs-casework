@@ -35,27 +35,31 @@ public class GetDocumentsAuthFilterService implements AuthFilter {
     }
 
     @Override
-    public Object applyFilter(ResponseEntity<?> responseEntityToFilter, AccessLevel userAccessLevel, Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
+    public Object applyFilter(ResponseEntity<?> responseEntityToFilter,
+                              AccessLevel userAccessLevel,
+                              Object[] collectionAsArray) throws SecurityExceptions.AuthFilterException {
 
-        GetDocumentsResponse getDocumentsResponse  = verifyAndReturnAsObjectType(responseEntityToFilter,GetDocumentsResponse.class);
+        GetDocumentsResponse getDocumentsResponse = verifyAndReturnAsObjectType(responseEntityToFilter,
+            GetDocumentsResponse.class);
         UUID userId = userPermissionsService.getUserId();
 
         log.debug("Filtering response by userId {} for list of documents.", userId);
 
         Set<DocumentDto> docsToReturn = new HashSet<>();
-        if (getDocumentsResponse.getDocumentDtos() != null) {
+        if (getDocumentsResponse.getDocumentDtos()!=null) {
             getDocumentsResponse.getDocumentDtos().forEach((DocumentDto documentDto) -> {
-                if (documentDto.getUploadOwnerUUID() != null &&
-                        documentDto.getUploadOwnerUUID().equals(userId)) {
+                if (documentDto.getUploadOwnerUUID()!=null && documentDto.getUploadOwnerUUID().equals(userId)) {
                     docsToReturn.add(documentDto);
                 }
             });
         }
 
-        SettableDocumentDtosSetGetDocumentsResponse response  = new SettableDocumentDtosSetGetDocumentsResponse(getDocumentsResponse);
+        SettableDocumentDtosSetGetDocumentsResponse response = new SettableDocumentDtosSetGetDocumentsResponse(
+            getDocumentsResponse);
         response.setDocumentDtos(docsToReturn);
 
-        log.info("Issuing filtered GetDocumentsResponse for userId: {}", userPermissionsService.getUserId(), value(EVENT, AUTH_FILTER_SUCCESS));
+        log.info("Issuing filtered GetDocumentsResponse for userId: {}", userPermissionsService.getUserId(),
+            value(EVENT, AUTH_FILTER_SUCCESS));
         return new ResponseEntity<GetDocumentsResponse>(response, responseEntityToFilter.getStatusCode());
     }
 
@@ -68,6 +72,7 @@ public class GetDocumentsAuthFilterService implements AuthFilter {
         public void setDocumentDtos(Set<DocumentDto> documentDtos) {
             this.replaceDocumentDtos(documentDtos);
         }
+
     }
 
 }

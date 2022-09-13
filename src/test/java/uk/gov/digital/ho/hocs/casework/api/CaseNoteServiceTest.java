@@ -21,12 +21,18 @@ import static org.mockito.Mockito.*;
 public class CaseNoteServiceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
+
     private final String caseNoteType = "MANUAL";
+
     private static final String text = "CASE_NOTE";
+
     String userId = "any user";
+
     @Mock
     private CaseNoteRepository caseNoteRepository;
+
     private CaseNoteService caseNoteService;
+
     @Mock
     AuditClient auditClient;
 
@@ -42,8 +48,8 @@ public class CaseNoteServiceTest {
     @Test
     public void shouldGetCaseNotes() throws ApplicationExceptions.EntityNotFoundException {
 
-
-        when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(Set.of(new CaseNote(caseUUID, "MANUAL", text, userId)));
+        when(caseNoteRepository.findAllByCaseUUID(caseUUID)).thenReturn(
+            Set.of(new CaseNote(caseUUID, "MANUAL", text, userId)));
 
         caseNoteService.getCaseNotes(caseUUID);
 
@@ -149,7 +155,7 @@ public class CaseNoteServiceTest {
             // Do nothing.
         }
 
-         verifyNoInteractions(caseNoteRepository);
+        verifyNoInteractions(caseNoteRepository);
 
     }
 
@@ -167,7 +173,7 @@ public class CaseNoteServiceTest {
             // Do nothing.
         }
 
-         verifyNoInteractions(caseNoteRepository);
+        verifyNoInteractions(caseNoteRepository);
 
     }
 
@@ -185,7 +191,7 @@ public class CaseNoteServiceTest {
             // Do nothing.
         }
 
-         verifyNoInteractions(caseNoteRepository);
+        verifyNoInteractions(caseNoteRepository);
 
     }
 

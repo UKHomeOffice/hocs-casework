@@ -12,13 +12,23 @@ import java.util.UUID;
 public class CaseTypeActionDto {
 
     private UUID uuid;
+
     private UUID caseTypeUuid;
+
     private String caseType;
+
     private String actionType;
+
     private String actionSubtype;
+
     private String actionLabel;
+
     private int maxConcurrentEvents;
+
     private int sortOrder;
+
     private boolean active;
+
     private String props;
+
 }

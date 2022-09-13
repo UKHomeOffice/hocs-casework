@@ -30,10 +30,12 @@ public class NotifyClient {
     private static final String EVENT_TYPE_HEADER = "event_type";
 
     private final String notifyQueueUrl;
-    private final AmazonSQSAsync notifyAsyncClient;
-    private final ObjectMapper objectMapper;
-    private final RequestData requestData;
 
+    private final AmazonSQSAsync notifyAsyncClient;
+
+    private final ObjectMapper objectMapper;
+
+    private final RequestData requestData;
 
     @Autowired
     public NotifyClient(AmazonSQSAsync notifyAsyncClient,
@@ -47,44 +49,47 @@ public class NotifyClient {
     }
 
     public void sendTeamEmail(UUID caseUUID, UUID stageUUID, UUID teamUUID, String caseReference, String emailType) {
-        sendMessage(
-                new TeamAssignChangeCommand(caseUUID, stageUUID, caseReference, teamUUID, emailType),
-                LogEvent.TEAM_EMAIL_SENT);
+        sendMessage(new TeamAssignChangeCommand(caseUUID, stageUUID, caseReference, teamUUID, emailType),
+            LogEvent.TEAM_EMAIL_SENT);
     }
 
-    public void sendUserEmail(UUID caseUUID, UUID stageUUID, UUID currentUserUUID, UUID newUserUUID, String caseReference) {
-        sendMessage(
-                new UserAssignChangeCommand(caseUUID, stageUUID, caseReference, currentUserUUID, newUserUUID),
-                LogEvent.USER_EMAIL_SENT);
+    public void sendUserEmail(UUID caseUUID,
+                              UUID stageUUID,
+                              UUID currentUserUUID,
+                              UUID newUserUUID,
+                              String caseReference) {
+        sendMessage(new UserAssignChangeCommand(caseUUID, stageUUID, caseReference, currentUserUUID, newUserUUID),
+            LogEvent.USER_EMAIL_SENT);
     }
 
-    public void sendOfflineQaEmail(UUID caseUUID, UUID stageUUID, UUID currentUserUUID, UUID offlineUserUUID, String caseReference) {
-        sendMessage(
-                new OfflineQaUserCommand(caseUUID, stageUUID, caseReference, offlineUserUUID, currentUserUUID),
-                LogEvent.OFFLINE_QA_EMAIL_SENT);
+    public void sendOfflineQaEmail(UUID caseUUID,
+                                   UUID stageUUID,
+                                   UUID currentUserUUID,
+                                   UUID offlineUserUUID,
+                                   String caseReference) {
+        sendMessage(new OfflineQaUserCommand(caseUUID, stageUUID, caseReference, offlineUserUUID, currentUserUUID),
+            LogEvent.OFFLINE_QA_EMAIL_SENT);
     }
 
     private void sendMessage(NotifyCommand command, LogEvent event) {
         try {
-            var messageRequest =
-                    new SendMessageRequest(notifyQueueUrl, objectMapper.writeValueAsString(command))
-                            .withMessageAttributes(getQueueHeaders(event.toString()));
+            var messageRequest = new SendMessageRequest(notifyQueueUrl,
+                objectMapper.writeValueAsString(command)).withMessageAttributes(getQueueHeaders(event.toString()));
 
             notifyAsyncClient.sendMessage(messageRequest);
             log.info("Sent email message of type {}", command.getCommand(), value(LogEvent.EVENT, event));
         } catch (JsonProcessingException e) {
-            log.error("Failed to send email message of type {}", command.getCommand(), value(LogEvent.EVENT, LogEvent.NOTIFY_EMAIL_FAILED), value(LogEvent.EXCEPTION, e));
+            log.error("Failed to send email message of type {}", command.getCommand(),
+                value(LogEvent.EVENT, LogEvent.NOTIFY_EMAIL_FAILED), value(LogEvent.EXCEPTION, e));
         }
     }
 
     private Map<String, MessageAttributeValue> getQueueHeaders(String eventType) {
-        return Map.of(
-                EVENT_TYPE_HEADER, new SqsStringMessageAttributeValue(eventType),
-                RequestData.CORRELATION_ID_HEADER, new SqsStringMessageAttributeValue(requestData.correlationId()),
-                RequestData.USER_ID_HEADER, new SqsStringMessageAttributeValue(requestData.userId()),
-                RequestData.USERNAME_HEADER, new SqsStringMessageAttributeValue(requestData.username()),
-                RequestData.GROUP_HEADER, new SqsStringMessageAttributeValue(requestData.groups()));
+        return Map.of(EVENT_TYPE_HEADER, new SqsStringMessageAttributeValue(eventType),
+            RequestData.CORRELATION_ID_HEADER, new SqsStringMessageAttributeValue(requestData.correlationId()),
+            RequestData.USER_ID_HEADER, new SqsStringMessageAttributeValue(requestData.userId()),
+            RequestData.USERNAME_HEADER, new SqsStringMessageAttributeValue(requestData.username()),
+            RequestData.GROUP_HEADER, new SqsStringMessageAttributeValue(requestData.groups()));
     }
-
 
 }

@@ -13,6 +13,7 @@ import java.util.List;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class GetCaseConfigResponse {
+
     String type;
 
     List<CaseTab> tabs;
@@ -20,4 +21,5 @@ public class GetCaseConfigResponse {
     public static GetCaseConfigResponse from(CaseConfig caseConfig) {
         return new GetCaseConfigResponse(caseConfig.getType(), caseConfig.getTabs());
     }
+
 }

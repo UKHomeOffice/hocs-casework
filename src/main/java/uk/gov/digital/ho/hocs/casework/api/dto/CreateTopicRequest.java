@@ -14,4 +14,5 @@ public class CreateTopicRequest {
     @NonNull
     @JsonProperty(value = "topicUUID", required = true)
     private UUID topicUUID;
+
 }

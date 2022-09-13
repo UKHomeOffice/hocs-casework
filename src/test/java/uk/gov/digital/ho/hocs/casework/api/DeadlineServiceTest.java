@@ -22,7 +22,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DeadlineServiceTest {
+
     private SpringConfiguration configuration;
+
     private DeadlineService deadlineService;
 
     @Mock
@@ -31,20 +33,15 @@ public class DeadlineServiceTest {
     @Mock
     InfoClient mockInfoService;
 
-    private final Set<BankHoliday.BankHolidayRegion> bankHolidayRegions = Set.of(BankHoliday.BankHolidayRegion.ENGLAND_AND_WALES);
+    private final Set<BankHoliday.BankHolidayRegion> bankHolidayRegions = Set.of(
+        BankHoliday.BankHolidayRegion.ENGLAND_AND_WALES);
 
     private final CaseDataType caseType = CaseDataTypeFactory.from("A1", "a1");
 
-    private final Set<LocalDate> englandAndWalesBankHolidays = Set.of(
-            LocalDate.parse("2020-01-01"),
-            LocalDate.parse("2020-04-10"),
-            LocalDate.parse("2020-04-13"),
-            LocalDate.parse("2020-05-08"),
-            LocalDate.parse("2020-05-25"),
-            LocalDate.parse("2020-08-31"),
-            LocalDate.parse("2020-12-25"),
-            LocalDate.parse("2020-12-28")
-    );
+    private final Set<LocalDate> englandAndWalesBankHolidays = Set.of(LocalDate.parse("2020-01-01"),
+        LocalDate.parse("2020-04-10"), LocalDate.parse("2020-04-13"), LocalDate.parse("2020-05-08"),
+        LocalDate.parse("2020-05-25"), LocalDate.parse("2020-08-31"), LocalDate.parse("2020-12-25"),
+        LocalDate.parse("2020-12-28"));
 
     @Before
     public void setUp() {
@@ -59,10 +56,11 @@ public class DeadlineServiceTest {
         LocalDate expectedDeadline = LocalDate.parse("2020-03-02");
 
         // when
-        final LocalDate result =
-                deadlineService.calculateWorkingDaysForCaseType("A1", originalReceivedDate, caseType.getSla());
+        final LocalDate result = deadlineService.calculateWorkingDaysForCaseType("A1", originalReceivedDate,
+            caseType.getSla());
 
         // then
         assertThat(result).isEqualTo(expectedDeadline);
     }
+
 }

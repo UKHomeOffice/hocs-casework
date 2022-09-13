@@ -26,23 +26,25 @@ public class SomuItemResource {
         this.somuItemService = somuItemService;
     }
 
-    @Authorised (accessLevel = AccessLevel.READ)
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUuid}/item", produces = APPLICATION_JSON_VALUE)
     ResponseEntity<Set<GetSomuItemResponse>> getAllCaseSomuItems(@PathVariable UUID caseUuid) {
         Set<SomuItem> somuItems = somuItemService.getItemsByCaseUuid(caseUuid);
         return ResponseEntity.ok(somuItems.stream().map(GetSomuItemResponse::from).collect(Collectors.toSet()));
     }
 
-    @Authorised (accessLevel = AccessLevel.READ)
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUuid}/item/{somuTypeUuid}", produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<Set<GetSomuItemResponse>> getCaseSomuItemsBySomuType(@PathVariable UUID caseUuid, @PathVariable UUID somuTypeUuid) {
+    ResponseEntity<Set<GetSomuItemResponse>> getCaseSomuItemsBySomuType(@PathVariable UUID caseUuid,
+                                                                        @PathVariable UUID somuTypeUuid) {
         Set<SomuItem> somuItems = somuItemService.getItemsByCaseUuidAndType(caseUuid, somuTypeUuid);
         return ResponseEntity.ok(somuItems.stream().map(GetSomuItemResponse::from).collect(Collectors.toSet()));
     }
 
-    @Authorised (accessLevel = AccessLevel.READ)
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUuid}/item/{somuTypeUuid}/{somuItemUuid}", produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<GetSomuItemResponse> getSomuItemByUuid(@PathVariable UUID caseUuid, @PathVariable UUID somuItemUuid) {
+    ResponseEntity<GetSomuItemResponse> getSomuItemByUuid(@PathVariable UUID caseUuid,
+                                                          @PathVariable UUID somuItemUuid) {
         return ResponseEntity.ok(GetSomuItemResponse.from(somuItemService.getItemByUuid(somuItemUuid)));
     }
 
@@ -55,8 +57,11 @@ public class SomuItemResource {
 
     @Authorised(accessLevel = AccessLevel.WRITE)
     @PostMapping(value = "/case/{caseUuid}/item/{somuTypeUuid}", produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<GetSomuItemResponse> upsertCaseSomuItemBySomuType(@PathVariable UUID caseUuid, @PathVariable UUID somuTypeUuid, @RequestBody CreateSomuItemRequest data) {
+    ResponseEntity<GetSomuItemResponse> upsertCaseSomuItemBySomuType(@PathVariable UUID caseUuid,
+                                                                     @PathVariable UUID somuTypeUuid,
+                                                                     @RequestBody CreateSomuItemRequest data) {
         SomuItem somuItem = somuItemService.upsertCaseSomuItemBySomuType(caseUuid, somuTypeUuid, data);
         return ResponseEntity.ok(GetSomuItemResponse.from(somuItem));
     }
+
 }

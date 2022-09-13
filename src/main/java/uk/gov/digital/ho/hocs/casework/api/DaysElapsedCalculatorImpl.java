@@ -14,6 +14,7 @@ public class DaysElapsedCalculatorImpl implements DaysElapsedCalculator {
     private final WorkingDaysElapsedProvider workingDaysElapsedProvider;
 
     private static final String DATE_RECEIVED_FIELD_NAME = "DateReceived";
+
     private static final String DATE_FORMAT = "yyyy-MM-dd";
 
     @Autowired
@@ -29,6 +30,7 @@ public class DaysElapsedCalculatorImpl implements DaysElapsedCalculator {
             LocalDate dateToCheck = LocalDate.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
             daysElapsed = workingDaysElapsedProvider.getWorkingDaysSince(caseType, dateToCheck);
         }
-       data.put(SYSTEM_DAYS_ELAPSED_FIELD_NAME, String.valueOf(daysElapsed));
+        data.put(SYSTEM_DAYS_ELAPSED_FIELD_NAME, String.valueOf(daysElapsed));
     }
+
 }

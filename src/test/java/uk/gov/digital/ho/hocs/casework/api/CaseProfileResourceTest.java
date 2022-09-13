@@ -22,16 +22,17 @@ public class CaseProfileResourceTest {
 
     @Mock
     private CaseDataService caseDataService;
+
     @Mock
     private InfoClient infoClient;
 
     @Before
-    public void before(){
+    public void before() {
         caseProfileResource = new CaseProfileResource(caseDataService, infoClient);
     }
 
     @Test
-    public void getProfileForCase(){
+    public void getProfileForCase() {
 
         UUID testUUID = UUID.randomUUID();
         String caseType = "caseTypeA";
@@ -41,7 +42,6 @@ public class CaseProfileResourceTest {
         when(infoClient.getProfileByCaseType(caseType)).thenReturn(profileDto);
 
         ResponseEntity<ProfileDto> response = caseProfileResource.getProfileForCase(testUUID);
-
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -55,4 +55,5 @@ public class CaseProfileResourceTest {
         verifyNoMoreInteractions(caseDataService, infoClient);
 
     }
+
 }

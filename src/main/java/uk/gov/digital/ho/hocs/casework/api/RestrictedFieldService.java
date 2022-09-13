@@ -17,15 +17,18 @@ public class RestrictedFieldService {
         this.restrictedFieldRepository = restrictedFieldRepository;
     }
 
-    public void removeRestrictedFieldsFromCaseData(String type, AccessLevel userAccessLevel, Map<String, String> caseData) {
-        restrictedFieldRepository.getByCaseTypeAndPermissionLevelGreaterThanEqual(type, userAccessLevel)
-                        .forEach(caseData.keySet()::remove);
+    public void removeRestrictedFieldsFromCaseData(String type,
+                                                   AccessLevel userAccessLevel,
+                                                   Map<String, String> caseData) {
+        restrictedFieldRepository.getByCaseTypeAndPermissionLevelGreaterThanEqual(type, userAccessLevel).forEach(
+            caseData.keySet()::remove);
     }
 
-    public void removeRestrictedFieldsFromAdditionalFields
-            (String type, AccessLevel userAccessLevel, List<AdditionalFieldDto> additionalFields) {
-        restrictedFieldRepository.getByCaseTypeAndPermissionLevelGreaterThanEqual(type, userAccessLevel)
-                .forEach(field ->
-                        additionalFields.removeIf(additionalFieldDto -> field.equals(additionalFieldDto.getName())));
+    public void removeRestrictedFieldsFromAdditionalFields(String type,
+                                                           AccessLevel userAccessLevel,
+                                                           List<AdditionalFieldDto> additionalFields) {
+        restrictedFieldRepository.getByCaseTypeAndPermissionLevelGreaterThanEqual(type, userAccessLevel).forEach(
+            field -> additionalFields.removeIf(additionalFieldDto -> field.equals(additionalFieldDto.getName())));
     }
+
 }

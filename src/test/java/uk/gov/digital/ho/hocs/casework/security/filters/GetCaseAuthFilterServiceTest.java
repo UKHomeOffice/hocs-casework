@@ -36,8 +36,8 @@ public class GetCaseAuthFilterServiceTest {
 
     @Before
     public void setUp() {
-        when(restrictedFieldRepository.getByCaseTypeAndPermissionLevelGreaterThanEqual(any(), eq(AccessLevel.RESTRICTED_OWNER)))
-                .thenReturn(Set.of("Data3", "Data4"));
+        when(restrictedFieldRepository.getByCaseTypeAndPermissionLevelGreaterThanEqual(any(),
+            eq(AccessLevel.RESTRICTED_OWNER))).thenReturn(Set.of("Data3", "Data4"));
 
         var restrictedFieldService = new RestrictedFieldService(restrictedFieldRepository);
 
@@ -48,14 +48,8 @@ public class GetCaseAuthFilterServiceTest {
     public void testShouldThrowExceptionIfFilterNotForObjectType() {
 
         // GIVEN
-        ResponseEntity<?> responseToFilter = ResponseEntity.ok(
-                GetCaseSummaryResponse.from(
-                        new CaseSummary(
-                                null, null, null,
-                                null, null, null,
-                                null, null, null,
-                                null, null, null, null)
-        ));
+        ResponseEntity<?> responseToFilter = ResponseEntity.ok(GetCaseSummaryResponse.from(
+            new CaseSummary(null, null, null, null, null, null, null, null, null, null, null, null, null)));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;
 
@@ -75,12 +69,8 @@ public class GetCaseAuthFilterServiceTest {
         caseDataMap.put("Data3", "Data 3");
         caseDataMap.put("Data4", "Data 4");
 
-        ResponseEntity<?> responseToFilter = ResponseEntity.ok(GetCaseResponse.from(
-                new CaseData(
-                        type, caseNumber, caseDataMap, null
-                ),
-                true
-        ));
+        ResponseEntity<?> responseToFilter = ResponseEntity.ok(
+            GetCaseResponse.from(new CaseData(type, caseNumber, caseDataMap, null), true));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;
 
@@ -88,9 +78,7 @@ public class GetCaseAuthFilterServiceTest {
         Object result = getCaseAuthFilterService.applyFilter(responseToFilter, userAccessLevel, null);
 
         // THEN
-        assertThat(result)
-                .isNotNull()
-                .isExactlyInstanceOf(ResponseEntity.class);
+        assertThat(result).isNotNull().isExactlyInstanceOf(ResponseEntity.class);
 
         ResponseEntity<?> resultResponseEntity = (ResponseEntity<?>) result;
 
@@ -112,12 +100,8 @@ public class GetCaseAuthFilterServiceTest {
         caseDataMap.put("Data3", "Data 3");
         caseDataMap.put("Data4", "Data 4");
 
-        ResponseEntity<?> responseToFilter = ResponseEntity.ok(GetCaseResponse.from(
-                        new CaseData(
-                                type, caseNumber, caseDataMap, null
-                        ),
-                        true
-                ));
+        ResponseEntity<?> responseToFilter = ResponseEntity.ok(
+            GetCaseResponse.from(new CaseData(type, caseNumber, caseDataMap, null), true));
 
         AccessLevel userAccessLevel = AccessLevel.RESTRICTED_OWNER;
 
@@ -125,13 +109,12 @@ public class GetCaseAuthFilterServiceTest {
         Object result = getCaseAuthFilterService.applyFilter(responseToFilter, userAccessLevel, null);
 
         // THEN
-        assertThat(result)
-                .isNotNull()
-                .isExactlyInstanceOf(ResponseEntity.class);
+        assertThat(result).isNotNull().isExactlyInstanceOf(ResponseEntity.class);
 
         ResponseEntity<?> resultResponseEntity = (ResponseEntity<?>) result;
 
-        assertThat(resultResponseEntity.getBody()).isInstanceOf(GetCaseResponse.class); // is actually protected subclass.
+        assertThat(resultResponseEntity.getBody()).isInstanceOf(
+            GetCaseResponse.class); // is actually protected subclass.
 
         GetCaseResponse getCaseResponse = (GetCaseResponse) resultResponseEntity.getBody();
 
@@ -140,4 +123,5 @@ public class GetCaseAuthFilterServiceTest {
         assertThat(getCaseResponse.getData().keySet()).doesNotContainAnyElementsOf(Arrays.asList("Data3", "Data4"));
 
     }
+
 }

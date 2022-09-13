@@ -35,10 +35,7 @@ public class ActiveCaseViewData extends AbstractCaseData implements Serializable
     @Column(name = "secondary_case_reference", insertable = false, updatable = false)
     private String nextCaseReference;
 
-    public ActiveCaseViewData(CaseDataType type,
-                              Long caseNumber,
-                              Map<String, String> data,
-                              LocalDate dateReceived) {
+    public ActiveCaseViewData(CaseDataType type, Long caseNumber, Map<String, String> data, LocalDate dateReceived) {
         this(type, caseNumber, dateReceived);
         this.setDataMap(data);
     }

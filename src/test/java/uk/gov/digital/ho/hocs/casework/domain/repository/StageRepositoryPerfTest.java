@@ -31,11 +31,14 @@ import static org.springframework.test.context.jdbc.SqlConfig.TransactionMode.IS
 @RunWith(SpringRunner.class)
 @DataJpaTest(showSql = false)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Sql(scripts = "classpath:stage/afterTest.sql", config = @SqlConfig(transactionMode = ISOLATED), executionPhase = AFTER_TEST_METHOD)
+@Sql(scripts = "classpath:stage/afterTest.sql",
+     config = @SqlConfig(transactionMode = ISOLATED),
+     executionPhase = AFTER_TEST_METHOD)
 @ActiveProfiles("test")
 public class StageRepositoryPerfTest {
 
     private static final long TEN_SECONDS = 10000L;
+
     private static final UUID TEAM_UUID = UUID.randomUUID();
 
     @Autowired
@@ -86,8 +89,8 @@ public class StageRepositoryPerfTest {
             var stage = stages.get(i);
             var basicStage = runFindTeamUuidByCaseAndStageQuery(stage.getCaseUUID(), stage.getUuid(), timings, i);
 
-            if (stage.getTeamUUID() == null) {
-                assertThat("No team uuid should return null", basicStage.getTeamUUID() == null);
+            if (stage.getTeamUUID()==null) {
+                assertThat("No team uuid should return null", basicStage.getTeamUUID()==null);
             } else {
                 assertThat("Uuid should match the projection", stage.getTeamUUID().equals(basicStage.getTeamUUID()));
             }
@@ -124,29 +127,31 @@ public class StageRepositoryPerfTest {
 
         // Add cases
         for (int i = 0; i < howManyCases; i++) {
-            CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), (long) i, LocalDate.of(2000, 12, 31));
+            CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), (long) i,
+                LocalDate.of(2000, 12, 31));
             caseData.setCaseDeadline(LocalDate.of(9999, 12, 31));
             entityManager.persist(caseData);
 
-            if (i % 500 == 0) {
+            if (i % 500==0) {
                 //log.info("Added case:{}", i);
             }
 
             // add some stage data to parent case
             for (int y = 0; y < 10; y++) {
                 String stageType = "stage" + y;
-                StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType, y == 5 ? TEAM_UUID : null, null, null);
+                StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType, y==5 ? TEAM_UUID:null,
+                    null, null);
 
                 entityManager.persist(stage);
                 //log.debug("Added case: {}, stage: {}", caseData.getUuid(), stageType);
             }
 
             // add link if needs be
-            if (i % 9 == 0) {
+            if (i % 9==0) {
                 prevCaseUuid = caseData.getUuid();
             }
 
-            if (i % 10 == 0) {
+            if (i % 10==0) {
                 entityManager.persist(new CaseLink(prevCaseUuid, caseData.getUuid()));
                 //log.debug("Added link from:{} to:{}", prevCaseUuid, caseData.getUuid());
             }
@@ -159,14 +164,16 @@ public class StageRepositoryPerfTest {
 
         // Add cases
         for (int i = 0; i < caseAmount; i++) {
-            CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), (long) i, LocalDate.of(2000, 12, 31));
+            CaseData caseData = new CaseData(CaseDataTypeFactory.from("TEST", "a1"), (long) i,
+                LocalDate.of(2000, 12, 31));
             caseData.setCaseDeadline(LocalDate.of(9999, 12, 31));
             entityManager.persist(caseData);
 
             // add some stage data to parent case
             for (int y = 0; y < 3; y++) {
                 String stageType = "stage" + y;
-                StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType, y == 2 ? TEAM_UUID : null, null, null);
+                StageWithCaseData stage = new StageWithCaseData(caseData.getUuid(), stageType, y==2 ? TEAM_UUID:null,
+                    null, null);
 
                 entityManager.persist(stage);
 
@@ -178,4 +185,5 @@ public class StageRepositoryPerfTest {
 
         return listAddedStages;
     }
+
 }

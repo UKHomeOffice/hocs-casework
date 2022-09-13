@@ -39,4 +39,5 @@ public class GetTopicsResponseTest {
         assertThat(getTopicsResponse.getTopics()).hasSize(0);
 
     }
+
 }

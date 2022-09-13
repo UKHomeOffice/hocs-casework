@@ -28,7 +28,9 @@ public class RestHelper {
     private RequestData requestData;
 
     @Autowired
-    public RestHelper(RestTemplate restTemplate, @Value("${hocs.basicauth}") String basicAuth, RequestData requestData) {
+    public RestHelper(RestTemplate restTemplate,
+                      @Value("${hocs.basicauth}") String basicAuth,
+                      RequestData requestData) {
         this.restTemplate = restTemplate;
         this.basicAuth = basicAuth;
         this.requestData = requestData;
@@ -36,30 +38,35 @@ public class RestHelper {
 
     public <T, R> R post(String serviceBaseURL, String url, T request, Class<R> responseType) {
         log.info("RestHelper making POST request to {}{}", serviceBaseURL, url, value(EVENT, REST_HELPER_POST));
-        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.POST, new HttpEntity<>(request, createAuthHeaders()), responseType);
+        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.POST,
+            new HttpEntity<>(request, createAuthHeaders()), responseType);
         return response.getBody();
     }
 
     public <T, R> R post(String serviceBaseURL, String url, T request, ParameterizedTypeReference<R> responseType) {
         log.info("RestHelper making POST request to {}{}", serviceBaseURL, url, value(EVENT, REST_HELPER_POST));
-        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.POST, new HttpEntity<>(request, createAuthHeaders()), responseType);
+        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.POST,
+            new HttpEntity<>(request, createAuthHeaders()), responseType);
         return response.getBody();
     }
 
     public <R> R get(String serviceBaseURL, String url, Class<R> responseType) {
         log.info("RestHelper making Get request to {}{}", serviceBaseURL, url, value(EVENT, REST_HELPER_GET));
-        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
+        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET,
+            new HttpEntity<>(null, createAuthHeaders()), responseType);
         return response.getBody();
     }
 
     public void delete(String serviceBaseURL, String url) {
         log.info("RestHelper making Delete request to {}{}", serviceBaseURL, url, value(EVENT, REST_HELPER_DELETE));
-        restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.DELETE, new HttpEntity<>(null, createAuthHeaders()), String.class);
+        restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.DELETE,
+            new HttpEntity<>(null, createAuthHeaders()), String.class);
     }
 
     public S3Document getFile(String serviceBaseURL, String url) {
         log.info("RestHelper making Get request for document {}{}", serviceBaseURL, url, value(EVENT, REST_HELPER_GET));
-        ResponseEntity<ByteArrayResource> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), ByteArrayResource.class);
+        ResponseEntity<ByteArrayResource> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url),
+            HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), ByteArrayResource.class);
         ByteArrayResource body = response.getBody();
         String filename = getFilename(response);
         String originalFilename = filename;
@@ -70,7 +77,8 @@ public class RestHelper {
 
     public <R> R get(String serviceBaseURL, String url, ParameterizedTypeReference<R> responseType) {
         log.info("RestHelper making Get request to {}{}", serviceBaseURL, url, value(EVENT, REST_HELPER_GET));
-        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET, new HttpEntity<>(null, createAuthHeaders()), responseType);
+        ResponseEntity<R> response = restTemplate.exchange(String.format("%s%s", serviceBaseURL, url), HttpMethod.GET,
+            new HttpEntity<>(null, createAuthHeaders()), responseType);
         return response.getBody();
     }
 
@@ -85,7 +93,8 @@ public class RestHelper {
     }
 
     private String getBasicAuth() {
-        return String.format("Basic %s", Base64.getEncoder().encodeToString(basicAuth.getBytes(Charset.forName("UTF-8"))));
+        return String.format("Basic %s",
+            Base64.getEncoder().encodeToString(basicAuth.getBytes(Charset.forName("UTF-8"))));
     }
 
     private String getFileExtension(String fileName) {
@@ -94,7 +103,8 @@ public class RestHelper {
 
     private String getFilename(ResponseEntity<ByteArrayResource> response) {
         if (response.getHeaders().containsKey(HttpHeaders.CONTENT_DISPOSITION)) {
-            ContentDisposition contentDisposition = ContentDisposition.parse(response.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0));
+            ContentDisposition contentDisposition = ContentDisposition.parse(
+                response.getHeaders().get(HttpHeaders.CONTENT_DISPOSITION).get(0));
             return contentDisposition.getFilename();
         }
         return "";

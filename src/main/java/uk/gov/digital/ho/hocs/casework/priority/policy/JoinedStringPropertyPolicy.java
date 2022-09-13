@@ -11,18 +11,24 @@ import java.util.Map;
 public class JoinedStringPropertyPolicy implements StagePriorityPolicy {
 
     private String firstPropertyName;
+
     private String firstPropertyValue;
+
     private String secondPropertyName;
+
     private String secondPropertyValue;
+
     private double pointsToAward;
 
     @Override
     public double apply(StageWithCaseData stageWithCaseData) {
         var data = stageWithCaseData.getData();
 
-        if (firstPropertyValue.equals(data.get(firstPropertyName)) && secondPropertyValue.equals(data.get(secondPropertyName))) {
+        if (firstPropertyValue.equals(data.get(firstPropertyName)) && secondPropertyValue.equals(
+            data.get(secondPropertyName))) {
             return pointsToAward;
         }
         return 0;
     }
+
 }

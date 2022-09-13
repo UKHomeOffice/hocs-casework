@@ -21,9 +21,7 @@ import java.util.UUID;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
 
 @MappedSuperclass
-@TypeDefs({
-        @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
-})
+@TypeDefs({ @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class) })
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class AbstractCaseData implements Serializable {
@@ -34,7 +32,7 @@ public class AbstractCaseData implements Serializable {
     private Long id;
 
     @Getter
-    @Column(name = "uuid", columnDefinition ="uuid")
+    @Column(name = "uuid", columnDefinition = "uuid")
     private UUID uuid;
 
     @Getter
@@ -77,7 +75,10 @@ public class AbstractCaseData implements Serializable {
 
     @Getter
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "primary_correspondent_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
+    @JoinColumn(name = "primary_correspondent_uuid",
+                referencedColumnName = "uuid",
+                insertable = false,
+                updatable = false)
     private Correspondent primaryCorrespondent;
 
     @Setter
@@ -113,16 +114,13 @@ public class AbstractCaseData implements Serializable {
     @Where(clause = "deleted = false")
     private Set<CaseNote> caseNotes;
 
-    public AbstractCaseData(CaseDataType type,
-                            Long caseNumber,
-                            Map<String, String> data,
-                            LocalDate dateReceived) {
+    public AbstractCaseData(CaseDataType type, Long caseNumber, Map<String, String> data, LocalDate dateReceived) {
         this(type, caseNumber, dateReceived);
         update(data);
     }
 
     public AbstractCaseData(CaseDataType type, Long caseNumber, LocalDate dateReceived) {
-        if (type == null || caseNumber == null) {
+        if (type==null || caseNumber==null) {
             throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
         }
 
@@ -132,9 +130,8 @@ public class AbstractCaseData implements Serializable {
         this.dateReceived = dateReceived;
     }
 
-
     private static UUID randomUUID(String shortCode) {
-        if (shortCode != null) {
+        if (shortCode!=null) {
             String uuid = UUID.randomUUID().toString().substring(0, 33);
             return UUID.fromString(uuid.concat(shortCode));
         } else {
@@ -142,8 +139,8 @@ public class AbstractCaseData implements Serializable {
         }
     }
 
-    public void update(Map<String,String> newData) {
-        if (newData != null && newData.size() > 0) {
+    public void update(Map<String, String> newData) {
+        if (newData!=null && newData.size() > 0) {
             this.dataMap.putAll(newData);
         }
     }

@@ -43,11 +43,17 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 public class StageResourceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
+
     private final UUID teamUUID = UUID.randomUUID();
+
     private final UUID userUUID = UUID.randomUUID();
+
     private final UUID stageUUID = UUID.randomUUID();
+
     private final UUID transitionNoteUUID = UUID.randomUUID();
+
     private final String stageType = "DCU_MIN_MARKUP";
+
     private final String allocationType = "ALLOCATE_TEAM";
 
     @Autowired
@@ -70,7 +76,8 @@ public class StageResourceTest {
     public void testShouldCreateStage() {
 
         Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
-        CreateStageRequest request = new CreateStageRequest(stageType,null, teamUUID, allocationType, transitionNoteUUID, userUUID);
+        CreateStageRequest request = new CreateStageRequest(stageType, null, teamUUID, allocationType,
+            transitionNoteUUID, userUUID);
 
         when(stageService.createStage(caseUUID, request)).thenReturn(stage);
 
@@ -108,7 +115,8 @@ public class StageResourceTest {
         // GIVEN
         Stage stage = new Stage(caseUUID, stageType, teamUUID, userUUID, null);
 
-        CreateStageRequest request = new CreateStageRequest(stageType,UUID.randomUUID(), null,"RANDOM_ALLOCATION_TYPE",  UUID.randomUUID(), UUID.randomUUID());
+        CreateStageRequest request = new CreateStageRequest(stageType, UUID.randomUUID(), null,
+            "RANDOM_ALLOCATION_TYPE", UUID.randomUUID(), UUID.randomUUID());
         when(stageService.createStage(caseUUID, request)).thenReturn(stage);
 
         // WHEN
@@ -244,6 +252,7 @@ public class StageResourceTest {
 
     /**
      * Test to ensure the reference regex is used.
+     *
      * @throws Exception
      */
     @Test
@@ -251,21 +260,19 @@ public class StageResourceTest {
 
         // given
         // These are all BAD references
-        String references[] = new String[] {
-                "A/1234567/99", // caseType is < 2
-                "AA/12345678/99", //seqNo.length > 7
-                "AA/A234567/99", // seqNo contains A
-                "AA/1234567/A9", // year suffix contains A
-                "5a1562e2-052b-44fa-87be-376b7cee489b", // The wrong  identifier
-                "A duff string" }; // duff
+        String references[] = new String[] { "A/1234567/99", // caseType is < 2
+            "AA/12345678/99", //seqNo.length > 7
+            "AA/A234567/99", // seqNo contains A
+            "AA/1234567/A9", // year suffix contains A
+            "5a1562e2-052b-44fa-87be-376b7cee489b", // The wrong  identifier
+            "A duff string" }; // duff
 
         // when
         for (String badRef : references) {
             mockMvc.perform(get("/case/{reference}/stage", URLEncoder.encode(badRef, StandardCharsets.UTF_8.name())))
-                    // then
-                    .andExpect(result -> assertThat(result.getResolvedException())
-                            .isInstanceOf(HttpRequestMethodNotSupportedException.class)
-                    );
+                // then
+                .andExpect(result -> assertThat(result.getResolvedException()).isInstanceOf(
+                    HttpRequestMethodNotSupportedException.class));
         }
 
     }
@@ -331,7 +338,8 @@ public class StageResourceTest {
     @Test
     public void testGetUsersForTeamByStage_stageTeamFound() {
 
-        List<UserDto> users = List.of(new UserDto(UUID.randomUUID().toString(), "username", "firstName", "lastName", "email@test.com"));
+        List<UserDto> users = List.of(
+            new UserDto(UUID.randomUUID().toString(), "username", "firstName", "lastName", "email@test.com"));
         UUID teamUUID = UUID.randomUUID();
         when(stageService.getStageTeam(caseUUID, stageUUID)).thenReturn(teamUUID);
         when(infoClient.getUsersForTeam(teamUUID)).thenReturn(users);
@@ -350,7 +358,8 @@ public class StageResourceTest {
     @Test
     public void testGetUsersForTeamByStage_stageTeamNotFound() {
 
-        List<UserDto> users = List.of(new UserDto(UUID.randomUUID().toString(), "username", "firstName", "lastName", "email@test.com"));
+        List<UserDto> users = List.of(
+            new UserDto(UUID.randomUUID().toString(), "username", "firstName", "lastName", "email@test.com"));
         when(stageService.getStageTeam(caseUUID, stageUUID)).thenReturn(null);
         when(infoClient.getUsersForTeamByStage(caseUUID, stageUUID)).thenReturn(users);
 
