@@ -1,0 +1,1046 @@
+{
+  "type": "MPAM",
+  "groups": {
+    "MPAM_CREATION": [
+      {
+        "component": "date",
+        "label": "When was the correspondence received?",
+        "name": "DateReceived"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "UKVI",
+              "value": "UKVI"
+            },
+            {
+              "label": "BF",
+              "value": "BF"
+            },
+            {
+              "label": "IE",
+              "value": "IE"
+            },
+            {
+              "label": "EUSS",
+              "value": "EUSS"
+            },
+            {
+              "label": "HMPO",
+              "value": "HMPO"
+            },
+            {
+              "label": "Windrush",
+              "value": "Windrush"
+            },
+            {
+              "label": "Coronavirus (COVID-19)",
+              "value": "Coronavirus"
+            },
+            {
+              "label": "Transfer to OGD",
+              "value": "TransferToOgd",
+              "conditionalContent": {
+                "label": "Reason for transfer"
+              }
+            },
+            {
+              "label": "Transfer to Other",
+              "value": "TransferToOther",
+              "conditionalContent": {
+                "label": "Reason for transfer"
+              }
+            }
+          ]
+        },
+        "label": "Business Area",
+        "name": "BusArea"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes (Ministerial)",
+              "value": "Ministerial"
+            },
+            {
+              "label": "No (Official)",
+              "value": "Official"
+            }
+          ]
+        },
+        "label": "Does this correspondence need a Ministerial response?",
+        "name": "RefType"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_MPAM_MIN_SIGN_OFF_TEAMS",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "RefType",
+              "conditionPropertyValue": "Ministerial"
+            }
+          ]
+        },
+        "label": "Ministerial sign off team",
+        "name": "MinSignOffTeam"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_MPAM_MIN_SIGN_OFF_TEAMS",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "RefType",
+              "conditionPropertyValue": "Ministerial"
+            }
+          ]
+        },
+        "label": "Addressee",
+        "name": "Addressee"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Standard",
+              "value": "Standard"
+            },
+            {
+              "label": "Priority",
+              "value": "Priority"
+            },
+            {
+              "label": "Immediate",
+              "value": "Immediate"
+            }
+          ],
+          "hideConditions": [
+            {
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "TransferToOgd"
+            },
+            {
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "TransferToOther"
+            }
+          ]
+        },
+        "label": "Urgency",
+        "name": "Priority"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Post",
+              "value": "Post"
+            },
+            {
+              "label": "Phone - reply given",
+              "value": "Phone-replied"
+            },
+            {
+              "label": "Phone - response required",
+              "value": "Phone-required"
+            },
+            {
+              "label": "Private office referral",
+              "value": "PO"
+            },
+            {
+              "label": "Outreach",
+              "value": "Outreach"
+            }
+          ]
+        },
+        "label": "Channel received",
+        "name": "ChannelIn"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "action": "CORRESPONDENT",
+          "entity": "correspondent",
+          "choices": "CASE_CORRESPONDENTS"
+        },
+        "label": "Which is the primary correspondent?",
+        "name": "Correspondents"
+      }
+    ],
+    "MPAM_TRANSFER": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "UKVI",
+              "value": "UKVI"
+            },
+            {
+              "label": "BF",
+              "value": "BF"
+            },
+            {
+              "label": "IE",
+              "value": "IE"
+            },
+            {
+              "label": "EUSS",
+              "value": "EUSS"
+            },
+            {
+              "label": "HMPO",
+              "value": "HMPO"
+            },
+            {
+              "label": "Windrush",
+              "value": "Windrush"
+            },
+            {
+              "label": "Coronavirus (COVID-19)",
+              "value": "Coronavirus"
+            },
+            {
+              "label": "Transfer to OGD",
+              "value": "TransferToOgd",
+              "conditionalContent": {
+                "label": "Reason for transfer"
+              }
+            },
+            {
+              "label": "Transfer to Other",
+              "value": "TransferToOther",
+              "conditionalContent": {
+                "label": "Reason for transfer"
+              }
+            }
+          ]
+        },
+        "label": "Business Area",
+        "name": "BusArea"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Post",
+              "value": "Post"
+            },
+            {
+              "label": "Phone - reply given",
+              "value": "Phone-replied"
+            },
+            {
+              "label": "Phone - response required",
+              "value": "Phone-required"
+            },
+            {
+              "label": "Private office referral",
+              "value": "PO"
+            },
+            {
+              "label": "Outreach",
+              "value": "Outreach"
+            }
+          ]
+        },
+        "label": "Channel received",
+        "name": "ChannelIn"
+      },
+      {
+        "component": "date",
+        "label": "Update Deadline for Transfer",
+        "name": "TransferDueDate"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save Deadline for Transfer",
+              "value": "SaveDeadline"
+            },
+            {
+              "label": "Transfer Accepted (Close case)",
+              "value": "TransferAccepted"
+            },
+            {
+              "label": "Transfer Rejected (Move to Triage)",
+              "value": "TransferRejected"
+            }
+          ]
+        },
+        "label": "Actions",
+        "name": "TransferOutcome"
+      }
+    ],
+    "MPAM_TRIAGE": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "UKVI",
+              "value": "UKVI"
+            },
+            {
+              "label": "BF",
+              "value": "BF"
+            },
+            {
+              "label": "IE",
+              "value": "IE"
+            },
+            {
+              "label": "EUSS",
+              "value": "EUSS"
+            },
+            {
+              "label": "HMPO",
+              "value": "HMPO"
+            },
+            {
+              "label": "Windrush",
+              "value": "Windrush"
+            },
+            {
+              "label": "Coronavirus (COVID-19)",
+              "value": "Coronavirus"
+            },
+            {
+              "label": "Transfer to OGD",
+              "value": "TransferToOgd",
+              "conditionalContent": {
+                "label": "Reason for transfer"
+              }
+            },
+            {
+              "label": "Transfer to Other",
+              "value": "TransferToOther",
+              "conditionalContent": {
+                "label": "Reason for transfer"
+              }
+            }
+          ]
+        },
+        "label": "Business Area",
+        "name": "BusArea"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes (Ministerial)",
+              "value": "Ministerial"
+            },
+            {
+              "label": "No (Official)",
+              "value": "Official"
+            }
+          ]
+        },
+        "label": "Does this correspondence need a Ministerial response?",
+        "name": "RefType"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_MPAM_MIN_SIGN_OFF_TEAMS",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "RefType",
+              "conditionPropertyValue": "Ministerial"
+            }
+          ]
+        },
+        "label": "Ministerial sign off team",
+        "name": "MinSignOffTeam"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_MPAM_MIN_SIGN_OFF_TEAMS",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "RefType",
+              "conditionPropertyValue": "Ministerial"
+            }
+          ]
+        },
+        "label": "Addressee",
+        "name": "Addressee"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Standard",
+              "value": "Standard"
+            },
+            {
+              "label": "Priority",
+              "value": "Priority"
+            },
+            {
+              "label": "Immediate",
+              "value": "Immediate"
+            }
+          ],
+          "hideConditions": [
+            {
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "TransferToOgd"
+            },
+            {
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "TransferToOther"
+            }
+          ]
+        },
+        "label": "Urgency",
+        "name": "Priority"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Post",
+              "value": "Post"
+            },
+            {
+              "label": "Phone - reply given",
+              "value": "Phone-replied"
+            },
+            {
+              "label": "Phone - response required",
+              "value": "Phone-required"
+            },
+            {
+              "label": "Private office referral",
+              "value": "PO"
+            },
+            {
+              "label": "Outreach",
+              "value": "Outreach"
+            }
+          ]
+        },
+        "label": "Channel received",
+        "name": "ChannelIn"
+      },
+      {
+        "component": "mapped-text",
+        "props": {
+          "choices": "S_MPAM_ENQUIRY_SUBJECTS"
+        },
+        "label": "Enquiry subject",
+        "name": "EnquirySubject"
+      },
+      {
+        "component": "mapped-text",
+        "props": {
+          "choices": "MPAM_ENQUIRY_REASONS_ALL"
+        },
+        "label": "Enquiry reason",
+        "name": "EnquiryReason"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "hideConditions": [
+            {
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "TransferToOgd"
+            },
+            {
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "TransferToOther"
+            }
+          ],
+          "conditionChoices": [
+            {
+              "choices": "S_MPAM_BUS_UNITS_1",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "UKVI"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_2",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "BF"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_3",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "IE"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_4",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "EUSS"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_5",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "HMPO"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_6",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "Windrush"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_7",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "Coronavirus"
+            }
+          ]
+        },
+        "label": "Business unit",
+        "name": "BusUnit"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "conditionChoices": [
+            {
+              "choices": [
+                {
+                  "label": "Save changes",
+                  "value": "Pending"
+                },
+                {
+                  "label": "Ready to draft",
+                  "value": "SendToDraft"
+                },
+                {
+                  "label": "Put on hold",
+                  "value": "SendToTriageOnHold"
+                },
+                {
+                  "label": "Escalate to workflow manager",
+                  "value": "SendToWorkflowManager"
+                },
+                {
+                  "label": "Request contributions",
+                  "value": "RequestContribution"
+                },
+                {
+                  "label": "Put case into a Campaign",
+                  "value": "PutOnCampaign"
+                }
+              ],
+              "conditionPropertyName": "RefType",
+              "conditionPropertyValue": "Ministerial"
+            },
+            {
+              "choices": [
+                {
+                  "label": "Save changes",
+                  "value": "Pending"
+                },
+                {
+                  "label": "Ready to draft",
+                  "value": "SendToDraft"
+                },
+                {
+                  "label": "Put on hold",
+                  "value": "SendToTriageOnHold"
+                },
+                {
+                  "label": "Escalate to workflow manager",
+                  "value": "SendToWorkflowManager"
+                },
+                {
+                  "label": "Request contributions",
+                  "value": "RequestContribution"
+                },
+                {
+                  "label": "Put case into a Campaign",
+                  "value": "PutOnCampaign"
+                },
+                {
+                  "label": "Close Case (Telephone)",
+                  "value": "CloseCaseTelephone"
+                }
+              ],
+              "conditionPropertyName": "RefType",
+              "conditionPropertyValue": "Official"
+            }
+          ]
+        },
+        "label": "Actions",
+        "name": "TriageOutcome"
+      },
+      {
+        "component": "text-area",
+        "label": "Case Conversion Notes",
+        "name": "CaseNote_TriageChangeCaseType"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Correcting an error, not converting a case",
+              "value": "Correction"
+            }
+          ]
+        },
+        "name": "RefTypeCorrection"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "MPAM_CONTRIBUTION_BUSINESS_AREAS",
+            "contributionBusinessUnit": "S_MPAM_BUS_UNITS_ALL"
+          },
+          "somuType": {
+            "type": "CONTRIBUTIONS",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "MPAM"
+          }
+        },
+        "label": "Case contributions",
+        "name": "CaseContributions"
+      },
+      {
+        "component": "type-ahead",
+        "props": {
+          "choices": "MPAM_CAMPAIGNS"
+        },
+        "label": "Campaign",
+        "name": "CampaignType"
+      },
+      {
+        "component": "text-area",
+        "label": "Reason for escalation",
+        "name": "CaseNote_EscalateToWorkFlowManager"
+      },
+      {
+        "component": "text-area",
+        "label": "Explanation for closing case (Telephone)",
+        "name": "CaseNote_CaseClose"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Telephone Surgery",
+              "value": "TelephoneSurgery"
+            },
+            {
+              "label": "MP Helpline",
+              "value": "MPHelpline"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ]
+        },
+        "label": "Telephone Contact Route",
+        "name": "TelephoneContactRoute"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Education",
+              "value": "Education"
+            },
+            {
+              "label": "Medical Issues",
+              "value": "Medical Issues"
+            },
+            {
+              "label": "Removals",
+              "value": "Removals"
+            },
+            {
+              "label": "Right to rent",
+              "value": "Right to rent"
+            },
+            {
+              "label": "Right to work",
+              "value": "Right to work"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ]
+        },
+        "label": "Compliance Measures",
+        "name": "ComplianceMeasures"
+      },
+      {
+        "component": "text-area",
+        "props": {
+          "populateFromCaseData": false,
+          "visibilityConditions": [
+            {
+              "function": "hasCommaSeparatedValue",
+              "conditionArgs": [
+                {
+                  "conditionPropertyName": "ComplianceMeasures",
+                  "conditionPropertyValue": "Other"
+                }
+              ]
+            }
+          ]
+        },
+        "label": "Compliance measures other details",
+        "name": "ComplianceMeasuresOtherDetails"
+      }
+    ],
+    "MPAM_DRAFT": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "UKVI",
+              "value": "UKVI"
+            },
+            {
+              "label": "BF",
+              "value": "BF"
+            },
+            {
+              "label": "IE",
+              "value": "IE"
+            },
+            {
+              "label": "EUSS",
+              "value": "EUSS"
+            },
+            {
+              "label": "HMPO",
+              "value": "HMPO"
+            },
+            {
+              "label": "Windrush",
+              "value": "Windrush"
+            },
+            {
+              "label": "Coronavirus (COVID-19)",
+              "value": "Coronavirus"
+            },
+            {
+              "label": "Transfer to OGD",
+              "value": "TransferToOgd",
+              "conditionalContent": {
+                "label": "Reason for transfer"
+              }
+            },
+            {
+              "label": "Transfer to Other",
+              "value": "TransferToOther",
+              "conditionalContent": {
+                "label": "Reason for transfer"
+              }
+            }
+          ]
+        },
+        "label": "Business Area",
+        "name": "BusArea"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes (Ministerial)",
+              "value": "Ministerial"
+            },
+            {
+              "label": "No (Official)",
+              "value": "Official"
+            }
+          ]
+        },
+        "label": "Does this correspondence need a Ministerial response?",
+        "name": "RefType"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_MPAM_MIN_SIGN_OFF_TEAMS",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "RefType",
+              "conditionPropertyValue": "Ministerial"
+            }
+          ]
+        },
+        "label": "Ministerial sign off team",
+        "name": "MinSignOffTeam"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_MPAM_MIN_SIGN_OFF_TEAMS",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "RefType",
+              "conditionPropertyValue": "Ministerial"
+            }
+          ]
+        },
+        "label": "Addressee",
+        "name": "Addressee"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Standard",
+              "value": "Standard"
+            },
+            {
+              "label": "Priority",
+              "value": "Priority"
+            },
+            {
+              "label": "Immediate",
+              "value": "Immediate"
+            }
+          ],
+          "hideConditions": [
+            {
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "TransferToOgd"
+            },
+            {
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "TransferToOther"
+            }
+          ]
+        },
+        "label": "Urgency",
+        "name": "Priority"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Post",
+              "value": "Post"
+            },
+            {
+              "label": "Phone - reply given",
+              "value": "Phone-replied"
+            },
+            {
+              "label": "Phone - response required",
+              "value": "Phone-required"
+            },
+            {
+              "label": "Private office referral",
+              "value": "PO"
+            },
+            {
+              "label": "Outreach",
+              "value": "Outreach"
+            }
+          ]
+        },
+        "label": "Channel received",
+        "name": "ChannelIn"
+      },
+      {
+        "component": "mapped-text",
+        "props": {
+          "choices": "S_MPAM_ENQUIRY_SUBJECTS"
+        },
+        "label": "Enquiry subject",
+        "name": "EnquirySubject"
+      },
+      {
+        "component": "mapped-text",
+        "props": {
+          "choices": "MPAM_ENQUIRY_REASONS_ALL"
+        },
+        "label": "Enquiry reason",
+        "name": "EnquiryReason"
+      },
+      {
+        "component": "mapped-text",
+        "props": {
+          "choices": "S_MPAM_BUS_UNITS_ALL"
+        },
+        "label": "Business unit",
+        "name": "BusUnit"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "conditionChoices": [
+            {
+              "choices": [
+                {
+                  "label": "Save changes",
+                  "value": "Pending"
+                },
+                {
+                  "label": "Move to QA",
+                  "value": "QA"
+                },
+                {
+                  "label": "Put on hold",
+                  "value": "On-Hold"
+                },
+                {
+                  "label": "Escalate to workflow manager",
+                  "value": "Escalate"
+                },
+                {
+                  "label": "Request contributions",
+                  "value": "RequestContribution"
+                },
+                {
+                  "label": "Put case into a Campaign",
+                  "value": "PutOnCampaign"
+                },
+                {
+                  "label": "Return to Triage",
+                  "value": "ReturnToTriage"
+                }
+              ],
+              "conditionPropertyName": "RefType",
+              "conditionPropertyValue": "Ministerial"
+            },
+            {
+              "choices": [
+                {
+                  "label": "Save changes",
+                  "value": "Pending"
+                },
+                {
+                  "label": "Move to QA",
+                  "value": "QA"
+                },
+                {
+                  "label": "Ready for dispatch (bypass QA)",
+                  "value": "Dispatch"
+                },
+                {
+                  "label": "Put on hold",
+                  "value": "On-Hold"
+                },
+                {
+                  "label": "Escalate to workflow manager",
+                  "value": "Escalate"
+                },
+                {
+                  "label": "Request contributions",
+                  "value": "RequestContribution"
+                },
+                {
+                  "label": "Put case into a Campaign",
+                  "value": "PutOnCampaign"
+                },
+                {
+                  "label": "Return to Triage",
+                  "value": "ReturnToTriage"
+                },
+                {
+                  "label": "Close Case (Telephone)",
+                  "value": "CloseCaseTelephone"
+                }
+              ],
+              "conditionPropertyName": "RefType",
+              "conditionPropertyValue": "Official"
+            }
+          ]
+        },
+        "label": "Actions",
+        "name": "DraftStatus"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "MPAM_CONTRIBUTION_BUSINESS_AREAS",
+            "contributionBusinessUnit": "S_MPAM_BUS_UNITS_ALL"
+          },
+          "somuType": {
+            "type": "CONTRIBUTIONS",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "MPAM"
+          }
+        },
+        "label": "Case contributions",
+        "name": "CaseContributions"
+      },
+      {
+        "component": "text-area",
+        "label": "Return to Triage reason",
+        "name": "CaseNote_DraftReturnToTriage"
+      },
+      {
+        "component": "text-area",
+        "label": "Reason for escalation",
+        "name": "CaseNote_EscalateToWorkFlowManager"
+      },
+      {
+        "component": "text-area",
+        "label": "Explanation for closing case (Telephone)",
+        "name": "CaseNote_CaseClose"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Telephone Surgery",
+              "value": "TelephoneSurgery"
+            },
+            {
+              "label": "MP Helpline",
+              "value": "MPHelpline"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ]
+        },
+        "label": "Telephone Contact Route",
+        "name": "TelephoneContactRoute"
+      }
+    ]
+  }
+}
