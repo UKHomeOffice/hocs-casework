@@ -1,0 +1,29 @@
+{
+  "type": "TEST2",
+  "groups": {
+    "TEST_STAGE": [
+      {
+        "component": "TestComponent",
+        "name": "TestField",
+        "label": "Test Field"
+      },
+      {
+        "component": "TestComponent",
+        "name": "TestFieldWithProps",
+        "label": "Test Field 2"
+      }
+    ],
+    "TEST_STAGE2": [
+      {
+        "component": "TestComponent",
+        "name": "TestField",
+        "label": "Test Field 3"
+      },
+      {
+        "component": "TestComponent",
+        "name": "TestFieldWithProps",
+        "label": "Test Field 4"
+      }
+    ]
+  }
+}

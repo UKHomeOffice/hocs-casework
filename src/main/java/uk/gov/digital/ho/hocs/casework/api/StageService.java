@@ -623,6 +623,18 @@ public class StageService {
         }
     }
 
+    Set<Stage> getAllStagesByCaseUUID(UUID caseUUID) {
+        log.debug("Getting all stages for case: {}", caseUUID);
+        Set<Stage> caseStages = stageRepository.findAllStagesByCaseUuid(caseUUID);
+
+        if (caseStages.isEmpty()) {
+            throw new ApplicationExceptions.EntityNotFoundException(
+                    String.format("No stages found for caseUUID: %s", caseUUID), STAGES_NOT_FOUND
+            );
+        }
+        return caseStages;
+    }
+
     private static Set<StageWithCaseData> groupByCaseUUID(Set<? extends StageWithCaseData> stages) {
 
         // Group the stages by case UUID
