@@ -1,0 +1,17 @@
+{
+  "type": "TEST1",
+  "groups": {
+    "Group 1": [
+      {
+        "component": "TestComponent",
+        "name": "TestField",
+        "label": "Test Field"
+      },
+      {
+        "component": "TestComponent",
+        "name": "TestFieldWithProps",
+        "label": "Test Field 2"
+      }
+    ]
+  }
+}
