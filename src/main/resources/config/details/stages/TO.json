@@ -1,0 +1,424 @@
+{
+  "type": "TO",
+  "groups": {
+    "TO_DATA_INPUT": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "YES"
+            },
+            {
+              "label": "No",
+              "value": "NO"
+            }
+          ]
+        },
+        "name": "RecipientAdded",
+        "label": "Do you wish to add a Recipient?"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "TO_RECIPIENTS",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "RecipientAdded",
+              "conditionPropertyValue": "YES"
+            }
+          ]
+        },
+        "name": "TORecipient",
+        "label": "Recipient"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "action": "CORRESPONDENT",
+          "entity": "correspondent",
+          "choices": "CASE_CORRESPONDENTS",
+          "addUrlPath": "addNoMp",
+          "hasAddLink": true,
+          "hasEditLink": true,
+          "hasRemoveLink": true,
+          "hideRemovePrimary": true
+        },
+        "name": "Correspondents",
+        "label": "Which is the primary correspondent?"
+      },
+      {
+        "component": "mapped-display",
+        "name": "HomeSecInt",
+        "label": "Does the Home Secretary have an interest in this case?"
+      },
+      {
+        "component": "date",
+        "name": "DateReceived",
+        "label": "Date Received"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "UKVI",
+              "value": "UKVI"
+            },
+            {
+              "label": "BF",
+              "value": "BF"
+            },
+            {
+              "label": "HMPO",
+              "value": "HMPO"
+            }
+          ]
+        },
+        "name": "BusinessArea",
+        "label": "Business Area"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Email",
+              "value": "EMAIL"
+            },
+            {
+              "label": "Post",
+              "value": "POST"
+            }
+          ]
+        },
+        "name": "ChannelReceived",
+        "label": "Channel Received"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            },
+            {
+              "label": "No",
+              "value": "No"
+            }
+          ]
+        },
+        "name": "HomeSecInterest",
+        "label": "Home Secretary Interest"
+      }
+    ],
+    "TO_TRIAGE": [
+      {
+        "component": "dropdown",
+        "props": {
+          "conditionChoices": [
+            {
+              "choices": "TO_ENQUIRY_SUBJECTS",
+              "conditionPropertyName": "BusinessArea",
+              "conditionPropertyValue": "UKVI"
+            },
+            {
+              "choices": "TO_BF_ENQUIRY_SUBJECTS",
+              "conditionPropertyName": "BusinessArea",
+              "conditionPropertyValue": "BF"
+            },
+            {
+              "choices": "TO_ENQUIRY_SUBJECTS",
+              "conditionPropertyName": "BusinessArea",
+              "conditionPropertyValue": "HMPO"
+            }
+          ]
+        },
+        "name": "EnquirySubject",
+        "label": "Enquiry subject"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "conditionChoices": [
+            {
+              "choices": "TO_ENQUIRY_REASON_COMP_HAND",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "COMP_HAND"
+            },
+            {
+              "choices": "TO_ENQUIRY_REASON_COMP_REJ",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "COMP_REJ"
+            },
+            {
+              "choices": "TO_ENQUIRY_REASON_DOC",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "DOCUMENTATION"
+            },
+            {
+              "choices": "TO_ENQUIRY_REASON_GUID",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "GUID_POLICY"
+            },
+            {
+              "choices": "TO_ENQUIRY_REASON_IM_HEALTH_SUR",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "IMMIGRATION_HEALTH_SUR"
+            },
+            {
+              "choices": "TO_ENQUIRY_REASON_PERS",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "PERS_LICENSE_SPECIFIC"
+            },
+            {
+              "choices": "TO_ENQUIRY_REASON_TECH",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "TECHNICAL"
+            },
+            {
+              "choices": "TO_ENQUIRY_REASON_SRU",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "SRU"
+            },
+            {
+              "choices": "TO_ENQUIRY_REASON_OTHER",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "OTHER"
+            },
+            {
+              "choices": "TO_BF_ENQUIRY_REASON_CUSTOMS",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Customs"
+            },
+            {
+              "choices": "TO_BF_ENQUIRY_REASON_IMMIGRATION",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Immigration"
+            },
+            {
+              "choices": "TO_BF_ENQUIRY_REASON_OUTWARD_BOUND",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Outward_bound"
+            },
+            {
+              "choices": "TO_BF_ENQUIRY_REASON_OTHER",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Other"
+            }
+          ]
+        },
+        "name": "EnquiryReason",
+        "label": "Enquiry reason"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "MPAM_CONTRIBUTION_BUSINESS_AREAS",
+            "contributionBusinessUnit": "S_MPAM_BUS_UNITS_ALL"
+          },
+          "somuType": {
+            "type": "CONTRIBUTIONS",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "TO"
+          },
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "BusinessArea",
+              "conditionPropertyValue": "UKVI"
+            },
+            {
+              "conditionPropertyName": "BusinessArea",
+              "conditionPropertyValue": "HMPO"
+            }
+          ]
+        },
+        "name": "CaseContributions",
+        "label": "Case Contributions"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "TO_BUS_UNIT_ALL"
+        },
+        "name": "BusUnit",
+        "label": "Business Unit"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "TO_BUSINESS_UNIT_TYPES",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "BusinessArea",
+              "conditionPropertyValue": "UKVI"
+            },
+            {
+              "conditionPropertyName": "BusinessArea",
+              "conditionPropertyValue": "HMPO"
+            }
+          ]
+        },
+        "name": "BusUnitParent",
+        "label": "Business Unit Type"
+      }
+    ],
+    "TO_DRAFT": [
+      {
+        "component": "text-area",
+        "name": "RejectionNoteAtDraft",
+        "label": "Why should this case be returned to Triage?"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_TO_DRAFT",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "DraftDocuments",
+        "label": "Primary initial draft document"
+      }
+    ],
+    "TO_QA": [
+      {
+        "component": "text-area",
+        "name": "RejectionNote",
+        "label": "Why are you rejecting the case?"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Approved",
+              "value": "Approved"
+            },
+            {
+              "label": "Decision not yet made",
+              "value": "DecisionNotYetMade"
+            },
+            {
+              "label": "Rejected",
+              "value": "Rejected"
+            }
+          ]
+        },
+        "name": "ApprovalStatus",
+        "label": "Approval Status"
+      }
+    ],
+    "TO_CAMPAIGN": [
+      {
+        "component": "type-ahead",
+        "props": {
+          "choices": "TROF_CAMPAIGNS",
+          "defaultOptions": true
+        },
+        "name": "CampaignType",
+        "label": "Campaign name"
+      }
+    ],
+    "TO_STOP_LIST": [
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "TO_STOP_LIST"
+        },
+        "name": "StopList",
+        "label": "Stop List name"
+      }
+    ],
+    "TO_HOME_SEC": [
+      {
+        "component": "text-area",
+        "name": "HomeSecRejectionNote",
+        "label": "Why are you rejecting the case?"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Approved",
+              "value": "Approved"
+            },
+            {
+              "label": "Decision not yet made",
+              "value": "DecisionNotYetMade"
+            },
+            {
+              "label": "Rejected",
+              "value": "Rejected"
+            }
+          ]
+        },
+        "name": "HomeSecApprovalStatus",
+        "label": "Approval Status"
+      }
+    ],
+    "TO_DISPATCH": [
+      {
+        "component": "date",
+        "name": "DispatchDate",
+        "label": "Date the final response was dispatched"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Email",
+              "value": "EMAIL"
+            },
+            {
+              "label": "Post",
+              "value": "POST"
+            }
+          ]
+        },
+        "name": "ResponseChannel",
+        "label": "Final response channel"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "FinalResponse",
+        "label": "Final response document"
+      }
+    ],
+    "TO_EARLY_CLOSURE": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Transferred to different area",
+              "value": "TRANSFERRED_TO_DIFFERENT_AREA"
+            },
+            {
+              "label": "Duplicate Case",
+              "value": "DUPLICATE_CASE"
+            }
+          ]
+        },
+        "name": "ClosureReason",
+        "label": "Why should this case be closed?"
+      },
+      {
+        "component": "text-area",
+        "name": "ClosureFreeText",
+        "label": "Please enter details of why the case is being closed"
+      }
+    ]
+  }
+}

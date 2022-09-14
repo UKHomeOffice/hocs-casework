@@ -1,0 +1,356 @@
+{
+  "type": "MTS",
+  "groups": {
+    "MTS_DATA_INPUT": [
+      {
+        "component": "entity-list",
+        "props": {
+          "action": "CORRESPONDENT",
+          "entity": "correspondent",
+          "choices": "CASE_CORRESPONDENTS"
+        },
+        "label": "Which is the primary correspondent?",
+        "name": "Correspondents"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "UKVI",
+              "value": "UKVI"
+            },
+            {
+              "label": "BF",
+              "value": "BF"
+            },
+            {
+              "label": "IE",
+              "value": "IE"
+            },
+            {
+              "label": "EUSS",
+              "value": "EUSS"
+            },
+            {
+              "label": "HMPO",
+              "value": "HMPO"
+            },
+            {
+              "label": "Windrush",
+              "value": "Windrush"
+            }
+          ]
+        },
+        "label": "Business Area",
+        "name": "BusArea"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "conditionChoices": [
+            {
+              "choices": "S_MPAM_BUS_UNITS_1",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "UKVI"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_2",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "BF"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_3",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "IE"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_4",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "EUSS"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_5",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "HMPO"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_6",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "Windrush"
+            }
+          ]
+        },
+        "label": "Business unit",
+        "name": "BusUnit"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Standard",
+              "value": "Standard"
+            },
+            {
+              "label": "Priority",
+              "value": "Priority"
+            },
+            {
+              "label": "Immediate",
+              "value": "Immediate"
+            }
+          ]
+        },
+        "label": "Urgency",
+        "name": "Priority"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "MPEL – Reply given",
+              "value": "MPEL-Reply-Given"
+            },
+            {
+              "label": "MPEL – Further action",
+              "value": "MPEL-Further-Action"
+            },
+            {
+              "label": "Engagement/Surgery – Reply given",
+              "value": "Engagement-Surgery-Reply-Given"
+            },
+            {
+              "label": "Engagement/Surgery – Further action",
+              "value": "Engagement-Surgery-Further-Action"
+            },
+            {
+              "label": "Outreach",
+              "value": "Outreach"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ]
+        },
+        "label": "Channel received",
+        "name": "ChannelIn"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": "S_MPAM_ENQUIRY_SUBJECTS"
+        },
+        "label": "Enquiry subject",
+        "name": "EnquirySubject"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "conditionChoices": [
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_PER",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Person_Specific"
+            },
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_GUI",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Guidance_Policy"
+            },
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_DOC",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Documentation"
+            },
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_TECH",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Technical"
+            },
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_DET",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Detention"
+            },
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_HMPO",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "HMPO_Specific"
+            },
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_OTHER",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Other"
+            }
+          ]
+        },
+        "label": "Enquiry reason",
+        "name": "EnquiryReason"
+      },
+      {
+        "component": "text-area",
+        "label": "Note to support case",
+        "name": "SupportNote"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "MPAM",
+              "value": "MPAM"
+            },
+            {
+              "label": "CCC",
+              "value": "CCC"
+            }
+          ]
+        },
+        "label": "Your Business Area",
+        "name": "YourBusArea"
+      },
+      {
+        "component": "date",
+        "label": "When was the correspondence received?",
+        "name": "DateReceived"
+      }
+    ],
+    "MTS_ON_HOLD": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "UKVI",
+              "value": "UKVI"
+            },
+            {
+              "label": "BF",
+              "value": "BF"
+            },
+            {
+              "label": "IE",
+              "value": "IE"
+            },
+            {
+              "label": "EUSS",
+              "value": "EUSS"
+            },
+            {
+              "label": "HMPO",
+              "value": "HMPO"
+            },
+            {
+              "label": "Windrush",
+              "value": "Windrush"
+            },
+            {
+              "label": "Coronavirus (COVID-19)",
+              "value": "Coronavirus"
+            }
+          ]
+        },
+        "label": "Business Area",
+        "name": "BusArea"
+      },
+      {
+        "component": "mapped-text",
+        "props": {
+          "choices": "S_MPAM_BUS_UNITS_ALL"
+        },
+        "label": "Business unit",
+        "name": "BusUnit"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Standard",
+              "value": "Standard"
+            },
+            {
+              "label": "Priority",
+              "value": "Priority"
+            },
+            {
+              "label": "Immediate",
+              "value": "Immediate"
+            }
+          ]
+        },
+        "label": "Urgency",
+        "name": "Priority"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Post",
+              "value": "Post"
+            },
+            {
+              "label": "Phone - reply given",
+              "value": "Phone-replied"
+            },
+            {
+              "label": "Phone - response required",
+              "value": "Phone-required"
+            },
+            {
+              "label": "Private office referral",
+              "value": "PO"
+            },
+            {
+              "label": "Outreach",
+              "value": "Outreach"
+            }
+          ]
+        },
+        "label": "Channel received",
+        "name": "ChannelIn"
+      },
+      {
+        "component": "mapped-text",
+        "props": {
+          "choices": "S_MPAM_ENQUIRY_SUBJECTS"
+        },
+        "label": "Enquiry subject",
+        "name": "EnquirySubject"
+      },
+      {
+        "component": "mapped-text",
+        "props": {
+          "choices": "MPAM_ENQUIRY_REASONS_ALL"
+        },
+        "label": "Enquiry reason",
+        "name": "EnquiryReason"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "MPAM",
+              "value": "MPAM"
+            },
+            {
+              "label": "CCC",
+              "value": "CCC"
+            }
+          ]
+        },
+        "label": "Your Business Area",
+        "name": "YourBusArea"
+      }
+    ]
+  }
+}

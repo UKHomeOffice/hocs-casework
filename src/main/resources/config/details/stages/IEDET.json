@@ -1,0 +1,288 @@
+{
+  "type": "IEDET",
+  "groups": {
+    "IEDET_REGISTRATION": [
+      {
+        "component": "date",
+        "name": "ComplainantDOB",
+        "label": "Date of Birth"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Male",
+              "value": "Male"
+            },
+            {
+              "label": "Female",
+              "value": "Female"
+            }
+          ]
+        },
+        "name": "ComplainantGender",
+        "label": "Gender"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "COUNTRIES_CURRENT"
+        },
+        "name": "ComplainantNationality",
+        "label": "Nationality"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantCompanyName",
+        "label": "Company Name"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantHORef",
+        "label": "Home Office Reference"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantPortRef",
+        "label": "Port Reference"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "action": "CORRESPONDENT",
+          "entity": "correspondent",
+          "choices": "CASE_CORRESPONDENTS",
+          "addUrlPath": "addNoMp",
+          "hasAddLink": true,
+          "hasEditLink": true,
+          "hasRemoveLink": true,
+          "hideRemovePrimary": true
+        },
+        "name": "Correspondents",
+        "label": "Which is the primary correspondent?"
+      },
+      {
+        "component": "date",
+        "name": "DateReceived",
+        "label": "When was the correspondence received?"
+      }
+    ],
+    "PSU_REGISTRATION": [
+      {
+        "component": "text",
+        "name": "PsuReference",
+        "label": "PSU reference"
+      }
+    ],
+    "IEDET_TRIAGE": [
+      {
+        "component": "text-area",
+        "name": "TransferCaseNote",
+        "label": "Reason for transfer"
+      },
+      {
+        "component": "paragraph",
+        "props": {
+          "children": "Select all that apply."
+        },
+        "name": "categoryInset"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": "IEDET_COMP_CATEGORIES_SERVICE",
+          "className": "govuk-checkboxes--small",
+          "showLabel": true
+        },
+        "name": "CompCategoriesService",
+        "label": "Service"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": "IEDET_COMP_CATEGORIES_SERIOUS_AND_MINOR",
+          "className": "govuk-checkboxes--small",
+          "showLabel": true
+        },
+        "name": "CompCategoriesSeriousAndMinor",
+        "label": "Serious and minor misconduct"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": "IEDET_COMP_CATEGORIES_SERIOUS",
+          "className": "govuk-checkboxes--small",
+          "showLabel": true
+        },
+        "name": "CompCategoriesSerious",
+        "label": "Serious misconduct"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_IEDET_COMP_ORIGIN"
+        },
+        "name": "CompOrigin",
+        "label": "Complaint Origin"
+      },
+      {
+        "component": "text",
+        "props": {
+          "limit": 100,
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "CompOrigin",
+              "conditionPropertyValue": "Other"
+            }
+          ]
+        },
+        "name": "CompOriginOther",
+        "label": "Other Complaint Origin"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseSummary",
+        "label": "Case Summary"
+      },
+      {
+        "component": "text",
+        "name": "3rdPartyRef",
+        "label": "Third Party Reference"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Service",
+              "value": "Service"
+            },
+            {
+              "label": "Minor misconduct",
+              "value": "MinorMisconduct"
+            },
+            {
+              "label": "Serious misconduct",
+              "value": "SeriousMisconduct"
+            }
+          ],
+          "className": "govuk-radios--small",
+          "showLabel": false
+        },
+        "name": "CompType",
+        "label": "Complaint Type"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Third party supplier",
+              "value": "ThirdParty"
+            },
+            {
+              "label": "IE Detention compliance team",
+              "value": "IedetCompliance"
+            },
+            {
+              "label": "DEPMU",
+              "value": "DEPMU"
+            },
+            {
+              "label": "Send to CCH",
+              "value": "CCH"
+            }
+          ],
+          "className": "govuk-radios--small"
+        },
+        "name": "TriageAssign",
+        "label": "Who will investigate the complaint?"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "IEDET_BUSINESS_AREAS",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "TriageAssign",
+              "conditionPropertyValue": "ThirdParty"
+            },
+            {
+              "conditionPropertyName": "TriageAssign",
+              "conditionPropertyValue": "IedetCompliance"
+            },
+            {
+              "conditionPropertyName": "TriageAssign",
+              "conditionPropertyValue": "DEPMU"
+            }
+          ]
+        },
+        "name": "BusinessArea",
+        "label": "Business area"
+      }
+    ],
+    "IEDET_DRAFT": [
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_ALL",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "ResponseDocuments",
+        "label": "Response document"
+      },
+      {
+        "component": "entity-manager",
+        "props": {
+          "entity": "template",
+          "choices": "CASE_TEMPLATES",
+          "hasTemplateLink": true
+        },
+        "name": "Complaint_Response",
+        "label": "Available Template"
+      }
+    ],
+    "IEDET_SEND": [
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "FinalResponseDocument",
+        "label": "Upload the Final Response"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_IEDET_CASE_OUTCOME"
+        },
+        "name": "CaseOutcome",
+        "label": "Case Outcome"
+      },
+      {
+        "component": "text-area",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "CaseOutcome",
+              "conditionPropertyValue": "other"
+            }
+          ]
+        },
+        "name": "OutcomeOther",
+        "label": "Please provide further details"
+      },
+      {
+        "component": "date",
+        "name": "ResponseDate",
+        "label": "Response date"
+      }
+    ]
+  }
+}

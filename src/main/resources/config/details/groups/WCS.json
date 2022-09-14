@@ -1,0 +1,1834 @@
+{
+  "type": "WCS",
+  "groups": {
+    "Case Details": [
+      {
+        "component": "inset",
+        "props": {
+          "children": "Case Info"
+        },
+        "name": "insetCaseInfo"
+      },
+      {
+        "component": "date",
+        "label": "Date claim was received",
+        "name": "ReceivedDate"
+      },
+      {
+        "component": "text",
+        "label": "Has the claimant had their status confirmed by the Windrush Scheme (Task Force)",
+        "name": "IsTaskForce"
+      },
+      {
+        "component": "text",
+        "label": "Windrush Scheme reference",
+        "name": "TaskForceRef"
+      },
+      {
+        "component": "text",
+        "label": "Type of claim",
+        "name": "ClaimType"
+      },
+      {
+        "component": "text",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "ClaimType",
+              "conditionPropertyValue": "Estate"
+            }
+          ]
+        },
+        "label": "Has the probate pack been sent?",
+        "name": "ProbatePackSent"
+      },
+      {
+        "component": "text",
+        "props": {
+          "visibilityConditions": [
+            {
+              "function": "hasAllValues",
+              "conditionArgs": [
+                {
+                  "conditionPropertyName": "ClaimType",
+                  "conditionPropertyValue": "Estate"
+                },
+                {
+                  "conditionPropertyName": "ProbatePackSent",
+                  "conditionPropertyValue": "Yes"
+                }
+              ]
+            }
+          ]
+        },
+        "label": "When was the probate pack sent?",
+        "name": "DateProbatePackSent"
+      },
+      {
+        "component": "text",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "ClaimType",
+              "conditionPropertyValue": "Estate"
+            }
+          ]
+        },
+        "label": "Has the probate pack been received?",
+        "name": "ProbatePackReceived"
+      },
+      {
+        "component": "text",
+        "props": {
+          "visibilityConditions": [
+            {
+              "function": "hasAllValues",
+              "conditionArgs": [
+                {
+                  "conditionPropertyName": "ClaimType",
+                  "conditionPropertyValue": "Estate"
+                },
+                {
+                  "conditionPropertyName": "ProbatePackReceived",
+                  "conditionPropertyValue": "Yes"
+                }
+              ]
+            }
+          ]
+        },
+        "label": "When was the probate pack received?",
+        "name": "DateProbatePackReceived"
+      },
+      {
+        "component": "text",
+        "label": "How was the form submitted",
+        "name": "FormSubmitted"
+      },
+      {
+        "component": "text",
+        "label": "Was the form sent through Claimant Assistance Adviser?",
+        "name": "IsAssistAdviser"
+      },
+      {
+        "component": "text",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "IsAssistAdviser",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "label": "Associated reference",
+        "name": "ClaimantAdvisorRef"
+      },
+      {
+        "component": "text",
+        "label": "Where is the claim from",
+        "name": "ClaimedFrom"
+      },
+      {
+        "component": "text-area",
+        "label": "Linked claims",
+        "name": "LinkedClaims"
+      },
+      {
+        "component": "date",
+        "label": "Brought forward",
+        "name": "BFDate"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "With claimant",
+              "value": "True"
+            }
+          ]
+        },
+        "name": "BF_WithClaimant"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "OGDs and/or third parties",
+              "value": "True"
+            }
+          ]
+        },
+        "name": "BF_ODGorThirdParty"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Policy",
+              "value": "True"
+            }
+          ]
+        },
+        "name": "BF_Policy"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Unworkable",
+              "value": "True"
+            }
+          ]
+        },
+        "name": "Unworkable"
+      },
+      {
+        "component": "inset",
+        "props": {
+          "children": "Personal details"
+        },
+        "name": "insetPersonalDetails"
+      },
+      {
+        "component": "text",
+        "label": "Full name",
+        "name": "FullName"
+      },
+      {
+        "component": "text",
+        "label": "Other/previous name or alias",
+        "name": "PreviousNames"
+      },
+      {
+        "component": "text",
+        "label": "Gender",
+        "name": "ClaimantGender"
+      },
+      {
+        "component": "date",
+        "label": "Date of birth",
+        "name": "DateOfBirth"
+      },
+      {
+        "component": "text",
+        "label": "Building and street",
+        "name": "Addr1"
+      },
+      {
+        "component": "text",
+        "label": "Town or city",
+        "name": "Addr2"
+      },
+      {
+        "component": "text",
+        "label": "County",
+        "name": "Addr3"
+      },
+      {
+        "component": "text",
+        "label": "Country",
+        "name": "Country"
+      },
+      {
+        "component": "text",
+        "label": "Postcode",
+        "name": "Postcode"
+      },
+      {
+        "component": "text",
+        "label": "Country of birth",
+        "name": "BirthCountry"
+      },
+      {
+        "component": "text",
+        "label": "Nationality",
+        "name": "Nationality"
+      },
+      {
+        "component": "text",
+        "label": "Telephone number",
+        "name": "Phone"
+      },
+      {
+        "component": "text",
+        "label": "Email address",
+        "name": "Email"
+      },
+      {
+        "component": "text",
+        "label": "Passport number",
+        "name": "Passport"
+      },
+      {
+        "component": "text-area",
+        "label": "Expired passport numbers",
+        "name": "PassportsPrev"
+      },
+      {
+        "component": "text",
+        "label": "National Insurance number",
+        "name": "NI"
+      },
+      {
+        "component": "inset",
+        "label": null,
+        "name": "insetEligibilityAndStatus"
+      },
+      {
+        "component": "mapped-text",
+        "props": {
+          "choices": "S_WCS_COHORTS"
+        },
+        "label": "Eligibility cohort",
+        "name": "Cohort"
+      },
+      {
+        "component": "mapped-text",
+        "props": {
+          "choices": "S_WCS_I_STATUS"
+        },
+        "label": "Status",
+        "name": "ImmigrationStatus"
+      },
+      {
+        "component": "mapped-text",
+        "props": {
+          "choices": "S_WCS_I_STATUS_OUTCOME"
+        },
+        "label": "Status outcome",
+        "name": "ImmigrationStatusOutcome"
+      },
+      {
+        "component": "date",
+        "label": "Date of status decision",
+        "name": "DateOfStatusDecision"
+      },
+      {
+        "component": "inset",
+        "props": {
+          "children": "Linked person details"
+        },
+        "name": "insetLinkedPersonDetails"
+      },
+      {
+        "component": "text",
+        "label": "Full name",
+        "name": "LinkedFullName"
+      },
+      {
+        "component": "text",
+        "label": "Other/previous name or alias",
+        "name": "LinkedPreviousNames"
+      },
+      {
+        "component": "text",
+        "label": "Gender",
+        "name": "LinkedPersonGender"
+      },
+      {
+        "component": "date",
+        "label": "Date of birth",
+        "name": "LinkedDateOfBirth"
+      },
+      {
+        "component": "text",
+        "label": "Building and street",
+        "name": "LinkedAddr1"
+      },
+      {
+        "component": "text",
+        "label": "Town or city",
+        "name": "LinkedAddr2"
+      },
+      {
+        "component": "text",
+        "label": "County",
+        "name": "LinkedAddr3"
+      },
+      {
+        "component": "text",
+        "label": "Country",
+        "name": "LinkedCountry"
+      },
+      {
+        "component": "text",
+        "label": "Postcode",
+        "name": "LinkedPostcode"
+      },
+      {
+        "component": "text",
+        "label": "Country of birth",
+        "name": "LinkedBirthCountry"
+      },
+      {
+        "component": "text",
+        "label": "Nationality",
+        "name": "LinkedNationality"
+      },
+      {
+        "component": "text",
+        "label": "Telephone number",
+        "name": "LinkedPhone"
+      },
+      {
+        "component": "text",
+        "label": "Email address",
+        "name": "LinkedEmail"
+      },
+      {
+        "component": "text",
+        "label": "Passport number",
+        "name": "LinkedPassport"
+      },
+      {
+        "component": "text-area",
+        "label": "Previous passport numbers",
+        "name": "LinkedPassportsPrev"
+      },
+      {
+        "component": "text",
+        "label": "National Insurance number",
+        "name": "LinkedNI"
+      },
+      {
+        "component": "text",
+        "label": "Linked person is deceased",
+        "name": "IsLinkedDeceased"
+      },
+      {
+        "component": "text",
+        "label": "Capacity person is acting in",
+        "name": "DeceasedCapacity"
+      },
+      {
+        "component": "date",
+        "label": "Date began acting on behalf of estate",
+        "name": "DeceasedActDate"
+      },
+      {
+        "component": "date",
+        "label": "Date of death",
+        "name": "DeceasedDate"
+      },
+      {
+        "component": "text",
+        "label": "Death Certificate number",
+        "name": "DeceasedCertificate"
+      },
+      {
+        "component": "text",
+        "label": "Reason for no death certificate details",
+        "name": "DeceasedInfoReason"
+      },
+      {
+        "component": "inset",
+        "props": {
+          "children": "Representative"
+        },
+        "name": "insetRepresentative"
+      },
+      {
+        "component": "text",
+        "label": "Name of representative",
+        "name": "RepName"
+      },
+      {
+        "component": "date",
+        "label": "Represented from date",
+        "name": "RepFromDate"
+      },
+      {
+        "component": "text",
+        "label": "Organisation",
+        "name": "RepOrg"
+      },
+      {
+        "component": "text",
+        "label": "Representative email address",
+        "name": "RepEmail"
+      },
+      {
+        "component": "text",
+        "label": "Representative phone number",
+        "name": "RepPhone"
+      },
+      {
+        "component": "text",
+        "label": "Representative Street",
+        "name": "RepStreet"
+      },
+      {
+        "component": "text",
+        "label": "Representative town or city",
+        "name": "RepCity"
+      },
+      {
+        "component": "text",
+        "label": "Representative County",
+        "name": "RepCounty"
+      },
+      {
+        "component": "text",
+        "label": "Representative Country",
+        "name": "RepCountry"
+      },
+      {
+        "component": "text",
+        "label": "Representative Postcode",
+        "name": "RepPostcode"
+      },
+      {
+        "component": "text-area",
+        "label": "Other representative details",
+        "name": "RepDetails"
+      },
+      {
+        "component": "inset",
+        "props": {
+          "children": "Consent details"
+        },
+        "name": "insetConsentDetails"
+      },
+      {
+        "component": "text",
+        "label": "Person who paid",
+        "name": "ConsentPersonWhoPaid"
+      },
+      {
+        "component": "text",
+        "label": "Award to be paid to",
+        "name": "ConsentAwardToBePaidTo"
+      },
+      {
+        "component": "text",
+        "label": "Consent form signed by",
+        "name": "ConsentSignedBy"
+      },
+      {
+        "component": "date",
+        "label": "Consent form signed date",
+        "name": "ConsentFormSignedDate"
+      },
+      {
+        "component": "inset",
+        "props": {
+          "children": "Government records"
+        },
+        "name": "insetGovernment"
+      },
+      {
+        "component": "text",
+        "label": "Previous HOCS reference",
+        "name": "PrevHocsRef"
+      },
+      {
+        "component": "text",
+        "label": "NHS number",
+        "name": "NHS"
+      },
+      {
+        "component": "text",
+        "label": "Driving licence number",
+        "name": "DrivingLicence"
+      },
+      {
+        "component": "text",
+        "label": "CID",
+        "name": "CID"
+      },
+      {
+        "component": "text",
+        "label": "CRS",
+        "name": "CRS"
+      },
+      {
+        "component": "text",
+        "label": "Warehouse",
+        "name": "Warehouse"
+      },
+      {
+        "component": "text",
+        "label": "Other",
+        "name": "OtherRef"
+      },
+      {
+        "component": "inset",
+        "props": {
+          "children": "Vulnerable and high profile"
+        },
+        "name": "insetVulnerable"
+      },
+      {
+        "component": "text",
+        "label": "Vulnerable claimant",
+        "name": "IsVulnerable"
+      },
+      {
+        "component": "date",
+        "label": "Date referred to vulnerable person team",
+        "name": "VulnerableClaimReceivedDate"
+      },
+      {
+        "component": "text-area",
+        "label": "Vulnerable claimant details",
+        "name": "VulnerableDetails"
+      },
+      {
+        "component": "text",
+        "label": "High profile claim",
+        "name": "IsHighProfile"
+      },
+      {
+        "component": "text",
+        "label": "High profile MP",
+        "name": "IsHighProfileMP"
+      },
+      {
+        "component": "text",
+        "label": "High profile Media",
+        "name": "IsHighProfileMedia"
+      },
+      {
+        "component": "text",
+        "label": "Detained and deported",
+        "name": "IsHighProfileDetainedDeported"
+      },
+      {
+        "component": "text",
+        "label": "Data Breach",
+        "name": "IsHighProfileDataBreach"
+      },
+      {
+        "component": "text",
+        "label": "Apology from Home Secretary",
+        "name": "IsHighProfileApologyHomeSecretary"
+      },
+      {
+        "component": "text-area",
+        "label": "Details including MP name and contact details, media outlets etc",
+        "name": "HighProfileDetails"
+      },
+      {
+        "component": "text",
+        "label": "Judicial review",
+        "name": "IsJudicialReview"
+      },
+      {
+        "component": "text-area",
+        "label": "Judicial review details",
+        "name": "JudicialReviewDetails"
+      },
+      {
+        "component": "inset",
+        "props": {
+          "children": "Tier 1 review"
+        },
+        "name": "insetTier1Review"
+      },
+      {
+        "component": "text",
+        "label": "Review/Offer withdrawn at Tier 1",
+        "name": "Tier1Withdrawn"
+      },
+      {
+        "component": "date",
+        "label": "Review/Offer withdrawn at Tier 1 date",
+        "name": "Tier1WithdrawnDate"
+      },
+      {
+        "component": "text",
+        "label": "Tier 1 interim first outcome",
+        "name": "Tier1OutcomeInterim"
+      },
+      {
+        "component": "date",
+        "label": "Tier 1 interim first decision date",
+        "name": "Tier1OutcomeDateInterim"
+      },
+      {
+        "component": "text",
+        "label": "Tier 1 interim second outcome",
+        "name": "Tier1OutcomeInterim2"
+      },
+      {
+        "component": "date",
+        "label": "Tier 1 interim second decision date",
+        "name": "Tier1OutcomeDateInterim2"
+      },
+      {
+        "component": "text",
+        "label": "Tier 1 full & final first outcome",
+        "name": "Tier1OutcomeFinal"
+      },
+      {
+        "component": "date",
+        "label": "Tier 1 full & final first decision date",
+        "name": "Tier1OutcomeDateFinal"
+      },
+      {
+        "component": "text",
+        "label": "Tier 1 full & final second outcome",
+        "name": "Tier1OutcomeFinal2"
+      },
+      {
+        "component": "date",
+        "label": "Tier 1 full & final second decision date",
+        "name": "Tier1OutcomeDateFinal2"
+      },
+      {
+        "component": "date",
+        "label": "Tier 1 received date",
+        "name": "Tier1ReviewOutcomeDate"
+      },
+      {
+        "component": "inset",
+        "props": {
+          "children": "Tier 2 review"
+        },
+        "name": "insetTier2Review"
+      },
+      {
+        "component": "text",
+        "label": "Review/Offer withdrawn at Tier 2",
+        "name": "Tier2Withdrawn"
+      },
+      {
+        "component": "date",
+        "label": "Review/Offer withdrawn at Tier 2 date",
+        "name": "Tier2WithdrawnDate"
+      },
+      {
+        "component": "date",
+        "label": "Date sent to Adjudicator's Office",
+        "name": "Tier2AdjudicatorsOfficeSentDate"
+      },
+      {
+        "component": "text",
+        "label": "Tier 2 adjudicator's office decision",
+        "name": "Tier2AdjudicatorsOfficeDecision"
+      },
+      {
+        "component": "date",
+        "label": "Tier 2 adjudicator's office decision date",
+        "name": "Tier2AdjudicatorsOfficeDecisionDate"
+      },
+      {
+        "component": "inset",
+        "props": {
+          "children": "Claim categories"
+        },
+        "name": "insetHeads"
+      },
+      {
+        "component": "text",
+        "props": {
+          "elementClassName": "govuk-!-width-one-half"
+        },
+        "label": "Total Awarded",
+        "name": "TotalAward"
+      },
+      {
+        "component": "text",
+        "props": {
+          "elementClassName": "govuk-!-width-one-half"
+        },
+        "label": "Total Paid",
+        "name": "TotalPaid"
+      },
+      {
+        "component": "date",
+        "label": "Payment account requested (MFF108)",
+        "name": "Mff108Date"
+      },
+      {
+        "component": "date",
+        "label": "BACS payment requested Interim (MFF125)",
+        "name": "Mff125InterimDate"
+      },
+      {
+        "component": "date",
+        "label": "BACS payment requested Final (MFF125)",
+        "name": "Mff125FullDate"
+      },
+      {
+        "component": "text",
+        "label": "Preliminary payment reference",
+        "name": "PreliminaryPayRef"
+      },
+      {
+        "component": "text",
+        "label": "Interim payment reference",
+        "name": "InterimPayRef"
+      },
+      {
+        "component": "text",
+        "label": "Final payment reference",
+        "name": "FinalPayRef"
+      },
+      {
+        "component": "date",
+        "label": "Apology letter sent",
+        "name": "ApologyDate"
+      },
+      {
+        "component": "inset",
+        "props": {
+          "children": "PNC Check"
+        },
+        "name": "insetPNC"
+      },
+      {
+        "component": "date",
+        "label": "PNC check valid until",
+        "name": "PncDate"
+      },
+      {
+        "component": "text",
+        "label": "Result of PNC check",
+        "name": "PncResult"
+      },
+      {
+        "component": "text",
+        "label": "Can you confirm the claimant's identity",
+        "name": "IdentityConfirmed"
+      },
+      {
+        "component": "text",
+        "label": "Can you confirm the claimant's eligibility",
+        "name": "EligibilityConfirmed"
+      },
+      {
+        "component": "mapped-text",
+        "props": {
+          "choices": "S_WCS_ELIG_REJ_REASON"
+        },
+        "label": "Eligibility rejection reason",
+        "name": "EligibilityRejReason"
+      }
+    ],
+    "Claim Categories": [
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Immigration and legal fees",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "LegalFeesType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "LegalFeesAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "LegalFeesPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "LegalFeesPaidDate",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Additional amount paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "LegalFeesAdditionalAmountPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date additional amount paid",
+                "name": "LegalFeesAdditionalAmountPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Immigration and legal fees",
+        "name": "LegalFeesClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Detention deportation and removal",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "RemovalType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "RemovalAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "RemovalPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "RemovalPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Detention deportation and removal",
+        "name": "RemovalClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Employment",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "EmploymentType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "EmploymentAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "EmploymentPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "EmploymentPaidDate",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Additional amount paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "EmploymentAdditionalAmountPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date additional amount paid",
+                "name": "EmploymentAdditionalAmountPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Employment",
+        "name": "EmploymentClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Child benefit/tax credits",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "TaxCreditType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "TaxCreditAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "TaxCreditPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "TaxCreditPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Child benefit/tax credits",
+        "name": "TaxCreditClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Benefits",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "BenefitsType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "DWP",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "BenefitsDwp",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "HMRC",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "BenefitsHmrc",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "BenefitsAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "BenefitsPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "BenefitsPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Benefits",
+        "name": "BenefitsClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Housing",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "HousingType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "HousingAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "HousingPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "HousingPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Housing",
+        "name": "HousingClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Health",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "HealthType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "NHS",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "HealthNhs",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Private health costs",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "HealthPrivate",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "HealthAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "HealthPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "HealthPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Health",
+        "name": "HealthClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Banking",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "BankingType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "BankingAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "BankingPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "BankingPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Banking",
+        "name": "BankingClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Education",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "EducationType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "EducationAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "EducationPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "EducationPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Education",
+        "name": "EducationClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Homelessness",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "HomelessType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "HomelessAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "HomelessPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "HomelessPaidDate",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Additional amount paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "HomelessAdditionalAmountPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date additional amount paid",
+                "name": "HomelessAdditionalAmountPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Homelessness",
+        "name": "HomelessClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Impact on daily life",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "text",
+              "props": {
+                "label": "Preliminary offer",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "ImpactPrelimOffer",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date Preliminary offer sent",
+                "name": "ImpactPrelimSentDate",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Preliminary offer paid amount",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "ImpactPrelimOfferPaidAmount",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date Preliminary offer paid",
+                "name": "ImpactPrelimPaidDate",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Preliminary offer considered but not awarded date sent",
+                "name": "ImpactPrelimConsideredDate",
+                "disabled": true
+              }
+            },
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "ImpactType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "ImpactAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "ImpactPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "ImpactPaidDate",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Additional amount paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "ImpactAdditionalAmountPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date additional amount paid",
+                "name": "ImpactAdditionalAmountPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Impact on daily life",
+        "name": "ImpactClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Discretionary",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "DiscretionType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "DiscretionAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "DiscretionPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "DiscretionPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Discretionary",
+        "name": "DiscretionClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Driving licence",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  }
+                ],
+                "name": "DrivingType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "DrivingAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "DrivingPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date paid",
+                "name": "DrivingPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Driving licence",
+        "name": "DrivingClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Urgent Exceptional Payment (UEP)",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "UepAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Deducted",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "UepDeduct",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Urgent Exceptional Payment (UEP)",
+        "name": "UepClaimed"
+      },
+      {
+        "component": "expandable-checkbox",
+        "props": {
+          "choice": {
+            "label": "Living Costs",
+            "value": "Yes"
+          },
+          "items": [
+            {
+              "component": "dropdown",
+              "props": {
+                "label": "Payment type",
+                "choices": [
+                  {
+                    "label": "Interim",
+                    "value": "Interim"
+                  },
+                  {
+                    "label": "Full",
+                    "value": "Full"
+                  },
+                  {
+                    "label": "Final",
+                    "value": "Final"
+                  }
+                ],
+                "name": "LivingType",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Awarded",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "LivingAward",
+                "disabled": true
+              }
+            },
+            {
+              "component": "text",
+              "props": {
+                "label": "Amount Paid",
+                "className": "currency",
+                "elementClassName": "govuk-!-width-one-half",
+                "name": "LivingPaid",
+                "disabled": true
+              }
+            },
+            {
+              "component": "date",
+              "props": {
+                "label": "Date Paid",
+                "name": "LivingPaidDate",
+                "disabled": true
+              }
+            }
+          ]
+        },
+        "label": "Living Costs",
+        "name": "LivingClaimed"
+      }
+    ]
+  }
+}

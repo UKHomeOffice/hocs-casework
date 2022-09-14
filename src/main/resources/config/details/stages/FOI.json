@@ -1,0 +1,205 @@
+{
+  "type": "FOI",
+  "groups": {
+    "FOI_ALLOCATION": [
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_FOI_CASEWORK_TEAMS"
+        },
+        "name": "AllocatedGroupUUID",
+        "label": "Group"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "FOI_ACCOUNT_MANAGERS"
+        },
+        "name": "AccountManager",
+        "label": "Account Manager"
+      }
+    ],
+    "FOI_ACCEPTANCE": [
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_FOI_ALL_RESP_TEAMS"
+        },
+        "name": "ResponsibleTeam",
+        "label": "Responsible Team"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Y"
+            },
+            {
+              "label": "No",
+              "value": "N",
+              "conditionalContent": {
+                "label": "Reason"
+              }
+            }
+          ]
+        },
+        "name": "AcceptCase",
+        "label": "Does this case belong in your group?"
+      }
+    ],
+    "FOI_DRAFT": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "RequestContrib-Y"
+            },
+            {
+              "label": "No",
+              "value": "RequestContrib-N"
+            }
+          ]
+        },
+        "name": "ContributionsRequired",
+        "label": "Do you need to request contributions?"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessUnit": "S_FOI_DIRECTORATES"
+          },
+          "somuType": {
+            "type": "CONTRIBUTIONS",
+            "choices": "S_FOI_DIRECTORATES",
+            "caseType": "FOI"
+          }
+        },
+        "name": "CaseContributions",
+        "label": "Case contributions"
+      }
+    ],
+    "FOI_APPROVAL": [
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "approvalRequestForBusinessUnit": "FOI_APPROVER_ROLES"
+          },
+          "somuType": {
+            "type": "APPROVAL_REQS",
+            "choices": "S_FOI_DIRECTORATES",
+            "caseType": "FOI"
+          }
+        },
+        "name": "ApprovalRequests",
+        "label": "Approval Requests"
+      }
+    ],
+    "FOI_DISPATCH": [
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "FOI",
+              "value": "FOI"
+            },
+            {
+              "label": "EIR",
+              "value": "EIR"
+            },
+            {
+              "label": "FOI & EIR",
+              "value": "FOI_AND_EIR"
+            }
+          ]
+        },
+        "name": "CaseType",
+        "label": "What type of case is this?"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Email",
+              "value": "EMAIL"
+            },
+            {
+              "label": "Post",
+              "value": "POST"
+            }
+          ]
+        },
+        "name": "ResponseChannel",
+        "label": "How will the response be sent?"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Request vexatious - section 14 (1)",
+              "value": "REQ_VEXATIOUS_SEC_14"
+            },
+            {
+              "label": "Repeat request section 14 (2)",
+              "value": "REPEAT_REQ_SEC_14"
+            },
+            {
+              "label": "Request unclear / advice and assistance provided",
+              "value": "REQ_UNCLEAR"
+            },
+            {
+              "label": "No information found/held",
+              "value": "NO_INFO"
+            },
+            {
+              "label": "Fee threshold invoked (more than £600) section 12 cost",
+              "value": "FEE_THRESHOLD"
+            },
+            {
+              "label": "Information withheld in full",
+              "value": "WITHHELD_IN_FULL"
+            },
+            {
+              "label": "Information released in full",
+              "value": "RELEASED_IN_FULL"
+            },
+            {
+              "label": "Information released in part",
+              "value": "RELEASED_IN_PART"
+            },
+            {
+              "label": "Information already in public domain",
+              "value": "ALREADY_IN_PUBLIC_DOMAIN"
+            }
+          ]
+        },
+        "name": "TransferOutcome",
+        "label": "What was the outcome of this case?"
+      },
+      {
+        "component": "checkbox-grid",
+        "props": {
+          "choices": "FOI_EXEMPTIONS"
+        },
+        "name": "Exemptions",
+        "label": "Select Exemptions"
+      },
+      {
+        "component": "checkbox-grid",
+        "props": {
+          "choices": "FOI_EIR_EXCEPTIONS"
+        },
+        "name": "Exceptions",
+        "label": "Select Exceptions"
+      }
+    ]
+  }
+}

@@ -1,0 +1,2927 @@
+{
+  "type": "COMP",
+  "groups": {
+    "COMP_REGISTRATION": [
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            }
+          ],
+          "showLabel": true
+        },
+        "name": "WebformComplaintInvalid",
+        "label": "Is the complaint invalid?"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Invalid Complaint",
+              "value": "Invalid Complaint"
+            },
+            {
+              "label": "Duplicate Record",
+              "value": "Duplicate Record"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "WebformComplaintInvalid",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "Close Reason",
+        "label": "Close Reason"
+      },
+      {
+        "component": "text-area",
+        "props": {
+          "visibilityConditions": [
+            {
+              "function": "hasAllValues",
+              "conditionArgs": {
+                "arg1": {
+                  "conditionPropertyName": "Close Reason",
+                  "conditionPropertyValue": "Other"
+                },
+                "arg2": {
+                  "conditionPropertyName": "WebformComplaintInvalid",
+                  "conditionPropertyValue": "Yes"
+                }
+              }
+            }
+          ]
+        },
+        "name": "CloseReasonText",
+        "label": "Reason for closing"
+      },
+      {
+        "component": "date",
+        "name": "DateReceived",
+        "label": "When was the correspondence received?"
+      },
+      {
+        "component": "text",
+        "name": "Withdrawn",
+        "label": "Withdrawn"
+      },
+      {
+        "component": "text-area",
+        "name": "WithdrawalReason",
+        "label": "WithdrawalReason"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "action": "CORRESPONDENT",
+          "entity": "correspondent",
+          "choices": "CASE_CORRESPONDENTS"
+        },
+        "name": "Correspondents",
+        "label": "Which is the primary correspondent?"
+      },
+      {
+        "component": "date",
+        "name": "ComplainantDOB",
+        "label": "Date of Birth"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Male",
+              "value": "Male"
+            },
+            {
+              "label": "Female",
+              "value": "Female"
+            }
+          ]
+        },
+        "name": "ComplainantGender",
+        "label": "Gender"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "COUNTRIES_CURRENT"
+        },
+        "name": "ComplainantNationality",
+        "label": "Nationality"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantCompanyName",
+        "label": "Company Name"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantHORef",
+        "label": "Home Office Reference"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantPortRef",
+        "label": "Port Reference"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Service",
+              "value": "Service"
+            },
+            {
+              "label": "Ex-Gratia",
+              "value": "Ex-Gratia"
+            },
+            {
+              "label": "Minor Misconduct",
+              "value": "MinorMisconduct"
+            }
+          ]
+        },
+        "name": "CompType",
+        "label": "Complaint Type"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Not Applicable",
+              "value": "NA"
+            },
+            {
+              "label": "Telephone",
+              "value": "TELEPHONE"
+            },
+            {
+              "label": "Email",
+              "value": "EMAIL"
+            },
+            {
+              "label": "HMPOTRT",
+              "value": "HMPOTRT"
+            },
+            {
+              "label": "Letter",
+              "value": "Letter"
+            },
+            {
+              "label": "Face to Face",
+              "value": "FACE"
+            },
+            {
+              "label": "Webform",
+              "value": "Webform"
+            }
+          ],
+          "hideConditions": [
+            {
+              "conditionPropertyName": "XOriginatedFrom",
+              "conditionPropertyValue": "Webform"
+            }
+          ]
+        },
+        "name": "Channel",
+        "label": "Channel"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseSummary",
+        "label": "Case Summary"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Very High",
+              "value": "1 Very High"
+            },
+            {
+              "label": "High",
+              "value": "2 High"
+            },
+            {
+              "label": "Medium",
+              "value": "3 Medium"
+            },
+            {
+              "label": "Low",
+              "value": "4 Low"
+            },
+            {
+              "label": "Very Low",
+              "value": "5 Very Low"
+            }
+          ]
+        },
+        "name": "Severity",
+        "label": "Severity"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Safe Guarding",
+              "value": "SafeGuarding"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeveritySafeGuarding"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Vulnerable",
+              "value": "Vulnerable"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeverityVulnerable"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "MP’s Interest",
+              "value": "MPsInterest"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeverityMpsInterest"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Media Interest",
+              "value": "MediaInterest"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeverityMediaInterest"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Exceptional Circumstances",
+              "value": "ExceptionalCircumstances"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeverityExceptionalCircumstances"
+      },
+      {
+        "component": "text",
+        "name": "PrevUkviRef",
+        "label": "Previous UKVI Complaint Ref"
+      },
+      {
+        "component": "text",
+        "name": "3rdPartyRef",
+        "label": "Third Party Reference"
+      },
+      {
+        "component": "accordion",
+        "name": "ServiceAccordion",
+        "label": "Service"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Delay",
+              "value": "Delay"
+            }
+          ]
+        },
+        "name": "CatDelay"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Admin / Process Error",
+              "value": "AdminErr"
+            }
+          ]
+        },
+        "name": "CatAdminErr"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Poor Communication",
+              "value": "PoorComm"
+            }
+          ]
+        },
+        "name": "CatPoorComm"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Wrong Information",
+              "value": "WrongInfo"
+            }
+          ]
+        },
+        "name": "CatWrongInfo"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Properties and Lost Documents",
+              "value": "Lost"
+            }
+          ]
+        },
+        "name": "CatLost"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Physical Environment",
+              "value": "CCPhy"
+            }
+          ]
+        },
+        "name": "CatCCPhy"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Availability of Service",
+              "value": "CCAvail"
+            }
+          ]
+        },
+        "name": "CatCCAvail"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Provision for Minors",
+              "value": "CCProvMinor"
+            }
+          ]
+        },
+        "name": "CatCCProvMinor"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Complaint Handling",
+              "value": "CCHandle"
+            }
+          ]
+        },
+        "name": "CatCCHandle"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Damage (BF)",
+              "value": "DamBF"
+            }
+          ]
+        },
+        "name": "CatDamBF"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Custody (BF)",
+              "value": "CustodyBF"
+            }
+          ]
+        },
+        "name": "CatCustodyBF"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Rudeness",
+              "value": "Rude"
+            }
+          ]
+        },
+        "name": "CatRude"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Unfair Treatment",
+              "value": "Unfair"
+            }
+          ]
+        },
+        "name": "CatUnfair"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Other Unprofessional",
+              "value": "OtherUnprof"
+            }
+          ]
+        },
+        "name": "CatOtherUnprof"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Theft",
+              "value": "Theft"
+            }
+          ]
+        },
+        "name": "CatTheft"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault"
+            }
+          ]
+        },
+        "name": "CatAssault"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Sexual Assault",
+              "value": "SexAssault"
+            }
+          ]
+        },
+        "name": "CatSexAssault"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Fraud / Corruption",
+              "value": "Fraud"
+            }
+          ]
+        },
+        "name": "CatFraud"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Racism and Other Discrimination",
+              "value": "Racism"
+            }
+          ]
+        },
+        "name": "CatRacism"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CSU_LIST"
+        },
+        "name": "OwningCSU",
+        "label": "Owning CSU"
+      }
+    ],
+    "COMP_EXGRATIA_RESPONSE_DRAFT": [
+      {
+        "component": "text-area",
+        "name": "CaseNote_DraftEscalate",
+        "label": "Enter reason for escalation"
+      }
+    ],
+    "COMP_MINORMISCONDUCT_RESPONSE_DRAFT": [
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_DRAFT"
+        },
+        "name": "DraftDocuments",
+        "label": "Primary draft document"
+      },
+      {
+        "component": "entity-manager",
+        "props": {
+          "entity": "template",
+          "choices": "CASE_TEMPLATES"
+        },
+        "name": "Complaint_Response",
+        "label": "Available Template"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Response is ready to send",
+              "value": "Send"
+            },
+            {
+              "label": "Send case to QA",
+              "value": "QA"
+            },
+            {
+              "label": "Escalate case to WFM",
+              "value": "Escalate"
+            }
+          ]
+        },
+        "name": "CctDraftResult",
+        "label": "Action"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_DraftReturn",
+        "label": "Enter reason for returning"
+      }
+    ],
+    "COMP_EXGRATIA_QA": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Accept - send response to complainant",
+              "value": "Accept"
+            },
+            {
+              "label": "Reject - return response to draft",
+              "value": "Reject"
+            }
+          ]
+        },
+        "name": "CctQaResult",
+        "label": "QA Result"
+      }
+    ],
+    "COMP_EXGRATIA_SEND": [
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE"
+        },
+        "name": "FinalResponseDocument",
+        "label": "Upload the Final Response"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CCT_CASE_OUTCOME"
+        },
+        "name": "CctCaseOutcome",
+        "label": "Case Outcome"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Telephone",
+              "value": "Telephone"
+            },
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Letter",
+              "value": "Letter"
+            },
+            {
+              "label": "In Person",
+              "value": "InPerson"
+            }
+          ]
+        },
+        "name": "ResponseChannel",
+        "label": "Response Channel"
+      },
+      {
+        "component": "date",
+        "name": "DateResponded",
+        "label": "Date of Response"
+      }
+    ],
+    "COMP_EXGRATIA_ESCALATE": [
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "COMPLAINANT_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "CompContributions",
+        "label": "Complainant additional information"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Has Letter of Authority been received?",
+              "value": "Yes"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaRequired",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaReceived"
+      },
+      {
+        "component": "date",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaReceived",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaDate",
+        "label": "Date of Letter of Authority"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "EX_GRATIA_BUS_REPS"
+          },
+          "somuType": {
+            "type": "EXGRATIA_BUS_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "ExGratiaBusContributions",
+        "label": "Business contributions"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "Return case to Triage",
+              "value": "Triage"
+            },
+            {
+              "label": "Case ready for drafting",
+              "value": "Draft"
+            }
+          ]
+        },
+        "name": "CctEscalateResult",
+        "label": "Action"
+      }
+    ],
+    "COMP_MINORMISCONDUCT_TRIAGE": [
+      {
+        "component": "text-area",
+        "name": "CaseSummary",
+        "label": "Case Summary"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes - accept the complaint",
+              "value": "Yes"
+            },
+            {
+              "label": "No - transfer the complaint",
+              "value": "No"
+            }
+          ]
+        },
+        "name": "CctTriageAccept",
+        "label": "Can your team respond to this complaint?"
+      },
+      {
+        "component": "date",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "CctTriageAccept",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "AcceptDate",
+        "label": "Date of Acceptance"
+      },
+      {
+        "component": "accordion",
+        "name": "ServiceAccordion",
+        "label": "Service"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Delay",
+              "value": "Delay"
+            }
+          ]
+        },
+        "name": "CatDelay"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Admin / Process Error",
+              "value": "AdminErr"
+            }
+          ]
+        },
+        "name": "CatAdminErr"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Poor Communication",
+              "value": "PoorComm"
+            }
+          ]
+        },
+        "name": "CatPoorComm"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Wrong Information",
+              "value": "WrongInfo"
+            }
+          ]
+        },
+        "name": "CatWrongInfo"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Properties and Lost Documents",
+              "value": "Lost"
+            }
+          ]
+        },
+        "name": "CatLost"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Physical Environment",
+              "value": "CCPhy"
+            }
+          ]
+        },
+        "name": "CatCCPhy"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Availability of Service",
+              "value": "CCAvail"
+            }
+          ]
+        },
+        "name": "CatCCAvail"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Provision for Minors",
+              "value": "CCProvMinor"
+            }
+          ]
+        },
+        "name": "CatCCProvMinor"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Complaint Handling",
+              "value": "CCHandle"
+            }
+          ]
+        },
+        "name": "CatCCHandle"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Damage (BF)",
+              "value": "DamBF"
+            }
+          ]
+        },
+        "name": "CatDamBF"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Custody (BF)",
+              "value": "CustodyBF"
+            }
+          ]
+        },
+        "name": "CatCustodyBF"
+      },
+      {
+        "component": "accordion",
+        "name": "SeriousMinorAccordian",
+        "label": "Serious and Minor"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Rudeness",
+              "value": "Rude"
+            }
+          ]
+        },
+        "name": "CatRude"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Unfair Treatment",
+              "value": "Unfair"
+            }
+          ]
+        },
+        "name": "CatUnfair"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Other Unprofessional",
+              "value": "OtherUnprof"
+            }
+          ]
+        },
+        "name": "CatOtherUnprof"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Theft",
+              "value": "Theft"
+            }
+          ]
+        },
+        "name": "CatTheft"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault"
+            }
+          ]
+        },
+        "name": "CatAssault"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Sexual Assault",
+              "value": "SexAssault"
+            }
+          ]
+        },
+        "name": "CatSexAssault"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Fraud / Corruption",
+              "value": "Fraud"
+            }
+          ]
+        },
+        "name": "CatFraud"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Racism and Other Discrimination",
+              "value": "Racism"
+            }
+          ]
+        },
+        "name": "CatRacism"
+      },
+      {
+        "component": "accordion",
+        "name": "ExGratiaAccordian",
+        "label": "Ex-Gratia"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Chaser",
+              "value": "Chaser"
+            }
+          ]
+        },
+        "name": "CatChaser"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Complaint Offer",
+              "value": "ComplaintOffer"
+            }
+          ]
+        },
+        "name": "CatOffer"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Litigation",
+              "value": "Litigation"
+            }
+          ]
+        },
+        "name": "CatLitigation"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "MPAM offer",
+              "value": "MPAMOffer"
+            }
+          ]
+        },
+        "name": "CatMPAMPOffer"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "New Claim - C",
+              "value": "NewClaimC"
+            }
+          ]
+        },
+        "name": "CatNewClaimC"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "New Claim - SF",
+              "value": "NewClaimSF"
+            }
+          ]
+        },
+        "name": "CatNewClaimSF"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "PHSO",
+              "value": "PHSO"
+            }
+          ]
+        },
+        "name": "CatPHSO"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Project",
+              "value": "Project"
+            }
+          ]
+        },
+        "name": "CatProject"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Reconsideration",
+              "value": "Reconsideration"
+            }
+          ]
+        },
+        "name": "CatReconsideration"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Stage3",
+              "value": "Stage3"
+            }
+          ]
+        },
+        "name": "CatStage3"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CSU_LIST"
+        },
+        "name": "OwningCSU",
+        "label": "Owning CSU"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_TriageTransfer",
+        "label": "Enter reason for transfer"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "CCH",
+              "value": "CCH"
+            }
+          ]
+        },
+        "name": "CctCompType",
+        "label": "Transfer to"
+      }
+    ],
+    "COMP_EXGRATIA_TRIAGE": [
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CCT_BUS_AREA"
+        },
+        "name": "BusArea",
+        "label": "Business Area"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CCT_ENQ_REASON"
+        },
+        "name": "EnqReason",
+        "label": "Enquiry Reason"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            },
+            {
+              "label": "No",
+              "value": "No"
+            }
+          ]
+        },
+        "name": "LoaRequired",
+        "label": "Is a Letter of Authority required?"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseSummary",
+        "label": "Case Summary"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes - accept the complaint",
+              "value": "Yes"
+            },
+            {
+              "label": "No - transfer the complaint",
+              "value": "No"
+            }
+          ]
+        },
+        "name": "CctTriageAccept",
+        "label": "Can your team respond to this complaint?"
+      },
+      {
+        "component": "date",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "CctTriageAccept",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "AcceptDate",
+        "label": "Date of Acceptance"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_TriageTransfer",
+        "label": "Enter reason for transfer"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "CCH",
+              "value": "CCH"
+            }
+          ]
+        },
+        "name": "CctCompType",
+        "label": "Transfer to"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "COMPLAINANT_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "CompContributions",
+        "label": "Complainant additional information"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Has Letter of Authority been received?",
+              "value": "Yes"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaRequired",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaReceived"
+      },
+      {
+        "component": "date",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaReceived",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaDate",
+        "label": "Date of Letter of Authority"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "EX_GRATIA_BUS_REPS"
+          },
+          "somuType": {
+            "type": "EXGRATIA_BUS_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "ExGratiaBusContributions",
+        "label": "Business contributions"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "All information collected - case ready for drafting",
+              "value": "Draft"
+            },
+            {
+              "label": "Escalate case to WFM",
+              "value": "Escalate"
+            },
+            {
+              "label": "No response - complete the case (close permanently)",
+              "value": "Complete"
+            }
+          ]
+        },
+        "name": "CctTriageResult",
+        "label": "Action"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Duplicate Record",
+              "value": "Duplicate Record"
+            },
+            {
+              "label": "Local Resolution",
+              "value": "Local Resolution"
+            },
+            {
+              "label": "Complaint Rejection",
+              "value": "Complaint Rejection"
+            },
+            {
+              "label": "Third Party Rejection",
+              "value": "Third Party Rejection"
+            },
+            {
+              "label": "Withdrawn by Customer",
+              "value": "Withdrawn by Customer"
+            },
+            {
+              "label": "Transferred to Other Department",
+              "value": "Transferred to Other Department"
+            },
+            {
+              "label": "Persistent Author",
+              "value": "Persistent Author"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "CctTriageResult",
+              "conditionPropertyValue": "Complete"
+            }
+          ]
+        },
+        "name": "Close Reason",
+        "label": "Close Reason"
+      },
+      {
+        "component": "text-area",
+        "props": {
+          "visibilityConditions": [
+            {
+              "function": "hasAllValues",
+              "conditionArgs": {
+                "arg1": {
+                  "conditionPropertyName": "Close Reason",
+                  "conditionPropertyValue": "Other"
+                },
+                "arg2": {
+                  "conditionPropertyName": "CctTriageResult",
+                  "conditionPropertyValue": "Complete"
+                }
+              }
+            }
+          ]
+        },
+        "name": "CloseReasonText",
+        "label": "Reason for closing"
+      },
+      {
+        "component": "accordion",
+        "name": "ServiceAccordion",
+        "label": "Service"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Delay",
+              "value": "Delay"
+            }
+          ]
+        },
+        "name": "CatDelay"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Admin / Process Error",
+              "value": "AdminErr"
+            }
+          ]
+        },
+        "name": "CatAdminErr"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Poor Communication",
+              "value": "PoorComm"
+            }
+          ]
+        },
+        "name": "CatPoorComm"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Wrong Information",
+              "value": "WrongInfo"
+            }
+          ]
+        },
+        "name": "CatWrongInfo"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Properties and Lost Documents",
+              "value": "Lost"
+            }
+          ]
+        },
+        "name": "CatLost"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Physical Environment",
+              "value": "CCPhy"
+            }
+          ]
+        },
+        "name": "CatCCPhy"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Availability of Service",
+              "value": "CCAvail"
+            }
+          ]
+        },
+        "name": "CatCCAvail"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Provision for Minors",
+              "value": "CCProvMinor"
+            }
+          ]
+        },
+        "name": "CatCCProvMinor"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Complaint Handling",
+              "value": "CCHandle"
+            }
+          ]
+        },
+        "name": "CatCCHandle"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Damage (BF)",
+              "value": "DamBF"
+            }
+          ]
+        },
+        "name": "CatDamBF"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Custody (BF)",
+              "value": "CustodyBF"
+            }
+          ]
+        },
+        "name": "CatCustodyBF"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Rudeness",
+              "value": "Rude"
+            }
+          ]
+        },
+        "name": "CatRude"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Unfair Treatment",
+              "value": "Unfair"
+            }
+          ]
+        },
+        "name": "CatUnfair"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Other Unprofessional",
+              "value": "OtherUnprof"
+            }
+          ]
+        },
+        "name": "CatOtherUnprof"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Theft",
+              "value": "Theft"
+            }
+          ]
+        },
+        "name": "CatTheft"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault"
+            }
+          ]
+        },
+        "name": "CatAssault"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Sexual Assault",
+              "value": "SexAssault"
+            }
+          ]
+        },
+        "name": "CatSexAssault"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Fraud / Corruption",
+              "value": "Fraud"
+            }
+          ]
+        },
+        "name": "CatFraud"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Racism and Other Discrimination",
+              "value": "Racism"
+            }
+          ]
+        },
+        "name": "CatRacism"
+      },
+      {
+        "component": "accordion",
+        "name": "ExGratiaAccordian",
+        "label": "Ex-Gratia"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Chaser",
+              "value": "Chaser"
+            }
+          ]
+        },
+        "name": "CatChaser"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Complaint Offer",
+              "value": "ComplaintOffer"
+            }
+          ]
+        },
+        "name": "CatOffer"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Litigation",
+              "value": "Litigation"
+            }
+          ]
+        },
+        "name": "CatLitigation"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "MPAM offer",
+              "value": "MPAMOffer"
+            }
+          ]
+        },
+        "name": "CatMPAMPOffer"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "New Claim - C",
+              "value": "NewClaimC"
+            }
+          ]
+        },
+        "name": "CatNewClaimC"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "New Claim - SF",
+              "value": "NewClaimSF"
+            }
+          ]
+        },
+        "name": "CatNewClaimSF"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "PHSO",
+              "value": "PHSO"
+            }
+          ]
+        },
+        "name": "CatPHSO"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Project",
+              "value": "Project"
+            }
+          ]
+        },
+        "name": "CatProject"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Reconsideration",
+              "value": "Reconsideration"
+            }
+          ]
+        },
+        "name": "CatReconsideration"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Stage3",
+              "value": "Stage3"
+            }
+          ]
+        },
+        "name": "CatStage3"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "conditionChoices": [
+            {
+              "choices": [
+                {
+                  "label": "IandP",
+                  "value": "IandP"
+                },
+                {
+                  "label": "RASI",
+                  "value": "RASI"
+                },
+                {
+                  "label": "VCIC",
+                  "value": "VCIC"
+                },
+                {
+                  "label": "VCOS",
+                  "value": "VCOS"
+                },
+                {
+                  "label": "Other",
+                  "value": "Other"
+                },
+                {
+                  "label": "EUSS FP",
+                  "value": "EUSSFP"
+                }
+              ],
+              "conditionPropertyName": "OwningCSU",
+              "conditionPropertyValue": "UKVI"
+            },
+            {
+              "choices": [
+                {
+                  "label": "CI",
+                  "value": "CI"
+                },
+                {
+                  "label": "FNORC",
+                  "value": "FNORC"
+                },
+                {
+                  "label": "Detention",
+                  "value": "Detention"
+                },
+                {
+                  "label": "ICE Teams",
+                  "value": "ICETeams"
+                },
+                {
+                  "label": "Other",
+                  "value": "Other"
+                },
+                {
+                  "label": "NRC",
+                  "value": "NRC"
+                },
+                {
+                  "label": "Reporting Centres",
+                  "value": "ReportingCentres"
+                },
+                {
+                  "label": "Returns Preparation",
+                  "value": "ReturnsPreparation"
+                }
+              ],
+              "conditionPropertyName": "OwningCSU",
+              "conditionPropertyValue": "IE"
+            }
+          ]
+        },
+        "name": "Directorate",
+        "label": "Directorate"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "conditionChoices": [
+            {
+              "choices": "COMP_IANDP_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "IandP"
+            },
+            {
+              "choices": "COMP_RASI_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "RASI"
+            },
+            {
+              "choices": "COMP_VCIC_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "VCIC"
+            },
+            {
+              "choices": "COMP_VCOS_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "VCOS"
+            },
+            {
+              "choices": "COMP_EUSS_FP_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "EUSSFP"
+            },
+            {
+              "choices": [
+                {
+                  "label": "",
+                  "value": ""
+                }
+              ],
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "VandCInternational"
+            },
+            {
+              "choices": [
+                {
+                  "label": "",
+                  "value": ""
+                }
+              ],
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "VandCInCountry"
+            },
+            {
+              "choices": [
+                {
+                  "label": "Crime Investigations",
+                  "value": "CrimeInvestigations"
+                }
+              ],
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "CI"
+            },
+            {
+              "choices": [
+                {
+                  "label": "FNORC (IE)",
+                  "value": "FNORC(IE)"
+                }
+              ],
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "FNORC"
+            },
+            {
+              "choices": [
+                {
+                  "label": "Detention Services",
+                  "value": "DetentionServices"
+                }
+              ],
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "Detention"
+            },
+            {
+              "choices": [
+                {
+                  "label": "ICE Teams",
+                  "value": "ICETeams"
+                }
+              ],
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "ICETeams"
+            },
+            {
+              "choices": "COMP_OTHER_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "Other"
+            },
+            {
+              "choices": [
+                {
+                  "label": "NRC (detained removal casework)",
+                  "value": "NRC"
+                }
+              ],
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "NRC"
+            },
+            {
+              "choices": [
+                {
+                  "label": "Reporting Centres",
+                  "value": "ReportingCentres"
+                }
+              ],
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "ReportingCentres"
+            },
+            {
+              "choices": [
+                {
+                  "label": "Returns Preparations (non detained removal casework)",
+                  "value": "ReturnsPreparations"
+                }
+              ],
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "ReturnsPreparation"
+            }
+          ]
+        },
+        "name": "BusAreaBasedOnDirectorate",
+        "label": "Business Area"
+      }
+    ],
+    "COMP_MINORMISCONDUCT_ESCALATE": [
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "COMPLAINANT_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "CompContributions",
+        "label": "Complainant additional information"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Has Letter of Authority been received?",
+              "value": "Yes"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaRequired",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaReceived"
+      },
+      {
+        "component": "date",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaReceived",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaDate",
+        "label": "Date of Letter of Authority"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_BUS_AREA"
+          },
+          "somuType": {
+            "type": "CCT_BUS_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "BusContributions",
+        "label": "Business contributions"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "Return case to Triage",
+              "value": "Triage"
+            },
+            {
+              "label": "Case ready for drafting",
+              "value": "Draft"
+            }
+          ]
+        },
+        "name": "CctEscalateResult",
+        "label": "Action"
+      }
+    ],
+    "COMP_CCH_RETURNS": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "CCT",
+              "value": "Service"
+            },
+            {
+              "label": "Ex-Gratia",
+              "value": "Ex-Gratia"
+            },
+            {
+              "label": "Minor Misconduct",
+              "value": "MinorMisconduct"
+            },
+            {
+              "label": "Complete the case (close permanently)",
+              "value": "Complete"
+            }
+          ]
+        },
+        "name": "CchCompType",
+        "label": "Transfer to"
+      }
+    ],
+    "COMP_SERVICE_TRIAGE": [
+      {
+        "component": "text-area",
+        "name": "CaseSummary",
+        "label": "Case Summary"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes - accept the complaint",
+              "value": "Yes"
+            },
+            {
+              "label": "No - transfer the complaint",
+              "value": "No"
+            }
+          ]
+        },
+        "name": "CctTriageAccept",
+        "label": "Can your team respond to this complaint?"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Very High",
+              "value": "1 Very High"
+            },
+            {
+              "label": "High",
+              "value": "2 High"
+            },
+            {
+              "label": "Medium",
+              "value": "3 Medium"
+            },
+            {
+              "label": "Low",
+              "value": "4 Low"
+            },
+            {
+              "label": "Very Low",
+              "value": "5 Very Low"
+            }
+          ]
+        },
+        "name": "Severity",
+        "label": "Severity"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Safe Guarding",
+              "value": "SafeGuarding"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeveritySafeGuarding"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Vulnerable",
+              "value": "Vulnerable"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeverityVulnerable"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "MP’s Interest",
+              "value": "MPsInterest"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeverityMpsInterest"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Media Interest",
+              "value": "MediaInterest"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeverityMediaInterest"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Exceptional Circumstances",
+              "value": "ExceptionalCircumstances"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeverityExceptionalCircumstances"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_TriageTransfer",
+        "label": "Enter reason for transfer"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "CCH",
+              "value": "CCH"
+            }
+          ]
+        },
+        "name": "CctCompType",
+        "label": "Transfer to"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "COMPLAINANT_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "CompContributions",
+        "label": "Complainant additional information"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Has Letter of Authority been received?",
+              "value": "Yes"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaRequired",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaReceived"
+      },
+      {
+        "component": "date",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaReceived",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaDate",
+        "label": "Date of Letter of Authority"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_BUS_AREA"
+          },
+          "somuType": {
+            "type": "CCT_BUS_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "BusContributions",
+        "label": "Business contributions"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "All information collected - case ready for drafting",
+              "value": "Draft"
+            },
+            {
+              "label": "Escalate case to WFM",
+              "value": "Escalate"
+            },
+            {
+              "label": "No response - complete the case (close permanently)",
+              "value": "Complete"
+            }
+          ]
+        },
+        "name": "CctTriageResult",
+        "label": "Action"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Duplicate Record",
+              "value": "Duplicate Record"
+            },
+            {
+              "label": "Local Resolution",
+              "value": "Local Resolution"
+            },
+            {
+              "label": "Complaint Rejection",
+              "value": "Complaint Rejection"
+            },
+            {
+              "label": "Third Party Rejection",
+              "value": "Third Party Rejection"
+            },
+            {
+              "label": "Withdrawn by Customer",
+              "value": "Withdrawn by Customer"
+            },
+            {
+              "label": "Transferred to Other Department",
+              "value": "Transferred to Other Department"
+            },
+            {
+              "label": "Persistent Author",
+              "value": "Persistent Author"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "CctTriageResult",
+              "conditionPropertyValue": "Complete"
+            }
+          ]
+        },
+        "name": "Close Reason",
+        "label": "Close Reason"
+      },
+      {
+        "component": "text-area",
+        "props": {
+          "visibilityConditions": [
+            {
+              "function": "hasAllValues",
+              "conditionArgs": {
+                "arg1": {
+                  "conditionPropertyName": "Close Reason",
+                  "conditionPropertyValue": "Other"
+                },
+                "arg2": {
+                  "conditionPropertyName": "CctTriageResult",
+                  "conditionPropertyValue": "Complete"
+                }
+              }
+            }
+          ]
+        },
+        "name": "CloseReasonText",
+        "label": "Reason for closing"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_TriageEscalate",
+        "label": "Enter reason for escalation"
+      }
+    ],
+    "COMP_CLOSED": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Re-open the case, send to CCT Stage 2",
+              "value": "Service"
+            },
+            {
+              "label": "Complete the case (close permanently)",
+              "value": "Complete"
+            }
+          ]
+        },
+        "name": "ClosedCompType",
+        "label": "Progress case"
+      }
+    ],
+    "COMP_OTHER": [
+      {
+        "component": "entity-list",
+        "props": {
+          "action": "CORRESPONDENT",
+          "entity": "correspondent",
+          "choices": "CASE_CORRESPONDENTS"
+        },
+        "name": "Correspondents",
+        "label": "Which is the primary correspondent?"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Service",
+              "value": "Service"
+            },
+            {
+              "label": "Ex-Gratia",
+              "value": "Ex-Gratia"
+            },
+            {
+              "label": "Minor Misconduct",
+              "value": "MinorMisconduct"
+            }
+          ]
+        },
+        "name": "CompType",
+        "label": "Complaint Type"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Not Applicable",
+              "value": "NA"
+            },
+            {
+              "label": "Telephone",
+              "value": "TELEPHONE"
+            },
+            {
+              "label": "Email",
+              "value": "EMAIL"
+            },
+            {
+              "label": "HMPOTRT",
+              "value": "HMPOTRT"
+            },
+            {
+              "label": "Letter",
+              "value": "Letter"
+            },
+            {
+              "label": "Face to Face",
+              "value": "FACE"
+            },
+            {
+              "label": "Webform",
+              "value": "Webform"
+            }
+          ],
+          "hideConditions": [
+            {
+              "conditionPropertyName": "XOriginatedFrom",
+              "conditionPropertyValue": "Webform"
+            }
+          ]
+        },
+        "name": "Channel",
+        "label": "Channel"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseSummary",
+        "label": "Case Summary"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Very High",
+              "value": "1 Very High"
+            },
+            {
+              "label": "High",
+              "value": "2 High"
+            },
+            {
+              "label": "Medium",
+              "value": "3 Medium"
+            },
+            {
+              "label": "Low",
+              "value": "4 Low"
+            },
+            {
+              "label": "Very Low",
+              "value": "5 Very Low"
+            }
+          ]
+        },
+        "name": "Severity",
+        "label": "Severity"
+      },
+      {
+        "component": "text",
+        "name": "PrevUkviRef",
+        "label": "Previous UKVI Complaint Ref"
+      },
+      {
+        "component": "text",
+        "name": "3rdPartyRef",
+        "label": "Third Party Reference"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_DRAFT"
+        },
+        "name": "DraftDocuments",
+        "label": "Primary draft document"
+      },
+      {
+        "component": "accordion",
+        "name": "ServiceAccordion",
+        "label": "Service"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Delay",
+              "value": "Delay"
+            }
+          ]
+        },
+        "name": "CatDelay"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Admin / Process Error",
+              "value": "AdminErr"
+            }
+          ]
+        },
+        "name": "CatAdminErr"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Poor Communication",
+              "value": "PoorComm"
+            }
+          ]
+        },
+        "name": "CatPoorComm"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Wrong Information",
+              "value": "WrongInfo"
+            }
+          ]
+        },
+        "name": "CatWrongInfo"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Properties and Lost Documents",
+              "value": "Lost"
+            }
+          ]
+        },
+        "name": "CatLost"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Physical Environment",
+              "value": "CCPhy"
+            }
+          ]
+        },
+        "name": "CatCCPhy"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Availability of Service",
+              "value": "CCAvail"
+            }
+          ]
+        },
+        "name": "CatCCAvail"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Provision for Minors",
+              "value": "CCProvMinor"
+            }
+          ]
+        },
+        "name": "CatCCProvMinor"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "CC - Complaint Handling",
+              "value": "CCHandle"
+            }
+          ]
+        },
+        "name": "CatCCHandle"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Damage (BF)",
+              "value": "DamBF"
+            }
+          ]
+        },
+        "name": "CatDamBF"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Custody (BF)",
+              "value": "CustodyBF"
+            }
+          ]
+        },
+        "name": "CatCustodyBF"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Rudeness",
+              "value": "Rude"
+            }
+          ]
+        },
+        "name": "CatRude"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Unfair Treatment",
+              "value": "Unfair"
+            }
+          ]
+        },
+        "name": "CatUnfair"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Other Unprofessional",
+              "value": "OtherUnprof"
+            }
+          ]
+        },
+        "name": "CatOtherUnprof"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Theft",
+              "value": "Theft"
+            }
+          ]
+        },
+        "name": "CatTheft"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault"
+            }
+          ]
+        },
+        "name": "CatAssault"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Sexual Assault",
+              "value": "SexAssault"
+            }
+          ]
+        },
+        "name": "CatSexAssault"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Fraud / Corruption",
+              "value": "Fraud"
+            }
+          ]
+        },
+        "name": "CatFraud"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Racism and Other Discrimination",
+              "value": "Racism"
+            }
+          ]
+        },
+        "name": "CatRacism"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CSU_LIST"
+        },
+        "name": "OwningCSU",
+        "label": "Owning CSU"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Submitting application",
+              "value": "SUBMITTING_APPLICATION"
+            },
+            {
+              "label": "Making appointment",
+              "value": "MAKING_APPOINTMENT"
+            },
+            {
+              "label": "Existing",
+              "value": "EXISTING"
+            },
+            {
+              "label": "Document delays",
+              "value": "DOCUMENT_DELAYS"
+            },
+            {
+              "label": "Immigration decision",
+              "value": "IMMIGRATION_DECISION"
+            },
+            {
+              "label": "Biometric residence permit",
+              "value": "BIOMETRIC_RESIDENCE_PERMIT"
+            },
+            {
+              "label": "Refund",
+              "value": "REFUND"
+            },
+            {
+              "label": "Poor staff behaviour",
+              "value": "POOR_STAFF_BEHAVIOUR"
+            },
+            {
+              "label": "Poor information",
+              "value": "POOR_INFORMATION"
+            },
+            {
+              "label": "Something else",
+              "value": "SOMETHING_ELSE"
+            }
+          ]
+        },
+        "name": "ComplaintType",
+        "label": "Complaint Reason"
+      }
+    ]
+  }
+}

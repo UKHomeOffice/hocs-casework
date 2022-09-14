@@ -1,0 +1,1212 @@
+{
+  "type": "BF2",
+  "groups": {
+    "BF2_REGISTRATION": [
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "b9c47527-12b8-4405-a951-8855d7bf9e6d",
+          "label": "Complaint Input"
+        }
+      },
+      {
+        "component": "radio",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Not Applicable",
+              "value": "NA"
+            },
+            {
+              "label": "Telephone",
+              "value": "TELEPHONE"
+            },
+            {
+              "label": "Email",
+              "value": "EMAIL"
+            },
+            {
+              "label": "HMPOTRT",
+              "value": "HMPOTRT"
+            },
+            {
+              "label": "Letter",
+              "value": "Letter"
+            },
+            {
+              "label": "Face to Face",
+              "value": "FACE"
+            },
+            {
+              "label": "Webform",
+              "value": "Webform"
+            }
+          ],
+          "label": "Channel",
+          "name": "Channel"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [],
+        "props": {
+          "label": "Case Summary",
+          "name": "CaseSummary"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "label": "Previous Complaint Reference",
+          "name": "PrevCompRef"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "label": "Third Party Reference",
+          "name": "3rdPartyRef"
+        }
+      },
+      {
+        "component": "hidden",
+        "validation": [],
+        "props": {
+          "label": "Complaint Type",
+          "name": "CompType"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "29d9c8b7-ea3d-4a8e-9bfe-9aeeb3981d73",
+          "label": "Complaint Correspondents"
+        }
+      },
+      {
+        "component": "entity-list",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "action": "CORRESPONDENT",
+          "entity": "correspondent",
+          "choices": "CASE_CORRESPONDENTS",
+          "addUrlPath": "addNoMp",
+          "hasAddLink": true,
+          "hasEditLink": true,
+          "hasRemoveLink": true,
+          "hideRemovePrimary": true,
+          "label": "Which is the primary correspondent?",
+          "name": "Correspondents"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "1b0d9552-5446-4cd3-99d0-14acfcc9ed53",
+          "label": "COMP Hidden"
+        }
+      },
+      {
+        "component": "date",
+        "validation": [
+          "required",
+          "isValidDate",
+          "isValidDay",
+          "isValidMonth",
+          "isYearWithinRange",
+          "isBeforeToday"
+        ],
+        "props": {
+          "label": "When was the correspondence received?",
+          "name": "DateReceived"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "label": "Withdrawn",
+          "name": "Withdrawn"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [],
+        "props": {
+          "label": "WithdrawalReason",
+          "name": "WithdrawalReason"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "6d605566-e811-4e43-b42e-2edd44ef41d3",
+          "label": "Complainant Details"
+        }
+      },
+      {
+        "component": "date",
+        "validation": [
+          "isValidDate",
+          "isValidDay",
+          "isValidMonth",
+          "isYearWithinRange",
+          "isBeforeToday"
+        ],
+        "props": {
+          "label": "Date of Birth",
+          "name": "ComplainantDOB"
+        }
+      },
+      {
+        "component": "radio",
+        "validation": [],
+        "props": {
+          "choices": [
+            {
+              "label": "Male",
+              "value": "Male"
+            },
+            {
+              "label": "Female",
+              "value": "Female"
+            }
+          ],
+          "label": "Gender",
+          "name": "ComplainantGender"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [],
+        "props": {
+          "choices": "COUNTRIES_CURRENT",
+          "label": "Nationality",
+          "name": "ComplainantNationality"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "label": "Company Name",
+          "name": "ComplainantCompanyName"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "label": "Home Office Reference",
+          "name": "ComplainantHORef"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "label": "Port Reference",
+          "name": "ComplainantPortRef"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "b5a606dd-bb69-40f2-8184-4144097c7ad6",
+          "label": "Complaint Correspondents Invalid"
+        }
+      }
+    ],
+    "BF2_TRIAGE": [
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "506053df-838d-4c6c-a637-de261310cc91",
+          "label": "Triage Details"
+        }
+      },
+      {
+        "component": "accordion",
+        "validation": [],
+        "props": {
+          "label": "Case Details",
+          "name": "caseDetailsAccordion"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "label": "Previous Complaint Reference",
+          "name": "PrevCompRef"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": "S_BF_REGION",
+          "label": "Region",
+          "name": "Region"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "conditionChoices": [
+            {
+              "choices": "S_BF_BUS_AREA_NORTH_REGION",
+              "conditionPropertyName": "Region",
+              "conditionPropertyValue": "NorthRegion"
+            },
+            {
+              "choices": "S_BF_BUS_AREA_CENTRAL_REGION",
+              "conditionPropertyName": "Region",
+              "conditionPropertyValue": "CentralRegion"
+            },
+            {
+              "choices": "S_BF_BUS_AREA_HEATHROW_REGION",
+              "conditionPropertyName": "Region",
+              "conditionPropertyValue": "HeathrowRegion"
+            },
+            {
+              "choices": "S_BF_BUS_AREA_SOUTH_REGION",
+              "conditionPropertyName": "Region",
+              "conditionPropertyValue": "SouthRegion"
+            },
+            {
+              "choices": "S_BF_BUS_AREA_SOUTH_EAST_REGION",
+              "conditionPropertyName": "Region",
+              "conditionPropertyValue": "SouthEastRegion"
+            },
+            {
+              "choices": "S_BF_BUS_AREA_EUROPE_REGION",
+              "conditionPropertyName": "Region",
+              "conditionPropertyValue": "EuropeRegion"
+            },
+            {
+              "choices": "S_BF_BUS_AREA_BF_INTEL",
+              "conditionPropertyName": "Region",
+              "conditionPropertyValue": "BFIntel"
+            },
+            {
+              "choices": "S_BF_BUS_AREA_OPS_LOGISTICS",
+              "conditionPropertyName": "Region",
+              "conditionPropertyValue": "OpsLogistics"
+            },
+            {
+              "choices": "S_BF_BUS_AREA_WARNING_INDEX_COMPLAINTS",
+              "conditionPropertyName": "Region",
+              "conditionPropertyValue": "WarningIndexComplaints"
+            },
+            {
+              "choices": "S_BF_BUS_AREA_UNKNOWN",
+              "conditionPropertyName": "Region",
+              "conditionPropertyValue": "Unknown"
+            }
+          ],
+          "label": "Business Area",
+          "name": "BusArea"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [],
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "Other/Notspecified"
+            }
+          ],
+          "label": "Other - Details",
+          "name": "BusinessAreaOther"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": "S_BF_COMPLAINT_REASON_FULL",
+          "label": "Reason for Complaint 1",
+          "name": "ComplaintReason1"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "limit": 1000,
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "ComplaintReason1",
+              "conditionPropertyValue": "Other"
+            }
+          ],
+          "label": "Other - Details (Complaint Reason 1)",
+          "name": "ComplaintReason1_Other"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [],
+        "props": {
+          "choices": "S_BF_COMPLAINT_REASON_FULL",
+          "label": "Reason for Complaint 2",
+          "name": "ComplaintReason2"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "limit": 1000,
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "ComplaintReason2",
+              "conditionPropertyValue": "Other"
+            }
+          ],
+          "label": "Other - Details (Complaint Reason 2)",
+          "name": "ComplaintReason2_Other"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [],
+        "props": {
+          "choices": "S_BF_COMPLAINT_REASON_FULL",
+          "label": "Reason for Complaint 3",
+          "name": "ComplaintReason3"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "limit": 1000,
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "ComplaintReason3",
+              "conditionPropertyValue": "Other"
+            }
+          ],
+          "label": "Other - Details (Complaint Reason 3)",
+          "name": "ComplaintReason3_Other"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [],
+        "props": {
+          "choices": "S_BF_COMPLAINT_REASON_FULL",
+          "label": "Reason for Complaint 4",
+          "name": "ComplaintReason4"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "limit": 1000,
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "ComplaintReason4",
+              "conditionPropertyValue": "Other"
+            }
+          ],
+          "label": "Other - Details (Complaint Reason 4)",
+          "name": "ComplaintReason4_Other"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [],
+        "props": {
+          "choices": "S_BF_COMPLAINT_REASON_FULL",
+          "label": "Reason for Complaint 5",
+          "name": "ComplaintReason5"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "limit": 1000,
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "ComplaintReason5",
+              "conditionPropertyValue": "Other"
+            }
+          ],
+          "label": "Other - Details (Complaint Reason 5)",
+          "name": "ComplaintReason5_Other"
+        }
+      },
+      {
+        "component": "radio",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            },
+            {
+              "label": "No",
+              "value": "No"
+            }
+          ],
+          "label": "Is a Letter of Authority required?",
+          "name": "LoaRequired"
+        }
+      },
+      {
+        "component": "somu-list",
+        "validation": [
+          "required",
+          "contributionsFulfilled"
+        ],
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_BF_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "BF_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "BF2"
+          },
+          "itemLinks": [
+            {
+              "label": "Edit",
+              "action": "edit"
+            }
+          ],
+          "primaryLink": {
+            "label": "Add complainant contribution",
+            "action": "addRequest"
+          },
+          "label": "Complainant additional information",
+          "name": "BFContributions"
+        }
+      },
+      {
+        "component": "somu-list",
+        "validation": [
+          "required",
+          "contributionsFulfilled"
+        ],
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_BF_CONTRIB_BUS_AREA"
+          },
+          "somuType": {
+            "type": "CCT_BUS_CONTRIB",
+            "choices": "S_BF_CONTRIB_BUS_AREA",
+            "caseType": "BF2"
+          },
+          "itemLinks": [
+            {
+              "label": "Edit",
+              "action": "edit"
+            }
+          ],
+          "primaryLink": {
+            "label": "Add business contribution",
+            "action": "addRequest"
+          },
+          "label": "Business contributions",
+          "name": "BusContributions"
+        }
+      },
+      {
+        "component": "checkbox",
+        "validation": [],
+        "props": {
+          "choices": [
+            {
+              "label": "Has Letter of Authority been received?",
+              "value": "Yes"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaRequired",
+              "conditionPropertyValue": "Yes"
+            }
+          ],
+          "label": "",
+          "name": "LoaReceived"
+        }
+      },
+      {
+        "component": "date",
+        "validation": [
+          "isValidDate",
+          "isValidDay",
+          "isValidMonth",
+          "isYearWithinRange",
+          "isBeforeToday"
+        ],
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaReceived",
+              "conditionPropertyValue": "Yes"
+            }
+          ],
+          "label": "Date of Letter of Authority",
+          "name": "LoaDate"
+        }
+      },
+      {
+        "component": "radio",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            },
+            {
+              "label": "No",
+              "value": "No"
+            }
+          ],
+          "label": "Has the complainant requested a payment?",
+          "name": "PaymentRequested"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [
+          "required",
+          "strictCurrency"
+        ],
+        "props": {
+          "className": "currency",
+          "elementClassName": "govuk-!-width-one-half",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "PaymentRequested",
+              "conditionPropertyValue": "Yes"
+            }
+          ],
+          "label": "Amount requested by complainant",
+          "name": "AmountComplainantRequested"
+        }
+      },
+      {
+        "component": "radio",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            },
+            {
+              "label": "No",
+              "value": "No"
+            }
+          ],
+          "label": "Are we issuing an offer for a Consolatory payment?",
+          "name": "PaymentTypeConsolatory"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [
+          "required",
+          "strictCurrency"
+        ],
+        "props": {
+          "className": "currency",
+          "elementClassName": "govuk-!-width-one-half",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "PaymentTypeConsolatory",
+              "conditionPropertyValue": "Yes"
+            }
+          ],
+          "label": "Consolatory payment offer sent to the complainant",
+          "name": "ConsolatoryOfferSentToComplainant"
+        }
+      },
+      {
+        "component": "radio",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            },
+            {
+              "label": "No",
+              "value": "No"
+            }
+          ],
+          "label": "Are we issuing an offer for an Ex-Gratia payment?",
+          "name": "PaymentTypeExGratia"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [
+          "required",
+          "strictCurrency"
+        ],
+        "props": {
+          "className": "currency",
+          "elementClassName": "govuk-!-width-one-half",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "PaymentTypeExGratia",
+              "conditionPropertyValue": "Yes"
+            }
+          ],
+          "label": "Ex-Gratia payment offer sent to the complainant",
+          "name": "ExGratiaOfferSentToComplainant"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "disabled": true,
+          "className": "currency",
+          "elementClassName": "govuk-!-width-one-half",
+          "label": "Total payment offer sent to the complainant",
+          "name": "TotalOfferSentToComplainant"
+        }
+      },
+      {
+        "component": "radio",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "All information collected - case ready for drafting",
+              "value": "Draft"
+            },
+            {
+              "label": "Escalate case to WFM",
+              "value": "Escalate"
+            },
+            {
+              "label": "No response - complete the case (close permanently)",
+              "value": "Complete"
+            }
+          ],
+          "label": "Action",
+          "name": "BFTriageResult"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "56bb749c-c5dc-4671-b18e-b52bf5932724",
+          "label": "Triage Escalate"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "label": "Enter reason for escalation",
+          "name": "CaseNote_TriageEscalate"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "6836197e-2eda-4dc3-aeca-01ba25da3795",
+          "label": "Triage Accept Case"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [],
+        "props": {
+          "label": "Case Summary",
+          "name": "CaseSummary"
+        }
+      },
+      {
+        "component": "radio",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Yes - accept the complaint",
+              "value": "Yes"
+            },
+            {
+              "label": "No - transfer offline and close the case",
+              "value": "No"
+            }
+          ],
+          "label": "Can your team respond to this complaint?",
+          "name": "BfTriageAccept"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "bc59fa5e-6e08-4c40-a98f-192cd39703f3",
+          "label": "Complaint Completion"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "label": "Enter note for case completion",
+          "name": "CaseNote_CompleteReason"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "699c2c6b-d479-4806-b61c-2370b71b9451",
+          "label": "Triage Transfer Case"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "label": "Enter reason for transfer",
+          "name": "CaseNote_TriageTransfer"
+        }
+      },
+      {
+        "component": "hidden",
+        "validation": [],
+        "props": {
+          "label": "Transferred to case reference",
+          "name": "TransferToCaseRef"
+        }
+      }
+    ],
+    "BF2_DRAFT": [
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "29d11d5a-3354-4b00-a411-6861dc53945c",
+          "label": "Complaint Draft Response"
+        }
+      },
+      {
+        "component": "entity-list",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_DRAFT",
+          "hasAddLink": true,
+          "hasRemoveLink": true,
+          "label": "Primary draft document",
+          "name": "DraftDocuments"
+        }
+      },
+      {
+        "component": "entity-manager",
+        "validation": [],
+        "props": {
+          "entity": "template",
+          "choices": "CASE_TEMPLATES",
+          "hasTemplateLink": true,
+          "label": "Available Template",
+          "name": "Complaint_Response"
+        }
+      },
+      {
+        "component": "radio",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Send case to QA",
+              "value": "QA"
+            },
+            {
+              "label": "Escalate case to WFM",
+              "value": "Escalate"
+            },
+            {
+              "label": "Reject - return to Triage",
+              "value": "Reject"
+            }
+          ],
+          "label": "Action",
+          "name": "BfDraftResult"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "dda88a6b-ab78-4cc5-8807-644322e9d8de",
+          "label": "Draft Escalate"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "label": "Enter reason for escalation",
+          "name": "CaseNote_DraftEscalate"
+        }
+      }
+    ],
+    "BF2_QA": [
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "2ec17455-1667-4c14-85a4-976a93539d41",
+          "label": "Complaint QA Response"
+        }
+      },
+      {
+        "component": "radio",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Accept - send response to complainant",
+              "value": "Accept"
+            },
+            {
+              "label": "Reject - return to draft",
+              "value": "RejectToDraft"
+            },
+            {
+              "label": "Reject - return to triage",
+              "value": "RejectToTriage"
+            }
+          ],
+          "label": "QA Result",
+          "name": "BfQaResult"
+        }
+      },
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "c68e2563-5878-4f40-a5b4-720e2bbd155c",
+          "label": "Complaint QA Rejection"
+        }
+      },
+      {
+        "component": "text-area",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "label": "Enter reason for rejection",
+          "name": "CaseNote_QaReject"
+        }
+      }
+    ],
+    "BF2_SEND": [
+      {
+        "component": "text",
+        "validation": [],
+        "props": {
+          "name": "8b934aac-5e23-4d85-a7f9-d0019835ebd1",
+          "label": "Complaint Send Response"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Upheld",
+              "value": "Upheld"
+            },
+            {
+              "label": "Not Upheld",
+              "value": "Not Upheld"
+            },
+            {
+              "label": "Partially Upheld",
+              "value": "Partially Upheld"
+            },
+            {
+              "label": "Withdrawn",
+              "value": "Withdrawn"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "function": "hasAnyValue",
+              "conditionArgs": {
+                "conditionPropertyName": "ComplaintReason1"
+              }
+            }
+          ],
+          "label": "Complaint Reason 1 Outcome",
+          "name": "ComplaintOutcome1"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Upheld",
+              "value": "Upheld"
+            },
+            {
+              "label": "Not Upheld",
+              "value": "Not Upheld"
+            },
+            {
+              "label": "Partially Upheld",
+              "value": "Partially Upheld"
+            },
+            {
+              "label": "Withdrawn",
+              "value": "Withdrawn"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "function": "hasAnyValue",
+              "conditionArgs": {
+                "conditionPropertyName": "ComplaintReason2"
+              }
+            }
+          ],
+          "label": "Complaint Reason 2 Outcome",
+          "name": "ComplaintOutcome2"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Upheld",
+              "value": "Upheld"
+            },
+            {
+              "label": "Not Upheld",
+              "value": "Not Upheld"
+            },
+            {
+              "label": "Partially Upheld",
+              "value": "Partially Upheld"
+            },
+            {
+              "label": "Withdrawn",
+              "value": "Withdrawn"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "function": "hasAnyValue",
+              "conditionArgs": {
+                "conditionPropertyName": "ComplaintReason3"
+              }
+            }
+          ],
+          "label": "Complaint Reason 3 Outcome",
+          "name": "ComplaintOutcome3"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Upheld",
+              "value": "Upheld"
+            },
+            {
+              "label": "Not Upheld",
+              "value": "Not Upheld"
+            },
+            {
+              "label": "Partially Upheld",
+              "value": "Partially Upheld"
+            },
+            {
+              "label": "Withdrawn",
+              "value": "Withdrawn"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "function": "hasAnyValue",
+              "conditionArgs": {
+                "conditionPropertyName": "ComplaintReason4"
+              }
+            }
+          ],
+          "label": "Complaint Reason 4 Outcome",
+          "name": "ComplaintOutcome4"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Upheld",
+              "value": "Upheld"
+            },
+            {
+              "label": "Not Upheld",
+              "value": "Not Upheld"
+            },
+            {
+              "label": "Partially Upheld",
+              "value": "Partially Upheld"
+            },
+            {
+              "label": "Withdrawn",
+              "value": "Withdrawn"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "function": "hasAnyValue",
+              "conditionArgs": {
+                "conditionPropertyName": "ComplaintReason5"
+              }
+            }
+          ],
+          "label": "Complaint Reason 5 Outcome",
+          "name": "ComplaintOutcome5"
+        }
+      },
+      {
+        "component": "dropdown",
+        "validation": [
+          "required"
+        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Telephone",
+              "value": "Telephone"
+            },
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Letter",
+              "value": "Letter"
+            },
+            {
+              "label": "In Person",
+              "value": "InPerson"
+            }
+          ],
+          "label": "Response Channel",
+          "name": "ResponseChannel"
+        }
+      },
+      {
+        "component": "date",
+        "validation": [
+          "required",
+          "isValidDay",
+          "isValidMonth",
+          "isValidDate",
+          "isBeforeToday"
+        ],
+        "props": {
+          "autopopulate": true,
+          "label": "Date of Response",
+          "name": "DateResponded"
+        }
+      }
+    ]
+  }
+}

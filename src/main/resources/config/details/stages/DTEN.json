@@ -1,0 +1,373 @@
+{
+  "type": "DTEN",
+  "groups": {
+    "DCU_DTEN_DATA_INPUT": [
+      {
+        "component": "date",
+        "label": "When was the correspondence sent?",
+        "name": "DateOfCorrespondence"
+      },
+      {
+        "component": "date",
+        "label": "When was the correspondence received?",
+        "name": "DateReceived"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Email",
+              "value": "EMAIL"
+            },
+            {
+              "label": "Post",
+              "value": "POST"
+            },
+            {
+              "label": "Phone",
+              "value": "PHONE"
+            },
+            {
+              "label": "No. 10",
+              "value": "NO10"
+            }
+          ]
+        },
+        "label": "How was the correspondence received?",
+        "name": "OriginalChannel"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "action": "CORRESPONDENT",
+          "entity": "correspondent",
+          "choices": "CASE_CORRESPONDENTS"
+        },
+        "label": "Which is the primary correspondent?",
+        "name": "Correspondents"
+      },
+      {
+        "component": "date",
+        "label": "What is the drafting deadline?",
+        "name": "DCU_DTEN_INITIAL_DRAFT_DEADLINE"
+      },
+      {
+        "component": "date",
+        "label": "What is the dispatch deadline?",
+        "name": "DCU_DTEN_DISPATCH_DEADLINE"
+      }
+    ],
+    "DCU_DTEN_MARKUP": [
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "PRIVATE_OFFICE_TEAMS"
+        },
+        "label": "Override Private Office Team",
+        "name": "OverridePOTeamUUID"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "DRAFT_TEAMS"
+        },
+        "label": "Override Initial Draft Team",
+        "name": "OverrideDraftingTeamUUID"
+      },
+      {
+        "component": "text",
+        "label": "Private Office Team",
+        "name": "POTeamName"
+      },
+      {
+        "component": "text",
+        "label": "Initial Draft Team",
+        "name": "DraftingTeamName"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "action": "TOPIC",
+          "entity": "topic",
+          "choices": "CASE_TOPICS"
+        },
+        "label": "Which is the primary topic?",
+        "name": "Topics"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Policy Response",
+              "value": "PR"
+            },
+            {
+              "label": "FAQ Response",
+              "value": "FAQ"
+            },
+            {
+              "label": "Refer To OGD",
+              "value": "OGD"
+            },
+            {
+              "label": "No Response Needed",
+              "value": "NRN"
+            },
+            {
+              "label": "Reject To Data Input",
+              "value": "REJ"
+            }
+          ]
+        },
+        "label": "What sort of response is required?",
+        "name": "MarkupDecision"
+      },
+      {
+        "component": "text",
+        "label": "Where should this case be transferred to?",
+        "name": "OGDDept"
+      },
+      {
+        "component": "text-area",
+        "label": "Why should this case be transferred here?",
+        "name": "CaseNote_OGD"
+      },
+      {
+        "component": "text-area",
+        "label": "Why is no response needed?",
+        "name": "CaseNote_NRN"
+      },
+      {
+        "component": "text-area",
+        "label": "Why should this case be rejected?",
+        "name": "CaseNote_REJ"
+      }
+    ],
+    "DCU_DTEN_NO_REPLY_NEEDED_CONFIRMATION": [
+      {
+        "component": "text-area",
+        "label": "Why is no response needed?",
+        "name": "CaseNote_NRN"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "ACCEPT"
+            },
+            {
+              "label": "No",
+              "value": "REJECT"
+            }
+          ]
+        },
+        "label": "Do you agree that no response is needed?",
+        "name": "NoReplyNeededConfirmation"
+      }
+    ],
+    "DCU_DTEN_INITIAL_DRAFT": [
+      {
+        "component": "entity-manager",
+        "props": {
+          "entity": "standard_line",
+          "choices": "CASE_STANDARD_LINES"
+        },
+        "label": "Available Standard line",
+        "name": "Documents_standard_line"
+      },
+      {
+        "component": "entity-manager",
+        "props": {
+          "entity": "template",
+          "choices": "CASE_TEMPLATES"
+        },
+        "label": "Available Template",
+        "name": "Documents_topic"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_DRAFT"
+        },
+        "label": "Primary draft document",
+        "name": "DraftDocuments"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "ACCEPT"
+            },
+            {
+              "label": "No",
+              "value": "REJECT"
+            }
+          ]
+        },
+        "label": "Can this correspondence be answered by your team?",
+        "name": "InitialDraftDecision"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Letter",
+              "value": "LETTER"
+            },
+            {
+              "label": "Email",
+              "value": "EMAIL"
+            },
+            {
+              "label": "Phone",
+              "value": "PHONE"
+            }
+          ]
+        },
+        "label": "How do you intend to respond?",
+        "name": "ResponseChannel"
+      },
+      {
+        "component": "text-area",
+        "label": "Why should this not be answered by your team?",
+        "name": "CaseNote_RejectionNote"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "TRUE"
+            },
+            {
+              "label": "No",
+              "value": "FALSE"
+            }
+          ]
+        },
+        "label": "Do you want to QA this offline?",
+        "name": "OfflineQA"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "USERS_FOR_CASE"
+        },
+        "label": "Who has done the Offline QA for this case?",
+        "name": "OfflineQaUser"
+      }
+    ],
+    "DCU_DTEN_QA_RESPONSE": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Approve primary draft",
+              "value": "ACCEPT"
+            },
+            {
+              "label": "Return case to drafting team",
+              "value": "REJECT"
+            },
+            {
+              "label": "Modify primary draft",
+              "value": "MODIFY"
+            }
+          ]
+        },
+        "label": "Actions",
+        "name": "QAResponseDecision"
+      },
+      {
+        "component": "text-area",
+        "label": "What is your feedback about the response?",
+        "name": "CaseNote_QA"
+      },
+      {
+        "component": "entity-manager",
+        "props": {
+          "entity": "standard_line",
+          "choices": "CASE_STANDARD_LINES"
+        },
+        "label": "Available Standard line",
+        "name": "Documents_standard_line"
+      },
+      {
+        "component": "entity-manager",
+        "props": {
+          "entity": "template",
+          "choices": "CASE_TEMPLATES"
+        },
+        "label": "Available Template",
+        "name": "Documents_topic"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_DRAFT"
+        },
+        "label": "Primary draft document",
+        "name": "DraftDocuments"
+      }
+    ],
+    "DCU_DTEN_PRIVATE_OFFICE": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "ACCEPT"
+            },
+            {
+              "label": "No",
+              "value": "REJECT"
+            }
+          ]
+        },
+        "label": "Do you approve the response?",
+        "name": "PrivateOfficeDecision"
+      },
+      {
+        "component": "text-area",
+        "label": "What is your feedback about the response?",
+        "name": "CaseNote_PrivateOfficeReject"
+      }
+    ],
+    "DCU_DTEN_DISPATCH": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "ACCEPT"
+            },
+            {
+              "label": "No",
+              "value": "REJECT"
+            }
+          ]
+        },
+        "label": "Are you able to dispatch this?",
+        "name": "DispatchDecision"
+      },
+      {
+        "component": "text-area",
+        "label": "Why are you unable to dispatch this?",
+        "name": "CaseNote_DispatchDecisionReject"
+      }
+    ]
+  }
+}
