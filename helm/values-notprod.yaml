@@ -4,13 +4,11 @@ hocs-backend-service:
   maxReplicas: 1
 
   deploymentAnnotations:
-    downscaler/uptime: "Mon-Sun 07:55-18:05 Europe/London"
+    downscaler/downtime: "Mon-Sun 00:00-07:55 Europe/London,Mon-Sun 18:05-24:00 Europe/London"
 
   app:
     resources:
       limits:
-        cpu: 300m
         memory: 768Mi
       requests:
-        cpu: 100m
         memory: 768Mi

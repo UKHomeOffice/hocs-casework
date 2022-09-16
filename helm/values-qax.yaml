@@ -1,5 +1,1 @@
 ---
-hocs-backend-service:
-
-  deploymentAnnotations:
-    downscaler/downscale-period: "Mon-Sun 18:10-07:50 Europe/London"

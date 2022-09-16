@@ -1,18 +1,18 @@
 {{- define "deployment.envs" }}
 - name: JAVA_OPTS
-  value: '-XX:MaxRAMPercentage=70 -Djava.security.egd=file:/dev/./urandom -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks -Dhttps.proxyHost=hocs-outbound-proxy.{{ .Values.namespace }}.svc.cluster.local -Dhttps.proxyPort=31290 -Dhttp.nonProxyHosts=*.{{ .Values.namespace }}.svc.cluster.local'
+  value: {{ tpl .Values.app.javaOpts . }}
 - name: SERVER_PORT
-  value: "{{ .Values.app.port }}"
+  value: {{ include "hocs-app.port" . }}
 - name: SPRING_PROFILES_ACTIVE
-  value: 'sns, sqs'
+  value: {{ .Values.app.springProfiles }}
 - name: HOCS_AUDIT_SERVICE
-  value: 'https://hocs-audit.{{ .Values.namespace }}.svc.cluster.local'
+  value: {{ tpl .Values.app.auditService . }}
 - name: HOCS_INFO_SERVICE
-  value: 'https://hocs-info-service.{{ .Values.namespace }}.svc.cluster.local'
+  value: {{ tpl .Values.app.infoService . }}
 - name: HOCS_SEARCH_SERVICE
-  value: 'https://hocs-search.{{ .Values.namespace }}.svc.cluster.local'
+  value: {{ tpl .Values.app.searchService . }}
 - name: HOCS_DOCUMENT_SERVICE
-  value: 'https://hocs-docs.{{ .Values.namespace }}.svc.cluster.local'
+  value: {{ tpl .Values.app.docsService . }}
 - name: HOCS_BASICAUTH
   valueFrom:
     secretKeyRef:
