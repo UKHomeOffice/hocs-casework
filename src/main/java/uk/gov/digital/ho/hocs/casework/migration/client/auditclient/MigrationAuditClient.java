@@ -91,7 +91,7 @@ public class MigrationAuditClient {
             logFailedToParseDataPayload(e);
         }
         sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_UPDATED, stageUUID, data,
-            requestData.correlationId(), userId, userName, null);
+            requestData.correlationId(), userId);
 
     }
 
@@ -104,7 +104,7 @@ public class MigrationAuditClient {
             logFailedToParseDataPayload(e);
         }
         sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_COMPLETED, null, data,
-            requestData.correlationId(), userId, userName, null);
+            requestData.correlationId(), userId);
     }
 
     public void createCaseNoteAudit(CaseNote caseNote) {
@@ -129,8 +129,8 @@ public class MigrationAuditClient {
         } catch (JsonProcessingException e) {
             logFailedToParseDataPayload(e);
         }
-        sendAuditMessage(localDateTime, caseNote.getCaseUUID(), data, EventType.CASE_NOTE_UPDATED, null,
-            requestData.correlationId(), userId, userName, null);
+        sendAuditMessage(localDateTime, caseNote.getCaseUUID(), data, EventType.CASE_NOTE_UPDATED, null, data,
+            requestData.correlationId(), userId);
     }
 
     public void createCorrespondentAudit(Correspondent correspondent) {
@@ -142,7 +142,7 @@ public class MigrationAuditClient {
             logFailedToParseDataPayload(e);
         }
         sendAuditMessage(localDateTime, correspondent.getCaseUUID(), data, EventType.CORRESPONDENT_CREATED, null, data,
-            requestData.correlationId(), userId, userName, null);
+            requestData.correlationId(), userId);
     }
 
     public void updateCorrespondentAudit(Correspondent correspondent) {
@@ -154,7 +154,7 @@ public class MigrationAuditClient {
             logFailedToParseDataPayload(e);
         }
         sendAuditMessage(localDateTime, correspondent.getCaseUUID(), data, EventType.CORRESPONDENT_UPDATED, null, data,
-            requestData.correlationId(), userId, userName, null);
+            requestData.correlationId(), userId);
     }
 
     public void createTopicAudit(Topic topic) {
@@ -166,7 +166,7 @@ public class MigrationAuditClient {
             logFailedToParseAuditPayload(e);
         }
         sendAuditMessage(localDateTime, topic.getCaseUUID(), data, EventType.CASE_TOPIC_CREATED, null, data,
-            requestData.correlationId(), userId, userName, null);
+            requestData.correlationId(), userId);
 
     }
 
@@ -179,7 +179,7 @@ public class MigrationAuditClient {
             logFailedToParseDataPayload(e);
         }
         sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_CREATED, null, data,
-            requestData.correlationId(), userId, userName, group);
+            requestData.correlationId(), userId);
     }
 
     public void createStage(BaseStage stage) {
@@ -222,8 +222,7 @@ public class MigrationAuditClient {
                                   String userId,
                                   String username,
                                   String groups) {
-        sendAuditMessage(localDateTime, caseUUID, payload, eventType, stageUUID, "{}", correlationId, userId, username,
-            groups);
+        sendAuditMessage(localDateTime, caseUUID, payload, eventType, stageUUID, "{}", correlationId, userId);
     }
 
     private void sendAuditMessage(LocalDateTime localDateTime,
@@ -233,9 +232,7 @@ public class MigrationAuditClient {
                                   UUID stageUUID,
                                   String data,
                                   String correlationId,
-                                  String userId,
-                                  String username,
-                                  String group) {
+                                  String userId) {
         CreateAuditRequest request = new CreateAuditRequest(correlationId, caseUUID, stageUUID, raisingService, payload,
             data, namespace, localDateTime, eventType, userId);
 
