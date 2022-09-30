@@ -7,18 +7,46 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.SomuTypeDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseConfig;
-import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_TEMPLATE_CACHE_INVALIDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPES_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPE_SHORT_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPE_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CONTRIBUTIONS_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_DEADLINES_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_DEFAULT_USERS_FOR_STAGE_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_ENTITY_BY_SIMPLE_NAME;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_ENTITY_LIST;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_PROFILE_BY_CASE_TYPE_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_STANDARD_LINE_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEAMS_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEAM_FOR_STAGE_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEMPLATE_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TOPIC_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USER;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USERS_FOR_TEAM_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USER_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MISSING_TEAM_FOR_STAGE;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TOPIC_STANDARD_LINE_CACHE_INVALIDATED;
 
 @Slf4j
 @Component
@@ -50,15 +78,6 @@ public class InfoClient {
         log.info("Got CaseDataType {} for Type {}", caseDataType.getDisplayCode(), type,
             value(EVENT, INFO_CLIENT_GET_CASE_TYPE_SUCCESS));
         return caseDataType;
-    }
-
-    @Deprecated(forRemoval = true)
-    @Cacheable(value = "InfoClientGetCaseConfig", unless = "#result == null", key = "#type")
-    public CaseConfig getCaseConfig(String type) {
-        CaseConfig caseConfig = restHelper.get(serviceBaseURL, String.format("/caseType/%s/config", type),
-            CaseConfig.class);
-        log.info("Got CaseConfig for Type {}", type, value(EVENT, INFO_CLIENT_GET_CASE_CONFIG_SUCCESS));
-        return caseConfig;
     }
 
     public List<CaseDataType> getAllCaseTypes() {

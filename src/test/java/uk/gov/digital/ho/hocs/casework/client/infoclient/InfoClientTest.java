@@ -10,8 +10,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseConfig;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseTab;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +19,10 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class InfoClientTest {
@@ -239,23 +240,6 @@ public class InfoClientTest {
 
         // THEN
         assertThat(response).isNotNull();
-    }
-
-    @Test
-    public void getConfigByCaseType() {
-        String caseType = "COMP";
-        CaseTab caseTab = new CaseTab("documents", "Documents", "DOCUMENTS");
-        CaseConfig caseConfig = new CaseConfig(caseType, List.of(caseTab));
-        String url = String.format("/caseType/%s/config", caseType);
-
-        when(restHelper.get("infoService", url, CaseConfig.class)).thenReturn(caseConfig);
-
-        CaseConfig result = infoClient.getCaseConfig("COMP");
-
-        assertThat(result).isEqualTo(caseConfig);
-
-        verify(restHelper).get("infoService", url, CaseConfig.class);
-        verifyNoMoreInteractions(restHelper);
     }
 
 }
