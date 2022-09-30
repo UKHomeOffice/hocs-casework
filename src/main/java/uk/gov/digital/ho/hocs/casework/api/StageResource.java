@@ -176,6 +176,7 @@ class StageResource {
         return ResponseEntity.ok(GetStagesResponse.from(stages));
     }
 
+    @Deprecated(forRemoval = true)
     @GetMapping(value = "/stage/case/{caseUUID}")
     ResponseEntity<GetStagesResponse> getAllStagesByCase(@PathVariable UUID caseUUID) {
         Set<StageWithCaseData> stages = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
