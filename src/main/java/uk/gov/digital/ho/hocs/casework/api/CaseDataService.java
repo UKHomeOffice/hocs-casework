@@ -9,7 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.MigrateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
 import uk.gov.digital.ho.hocs.casework.api.factory.CaseCopyFactory;
 import uk.gov.digital.ho.hocs.casework.api.factory.strategies.CaseCopyStrategy;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
@@ -20,12 +24,30 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
-import uk.gov.digital.ho.hocs.casework.domain.repository.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveCaseViewData;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseLink;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
+import uk.gov.digital.ho.hocs.casework.domain.model.DataTotal;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
+import uk.gov.digital.ho.hocs.casework.domain.repository.ActiveCaseViewDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseLinkRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -41,8 +63,9 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DELETED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_UPDATED_NULL_DATA;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_RETRIEVED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_SUMMARY_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_LOOKUP_FAILED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.DATA_MAPPING_EXCEPTION;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.DATA_MAPPING_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.GET_CASE_REF_BY_UUID;
@@ -51,10 +74,25 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRE
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_TOPIC_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_DEADLINE_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.DATA_MAPPING_SUCCESS;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.DATA_MAPPING_EXCEPTION;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.UNCAUGHT_EXCEPTION;
-import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.*;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.APPEAL_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.APPEAL_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_TOPIC_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.DOCUMENT_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.DOCUMENT_DELETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.EXTENSION_APPLIED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.EXTERNAL_INTEREST_CREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.EXTERNAL_INTEREST_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_COMPLETED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_RECREATED;
 
 @Service
 @Slf4j
@@ -587,12 +625,6 @@ public class CaseDataService {
             caseDataSummaryService.getAdditionalCaseDataFieldsByCaseType(caseData.getType(), caseData.getDataMap()));
 
         return summaryBuilder;
-    }
-
-    @Deprecated(forRemoval = true)
-    CaseConfig getCaseConfig(UUID caseUUID) {
-        String caseType = caseDataRepository.getCaseType(caseUUID);
-        return infoClient.getCaseConfig(caseType);
     }
 
     private void updateDeadlineForStage(CaseData caseData, String stageType, Integer noOfDays) {

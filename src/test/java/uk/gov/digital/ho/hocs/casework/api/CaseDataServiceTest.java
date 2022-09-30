@@ -23,18 +23,22 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.EntityTotalDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveCaseViewData;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
+import uk.gov.digital.ho.hocs.casework.domain.model.BankHoliday;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseLink;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
-import uk.gov.digital.ho.hocs.casework.domain.repository.*;
-import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
+import uk.gov.digital.ho.hocs.casework.domain.repository.ActiveCaseViewDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseLinkRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -58,8 +62,8 @@ import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_TEAM;
@@ -1254,26 +1258,6 @@ public class CaseDataServiceTest {
         verify(auditClient, times(0)).updateCaseAudit(any(), any());
 
         verifyNoMoreInteractions(caseDataRepository, auditClient);
-
-    }
-
-    @Test
-    public void shouldGetCaseConfigFromCaseUUID() {
-        UUID uuid = UUID.randomUUID();
-        String caseType = "COMP";
-        CaseTab caseTab = new CaseTab("documents", "Documents", "DOCUMENTS");
-
-        CaseConfig caseConfig = new CaseConfig(caseType, List.of(caseTab));
-
-        when(caseDataRepository.getCaseType(uuid)).thenReturn(caseType);
-        when(infoClient.getCaseConfig(caseType)).thenReturn(caseConfig);
-
-        CaseConfig output = caseDataService.getCaseConfig(uuid);
-
-        verify(caseDataRepository).getCaseType(uuid);
-        verify(infoClient).getCaseConfig(caseType);
-
-        assertThat(output).isEqualTo(caseConfig);
 
     }
 

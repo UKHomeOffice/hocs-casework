@@ -3,13 +3,34 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseReferenceResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseTypeResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.MigrateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.MigrateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.TimelineItemDto;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCaseDataRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateDeadlineForStagesRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdatePrimaryCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageDeadlineRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseConfig;
 import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Allocated;
@@ -20,7 +41,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -78,13 +103,6 @@ class CaseDataResource {
     public ResponseEntity<GetCaseSummaryResponse> getCaseSummary(@PathVariable UUID caseUUID) {
         CaseSummary caseSummary = caseDataService.getCaseSummary(caseUUID);
         return ResponseEntity.ok(GetCaseSummaryResponse.from(caseSummary));
-    }
-
-    @Deprecated(forRemoval = true)
-    @GetMapping(value = "/case/{caseUUID}/config")
-    public ResponseEntity<GetCaseConfigResponse> getCaseConfig(@PathVariable UUID caseUUID) {
-        CaseConfig caseConfig = caseDataService.getCaseConfig(caseUUID);
-        return ResponseEntity.ok(GetCaseConfigResponse.from(caseConfig));
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/calculateTotals")
