@@ -23,12 +23,8 @@ import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.EventType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
-import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 import uk.gov.digital.ho.hocs.casework.utils.BaseAwsTest;
 
@@ -100,85 +96,6 @@ public class MigrationAuditClientTest extends BaseAwsTest {
         verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
 
         assertSnsValues(caseData.getUuid(), EventType.CASE_CREATED);
-    }
-
-    @Test
-    public void shouldSendCaseUpdateEvent() throws JsonProcessingException {
-        var caseID = 12345L;
-        var caseType = CaseDataTypeFactory.from("TEST", "F0");
-        var stageUUID = UUID.randomUUID();
-        var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
-
-        migrationAuditClient.updateCaseAudit(caseData, stageUUID);
-
-        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
-
-        assertSnsValues(caseData.getUuid(), EventType.CASE_UPDATED);
-    }
-
-    @Test
-    public void createCorrespondentAudit() throws IOException {
-        var address = new Address("TEST", "some street", "some town", "some count", "UK");
-        var correspondent = new Correspondent(UUID.randomUUID(), "MP", "John Smith", "An Organisation", address,
-            "123456789", "test@test.com", "1234", "external key");
-
-        migrationAuditClient.createCorrespondentAudit(correspondent);
-
-        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
-
-        assertSnsValues(correspondent.getCaseUUID(), EventType.CORRESPONDENT_CREATED);
-    }
-
-    @Test
-    public void updateCorrespondentAudit() throws IOException {
-        var address = new Address("TEST", "some street", "some town", "some count", "UK");
-        var correspondent = new Correspondent(UUID.randomUUID(), "MP", "John Smith", "An Organisation", address,
-            "123456789", "test@test.com", "1234", "external key");
-
-        migrationAuditClient.updateCorrespondentAudit(correspondent);
-
-        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
-
-        assertSnsValues(correspondent.getCaseUUID(), EventType.CORRESPONDENT_UPDATED);
-    }
-
-    @Test
-    public void createTopicAudit() throws IOException {
-        var caseUUID = UUID.randomUUID();
-        var topic = new Topic(caseUUID, "topic name", UUID.randomUUID());
-
-        migrationAuditClient.createTopicAudit(topic);
-
-        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
-
-        assertSnsValues(topic.getCaseUUID(), EventType.CASE_TOPIC_CREATED);
-    }
-
-    @Test
-    public void createCaseNoteAudit() throws IOException {
-        var caseUUID = UUID.randomUUID();
-        var caseNote = new CaseNote(caseUUID, "ORIGINAL", "some note", "Test User");
-
-        migrationAuditClient.createCaseNoteAudit(caseNote);
-
-        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
-
-        assertSnsValues(caseNote.getCaseUUID(), EventType.CASE_NOTE_CREATED,
-            Map.of("caseNoteType", "ORIGINAL", "text", "some note"));
-    }
-
-    @Test
-    public void updateCaseNoteAudit() throws IOException {
-        var caseUUID = UUID.randomUUID();
-        var caseNote = new CaseNote(caseUUID, "DRAFT", "post-text", "Test User");
-
-        migrationAuditClient.updateCaseNoteAudit(caseNote, "ORIGINAL", "pre-text");
-
-        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
-
-        assertSnsValues(caseNote.getCaseUUID(), EventType.CASE_NOTE_UPDATED,
-            Map.of("prevCaseNoteType", "ORIGINAL", "prevText", "pre-text", "caseNoteType", "DRAFT", "text",
-                "post-text"));
     }
 
     @Test

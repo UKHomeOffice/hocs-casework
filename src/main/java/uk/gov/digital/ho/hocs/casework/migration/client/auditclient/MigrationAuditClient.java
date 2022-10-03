@@ -17,9 +17,6 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
-import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 
 import java.time.LocalDateTime;
@@ -52,10 +49,6 @@ public class MigrationAuditClient {
 
     private final RequestData requestData;
 
-    private final RestHelper restHelper;
-
-    private final String serviceBaseURL;
-
     @Autowired
     public MigrationAuditClient(AmazonSNSAsync auditSearchSnsClient,
                                 @Value("${aws.sns.audit-search.arn}") String auditQueue,
@@ -66,7 +59,6 @@ public class MigrationAuditClient {
                                 @Value("${migration.userid}") String userId,
                                 @Value("${migration.username}") String userName,
                                 @Value("${migration.group}") String group,
-                                RestHelper restHelper,
                                 @Value("${hocs.audit-service}") String auditService) {
         this.auditSearchSnsClient = auditSearchSnsClient;
         this.auditQueue = auditQueue;
@@ -77,8 +69,6 @@ public class MigrationAuditClient {
         this.userName = userName;
         this.group = group;
         this.requestData = requestData;
-        this.restHelper = restHelper;
-        this.serviceBaseURL = auditService;
     }
 
     public void updateCaseAudit(CaseData caseData, UUID stageUUID) {
@@ -107,69 +97,6 @@ public class MigrationAuditClient {
             requestData.correlationId(), userId);
     }
 
-    public void createCaseNoteAudit(CaseNote caseNote) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        String data = "{}";
-        try {
-            data = objectMapper.writeValueAsString(caseNote);
-        } catch (JsonProcessingException e) {
-            logFailedToParseDataPayload(e);
-        }
-        sendAuditMessage(localDateTime, caseNote.getCaseUUID(), data, EventType.CASE_NOTE_CREATED, null,
-            requestData.correlationId(), userId, userName, null);
-    }
-
-    public void updateCaseNoteAudit(CaseNote caseNote, String prevCaseNoteType, String prevText) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        String data = "{}";
-        try {
-            data = objectMapper.writeValueAsString(
-                new AuditPayload.CaseNoteUpdate(prevCaseNoteType, prevText, caseNote.getCaseNoteType(),
-                    caseNote.getText()));
-        } catch (JsonProcessingException e) {
-            logFailedToParseDataPayload(e);
-        }
-        sendAuditMessage(localDateTime, caseNote.getCaseUUID(), data, EventType.CASE_NOTE_UPDATED, null, data,
-            requestData.correlationId(), userId);
-    }
-
-    public void createCorrespondentAudit(Correspondent correspondent) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        String data = "{}";
-        try {
-            data = objectMapper.writeValueAsString(AuditPayload.CreateCorrespondentRequest.from(correspondent));
-        } catch (JsonProcessingException e) {
-            logFailedToParseDataPayload(e);
-        }
-        sendAuditMessage(localDateTime, correspondent.getCaseUUID(), data, EventType.CORRESPONDENT_CREATED, null, data,
-            requestData.correlationId(), userId);
-    }
-
-    public void updateCorrespondentAudit(Correspondent correspondent) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        String data = "{}";
-        try {
-            data = objectMapper.writeValueAsString(AuditPayload.CreateCorrespondentRequest.from(correspondent));
-        } catch (JsonProcessingException e) {
-            logFailedToParseDataPayload(e);
-        }
-        sendAuditMessage(localDateTime, correspondent.getCaseUUID(), data, EventType.CORRESPONDENT_UPDATED, null, data,
-            requestData.correlationId(), userId);
-    }
-
-    public void createTopicAudit(Topic topic) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        String data = "{}";
-        try {
-            data = objectMapper.writeValueAsString(new AuditPayload.Topic(topic.getTextUUID(), topic.getText()));
-        } catch (JsonProcessingException e) {
-            logFailedToParseAuditPayload(e);
-        }
-        sendAuditMessage(localDateTime, topic.getCaseUUID(), data, EventType.CASE_TOPIC_CREATED, null, data,
-            requestData.correlationId(), userId);
-
-    }
-
     public void createCaseAudit(CaseData caseData) {
         LocalDateTime localDateTime = LocalDateTime.now();
         String data = "{}";
@@ -188,25 +115,6 @@ public class MigrationAuditClient {
             sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(
                     new AuditPayload.StageAllocation(stage.getUuid(), stage.getTeamUUID(), stage.getStageType(),
                         stage.getDeadline(), stage.getDeadlineWarning())), EventType.STAGE_CREATED, stage.getUuid(),
-                        requestData.correlationId(), userId, userName, null);
-        } catch (JsonProcessingException e) {
-            logFailedToParseAuditPayload(e);
-        }
-    }
-
-    public void updateStageTeam(BaseStage stage) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-
-        try {
-            EventType allocationType;
-            if (stage.getTeamUUID()!=null) {
-                allocationType = EventType.STAGE_ALLOCATED_TO_TEAM;
-            } else {
-                allocationType = EventType.STAGE_COMPLETED;
-            }
-            sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(
-                    new AuditPayload.StageAllocation(stage.getUuid(), stage.getTeamUUID(), stage.getStageType(),
-                        stage.getDeadline(), stage.getDeadlineWarning())), allocationType, stage.getUuid(),
                         requestData.correlationId(), userId, userName, null);
         } catch (JsonProcessingException e) {
             logFailedToParseAuditPayload(e);
