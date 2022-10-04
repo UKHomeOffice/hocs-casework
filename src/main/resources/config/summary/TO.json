@@ -131,6 +131,10 @@
       "label": "Enquiry reason"
     },
     {
+      "name": "OtherEnquiryReason",
+      "label": "Other enquiry reason"
+    },
+    {
       "choices": "TO_BUS_UNIT_ALL",
       "name": "BusUnit",
       "label": "Business Unit"

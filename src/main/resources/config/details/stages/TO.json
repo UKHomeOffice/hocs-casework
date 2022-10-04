@@ -214,6 +214,20 @@
         "label": "Enquiry reason"
       },
       {
+        "component": "text-area",
+        "props": {
+          "limit": 100,
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "EnquiryReason",
+              "conditionPropertyValue": "OTHER"
+            }
+          ]
+        },
+        "name": "OtherEnquiryReason",
+        "label": "Other enquiry reason"
+      },
+      {
         "component": "somu-list",
         "props": {
           "choices": {
