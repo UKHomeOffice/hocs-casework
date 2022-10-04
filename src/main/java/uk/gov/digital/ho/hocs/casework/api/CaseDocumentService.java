@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.CopyDocumentsRequest;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
@@ -11,13 +10,17 @@ import uk.gov.digital.ho.hocs.casework.client.documentclient.S3Document;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseTypeDocumentTagRepository;
 
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DOCUMENTS_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DOCUMENT_PDF_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DOCUMENT_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 
 @Service
 @Slf4j
@@ -27,17 +30,20 @@ public class CaseDocumentService {
 
     private final DocumentClient documentClient;
 
+    private final CaseTypeDocumentTagRepository caseTypeDocumentTagRepository;
+
     protected final InfoClient infoClient;
 
     private static final String DRAFT_DOCUMENT_FIELD_NAME = "DraftDocuments";
 
     private static final String PRIMARY_DRAFT_LABEL = "Primary Draft";
 
-    @Autowired
     public CaseDocumentService(CaseDataRepository caseDataRepository,
+                               CaseTypeDocumentTagRepository caseTypeDocumentTagRepository,
                                DocumentClient documentClient,
                                InfoClient infoClient) {
         this.caseDataRepository = caseDataRepository;
+        this.caseTypeDocumentTagRepository = caseTypeDocumentTagRepository;
         this.documentClient = documentClient;
         this.infoClient = infoClient;
     }
@@ -48,7 +54,6 @@ public class CaseDocumentService {
 
         CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
         enrichDocumentsResponse(getDocumentsResponse, caseData.getData(DRAFT_DOCUMENT_FIELD_NAME), caseData.getType());
-        getDocumentsResponse.setDocumentTags(infoClient.getDocumentTags(caseData.getType()));
 
         log.info("Got {} documents and {} document tags for Case: {} with type: {}",
             getDocumentsResponse.getDocumentDtos().size(), getDocumentsResponse.getDocumentTags().size(), caseUUID,
@@ -89,7 +94,7 @@ public class CaseDocumentService {
                 documentDto.addLabel(PRIMARY_DRAFT_LABEL);
             }
         }
-        getDocumentsResponse.setDocumentTags(infoClient.getDocumentTags(caseType));
+        getDocumentsResponse.setDocumentTags(caseTypeDocumentTagRepository.getTagsByType(caseType));
     }
 
     public void copyDocuments(UUID fromUUID, UUID toUUID, String[] types) {
@@ -97,4 +102,8 @@ public class CaseDocumentService {
         documentClient.copyDocuments(copyDocumentsRequest);
     }
 
+    public List<String> getDocumentTags(UUID caseUUID) {
+        String caseType = caseDataRepository.getCaseType(caseUUID);
+        return caseTypeDocumentTagRepository.getTagsByType(caseType);
+    }
 }

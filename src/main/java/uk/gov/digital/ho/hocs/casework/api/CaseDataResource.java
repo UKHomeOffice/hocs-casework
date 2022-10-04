@@ -209,13 +209,6 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
-    @GetMapping(value = "/case/{caseUUID}/documentTags")
-    public ResponseEntity<List<String>> getDocumentTags(@PathVariable UUID caseUUID) {
-        List<String> documentTags = caseDataService.getDocumentTags(caseUUID);
-        return ResponseEntity.ok(documentTags);
-    }
-
     @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/standardLine")
     public ResponseEntity<Set<GetStandardLineResponse>> getStandardLine(@PathVariable UUID caseUUID) {
