@@ -250,7 +250,7 @@
         "component": "entity-list",
         "props": {
           "entity": "document",
-          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
+          "choices": "CASE_DOCUMENT_LIST_IEDET_FINAL_RESPONSE",
           "hasAddLink": true,
           "hasRemoveLink": true
         },
