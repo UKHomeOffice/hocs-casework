@@ -49,14 +49,14 @@ public class MigrationCaseResourceTest {
         //given
         CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
         CreateMigrationCaseRequest request = new CreateMigrationCaseRequest(caseDataType.getDisplayCode(), data,
-            dateArg, null, STAGE_TYPE);
+            dateArg, null, STAGE_TYPE, null);
         when(migrationCaseService.createMigrationCase(caseDataType.getDisplayCode(), STAGE_TYPE, data,
-            dateArg)).thenReturn(caseData);
+            dateArg, null)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = migrationCaseResource.createMigrationCase(request);
 
         verify(migrationCaseService, times(1)).createMigrationCase(caseDataType.getDisplayCode(), STAGE_TYPE, data,
-            dateArg);
+            dateArg, null);
 
         verifyNoMoreInteractions(migrationCaseService);
 
