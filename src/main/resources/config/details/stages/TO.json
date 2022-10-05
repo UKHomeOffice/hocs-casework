@@ -3,37 +3,6 @@
   "groups": {
     "TO_DATA_INPUT": [
       {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Yes",
-              "value": "YES"
-            },
-            {
-              "label": "No",
-              "value": "NO"
-            }
-          ]
-        },
-        "name": "RecipientAdded",
-        "label": "Do you wish to add a Recipient?"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "TO_RECIPIENTS",
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "RecipientAdded",
-              "conditionPropertyValue": "YES"
-            }
-          ]
-        },
-        "name": "TORecipient",
-        "label": "Recipient"
-      },
-      {
         "component": "entity-list",
         "props": {
           "action": "CORRESPONDENT",
@@ -112,6 +81,37 @@
         },
         "name": "HomeSecInterest",
         "label": "Home Secretary Interest"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "YES"
+            },
+            {
+              "label": "No",
+              "value": "NO"
+            }
+          ]
+        },
+        "name": "RecipientAdded",
+        "label": "Do you wish to add a Recipient?"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "TO_RECIPIENTS",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "RecipientAdded",
+              "conditionPropertyValue": "YES"
+            }
+          ]
+        },
+        "name": "TORecipient",
+        "label": "Recipient"
       }
     ],
     "TO_TRIAGE": [
@@ -282,11 +282,6 @@
     ],
     "TO_DRAFT": [
       {
-        "component": "text-area",
-        "name": "RejectionNoteAtDraft",
-        "label": "Why should this case be returned to Triage?"
-      },
-      {
         "component": "entity-list",
         "props": {
           "entity": "document",
@@ -296,14 +291,14 @@
         },
         "name": "DraftDocuments",
         "label": "Primary initial draft document"
+      },
+      {
+        "component": "text-area",
+        "name": "RejectionNoteAtDraft",
+        "label": "Why should this case be returned to Triage?"
       }
     ],
     "TO_QA": [
-      {
-        "component": "text-area",
-        "name": "RejectionNote",
-        "label": "Why are you rejecting the case?"
-      },
       {
         "component": "dropdown",
         "props": {
@@ -324,6 +319,11 @@
         },
         "name": "ApprovalStatus",
         "label": "Approval Status"
+      },
+      {
+        "component": "text-area",
+        "name": "RejectionNote",
+        "label": "Why are you rejecting the case?"
       }
     ],
     "TO_CAMPAIGN": [
@@ -334,7 +334,7 @@
           "defaultOptions": true
         },
         "name": "CampaignType",
-        "label": "Campaign name"
+        "label": "Campaign"
       }
     ],
     "TO_STOP_LIST": [
@@ -348,11 +348,6 @@
       }
     ],
     "TO_HOME_SEC": [
-      {
-        "component": "text-area",
-        "name": "HomeSecRejectionNote",
-        "label": "Why are you rejecting the case?"
-      },
       {
         "component": "dropdown",
         "props": {
@@ -373,6 +368,11 @@
         },
         "name": "HomeSecApprovalStatus",
         "label": "Approval Status"
+      },
+      {
+        "component": "text-area",
+        "name": "HomeSecRejectionNote",
+        "label": "Why are you rejecting the case?"
       }
     ],
     "TO_DISPATCH": [

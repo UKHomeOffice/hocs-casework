@@ -1,17 +1,96 @@
 {
   "type": "BF",
   "groups": {
-    "BF_REGISTRATION" : [ {
-      "component" : "radio",
-      "props" : {
-        "choices" : [ {
-          "label" : "Not Applicable",
-          "value" : "NA"
-        }, {
-          "label" : "Telephone",
-          "value" : "TELEPHONE"
-        }, {
-          "label" : "Email",
+    "BF_REGISTRATION" : [
+      {
+        "component": "date",
+        "name": "DateReceived",
+        "label": "When was the correspondence received?"
+      },
+      {
+        "component": "text",
+        "name": "Withdrawn",
+        "label": "Withdrawn"
+      },
+      {
+        "component": "text-area",
+        "name": "WithdrawalReason",
+        "label": "WithdrawalReason"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "action": "CORRESPONDENT",
+          "entity": "correspondent",
+          "choices": "CASE_CORRESPONDENTS",
+          "addUrlPath": "addNoMp",
+          "hasAddLink": true,
+          "hasEditLink": true,
+          "hasRemoveLink": true,
+          "hideRemovePrimary": true
+        },
+        "name": "Correspondents",
+        "label": "Which is the primary correspondent?"
+      },
+      {
+        "component": "date",
+        "name": "ComplainantDOB",
+        "label": "Date of Birth"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Male",
+              "value": "Male"
+            },
+            {
+              "label": "Female",
+              "value": "Female"
+            }
+          ]
+        },
+        "name": "ComplainantGender",
+        "label": "Gender"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "COUNTRIES_CURRENT"
+        },
+        "name": "ComplainantNationality",
+        "label": "Nationality"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantCompanyName",
+        "label": "Company Name"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantHORef",
+        "label": "Home Office Reference"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantPortRef",
+        "label": "Port Reference"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Not Applicable",
+              "value": "NA"
+            },
+            {
+              "label": "Telephone",
+              "value": "TELEPHONE"
+            },
+            {
+              "label": "Email",
           "value" : "EMAIL"
         }, {
           "label" : "HMPOTRT",
@@ -54,68 +133,6 @@
       },
       "name" : "CompType",
       "label" : "Complaint Type"
-    }, {
-      "component" : "date",
-      "name" : "ComplainantDOB",
-      "label" : "Date of Birth"
-    }, {
-      "component" : "radio",
-      "props" : {
-        "choices" : [ {
-          "label" : "Male",
-          "value" : "Male"
-        }, {
-          "label" : "Female",
-          "value" : "Female"
-        } ]
-      },
-      "name" : "ComplainantGender",
-      "label" : "Gender"
-    }, {
-      "component" : "dropdown",
-      "props" : {
-        "choices" : "COUNTRIES_CURRENT"
-      },
-      "name" : "ComplainantNationality",
-      "label" : "Nationality"
-    }, {
-      "component" : "text",
-      "name" : "ComplainantCompanyName",
-      "label" : "Company Name"
-    }, {
-      "component" : "text",
-      "name" : "ComplainantHORef",
-      "label" : "Home Office Reference"
-    }, {
-      "component" : "text",
-      "name" : "ComplainantPortRef",
-      "label" : "Port Reference"
-    }, {
-      "component" : "entity-list",
-      "props" : {
-        "action" : "CORRESPONDENT",
-        "entity" : "correspondent",
-        "choices" : "CASE_CORRESPONDENTS",
-        "addUrlPath" : "addNoMp",
-        "hasAddLink" : true,
-        "hasEditLink" : true,
-        "hasRemoveLink" : true,
-        "hideRemovePrimary" : true
-      },
-      "name" : "Correspondents",
-      "label" : "Which is the primary correspondent?"
-    }, {
-      "component" : "date",
-      "name" : "DateReceived",
-      "label" : "When was the correspondence received?"
-    }, {
-      "component" : "text",
-      "name" : "Withdrawn",
-      "label" : "Withdrawn"
-    }, {
-      "component" : "text-area",
-      "name" : "WithdrawalReason",
-      "label" : "WithdrawalReason"
     } ],
     "BF_QA" : [ {
       "component" : "radio",
@@ -134,28 +151,39 @@
       "name" : "BfQaResult",
       "label" : "QA Result"
     } ],
-    "BF_TRIAGE" : [ {
-      "component" : "hidden",
-      "props" : {
-        "choices" : [ {
-          "label" : "Service",
-          "value" : "Service"
-        }, {
-          "label" : "Minor Misconduct",
-          "value" : "MinorMisconduct"
-        } ]
+    "BF_TRIAGE" : [
+      {
+        "component": "text-area",
+        "name": "CaseSummary",
+        "label": "Case Summary"
       },
-      "name" : "CompType",
-      "label" : "Complaint Type"
-    }, {
-      "component" : "accordion",
-      "name" : "caseDetailsAccordion",
-      "label" : "Case Details"
-    }, {
-      "component" : "text",
-      "name" : "PrevCompRef",
-      "label" : "Previous Complaint Reference"
-    }, {
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes - accept the complaint",
+              "value": "Yes"
+            },
+            {
+              "label": "No - transfer offline and close the case",
+              "value": "No"
+            }
+          ]
+        },
+        "name": "BfTriageAccept",
+        "label": "Can your team respond to this complaint?"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_CompleteReason",
+        "label": "Enter note for case completion"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_TriageEscalate",
+        "label": "Enter reason for escalation"
+      }, {
       "component" : "dropdown",
       "props" : {
         "choices" : "S_BF_REGION"
@@ -222,15 +250,7 @@
     }, {
       "component" : "dropdown",
       "props" : {
-        "conditionChoices" : [ {
-          "choices" : "S_BF_COMPLAINT_REASON_SERVICE",
-          "conditionPropertyName" : "CompType",
-          "conditionPropertyValue" : "Service"
-        }, {
-          "choices" : "S_BF_COMPLAINT_REASON_FULL",
-          "conditionPropertyName" : "CompType",
-          "conditionPropertyValue" : "MinorMisconduct"
-        } ]
+        "choices": "S_BF_COMPLAINT_REASON_FULL"
       },
       "name" : "ComplaintReason1",
       "label" : "Reason for Complaint 1"
@@ -248,15 +268,7 @@
     }, {
       "component" : "dropdown",
       "props" : {
-        "conditionChoices" : [ {
-          "choices" : "S_BF_COMPLAINT_REASON_SERVICE",
-          "conditionPropertyName" : "CompType",
-          "conditionPropertyValue" : "Service"
-        }, {
-          "choices" : "S_BF_COMPLAINT_REASON_FULL",
-          "conditionPropertyName" : "CompType",
-          "conditionPropertyValue" : "MinorMisconduct"
-        } ]
+        "choices": "S_BF_COMPLAINT_REASON_FULL"
       },
       "name" : "ComplaintReason2",
       "label" : "Reason for Complaint 2"
@@ -274,15 +286,7 @@
     }, {
       "component" : "dropdown",
       "props" : {
-        "conditionChoices" : [ {
-          "choices" : "S_BF_COMPLAINT_REASON_SERVICE",
-          "conditionPropertyName" : "CompType",
-          "conditionPropertyValue" : "Service"
-        }, {
-          "choices" : "S_BF_COMPLAINT_REASON_FULL",
-          "conditionPropertyName" : "CompType",
-          "conditionPropertyValue" : "MinorMisconduct"
-        } ]
+        "choices": "S_BF_COMPLAINT_REASON_FULL"
       },
       "name" : "ComplaintReason3",
       "label" : "Reason for Complaint 3"
@@ -300,15 +304,7 @@
     }, {
       "component" : "dropdown",
       "props" : {
-        "conditionChoices" : [ {
-          "choices" : "S_BF_COMPLAINT_REASON_SERVICE",
-          "conditionPropertyName" : "CompType",
-          "conditionPropertyValue" : "Service"
-        }, {
-          "choices" : "S_BF_COMPLAINT_REASON_FULL",
-          "conditionPropertyName" : "CompType",
-          "conditionPropertyValue" : "MinorMisconduct"
-        } ]
+        "choices": "S_BF_COMPLAINT_REASON_FULL"
       },
       "name" : "ComplaintReason4",
       "label" : "Reason for Complaint 4"
@@ -326,15 +322,7 @@
     }, {
       "component" : "dropdown",
       "props" : {
-        "conditionChoices" : [ {
-          "choices" : "S_BF_COMPLAINT_REASON_SERVICE",
-          "conditionPropertyName" : "CompType",
-          "conditionPropertyValue" : "Service"
-        }, {
-          "choices" : "S_BF_COMPLAINT_REASON_FULL",
-          "conditionPropertyName" : "CompType",
-          "conditionPropertyValue" : "MinorMisconduct"
-        } ]
+        "choices": "S_BF_COMPLAINT_REASON_FULL"
       },
       "name" : "ComplaintReason5",
       "label" : "Reason for Complaint 5"
@@ -353,26 +341,91 @@
       "component" : "radio",
       "props" : {
         "choices" : [ {
-          "label" : "Yes",
-          "value" : "Yes"
-        }, {
-          "label" : "No",
-          "value" : "No"
-        } ]
-      },
-      "name" : "LoaRequired",
-      "label" : "Is a Letter of Authority required?"
-    }, {
-      "component" : "somu-list",
-      "props" : {
-        "choices" : {
-          "contributionBusinessArea" : "S_BF_CONTRIB_TYPE"
+          "label": "Yes",
+          "value": "Yes"
         },
-        "somuType" : {
-          "type" : "BF_CONTRIB",
-          "choices" : "S_MPAM_BUS_UNITS_ALL",
-          "caseType" : "BF"
-        }
+          {
+            "label": "No",
+            "value": "No"
+          }
+        ]
+      },
+        "name": "LoaRequired",
+        "label": "Is a Letter of Authority required?"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "All information collected - case ready for drafting",
+              "value": "Draft"
+            },
+            {
+              "label": "Escalate case to WFM",
+              "value": "Escalate"
+            },
+            {
+              "label": "No response - complete the case (close permanently)",
+              "value": "Complete"
+            }
+          ]
+        },
+        "name": "BFTriageResult",
+        "label": "Action"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_TriageTransfer",
+        "label": "Enter reason for transfer"
+      },
+      {
+        "component": "hidden",
+        "name": "TransferToCaseRef",
+        "label": "Transferred to case reference"
+      },
+      {
+        "component": "hidden",
+        "props": {
+          "choices": [
+            {
+              "label": "Service",
+              "value": "Service"
+            },
+            {
+              "label": "Minor Misconduct",
+              "value": "MinorMisconduct"
+            }
+          ]
+        },
+        "name": "CompType",
+        "label": "Complaint Type"
+      },
+      {
+        "component": "accordion",
+        "name": "caseDetailsAccordion",
+        "label": "Case Details"
+      },
+      {
+        "component": "text",
+        "name": "PrevCompRef",
+        "label": "Previous Complaint Reference"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_BF_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "BF_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "BF"
+          }
       },
       "name" : "BFContributions",
       "label" : "Complainant additional information"
@@ -496,64 +549,8 @@
       },
       "name" : "TotalOfferSentToComplainant",
       "label" : "Total payment offer sent to the complainant"
-    }, {
-      "component" : "radio",
-      "props" : {
-        "choices" : [ {
-          "label" : "Save changes",
-          "value" : "Pending"
-        }, {
-          "label" : "All information collected - case ready for drafting",
-          "value" : "Draft"
-        }, {
-          "label" : "Escalate case to WFM",
-          "value" : "Escalate"
-        }, {
-          "label" : "No response - complete the case (close permanently)",
-          "value" : "Complete"
-        } ]
-      },
-      "name" : "BFTriageResult",
-      "label" : "Action"
-    }, {
-      "component" : "text-area",
-      "name" : "CaseNote_TriageEscalate",
-      "label" : "Enter reason for escalation"
-    }, {
-      "component" : "text-area",
-      "name" : "CaseSummary",
-      "label" : "Case Summary"
-    }, {
-      "component" : "radio",
-      "props" : {
-        "choices" : [ {
-          "label" : "Yes - accept the complaint",
-          "value" : "Yes"
-        }, {
-          "label" : "No - transfer offline and close the case",
-          "value" : "No"
-        } ]
-      },
-      "name" : "BfTriageAccept",
-      "label" : "Can your team respond to this complaint?"
-    }, {
-      "component" : "text-area",
-      "name" : "CaseNote_CompleteReason",
-      "label" : "Enter note for case completion"
-    }, {
-      "component" : "text-area",
-      "name" : "CaseNote_TriageTransfer",
-      "label" : "Enter reason for transfer"
-    }, {
-      "component" : "hidden",
-      "name" : "TransferToCaseRef",
-      "label" : "Transferred to case reference"
     } ],
     "BF_DRAFT" : [ {
-      "component" : "text-area",
-      "name" : "CaseNote_DraftEscalate",
-      "label" : "Enter reason for escalation"
-    }, {
       "component" : "entity-list",
       "props" : {
         "entity" : "document",
@@ -581,17 +578,26 @@
         }, {
           "label" : "Send case to QA",
           "value" : "QA"
-        }, {
-          "label" : "Escalate case to WFM",
-          "value" : "Escalate"
-        }, {
-          "label" : "Reject - return to Triage",
-          "value" : "Reject"
-        } ]
+        },
+          {
+            "label": "Escalate case to WFM",
+            "value": "Escalate"
+          },
+          {
+            "label": "Reject - return to Triage",
+            "value": "Reject"
+          }
+        ]
       },
-      "name" : "BfDraftResult",
-      "label" : "Action"
-    } ],
+      "name": "BfDraftResult",
+      "label": "Action"
+    },
+      {
+        "component": "text-area",
+        "name": "CaseNote_DraftEscalate",
+        "label": "Enter reason for escalation"
+      }
+    ],
     "BF_SEND" : [ {
       "component" : "dropdown",
       "props" : {

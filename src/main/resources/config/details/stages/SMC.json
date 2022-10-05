@@ -3,6 +3,66 @@
   "groups": {
     "SMC_REGISTRATION": [
       {
+        "component": "date",
+        "name": "DateReceived",
+        "label": "When was the correspondence received?"
+      },
+      {
+        "component": "text",
+        "name": "Withdrawn",
+        "label": "Withdrawn"
+      },
+      {
+        "component": "text-area",
+        "name": "WithdrawalReason",
+        "label": "WithdrawalReason"
+      },
+      {
+        "component": "date",
+        "name": "ComplainantDOB",
+        "label": "Date of Birth"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Male",
+              "value": "Male"
+            },
+            {
+              "label": "Female",
+              "value": "Female"
+            }
+          ]
+        },
+        "name": "ComplainantGender",
+        "label": "Gender"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "COUNTRIES_CURRENT"
+        },
+        "name": "ComplainantNationality",
+        "label": "Nationality"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantCompanyName",
+        "label": "Company Name"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantHORef",
+        "label": "Home Office Reference"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantPortRef",
+        "label": "Port Reference"
+      },
+      {
         "component": "radio",
         "props": {
           "choices": [
@@ -42,20 +102,21 @@
             }
           ]
         },
-        "label": "Channel",
-        "name": "Channel"
+        "name": "Channel",
+        "label": "Channel"
       },
       {
         "component": "dropdown",
         "props": {
           "choices": "S_SMC_COMP_ORIGIN"
         },
-        "label": "Complaint Origin",
-        "name": "CompOrigin"
+        "name": "CompOrigin",
+        "label": "Complaint Origin"
       },
       {
         "component": "text",
         "props": {
+          "limit": 100,
           "visibilityConditions": [
             {
               "conditionPropertyName": "CompOrigin",
@@ -63,13 +124,13 @@
             }
           ]
         },
-        "label": "Other Complaint Origin",
-        "name": "CompOriginOther"
+        "name": "CompOriginOther",
+        "label": "Other Complaint Origin"
       },
       {
         "component": "text-area",
-        "label": "Case Summary",
-        "name": "InitCaseSummary"
+        "name": "InitCaseSummary",
+        "label": "Case Summary"
       },
       {
         "component": "checkbox",
@@ -81,8 +142,8 @@
             }
           ]
         },
-        "label": "Additional Information",
-        "name": "InitSafeGuarding"
+        "name": "InitSafeGuarding",
+        "label": "Additional Information"
       },
       {
         "component": "checkbox",
@@ -94,8 +155,8 @@
             }
           ]
         },
-        "label": "Additional Information",
-        "name": "InitVulnerable"
+        "name": "InitVulnerable",
+        "label": "Additional Information"
       },
       {
         "component": "checkbox",
@@ -107,83 +168,23 @@
             }
           ]
         },
-        "label": "Additional Information",
-        "name": "InitMinor"
+        "name": "InitMinor",
+        "label": "Additional Information"
       },
       {
         "component": "text",
-        "label": "Previous UKVI Complaint Ref",
-        "name": "PrevUkviRef"
+        "name": "PrevUkviRef",
+        "label": "Previous UKVI Complaint Ref"
       },
       {
         "component": "text",
-        "label": "Third Party Reference",
-        "name": "3rdPartyRef"
-      },
-      {
-        "component": "date",
-        "label": "When was the correspondence received?",
-        "name": "DateReceived"
-      },
-      {
-        "component": "text",
-        "label": "Withdrawn",
-        "name": "Withdrawn"
-      },
-      {
-        "component": "text-area",
-        "label": "WithdrawalReason",
-        "name": "WithdrawalReason"
-      },
-      {
-        "component": "date",
-        "label": "Date of Birth",
-        "name": "ComplainantDOB"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Male",
-              "value": "Male"
-            },
-            {
-              "label": "Female",
-              "value": "Female"
-            }
-          ]
-        },
-        "label": "Gender",
-        "name": "ComplainantGender"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "COUNTRIES_CURRENT"
-        },
-        "label": "Nationality",
-        "name": "ComplainantNationality"
-      },
-      {
-        "component": "text",
-        "label": "Company Name",
-        "name": "ComplainantCompanyName"
-      },
-      {
-        "component": "text",
-        "label": "Home Office Reference",
-        "name": "ComplainantHORef"
-      },
-      {
-        "component": "text",
-        "label": "Port Reference",
-        "name": "ComplainantPortRef"
+        "name": "3rdPartyRef",
+        "label": "Third Party Reference"
       },
       {
         "component": "accordion",
-        "label": "Serious",
-        "name": "SeriousAccordian"
+        "name": "SeriousAccordian",
+        "label": "Serious"
       },
       {
         "component": "checkbox",
@@ -319,8 +320,8 @@
       },
       {
         "component": "accordion",
-        "label": "Service",
-        "name": "ServiceAccordion"
+        "name": "ServiceAccordion",
+        "label": "Service"
       },
       {
         "component": "checkbox",
@@ -495,15 +496,232 @@
         "props": {
           "choices": "S_SMC_CSU_LIST"
         },
-        "label": "Owning CSU",
-        "name": "InitOwningCSU"
+        "name": "InitOwningCSU",
+        "label": "Owning CSU"
       }
     ],
     "SMC_TRIAGE": [
       {
+        "component": "text-area",
+        "name": "CaseSummary",
+        "label": "Case Summary"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes - accept the complaint",
+              "value": "Yes"
+            },
+            {
+              "label": "No - transfer the complaint",
+              "value": "No"
+            }
+          ]
+        },
+        "name": "CctTriageAccept",
+        "label": "Can your team respond to this complaint?"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Safe Guarding",
+              "value": "SafeGuarding"
+            }
+          ]
+        },
+        "name": "SafeGuarding",
+        "label": "Additional Information"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Vulnerable",
+              "value": "Vulnerable"
+            }
+          ]
+        },
+        "name": "Vulnerable",
+        "label": "Additional Information"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Case is made by / on behalf of a minor",
+              "value": "Minor"
+            }
+          ]
+        },
+        "name": "Minor",
+        "label": "Additional Information"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_SMC_BUS_AREA"
+        },
+        "name": "BusArea",
+        "label": "Business Area"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CCT_ENQ_REASON"
+        },
+        "name": "EnqReason",
+        "label": "Enquiry Reason"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            },
+            {
+              "label": "No",
+              "value": "No"
+            }
+          ]
+        },
+        "name": "LoaRequired",
+        "label": "Is a Letter of Authority required?"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "SMC_COMP_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "SMC"
+          }
+        },
+        "name": "CompContributions",
+        "label": "Complainant additional information"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Has Letter of Authority been received?",
+              "value": "Yes"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaRequired",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaReceived"
+      },
+      {
+        "component": "date",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaReceived",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaDate",
+        "label": "Date of Letter of Authority"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_BUS_AREA"
+          },
+          "somuType": {
+            "type": "SMC_BUS_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "SMC"
+          }
+        },
+        "name": "BusContributions",
+        "label": "Business contributions"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "All information collected - case ready for drafting",
+              "value": "Draft"
+            },
+            {
+              "label": "No response, referred to team not on DECS",
+              "value": "NoResponse"
+            },
+            {
+              "label": "No response - complete the case (close permanently)",
+              "value": "Complete"
+            }
+          ]
+        },
+        "name": "ScmTriageResult",
+        "label": "Action"
+      },
+      {
+        "component": "text",
+        "name": "PSURef",
+        "label": "PSU Reference"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_CompleteReason",
+        "label": "Enter note for case completion"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_ReferReason",
+        "label": "Enter note for case referral"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_TriageTransfer",
+        "label": "Enter reason for transfer"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "CCH",
+              "value": "CCH"
+            },
+            {
+              "label": "IE Detention",
+              "value": "IEDET"
+            }
+          ]
+        },
+        "name": "TransferType",
+        "label": "Transfer to"
+      },
+      {
         "component": "accordion",
-        "label": "Serious",
-        "name": "SeriousAccordian"
+        "name": "SeriousAccordian",
+        "label": "Serious"
       },
       {
         "component": "checkbox",
@@ -639,8 +857,8 @@
       },
       {
         "component": "accordion",
-        "label": "Service",
-        "name": "ServiceAccordion"
+        "name": "ServiceAccordion",
+        "label": "Service"
       },
       {
         "component": "checkbox",
@@ -815,225 +1033,8 @@
         "props": {
           "choices": "S_SMC_CSU_LIST"
         },
-        "label": "Owning CSU",
-        "name": "OwningCSU"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "Safe Guarding",
-              "value": "SafeGuarding"
-            }
-          ]
-        },
-        "label": "Additional Information",
-        "name": "SafeGuarding"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "Vulnerable",
-              "value": "Vulnerable"
-            }
-          ]
-        },
-        "label": "Additional Information",
-        "name": "Vulnerable"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "Case is made by / on behalf of a minor",
-              "value": "Minor"
-            }
-          ]
-        },
-        "label": "Additional Information",
-        "name": "Minor"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "S_SMC_BUS_AREA"
-        },
-        "label": "Business Area",
-        "name": "BusArea"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "S_COMP_CCT_ENQ_REASON"
-        },
-        "label": "Enquiry Reason",
-        "name": "EnqReason"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Yes",
-              "value": "Yes"
-            },
-            {
-              "label": "No",
-              "value": "No"
-            }
-          ]
-        },
-        "label": "Is a Letter of Authority required?",
-        "name": "LoaRequired"
-      },
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
-          },
-          "somuType": {
-            "type": "SMC_COMP_CONTRIB",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "SMC"
-          }
-        },
-        "label": "Complainant additional information",
-        "name": "CompContributions"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "Has Letter of Authority been received?",
-              "value": "Yes"
-            }
-          ],
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "LoaRequired",
-              "conditionPropertyValue": "Yes"
-            }
-          ]
-        },
-        "name": "LoaReceived"
-      },
-      {
-        "component": "date",
-        "props": {
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "LoaReceived",
-              "conditionPropertyValue": "Yes"
-            }
-          ]
-        },
-        "label": "Date of Letter of Authority",
-        "name": "LoaDate"
-      },
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "S_COMP_CONTRIB_BUS_AREA"
-          },
-          "somuType": {
-            "type": "SMC_BUS_CONTRIB",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "SMC"
-          }
-        },
-        "label": "Business contributions",
-        "name": "BusContributions"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Save changes",
-              "value": "Pending"
-            },
-            {
-              "label": "All information collected - case ready for drafting",
-              "value": "Draft"
-            },
-            {
-              "label": "No response, referred to team not on DECS",
-              "value": "NoResponse"
-            },
-            {
-              "label": "No response - complete the case (close permanently)",
-              "value": "Complete"
-            }
-          ]
-        },
-        "label": "Action",
-        "name": "ScmTriageResult"
-      },
-      {
-        "component": "text-area",
-        "label": "Enter note for case completion",
-        "name": "CaseNote_CompleteReason"
-      },
-      {
-        "component": "text-area",
-        "label": "Enter note for case referral",
-        "name": "CaseNote_ReferReason"
-      },
-      {
-        "component": "text-area",
-        "label": "Enter reason for transfer",
-        "name": "CaseNote_TriageTransfer"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "CCH",
-              "value": "CCH"
-            },
-            {
-              "label": "IE Detention",
-              "value": "IEDET"
-            }
-          ]
-        },
-        "label": "Transfer to",
-        "name": "TransferType"
-      },
-      {
-        "component": "text-area",
-        "label": "Case Summary",
-        "name": "CaseSummary"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Yes - accept the complaint",
-              "value": "Yes"
-            },
-            {
-              "label": "No - transfer the complaint",
-              "value": "No"
-            }
-          ]
-        },
-        "label": "Can your team respond to this complaint?",
-        "name": "CctTriageAccept"
-      },
-      {
-        "component": "text",
-        "label": "PSU Reference",
-        "name": "PSURef"
+        "name": "OwningCSU",
+        "label": "Owning CSU"
       }
     ],
     "SMC_DRAFT": [
@@ -1041,19 +1042,22 @@
         "component": "entity-list",
         "props": {
           "entity": "document",
-          "choices": "CASE_DOCUMENT_LIST_DRAFT"
+          "choices": "CASE_DOCUMENT_LIST_DRAFT",
+          "hasAddLink": true,
+          "hasRemoveLink": true
         },
-        "label": "Primary draft document",
-        "name": "DraftDocuments"
+        "name": "DraftDocuments",
+        "label": "Primary draft document"
       },
       {
         "component": "entity-manager",
         "props": {
           "entity": "template",
-          "choices": "CASE_TEMPLATES"
+          "choices": "CASE_TEMPLATES",
+          "hasTemplateLink": true
         },
-        "label": "Available Template",
-        "name": "Complaint_Response"
+        "name": "Complaint_Response",
+        "label": "Available Template"
       }
     ],
     "SMC_SEND": [
@@ -1061,10 +1065,12 @@
         "component": "entity-list",
         "props": {
           "entity": "document",
-          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE"
+          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
         },
-        "label": "Upload the Final Response",
-        "name": "FinalResponseDocument"
+        "name": "FinalResponseDocument",
+        "label": "Upload the Final Response"
       },
       {
         "component": "dropdown",
@@ -1088,13 +1094,13 @@
             }
           ]
         },
-        "label": "Case Outcome",
-        "name": "CctCaseOutcome"
+        "name": "CctCaseOutcome",
+        "label": "Case Outcome"
       },
       {
         "component": "date",
-        "label": "Response date",
-        "name": "ResponseDate"
+        "name": "ResponseDate",
+        "label": "Response date"
       }
     ]
   }
