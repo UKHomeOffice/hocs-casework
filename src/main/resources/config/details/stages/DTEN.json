@@ -4,13 +4,13 @@
     "DCU_DTEN_DATA_INPUT": [
       {
         "component": "date",
-        "label": "When was the correspondence sent?",
-        "name": "DateOfCorrespondence"
+        "name": "DateOfCorrespondence",
+        "label": "When was the correspondence sent?"
       },
       {
         "component": "date",
-        "label": "When was the correspondence received?",
-        "name": "DateReceived"
+        "name": "DateReceived",
+        "label": "When was the correspondence received?"
       },
       {
         "component": "radio",
@@ -34,67 +34,34 @@
             }
           ]
         },
-        "label": "How was the correspondence received?",
-        "name": "OriginalChannel"
+        "name": "OriginalChannel",
+        "label": "How was the correspondence received?"
       },
       {
         "component": "entity-list",
         "props": {
           "action": "CORRESPONDENT",
           "entity": "correspondent",
-          "choices": "CASE_CORRESPONDENTS"
+          "choices": "CASE_CORRESPONDENTS",
+          "hasAddLink": true,
+          "hasEditLink": true,
+          "hasRemoveLink": true
         },
-        "label": "Which is the primary correspondent?",
-        "name": "Correspondents"
+        "name": "Correspondents",
+        "label": "Which is the primary correspondent?"
       },
       {
         "component": "date",
-        "label": "What is the drafting deadline?",
-        "name": "DCU_DTEN_INITIAL_DRAFT_DEADLINE"
+        "name": "DCU_DTEN_INITIAL_DRAFT_DEADLINE",
+        "label": "What is the drafting deadline?"
       },
       {
         "component": "date",
-        "label": "What is the dispatch deadline?",
-        "name": "DCU_DTEN_DISPATCH_DEADLINE"
+        "name": "DCU_DTEN_DISPATCH_DEADLINE",
+        "label": "What is the dispatch deadline?"
       }
     ],
     "DCU_DTEN_MARKUP": [
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "PRIVATE_OFFICE_TEAMS"
-        },
-        "label": "Override Private Office Team",
-        "name": "OverridePOTeamUUID"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "DRAFT_TEAMS"
-        },
-        "label": "Override Initial Draft Team",
-        "name": "OverrideDraftingTeamUUID"
-      },
-      {
-        "component": "text",
-        "label": "Private Office Team",
-        "name": "POTeamName"
-      },
-      {
-        "component": "text",
-        "label": "Initial Draft Team",
-        "name": "DraftingTeamName"
-      },
-      {
-        "component": "entity-list",
-        "props": {
-          "action": "TOPIC",
-          "entity": "topic",
-          "choices": "CASE_TOPICS"
-        },
-        "label": "Which is the primary topic?",
-        "name": "Topics"
-      },
       {
         "component": "radio",
         "props": {
@@ -121,35 +88,73 @@
             }
           ]
         },
-        "label": "What sort of response is required?",
-        "name": "MarkupDecision"
+        "name": "MarkupDecision",
+        "label": "What sort of response is required?"
       },
       {
         "component": "text",
-        "label": "Where should this case be transferred to?",
-        "name": "OGDDept"
+        "name": "OGDDept",
+        "label": "Where should this case be transferred to?"
       },
       {
         "component": "text-area",
-        "label": "Why should this case be transferred here?",
-        "name": "CaseNote_OGD"
+        "name": "CaseNote_OGD",
+        "label": "Why should this case be transferred here?"
       },
       {
         "component": "text-area",
-        "label": "Why is no response needed?",
-        "name": "CaseNote_NRN"
+        "name": "CaseNote_NRN",
+        "label": "Why is no response needed?"
       },
       {
         "component": "text-area",
-        "label": "Why should this case be rejected?",
-        "name": "CaseNote_REJ"
+        "name": "CaseNote_REJ",
+        "label": "Why should this case be rejected?"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "action": "TOPIC",
+          "entity": "topic",
+          "choices": "CASE_TOPICS",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "Topics",
+        "label": "Which is the primary topic?"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "PRIVATE_OFFICE_TEAMS"
+        },
+        "name": "OverridePOTeamUUID",
+        "label": "Override Private Office Team"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "DRAFT_TEAMS"
+        },
+        "name": "OverrideDraftingTeamUUID",
+        "label": "Override Initial Draft Team"
+      },
+      {
+        "component": "text",
+        "name": "POTeamName",
+        "label": "Private Office Team"
+      },
+      {
+        "component": "text",
+        "name": "DraftingTeamName",
+        "label": "Initial Draft Team"
       }
     ],
     "DCU_DTEN_NO_REPLY_NEEDED_CONFIRMATION": [
       {
         "component": "text-area",
-        "label": "Why is no response needed?",
-        "name": "CaseNote_NRN"
+        "name": "CaseNote_NRN",
+        "label": "Why is no response needed?"
       },
       {
         "component": "radio",
@@ -165,39 +170,12 @@
             }
           ]
         },
-        "label": "Do you agree that no response is needed?",
-        "name": "NoReplyNeededConfirmation"
+        "name": "NoReplyNeededConfirmation",
+        "label": "Do you agree that no response is needed?"
       }
     ],
     "DCU_DTEN_INITIAL_DRAFT": [
       {
-        "component": "entity-manager",
-        "props": {
-          "entity": "standard_line",
-          "choices": "CASE_STANDARD_LINES"
-        },
-        "label": "Available Standard line",
-        "name": "Documents_standard_line"
-      },
-      {
-        "component": "entity-manager",
-        "props": {
-          "entity": "template",
-          "choices": "CASE_TEMPLATES"
-        },
-        "label": "Available Template",
-        "name": "Documents_topic"
-      },
-      {
-        "component": "entity-list",
-        "props": {
-          "entity": "document",
-          "choices": "CASE_DOCUMENT_LIST_DRAFT"
-        },
-        "label": "Primary draft document",
-        "name": "DraftDocuments"
-      },
-      {
         "component": "radio",
         "props": {
           "choices": [
@@ -211,8 +189,8 @@
             }
           ]
         },
-        "label": "Can this correspondence be answered by your team?",
-        "name": "InitialDraftDecision"
+        "name": "InitialDraftDecision",
+        "label": "Can this correspondence be answered by your team?"
       },
       {
         "component": "radio",
@@ -232,13 +210,44 @@
             }
           ]
         },
-        "label": "How do you intend to respond?",
-        "name": "ResponseChannel"
+        "name": "ResponseChannel",
+        "label": "How do you intend to respond?"
       },
       {
         "component": "text-area",
-        "label": "Why should this not be answered by your team?",
-        "name": "CaseNote_RejectionNote"
+        "name": "CaseNote_RejectionNote",
+        "label": "Why should this not be answered by your team?"
+      },
+      {
+        "component": "entity-manager",
+        "props": {
+          "entity": "standard_line",
+          "choices": "CASE_STANDARD_LINES",
+          "hasDownloadLink": true
+        },
+        "name": "Documents_standard_line",
+        "label": "Available Standard line"
+      },
+      {
+        "component": "entity-manager",
+        "props": {
+          "entity": "template",
+          "choices": "CASE_TEMPLATES",
+          "hasTemplateLink": true
+        },
+        "name": "Documents_topic",
+        "label": "Available Template"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_DRAFT",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "DraftDocuments",
+        "label": "Primary draft document"
       },
       {
         "component": "radio",
@@ -254,16 +263,16 @@
             }
           ]
         },
-        "label": "Do you want to QA this offline?",
-        "name": "OfflineQA"
+        "name": "OfflineQA",
+        "label": "Do you want to QA this offline?"
       },
       {
         "component": "dropdown",
         "props": {
           "choices": "USERS_FOR_CASE"
         },
-        "label": "Who has done the Offline QA for this case?",
-        "name": "OfflineQaUser"
+        "name": "OfflineQaUser",
+        "label": "Who has done the Offline QA for this case?"
       }
     ],
     "DCU_DTEN_QA_RESPONSE": [
@@ -285,40 +294,44 @@
             }
           ]
         },
-        "label": "Actions",
-        "name": "QAResponseDecision"
+        "name": "QAResponseDecision",
+        "label": "Actions"
       },
       {
         "component": "text-area",
-        "label": "What is your feedback about the response?",
-        "name": "CaseNote_QA"
+        "name": "CaseNote_QA",
+        "label": "What is your feedback about the response?"
       },
       {
         "component": "entity-manager",
         "props": {
           "entity": "standard_line",
-          "choices": "CASE_STANDARD_LINES"
+          "choices": "CASE_STANDARD_LINES",
+          "hasDownloadLink": true
         },
-        "label": "Available Standard line",
-        "name": "Documents_standard_line"
+        "name": "Documents_standard_line",
+        "label": "Available Standard line"
       },
       {
         "component": "entity-manager",
         "props": {
           "entity": "template",
-          "choices": "CASE_TEMPLATES"
+          "choices": "CASE_TEMPLATES",
+          "hasTemplateLink": true
         },
-        "label": "Available Template",
-        "name": "Documents_topic"
+        "name": "Documents_topic",
+        "label": "Available Template"
       },
       {
         "component": "entity-list",
         "props": {
           "entity": "document",
-          "choices": "CASE_DOCUMENT_LIST_DRAFT"
+          "choices": "CASE_DOCUMENT_LIST_DRAFT",
+          "hasAddLink": true,
+          "hasRemoveLink": true
         },
-        "label": "Primary draft document",
-        "name": "DraftDocuments"
+        "name": "DraftDocuments",
+        "label": "Primary draft document"
       }
     ],
     "DCU_DTEN_PRIVATE_OFFICE": [
@@ -336,16 +349,21 @@
             }
           ]
         },
-        "label": "Do you approve the response?",
-        "name": "PrivateOfficeDecision"
+        "name": "PrivateOfficeDecision",
+        "label": "Do you approve the response?"
       },
       {
         "component": "text-area",
-        "label": "What is your feedback about the response?",
-        "name": "CaseNote_PrivateOfficeReject"
+        "name": "CaseNote_PrivateOfficeReject",
+        "label": "What is your feedback about the response?"
       }
     ],
     "DCU_DTEN_DISPATCH": [
+      {
+        "component": "text-area",
+        "name": "CaseNote_DispatchDecisionReject",
+        "label": "Why are you unable to dispatch this?"
+      },
       {
         "component": "radio",
         "props": {
@@ -360,13 +378,8 @@
             }
           ]
         },
-        "label": "Are you able to dispatch this?",
-        "name": "DispatchDecision"
-      },
-      {
-        "component": "text-area",
-        "label": "Why are you unable to dispatch this?",
-        "name": "CaseNote_DispatchDecisionReject"
+        "name": "DispatchDecision",
+        "label": "Are you able to dispatch this?"
       }
     ]
   }
