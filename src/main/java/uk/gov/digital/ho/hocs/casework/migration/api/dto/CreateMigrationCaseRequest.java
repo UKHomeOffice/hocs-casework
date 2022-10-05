@@ -7,6 +7,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -28,5 +29,8 @@ public class CreateMigrationCaseRequest {
 
     @JsonProperty("stageType")
     private String stageType;
+
+    @JsonProperty("complaintCorrespondents")
+    private List<ComplaintCorrespondent> complaintCorrespondents;
 
 }

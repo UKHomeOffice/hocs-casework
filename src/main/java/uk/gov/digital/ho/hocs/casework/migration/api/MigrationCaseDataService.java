@@ -19,6 +19,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MIGRATION_CAS
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MIGRATION_CASE_NOT_UPDATED_NULL_DATA;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MIGRATION_CASE_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MIGRATION_CASE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRESPONDENT_UPDATED;
 
 @Service
 @Slf4j
@@ -82,6 +83,7 @@ public class MigrationCaseDataService {
         LocalDate deadline = LocalDate.now();
         caseData.setCaseDeadline(deadline);
         caseData.setCompleted(true);
+        //caseData.setPrimaryCorrespondentUUID( GET UUID of primary Correspondence );
         caseDataRepository.save(caseData);
         auditClient.createCaseAudit(caseData);
         return caseData;

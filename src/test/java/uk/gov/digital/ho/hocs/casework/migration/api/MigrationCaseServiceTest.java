@@ -57,7 +57,7 @@ public class MigrationCaseServiceTest {
         when(migrationCaseDataService.createCompletedCase(caseDataType.getDisplayName(), data,
             originalReceivedDate)).thenReturn(caseData);
 
-        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate);
+        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate, null);
 
         // then
         verify(migrationCaseDataService, times(1)).createCompletedCase(caseDataType.getDisplayName(), data,
