@@ -4,6 +4,28 @@
     "POGR2_REGISTRATION": [
       {
         "component": "date",
+        "name": "DateReceived",
+        "label": "When was the correspondence received?"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "HMPO",
+              "value": "HMPO"
+            },
+            {
+              "label": "GRO",
+              "value": "GRO"
+            }
+          ]
+        },
+        "name": "BusinessArea",
+        "label": "Business Area"
+      },
+      {
+        "component": "date",
         "name": "ComplainantDOB",
         "label": "Date of Birth"
       },
@@ -252,31 +274,512 @@
         "component": "text",
         "name": "ComplainantCaseAccountNumber",
         "label": "Case/Account Number"
+      }
+    ],
+    "POGR2_HMPO_INVESTIGATION": [
+      {
+        "component": "radio",
+        "props": {
+          "conditionChoices": [
+            {
+              "choices": [
+                {
+                  "label": "Yes - accept the complaint",
+                  "value": "Accept"
+                },
+                {
+                  "label": "No - close and transfer to external team",
+                  "value": "Reject"
+                }
+              ],
+              "conditionPropertyName": "BusinessArea",
+              "conditionPropertyValue": "HMPO"
+            },
+            {
+              "choices": [
+                {
+                  "label": "Yes - accept the complaint",
+                  "value": "Accept"
+                },
+                {
+                  "label": "No - transfer the case",
+                  "value": "Reject"
+                }
+              ],
+              "conditionPropertyName": "BusinessArea",
+              "conditionPropertyValue": "GRO"
+            }
+          ]
+        },
+        "name": "InvestigationAccept",
+        "label": "Can your team respond to this complaint?"
+      },
+      {
+        "component": "text-area",
+        "props": {
+          "visibilityConditions": [
+            {
+              "function": "hasAllValues",
+              "conditionArgs": {
+                "arg1": {
+                  "conditionPropertyName": "InvestigationAccept",
+                  "conditionPropertyValue": "Reject"
+                },
+                "arg2": {
+                  "conditionPropertyName": "BusinessArea",
+                  "conditionPropertyValue": "HMPO"
+                }
+              }
+            }
+          ]
+        },
+        "name": "CaseNote_InvestigationReject",
+        "label": "Enter the reason for transfer"
       },
       {
         "component": "date",
-        "name": "DateReceived",
-        "label": "When was the correspondence received?"
+        "name": "ComplainantDOB",
+        "label": "Date of Birth"
       },
       {
         "component": "radio",
         "props": {
           "choices": [
             {
-              "label": "HMPO",
-              "value": "HMPO"
+              "label": "Male",
+              "value": "Male"
             },
             {
-              "label": "GRO",
-              "value": "GRO"
+              "label": "Female",
+              "value": "Female"
             }
           ]
         },
-        "name": "BusinessArea",
-        "label": "Business Area"
+        "name": "ComplainantGender",
+        "label": "Gender"
+      },
+      {
+        "component": "date",
+        "name": "DateOfCorrespondence",
+        "label": "Date of Correspondence"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "COUNTRIES_CURRENT"
+        },
+        "name": "ComplaintNationOrigin",
+        "label": "Nation from which complaint is being made"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantCompanyName",
+        "label": "Company Name"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantApplicationReference",
+        "label": "Application Reference"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantPassportNumber",
+        "label": "Passport Number"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "HMPO_COMPLAINT_CATEGORIES"
+        },
+        "name": "ComplainantCategory",
+        "label": "Complaint Category"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "conditionChoices": [
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_ABI",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Authentication By Interview (ABI)"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_CUSTOMER_COMMUNICATIONS",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Customer Communications"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_DHL",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "DHL"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_DISCRIMINATORY",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Discriminatory"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_FEDEX",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Fedex"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_EXAMINATION",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Examination"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_CSMT",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "CSMT"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_COUNTER_SERVICES",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "HMPO Counter Services"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_POLICY",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "HMPO Policy and Procedures"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_ID_CHECKS",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "ID Checks & Counter Fraud"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_NATIONALITY",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Nationality"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_DIGITAL",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Digital Application Channels"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_PAPER",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Paper Application Form"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_PARTNERS_OTHER",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Partners - Other"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_POL",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "POL - Check & Send"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_QUALITY",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Product Quality & Design"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_ROYAL_MAIL",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Royal Mail"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_TP_ADVICELINE",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "TP - Passport Adviceline"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_OAB",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "OAB"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_SOPRA_STERIA",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Sopra Steria"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_SVS",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "SVS"
+            }
+          ]
+        },
+        "name": "ComplaintReason",
+        "label": "Complaint Reason"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "POGR_HMPO_LOCATIONS"
+        },
+        "name": "ComplainantLocation",
+        "label": "Location"
+      },
+      {
+        "component": "text-area",
+        "name": "ComplaintDescription",
+        "label": "Description of Complaint"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Post",
+              "value": "Post"
+            },
+            {
+              "label": "Telephone",
+              "value": "Telephone"
+            },
+            {
+              "label": "Webform",
+              "value": "Webform"
+            }
+          ]
+        },
+        "name": "ComplaintChannel",
+        "label": "Complaint Channel"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            }
+          ],
+          "showLabel": true
+        },
+        "name": "ComplaintPriority",
+        "label": "Priority"
+      },
+      {
+        "component": "text",
+        "name": "ComplaintThirdPartyReference",
+        "label": "Third Party Reference"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_BF_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "CONTRIBUTIONS",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "POGR2"
+          }
+        },
+        "name": "ComplainantContributions",
+        "label": "Complainant Contributions"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "MPAM_CONTRIBUTION_BUSINESS_AREAS",
+            "contributionBusinessUnit": "S_MPAM_BUS_UNITS_ALL"
+          },
+          "somuType": {
+            "type": "BUS_CONTRIBUTIONS",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "POGR2"
+          }
+        },
+        "name": "BusinessContributions",
+        "label": "Business Contributions"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            }
+          ],
+          "showLabel": "true",
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaRequired",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaReceived",
+        "label": "Letter of Authority Received"
+      },
+      {
+        "component": "date",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaReceived",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaDateReceived",
+        "label": "Letter of Authority Date Received"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "All information collected - respond",
+              "value": "Draft"
+            },
+            {
+              "label": "Escalate case to WFM",
+              "value": "Escalate"
+            },
+            {
+              "label": "Close the case",
+              "value": "Complete"
+            }
+          ]
+        },
+        "name": "InvestigationOutcome",
+        "label": "Actions"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_InvestigationEscalate",
+        "label": "Enter reason for escalation"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Duplicate Record",
+              "value": "Duplicate Record"
+            },
+            {
+              "label": "Local Resolution",
+              "value": "Local Resolution"
+            },
+            {
+              "label": "Complaint Rejection",
+              "value": "Complaint Rejection"
+            },
+            {
+              "label": "Third Party Rejection",
+              "value": "Third Party Rejection"
+            },
+            {
+              "label": "Withdrawn by Customer",
+              "value": "Withdrawn by Customer"
+            },
+            {
+              "label": "Transferred to Other Department",
+              "value": "Transferred to Other Department"
+            },
+            {
+              "label": "Persistent Author",
+              "value": "Persistent Author"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "InvestigationOutcome",
+              "conditionPropertyValue": "Complete"
+            }
+          ]
+        },
+        "name": "ClosureReason",
+        "label": "Closure Reason"
+      },
+      {
+        "component": "text-area",
+        "name": "ClosureCaseNote",
+        "label": "Enter a note for case closure",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "InvestigationOutcome",
+              "conditionPropertyValue": "Complete"
+            }
+          ]
+        }
       }
     ],
     "POGR2_GRO_INVESTIGATION": [
+      {
+        "component": "radio",
+        "props": {
+          "conditionChoices": [
+            {
+              "choices": [
+                {
+                  "label": "Yes - accept the complaint",
+                  "value": "Accept"
+                },
+                {
+                  "label": "No - close and transfer to external team",
+                  "value": "Reject"
+                }
+              ],
+              "conditionPropertyName": "BusinessArea",
+              "conditionPropertyValue": "HMPO"
+            },
+            {
+              "choices": [
+                {
+                  "label": "Yes - accept the complaint",
+                  "value": "Accept"
+                },
+                {
+                  "label": "No - transfer the case",
+                  "value": "Reject"
+                }
+              ],
+              "conditionPropertyName": "BusinessArea",
+              "conditionPropertyValue": "GRO"
+            }
+          ]
+        },
+        "name": "InvestigationAccept",
+        "label": "Can your team respond to this complaint?"
+      },
+      {
+        "component": "text-area",
+        "props": {
+          "visibilityConditions": [
+            {
+              "function": "hasAllValues",
+              "conditionArgs": {
+                "arg1": {
+                  "conditionPropertyName": "InvestigationAccept",
+                  "conditionPropertyValue": "Reject"
+                },
+                "arg2": {
+                  "conditionPropertyName": "BusinessArea",
+                  "conditionPropertyValue": "HMPO"
+                }
+              }
+            }
+          ]
+        },
+        "name": "CaseNote_InvestigationReject",
+        "label": "Enter the reason for transfer"
+      },
       {
         "component": "date",
         "name": "ComplainantDOB",
@@ -561,445 +1064,41 @@
         "component": "text-area",
         "name": "CaseNote_InvestigationEscalate",
         "label": "Enter reason for escalation"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": [
-            {
-              "label": "Duplicate Record",
-              "value": "Duplicate Record"
-            },
-            {
-              "label": "Local Resolution",
-              "value": "Local Resolution"
-            },
-            {
-              "label": "Complaint Rejection",
-              "value": "Complaint Rejection"
-            },
-            {
-              "label": "Third Party Rejection",
-              "value": "Third Party Rejection"
-            },
-            {
-              "label": "Withdrawn by Customer",
-              "value": "Withdrawn by Customer"
-            },
-            {
-              "label": "Transferred to Other Department",
-              "value": "Transferred to Other Department"
-            },
-            {
-              "label": "Persistent Author",
-              "value": "Persistent Author"
-            },
-            {
-              "label": "Other",
-              "value": "Other"
-            }
-          ],
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "InvestigationOutcome",
-              "conditionPropertyValue": "Complete"
-            }
-          ]
-        },
-        "name": "ClosureReason",
-        "label": "Closure Reason"
-      },
-      {
-        "component": "text-area",
-        "name": "ClosureCaseNote",
-        "label": "Enter a note for case closure",
-        "props": {
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "InvestigationOutcome",
-              "conditionPropertyValue": "Complete"
-            }
-          ]
-        }
       }
     ],
-    "POGR2_HMPO_INVESTIGATION": [
-      {
-        "component": "date",
-        "name": "ComplainantDOB",
-        "label": "Date of Birth"
-      },
+    "POGR2_GRO_DRAFT": [
       {
         "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Male",
-              "value": "Male"
-            },
-            {
-              "label": "Female",
-              "value": "Female"
-            }
-          ]
-        },
-        "name": "ComplainantGender",
-        "label": "Gender"
-      },
-      {
-        "component": "date",
-        "name": "DateOfCorrespondence",
-        "label": "Date of Correspondence"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "COUNTRIES_CURRENT"
-        },
-        "name": "ComplaintNationOrigin",
-        "label": "Nation from which complaint is being made"
-      },
-      {
-        "component": "text",
-        "name": "ComplainantCompanyName",
-        "label": "Company Name"
-      },
-      {
-        "component": "text",
-        "name": "ComplainantApplicationReference",
-        "label": "Application Reference"
-      },
-      {
-        "component": "text",
-        "name": "ComplainantPassportNumber",
-        "label": "Passport Number"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "HMPO_COMPLAINT_CATEGORIES"
-        },
-        "name": "ComplainantCategory",
-        "label": "Complaint Category"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "conditionChoices": [
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_ABI",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Authentication By Interview (ABI)"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_CUSTOMER_COMMUNICATIONS",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Customer Communications"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_DHL",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "DHL"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_DISCRIMINATORY",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Discriminatory"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_FEDEX",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Fedex"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_EXAMINATION",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Examination"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_CSMT",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "CSMT"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_COUNTER_SERVICES",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "HMPO Counter Services"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_POLICY",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "HMPO Policy and Procedures"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_ID_CHECKS",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "ID Checks & Counter Fraud"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_NATIONALITY",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Nationality"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_DIGITAL",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Digital Application Channels"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_PAPER",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Paper Application Form"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_PARTNERS_OTHER",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Partners - Other"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_POL",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "POL - Check & Send"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_QUALITY",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Product Quality & Design"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_ROYAL_MAIL",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Royal Mail"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_TP_ADVICELINE",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "TP - Passport Adviceline"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_OAB",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "OAB"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_SOPRA_STERIA",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Sopra Steria"
-            },
-            {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_SVS",
-              "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "SVS"
-            }
-          ]
-        },
-        "name": "ComplaintReason",
-        "label": "Complaint Reason"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "POGR_HMPO_LOCATIONS"
-        },
-        "name": "ComplainantLocation",
-        "label": "Location"
-      },
-      {
-        "component": "text-area",
-        "name": "ComplaintDescription",
-        "label": "Description of Complaint"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Email",
-              "value": "Email"
-            },
-            {
-              "label": "Post",
-              "value": "Post"
-            },
-            {
-              "label": "Telephone",
-              "value": "Telephone"
-            },
-            {
-              "label": "Webform",
-              "value": "Webform"
-            }
-          ]
-        },
-        "name": "ComplaintChannel",
-        "label": "Complaint Channel"
-      },
-      {
-        "component": "checkbox",
         "props": {
           "choices": [
             {
               "label": "Yes",
               "value": "Yes"
-            }
-          ],
-          "showLabel": true
-        },
-        "name": "ComplaintPriority",
-        "label": "Priority"
-      },
-      {
-        "component": "text",
-        "name": "ComplaintThirdPartyReference",
-        "label": "Third Party Reference"
-      },
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "S_BF_CONTRIB_TYPE"
-          },
-          "somuType": {
-            "type": "CONTRIBUTIONS",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "POGR2"
-          }
-        },
-        "name": "ComplainantContributions",
-        "label": "Complainant Contributions"
-      },
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "MPAM_CONTRIBUTION_BUSINESS_AREAS",
-            "contributionBusinessUnit": "S_MPAM_BUS_UNITS_ALL"
-          },
-          "somuType": {
-            "type": "BUS_CONTRIBUTIONS",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "POGR2"
-          }
-        },
-        "name": "BusinessContributions",
-        "label": "Business Contributions"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+            },
             {
-              "label": "Yes",
-              "value": "Yes"
-            }
-          ],
-          "showLabel": "true",
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "LoaRequired",
-              "conditionPropertyValue": "Yes"
+              "label": "No",
+              "value": "No"
             }
           ]
         },
-        "name": "LoaReceived",
-        "label": "Letter of Authority Received"
+        "name": "TelephoneResponse",
+        "label": "Was the case resolved by phone call?"
       },
       {
         "component": "date",
         "props": {
+          "autopopulate": true,
           "visibilityConditions": [
             {
-              "conditionPropertyName": "LoaReceived",
-              "conditionPropertyValue": "Yes"
-            }
-          ]
-        },
-        "name": "LoaDateReceived",
-        "label": "Letter of Authority Date Received"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Save changes",
-              "value": "Pending"
-            },
-            {
-              "label": "All information collected - respond",
-              "value": "Draft"
-            },
-            {
-              "label": "Escalate case to WFM",
-              "value": "Escalate"
-            },
-            {
-              "label": "Close the case",
-              "value": "Complete"
-            }
-          ]
-        },
-        "name": "InvestigationOutcome",
-        "label": "Actions"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "conditionChoices": [
-            {
-              "choices": [
-                {
-                  "label": "Yes - accept the complaint",
-                  "value": "Accept"
-                },
-                {
-                  "label": "No - close and transfer to external team",
-                  "value": "Reject"
-                }
-              ],
-              "conditionPropertyName": "BusinessArea",
-              "conditionPropertyValue": "HMPO"
-            },
-            {
-              "choices": [
-                {
-                  "label": "Yes - accept the complaint",
-                  "value": "Accept"
-                },
-                {
-                  "label": "No - transfer the case",
-                  "value": "Reject"
-                }
-              ],
-              "conditionPropertyName": "BusinessArea",
-              "conditionPropertyValue": "GRO"
-            }
-          ]
-        },
-        "name": "InvestigationAccept",
-        "label": "Can your team respond to this complaint?"
-      },
-      {
-        "component": "text-area",
-        "props": {
-          "visibilityConditions": [
-            {
-              "function": "hasAllValues",
+              "function": "hasAnyValue",
               "conditionArgs": {
-                "arg1": {
-                  "conditionPropertyName": "InvestigationAccept",
-                  "conditionPropertyValue": "Reject"
-                },
-                "arg2": {
-                  "conditionPropertyName": "BusinessArea",
-                  "conditionPropertyValue": "HMPO"
-                }
+                "conditionPropertyName": "TelephoneResponse"
               }
             }
           ]
         },
-        "name": "CaseNote_InvestigationReject",
-        "label": "Enter the reason for transfer"
+        "name": "TelephoneResponseDateOfCall",
+        "label": "Date of Call"
       },
       {
         "component": "text-area",
@@ -1068,6 +1167,19 @@
       }
     ],
     "POGR2_HMPO_DRAFT": [
+        "props": {
+          "visibilityConditions": [
+            {
+              "function": "hasAnyValue",
+              "conditionArgs": {
+                "conditionPropertyName": "TelephoneResponse"
+              }
+            }
+          ]
+        },
+        "name": "TelephoneResponseCaseNote",
+        "label": "Details of Phone Call"
+      },
       {
         "component": "date",
         "name": "ComplainantDOB",
@@ -1110,18 +1222,13 @@
       },
       {
         "component": "text",
-        "name": "ComplainantApplicationReference",
-        "label": "Application Reference"
-      },
-      {
-        "component": "text",
-        "name": "ComplainantPassportNumber",
-        "label": "Passport Number"
+        "name": "ComplainantCaseAccountNumber",
+        "label": "Case/Account Number"
       },
       {
         "component": "dropdown",
         "props": {
-          "choices": "HMPO_COMPLAINT_CATEGORIES"
+          "choices": "GRO_COMPLAINT_CATEGORIES"
         },
         "name": "ComplainantCategory",
         "label": "Complaint Category"
@@ -1131,109 +1238,109 @@
         "props": {
           "conditionChoices": [
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_ABI",
+              "choices": "GRO_COMPLAINT_CATEGORIES_CSMT",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Authentication By Interview (ABI)"
+              "conditionPropertyValue": "CSMT - Customer Service"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_CUSTOMER_COMMUNICATIONS",
+              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_STANDARD",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Customer Communications"
+              "conditionPropertyValue": "Production - Standard"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_DHL",
+              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_PRIORITIES",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "DHL"
+              "conditionPropertyValue": "Production - Priorities"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_DISCRIMINATORY",
+              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_EXCEPTIONS",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Discriminatory"
+              "conditionPropertyValue": "Production - Exceptions"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_FEDEX",
+              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_PDF",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Fedex"
+              "conditionPropertyValue": "Production - PDF"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_EXAMINATION",
+              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_EMAIL_TEAM",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Examination"
+              "conditionPropertyValue": "Production - Email Team"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_CSMT",
+              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_CCU_POST_TEAM",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "CSMT"
+              "conditionPropertyValue": "Production - CCU Post team"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_COUNTER_SERVICES",
+              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_KIT",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "HMPO Counter Services"
+              "conditionPropertyValue": "Production - KIT"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_POLICY",
+              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_INDEXING",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "HMPO Policy and Procedures"
+              "conditionPropertyValue": "Production - Indexing"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_ID_CHECKS",
+              "choices": "GRO_COMPLAINT_CATEGORIES_SD_FDU",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "ID Checks & Counter Fraud"
+              "conditionPropertyValue": "S&D - FDU"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_NATIONALITY",
+              "choices": "GRO_COMPLAINT_CATEGORIES_SD_ENGAGEMENT",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Nationality"
+              "conditionPropertyValue": "S&D - Engagement"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_DIGITAL",
+              "choices": "GRO_COMPLAINT_CATEGORIES_SYSTEMS",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Digital Application Channels"
+              "conditionPropertyValue": "Systems - ROLO"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_PAPER",
+              "choices": "GRO_COMPLAINT_CATEGORIES_ARC_ADOPTIONS",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Paper Application Form"
+              "conditionPropertyValue": "ARC - Adoptions"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_PARTNERS_OTHER",
+              "choices": "GRO_COMPLAINT_CATEGORIES_ARC_CASEWORK",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Partners - Other"
+              "conditionPropertyValue": "ARC - Casework"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_POL",
+              "choices": "GRO_COMPLAINT_CATEGORIES_POLICY",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "POL - Check & Send"
+              "conditionPropertyValue": "Policy"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_QUALITY",
+              "choices": "GRO_COMPLAINT_CATEGORIES_POLICY_BUSINESS",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Product Quality & Design"
+              "conditionPropertyValue": "Policy - Business Procedures"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_ROYAL_MAIL",
+              "choices": "GRO_COMPLAINT_CATEGORIES_THIRD_PARTY_DHL",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Royal Mail"
+              "conditionPropertyValue": "Third Party - DHL"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_TP_ADVICELINE",
+              "choices": "GRO_COMPLAINT_CATEGORIES_THIRD_PARTY_ROYAL_MAIL",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "TP - Passport Adviceline"
+              "conditionPropertyValue": "Third Party - Royal Mail"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_OAB",
+              "choices": "GRO_COMPLAINT_CATEGORIES_THIRD_PARTY_MAIL",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "OAB"
+              "conditionPropertyValue": "Third Party - International / UK Mail"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_SOPRA_STERIA",
+              "choices": "GRO_COMPLAINT_CATEGORIES_THIRD_PARTY_WORLD_PAY",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Sopra Steria"
+              "conditionPropertyValue": "Third Party - World Pay"
             },
             {
-              "choices": "HMPO_COMPLAINT_CATEGORIES_SVS",
+              "choices": "GRO_COMPLAINT_CATEGORIES_OTHER",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "SVS"
+              "conditionPropertyValue": "Other"
             }
           ]
         },
@@ -1241,42 +1348,9 @@
         "label": "Complaint Reason"
       },
       {
-        "component": "dropdown",
-        "props": {
-          "choices": "POGR_HMPO_LOCATIONS"
-        },
-        "name": "ComplainantLocation",
-        "label": "Location"
-      },
-      {
         "component": "text-area",
         "name": "ComplaintDescription",
         "label": "Description of Complaint"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Email",
-              "value": "Email"
-            },
-            {
-              "label": "Post",
-              "value": "Post"
-            },
-            {
-              "label": "Telephone",
-              "value": "Telephone"
-            },
-            {
-              "label": "Webform",
-              "value": "Webform"
-            }
-          ]
-        },
-        "name": "ComplaintChannel",
-        "label": "Complaint Channel"
       },
       {
         "component": "checkbox",
@@ -1416,7 +1490,55 @@
         }
       }
     ],
-    "POGR2_GRO_DRAFT": [
+    "POGR2_HMPO_DRAFT": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            },
+            {
+              "label": "No",
+              "value": "No"
+            }
+          ]
+        },
+        "name": "TelephoneResponse",
+        "label": "Was the case resolved by phone call?"
+      },
+      {
+        "component": "date",
+        "props": {
+          "autopopulate": true,
+          "visibilityConditions": [
+            {
+              "function": "hasAnyValue",
+              "conditionArgs": {
+                "conditionPropertyName": "TelephoneResponse"
+              }
+            }
+          ]
+        },
+        "name": "TelephoneResponseDateOfCall",
+        "label": "Date of Call"
+      },
+      {
+        "component": "text-area",
+        "props": {
+          "visibilityConditions": [
+            {
+              "function": "hasAnyValue",
+              "conditionArgs": {
+                "conditionPropertyName": "TelephoneResponse"
+              }
+            }
+          ]
+        },
+        "name": "TelephoneResponseCaseNote",
+        "label": "Details of Phone Call"
+      },
       {
         "component": "date",
         "name": "ComplainantDOB",
@@ -1459,13 +1581,18 @@
       },
       {
         "component": "text",
-        "name": "ComplainantCaseAccountNumber",
-        "label": "Case/Account Number"
+        "name": "ComplainantApplicationReference",
+        "label": "Application Reference"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantPassportNumber",
+        "label": "Passport Number"
       },
       {
         "component": "dropdown",
         "props": {
-          "choices": "GRO_COMPLAINT_CATEGORIES"
+          "choices": "HMPO_COMPLAINT_CATEGORIES"
         },
         "name": "ComplainantCategory",
         "label": "Complaint Category"
@@ -1475,109 +1602,109 @@
         "props": {
           "conditionChoices": [
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_CSMT",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_ABI",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "CSMT - Customer Service"
+              "conditionPropertyValue": "Authentication By Interview (ABI)"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_STANDARD",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_CUSTOMER_COMMUNICATIONS",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Production - Standard"
+              "conditionPropertyValue": "Customer Communications"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_PRIORITIES",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_DHL",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Production - Priorities"
+              "conditionPropertyValue": "DHL"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_EXCEPTIONS",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_DISCRIMINATORY",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Production - Exceptions"
+              "conditionPropertyValue": "Discriminatory"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_PDF",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_FEDEX",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Production - PDF"
+              "conditionPropertyValue": "Fedex"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_EMAIL_TEAM",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_EXAMINATION",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Production - Email Team"
+              "conditionPropertyValue": "Examination"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_CCU_POST_TEAM",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_CSMT",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Production - CCU Post team"
+              "conditionPropertyValue": "CSMT"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_KIT",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_COUNTER_SERVICES",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Production - KIT"
+              "conditionPropertyValue": "HMPO Counter Services"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_PRODUCTION_INDEXING",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_POLICY",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Production - Indexing"
+              "conditionPropertyValue": "HMPO Policy and Procedures"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_SD_FDU",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_ID_CHECKS",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "S&D - FDU"
+              "conditionPropertyValue": "ID Checks & Counter Fraud"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_SD_ENGAGEMENT",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_NATIONALITY",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "S&D - Engagement"
+              "conditionPropertyValue": "Nationality"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_SYSTEMS",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_DIGITAL",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Systems - ROLO"
+              "conditionPropertyValue": "Digital Application Channels"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_ARC_ADOPTIONS",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_PAPER",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "ARC - Adoptions"
+              "conditionPropertyValue": "Paper Application Form"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_ARC_CASEWORK",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_PARTNERS_OTHER",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "ARC - Casework"
+              "conditionPropertyValue": "Partners - Other"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_POLICY",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_POL",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Policy"
+              "conditionPropertyValue": "POL - Check & Send"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_POLICY_BUSINESS",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_QUALITY",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Policy - Business Procedures"
+              "conditionPropertyValue": "Product Quality & Design"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_THIRD_PARTY_DHL",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_ROYAL_MAIL",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Third Party - DHL"
+              "conditionPropertyValue": "Royal Mail"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_THIRD_PARTY_ROYAL_MAIL",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_TP_ADVICELINE",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Third Party - Royal Mail"
+              "conditionPropertyValue": "TP - Passport Adviceline"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_THIRD_PARTY_MAIL",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_OAB",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Third Party - International / UK Mail"
+              "conditionPropertyValue": "OAB"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_THIRD_PARTY_WORLD_PAY",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_SOPRA_STERIA",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Third Party - World Pay"
+              "conditionPropertyValue": "Sopra Steria"
             },
             {
-              "choices": "GRO_COMPLAINT_CATEGORIES_OTHER",
+              "choices": "HMPO_COMPLAINT_CATEGORIES_SVS",
               "conditionPropertyName": "ComplainantCategory",
-              "conditionPropertyValue": "Other"
+              "conditionPropertyValue": "SVS"
             }
           ]
         },
@@ -1585,9 +1712,42 @@
         "label": "Complaint Reason"
       },
       {
+        "component": "dropdown",
+        "props": {
+          "choices": "POGR_HMPO_LOCATIONS"
+        },
+        "name": "ComplainantLocation",
+        "label": "Location"
+      },
+      {
         "component": "text-area",
         "name": "ComplaintDescription",
         "label": "Description of Complaint"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Post",
+              "value": "Post"
+            },
+            {
+              "label": "Telephone",
+              "value": "Telephone"
+            },
+            {
+              "label": "Webform",
+              "value": "Webform"
+            }
+          ]
+        },
+        "name": "ComplaintChannel",
+        "label": "Complaint Channel"
       },
       {
         "component": "checkbox",
@@ -1813,60 +1973,6 @@
         "label": "QA Outcome"
       }
     ],
-    "POGR2_HMPO_ESCALATE": [
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "S_BF_CONTRIB_TYPE"
-          },
-          "somuType": {
-            "type": "CONTRIBUTIONS",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "POGR2"
-          }
-        },
-        "name": "ComplainantContributions",
-        "label": "Complainant Contributions"
-      },
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "MPAM_CONTRIBUTION_BUSINESS_AREAS",
-            "contributionBusinessUnit": "S_MPAM_BUS_UNITS_ALL"
-          },
-          "somuType": {
-            "type": "BUS_CONTRIBUTIONS",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "POGR2"
-          }
-        },
-        "name": "BusinessContributions",
-        "label": "Business Contributions"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Save changes",
-              "value": "Pending"
-            },
-            {
-              "label": "Return case to Investigation",
-              "value": "Investigation"
-            },
-            {
-              "label": "Return case to Draft",
-              "value": "Draft"
-            }
-          ]
-        },
-        "name": "EscalationOutcome",
-        "label": "Action"
-      }
-    ],
     "POGR2_GRO_ESCALATE": [
       {
         "component": "somu-list",
@@ -2075,6 +2181,60 @@
         },
         "name": "DispatchDocumentTypeOther",
         "label": "Type of document lost or damaged (other)"
+      }
+    ],
+    "POGR2_HMPO_ESCALATE": [
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_BF_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "CONTRIBUTIONS",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "POGR2"
+          }
+        },
+        "name": "ComplainantContributions",
+        "label": "Complainant Contributions"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "MPAM_CONTRIBUTION_BUSINESS_AREAS",
+            "contributionBusinessUnit": "S_MPAM_BUS_UNITS_ALL"
+          },
+          "somuType": {
+            "type": "BUS_CONTRIBUTIONS",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "POGR2"
+          }
+        },
+        "name": "BusinessContributions",
+        "label": "Business Contributions"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "Return case to Investigation",
+              "value": "Investigation"
+            },
+            {
+              "label": "Return case to Draft",
+              "value": "Draft"
+            }
+          ]
+        },
+        "name": "EscalationOutcome",
+        "label": "Action"
       }
     ],
     "POGR2_GRO_DISPATCH": [

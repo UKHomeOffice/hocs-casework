@@ -7,10 +7,19 @@
         "props": {
           "action": "CORRESPONDENT",
           "entity": "correspondent",
-          "choices": "CASE_CORRESPONDENTS"
+          "choices": "CASE_CORRESPONDENTS",
+          "hasAddLink": true,
+          "hasEditLink": true,
+          "hasRemoveLink": true,
+          "hideRemovePrimary": true
         },
-        "label": "Which is the primary correspondent?",
-        "name": "Correspondents"
+        "name": "Correspondents",
+        "label": "Which is the primary correspondent?"
+      },
+      {
+        "component": "date",
+        "name": "DateReceived",
+        "label": "When was the correspondence received?"
       },
       {
         "component": "radio",
@@ -42,8 +51,8 @@
             }
           ]
         },
-        "label": "Business Area",
-        "name": "BusArea"
+        "name": "BusArea",
+        "label": "Business Area"
       },
       {
         "component": "dropdown",
@@ -81,8 +90,8 @@
             }
           ]
         },
-        "label": "Business unit",
-        "name": "BusUnit"
+        "name": "BusUnit",
+        "label": "Business unit"
       },
       {
         "component": "radio",
@@ -102,8 +111,8 @@
             }
           ]
         },
-        "label": "Urgency",
-        "name": "Priority"
+        "name": "Priority",
+        "label": "Urgency"
       },
       {
         "component": "radio",
@@ -135,16 +144,16 @@
             }
           ]
         },
-        "label": "Channel received",
-        "name": "ChannelIn"
+        "name": "ChannelIn",
+        "label": "Channel received"
       },
       {
         "component": "radio",
         "props": {
           "choices": "S_MPAM_ENQUIRY_SUBJECTS"
         },
-        "label": "Enquiry subject",
-        "name": "EnquirySubject"
+        "name": "EnquirySubject",
+        "label": "Enquiry subject"
       },
       {
         "component": "dropdown",
@@ -187,13 +196,13 @@
             }
           ]
         },
-        "label": "Enquiry reason",
-        "name": "EnquiryReason"
+        "name": "EnquiryReason",
+        "label": "Enquiry reason"
       },
       {
         "component": "text-area",
-        "label": "Note to support case",
-        "name": "SupportNote"
+        "name": "SupportNote",
+        "label": "Note to support case"
       },
       {
         "component": "radio",
@@ -209,13 +218,16 @@
             }
           ]
         },
-        "label": "Your Business Area",
-        "name": "YourBusArea"
+        "name": "YourBusArea",
+        "label": "Your Business Area"
       },
       {
-        "component": "date",
-        "label": "When was the correspondence received?",
-        "name": "DateReceived"
+        "component": "hidden",
+        "props": {
+          "defaultValue": "Complete",
+          "populateFromCaseData": false
+        },
+        "name": "DataInputStatus"
       }
     ],
     "MTS_ON_HOLD": [
@@ -253,16 +265,16 @@
             }
           ]
         },
-        "label": "Business Area",
-        "name": "BusArea"
+        "name": "BusArea",
+        "label": "Business Area"
       },
       {
         "component": "mapped-text",
         "props": {
           "choices": "S_MPAM_BUS_UNITS_ALL"
         },
-        "label": "Business unit",
-        "name": "BusUnit"
+        "name": "BusUnit",
+        "label": "Business unit"
       },
       {
         "component": "radio",
@@ -282,8 +294,8 @@
             }
           ]
         },
-        "label": "Urgency",
-        "name": "Priority"
+        "name": "Priority",
+        "label": "Urgency"
       },
       {
         "component": "radio",
@@ -315,24 +327,24 @@
             }
           ]
         },
-        "label": "Channel received",
-        "name": "ChannelIn"
+        "name": "ChannelIn",
+        "label": "Channel received"
       },
       {
         "component": "mapped-text",
         "props": {
           "choices": "S_MPAM_ENQUIRY_SUBJECTS"
         },
-        "label": "Enquiry subject",
-        "name": "EnquirySubject"
+        "name": "EnquirySubject",
+        "label": "Enquiry subject"
       },
       {
         "component": "mapped-text",
         "props": {
           "choices": "MPAM_ENQUIRY_REASONS_ALL"
         },
-        "label": "Enquiry reason",
-        "name": "EnquiryReason"
+        "name": "EnquiryReason",
+        "label": "Enquiry reason"
       },
       {
         "component": "radio",
@@ -348,8 +360,8 @@
             }
           ]
         },
-        "label": "Your Business Area",
-        "name": "YourBusArea"
+        "name": "YourBusArea",
+        "label": "Your Business Area"
       }
     ]
   }

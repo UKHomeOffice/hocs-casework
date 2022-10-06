@@ -3,8 +3,11 @@ package uk.gov.digital.ho.hocs.casework.api;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
@@ -14,6 +17,7 @@ import uk.gov.digital.ho.hocs.casework.client.documentclient.S3Document;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseTypeDocumentTagRepository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,11 +31,14 @@ import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("local")
 public class CaseDocumentServiceTest {
 
     private final UUID caseUUID = UUID.randomUUID();
@@ -64,20 +71,23 @@ public class CaseDocumentServiceTest {
 
     private S3Document s3Document;
 
-    @Mock
+    @MockBean
     private CaseDataRepository caseDataRepository;
 
-    @Mock
+    @Autowired
+    private CaseTypeDocumentTagRepository caseTypeDocumentTagRepository;
+
+    @MockBean
     private DocumentClient documentClient;
 
-    @Mock
+    @MockBean
     private InfoClient infoClient;
 
     private CaseDocumentService caseDocumentService;
 
     @Before
     public void setUp() {
-        caseDocumentService = new CaseDocumentService(caseDataRepository, documentClient, infoClient);
+        caseDocumentService = new CaseDocumentService(caseDataRepository, caseTypeDocumentTagRepository, documentClient, infoClient);
         documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated,
             docUpdated, uploaderUUID, docDeleted, docLabels, true, true);
         s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);
@@ -86,8 +96,8 @@ public class CaseDocumentServiceTest {
     @Test
     public void getDocuments() {
         GetDocumentsResponse documentsResponse = new GetDocumentsResponse(
-            new HashSet<>(Collections.singletonList(documentDto)), new ArrayList<>(Arrays.asList("ORIGINAL", "DRAFT")));
-        CaseDataType type = CaseDataTypeFactory.from("CaseType", "a1");
+            new HashSet<>(Collections.singletonList(documentDto)), new ArrayList<>(Arrays.asList("TEST_TAG")));
+        CaseDataType type = CaseDataTypeFactory.from("TEST", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         data.put("DraftDocuments", documentUUID.toString());
@@ -96,7 +106,6 @@ public class CaseDocumentServiceTest {
         when(caseDataRepository.findAnyByUuid(caseUUID)).thenReturn(caseData);
         String caseType = "MIN";
         when(documentClient.getDocuments(caseUUID, caseType)).thenReturn(documentsResponse);
-        when(infoClient.getDocumentTags("CaseType")).thenReturn(new ArrayList<>(Arrays.asList("ORIGINAL", "DRAFT")));
 
         GetDocumentsResponse result = caseDocumentService.getDocuments(caseUUID, caseType);
 
@@ -108,9 +117,8 @@ public class CaseDocumentServiceTest {
         assertThat(result.getDocumentDtos().size()).isOne();
         assertThat(result.getDocumentDtos().iterator().next().getLabels()).contains("Primary Draft");
         assertThat(result.getDocumentTags()).isNotNull();
-        assertThat(result.getDocumentTags().size()).isEqualTo(2);
-        assertThat(result.getDocumentTags().get(0)).isEqualTo("ORIGINAL");
-        assertThat(result.getDocumentTags().get(1)).isEqualTo("DRAFT");
+        assertThat(result.getDocumentTags()).hasSize(1);
+        assertThat(result.getDocumentTags().get(0)).isEqualTo("TEST_TAG");
         checkDocumentDto(result.getDocumentDtos().iterator().next());
     }
 
@@ -155,6 +163,33 @@ public class CaseDocumentServiceTest {
 
         checkS3Document(result);
     }
+
+    @Test
+    public void getDocumentTags_returnValidTagsWhenTypeFound() {
+        when(caseDataRepository.getCaseType(any())).thenReturn("TEST");
+
+        var tags = caseDocumentService.getDocumentTags(UUID.randomUUID());
+
+        assertThat(tags)
+            .isNotNull()
+            .hasSize(1)
+            .contains("TEST_TAG");
+    }
+
+    @Test
+    public void getDocumentTags_returnEmptyListWhenCaseTypeNull() {
+        when(caseDataRepository.getCaseType(any())).thenReturn(null);
+
+        assertThat(caseDocumentService.getDocumentTags(UUID.randomUUID())).isEmpty();
+    }
+
+    @Test
+    public void getDocumentTags_returnEmptyListWhenCaseTypeNotFound() {
+        when(caseDataRepository.getCaseType(any())).thenReturn("UNKNOWN");
+
+        assertThat(caseDocumentService.getDocumentTags(UUID.randomUUID())).isEmpty();
+    }
+
 
     private void checkDocumentDto(DocumentDto result) {
         assertThat(result).isNotNull();

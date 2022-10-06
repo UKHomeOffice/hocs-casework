@@ -1,6 +1,111 @@
 {
   "type": "FOI",
   "groups": {
+    "FOI_CASE_CREATION": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Valid",
+              "value": "RequestValid-Y"
+            },
+            {
+              "label": "Invalid",
+              "value": "RequestValid-N"
+            }
+          ]
+        },
+        "name": "RequestValidity",
+        "label": "Case Validity"
+      },
+      {
+        "component": "date",
+        "name": "DateReceived",
+        "label": "When was the correspondence received?"
+      },
+      {
+        "component": "date",
+        "name": "KimuDateReceived",
+        "label": "Date received in KIMU"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Email",
+              "value": "EMAIL"
+            },
+            {
+              "label": "Post",
+              "value": "POST"
+            }
+          ]
+        },
+        "name": "OriginalChannel",
+        "label": "How was the correspondence received?"
+      },
+      {
+        "component": "type-ahead",
+        "props": {
+          "choices": "TOPICS_FOI",
+          "defaultOptions": true
+        },
+        "name": "Topics",
+        "label": "FOI Topic"
+      },
+      {
+        "component": "text-area",
+        "name": "RequestQuestion",
+        "label": "Request Question"
+      },
+      {
+        "component": "entity-manager",
+        "props": {
+          "entity": "template",
+          "choices": "CASE_TEMPLATES",
+          "hasTemplateLink": true
+        },
+        "name": "foi_templates",
+        "label": "Available Templates"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_FOI_INITIAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "InitialResponseDocument",
+        "label": "Initial response document"
+      },
+      {
+        "component": "date",
+        "name": "dateOfResponse",
+        "label": "What day was the response sent?"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Request unclear / advice and assistance provide",
+              "value": "REQ_UNCLEAR"
+            }
+          ],
+          "defaultValue": "REQ_UNCLEAR"
+        },
+        "name": "TransferOutcomeAtDraft",
+        "label": "What was the outcome of this case?"
+      },
+      {
+        "component": "date",
+        "name": "AcknowledgementDate",
+        "label": "When was the acknowledgement response to the valid request issued?"
+      }
+    ],
     "FOI_ALLOCATION": [
       {
         "component": "dropdown",
@@ -21,14 +126,6 @@
     ],
     "FOI_ACCEPTANCE": [
       {
-        "component": "dropdown",
-        "props": {
-          "choices": "S_FOI_ALL_RESP_TEAMS"
-        },
-        "name": "ResponsibleTeam",
-        "label": "Responsible Team"
-      },
-      {
         "component": "radio",
         "props": {
           "choices": [
@@ -47,6 +144,14 @@
         },
         "name": "AcceptCase",
         "label": "Does this case belong in your group?"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_FOI_ALL_RESP_TEAMS"
+        },
+        "name": "ResponsibleTeam",
+        "label": "Responsible Team"
       }
     ],
     "FOI_DRAFT": [
