@@ -843,6 +843,66 @@
         },
         "name": "InvestigationOutcome",
         "label": "Actions"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Duplicate Record",
+              "value": "Duplicate Record"
+            },
+            {
+              "label": "Local Resolution",
+              "value": "Local Resolution"
+            },
+            {
+              "label": "Complaint Rejection",
+              "value": "Complaint Rejection"
+            },
+            {
+              "label": "Third Party Rejection",
+              "value": "Third Party Rejection"
+            },
+            {
+              "label": "Withdrawn by Customer",
+              "value": "Withdrawn by Customer"
+            },
+            {
+              "label": "Transferred to Other Department",
+              "value": "Transferred to Other Department"
+            },
+            {
+              "label": "Persistent Author",
+              "value": "Persistent Author"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "InvestigationOutcome",
+              "conditionPropertyValue": "Complete"
+            }
+          ]
+        },
+        "name": "ClosureReason",
+        "label": "Closure Reason"
+      },
+      {
+        "component": "text-area",
+        "name": "ClosureCaseNote",
+        "label": "Enter a note for case closure",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "InvestigationOutcome",
+              "conditionPropertyValue": "Complete"
+            }
+          ]
+        }
       }
     ],
     "POGR_HMPO_INVESTIGATION": [
@@ -1227,6 +1287,66 @@
         "component": "text-area",
         "name": "CaseNote_InvestigationEscalate",
         "label": "Enter reason for escalation"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Duplicate Record",
+              "value": "Duplicate Record"
+            },
+            {
+              "label": "Local Resolution",
+              "value": "Local Resolution"
+            },
+            {
+              "label": "Complaint Rejection",
+              "value": "Complaint Rejection"
+            },
+            {
+              "label": "Third Party Rejection",
+              "value": "Third Party Rejection"
+            },
+            {
+              "label": "Withdrawn by Customer",
+              "value": "Withdrawn by Customer"
+            },
+            {
+              "label": "Transferred to Other Department",
+              "value": "Transferred to Other Department"
+            },
+            {
+              "label": "Persistent Author",
+              "value": "Persistent Author"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "InvestigationOutcome",
+              "conditionPropertyValue": "Complete"
+            }
+          ]
+        },
+        "name": "ClosureReason",
+        "label": "Closure Reason"
+      },
+      {
+        "component": "text-area",
+        "name": "ClosureCaseNote",
+        "label": "Enter a note for case closure",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "InvestigationOutcome",
+              "conditionPropertyValue": "Complete"
+            }
+          ]
+        }
       }
     ],
     "POGR_GRO_DRAFT": [
@@ -1558,6 +1678,12 @@
               "label": "Other",
               "value": "Other"
             }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "DraftOutcome",
+              "conditionPropertyValue": "CloseCase"
+            }
           ]
         },
         "name": "ClosureReason",
@@ -1566,7 +1692,15 @@
       {
         "component": "text-area",
         "name": "ClosureCaseNote",
-        "label": "Enter a note for case closure"
+        "label": "Enter a note for case closure",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "DraftOutcome",
+              "conditionPropertyValue": "CloseCase"
+            }
+          ]
+        }
       }
     ],
     "POGR_HMPO_DRAFT": [
@@ -1945,6 +2079,66 @@
         "component": "text-area",
         "name": "ClosureCaseNote",
         "label": "Enter a note for case closure"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Duplicate Record",
+              "value": "Duplicate Record"
+            },
+            {
+              "label": "Local Resolution",
+              "value": "Local Resolution"
+            },
+            {
+              "label": "Complaint Rejection",
+              "value": "Complaint Rejection"
+            },
+            {
+              "label": "Third Party Rejection",
+              "value": "Third Party Rejection"
+            },
+            {
+              "label": "Withdrawn by Customer",
+              "value": "Withdrawn by Customer"
+            },
+            {
+              "label": "Transferred to Other Department",
+              "value": "Transferred to Other Department"
+            },
+            {
+              "label": "Persistent Author",
+              "value": "Persistent Author"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "DraftOutcome",
+              "conditionPropertyValue": "CloseCase"
+            }
+          ]
+        },
+        "name": "ClosureReason",
+        "label": "Closure Reason"
+      },
+      {
+        "component": "text-area",
+        "name": "ClosureCaseNote",
+        "label": "Enter a note for case closure",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "DraftOutcome",
+              "conditionPropertyValue": "CloseCase"
+            }
+          ]
+        }
       }
     ],
     "POGR_GRO_QA": [
