@@ -4,18 +4,18 @@
     "COMP2_REGISTRATION": [
       {
         "component": "date",
-        "label": "When was the correspondence received?",
-        "name": "DateReceived"
+        "name": "DateReceived",
+        "label": "When was the correspondence received?"
       },
       {
         "component": "text",
-        "label": "Withdrawn",
-        "name": "Withdrawn"
+        "name": "Withdrawn",
+        "label": "Withdrawn"
       },
       {
         "component": "text-area",
-        "label": "WithdrawalReason",
-        "name": "WithdrawalReason"
+        "name": "WithdrawalReason",
+        "label": "WithdrawalReason"
       },
       {
         "component": "entity-list",
@@ -23,15 +23,19 @@
           "action": "CORRESPONDENT",
           "entity": "correspondent",
           "choices": "CASE_CORRESPONDENTS",
-          "addUrlPath": "addNoMp"
+          "addUrlPath": "addNoMp",
+          "hasAddLink": true,
+          "hasEditLink": true,
+          "hasRemoveLink": true,
+          "hideRemovePrimary": true
         },
-        "label": "Which is the primary correspondent?",
-        "name": "Correspondents"
+        "name": "Correspondents",
+        "label": "Which is the primary correspondent?"
       },
       {
         "component": "date",
-        "label": "Date of Birth",
-        "name": "ComplainantDOB"
+        "name": "ComplainantDOB",
+        "label": "Date of Birth"
       },
       {
         "component": "radio",
@@ -47,31 +51,31 @@
             }
           ]
         },
-        "label": "Gender",
-        "name": "ComplainantGender"
+        "name": "ComplainantGender",
+        "label": "Gender"
       },
       {
         "component": "dropdown",
         "props": {
           "choices": "COUNTRIES_CURRENT"
         },
-        "label": "Nationality",
-        "name": "ComplainantNationality"
+        "name": "ComplainantNationality",
+        "label": "Nationality"
       },
       {
         "component": "text",
-        "label": "Company Name",
-        "name": "ComplainantCompanyName"
+        "name": "ComplainantCompanyName",
+        "label": "Company Name"
       },
       {
         "component": "text",
-        "label": "Home Office Reference",
-        "name": "ComplainantHORef"
+        "name": "ComplainantHORef",
+        "label": "Home Office Reference"
       },
       {
         "component": "text",
-        "label": "Port Reference",
-        "name": "ComplainantPortRef"
+        "name": "ComplainantPortRef",
+        "label": "Port Reference"
       },
       {
         "component": "radio",
@@ -91,8 +95,8 @@
             }
           ]
         },
-        "label": "Complaint Type",
-        "name": "CompType"
+        "name": "CompType",
+        "label": "Complaint Type"
       },
       {
         "component": "radio",
@@ -134,13 +138,13 @@
             }
           ]
         },
-        "label": "Channel",
-        "name": "Channel"
+        "name": "Channel",
+        "label": "Channel"
       },
       {
         "component": "text-area",
-        "label": "Case Summary",
-        "name": "CaseSummary"
+        "name": "CaseSummary",
+        "label": "Case Summary"
       },
       {
         "component": "radio",
@@ -168,8 +172,8 @@
             }
           ]
         },
-        "label": "Severity",
-        "name": "Severity"
+        "name": "Severity",
+        "label": "Severity"
       },
       {
         "component": "checkbox",
@@ -283,18 +287,18 @@
       },
       {
         "component": "text",
-        "label": "Previous UKVI Complaint Ref",
-        "name": "PrevUkviRef"
+        "name": "PrevUkviRef",
+        "label": "Previous UKVI Complaint Ref"
       },
       {
         "component": "text",
-        "label": "Third Party Reference",
-        "name": "3rdPartyRef"
+        "name": "3rdPartyRef",
+        "label": "Third Party Reference"
       },
       {
         "component": "accordion",
-        "label": "Service",
-        "name": "ServiceAccordion"
+        "name": "ServiceAccordion",
+        "label": "Service"
       },
       {
         "component": "checkbox",
@@ -529,64 +533,11 @@
         "props": {
           "choices": "S_COMP_CSU_LIST"
         },
-        "label": "Owning CSU",
-        "name": "OwningCSU"
+        "name": "OwningCSU",
+        "label": "Owning CSU"
       }
     ],
-    "COMP2_EXGRATIA_TRIAGE": [
-      {
-        "component": "text-area",
-        "label": "Case Summary",
-        "name": "CaseSummary"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Yes - accept the complaint",
-              "value": "Yes"
-            },
-            {
-              "label": "No - transfer the complaint",
-              "value": "No"
-            }
-          ]
-        },
-        "label": "Can your team respond to this complaint?",
-        "name": "CctTriageAccept"
-      },
-      {
-        "component": "date",
-        "props": {
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "CctTriageAccept",
-              "conditionPropertyValue": "Yes"
-            }
-          ]
-        },
-        "label": "Date of Acceptance",
-        "name": "AcceptDate"
-      },
-      {
-        "component": "text-area",
-        "label": "Enter reason for transfer",
-        "name": "CaseNote_TriageTransfer"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "CCH",
-              "value": "CCH"
-            }
-          ]
-        },
-        "label": "Transfer to",
-        "name": "CctCompType"
-      },
+    "COMP2_MINORMISCONDUCT_TRIAGE": [
       {
         "component": "somu-list",
         "props": {
@@ -599,8 +550,8 @@
             "caseType": "COMP"
           }
         },
-        "label": "Complainant additional information",
-        "name": "CompContributions"
+        "name": "CompContributions",
+        "label": "Complainant additional information"
       },
       {
         "component": "checkbox",
@@ -630,8 +581,8 @@
             }
           ]
         },
-        "label": "Date of Letter of Authority",
-        "name": "LoaDate"
+        "name": "LoaDate",
+        "label": "Date of Letter of Authority"
       },
       {
         "component": "somu-list",
@@ -645,8 +596,8 @@
             "caseType": "COMP"
           }
         },
-        "label": "Business contributions",
-        "name": "ExGratiaBusContributions"
+        "name": "ExGratiaBusContributions",
+        "label": "Business contributions"
       },
       {
         "component": "radio",
@@ -670,8 +621,8 @@
             }
           ]
         },
-        "label": "Action",
-        "name": "CctTriageResult"
+        "name": "CctTriageResult",
+        "label": "Action"
       },
       {
         "component": "dropdown",
@@ -717,8 +668,8 @@
             }
           ]
         },
-        "label": "Close Reason",
-        "name": "Close Reason"
+        "name": "Close Reason",
+        "label": "Close Reason"
       },
       {
         "component": "text-area",
@@ -739,8 +690,8 @@
             }
           ]
         },
-        "label": "Reason for closing",
-        "name": "CloseReasonText"
+        "name": "CloseReasonText",
+        "label": "Reason for closing"
       },
       {
         "component": "radio",
@@ -760,74 +711,14 @@
             }
           ]
         },
-        "label": "Action",
-        "name": "CctEscalateResult"
+        "name": "CctEscalateResult",
+        "label": "Action"
       },
       {
-        "component": "dropdown",
-        "props": {
-          "choices": "S_COMP_CCT_BUS_AREA"
-        },
-        "label": "Business Area",
-        "name": "BusArea"
+        "component": "accordion",
+        "name": "ServiceAccordion",
+        "label": "Service"
       },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "S_COMP_CCT_ENQ_REASON"
-        },
-        "label": "Enquiry Reason",
-        "name": "EnqReason"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Yes",
-              "value": "Yes"
-            },
-            {
-              "label": "No",
-              "value": "No"
-            }
-          ]
-        },
-        "label": "Is a Letter of Authority required?",
-        "name": "LoaRequired"
-      },
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
-          },
-          "somuType": {
-            "type": "COMPLAINANT_CONTRIB",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "COMP2"
-          }
-        },
-        "label": "Complainant additional information",
-        "name": "Comp2Contributions"
-      },
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "EX_GRATIA_BUS_REPS"
-          },
-          "somuType": {
-            "type": "EXGRATIA_BUS_CONTRIB",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "COMP2"
-          }
-        },
-        "label": "Business contributions",
-        "name": "Comp2ExGratiaBusContributions"
-      }
-    ],
-    "COMP2_MINORMISCONDUCT_TRIAGE": [
       {
         "component": "checkbox",
         "props": {
@@ -896,9 +787,9 @@
               "label": "CC - Physical Environment",
               "value": "CCPhy"
             }
-          ],
-          "name": "CatCCPhy"
-        }
+          ]
+        },
+        "name": "CatCCPhy"
       },
       {
         "component": "checkbox",
@@ -962,8 +853,8 @@
       },
       {
         "component": "accordion",
-        "label": "Serious and Minor",
-        "name": "SeriousMinorAccordian"
+        "name": "SeriousMinorAccordian",
+        "label": "Serious and Minor"
       },
       {
         "component": "checkbox",
@@ -1060,6 +951,11 @@
           ]
         },
         "name": "CatRacism"
+      },
+      {
+        "component": "accordion",
+        "name": "ExGratiaAccordian",
+        "label": "Ex-Gratia"
       },
       {
         "component": "checkbox",
@@ -1186,38 +1082,64 @@
         "props": {
           "choices": "S_COMP_CSU_LIST"
         },
-        "label": "Owning CSU",
-        "name": "OwningCSU"
+        "name": "OwningCSU",
+        "label": "Owning CSU"
       }
     ],
-    "COMP2_CCH_RETURNS": [
+    "COMP2_EXGRATIA_TRIAGE": [
+      {
+        "component": "text-area",
+        "name": "CaseSummary",
+        "label": "Case Summary"
+      },
       {
         "component": "radio",
         "props": {
           "choices": [
             {
-              "label": "CCT",
-              "value": "Service"
+              "label": "Yes - accept the complaint",
+              "value": "Yes"
             },
             {
-              "label": "Ex-Gratia",
-              "value": "Ex-Gratia"
-            },
-            {
-              "label": "Minor Misconduct",
-              "value": "MinorMisconduct"
-            },
-            {
-              "label": "Complete the case (close permanently)",
-              "value": "Complete"
+              "label": "No - transfer the complaint",
+              "value": "No"
             }
           ]
         },
-        "label": "Transfer to",
-        "name": "CchCompType"
-      }
-    ],
-    "COMP2_SERVICE_TRIAGE": [
+        "name": "CctTriageAccept",
+        "label": "Can your team respond to this complaint?"
+      },
+      {
+        "component": "date",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "CctTriageAccept",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "AcceptDate",
+        "label": "Date of Acceptance"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_TriageTransfer",
+        "label": "Enter reason for transfer"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "CCH",
+              "value": "CCH"
+            }
+          ]
+        },
+        "name": "CctCompType",
+        "label": "Transfer to"
+      },
       {
         "component": "somu-list",
         "props": {
@@ -1227,11 +1149,11 @@
           "somuType": {
             "type": "COMPLAINANT_CONTRIB",
             "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "COMP2"
+            "caseType": "COMP"
           }
         },
-        "label": "Complainant additional information",
-        "name": "Comp2Contributions"
+        "name": "CompContributions",
+        "label": "Complainant additional information"
       },
       {
         "component": "checkbox",
@@ -1261,23 +1183,23 @@
             }
           ]
         },
-        "label": "Date of Letter of Authority",
-        "name": "LoaDate"
+        "name": "LoaDate",
+        "label": "Date of Letter of Authority"
       },
       {
         "component": "somu-list",
         "props": {
           "choices": {
-            "contributionBusinessArea": "S_COMP_CONTRIB_BUS_AREA"
+            "contributionBusinessArea": "EX_GRATIA_BUS_REPS"
           },
           "somuType": {
-            "type": "CCT_BUS_CONTRIB",
+            "type": "EXGRATIA_BUS_CONTRIB",
             "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "COMP2"
+            "caseType": "COMP"
           }
         },
-        "label": "Business contributions",
-        "name": "Comp2BusContributions"
+        "name": "ExGratiaBusContributions",
+        "label": "Business contributions"
       },
       {
         "component": "radio",
@@ -1301,8 +1223,8 @@
             }
           ]
         },
-        "label": "Action",
-        "name": "CctTriageResult"
+        "name": "CctTriageResult",
+        "label": "Action"
       },
       {
         "component": "dropdown",
@@ -1348,8 +1270,8 @@
             }
           ]
         },
-        "label": "Close Reason",
-        "name": "Close Reason"
+        "name": "Close Reason",
+        "label": "Close Reason"
       },
       {
         "component": "text-area",
@@ -1370,13 +1292,126 @@
             }
           ]
         },
-        "label": "Reason for closing",
-        "name": "CloseReasonText"
+        "name": "CloseReasonText",
+        "label": "Reason for closing"
       },
       {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "Return case to Triage",
+              "value": "Triage"
+            },
+            {
+              "label": "Case ready for drafting",
+              "value": "Draft"
+            }
+          ]
+        },
+        "name": "CctEscalateResult",
+        "label": "Action"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CCT_BUS_AREA"
+        },
+        "name": "BusArea",
+        "label": "Business Area"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CCT_ENQ_REASON"
+        },
+        "name": "EnqReason",
+        "label": "Enquiry Reason"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            },
+            {
+              "label": "No",
+              "value": "No"
+            }
+          ]
+        },
+        "name": "LoaRequired",
+        "label": "Is a Letter of Authority required?"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "COMPLAINANT_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP2"
+          }
+        },
+        "name": "Comp2Contributions",
+        "label": "Complainant additional information"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "EX_GRATIA_BUS_REPS"
+          },
+          "somuType": {
+            "type": "EXGRATIA_BUS_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP2"
+          }
+        },
+        "name": "Comp2ExGratiaBusContributions",
+        "label": "Business contributions"
+      }
+    ],
+    "COMP2_CCH_RETURNS": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "CCT",
+              "value": "Service"
+            },
+            {
+              "label": "Ex-Gratia",
+              "value": "Ex-Gratia"
+            },
+            {
+              "label": "Minor Misconduct",
+              "value": "MinorMisconduct"
+            },
+            {
+              "label": "Complete the case (close permanently)",
+              "value": "Complete"
+            }
+          ]
+        },
+        "name": "CchCompType",
+        "label": "Transfer to"
+      }
+    ],
+    "COMP2_SERVICE_TRIAGE": [
+      {
         "component": "text-area",
-        "label": "Case Summary",
-        "name": "CaseSummary"
+        "name": "CaseSummary",
+        "label": "Case Summary"
       },
       {
         "component": "radio",
@@ -1392,8 +1427,8 @@
             }
           ]
         },
-        "label": "Can your team respond to this complaint?",
-        "name": "CctTriageAccept"
+        "name": "CctTriageAccept",
+        "label": "Can your team respond to this complaint?"
       },
       {
         "component": "radio",
@@ -1421,8 +1456,8 @@
             }
           ]
         },
-        "label": "Severity",
-        "name": "Severity"
+        "name": "Severity",
+        "label": "Severity"
       },
       {
         "component": "checkbox",
@@ -1536,8 +1571,8 @@
       },
       {
         "component": "text-area",
-        "label": "Enter reason for transfer",
-        "name": "CaseNote_TriageTransfer"
+        "name": "CaseNote_TriageTransfer",
+        "label": "Enter reason for transfer"
       },
       {
         "component": "radio",
@@ -1549,8 +1584,8 @@
             }
           ]
         },
-        "label": "Transfer to",
-        "name": "CctCompType"
+        "name": "CctCompType",
+        "label": "Transfer to"
       },
       {
         "component": "dropdown",
@@ -1626,8 +1661,8 @@
             }
           ]
         },
-        "label": "Directorate",
-        "name": "Directorate"
+        "name": "Directorate",
+        "label": "Directorate"
       },
       {
         "component": "dropdown",
@@ -1661,6 +1696,7 @@
             {
               "choices": [
                 {
+                  "label": "",
                   "value": ""
                 }
               ],
@@ -1670,6 +1706,7 @@
             {
               "choices": [
                 {
+                  "label": "",
                   "value": ""
                 }
               ],
@@ -1753,16 +1790,16 @@
             }
           ]
         },
-        "label": "Business Area",
-        "name": "BusAreaBasedOnDirectorate"
+        "name": "BusAreaBasedOnDirectorate",
+        "label": "Business Area"
       },
       {
         "component": "dropdown",
         "props": {
           "choices": "S_COMP_CCT_ENQ_REASON"
         },
-        "label": "Enquiry Reason",
-        "name": "EnqReason"
+        "name": "EnqReason",
+        "label": "Enquiry Reason"
       },
       {
         "component": "radio",
@@ -1778,17 +1815,8 @@
             }
           ]
         },
-        "label": "Is a Letter of Authority required?",
-        "name": "LoaRequired"
-      },
-      {
-        "component": "text",
-        "props": {
-          "name": "1f2fb59b-f454-43c5-ab69-d717d8f91beb",
-          "label": "Triage Contributions"
-        },
-        "label": "Triage Contributions",
-        "name": "1f2fb59b-f454-43c5-ab69-d717d8f91beb"
+        "name": "LoaRequired",
+        "label": "Is a Letter of Authority required?"
       },
       {
         "component": "somu-list",
@@ -1802,96 +1830,8 @@
             "caseType": "COMP"
           }
         },
-        "label": "Complainant additional information",
-        "name": "CompContributions"
-      },
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "S_COMP_CONTRIB_BUS_AREA"
-          },
-          "somuType": {
-            "type": "CCT_BUS_CONTRIB",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "COMP"
-          }
-        },
-        "label": "Business contributions",
-        "name": "BusContributions"
-      },
-      {
-        "component": "text-area",
-        "label": "Enter reason for escalation",
-        "name": "CaseNote_TriageEscalate"
-      }
-    ],
-    "COMP2_SERVICE_DRAFT": [
-      {
-        "component": "entity-list",
-        "props": {
-          "entity": "document",
-          "choices": "CASE_DOCUMENT_LIST_DRAFT"
-        },
-        "label": "Primary draft document",
-        "name": "DraftDocuments"
-      },
-      {
-        "component": "entity-manager",
-        "props": {
-          "entity": "template",
-          "choices": "CASE_TEMPLATES"
-        },
-        "label": "Available Template",
-        "name": "Complaint_Response"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Response is ready to send",
-              "value": "Send"
-            },
-            {
-              "label": "Send case to QA",
-              "value": "QA"
-            },
-            {
-              "label": "Escalate case to WFM",
-              "value": "Escalate"
-            }
-          ]
-        },
-        "label": "Action",
-        "name": "CctDraftResult"
-      },
-      {
-        "component": "text-area",
-        "label": "Enter reason for returning",
-        "name": "CaseNote_DraftReturn"
-      },
-      {
-        "component": "text-area",
-        "label": "Enter reason for escalation",
-        "name": "CaseNote_DraftEscalate"
-      }
-    ],
-    "COMP2_SERVICE_ESCALATE": [
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
-          },
-          "somuType": {
-            "type": "COMPLAINANT_CONTRIB",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "COMP"
-          }
-        },
-        "label": "Complainant additional information",
-        "name": "CompContributions"
+        "name": "CompContributions",
+        "label": "Complainant additional information"
       },
       {
         "component": "checkbox",
@@ -1921,8 +1861,8 @@
             }
           ]
         },
-        "label": "Date of Letter of Authority",
-        "name": "LoaDate"
+        "name": "LoaDate",
+        "label": "Date of Letter of Authority"
       },
       {
         "component": "somu-list",
@@ -1936,8 +1876,269 @@
             "caseType": "COMP"
           }
         },
-        "label": "Business contributions",
-        "name": "BusContributions"
+        "name": "BusContributions",
+        "label": "Business contributions"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "All information collected - case ready for drafting",
+              "value": "Draft"
+            },
+            {
+              "label": "Escalate case to WFM",
+              "value": "Escalate"
+            },
+            {
+              "label": "No response - complete the case (close permanently)",
+              "value": "Complete"
+            }
+          ]
+        },
+        "name": "CctTriageResult",
+        "label": "Action"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Duplicate Record",
+              "value": "Duplicate Record"
+            },
+            {
+              "label": "Local Resolution",
+              "value": "Local Resolution"
+            },
+            {
+              "label": "Complaint Rejection",
+              "value": "Complaint Rejection"
+            },
+            {
+              "label": "Third Party Rejection",
+              "value": "Third Party Rejection"
+            },
+            {
+              "label": "Withdrawn by Customer",
+              "value": "Withdrawn by Customer"
+            },
+            {
+              "label": "Transferred to Other Department",
+              "value": "Transferred to Other Department"
+            },
+            {
+              "label": "Persistent Author",
+              "value": "Persistent Author"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "CctTriageResult",
+              "conditionPropertyValue": "Complete"
+            }
+          ]
+        },
+        "name": "Close Reason",
+        "label": "Close Reason"
+      },
+      {
+        "component": "text-area",
+        "props": {
+          "visibilityConditions": [
+            {
+              "function": "hasAllValues",
+              "conditionArgs": {
+                "arg1": {
+                  "conditionPropertyName": "Close Reason",
+                  "conditionPropertyValue": "Other"
+                },
+                "arg2": {
+                  "conditionPropertyName": "CctTriageResult",
+                  "conditionPropertyValue": "Complete"
+                }
+              }
+            }
+          ]
+        },
+        "name": "CloseReasonText",
+        "label": "Reason for closing"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_TriageEscalate",
+        "label": "Enter reason for escalation"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "EX_GRATIA_BUS_REPS"
+          },
+          "somuType": {
+            "type": "EXGRATIA_BUS_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "ExGratiaBusContributions",
+        "label": "Business contributions"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "COMPLAINANT_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP2"
+          }
+        },
+        "name": "Comp2Contributions",
+        "label": "Complainant additional information"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_BUS_AREA"
+          },
+          "somuType": {
+            "type": "CCT_BUS_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP2"
+          }
+        },
+        "name": "Comp2BusContributions",
+        "label": "Business contributions"
+      }
+    ],
+    "COMP2_SERVICE_DRAFT": [
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_DRAFT",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "DraftDocuments",
+        "label": "Primary draft document"
+      },
+      {
+        "component": "entity-manager",
+        "props": {
+          "entity": "template",
+          "choices": "CASE_TEMPLATES",
+          "hasTemplateLink": true
+        },
+        "name": "Complaint_Response",
+        "label": "Available Template"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Response is ready to send",
+              "value": "Send"
+            },
+            {
+              "label": "Send case to QA",
+              "value": "QA"
+            },
+            {
+              "label": "Escalate case to WFM",
+              "value": "Escalate"
+            }
+          ]
+        },
+        "name": "CctDraftResult",
+        "label": "Action"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_DraftReturn",
+        "label": "Enter reason for returning"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_DraftEscalate",
+        "label": "Enter reason for escalation"
+      }
+    ],
+    "COMP2_SERVICE_ESCALATE": [
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "COMPLAINANT_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "CompContributions",
+        "label": "Complainant additional information"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Has Letter of Authority been received?",
+              "value": "Yes"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaRequired",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaReceived"
+      },
+      {
+        "component": "date",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaReceived",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaDate",
+        "label": "Date of Letter of Authority"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_BUS_AREA"
+          },
+          "somuType": {
+            "type": "CCT_BUS_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "BusContributions",
+        "label": "Business contributions"
       },
       {
         "component": "radio",
@@ -1957,8 +2158,8 @@
             }
           ]
         },
-        "label": "Action",
-        "name": "CctEscalateResult"
+        "name": "CctEscalateResult",
+        "label": "Action"
       },
       {
         "component": "somu-list",
@@ -1972,8 +2173,8 @@
             "caseType": "COMP2"
           }
         },
-        "label": "Complainant additional information",
-        "name": "Comp2Contributions"
+        "name": "Comp2Contributions",
+        "label": "Complainant additional information"
       },
       {
         "component": "somu-list",
@@ -1987,16 +2188,13 @@
             "caseType": "COMP2"
           }
         },
-        "label": "Business contributions",
-        "name": "Comp2BusContributions"
+        "name": "Comp2BusContributions",
+        "label": "Business contributions"
       }
     ],
     "COMP2_SERVICE_QA": [
       {
         "component": "radio",
-        "validation": [
-          "required"
-        ],
         "props": {
           "choices": [
             {
@@ -2009,8 +2207,8 @@
             }
           ]
         },
-        "label": "QA Result",
-        "name": "CctQaResult"
+        "name": "CctQaResult",
+        "label": "QA Result"
       }
     ],
     "COMP2_SERVICE_SEND": [
@@ -2018,18 +2216,20 @@
         "component": "entity-list",
         "props": {
           "entity": "document",
-          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE"
+          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
         },
-        "label": "Upload the Final Response",
-        "name": "FinalResponseDocument"
+        "name": "FinalResponseDocument",
+        "label": "Upload the Final Response"
       },
       {
         "component": "dropdown",
         "props": {
           "choices": "S_COMP_CCT_CASE_OUTCOME"
         },
-        "label": "Case Outcome",
-        "name": "CctCaseOutcome"
+        "name": "CctCaseOutcome",
+        "label": "Case Outcome"
       },
       {
         "component": "dropdown",
@@ -2053,13 +2253,16 @@
             }
           ]
         },
-        "label": "Response Channel",
-        "name": "ResponseChannel"
+        "name": "ResponseChannel",
+        "label": "Response Channel"
       },
       {
         "component": "date",
-        "label": "Date of Response",
-        "name": "DateResponded"
+        "props": {
+          "autopopulate": true
+        },
+        "name": "DateResponded",
+        "label": "Date of Response"
       }
     ],
     "COMP2_CLOSED": [
@@ -2077,8 +2280,8 @@
             }
           ]
         },
-        "label": "Progress case",
-        "name": "ClosedCompType"
+        "name": "ClosedCompType",
+        "label": "Progress case"
       }
     ],
     "COMP2_OTHER": [
@@ -2088,10 +2291,14 @@
           "action": "CORRESPONDENT",
           "entity": "correspondent",
           "choices": "CASE_CORRESPONDENTS",
-          "addUrlPath": "addNoMp"
+          "addUrlPath": "addNoMp",
+          "hasAddLink": true,
+          "hasEditLink": true,
+          "hasRemoveLink": true,
+          "hideRemovePrimary": true
         },
-        "label": "Which is the primary correspondent?",
-        "name": "Correspondents"
+        "name": "Correspondents",
+        "label": "Which is the primary correspondent?"
       },
       {
         "component": "radio",
@@ -2111,8 +2318,8 @@
             }
           ]
         },
-        "label": "Complaint Type",
-        "name": "CompType"
+        "name": "CompType",
+        "label": "Complaint Type"
       },
       {
         "component": "radio",
@@ -2154,13 +2361,13 @@
             }
           ]
         },
-        "label": "Channel",
-        "name": "Channel"
+        "name": "Channel",
+        "label": "Channel"
       },
       {
         "component": "text-area",
-        "label": "Case Summary",
-        "name": "CaseSummary"
+        "name": "CaseSummary",
+        "label": "Case Summary"
       },
       {
         "component": "radio",
@@ -2188,32 +2395,34 @@
             }
           ]
         },
-        "label": "Severity",
-        "name": "Severity"
+        "name": "Severity",
+        "label": "Severity"
       },
       {
         "component": "text",
-        "label": "Previous UKVI Complaint Ref",
-        "name": "PrevUkviRef"
+        "name": "PrevUkviRef",
+        "label": "Previous UKVI Complaint Ref"
       },
       {
         "component": "text",
-        "label": "Third Party Reference",
-        "name": "3rdPartyRef"
+        "name": "3rdPartyRef",
+        "label": "Third Party Reference"
       },
       {
         "component": "entity-list",
         "props": {
           "entity": "document",
-          "choices": "CASE_DOCUMENT_LIST_DRAFT"
+          "choices": "CASE_DOCUMENT_LIST_DRAFT",
+          "hasAddLink": true,
+          "hasRemoveLink": true
         },
-        "label": "Primary draft document",
-        "name": "DraftDocuments"
+        "name": "DraftDocuments",
+        "label": "Primary draft document"
       },
       {
         "component": "accordion",
-        "label": "Service",
-        "name": "ServiceAccordion"
+        "name": "ServiceAccordion",
+        "label": "Service"
       },
       {
         "component": "checkbox",
@@ -2448,8 +2657,8 @@
         "props": {
           "choices": "S_COMP_CSU_LIST"
         },
-        "label": "Owning CSU",
-        "name": "OwningCSU"
+        "name": "OwningCSU",
+        "label": "Owning CSU"
       },
       {
         "component": "radio",
@@ -2497,8 +2706,8 @@
             }
           ]
         },
-        "label": "Complaint Reason",
-        "name": "ComplaintType"
+        "name": "ComplaintType",
+        "label": "Complaint Reason"
       }
     ]
   }

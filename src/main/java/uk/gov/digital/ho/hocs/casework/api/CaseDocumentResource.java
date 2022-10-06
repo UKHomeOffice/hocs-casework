@@ -6,16 +6,20 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentDto;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.GetDocumentsResponse;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.S3Document;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
+import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_UTF8_VALUE;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
@@ -30,7 +34,7 @@ public class CaseDocumentResource {
     }
 
     @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
-    @GetMapping(value = "/case/document/reference/{caseUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/case/document/reference/{caseUUID}", produces = APPLICATION_JSON_VALUE)
     ResponseEntity<GetDocumentsResponse> getDocumentsForCase(@PathVariable UUID caseUUID,
                                                              @RequestParam(name = "type", required = false)
                                                              String type) {
@@ -45,14 +49,14 @@ public class CaseDocumentResource {
     }
 
     @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
-    @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}", produces = APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<DocumentDto> getDocumentResourceLocation(@PathVariable UUID caseUUID,
                                                                    @PathVariable UUID documentUUID) {
         return ResponseEntity.ok(caseDocumentService.getDocument(documentUUID));
     }
 
     @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
-    @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}/file", produces = APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}/file", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ByteArrayResource> getCaseDocumentFile(@PathVariable UUID caseUUID,
                                                                  @PathVariable UUID documentUUID) {
         S3Document document = caseDocumentService.getDocumentFile(documentUUID);
@@ -66,7 +70,7 @@ public class CaseDocumentResource {
     }
 
     @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
-    @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}/pdf", produces = APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}/pdf", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ByteArrayResource> getCaseDocumentPdf(@PathVariable UUID caseUUID,
                                                                 @PathVariable UUID documentUUID) {
         S3Document document = caseDocumentService.getDocumentPdf(documentUUID);
@@ -78,5 +82,12 @@ public class CaseDocumentResource {
             "attachment;filename=" + document.getOriginalFilename()).contentType(mediaType).contentLength(
             document.getData().length).body(resource);
     }
+
+    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @GetMapping(value = "/case/{caseUUID}/documentTags", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<String>> getDocumentTags(@PathVariable UUID caseUUID) {
+        return ResponseEntity.ok(caseDocumentService.getDocumentTags(caseUUID));
+    }
+
 
 }
