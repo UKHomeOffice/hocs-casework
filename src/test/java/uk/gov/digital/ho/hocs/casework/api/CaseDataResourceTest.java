@@ -229,7 +229,6 @@ public class CaseDataResourceTest {
         verify(caseDataService, times(1)).getCaseTeams(uuid);
 
         verifyNoMoreInteractions(caseDataService);
-//        verifyNoMoreInteractions(infoClient);
 
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).containsAll(List.of(user1, user2));
