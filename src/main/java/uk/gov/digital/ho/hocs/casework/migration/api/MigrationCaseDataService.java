@@ -83,10 +83,18 @@ public class MigrationCaseDataService {
         LocalDate deadline = LocalDate.now();
         caseData.setCaseDeadline(deadline);
         caseData.setCompleted(true);
-        //caseData.setPrimaryCorrespondentUUID( GET UUID of primary Correspondence );
         caseDataRepository.save(caseData);
         auditClient.createCaseAudit(caseData);
         return caseData;
     }
 
+    public void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) {
+        log.debug("Updating Primary Correspondent for Migrated Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID);
+        CaseData caseData = getCaseData(caseUUID);
+        caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
+        caseDataRepository.save(caseData);
+        auditClient.updateCaseAudit(caseData, stageUUID);
+        log.info("Updated Primary Correspondent for Migrated Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID,
+            value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
+    }
 }

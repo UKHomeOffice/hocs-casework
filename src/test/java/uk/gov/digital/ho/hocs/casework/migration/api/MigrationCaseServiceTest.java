@@ -5,11 +5,16 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.jdbc.core.simple.AbstractJdbcCall;
+import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
+import javax.sql.rowset.CachedRowSet;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -40,9 +45,17 @@ public class MigrationCaseServiceTest {
     @Mock
     private MigrationCaseDataService migrationCaseDataService;
 
+    @Mock
+    private CorrespondentService correspondentService;
+    @Mock
+    private CorrespondentRepository correspondentRepository;
+
+    @Mock
+    private AuditClient auditClient;
+
     @Before
     public void setUp() {
-        this.migrationCaseService = new MigrationCaseService(migrationCaseDataService, migrationStageService);
+        this.migrationCaseService = new MigrationCaseService(migrationCaseDataService, migrationStageService,  correspondentService, correspondentRepository, auditClient);
     }
 
     @Test
