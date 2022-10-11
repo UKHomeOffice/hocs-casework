@@ -29,6 +29,8 @@ import uk.gov.digital.ho.hocs.casework.api.dto.UpdatePrimaryCorrespondentRequest
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageDeadlineRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsResponse;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
@@ -55,9 +57,12 @@ class CaseDataResource {
 
     private final CaseDataService caseDataService;
 
+    private final InfoClient infoClient;
+
     @Autowired
-    public CaseDataResource(@Qualifier("CaseDataService") CaseDataService caseDataService) {
+    public CaseDataResource(@Qualifier("CaseDataService") CaseDataService caseDataService, InfoClient infoClient) {
         this.caseDataService = caseDataService;
+        this.infoClient = infoClient;
     }
 
     @Authorised(accessLevel = AccessLevel.OWNER, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
@@ -103,6 +108,14 @@ class CaseDataResource {
     public ResponseEntity<GetCaseSummaryResponse> getCaseSummary(@PathVariable UUID caseUUID) {
         CaseSummary caseSummary = caseDataService.getCaseSummary(caseUUID);
         return ResponseEntity.ok(GetCaseSummaryResponse.from(caseSummary));
+    }
+
+    @GetMapping(value = "/case/{caseUUID}/team/members")
+    public ResponseEntity<List<UserDto>> getCaseTeams(@PathVariable UUID caseUUID) {
+        Set<UUID> teamUUIDs = caseDataService.getCaseTeams(caseUUID);
+        List<UserDto> users = teamUUIDs.stream().map(infoClient::getUsersForTeam).flatMap(List::stream).toList();
+
+        return ResponseEntity.ok(users);
     }
 
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/calculateTotals")
