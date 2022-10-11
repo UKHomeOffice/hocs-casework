@@ -13,6 +13,12 @@
   value: '{{ tpl .Values.app.env.searchService . }}'
 - name: HOCS_DOCUMENT_SERVICE
   value: '{{ tpl .Values.app.env.docsService . }}'
+- name: MIGRATION_USERID
+  value: '{{ tpl .Values.app.env.migrationUserId . }}'
+- name: MIGRATION_USERNAME
+  value: '{{ tpl .Values.app.env.migrationUserName . }}'
+- name: MIGRATION_GROUP
+  value: '{{ tpl .Values.app.env.migrationGroup . }}'
 - name: HOCS_BASICAUTH
   valueFrom:
     secretKeyRef:
