@@ -7,17 +7,20 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
-import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MigrationCaseDataServiceTest {
@@ -39,11 +42,11 @@ public class MigrationCaseDataServiceTest {
     private InfoClient infoClient;
 
     @Mock
-    private AuditClient auditClient;
+    private MigrationAuditClient migrationAuditClient;
 
     @Before
     public void setUp() {
-        this.migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, infoClient, auditClient);
+        this.migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, infoClient, migrationAuditClient);
     }
 
     @Test
