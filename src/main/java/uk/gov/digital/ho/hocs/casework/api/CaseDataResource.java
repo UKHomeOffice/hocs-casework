@@ -113,7 +113,7 @@ class CaseDataResource {
     @GetMapping(value = "/case/{caseUUID}/team/members")
     public ResponseEntity<List<UserDto>> getCaseTeams(@PathVariable UUID caseUUID) {
         Set<UUID> teamUUIDs = caseDataService.getCaseTeams(caseUUID);
-        List<UserDto> users = teamUUIDs.stream().map(infoClient::getUsersForTeam).flatMap(List::stream).collect(Collectors.toList());
+        List<UserDto> users = teamUUIDs.stream().map(infoClient::getUsersForTeam).flatMap(List::stream).toList();
 
         return ResponseEntity.ok(users);
     }
