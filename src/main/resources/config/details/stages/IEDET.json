@@ -177,7 +177,7 @@
         "name": "categoryInset"
       },
       {
-        "component": "checkbox",
+        "component": "checkbox-group",
         "props": {
           "choices": "IEDET_COMP_CATEGORIES_SERVICE",
           "className": "govuk-checkboxes--small",
@@ -187,7 +187,7 @@
         "label": "Service"
       },
       {
-        "component": "checkbox",
+        "component": "checkbox-group",
         "props": {
           "choices": "IEDET_COMP_CATEGORIES_SERIOUS_AND_MINOR",
           "className": "govuk-checkboxes--small",
@@ -197,7 +197,7 @@
         "label": "Serious and minor misconduct"
       },
       {
-        "component": "checkbox",
+        "component": "checkbox-group",
         "props": {
           "choices": "IEDET_COMP_CATEGORIES_SERIOUS",
           "className": "govuk-checkboxes--small",

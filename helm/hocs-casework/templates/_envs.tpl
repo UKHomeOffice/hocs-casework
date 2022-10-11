@@ -1,18 +1,18 @@
 {{- define "deployment.envs" }}
 - name: JAVA_OPTS
-  value: '{{ tpl .Values.app.javaOpts . }}'
+  value: '{{ tpl .Values.app.env.javaOpts . }}'
 - name: SERVER_PORT
   value: '{{ include "hocs-app.port" . }}'
 - name: SPRING_PROFILES_ACTIVE
-  value: '{{ tpl .Values.app.springProfiles . }}'
+  value: '{{ tpl .Values.app.env.springProfiles . }}'
 - name: HOCS_AUDIT_SERVICE
-  value: '{{ tpl .Values.app.auditService . }}'
+  value: '{{ tpl .Values.app.env.auditService . }}'
 - name: HOCS_INFO_SERVICE
-  value: '{{ tpl .Values.app.infoService . }}'
+  value: '{{ tpl .Values.app.env.infoService . }}'
 - name: HOCS_SEARCH_SERVICE
-  value: '{{ tpl .Values.app.searchService . }}'
+  value: '{{ tpl .Values.app.env.searchService . }}'
 - name: HOCS_DOCUMENT_SERVICE
-  value: '{{ tpl .Values.app.docsService . }}'
+  value: '{{ tpl .Values.app.env.docsService . }}'
 - name: HOCS_BASICAUTH
   valueFrom:
     secretKeyRef:
