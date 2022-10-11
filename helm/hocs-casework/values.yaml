@@ -23,7 +23,7 @@ hocs-generic-service:
       infoService: https://hocs-info-service.{{ .Release.Namespace }}.svc.cluster.local
       searchService: https://hocs-search.{{ .Release.Namespace }}.svc.cluster.local
       docsService: https://hocs-docs.{{ .Release.Namespace }}.svc.cluster.local
-      # The 'real' migration values need to be a secrets
+      # The 'real' migration values need to be in a secret
       migrationUserId: cms
       migrationUserName: migration
       migrationGroup: cms
