@@ -5,20 +5,22 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.jdbc.core.simple.AbstractJdbcCall;
 import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.ComplaintCorrespondent;
 
-import javax.sql.rowset.CachedRowSet;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -65,12 +67,16 @@ public class MigrationCaseServiceTest {
         Map<String, String> data = Collections.emptyMap();
         CaseData caseData = new CaseData(1L, UUID.randomUUID(), LocalDateTime.now(), "COMP", null, false, data, null,
             null, null, null, LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(10), false, null, null);
+        Stage stage = new Stage(caseData.getUuid(), STAGE_TYPE, null, null, null);
 
         //when
         when(migrationCaseDataService.createCompletedCase(caseDataType.getDisplayName(), data,
             originalReceivedDate)).thenReturn(caseData);
 
-        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate, null);
+        when(migrationStageService.createStageForClosedCase(caseData.getUuid(), STAGE_TYPE)).thenReturn(stage);
+
+        List<ComplaintCorrespondent> correspondents = new ArrayList<>();
+        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate, correspondents);
 
         // then
         verify(migrationCaseDataService, times(1)).createCompletedCase(caseDataType.getDisplayName(), data,

@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.migration.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -75,6 +76,7 @@ public class MigrationCaseDataService {
             value(EVENT, MIGRATION_CASE_UPDATED));
     }
 
+    @Transactional
     CaseData createCompletedCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
         log.debug("Creating Case of type: {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
