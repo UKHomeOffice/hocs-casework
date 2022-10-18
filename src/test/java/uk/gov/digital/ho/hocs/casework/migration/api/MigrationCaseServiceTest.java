@@ -13,14 +13,13 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
-import uk.gov.digital.ho.hocs.casework.migration.api.dto.ComplaintCorrespondent;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CorrespondentType;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -75,8 +74,8 @@ public class MigrationCaseServiceTest {
 
         when(migrationStageService.createStageForClosedCase(caseData.getUuid(), STAGE_TYPE)).thenReturn(stage);
 
-        List<ComplaintCorrespondent> correspondents = new ArrayList<>();
-        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate, correspondents);
+        MigrationComplaintCorrespondent primaryCorrespondents =  createCorrespondent();
+        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate, primaryCorrespondents);
 
         // then
         verify(migrationCaseDataService, times(1)).createCompletedCase(caseDataType.getDisplayName(), data,
@@ -84,6 +83,22 @@ public class MigrationCaseServiceTest {
         verify(migrationStageService, times(1)).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
         verifyNoMoreInteractions(migrationCaseDataService);
         verifyNoMoreInteractions(migrationStageService);
+    }
+
+    MigrationComplaintCorrespondent createCorrespondent() {
+        return new MigrationComplaintCorrespondent(
+                "fullName",
+                CorrespondentType.COMPLAINANT,
+                "address1",
+                "address2",
+                "address3",
+                "postcode",
+                "country",
+                "organisation",
+                "telephone",
+                "email",
+                "reference"
+            );
     }
 
 }
