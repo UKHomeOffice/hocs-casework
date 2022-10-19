@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -83,6 +84,11 @@ public class MigrationCaseServiceTest {
         verify(migrationStageService, times(1)).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
         verifyNoMoreInteractions(migrationCaseDataService);
         verifyNoMoreInteractions(migrationStageService);
+    }
+
+    @Test
+    public void GivenAValidMigratedCaseWhenCaseIsCreatedThenShouldContainAPrimaryCorrespondent() {
+        fail();
     }
 
     MigrationComplaintCorrespondent createCorrespondent() {
