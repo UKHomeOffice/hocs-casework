@@ -4,13 +4,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
+import uk.gov.digital.ho.hocs.casework.client.documentclient.dto.CreateCaseworkDocumentRequest;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -29,12 +33,16 @@ public class MigrationCaseDataService {
 
     protected final MigrationAuditClient migrationAuditClient;
 
+    protected final DocumentClient documentClient;
+
     protected final InfoClient infoClient;
 
     public MigrationCaseDataService(CaseDataRepository caseDataRepository,
+                                    DocumentClient documentClient,
                                     InfoClient infoClient,
                                     MigrationAuditClient migrationAuditClient) {
         this.caseDataRepository = caseDataRepository;
+        this.documentClient = documentClient;
         this.infoClient = infoClient;
         this.migrationAuditClient = migrationAuditClient;
     }
@@ -87,6 +95,13 @@ public class MigrationCaseDataService {
         migrationAuditClient.createCaseAudit(caseData);
         migrationAuditClient.completeCaseAudit(caseData);
         return caseData;
+    }
+
+    void createCaseAttachments(UUID caseId, List<CaseAttachment> caseAttachemnts) {
+        for(CaseAttachment attachment : caseAttachemnts) {
+            CreateCaseworkDocumentRequest document = new CreateCaseworkDocumentRequest(attachment.getDisplayName(), attachment.getType(), attachment.getS3UntrustedUrl(), caseId);
+            documentClient.createDocument(caseId, document);
+        }
     }
 
 }

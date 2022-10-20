@@ -3,10 +3,9 @@ package uk.gov.digital.ho.hocs.casework.migration.api.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequestInterface;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -22,6 +21,9 @@ public class CreateMigrationCaseRequest {
 
     @JsonProperty("dateReceived")
     private LocalDate dateReceived;
+
+    @JsonProperty("caseAttachments")
+    private List<CaseAttachment> attachments;
 
     @JsonProperty("fromCaseUUID")
     private UUID fromCaseUUID;

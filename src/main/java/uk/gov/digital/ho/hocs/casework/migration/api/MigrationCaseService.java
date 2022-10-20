@@ -6,6 +6,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -22,9 +23,10 @@ public class MigrationCaseService {
         this.migrationStageService = migrationStageService;
     }
 
-    CaseData createMigrationCase(String caseType, String stageType, Map<String, String> data, LocalDate dateReceived) {
+    CaseData createMigrationCase(String caseType, String stageType, Map<String, String> data, LocalDate dateReceived, List caseAttachments) {
         log.debug("Migrating Case of type: {}", caseType);
         CaseData caseData = migrationCaseDataService.createCompletedCase(caseType, data, dateReceived);
+        migrationCaseDataService.createCaseAttachments(caseData.getUuid(), caseAttachments);
         Stage stage = migrationStageService.createStageForClosedCase(caseData.getUuid(), stageType);
         return caseData;
     }

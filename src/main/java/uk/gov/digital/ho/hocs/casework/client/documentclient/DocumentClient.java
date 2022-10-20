@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.CopyDocumentsRequest;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
+import uk.gov.digital.ho.hocs.casework.client.documentclient.dto.CreateCaseworkDocumentRequest;
 
 import java.util.UUID;
 
@@ -24,6 +25,11 @@ public class DocumentClient {
     public DocumentClient(RestHelper restHelper, @Value("${hocs.document-service}") String documentService) {
         this.restHelper = restHelper;
         this.serviceBaseURL = documentService;
+    }
+
+    public void createDocument(UUID caseUUID, CreateCaseworkDocumentRequest request) {
+        UUID response = restHelper.post(serviceBaseURL, "/document", request, UUID.class);
+        log.info("Created Document {}, Case {}", response, caseUUID, value(EVENT, DOCUMENT_CLIENT_CREATE_SUCCESS));
     }
 
     public GetDocumentsResponse getDocuments(UUID caseUUID, String type) {
