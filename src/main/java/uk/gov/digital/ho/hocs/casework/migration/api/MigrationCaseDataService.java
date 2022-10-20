@@ -1,20 +1,28 @@
 package uk.gov.digital.ho.hocs.casework.migration.api;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CORRESPONDENT_CREATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CORRESPONDENT_CREATE_FAILURE;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MIGRATION_CASE_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MIGRATION_CASE_NOT_UPDATED_NULL_DATA;
@@ -27,6 +35,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRE
 public class MigrationCaseDataService {
 
     protected final CaseDataRepository caseDataRepository;
+    private final CorrespondentRepository correspondentRepository;
 
     protected final AuditClient auditClient;
 
@@ -34,10 +43,12 @@ public class MigrationCaseDataService {
 
     public MigrationCaseDataService(CaseDataRepository caseDataRepository,
                                     InfoClient infoClient,
-                                    AuditClient auditClient) {
+                                    AuditClient auditClient,
+                                    CorrespondentRepository correspondentRepository) {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.auditClient = auditClient;
+        this.correspondentRepository = correspondentRepository;
     }
 
     protected CaseData getCaseData(UUID caseUUID) {
@@ -88,6 +99,42 @@ public class MigrationCaseDataService {
         caseDataRepository.save(caseData);
         auditClient.createCaseAudit(caseData);
         return caseData;
+    }
+
+    void createPrimaryCorrespondent(MigrationComplaintCorrespondent primaryCorrespondent, UUID caseUUID, UUID stageUUID) {
+        log.debug("Creating Correspondent of Type: {} for Migrated Case: {}", primaryCorrespondent.getCorrespondentType(), caseUUID);
+        Correspondent correspondent = new Correspondent(caseUUID,
+            primaryCorrespondent.getCorrespondentType().toString(),
+            primaryCorrespondent.getFullName(),
+            primaryCorrespondent.getOrganisation(),
+            new Address(primaryCorrespondent.getPostcode(),
+                primaryCorrespondent.getAddress1(), primaryCorrespondent.getAddress2(), primaryCorrespondent.getAddress3(),
+                primaryCorrespondent.getCountry()
+            ),
+            primaryCorrespondent.getTelephone(),
+            primaryCorrespondent.getEmail(),
+            primaryCorrespondent.getReference(),
+            primaryCorrespondent.getReference());
+
+        try {
+            correspondentRepository.save(correspondent);
+            auditClient.createCorrespondentAudit(correspondent);
+
+            Set<Correspondent> caseCorrespondents = correspondentRepository.findAllByCaseUUID(caseUUID);
+
+            if (caseCorrespondents.size()==1) {
+                updatePrimaryCorrespondent(caseUUID,
+                    stageUUID,
+                    caseCorrespondents.stream().findFirst().get().getCaseUUID());
+            }
+
+        } catch(DataIntegrityViolationException e) {
+            throw new ApplicationExceptions.EntityCreationException(
+                String.format("Failed to create correspondent %s for Migrated Case: %s", correspondent.getUuid(), caseUUID),
+                CORRESPONDENT_CREATE_FAILURE, e);
+        }
+        log.info("Created Correspondent: {} for Migrated Case: {}", correspondent.getUuid(), caseUUID,
+            value(EVENT, CORRESPONDENT_CREATED));
     }
 
     public void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) {

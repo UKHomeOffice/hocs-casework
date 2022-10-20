@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -36,6 +37,9 @@ public class MigrationCaseDataServiceTest {
     private CaseDataRepository caseDataRepository;
 
     @Mock
+    private CorrespondentRepository correspondentRepository;
+
+    @Mock
     private InfoClient infoClient;
 
     @Mock
@@ -43,7 +47,7 @@ public class MigrationCaseDataServiceTest {
 
     @Before
     public void setUp() {
-        this.migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, infoClient, auditClient);
+        this.migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, infoClient, auditClient, correspondentRepository);
     }
 
     @Test
