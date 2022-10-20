@@ -102,15 +102,12 @@ public class MigrationCaseDataServiceTest {
     @Test
     public void shouldCreatedAPrimaryCorrespondent() {
         // given
-        UUID caseUUID = UUID.randomUUID();
-        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
-        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+        CaseData caseData = new CaseData();
+        when(caseDataRepository.findActiveByUuid(any())).thenReturn(caseData);
 
         Set<Correspondent> correspondents = new HashSet<>();
         correspondents.add(createCorrespondent());
-        when(correspondentRepository.findAllByCaseUUID(caseUUID)).thenReturn(correspondents);
-
-        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(any());
+        when(correspondentRepository.findAllByCaseUUID(any())).thenReturn(correspondents);
 
         // when
         migrationCaseDataService.createPrimaryCorrespondent(createMigrationComplaintCorrespondent(), UUID.randomUUID(), UUID.randomUUID());
