@@ -33,14 +33,13 @@ public class CopyCompToComp2 extends AbstractCaseCopyStrategy implements CaseCop
 
     @Override
     public void copyCase(CaseData fromCase, CaseData toCase) {
-
-        // copy clob details
-        copyClobData(fromCase, toCase, DATA_CLOB_KEYS);
-        caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
-
         // Correspondents include the primary_correspondent_uuid
         correspondentService.copyCorrespondents(fromCase.getUuid(), toCase.getUuid());
 
+        // copy clob details
+        copyClobData(fromCase, toCase, DATA_CLOB_KEYS);
+        toCase.update("Correspondents", toCase.getPrimaryCorrespondentUUID().toString());
+        caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
     }
 
 }
