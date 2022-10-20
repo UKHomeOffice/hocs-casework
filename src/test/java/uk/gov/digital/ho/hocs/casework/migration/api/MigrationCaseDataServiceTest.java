@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
@@ -53,9 +54,12 @@ public class MigrationCaseDataServiceTest {
     @Mock
     private MigrationAuditClient migrationAuditClient;
 
+    @Mock
+    private AuditClient auditClient;
+
     @Before
     public void setUp() {
-        this.migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, infoClient, auditClient, correspondentRepository);
+        this.migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, infoClient, migrationAuditClient, auditClient, correspondentRepository);
     }
 
     @Test

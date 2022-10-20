@@ -40,14 +40,18 @@ public class MigrationCaseDataService {
 
     protected final MigrationAuditClient migrationAuditClient;
 
+    protected final AuditClient auditClient;
+
     protected final InfoClient infoClient;
 
     public MigrationCaseDataService(CaseDataRepository caseDataRepository,
                                     InfoClient infoClient,
+                                    MigrationAuditClient migrationAuditClient,
                                     AuditClient auditClient,
                                     CorrespondentRepository correspondentRepository) {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
+        this.migrationAuditClient = migrationAuditClient;
         this.auditClient = auditClient;
         this.correspondentRepository = correspondentRepository;
     }
