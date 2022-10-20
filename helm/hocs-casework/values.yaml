@@ -7,12 +7,12 @@ hocs-generic-service:
       repository: quay.io/ukhomeofficedigital/hocs-casework
     resources:
       limits:
-        memory: 1536Mi
+        memory: 2204Mi
       requests:
-        memory: 1536Mi
+        memory: 2204Mi
     env:
       javaOpts: >-
-        -XX:InitialRAMPercentage=50 -XX:MaxRAMPercentage=70
+        -XX:InitialRAMPercentage=60 -XX:MaxRAMPercentage=70
         -Djava.security.egd=file:/dev/./urandom
         -Djavax.net.ssl.trustStore=/etc/keystore/truststore.jks
         -Dhttps.proxyHost=hocs-outbound-proxy.{{ .Release.Namespace }}.svc.cluster.local
