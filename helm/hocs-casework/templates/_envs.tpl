@@ -1,18 +1,36 @@
 {{- define "deployment.envs" }}
 - name: JAVA_OPTS
-  value: '{{ tpl .Values.app.javaOpts . }}'
+  value: '{{ tpl .Values.app.env.javaOpts . }}'
+{{- if not .Values.proxy.enabled }}
+- name: SERVER_SSL_KEY_STORE_TYPE
+  value: 'PKCS12'
+- name: SERVER_SSL_KEY_STORE_PASSWORD
+  value: 'changeit'
+- name: SERVER_SSL_KEY_STORE
+  value: 'file:/etc/keystore/keystore.jks'
+- name: SERVER_COMPRESSION_ENABLED
+  value: 'true'
+- name: SERVER_SSL_ENABLED
+  value: 'true'
+{{- end }}
 - name: SERVER_PORT
   value: '{{ include "hocs-app.port" . }}'
 - name: SPRING_PROFILES_ACTIVE
-  value: '{{ tpl .Values.app.springProfiles . }}'
+  value: '{{ tpl .Values.app.env.springProfiles . }}'
 - name: HOCS_AUDIT_SERVICE
-  value: '{{ tpl .Values.app.auditService . }}'
+  value: '{{ tpl .Values.app.env.auditService . }}'
 - name: HOCS_INFO_SERVICE
-  value: '{{ tpl .Values.app.infoService . }}'
+  value: '{{ tpl .Values.app.env.infoService . }}'
 - name: HOCS_SEARCH_SERVICE
-  value: '{{ tpl .Values.app.searchService . }}'
+  value: '{{ tpl .Values.app.env.searchService . }}'
 - name: HOCS_DOCUMENT_SERVICE
-  value: '{{ tpl .Values.app.docsService . }}'
+  value: '{{ tpl .Values.app.env.docsService . }}'
+- name: MIGRATION_USERID
+  value: '{{ tpl .Values.app.env.migrationUserId . }}'
+- name: MIGRATION_USERNAME
+  value: '{{ tpl .Values.app.env.migrationUserName . }}'
+- name: MIGRATION_GROUP
+  value: '{{ tpl .Values.app.env.migrationGroup . }}'
 - name: HOCS_BASICAUTH
   valueFrom:
     secretKeyRef:

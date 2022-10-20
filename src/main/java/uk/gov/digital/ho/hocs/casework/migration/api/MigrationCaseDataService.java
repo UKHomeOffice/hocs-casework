@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
+import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -37,7 +38,7 @@ public class MigrationCaseDataService {
     protected final CaseDataRepository caseDataRepository;
     private final CorrespondentRepository correspondentRepository;
 
-    protected final AuditClient auditClient;
+    protected final MigrationAuditClient migrationAuditClient;
 
     protected final InfoClient infoClient;
 
@@ -82,7 +83,7 @@ public class MigrationCaseDataService {
         log.debug("Data size {}", data.size());
         caseData.update(data);
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData, stageUUID);
+        migrationAuditClient.updateCaseAudit(caseData, stageUUID);
         log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID,
             value(EVENT, MIGRATION_CASE_UPDATED));
     }
@@ -97,7 +98,8 @@ public class MigrationCaseDataService {
         caseData.setCaseDeadline(deadline);
         caseData.setCompleted(true);
         caseDataRepository.save(caseData);
-        auditClient.createCaseAudit(caseData);
+        migrationAuditClient.createCaseAudit(caseData);
+        migrationAuditClient.completeCaseAudit(caseData);
         return caseData;
     }
 

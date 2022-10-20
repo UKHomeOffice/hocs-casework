@@ -5,10 +5,28 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import uk.gov.digital.ho.hocs.casework.api.dto.*;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
+import uk.gov.digital.ho.hocs.casework.api.dto.CaseSummaryLink;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCaseSummaryResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.MigrateCaseRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.MigrateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCaseDataRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateDeadlineForStagesRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdatePrimaryCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageDeadlineRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsRequest;
+import uk.gov.digital.ho.hocs.casework.api.dto.UpdateTeamByStageAndTextsResponse;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
+import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
@@ -21,6 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -54,13 +73,16 @@ public class CaseDataResourceTest {
     @Mock
     private CaseDataService caseDataService;
 
+    @Mock
+    private InfoClient infoClient;
+
     private final LocalDate dateArg = LocalDate.now();
 
     private CaseDataResource caseDataResource;
 
     @Before
     public void setUp() {
-        caseDataResource = new CaseDataResource(caseDataService);
+        caseDataResource = new CaseDataResource(caseDataService, infoClient);
     }
 
     @Test
@@ -175,6 +197,41 @@ public class CaseDataResourceTest {
         assertThat(link.getCaseUUID()).isEqualTo(PREVIOUS_CASE_UUID);
         assertThat(link.getStageUUID()).isEqualTo(PREVIOUS_STAGE_UUID);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldGetCaseTeams() {
+        UUID team1UUID = UUID.randomUUID();
+        UUID team2UUID = UUID.randomUUID();
+
+        UserDto user1 = new UserDto(
+            "1",
+            "user 1",
+            "user",
+            "one",
+            "email1"
+        );
+
+        UserDto user2 = new UserDto(
+            "2",
+            "user 2",
+            "user",
+            "two",
+            "email2"
+        );
+
+        when(caseDataService.getCaseTeams(uuid)).thenReturn(Set.of(team1UUID, team2UUID));
+        when(infoClient.getUsersForTeam(team1UUID)).thenReturn(List.of(user1));
+        when(infoClient.getUsersForTeam(team2UUID)).thenReturn(List.of(user2));
+
+        ResponseEntity<List<UserDto>> response = caseDataResource.getCaseTeams(uuid);
+
+        verify(caseDataService, times(1)).getCaseTeams(uuid);
+
+        verifyNoMoreInteractions(caseDataService);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.getBody()).containsAll(List.of(user1, user2));
     }
 
     @Test
@@ -298,19 +355,6 @@ public class CaseDataResourceTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody()).isInstanceOf(UpdateTeamByStageAndTextsResponse.class);
         assertThat(response.getBody().getTeamMap()).isEqualTo(teamMap);
-    }
-
-    @Test
-    public void shouldGetDocumentTags() {
-        UUID caseUUID = UUID.randomUUID();
-        List<String> documentTags = List.of("Tag");
-        when(caseDataService.getDocumentTags(caseUUID)).thenReturn(documentTags);
-
-        ResponseEntity<List<String>> response = caseDataResource.getDocumentTags(caseUUID);
-
-        assertThat(response.getBody()).isSameAs(documentTags);
-        verify(caseDataService).getDocumentTags(caseUUID);
-        verifyNoMoreInteractions(caseDataService);
     }
 
     @Test

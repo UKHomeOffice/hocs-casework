@@ -44,7 +44,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -392,22 +391,6 @@ public class CaseDataServiceTest {
         // check audit
         verify(auditClient).migrateCaseAudit(caseData.getValue());
         verifyNoMoreInteractions(auditClient);
-    }
-
-    @Test
-    public void shouldGetDocumentTags() {
-        UUID caseUUID = UUID.randomUUID();
-        when(caseDataRepository.getCaseType(caseUUID)).thenReturn("TEST");
-        List<String> documentTags = new ArrayList<String>(Arrays.asList("Tag"));
-        when(infoClient.getDocumentTags("TEST")).thenReturn(documentTags);
-
-        List<String> tags = caseDataService.getDocumentTags(caseUUID);
-
-        assertThat(tags).isSameAs(documentTags);
-        verify(caseDataRepository).getCaseType(caseUUID);
-        verifyNoMoreInteractions(caseDataRepository);
-        verify(infoClient).getDocumentTags("TEST");
-        verifyNoMoreInteractions(infoClient);
     }
 
     @Test
