@@ -10,14 +10,23 @@ import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CorrespondentType;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 
 import java.time.LocalDate;
+import java.util.AbstractSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -90,4 +99,60 @@ public class MigrationCaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
     }
 
+    @Test
+    public void shouldCreatedAPrimaryCorrespondent() {
+        // given
+        UUID caseUUID = UUID.randomUUID();
+        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+
+        Set<Correspondent> correspondents = new HashSet<>();
+        correspondents.add(createCorrespondent());
+        when(correspondentRepository.findAllByCaseUUID(caseUUID)).thenReturn(correspondents);
+
+        when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(any());
+
+        // when
+        migrationCaseDataService.createPrimaryCorrespondent(createMigrationComplaintCorrespondent(), UUID.randomUUID(), UUID.randomUUID());
+
+        //then
+        verify(correspondentRepository, times(1)).save(any());
+        verify(caseDataRepository, times(1)).save(any());
+    }
+
+    MigrationComplaintCorrespondent createMigrationComplaintCorrespondent() {
+        return new MigrationComplaintCorrespondent(
+            "fullName",
+            CorrespondentType.COMPLAINANT,
+            "address1",
+            "address2",
+            "address3",
+            "postcode",
+            "country",
+            "organisation",
+            "telephone",
+            "email",
+            "reference"
+        );
+    }
+
+    Correspondent createCorrespondent() {
+        return new Correspondent(
+            UUID.randomUUID(),
+            "correspondentType",
+            "fullName",
+            "organisation",
+            new Address(
+                "postcode",
+                "address1",
+                "address2",
+                "address3",
+                "country"
+            ),
+            "telephone",
+            "email",
+            "reference",
+            "reference"
+        );
+    }
 }
