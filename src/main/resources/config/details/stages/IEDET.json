@@ -205,6 +205,18 @@
         "props": {
           "choices": [
             {
+              "label": "Complaint handling",
+              "value": "Handle"
+            }
+          ]
+        },
+        "name": "CatHandle"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
               "label": "Delay",
               "value": "Delay"
             }
@@ -301,12 +313,24 @@
         "props": {
           "choices": [
             {
-              "label": "Complaint handling",
-              "value": "Handle"
+              "label": "Detainee on detainee",
+              "value": "DetOnDet"
             }
           ]
         },
-        "name": "CatHandle"
+        "name": "CatDetOnDet"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Other unprofessionalism",
+              "value": "OtherUnprof"
+            }
+          ]
+        },
+        "name": "CatOtherUnprof"
       },
       {
         "component": "checkbox",
@@ -337,60 +361,12 @@
         "props": {
           "choices": [
             {
-              "label": "Other unprofessionalism",
-              "value": "OtherUnprof"
-            }
-          ]
-        },
-        "name": "CatOtherUnprof"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "Detainee on detainee",
-              "value": "DetOnDet"
-            }
-          ]
-        },
-        "name": "CatDetOnDet"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "Theft",
-              "value": "Theft"
-            }
-          ]
-        },
-        "name": "CatTheft"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
               "label": "Assault",
               "value": "Assault"
             }
           ]
         },
         "name": "CatAssault"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "Sexual assault",
-              "value": "SexAssault"
-            }
-          ]
-        },
-        "name": "CatSexAssault"
       },
       {
         "component": "checkbox",
@@ -415,6 +391,30 @@
           ]
         },
         "name": "CatRacism"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Sexual assault",
+              "value": "SexAssault"
+            }
+          ]
+        },
+        "name": "CatSexAssault"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Theft",
+              "value": "Theft"
+            }
+          ]
+        },
+        "name": "CatTheft"
       },
       {
         "component": "radio",
