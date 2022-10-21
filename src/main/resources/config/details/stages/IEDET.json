@@ -1,7 +1,7 @@
 {
   "type": "IEDET",
   "groups": {
-    "PSU_REGISTRATION": [
+    "IEDET_PSU_REGISTRATION": [
       {
         "component": "text",
         "name": "PsuReference",
