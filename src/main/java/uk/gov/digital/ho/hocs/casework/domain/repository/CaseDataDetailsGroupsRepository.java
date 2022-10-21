@@ -30,7 +30,7 @@ public class CaseDataDetailsGroupsRepository extends JsonConfigFolderReader {
         var detailFields = detailsFields.get(type);
 
         if (detailFields == null) {
-            log.warn("No mapping found for type: {}", type, value(EVENT, CASE_DATA_DETAILS_NOT_FOUND));
+            log.info("No mapping found for type: {}", type, value(EVENT, CASE_DATA_DETAILS_NOT_FOUND));
             return Collections.emptyMap();
         }
         return detailFields;

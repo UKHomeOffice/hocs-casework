@@ -72,7 +72,7 @@ public class CopyBfToBf2Test {
 
     @Before
     public void setUp() {
-        toCase = new CaseData(2L, TO_CASE_UUID, null, null, null, false, new HashMap<>(Map.of()), null, null, null,
+        toCase = new CaseData(2L, TO_CASE_UUID, null, null, null, false, new HashMap<>(Map.of()), null, null, UUID.randomUUID(),
             null, null, null, null, false, null, null);
 
         FROM_CLOB.put("OwningCSU", "csu");

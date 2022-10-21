@@ -78,7 +78,7 @@ public class CopyCompToComp2Test {
 
     @Before
     public void setUp() {
-        toCase = new CaseData(2L, TO_CASE_UUID, null, null, null, false, new HashMap<>(Map.of()), null, null, null,
+        toCase = new CaseData(2L, TO_CASE_UUID, null, null, null, false, new HashMap<>(Map.of()), null, null, UUID.randomUUID(),
             null, null, null, null, false, null, null);
     }
 
@@ -97,7 +97,7 @@ public class CopyCompToComp2Test {
 
         // clob values were copied - there's a separate test for copying values
         assertThat(toCase.getDataMap()).isNotNull();
-        assertThat(toCase.getDataMap()).isEqualTo(FROM_CASE.getDataMap());
+        assertThat(toCase.getDataMap()).containsAllEntriesOf(FROM_CASE.getDataMap());
 
     }
 
