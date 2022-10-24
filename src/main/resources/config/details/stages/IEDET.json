@@ -8,6 +8,66 @@
         "label": "PSU reference"
       }
     ],
+    "IEDET_PSU_OUTCOME": [
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Substantiated",
+              "value": "Substantiated"
+            },
+            {
+              "label": "Partially substantiated",
+              "value": "Partially substantiated"
+            },
+            {
+              "label": "Unsubstantiated",
+              "value": "Unsubstantiated"
+            },
+            {
+              "label": "Withdrawn",
+              "value": "Withdrawn"
+            },
+            {
+              "label": "Not serious - send back to IE Detention",
+              "value": "ReturnCase"
+            }
+          ]
+        },
+        "component": "radio",
+        "name": "ComplaintOutcome",
+        "label": "Complaint outcome"
+      },
+      {
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "ComplaintOutcome",
+              "conditionPropertyValue": "Withdrawn"
+            }
+          ]
+        },
+        "component": "text-area",
+        "name": "withdrawalReason",
+        "label": "Why has the complaint been withdrawn?"
+      },
+      {
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_IEDET_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "component": "entity-list",
+        "name": "FinalResponseDocument",
+        "label": "Final response"
+      },
+      {
+        "component": "date",
+        "name": "dateOfResponse",
+        "label": "Final response sent"
+      }
+    ],
     "IEDET_REGISTRATION": [
       {
         "component": "date",
