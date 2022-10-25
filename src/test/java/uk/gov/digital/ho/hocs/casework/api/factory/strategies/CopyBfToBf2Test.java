@@ -119,4 +119,26 @@ public class CopyBfToBf2Test {
         assertThat(toCase.getDataMap()).containsEntry("PreviousCaseReference", "BF/12345678/01");
     }
 
+    @Test
+    public void shouldCopyCaseDetailsWithNoCorrespondent() {
+
+        // given
+        var bfToBf2 = new CopyBfToBf2(caseDataService, correspondentService);
+
+        toCase = new CaseData(2L, TO_CASE_UUID, null, null, null, false, new HashMap<>(Map.of()), null, null, null,
+            null, null, null, null, false, null, null);
+
+        // when
+        bfToBf2.copyCase(FROM_CASE, toCase);
+
+        // then
+        verify(caseDataService, times(1)).updateCaseData(eq(toCase.getUuid()), any(), anyMap());
+        verify(correspondentService, times(1)).copyCorrespondents(FROM_CASE.getUuid(), toCase.getUuid());
+
+        // clob values were copied - there's a separate test for copying values
+        assertThat(toCase.getDataMap()).isNotNull();
+        assertThat(toCase.getDataMap()).doesNotContainKey("Correspondents");
+
+    }
+
 }
