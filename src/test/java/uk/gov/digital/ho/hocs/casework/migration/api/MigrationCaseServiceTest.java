@@ -9,11 +9,14 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -40,9 +43,14 @@ public class MigrationCaseServiceTest {
     @Mock
     private MigrationCaseDataService migrationCaseDataService;
 
+    private List<CaseAttachment> caseAttachments;
+
     @Before
     public void setUp() {
         this.migrationCaseService = new MigrationCaseService(migrationCaseDataService, migrationStageService);
+        CaseAttachment caseAttachment1 = new CaseAttachment("","","");
+        CaseAttachment caseAttachment2 = new CaseAttachment("","","");
+        caseAttachments = new ArrayList<>(List.of(caseAttachment1,caseAttachment2));
     }
 
     @Test
@@ -57,12 +65,13 @@ public class MigrationCaseServiceTest {
         when(migrationCaseDataService.createCompletedCase(caseDataType.getDisplayName(), data,
             originalReceivedDate)).thenReturn(caseData);
 
-        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate);
+        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate, caseAttachments);
 
         // then
         verify(migrationCaseDataService, times(1)).createCompletedCase(caseDataType.getDisplayName(), data,
             originalReceivedDate);
         verify(migrationStageService, times(1)).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
+        verify(migrationCaseDataService, times(1)).createCaseAttachments(caseData.getUuid(), caseAttachments);
         verifyNoMoreInteractions(migrationCaseDataService);
         verifyNoMoreInteractions(migrationStageService);
     }
