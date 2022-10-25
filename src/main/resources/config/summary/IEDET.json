@@ -172,11 +172,19 @@
           }
         ]
       },
+<<<<<<< Updated upstream
       "name": "withdrawalReason",
       "label": "Why has the complaint been withdrawn?"
     },
     {
       "name": "dateOfResponse",
+=======
+      "name": "WithdrawalReason",
+      "label": "Why has the complaint been withdrawn?"
+    },
+    {
+      "name": "DateOfResponse",
+>>>>>>> Stashed changes
       "label": "Final response sent"
     }
   ]
