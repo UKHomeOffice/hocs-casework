@@ -48,11 +48,7 @@
           ]
         },
         "component": "text-area",
-<<<<<<< Updated upstream
         "name": "withdrawalReason",
-=======
-        "name": "WithdrawalReason",
->>>>>>> Stashed changes
         "label": "Why has the complaint been withdrawn?"
       },
       {
@@ -68,11 +64,7 @@
       },
       {
         "component": "date",
-<<<<<<< Updated upstream
-        "name": "dateOfResponse",
-=======
         "name": "DateOfResponse",
->>>>>>> Stashed changes
         "label": "Final response sent"
       }
     ],
