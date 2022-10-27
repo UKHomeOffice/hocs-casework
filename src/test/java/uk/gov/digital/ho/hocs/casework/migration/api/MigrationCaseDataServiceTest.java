@@ -105,8 +105,8 @@ public class MigrationCaseDataServiceTest {
         CaseAttachment caseAttachment1 = new CaseAttachment("","","");
         CaseAttachment caseAttachment2 = new CaseAttachment("","","");
         List<CaseAttachment> caseAttachments = new ArrayList<>(List.of(caseAttachment1,caseAttachment2));
-        CreateCaseworkDocumentRequest document1 = new CreateCaseworkDocumentRequest(caseAttachment1.getDisplayName(), caseAttachment1.getType(), caseAttachment1.getS3UntrustedUrl(), caseId);
-        CreateCaseworkDocumentRequest document2 = new CreateCaseworkDocumentRequest(caseAttachment2.getDisplayName(), caseAttachment2.getType(), caseAttachment2.getS3UntrustedUrl(), caseId);
+        CreateCaseworkDocumentRequest document1 = new CreateCaseworkDocumentRequest(caseAttachment1.getDisplayName(), caseAttachment1.getType(), caseAttachment1.getDocumentPath(), caseId);
+        CreateCaseworkDocumentRequest document2 = new CreateCaseworkDocumentRequest(caseAttachment2.getDisplayName(), caseAttachment2.getType(), caseAttachment2.getDocumentPath(), caseId);
         migrationCaseDataService.createCaseAttachments(caseId, caseAttachments);
 
         verify(documentClient, times(2)).createDocument(any(UUID.class), any(CreateCaseworkDocumentRequest.class));

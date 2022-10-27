@@ -99,7 +99,7 @@ public class MigrationCaseDataService {
 
     void createCaseAttachments(UUID caseId, List<CaseAttachment> caseAttachemnts) {
         for(CaseAttachment attachment : caseAttachemnts) {
-            CreateCaseworkDocumentRequest document = new CreateCaseworkDocumentRequest(attachment.getDisplayName(), attachment.getType(), attachment.getS3UntrustedUrl(), caseId);
+            CreateCaseworkDocumentRequest document = new CreateCaseworkDocumentRequest(attachment.getDisplayName(), attachment.getType(), attachment.getDocumentPath(), caseId);
             documentClient.createDocument(caseId, document);
         }
     }

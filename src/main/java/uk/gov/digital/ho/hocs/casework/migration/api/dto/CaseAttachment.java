@@ -18,6 +18,6 @@ public class CaseAttachment {
     @JsonProperty("documentType")
     private String type;
 
-    @JsonProperty("s3UntrustedUrl")
-    private String s3UntrustedUrl;
+    @JsonProperty("documentPath")
+    private String documentPath;
 }
