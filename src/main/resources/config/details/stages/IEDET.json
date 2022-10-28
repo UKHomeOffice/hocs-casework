@@ -27,7 +27,7 @@
           "hideRemovePrimary": true
         },
         "name": "Correspondents",
-        "label": "Which is the primary correspondent?"
+        "label": "Who is the primary correspondent?"
       },
       {
         "component": "date",
