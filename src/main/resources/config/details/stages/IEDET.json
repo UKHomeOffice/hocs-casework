@@ -1,7 +1,7 @@
 {
   "type": "IEDET",
   "groups": {
-    "PSU_REGISTRATION": [
+    "IEDET_PSU_REGISTRATION": [
       {
         "component": "text",
         "name": "PsuReference",
@@ -27,7 +27,7 @@
           "hideRemovePrimary": true
         },
         "name": "Correspondents",
-        "label": "Which is the primary correspondent?"
+        "label": "Who is the primary correspondent?"
       },
       {
         "component": "date",
@@ -177,34 +177,244 @@
         "name": "categoryInset"
       },
       {
-        "component": "checkbox-group",
+        "component": "checkbox",
         "props": {
-          "choices": "IEDET_COMP_CATEGORIES_SERVICE",
-          "className": "govuk-checkboxes--small",
-          "showLabel": true
+          "choices": [
+            {
+              "label": "Admin / process error",
+              "value": "AdminErr"
+            }
+          ]
         },
-        "name": "CompCategoriesService",
-        "label": "Service"
+        "name": "CatAdminErr"
       },
       {
-        "component": "checkbox-group",
+        "component": "checkbox",
         "props": {
-          "choices": "IEDET_COMP_CATEGORIES_SERIOUS_AND_MINOR",
-          "className": "govuk-checkboxes--small",
-          "showLabel": true
+          "choices": [
+            {
+              "label": "Availability of service",
+              "value": "Avail"
+            }
+          ]
         },
-        "name": "CompCategoriesSeriousAndMinor",
-        "label": "Serious and minor misconduct"
+        "name": "CatAvail"
       },
       {
-        "component": "checkbox-group",
+        "component": "checkbox",
         "props": {
-          "choices": "IEDET_COMP_CATEGORIES_SERIOUS",
-          "className": "govuk-checkboxes--small",
-          "showLabel": true
+          "choices": [
+            {
+              "label": "Complaint handling",
+              "value": "Handle"
+            }
+          ]
         },
-        "name": "CompCategoriesSerious",
-        "label": "Serious misconduct"
+        "name": "CatHandle"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Delay",
+              "value": "Delay"
+            }
+          ]
+        },
+        "name": "CatDelay"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Physical environment",
+              "value": "PhysEnv"
+            }
+          ]
+        },
+        "name": "CatPhysEnv"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Poor communication",
+              "value": "PoorComm"
+            }
+          ]
+        },
+        "name": "CatPoorComm"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Property or documents - lost",
+              "value": "Lost"
+            }
+          ]
+        },
+        "name": "CatLost"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Property or documents - stolen",
+              "value": "Stolen"
+            }
+          ]
+        },
+        "name": "CatStolen"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Property or documents - withheld",
+              "value": "Withheld"
+            }
+          ]
+        },
+        "name": "CatWithheld"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Provision for minors",
+              "value": "ProvMinor"
+            }
+          ]
+        },
+        "name": "CatProvMinor"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Wrong information",
+              "value": "WrongInfo"
+            }
+          ]
+        },
+        "name": "CatWrongInfo"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Detainee on detainee",
+              "value": "DetOnDet"
+            }
+          ]
+        },
+        "name": "CatDetOnDet"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Other unprofessionalism",
+              "value": "OtherUnprof"
+            }
+          ]
+        },
+        "name": "CatOtherUnprof"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Rudeness",
+              "value": "Rude"
+            }
+          ]
+        },
+        "name": "CatRude"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Unfair treatment",
+              "value": "Unfair"
+            }
+          ]
+        },
+        "name": "CatUnfair"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault"
+            }
+          ]
+        },
+        "name": "CatAssault"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Fraud / corruption",
+              "value": "Fraud"
+            }
+          ]
+        },
+        "name": "CatFraud"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Racism / discrimination",
+              "value": "Racism"
+            }
+          ]
+        },
+        "name": "CatRacism"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Sexual assault",
+              "value": "SexAssault"
+            }
+          ]
+        },
+        "name": "CatSexAssault"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Theft",
+              "value": "Theft"
+            }
+          ]
+        },
+        "name": "CatTheft"
       },
       {
         "component": "radio",
