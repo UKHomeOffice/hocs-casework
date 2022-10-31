@@ -7,20 +7,27 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
+import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
+import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CorrespondentType;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
+import java.util.AbstractSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MigrationCaseDataServiceTest {
@@ -39,14 +46,20 @@ public class MigrationCaseDataServiceTest {
     private CaseDataRepository caseDataRepository;
 
     @Mock
+    private CorrespondentRepository correspondentRepository;
+
+    @Mock
     private InfoClient infoClient;
 
     @Mock
     private MigrationAuditClient migrationAuditClient;
 
+    @Mock
+    private AuditClient auditClient;
+
     @Before
     public void setUp() {
-        this.migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, infoClient, migrationAuditClient);
+        this.migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, infoClient, migrationAuditClient, auditClient, correspondentRepository);
     }
 
     @Test
@@ -89,4 +102,57 @@ public class MigrationCaseDataServiceTest {
         verifyNoMoreInteractions(caseDataRepository);
     }
 
+    @Test
+    public void shouldCreatedAPrimaryCorrespondent() {
+        // given
+        CaseData caseData = new CaseData();
+        when(caseDataRepository.findActiveByUuid(any())).thenReturn(caseData);
+
+        Set<Correspondent> correspondents = new HashSet<>();
+        correspondents.add(createCorrespondent());
+        when(correspondentRepository.findAllByCaseUUID(any())).thenReturn(correspondents);
+
+        // when
+        migrationCaseDataService.createPrimaryCorrespondent(createMigrationComplaintCorrespondent(), UUID.randomUUID(), UUID.randomUUID());
+
+        //then
+        verify(correspondentRepository, times(1)).save(any());
+        verify(caseDataRepository, times(1)).save(any());
+    }
+
+    MigrationComplaintCorrespondent createMigrationComplaintCorrespondent() {
+        return new MigrationComplaintCorrespondent(
+            "fullName",
+            CorrespondentType.COMPLAINANT,
+            "address1",
+            "address2",
+            "address3",
+            "postcode",
+            "country",
+            "organisation",
+            "telephone",
+            "email",
+            "reference"
+        );
+    }
+
+    Correspondent createCorrespondent() {
+        return new Correspondent(
+            UUID.randomUUID(),
+            "correspondentType",
+            "fullName",
+            "organisation",
+            new Address(
+                "postcode",
+                "address1",
+                "address2",
+                "address3",
+                "country"
+            ),
+            "telephone",
+            "email",
+            "reference",
+            "reference"
+        );
+    }
 }
