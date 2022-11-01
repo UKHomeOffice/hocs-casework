@@ -79,7 +79,7 @@
       {
         "component": "text-area",
         "name": "CaseSummary",
-        "label": "Case Summary"
+        "label": "Case summary"
       },
       {
         "component": "radio",
@@ -148,7 +148,7 @@
           "choices": "S_IEDET_COMP_ORIGIN"
         },
         "name": "CompOrigin",
-        "label": "Complaint Origin"
+        "label": "Complaint origin"
       },
       {
         "component": "text",
@@ -167,7 +167,7 @@
       {
         "component": "text",
         "name": "3rdPartyRef",
-        "label": "Third Party Reference"
+        "label": "Third party reference"
       },
       {
         "component": "paragraph",
