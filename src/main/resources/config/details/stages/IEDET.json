@@ -32,7 +32,7 @@
       {
         "component": "date",
         "name": "ComplainantDOB",
-        "label": "Date of Birth"
+        "label": "Date of birth"
       },
       {
         "component": "radio",
@@ -62,17 +62,17 @@
       {
         "component": "text",
         "name": "ComplainantCompanyName",
-        "label": "Company Name"
+        "label": "Company name"
       },
       {
         "component": "text",
         "name": "ComplainantHORef",
-        "label": "Home Office Reference"
+        "label": "Home Office reference"
       },
       {
         "component": "text",
         "name": "ComplainantPortRef",
-        "label": "Port Reference"
+        "label": "Port reference"
       }
     ],
     "IEDET_TRIAGE": [
