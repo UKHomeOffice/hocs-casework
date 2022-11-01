@@ -16,8 +16,22 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static org.springframework.http.HttpStatus.*;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.CONFLICT;
+import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.METHOD_NOT_ALLOWED;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.DATA_MAPPING_EXCEPTION;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REST_HELPER_GET_BAD_REQUEST;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REST_HELPER_GET_FORBIDDEN;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REST_HELPER_GET_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REST_HELPER_GET_UNAUTHORIZED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REST_HELPER_POST_FAILURE;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.UNCAUGHT_EXCEPTION;
 
 @ControllerAdvice
 @Slf4j
@@ -102,6 +116,12 @@ public class RestResponseEntityExceptionHandler {
     public ResponseEntity<String> handle(ApplicationExceptions.TeamAllocationException e) {
         log.error("TeamAllocationException: {}", e.getMessage(), value(EVENT, INTERNAL_SERVER_ERROR));
         return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ApplicationExceptions.DatabaseConflictException.class)
+    public ResponseEntity<String> handle(ApplicationExceptions.DatabaseConflictException e) {
+        log.error("DatabaseConflictException: {}", e.getMessage(), value(EVENT, CONFLICT));
+        return new ResponseEntity<>(e.getMessage(), CONFLICT);
     }
 
     @ExceptionHandler(Exception.class)
