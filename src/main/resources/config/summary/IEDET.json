@@ -160,14 +160,14 @@
           "value": "ReturnCase"
         }
       ],
-      "name": "ComplaintOutcome",
+      "name": "PsuComplaintOutcome",
       "label": "Complaint outcome"
     },
     {
       "props": {
         "visibilityConditions": [
           {
-            "conditionPropertyName": "ComplaintOutcome",
+            "conditionPropertyName": "PsuComplaintOutcome",
             "conditionPropertyValue": "Withdrawn"
           }
         ]
@@ -177,7 +177,7 @@
     },
     {
       "name": "DateOfResponse",
-      "label": "Final response sent"
+      "label": "Final response date"
     }
   ]
 }

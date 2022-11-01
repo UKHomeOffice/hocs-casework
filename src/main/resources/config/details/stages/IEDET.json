@@ -35,20 +35,20 @@
           ]
         },
         "component": "radio",
-        "name": "ComplaintOutcome",
+        "name": "PsuComplaintOutcome",
         "label": "Complaint outcome"
       },
       {
         "props": {
           "visibilityConditions": [
             {
-              "conditionPropertyName": "ComplaintOutcome",
+              "conditionPropertyName": "PsuComplaintOutcome",
               "conditionPropertyValue": "Withdrawn"
             }
           ]
         },
         "component": "text-area",
-        "name": "withdrawalReason",
+        "name": "WithdrawalReason",
         "label": "Why has the complaint been withdrawn?"
       },
       {
@@ -65,7 +65,7 @@
       {
         "component": "date",
         "name": "DateOfResponse",
-        "label": "Final response sent"
+        "label": "Final response date"
       }
     ],
     "IEDET_REGISTRATION": [
