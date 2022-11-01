@@ -4,17 +4,26 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
+import org.hibernate.annotations.Where;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -73,10 +82,10 @@ public class StageWithCaseData extends BaseStage {
     private String somu;
 
     @Getter
-    @Setter
-    @Transient
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private ArrayList<String> tag;
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "case_uuid", referencedColumnName = "case_uuid")
+    @Where(clause = "deleted_on IS NULL")
+    private List<CaseDataTag> tag;
 
     @Getter
     @Setter
@@ -116,7 +125,7 @@ public class StageWithCaseData extends BaseStage {
     private Boolean completed;
 
     public StageWithCaseData(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, UUID transitionNoteUUID) {
-        if (caseUUID==null || stageType==null) {
+        if (caseUUID == null || stageType == null) {
             throw new ApplicationExceptions.EntityCreationException(
                 String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
         }
@@ -130,6 +139,7 @@ public class StageWithCaseData extends BaseStage {
         this.teamUUID = teamUUID;
         this.userUUID = userUUID;
         this.data = new HashMap<>();
+        this.tag = new ArrayList<>();
     }
 
     public StageWithCaseData() {
@@ -137,7 +147,7 @@ public class StageWithCaseData extends BaseStage {
     }
 
     public void putData(String key, String value) {
-        if (this.data==null) {
+        if (this.data == null) {
             this.data = new HashMap<>();
         }
 
@@ -146,6 +156,14 @@ public class StageWithCaseData extends BaseStage {
 
     public String getData(String key) {
         return this.data.getOrDefault(key, null);
+    }
+
+    public void appendTags(List<String> tags) {
+        if (tag == null) {
+            tag = new ArrayList<>();
+        }
+
+        tag.addAll(tags.stream().map(tagStr -> new CaseDataTag(this.caseUUID, tagStr)).toList());
     }
 
 }

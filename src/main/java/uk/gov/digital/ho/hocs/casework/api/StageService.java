@@ -20,7 +20,11 @@ import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.searchclient.SearchClient;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
-import uk.gov.digital.ho.hocs.casework.domain.model.*;
+import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
@@ -44,7 +48,23 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_WITHDRAWN;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_EMPTY;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_FORBIDDEN;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGES_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_TEAM;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_USER;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_USER_FAILURE;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_COMPLETED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_RECREATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_TRANSITION_NOTE_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_EMPTY;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.USERS_TEAMS_STAGE_LIST_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
 @Slf4j
@@ -529,7 +549,9 @@ public class StageService {
         for (StageWithCaseData stage : stages) {
             stagePriorityCalculator.updatePriority(stage, stage.getCaseDataType());
             daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
-            stage.setTag(stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType()));
+
+            //TODO: HOCS-5871 Remove after Workflow Implementation released
+            stage.appendTags(stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType()));
         }
     }
 

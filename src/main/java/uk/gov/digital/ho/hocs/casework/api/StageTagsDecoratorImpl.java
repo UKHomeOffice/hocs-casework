@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -24,8 +24,8 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
     private static final String PO_TEAM_NAME = "POTeamName";
 
     @Override
-    public ArrayList<String> decorateTags(Map<String, String> data, String stageType) {
-        ArrayList<String> tags = new ArrayList<>();
+    public List<String> decorateTags(Map<String, String> data, String stageType) {
+        List<String> tags = new ArrayList<>();
         if (this.addHomeSecReplyTag(data, stageType).equals(Boolean.TRUE)) {
             tags.add(StageTags.HOME_SEC_REPLY_TAG);
         }
@@ -55,7 +55,7 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
 
     private Boolean isHomeSecReplyNoPoTeam(Map<String, String> data) {
 
-        if (data.get(PRIVATE_OFFICE_OVERRIDE_PO_TEAM_UUID_FIELD_NAME)!=null) {
+        if (data.get(PRIVATE_OFFICE_OVERRIDE_PO_TEAM_UUID_FIELD_NAME) != null) {
             return false;
         }
 
@@ -72,7 +72,7 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
         String[] homeSecReplyCasePoTeamPrecedence = { PRIVATE_OFFICE_OVERRIDE_PO_TEAM_UUID_FIELD_NAME,
             OVERRIDE_PO_TEAM_UUID_FIELD_NAME, PO_TEAM_UUID_FIELD_NAME };
         for (String poTeamUuid : homeSecReplyCasePoTeamPrecedence) {
-            if (data.get(poTeamUuid)!=null) {
+            if (data.get(poTeamUuid) != null) {
                 if (!data.get(poTeamUuid).equals("")) {
                     return data.get(poTeamUuid);
                 }
