@@ -82,7 +82,7 @@
     {
       "choices": "S_IEDET_COMP_ORIGIN",
       "name": "CompOrigin",
-      "label": "Complaint Origin"
+      "label": "Complaint origin"
     },
     {
       "name": "OutcomeOther",
