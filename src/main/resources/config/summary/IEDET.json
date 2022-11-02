@@ -136,6 +136,48 @@
     {
       "name": "PsuReference",
       "label": "PSU reference"
+    },
+    {
+      "choices": [
+        {
+          "label": "Substantiated",
+          "value": "Substantiated"
+        },
+        {
+          "label": "Partially substantiated",
+          "value": "Partially substantiated"
+        },
+        {
+          "label": "Unsubstantiated",
+          "value": "Unsubstantiated"
+        },
+        {
+          "label": "Withdrawn",
+          "value": "Withdrawn"
+        },
+        {
+          "label": "Not serious - send back to IE Detention",
+          "value": "ReturnCase"
+        }
+      ],
+      "name": "PsuComplaintOutcome",
+      "label": "Complaint outcome"
+    },
+    {
+      "props": {
+        "visibilityConditions": [
+          {
+            "conditionPropertyName": "PsuComplaintOutcome",
+            "conditionPropertyValue": "Withdrawn"
+          }
+        ]
+      },
+      "name": "WithdrawalReason",
+      "label": "Why has the complaint been withdrawn?"
+    },
+    {
+      "name": "DateOfResponse",
+      "label": "Final response date"
     }
   ]
 }
