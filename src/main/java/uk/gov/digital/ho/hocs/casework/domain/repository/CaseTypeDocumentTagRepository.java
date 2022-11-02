@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DATA_DETAILS_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_DATA_DOCUMENT_TAG_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 
 @Service
@@ -30,7 +30,7 @@ public class CaseTypeDocumentTagRepository extends JsonConfigFolderReader {
         var tags = documentTags.get(type);
 
         if (tags == null) {
-            log.warn("No mapping found for type: {}", type, value(EVENT, CASE_DATA_DETAILS_NOT_FOUND));
+            log.warn("No mapping found for type: {}", type, value(EVENT, CASE_DATA_DOCUMENT_TAG_NOT_FOUND));
             return Collections.emptyList();
         }
         return tags;
