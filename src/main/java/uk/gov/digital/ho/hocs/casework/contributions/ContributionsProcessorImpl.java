@@ -12,9 +12,11 @@ import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.hocs.casework.contributions.Contribution.ContributionStatus.CONTRIBUTION_CANCELLED;
@@ -43,8 +45,9 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
 
     @Override
     public void processContributionsForStages(Set<StageWithCaseData> stages) {
-        Set<SomuItem> allSomuItems = somuItemService.getCaseItemsByCaseUuids(
-            stages.stream().map(BaseStage::getCaseUUID).collect(Collectors.toSet()));
+        Map<UUID, Set<SomuItem>> allSomuItems = somuItemService.getCaseItemsByCaseUuids(
+                stages.stream().map(BaseStage::getCaseUUID).collect(Collectors.toSet()))
+            .stream().collect(Collectors.groupingBy(SomuItem::getCaseUuid, Collectors.toSet()));
 
         if (allSomuItems.size()==0) {
             return;
@@ -52,8 +55,7 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
 
         for (StageWithCaseData stage : stages) {
             if (infoClient.getStageContributions(stage.getStageType())) {
-                Set<Contribution> contributions = allSomuItems.stream().filter(
-                    somuItem -> somuItem.getCaseUuid().equals(stage.getCaseUUID())).map(somuItem -> {
+                Set<Contribution> contributions = allSomuItems.getOrDefault(stage.getCaseUUID(), Set.of()).stream().map(somuItem -> {
                     try {
                         return objectMapper.readValue(somuItem.getData(), Contribution.class);
                     } catch (JsonProcessingException e) {
