@@ -55,7 +55,7 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
 
         for (StageWithCaseData stage : stages) {
             if (infoClient.getStageContributions(stage.getStageType())) {
-                Set<Contribution> contributions = allSomuItems.get(stage.getCaseUUID()).stream().map(somuItem -> {
+                Set<Contribution> contributions = allSomuItems.getOrDefault(stage.getCaseUUID(), Set.of()).stream().map(somuItem -> {
                     try {
                         return objectMapper.readValue(somuItem.getData(), Contribution.class);
                     } catch (JsonProcessingException e) {
