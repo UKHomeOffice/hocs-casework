@@ -10,8 +10,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.Map;
@@ -36,9 +34,6 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
     private final ObjectMapper objectMapper;
 
     private final InfoClient infoClient;
-
-    @PersistenceContext
-    protected EntityManager entityManager;
 
     public ContributionsProcessorImpl(ObjectMapper objectMapper,
                                       SomuItemService somuItemService,
