@@ -10,11 +10,15 @@ import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.time.LocalDate;
 import java.util.Comparator;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static uk.gov.digital.ho.hocs.casework.contributions.Contribution.ContributionStatus.CONTRIBUTION_CANCELLED;
@@ -33,6 +37,9 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
 
     private final InfoClient infoClient;
 
+    @PersistenceContext
+    protected EntityManager entityManager;
+
     public ContributionsProcessorImpl(ObjectMapper objectMapper,
                                       SomuItemService somuItemService,
                                       InfoClient infoClient) {
@@ -43,8 +50,9 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
 
     @Override
     public void processContributionsForStages(Set<StageWithCaseData> stages) {
-        Set<SomuItem> allSomuItems = somuItemService.getCaseItemsByCaseUuids(
-            stages.stream().map(BaseStage::getCaseUUID).collect(Collectors.toSet()));
+        Map<UUID, Set<SomuItem>> allSomuItems = somuItemService.getCaseItemsByCaseUuids(
+            stages.stream().map(BaseStage::getCaseUUID).collect(Collectors.toSet()))
+            .stream().collect(Collectors.groupingBy(SomuItem::getCaseUuid, Collectors.toSet()));
 
         if (allSomuItems.size()==0) {
             return;
@@ -52,8 +60,7 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
 
         for (StageWithCaseData stage : stages) {
             if (infoClient.getStageContributions(stage.getStageType())) {
-                Set<Contribution> contributions = allSomuItems.stream().filter(
-                    somuItem -> somuItem.getCaseUuid().equals(stage.getCaseUUID())).map(somuItem -> {
+                Set<Contribution> contributions = allSomuItems.get(stage.getCaseUUID()).stream().map(somuItem -> {
                     try {
                         return objectMapper.readValue(somuItem.getData(), Contribution.class);
                     } catch (JsonProcessingException e) {
@@ -68,12 +75,12 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                 }
 
                 calculateDueContributionDate(contributions).ifPresent(ld -> {
-                    log.info("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
+                    log.debug("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
                     stage.setDueContribution(ld.toString());
                 });
 
                 highestContributionStatus(contributions).ifPresent(cs -> {
-                    log.info("Setting contribution status {}, for caseId {}", cs.getDisplayedStatus(),
+                    log.debug("Setting contribution status {}, for caseId {}", cs.getDisplayedStatus(),
                         stage.getCaseUUID());
                     stage.setContributions(cs.getDisplayedStatus());
                 });
