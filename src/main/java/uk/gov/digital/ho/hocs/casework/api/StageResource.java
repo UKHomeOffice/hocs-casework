@@ -23,7 +23,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Allocated;
@@ -57,7 +57,7 @@ class StageResource {
     @PostMapping(value = "/case/{caseUUID}/stage")
     ResponseEntity<CreateStageResponse> createStage(@PathVariable UUID caseUUID,
                                                     @RequestBody CreateStageRequest request) {
-        Stage stage = stageService.createStage(caseUUID, request);
+        BaseStage stage = stageService.createStage(caseUUID, request);
         return ResponseEntity.ok(CreateStageResponse.from(stage));
     }
 
@@ -91,7 +91,7 @@ class StageResource {
     ResponseEntity allocateStageUser(@PathVariable UUID teamUUID,
                                      @RequestHeader(RequestData.USER_ID_HEADER) UUID userUUID) {
         StageWithCaseData stage = stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID);
-        if (stage==null) {
+        if (stage == null) {
             return ResponseEntity.ok(stage);
         }
         return ResponseEntity.ok(GetStageResponse.from(stage));
@@ -123,7 +123,7 @@ class StageResource {
                                                                 @PathVariable UUID stageUUID) {
         UUID teamUUID = stageService.getStageTeam(caseUUID, stageUUID);
         List<UserDto> users;
-        if (teamUUID!=null) {
+        if (teamUUID != null) {
             users = infoClient.getUsersForTeam(teamUUID);
         } else {
             users = infoClient.getUsersForTeamByStage(caseUUID, stageUUID);

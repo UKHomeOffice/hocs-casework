@@ -1,20 +1,30 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@MappedSuperclass
-public abstract class BaseStage implements Serializable {
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
+
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "stage")
+@NoArgsConstructor
+public class BaseStage implements Serializable {
 
     @Id
     @Column(name = "id")
@@ -67,6 +77,21 @@ public abstract class BaseStage implements Serializable {
     @Column(name = "somu", insertable = false, updatable = false)
     protected String somu;
 
+    public BaseStage(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, UUID transitionNoteUUID) {
+        if (caseUUID == null || stageType == null) {
+            throw new ApplicationExceptions.EntityCreationException(
+                String.format("Cannot create Stage (%s, %s).", caseUUID, stageType), STAGE_CREATE_FAILURE);
+        }
+
+        this.uuid = UUID.randomUUID();
+        this.created = LocalDateTime.now();
+        this.caseUUID = caseUUID;
+        this.stageType = stageType;
+        this.transitionNoteUUID = transitionNoteUUID;
+        setTeam(teamUUID);
+        this.userUUID = userUUID;
+    }
+
     public void setTeam(UUID teamUUID) {
         this.teamUUID = teamUUID;
         this.userUUID = null;
@@ -77,7 +102,7 @@ public abstract class BaseStage implements Serializable {
     }
 
     public boolean isActive() {
-        return this.teamUUID!=null;
+        return this.teamUUID != null;
     }
 
 }

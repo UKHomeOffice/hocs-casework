@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataDetailsDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataDetailsGroupsRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataDetailsStagesRepository;
 
@@ -16,9 +16,13 @@ import java.util.stream.Collectors;
 public class CaseDataDetailsService {
 
     private final CaseDataService caseDataService;
+
     private final StageService stageService;
+
     private final CaseDataDetailsGroupsRepository caseDataDetailsGroupsRepository;
+
     private final CaseDataDetailsStagesRepository caseDataDetailsStagesRepository;
+
     private final InfoClient infoClient;
 
     public CaseDataDetailsService(CaseDataService caseDataService,
@@ -51,7 +55,7 @@ public class CaseDataDetailsService {
                 caseData.getDataMap());
         }
 
-        var caseStages = stageService.getAllStagesByCaseUUID(caseUuid).stream().map(Stage::getStageType).toList();
+        var caseStages = stageService.getAllStagesByCaseUUID(caseUuid).stream().map(BaseStage::getStageType).toList();
 
         /*
          * TODO: Remove this call by bringing stage types into casework or reworking existing case type implementation
@@ -60,18 +64,13 @@ public class CaseDataDetailsService {
         var caseTypeStages = infoClient.getAllStagesForCaseType(caseData.getType()).stream().collect(
             Collectors.toMap(StageTypeDto::getType, StageTypeDto::getDisplayName));
 
-        var filteredCaseStages = caseDataStageFields.entrySet().stream()
-                .filter(caseDataStage -> caseStages.contains(caseDataStage.getKey()))
-                .collect(
-                        Collectors.toMap(stage -> caseTypeStages.getOrDefault(stage.getKey(), stage.getKey()),
-                                stage -> caseDataStageFields.get(stage.getKey()),
-                                (u, v) -> u,
-                                LinkedHashMap::new));
+        var filteredCaseStages = caseDataStageFields.entrySet().stream().filter(
+            caseDataStage -> caseStages.contains(caseDataStage.getKey())).collect(
+            Collectors.toMap(stage -> caseTypeStages.getOrDefault(stage.getKey(), stage.getKey()),
+                stage -> caseDataStageFields.get(stage.getKey()), (u, v) -> u, LinkedHashMap::new));
 
-        return new CaseDataDetailsDto(caseData.getType(),
-                caseData.getReference(),
-                filteredCaseStages,
-                caseData.getDataMap());
+        return new CaseDataDetailsDto(caseData.getType(), caseData.getReference(), filteredCaseStages,
+            caseData.getDataMap());
     }
 
 }

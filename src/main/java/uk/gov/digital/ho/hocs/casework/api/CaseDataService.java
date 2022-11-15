@@ -26,12 +26,12 @@ import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveCaseViewData;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseLink;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseSummary;
 import uk.gov.digital.ho.hocs.casework.domain.model.DataTotal;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.TimelineItem;
 import uk.gov.digital.ho.hocs.casework.domain.repository.ActiveCaseViewDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
@@ -99,6 +99,23 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE
 @Qualifier("CaseDataService")
 public class CaseDataService {
 
+    public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
+
+    public static final Pattern CASE_UUID_PATTERN = Pattern.compile(
+        "\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b", Pattern.CASE_INSENSITIVE);
+
+    public static final String REFERENCE_NOT_FOUND = "REFERENCE NOT FOUND";
+
+    public static final List<String> TIMELINE_EVENTS = List.of(CASE_CREATED.toString(), CASE_COMPLETED.toString(),
+        CASE_TOPIC_CREATED.toString(), CASE_TOPIC_DELETED.toString(), STAGE_ALLOCATED_TO_TEAM.toString(),
+        STAGE_CREATED.toString(), STAGE_RECREATED.toString(), STAGE_COMPLETED.toString(),
+        STAGE_ALLOCATED_TO_USER.toString(), CORRESPONDENT_DELETED.toString(), CORRESPONDENT_CREATED.toString(),
+        CORRESPONDENT_UPDATED.toString(), DOCUMENT_CREATED.toString(), DOCUMENT_DELETED.toString(),
+        APPEAL_UPDATED.toString(), APPEAL_CREATED.toString(), EXTENSION_APPLIED.toString(),
+        EXTERNAL_INTEREST_CREATED.toString(), EXTERNAL_INTEREST_UPDATED.toString()
+
+                                                              );
+
     protected final CaseDataRepository caseDataRepository;
 
     protected final ActiveCaseViewDataRepository activeCaseViewDataRepository;
@@ -120,13 +137,6 @@ public class CaseDataService {
     private final StageRepository stageRepository;
 
     private final CaseDataSummaryService caseDataSummaryService;
-
-    public static final Pattern CASE_REFERENCE_PATTERN = Pattern.compile("^[a-zA-Z0-9]{2,5}\\/([0-9]{7})\\/[0-9]{2}$");
-
-    public static final Pattern CASE_UUID_PATTERN = Pattern.compile(
-        "\\b[0-9a-f]{8}\\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\\b[0-9a-f]{12}\\b", Pattern.CASE_INSENSITIVE);
-
-    public static final String REFERENCE_NOT_FOUND = "REFERENCE NOT FOUND";
 
     @Autowired
     public CaseDataService(CaseDataRepository caseDataRepository,
@@ -154,16 +164,6 @@ public class CaseDataService {
         this.caseDataSummaryService = caseDataSummaryService;
     }
 
-    public static final List<String> TIMELINE_EVENTS = List.of(CASE_CREATED.toString(), CASE_COMPLETED.toString(),
-        CASE_TOPIC_CREATED.toString(), CASE_TOPIC_DELETED.toString(), STAGE_ALLOCATED_TO_TEAM.toString(),
-        STAGE_CREATED.toString(), STAGE_RECREATED.toString(), STAGE_COMPLETED.toString(),
-        STAGE_ALLOCATED_TO_USER.toString(), CORRESPONDENT_DELETED.toString(), CORRESPONDENT_CREATED.toString(),
-        CORRESPONDENT_UPDATED.toString(), DOCUMENT_CREATED.toString(), DOCUMENT_DELETED.toString(),
-        APPEAL_UPDATED.toString(), APPEAL_CREATED.toString(), EXTENSION_APPLIED.toString(),
-        EXTERNAL_INTEREST_CREATED.toString(), EXTERNAL_INTEREST_UPDATED.toString()
-
-                                                              );
-
     public CaseData getCase(UUID caseUUID) {
         CaseData caseData = getCaseData(caseUUID);
         auditClient.viewCaseAudit(caseData);
@@ -173,7 +173,7 @@ public class CaseDataService {
     protected CaseData getCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
-        if (caseData==null) {
+        if (caseData == null) {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID),
                 CASE_NOT_FOUND);
@@ -185,7 +185,7 @@ public class CaseDataService {
     private ActiveCaseViewData getActiveCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         ActiveCaseViewData caseData = activeCaseViewDataRepository.findByUuid(caseUUID);
-        if (caseData==null) {
+        if (caseData == null) {
             log.error("Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID),
                 CASE_NOT_FOUND);
@@ -197,7 +197,7 @@ public class CaseDataService {
     public CaseData getCaseDataByReference(String reference) {
         log.debug("Getting Case by reference: {}", reference);
         CaseData caseData = caseDataRepository.findByReference(reference);
-        if (caseData==null) {
+        if (caseData == null) {
             log.error("Case: {}, not found!", reference, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", reference),
                 CASE_NOT_FOUND);
@@ -209,7 +209,7 @@ public class CaseDataService {
     private CaseData getAnyCaseData(UUID caseUUID) {
         log.debug("Getting any Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findAnyByUuid(caseUUID);
-        if (caseData==null) {
+        if (caseData == null) {
             log.error("Any Case: {}, not found!", caseUUID, value(EVENT, CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Any Case: %s, not found!", caseUUID),
                 CASE_NOT_FOUND);
@@ -222,7 +222,7 @@ public class CaseDataService {
         log.info("Looking up CaseRef for Case: {}", caseUUID, value(EVENT, GET_CASE_REF_BY_UUID));
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
-        if (caseData==null) {
+        if (caseData == null) {
             log.warn("CaseData not found for Case: {}", caseUUID, value(EVENT, GET_CASE_REF_BY_UUID_FAILURE));
             return REFERENCE_NOT_FOUND;
         }
@@ -258,7 +258,7 @@ public class CaseDataService {
         log.debug("Creating Case of type: {}", caseType);
 
         CaseData caseData;
-        if (fromCaseUUID==null) {
+        if (fromCaseUUID == null) {
             caseData = createSimpleCase(caseType, data, dateReceived);
         } else {
             caseData = createCaseFromCaseUUID(caseType, data, dateReceived, fromCaseUUID);
@@ -388,7 +388,7 @@ public class CaseDataService {
     }
 
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
-        if (data==null) {
+        if (data == null) {
             log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID,
                 value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
             return;
@@ -398,7 +398,7 @@ public class CaseDataService {
 
     public void updateCaseData(CaseData caseData, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseData.getUuid());
-        if (data==null) {
+        if (data == null) {
             log.warn("Data was null for Case: {} Stage: {}", caseData.getUuid(), stageUUID,
                 value(EVENT, CASE_NOT_UPDATED_NULL_DATA));
             return;
@@ -451,7 +451,7 @@ public class CaseDataService {
         log.debug("Updating dispatch deadline date for Case: {} Stage: {} Date: {}", caseUUID, stageUUID,
             dispatchDeadlineDate);
         CaseData caseData = getCaseData(caseUUID);
-        if (dispatchDeadlineDate!=null) {
+        if (dispatchDeadlineDate != null) {
             caseData.setCaseDeadline(dispatchDeadlineDate);
         }
 
@@ -491,7 +491,7 @@ public class CaseDataService {
 
     public void updateStageDeadlines(CaseData caseData) {
 
-        if (caseData.getActiveStages()==null) {
+        if (caseData.getActiveStages() == null) {
             log.warn("Case uuid:{} supplied with null active stages", caseData.getUuid());
             return;
         }
@@ -501,7 +501,7 @@ public class CaseDataService {
         for (ActiveStage stage : caseData.getActiveStages()) {
             // Try and overwrite the deadlines with inputted values from the data map.
             String overrideDeadline = caseData.getData(String.format("%s_DEADLINE", stage.getStageType()));
-            if (overrideDeadline==null) {
+            if (overrideDeadline == null) {
                 LocalDate dateReceived = caseData.getDateReceived();
                 LocalDate caseDeadline = caseData.getCaseDeadline();
                 LocalDate caseDeadlineWarning = caseData.getCaseDeadlineWarning();
@@ -513,7 +513,7 @@ public class CaseDataService {
                     caseData.getDateReceived(), caseData.getCaseDeadline(), stageDefinition.getSla());
 
                 stage.setDeadline(deadline);
-                if (caseDeadlineWarning!=null) {
+                if (caseDeadlineWarning != null) {
                     LocalDate deadlineWarning = deadlineService.calculateWorkingDaysForStage(caseData.getType(),
                         dateReceived, caseDeadline, stageDefinition.getDeadlineWarning());
 
@@ -578,7 +578,7 @@ public class CaseDataService {
         caseData.setCompleted(completed);
 
         // Complete final stage if active stage exists
-        Optional<Stage> maybeFinalStage = stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseUUID);
+        Optional<BaseStage> maybeFinalStage = stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseUUID);
         maybeFinalStage.ifPresent(stage -> {
             stage.setTeam(null);
             stageRepository.save(stage);
@@ -633,7 +633,7 @@ public class CaseDataService {
 
         caseData.update(String.format("%s_DEADLINE", stageType), deadline.toString());
 
-        if (caseData.getActiveStages()!=null) {
+        if (caseData.getActiveStages() != null) {
             caseData.getActiveStages().stream().filter(
                 stage -> stage.getStageType().equals(stageType)).findFirst().ifPresent(
                 activeStage -> activeStage.setDeadline(deadline));
@@ -727,7 +727,7 @@ public class CaseDataService {
         for (String text : texts) {
             String value = dataMap.getOrDefault(text, "");
             if (!value.isEmpty()) {
-                if (linkValue!=null) {
+                if (linkValue != null) {
                     linkValue.append("_");
                     linkValue.append(value);
                 } else {
@@ -781,7 +781,7 @@ public class CaseDataService {
 
         keyMappings.forEach((String fromKey, String toKey) -> {
             String mappedVal = updatedCaseDataMap.putIfAbsent(toKey, updatedCaseDataMap.get(fromKey));
-            if (mappedVal!=null) {
+            if (mappedVal != null) {
                 log.warn(
                     "Requested key to map of key {} to {} cannot take place as key {} already exists and will not be overwritten.",
                     fromKey, toKey, toKey);

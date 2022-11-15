@@ -12,6 +12,7 @@ import org.hibernate.annotations.Where;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -21,17 +22,18 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
 
 @TypeDefs({ @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class) })
 @Entity
-@Table(name = "stage")
+@Table(name = "stage_data")
 public class StageWithCaseData extends BaseStage {
 
     public static final String DCU_MIN_INITIAL_DRAFT = "DCU_MIN_INITIAL_DRAFT";
@@ -82,10 +84,15 @@ public class StageWithCaseData extends BaseStage {
     private String somu;
 
     @Getter
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "case_uuid", referencedColumnName = "case_uuid")
     @Where(clause = "deleted_on IS NULL")
-    private List<CaseDataTag> tag;
+    private Set<CaseDataTag> tag;
+
+    @Getter
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "case_uuid", referencedColumnName = "case_uuid")
+    private Set<SomuItem> somu_items;
 
     @Getter
     @Setter
@@ -139,7 +146,7 @@ public class StageWithCaseData extends BaseStage {
         this.teamUUID = teamUUID;
         this.userUUID = userUUID;
         this.data = new HashMap<>();
-        this.tag = new ArrayList<>();
+        this.tag = new HashSet<>();
     }
 
     public StageWithCaseData() {
@@ -160,7 +167,7 @@ public class StageWithCaseData extends BaseStage {
 
     public void appendTags(List<String> tags) {
         if (tag == null) {
-            tag = new ArrayList<>();
+            tag = new HashSet<>();
         }
 
         tag.addAll(tags.stream().map(tagStr -> new CaseDataTag(this.caseUUID, tagStr)).toList());
