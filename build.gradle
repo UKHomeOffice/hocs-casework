@@ -39,7 +39,7 @@ dependencies {
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-    annotationProcessor 'org.springframework:spring-context-indexer:5.3.23'
+    annotationProcessor 'org.springframework:spring-context-indexer:5.3.24'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
     testImplementation 'com.google.guava:guava:31.1-jre'
