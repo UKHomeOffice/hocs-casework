@@ -237,244 +237,140 @@
         "name": "categoryInset"
       },
       {
-        "component": "checkbox",
         "props": {
           "choices": [
             {
               "label": "Admin / process error",
-              "value": "AdminErr"
-            }
-          ]
-        },
-        "name": "CatAdminErr"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "AdminErr",
+              "name": "CatAdminErr"
+            },
             {
               "label": "Availability of service",
-              "value": "Avail"
-            }
-          ]
-        },
-        "name": "CatAvail"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "Avail",
+              "name": "CatAvail"
+            },
             {
               "label": "Complaint handling",
-              "value": "Handle"
-            }
-          ]
-        },
-        "name": "CatHandle"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "Handle",
+              "name": "CatHandle"
+            },
             {
               "label": "Delay",
-              "value": "Delay"
-            }
-          ]
-        },
-        "name": "CatDelay"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "Delay",
+              "name": "CatDelay"
+            },
             {
               "label": "Physical environment",
-              "value": "PhysEnv"
-            }
-          ]
-        },
-        "name": "CatPhysEnv"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "PhysEnv",
+              "name": "CatPhysEnv"
+            },
             {
               "label": "Poor communication",
-              "value": "PoorComm"
-            }
-          ]
-        },
-        "name": "CatPoorComm"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "PoorComm",
+              "name": "CatPoorComm"
+            },
             {
               "label": "Property or documents - lost",
-              "value": "Lost"
-            }
-          ]
-        },
-        "name": "CatLost"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "Lost",
+              "name": "CatLost"
+            },
             {
               "label": "Property or documents - stolen",
-              "value": "Stolen"
-            }
-          ]
-        },
-        "name": "CatStolen"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "Stolen",
+              "name": "CatStolen"
+            },
             {
               "label": "Property or documents - withheld",
-              "value": "Withheld"
-            }
-          ]
-        },
-        "name": "CatWithheld"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "Withheld",
+              "name": "CatWithheld"
+            },
             {
               "label": "Provision for minors",
-              "value": "ProvMinor"
-            }
-          ]
-        },
-        "name": "CatProvMinor"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "ProvMinor",
+              "name": "CatProvMinor"
+            },
             {
               "label": "Wrong information",
-              "value": "WrongInfo"
+              "value": "WrongInfo",
+              "name": "CatWrongInfo"
             }
-          ]
+          ],
+          "className": "govuk-checkboxes--small",
+          "showLabel": true,
+          "saveSeparately": true
         },
-        "name": "CatWrongInfo"
+        "component": "checkbox-group",
+        "name": "CompCategoriesService",
+        "label": "Service"
       },
       {
-        "component": "checkbox",
         "props": {
           "choices": [
             {
               "label": "Detainee on detainee",
-              "value": "DetOnDet"
-            }
-          ]
-        },
-        "name": "CatDetOnDet"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "DetOnDet",
+              "name": "CatDetOnDet"
+            },
             {
               "label": "Other unprofessionalism",
-              "value": "OtherUnprof"
-            }
-          ]
-        },
-        "name": "CatOtherUnprof"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "OtherUnprof",
+              "name": "CatOtherUnprof"
+            },
             {
               "label": "Rudeness",
-              "value": "Rude"
-            }
-          ]
-        },
-        "name": "CatRude"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "Rude",
+              "name": "CatRude"
+            },
             {
               "label": "Unfair treatment",
-              "value": "Unfair"
+              "value": "Unfair",
+              "name": "CatUnfair"
             }
-          ]
+          ],
+          "className": "govuk-checkboxes--small",
+          "showLabel": true,
+          "saveSeparately": true
         },
-        "name": "CatUnfair"
+        "component": "checkbox-group",
+        "name": "CompCategoriesSeriousAndMinor",
+        "label": "Serious and minor misconduct"
       },
       {
-        "component": "checkbox",
         "props": {
           "choices": [
             {
               "label": "Assault",
-              "value": "Assault"
-            }
-          ]
-        },
-        "name": "CatAssault"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "Assault",
+              "name": "CatAssault"
+            },
             {
               "label": "Fraud / corruption",
-              "value": "Fraud"
-            }
-          ]
-        },
-        "name": "CatFraud"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "Fraud",
+              "name": "CatFraud"
+            },
             {
               "label": "Racism / discrimination",
-              "value": "Racism"
-            }
-          ]
-        },
-        "name": "CatRacism"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "Racism",
+              "name": "CatRacism"
+            },
             {
               "label": "Sexual assault",
-              "value": "SexAssault"
-            }
-          ]
-        },
-        "name": "CatSexAssault"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "SexAssault",
+              "name": "CatSexAssault"
+            },
             {
               "label": "Theft",
-              "value": "Theft"
+              "value": "Theft",
+              "name": "CatTheft"
             }
-          ]
+          ],
+          "className": "govuk-checkboxes--small",
+          "showLabel": true,
+          "saveSeparately": true
         },
-        "name": "CatTheft"
+        "component": "checkbox-group",
+        "name": "CompCategoriesSerious",
+        "label": "Serious misconduct"
       },
       {
         "component": "radio",
