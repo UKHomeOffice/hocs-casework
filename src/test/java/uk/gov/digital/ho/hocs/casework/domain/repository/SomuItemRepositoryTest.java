@@ -14,6 +14,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
@@ -70,7 +71,7 @@ public class SomuItemRepositoryTest {
     public void shouldFindSomuItemsByCaseUuids() {
         var secondSomuItem = setUpCaseDataAndSomuItem(2L);
 
-        Set<SomuItem> somuItems = repository.findAllByCaseUuidIn(
+        Collection<SomuItem> somuItems = repository.findAllByCaseUuidIn(
             Set.of(somuItem.getCaseUuid(), secondSomuItem.getCaseUuid()));
 
         assertEquals(somuItems.size(), 2);

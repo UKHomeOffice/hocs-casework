@@ -9,6 +9,8 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.repository.SomuItemRepository;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -31,14 +33,15 @@ public class SomuItemService {
         this.auditClient = auditClient;
     }
 
-    public Set<SomuItem> getCaseItemsByCaseUuids(Set<UUID> caseUuids) {
-        log.debug("Getting all Somu Items for Case: {}", caseUuids);
+    public Collection<SomuItem> getCaseItemsByCaseUuids(Collection<UUID> caseUuids) {
+        log.info("Getting all Somu Items for Case: {}", caseUuids);
 
-        Set<SomuItem> somuItems = somuItemRepository.findAllByCaseUuidIn(caseUuids);
+        Collection<SomuItem> somuItems = somuItemRepository.findAllByCaseUuidIn(caseUuids);
         log.info("Got {} Somu Item for {} cases, Event {}", somuItems.size(), caseUuids.size(),
             value(EVENT, SOMU_ITEM_RETRIEVED));
 
-        auditClient.viewAllSomuItemsForCasesAudit(caseUuids);
+        //todo: this audit is too long, do we need to audit at all?
+        //auditClient.viewAllSomuItemsForCasesAudit(caseUuids);
 
         return somuItems;
     }

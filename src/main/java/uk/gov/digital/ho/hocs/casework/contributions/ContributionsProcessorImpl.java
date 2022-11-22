@@ -11,11 +11,11 @@ import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -44,18 +44,19 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
     }
 
     @Override
-    public void processContributionsForStages(Set<StageWithCaseData> stages) {
-        Map<UUID, Set<SomuItem>> allSomuItems = somuItemService.getCaseItemsByCaseUuids(
-                stages.stream().map(BaseStage::getCaseUUID).collect(Collectors.toSet()))
-            .stream().collect(Collectors.groupingBy(SomuItem::getCaseUuid, Collectors.toSet()));
-
+    public void processContributionsForStages(Collection<StageWithCaseData> stages) {
+        log.info("Grouping Contributions");
+        Map<UUID, List<SomuItem>> allSomuItems = somuItemService.getCaseItemsByCaseUuids(
+                stages.stream().map(BaseStage::getCaseUUID).collect(Collectors.toList()))
+            .stream().collect(Collectors.groupingBy(SomuItem::getCaseUuid, Collectors.toList()));
+        log.info("Finished grouping Contributions");
         if (allSomuItems.size()==0) {
             return;
         }
-
+        log.info("Processing Contributions mapsize:{}", allSomuItems.size());
         for (StageWithCaseData stage : stages) {
             if (infoClient.getStageContributions(stage.getStageType())) {
-                Set<Contribution> contributions = allSomuItems.getOrDefault(stage.getCaseUUID(), Set.of()).stream().map(somuItem -> {
+                List<Contribution> contributions = allSomuItems.getOrDefault(stage.getCaseUUID(), List.of()).stream().map(somuItem -> {
                     try {
                         return objectMapper.readValue(somuItem.getData(), Contribution.class);
                     } catch (JsonProcessingException e) {
@@ -63,36 +64,38 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                             e.getMessage()), e);
                     }
                     return null;
-                }).filter(Objects::nonNull).filter(Contribution::isContribution).collect(Collectors.toSet());
+                }).filter(it -> it !=null && it.isContribution()).collect(Collectors.toList());
 
                 if (contributions.size()==0) {
                     continue;
                 }
 
                 calculateDueContributionDate(contributions).ifPresent(ld -> {
-                    log.info("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
+                    log.debug("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
                     stage.setDueContribution(ld.toString());
                 });
 
                 highestContributionStatus(contributions).ifPresent(cs -> {
-                    log.info("Setting contribution status {}, for caseId {}", cs.getDisplayedStatus(),
+                    log.debug("Setting contribution status {}, for caseId {}", cs.getDisplayedStatus(),
                         stage.getCaseUUID());
                     stage.setContributions(cs.getDisplayedStatus());
                 });
             }
         }
+        log.info("Finished Processing Contributions");
+
     }
 
-    Optional<LocalDate> calculateDueContributionDate(Set<Contribution> contributionSomuItems) {
+    Optional<LocalDate> calculateDueContributionDate(Collection<Contribution> contributionSomuItems) {
         return contributionSomuItems.stream().filter(contribution -> contribution.getStatus()==NONE).map(
             Contribution::getDueDate).sorted().findFirst();
     }
 
-    Optional<Contribution.ContributionStatus> highestContributionStatus(Set<Contribution> contributions) {
+    Optional<Contribution.ContributionStatus> highestContributionStatus(Collection<Contribution> contributions) {
         return highestContributionStatus(contributions, LocalDate.now());
     }
 
-    Optional<Contribution.ContributionStatus> highestContributionStatus(Set<Contribution> contributionSomuItems,
+    Optional<Contribution.ContributionStatus> highestContributionStatus(Collection<Contribution> contributionSomuItems,
                                                                         LocalDate now) {
         return contributionSomuItems.stream().map(csi -> {
             Contribution.ContributionStatus contributionStatus = csi.getStatus();

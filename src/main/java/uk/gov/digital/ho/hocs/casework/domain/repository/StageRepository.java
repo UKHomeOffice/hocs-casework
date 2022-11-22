@@ -7,6 +7,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -44,7 +45,7 @@ public interface StageRepository extends CrudRepository<BaseStage, Long> {
     Set<StageWithCaseData> findAllByCaseUUIDIn(Set<UUID> caseUUID);
 
     @Query(value = "SELECT sd.* FROM stage_data sd WHERE sd.team_uuid = ?1", nativeQuery = true)
-    Set<StageWithCaseData> findAllActiveByTeamUUID(UUID teamUUID);
+    Collection<StageWithCaseData> findAllActiveByTeamUUID(UUID teamUUID);
 
     @Query(value = "SELECT sd.* FROM stage_data sd WHERE sd.team_uuid in ?1", nativeQuery = true)
     Set<StageWithCaseData> findAllActiveByTeamUUID(Set<UUID> teamUUID);

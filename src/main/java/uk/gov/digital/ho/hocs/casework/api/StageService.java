@@ -28,6 +28,7 @@ import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -433,10 +434,12 @@ public class StageService {
         return stageRepository.findAllActiveByCaseUUID(caseUUID);
     }
 
-    Set<StageWithCaseData> getActiveStagesByTeamUUID(UUID teamUUID) {
+    Collection<StageWithCaseData> getActiveStagesByTeamUUID(UUID teamUUID) {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
 
+        log.info("Getting Permissions");
         Set<UUID> usersTeam = userPermissionsService.getExpandedUserTeams();
+        log.info("Got Permissions");
 
         if (!usersTeam.contains(teamUUID)) {
             log.warn("User {} attempted to view team {}", userPermissionsService.getUserId(), teamUUID,
@@ -445,14 +448,16 @@ public class StageService {
                 SECURITY_FORBIDDEN);
         }
 
-        Set<StageWithCaseData> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
+        log.info("Getting Stages");
+        Collection<StageWithCaseData> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
+        log.info("Got Stages");
 
         updateStages(stages);
 
         return stages;
     }
 
-    void updateContributions(Set<StageWithCaseData> stage) {
+    void updateContributions(Collection<StageWithCaseData> stage) {
         log.debug("Adding contributions data for stages");
         contributionsProcessor.processContributionsForStages(stage);
     }
@@ -523,14 +528,19 @@ public class StageService {
         return stages;
     }
 
-    private void updateStages(Set<StageWithCaseData> stages) {
+    private void updateStages(Collection<StageWithCaseData> stages) {
+        log.info("Updating Contributions");
         updateContributions(stages);
+        log.info("Updated Contributions");
 
+        log.info("Updating Days Elapsed");
         for (StageWithCaseData stage : stages) {
             stagePriorityCalculator.updatePriority(stage, stage.getCaseDataType());
             daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
             stage.setTag(stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType()));
         }
+        log.info("Updated Days Elapsed");
+
     }
 
     private StageWithCaseData getStageWithCaseData(UUID caseUUID, UUID stageUUID) {

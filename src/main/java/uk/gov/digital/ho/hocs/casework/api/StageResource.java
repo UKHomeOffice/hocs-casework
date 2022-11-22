@@ -34,6 +34,7 @@ import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -139,7 +140,7 @@ class StageResource {
 
     @GetMapping(value = "/stage/team/{teamUUID}")
     ResponseEntity<GetStagesResponse> getActiveStagesByTeamUUID(@PathVariable UUID teamUUID) {
-        Set<StageWithCaseData> activeStages = stageService.getActiveStagesByTeamUUID(teamUUID);
+        Collection<StageWithCaseData> activeStages = stageService.getActiveStagesByTeamUUID(teamUUID);
         return ResponseEntity.ok(GetStagesResponse.from(activeStages));
     }
 
