@@ -3,12 +3,12 @@ package uk.gov.digital.ho.hocs.casework.priority.policy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.CaseData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
 
 @AllArgsConstructor
 @Getter
@@ -29,8 +29,8 @@ public class DaysElapsedPolicy implements StagePriorityPolicy {
     private double pointsToAwardPerDay;
 
     @Override
-    public double apply(StageWithCaseData stageWithCaseData) {
-        var data = stageWithCaseData.getData();
+    public double apply(CaseData caseData, ActiveStage stage) {
+        var data = caseData.getDataMap();
 
         if (propertyValue.equals(data.get(propertyName))) {
             String dateString = data.get(dateFieldName);

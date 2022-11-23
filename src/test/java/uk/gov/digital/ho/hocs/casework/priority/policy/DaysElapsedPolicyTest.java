@@ -2,12 +2,16 @@ package uk.gov.digital.ho.hocs.casework.priority.policy;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.CaseData;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -15,7 +19,9 @@ public class DaysElapsedPolicyTest {
 
     private DaysElapsedPolicy policy;
 
-    private StageWithCaseData stage;
+    private CaseData caseData;
+
+    private ActiveStage activeStage;
 
     private static final String PROPERTY_NAME = "property1";
 
@@ -33,7 +39,14 @@ public class DaysElapsedPolicyTest {
 
     @Before
     public void before() {
-        stage = new StageWithCaseData();
+        var caseUUID = UUID.randomUUID();
+        caseData = new CaseData(caseUUID, LocalDateTime.now(), "MIN", "MIN/123456/22", false, new HashMap<>(), null,
+            null, null, null, Collections.emptySet(), null, null, LocalDate.now(), false, null, Collections.emptySet(),
+            Set.of());
+
+        activeStage = new ActiveStage(UUID.randomUUID(), LocalDateTime.now(), "DCU_MIN_MARKUP", null, null, null,
+            caseUUID, null, null, caseData, null, null, null);
+        caseData.setActiveStages(Set.of(activeStage));
 
         policy = new DaysElapsedPolicy(PROPERTY_NAME, PROPERTY_VALUE, DATE_FIELD_NAME, DATE_FORMAT, CAP_NUMBER_OF_DAYS,
             CAP_POINTS_TO_AWARD, POINTS_TO_AWARD_PER_DAY);
@@ -43,10 +56,10 @@ public class DaysElapsedPolicyTest {
     public void apply_criteriaMatched() {
         LocalDate testDate = LocalDate.now().minusDays(10);
 
-        stage.putData(PROPERTY_NAME, PROPERTY_VALUE);
-        stage.putData(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
+        caseData.update(PROPERTY_NAME, PROPERTY_VALUE);
+        caseData.update(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
 
-        double result = policy.apply(stage);
+        double result = policy.apply(caseData, activeStage);
         assertThat(result).isEqualTo(20d);
     }
 
@@ -54,25 +67,25 @@ public class DaysElapsedPolicyTest {
     public void apply_criteriaMatched_capped() {
         LocalDate testDate = LocalDate.now().minusDays(55);
 
-        stage.putData(PROPERTY_NAME, PROPERTY_VALUE);
-        stage.putData(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
+        caseData.update(PROPERTY_NAME, PROPERTY_VALUE);
+        caseData.update(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
 
-        double result = policy.apply(stage);
+        double result = policy.apply(caseData, activeStage);
 
         assertThat(result).isEqualTo(35d);
     }
 
     @Test
     public void apply_criteriaNotMatched() {
-        stage.putData(PROPERTY_NAME, "C");
+        caseData.update(PROPERTY_NAME, "C");
 
-        double result = policy.apply(stage);
+        double result = policy.apply(caseData, activeStage);
         assertThat(result).isZero();
     }
 
     @Test
     public void apply_propertyMissing() {
-        double result = policy.apply(stage);
+        double result = policy.apply(caseData, activeStage);
         assertThat(result).isZero();
     }
 

@@ -200,39 +200,6 @@ public class StageResourceTest {
     }
 
     @Test
-    public void testShouldGetActiveStages() {
-
-        Set<StageWithCaseData> stages = new HashSet<>();
-
-        when(stageService.getActiveStagesForUsersTeams()).thenReturn(stages);
-
-        ResponseEntity<GetStagesResponse> response = stageResource.getActiveStages();
-
-        verify(stageService).getActiveStagesForUsersTeams();
-
-        checkNoMoreInteractions();
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
-    public void testShouldGetActiveStagesForUser() {
-        Set<StageWithCaseData> stages = new HashSet<>();
-
-        when(stageService.getActiveUserStagesWithTeamsForUser(userUUID)).thenReturn(stages);
-
-        ResponseEntity<GetStagesResponse> response = stageResource.getActiveStagesForUser(userUUID);
-
-        verify(stageService).getActiveUserStagesWithTeamsForUser(userUUID);
-
-        checkNoMoreInteractions();
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
     public void testShouldGetActiveStagesCaseRef() throws UnsupportedEncodingException {
         String ref = "MIN/0123456/19";
 
@@ -372,28 +339,6 @@ public class StageResourceTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(response.getBody()).isEqualTo(users);
 
-    }
-
-    @Test
-    public void testAllocateStageUser() {
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
-        when(stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID)).thenReturn(stage);
-
-        ResponseEntity<GetStageResponse> response = stageResource.allocateStageUser(teamUUID, userUUID);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
-
-    @Test
-    public void testAllocateStageUser_withNoStage() {
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
-        when(stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID)).thenReturn(null);
-
-        ResponseEntity<GetStageResponse> response = stageResource.allocateStageUser(teamUUID, userUUID);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     private void checkNoMoreInteractions() {

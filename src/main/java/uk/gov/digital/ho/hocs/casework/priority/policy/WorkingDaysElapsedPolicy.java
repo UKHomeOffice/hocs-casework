@@ -4,12 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.util.StringUtils;
 import uk.gov.digital.ho.hocs.casework.api.WorkingDaysElapsedProvider;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.CaseData;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Map;
-
 @AllArgsConstructor
 @Getter
 public class WorkingDaysElapsedPolicy implements StagePriorityPolicy {
@@ -31,8 +30,8 @@ public class WorkingDaysElapsedPolicy implements StagePriorityPolicy {
     private double pointsToAwardPerDay;
 
     @Override
-    public double apply(StageWithCaseData stageWithCaseData) {
-        var data = stageWithCaseData.getData();
+    public double apply(CaseData caseData, ActiveStage stage) {
+        var data = caseData.getDataMap();
 
         if (propertyName!=null && propertyValue!=null && !propertyValue.equals(data.get(propertyName))) {
             return 0;
@@ -42,8 +41,7 @@ public class WorkingDaysElapsedPolicy implements StagePriorityPolicy {
         if (StringUtils.hasText(dateString)) {
             LocalDate dateToCheck = LocalDate.parse(dateString, DateTimeFormatter.ofPattern(dateFormat));
 
-            int daysElapsed = workingDaysElapsedProvider.getWorkingDaysSince(stageWithCaseData.getCaseDataType(),
-                dateToCheck);
+            int daysElapsed = workingDaysElapsedProvider.getWorkingDaysSince(caseData.getType(), dateToCheck);
             if (capNumberOfDays > -1 && daysElapsed >= capNumberOfDays) {
                 return capPointsToAward;
             }

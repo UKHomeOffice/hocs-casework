@@ -2,9 +2,15 @@ package uk.gov.digital.ho.hocs.casework.priority.policy;
 
 import org.junit.Before;
 import org.junit.Test;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.CaseData;
 
-import java.util.Map;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -12,7 +18,9 @@ public class SimpleStringPropertyPolicyTest {
 
     private SimpleStringPropertyPolicy policy;
 
-    private StageWithCaseData stage;
+    private CaseData caseData;
+
+    private ActiveStage activeStage;
 
     private static final String PROPERTY_NAME = "property1";
 
@@ -22,29 +30,36 @@ public class SimpleStringPropertyPolicyTest {
 
     @Before
     public void before() {
-        stage = new StageWithCaseData();
+        var caseUUID = UUID.randomUUID();
+        caseData = new CaseData(caseUUID, LocalDateTime.now(), "MIN", "MIN/123456/22", false, new HashMap<>(), null,
+            null, null, null, Collections.emptySet(), null, null, LocalDate.now(), false, null, Collections.emptySet(),
+            Set.of());
+
+        activeStage = new ActiveStage(UUID.randomUUID(), LocalDateTime.now(), "DCU_MIN_MARKUP", null, null, null,
+            caseUUID, null, null, caseData, null, null, null);
+        caseData.setActiveStages(Set.of(activeStage));
         policy = new SimpleStringPropertyPolicy(PROPERTY_NAME, PROPERTY_VALUE, POINTS_TO_AWARD);
     }
 
     @Test
     public void apply_criteriaMatched() {
-        stage.putData(PROPERTY_NAME, PROPERTY_VALUE);
+        caseData.update(PROPERTY_NAME, PROPERTY_VALUE);
 
-        double result = policy.apply(stage);
+        double result = policy.apply(caseData, activeStage);
         assertThat(result).isEqualTo(POINTS_TO_AWARD);
     }
 
     @Test
     public void apply_criteriaNotMatched() {
-        stage.putData(PROPERTY_NAME, "C");
+        caseData.update(PROPERTY_NAME, "C");
 
-        double result = policy.apply(stage);
+        double result = policy.apply(caseData, activeStage);
         assertThat(result).isZero();
     }
 
     @Test
     public void apply_propertyMissing() {
-        double result = policy.apply(stage);
+        double result = policy.apply(caseData, activeStage);
         assertThat(result).isZero();
     }
 

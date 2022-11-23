@@ -1,11 +1,11 @@
 package uk.gov.digital.ho.hocs.casework.contributions;
 
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.CaseData;
 
 import java.util.Set;
 
 public interface ContributionsProcessor {
 
-    void processContributionsForStages(Set<StageWithCaseData> stage);
+    void processContributionsForStages(Set<CaseData> caseData);
 
 }

@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.api;
 
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +26,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
-import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
@@ -52,7 +50,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_WITHDRAW
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_EMPTY;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SEARCH_STAGE_LIST_RETRIEVED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SECURITY_FORBIDDEN;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGES_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_TEAM;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNED_USER;
@@ -62,8 +59,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATED
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_NOT_FOUND;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_RECREATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_TRANSITION_NOTE_UPDATED;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_EMPTY;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.USERS_TEAMS_STAGE_LIST_RETRIEVED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 
@@ -451,108 +446,6 @@ public class StageService {
     Set<StageWithCaseData> getActiveStagesByCaseUUID(UUID caseUUID) {
         log.debug("Getting Active Stages for Case: {}", caseUUID);
         return stageRepository.findAllActiveByCaseUUID(caseUUID);
-    }
-
-    Set<StageWithCaseData> getActiveStagesByTeamUUID(UUID teamUUID) {
-        log.debug("Getting Active Stages for Team: {}", teamUUID);
-
-        Set<UUID> usersTeam = userPermissionsService.getExpandedUserTeams();
-
-        if (!usersTeam.contains(teamUUID)) {
-            log.warn("User {} attempted to view team {}", userPermissionsService.getUserId(), teamUUID,
-                value(EVENT, SECURITY_FORBIDDEN));
-            throw new SecurityExceptions.ForbiddenException("User does not have access to the requested resource",
-                SECURITY_FORBIDDEN);
-        }
-
-        Set<StageWithCaseData> stages = stageRepository.findAllActiveByTeamUUID(teamUUID);
-
-        updateStages(stages);
-
-        return stages;
-    }
-
-    void updateContributions(Set<StageWithCaseData> stage) {
-        log.debug("Adding contributions data for stages");
-        contributionsProcessor.processContributionsForStages(stage);
-    }
-
-    StageWithCaseData getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {
-        log.debug("Getting unassigned cases for user: {} in team {}", userUUID, teamUUID);
-        Set<StageWithCaseData> unassignedStages = stageRepository.findAllUnassignedAndActiveByTeamUUID(teamUUID);
-        if (unassignedStages.isEmpty()) {
-            log.debug("No unassigned case found for user: {} in team {}", userUUID, teamUUID);
-            return null;
-        }
-
-        for (StageWithCaseData stage : unassignedStages) {
-            stagePriorityCalculator.updatePriority(stage, stage.getCaseDataType());
-            daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
-        }
-
-        double prevSystemCalculatedPriority = 0;
-        StageWithCaseData nextAvailableStage = unassignedStages.stream().findFirst().get();
-        for (StageWithCaseData stage : unassignedStages) {
-            JSONObject caseData = new JSONObject(stage.getData());
-            double systemCalculatedPriority = caseData.getDouble("systemCalculatedPriority");
-
-            if (systemCalculatedPriority > prevSystemCalculatedPriority) {
-                prevSystemCalculatedPriority = systemCalculatedPriority;
-                nextAvailableStage = stage;
-            }
-        }
-
-        UUID caseUUID = nextAvailableStage.getCaseUUID();
-        UUID stageUUID = nextAvailableStage.getUuid();
-        updateStageUser(caseUUID, stageUUID, userUUID);
-
-        return nextAvailableStage;
-    }
-
-    Set<StageWithCaseData> getActiveStagesForUsersTeams() {
-        log.debug("Getting active stages for users teams");
-
-        Set<UUID> teams = userPermissionsService.getExpandedUserTeams();
-        if (teams.isEmpty()) {
-            log.warn("No teams - Returning 0 Stages", value(EVENT, TEAMS_STAGE_LIST_EMPTY));
-            return new HashSet<>(0);
-        }
-
-        Set<StageWithCaseData> stages = stageRepository.findAllActiveByTeamUUID(teams);
-
-        updateStages(stages);
-
-        log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
-        return stages;
-    }
-
-    Set<StageWithCaseData> getActiveUserStagesWithTeamsForUser(UUID userUuid) {
-        log.debug("Getting active stages for teams a user has and is also assigned to");
-
-        Set<UUID> teams = userPermissionsService.getExpandedUserTeams();
-        if (teams.isEmpty()) {
-            log.warn("No teams - Returning 0 Stages", value(EVENT, TEAMS_STAGE_LIST_EMPTY));
-            return new HashSet<>(0);
-        }
-
-        Set<StageWithCaseData> stages = stageRepository.findAllActiveByUserUuidAndTeamUuid(userUuid, teams);
-
-        updateStages(stages);
-
-        log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
-        return stages;
-    }
-
-    private void updateStages(Set<StageWithCaseData> stages) {
-        updateContributions(stages);
-
-        for (StageWithCaseData stage : stages) {
-            stagePriorityCalculator.updatePriority(stage, stage.getCaseDataType());
-            daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
-
-            //TODO: HOCS-5871 Remove after Workflow Implementation released
-            stage.appendTags(stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType()));
-        }
     }
 
     private StageWithCaseData getStageWithCaseData(UUID caseUUID, UUID stageUUID) {

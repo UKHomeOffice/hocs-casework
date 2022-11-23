@@ -5,14 +5,22 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.CaseData;
 import uk.gov.digital.ho.hocs.casework.priority.policy.StagePriorityPolicy;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator.SYSTEM_PRIORITY_FIELD_NAME;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -23,7 +31,11 @@ public class StagePriorityCalculatorImplTest {
     @Mock
     StagePriorityPolicyProvider stagePriorityPolicyProvider;
 
-    StageWithCaseData stage;
+    UUID caseUUID = UUID.randomUUID();
+
+    CaseData caseData;
+
+    ActiveStage activeStage;
 
     private final String caseType = "Test_Case_Type";
 
@@ -31,39 +43,42 @@ public class StagePriorityCalculatorImplTest {
     public void before() {
         stagePriorityCalculator = new StagePriorityCalculatorImpl(stagePriorityPolicyProvider);
 
-        stage = new StageWithCaseData();
-        stage.setCaseDataType(caseType);
+        caseData = new CaseData(caseUUID, LocalDateTime.now(), caseType, "Test_Case_Type/123456/22", false,
+            new HashMap<>(), null, null, null, null, Collections.emptySet(), null, null, LocalDate.now(), false, null,
+            Collections.emptySet(), Set.of());
+
+        activeStage = new ActiveStage(UUID.randomUUID(), LocalDateTime.now(), "DCU_MIN_MARKUP", null, null, null,
+            caseUUID, null, null, caseData, null, null, null);
+        caseData.setActiveStages(Set.of(activeStage));
 
     }
 
     @Test
     public void updatePriority_noPolicies() {
-        stage.putData("PropertyA", "ValueA");
+        caseData.update("PropertyA", "ValueA");
 
-        stagePriorityCalculator.updatePriority(stage, caseType);
+        stagePriorityCalculator.updatePriority(caseData, caseType);
 
-        assertTrue(stage.getData().containsKey(SYSTEM_PRIORITY_FIELD_NAME));
-        assertEquals("0.0", stage.getData().get(SYSTEM_PRIORITY_FIELD_NAME));
+        assertThat(caseData.getDataMap()).containsEntry(SYSTEM_PRIORITY_FIELD_NAME, "0.0");
     }
 
     @Test
     public void updatePriority_withPolicies() {
-        stage.putData("PropertyA", "ValueA");
+        caseData.update("PropertyA", "ValueA");
 
         StagePriorityPolicy policyA = mock(StagePriorityPolicy.class);
-        when(policyA.apply(stage)).thenReturn(12d);
+        when(policyA.apply(caseData, activeStage)).thenReturn(12d);
         StagePriorityPolicy policyB = mock(StagePriorityPolicy.class);
-        when(policyB.apply(stage)).thenReturn(3d);
+        when(policyB.apply(caseData, activeStage)).thenReturn(3d);
 
         when(stagePriorityPolicyProvider.getPolicies(caseType)).thenReturn(List.of(policyA, policyB));
 
-        stagePriorityCalculator.updatePriority(stage, caseType);
+        stagePriorityCalculator.updatePriority(caseData, caseType);
 
-        assertTrue(stage.getData().containsKey(SYSTEM_PRIORITY_FIELD_NAME));
-        assertEquals("15.0", stage.getData().get(SYSTEM_PRIORITY_FIELD_NAME));
+        assertThat(caseData.getDataMap()).containsEntry(SYSTEM_PRIORITY_FIELD_NAME, "15.0");
 
-        verify(policyA).apply(stage);
-        verify(policyB).apply(stage);
+        verify(policyA).apply(caseData, activeStage);
+        verify(policyB).apply(caseData, activeStage);
 
     }
 

@@ -25,12 +25,10 @@ import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataTag;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
-import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
@@ -812,55 +810,6 @@ public class StageServiceTest {
     }
 
     @Test
-    public void shouldGetActiveStages_blankResult() {
-        Set<UUID> teams = new HashSet<>();
-        teams.add(UUID.randomUUID());
-
-        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
-
-        stageService.getActiveStagesForUsersTeams();
-
-        verify(stageRepository).findAllActiveByTeamUUID(teams);
-
-        verifyNoMoreInteractions(stageRepository);
-        verifyNoInteractions(notifyClient);
-    }
-
-    @Test
-    public void shouldGetActiveStages() {
-        Set<UUID> teams = new HashSet<>();
-        teams.add(UUID.randomUUID());
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID,
-            transitionNoteUUID);
-
-        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
-        when(stageRepository.findAllActiveByTeamUUID(teams)).thenReturn(Set.of(stage));
-
-        stageService.getActiveStagesForUsersTeams();
-
-        verify(userPermissionsService).getExpandedUserTeams();
-        verify(stageRepository).findAllActiveByTeamUUID(teams);
-        verify(stagePriorityCalculator).updatePriority(stage, stage.getCaseDataType());
-        verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
-
-        checkNoMoreInteraction();
-    }
-
-    @Test
-    public void shouldGetActiveStagesEmpty() {
-        Set<UUID> teams = new HashSet<>();
-
-        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
-
-        stageService.getActiveStagesForUsersTeams();
-
-        // We don't try and get active stages with no teams (empty set) because we're going to get 0 results.
-        verify(userPermissionsService).getExpandedUserTeams();
-        checkNoMoreInteraction();
-
-    }
-
-    @Test
     public void shouldUpdateStageTransitionNote() {
 
         Stage stage = new Stage(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID, transitionNoteUUID);
@@ -1281,116 +1230,6 @@ public class StageServiceTest {
         verify(auditClient).updateStageTeam(stage2);
         verify(caseNoteService).createCaseNote(caseUUID, "WITHDRAW", "Note 1");
         checkNoMoreInteraction();
-    }
-
-    @Test
-    public void shouldGetUnassignedAndActiveStageByTeamUUID() {
-        stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID);
-
-        verify(stageRepository).findAllUnassignedAndActiveByTeamUUID(teamUUID);
-
-        verifyNoMoreInteractions(stageRepository);
-        verifyNoInteractions(notifyClient);
-    }
-
-    @Test
-    public void shouldGetActiveStagesByTeamUuids() {
-        Set<UUID> teamUuids = Set.of(teamUUID);
-        StageWithCaseData stage1 = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID,
-            transitionNoteUUID);
-        StageWithCaseData stage2 = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID,
-            transitionNoteUUID);
-        Set<StageWithCaseData> stages = Set.of(stage1, stage2);
-
-        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teamUuids);
-        when(stageRepository.findAllActiveByTeamUUID(teamUUID)).thenReturn(stages);
-
-        stageService.getActiveStagesByTeamUUID(teamUUID);
-
-        verify(userPermissionsService).getExpandedUserTeams();
-        verify(contributionsProcessor).processContributionsForStages(stages);
-        verify(stageRepository).findAllActiveByTeamUUID(teamUUID);
-    }
-
-    @Test(expected = SecurityExceptions.ForbiddenException.class)
-    public void shouldGetActiveStagesByTeamUuids_ForbiddenThrownWhenNotInTeam() {
-        Set<UUID> teamUuids = Set.of(UUID.randomUUID());
-
-        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teamUuids);
-
-        stageService.getActiveStagesByTeamUUID(teamUUID);
-    }
-
-    @Test
-    public void shouldGetActiveUserStagesWithTeams() {
-        Set<UUID> teams = new HashSet<>();
-        teams.add(UUID.randomUUID());
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID,
-            transitionNoteUUID);
-
-        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
-        when(stageRepository.findAllActiveByUserUuidAndTeamUuid(userUUID, teams)).thenReturn(Set.of(stage));
-
-        stageService.getActiveUserStagesWithTeamsForUser(userUUID);
-
-        verify(userPermissionsService).getExpandedUserTeams();
-        verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
-        verify(stagePriorityCalculator).updatePriority(stage, stage.getCaseDataType());
-        verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
-
-        checkNoMoreInteraction();
-    }
-
-    @Test
-    public void shouldSetTagsOnStages() {
-        Set<UUID> teams = new HashSet<>();
-        teams.add(UUID.randomUUID());
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID,
-            transitionNoteUUID);
-        stage.putData("HomeSecReply", "TRUE");
-
-        ArrayList<String> tags = new ArrayList<>(Collections.singleton("HS"));
-
-        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
-        when(stageRepository.findAllActiveByUserUuidAndTeamUuid(userUUID, teams)).thenReturn(Set.of(stage));
-        when(stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType())).thenReturn(tags);
-
-        var result = stageService.getActiveUserStagesWithTeamsForUser(userUUID);
-
-        verify(userPermissionsService).getExpandedUserTeams();
-        verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
-        verify(stagePriorityCalculator).updatePriority(stage, stage.getCaseDataType());
-        verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
-        verify(stageTagsDecorator).decorateTags(stage.getData(), stage.getStageType());
-
-        assertThat(result.iterator().next().getTag()).containsExactly(new CaseDataTag(caseUUID, "HS"));
-
-        checkNoMoreInteraction();
-    }
-
-    @Test
-    public void shouldGetActiveUserStagesWithTeamsAndCaseType_noTeams() {
-        Set<UUID> teams = new HashSet<>();
-
-        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
-
-        stageService.getActiveUserStagesWithTeamsForUser(userUUID);
-
-        verify(userPermissionsService).getExpandedUserTeams();
-        checkNoMoreInteraction();
-    }
-
-    @Test
-    public void getActiveUserStagesWithTeamsAndCaseType_blankResult() {
-        Set<UUID> teams = Set.of(UUID.randomUUID());
-
-        when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
-
-        stageService.getActiveUserStagesWithTeamsForUser(userUUID);
-
-        verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
-
-        verifyNoMoreInteractions(stageRepository, notifyClient);
     }
 
     @Test

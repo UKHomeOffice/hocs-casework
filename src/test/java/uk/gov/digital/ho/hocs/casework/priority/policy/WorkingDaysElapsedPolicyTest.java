@@ -6,20 +6,30 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.WorkingDaysElapsedProvider;
-import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.ActiveStage;
+import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.CaseData;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class WorkingDaysElapsedPolicyTest {
 
     private WorkingDaysElapsedPolicy policy;
 
-    private StageWithCaseData stage;
+    private CaseData caseData;
+
+    private ActiveStage activeStage;
 
     private static final String PROPERTY_NAME = "property1";
 
@@ -42,8 +52,14 @@ public class WorkingDaysElapsedPolicyTest {
 
     @Before
     public void before() {
-        stage = new StageWithCaseData();
-        stage.setCaseDataType(TEST_CASE_TYPE);
+        var caseUUID = UUID.randomUUID();
+        caseData = new CaseData(caseUUID, LocalDateTime.now(), TEST_CASE_TYPE, TEST_CASE_TYPE + "/123456/22", false,
+            new HashMap<>(), null, null, null, null, Collections.emptySet(), null, null, LocalDate.now(), false, null,
+            Collections.emptySet(), Set.of());
+
+        activeStage = new ActiveStage(UUID.randomUUID(), LocalDateTime.now(), "DCU_MIN_MARKUP", null, null, null,
+            caseUUID, null, null, caseData, null, null, null);
+        caseData.setActiveStages(Set.of(activeStage));
 
         policy = new WorkingDaysElapsedPolicy(workingDaysElapsedProvider, PROPERTY_NAME, PROPERTY_VALUE,
             DATE_FIELD_NAME, DATE_FORMAT, CAP_NUMBER_OF_DAYS, CAP_POINTS_TO_AWARD, POINTS_TO_AWARD_PER_DAY);
@@ -55,10 +71,10 @@ public class WorkingDaysElapsedPolicyTest {
 
         when(workingDaysElapsedProvider.getWorkingDaysSince(TEST_CASE_TYPE, testDate)).thenReturn(10);
 
-        stage.putData(PROPERTY_NAME, PROPERTY_VALUE);
-        stage.putData(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
+        caseData.update(PROPERTY_NAME, PROPERTY_VALUE);
+        caseData.update(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
 
-        double result = policy.apply(stage);
+        double result = policy.apply(caseData, activeStage);
         assertThat(result).isEqualTo(20d);
 
         verify(workingDaysElapsedProvider).getWorkingDaysSince(TEST_CASE_TYPE, testDate);
@@ -71,10 +87,10 @@ public class WorkingDaysElapsedPolicyTest {
 
         when(workingDaysElapsedProvider.getWorkingDaysSince(TEST_CASE_TYPE, testDate)).thenReturn(55);
 
-        stage.putData(PROPERTY_NAME, PROPERTY_VALUE);
-        stage.putData(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
+        caseData.update(PROPERTY_NAME, PROPERTY_VALUE);
+        caseData.update(DATE_FIELD_NAME, DateTimeFormatter.ofPattern(DATE_FORMAT).format(testDate));
 
-        double result = policy.apply(stage);
+        double result = policy.apply(caseData, activeStage);
         assertThat(result).isEqualTo(35d);
 
         verify(workingDaysElapsedProvider).getWorkingDaysSince(TEST_CASE_TYPE, testDate);
@@ -83,9 +99,9 @@ public class WorkingDaysElapsedPolicyTest {
 
     @Test
     public void apply_criteriaNotMatched() {
-        stage.putData(PROPERTY_NAME, "C");
+        caseData.update(PROPERTY_NAME, "C");
 
-        double result = policy.apply(stage);
+        double result = policy.apply(caseData, activeStage);
         assertThat(result).isZero();
 
         verifyNoMoreInteractions(workingDaysElapsedProvider);
@@ -93,7 +109,7 @@ public class WorkingDaysElapsedPolicyTest {
 
     @Test
     public void apply_propertyMissing() {
-        double result = policy.apply(stage);
+        double result = policy.apply(caseData, activeStage);
         assertThat(result).isZero();
 
         verifyNoMoreInteractions(workingDaysElapsedProvider);

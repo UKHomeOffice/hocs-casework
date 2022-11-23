@@ -13,7 +13,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SOMU_ITEM_CREATED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SOMU_ITEM_DELETED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SOMU_ITEM_NOT_FOUND;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SOMU_ITEM_RETRIEVED;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.SOMU_ITEM_UPDATED;
 
 @Service
 @Slf4j
@@ -29,18 +34,6 @@ public class SomuItemService {
     public SomuItemService(SomuItemRepository somuItemRepository, AuditClient auditClient) {
         this.somuItemRepository = somuItemRepository;
         this.auditClient = auditClient;
-    }
-
-    public Set<SomuItem> getCaseItemsByCaseUuids(Set<UUID> caseUuids) {
-        log.debug("Getting all Somu Items for Case: {}", caseUuids);
-
-        Set<SomuItem> somuItems = somuItemRepository.findAllByCaseUuidIn(caseUuids);
-        log.info("Got {} Somu Item for {} cases, Event {}", somuItems.size(), caseUuids.size(),
-            value(EVENT, SOMU_ITEM_RETRIEVED));
-
-        auditClient.viewAllSomuItemsForCasesAudit(caseUuids);
-
-        return somuItems;
     }
 
     public Set<SomuItem> getItemsByCaseUuid(UUID caseUUID) {
