@@ -122,7 +122,7 @@ public class MigrationCaseDataServiceTest {
     }
 
     @Test
-    public void shouldCreatedAnAdditionalCorrespondent() {
+    public void shouldCreateAnAdditionalCorrespondent() {
         // given
         Set<Correspondent> correspondents = new HashSet<>();
         correspondents.add(createCorrespondent());
@@ -136,7 +136,6 @@ public class MigrationCaseDataServiceTest {
 
         //then
         verify(correspondentRepository, times(1)).save(any());
-        //verify(caseDataRepository, times(1)).save(any());
     }
 
     MigrationComplaintCorrespondent createMigrationComplaintCorrespondent() {
