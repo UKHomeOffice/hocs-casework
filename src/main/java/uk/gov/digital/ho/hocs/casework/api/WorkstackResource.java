@@ -3,6 +3,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -27,7 +28,7 @@ class WorkstackResource {
     }
 
     @GetMapping(value = "/stage/team/{teamUUID}")
-    ResponseEntity<GetWorkstacksResponse> getActiveStagesByTeamUUID(@PathVariable UUID teamUUID) {
+    public ResponseEntity<GetWorkstacksResponse> getActiveStagesByTeamUUID(@PathVariable UUID teamUUID) {
         Set<ActiveStage> activeStages = workstackService.getActiveStagesByTeamUUID(teamUUID);
         return ResponseEntity.ok(GetWorkstacksResponse.from(activeStages));
     }

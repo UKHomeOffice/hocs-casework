@@ -36,11 +36,10 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
     }
 
     @Override
-    public void processContributionsForStages(Set<CaseData> cases) {
+    public void processContributionsForCase(CaseData caseData) {
 
-        for (ActiveStage stage : cases.stream().flatMap(caseData -> caseData.getActiveStages().stream()).collect(
-            Collectors.toSet())) {
-            if (infoClient.getStageContributions(stage.getStageType())) {
+        for (ActiveStage stage : caseData.getActiveStages().stream().collect(Collectors.toSet())) {
+            if (Boolean.TRUE.equals(infoClient.getStageContributions(stage.getStageType()))) {
                 Set<Contribution> contributions = stage.getCaseData().getSomu_items().stream().map(somuItem -> {
                     try {
                         return objectMapper.readValue(somuItem.getData(), Contribution.class);

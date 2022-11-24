@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -113,7 +114,7 @@ public class WorkstackServiceTest {
         teams.add(UUID.randomUUID());
 
         when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
-        when(workstackRepository.findAllActiveByTeamUUID(teams)).thenReturn(Set.of(caseData));
+        when(workstackRepository.findAllActiveByTeamUUID(teams)).thenReturn(Stream.of(caseData));
 
         workstackService.getActiveStagesForUsersTeams();
 
@@ -153,12 +154,12 @@ public class WorkstackServiceTest {
         Set<UUID> teamUuids = Set.of(teamUUID);
 
         when(userPermissionsService.getExpandedUserTeams()).thenReturn(teamUuids);
-        when(workstackRepository.findAllActiveByTeamUUID(teamUUID)).thenReturn(Set.of(caseData));
+        when(workstackRepository.findAllActiveByTeamUUID(teamUUID)).thenReturn(Stream.of(caseData));
 
         workstackService.getActiveStagesByTeamUUID(teamUUID);
 
         verify(userPermissionsService).getExpandedUserTeams();
-        verify(contributionsProcessor).processContributionsForStages(Set.of(caseData));
+        verify(contributionsProcessor).processContributionsForCase(caseData);
         verify(workstackRepository).findAllActiveByTeamUUID(teamUUID);
     }
 

@@ -2,6 +2,7 @@ package uk.gov.digital.ho.hocs.casework.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.contributions.ContributionsProcessor;
 import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.workstacks.CaseData;
@@ -15,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
@@ -56,7 +58,8 @@ public class WorkstackService {
         this.contributionsProcessor = contributionsProcessor;
     }
 
-    Set<ActiveStage> getActiveStagesByTeamUUID(UUID teamUUID) {
+    @Transactional(readOnly = true)
+    public Set<ActiveStage> getActiveStagesByTeamUUID(UUID teamUUID) {
         log.debug("Getting Active Stages for Team: {}", teamUUID);
 
         Set<UUID> usersTeam = userPermissionsService.getExpandedUserTeams();
@@ -68,16 +71,15 @@ public class WorkstackService {
                 SECURITY_FORBIDDEN);
         }
 
-        Set<CaseData> cases = workstackRepository.findAllActiveByTeamUUID(teamUUID);
+        try (Stream<CaseData> cases = workstackRepository.findAllActiveByTeamUUID(teamUUID)) {
+            return cases.map(this::updateStages).flatMap(caseData -> caseData.getActiveStages().stream()).collect(Collectors.toSet());
+        }
 
-        updateStages(cases);
-
-        return cases.stream().flatMap(caseData -> caseData.getActiveStages().stream()).collect(Collectors.toSet());
     }
 
-    void updateContributions(Set<CaseData> cases) {
+    private void updateContribution(CaseData caseData) {
         log.debug("Adding contributions data for stages");
-        contributionsProcessor.processContributionsForStages(cases);
+        contributionsProcessor.processContributionsForCase(caseData);
     }
 
     ActiveStage getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {
@@ -127,12 +129,9 @@ public class WorkstackService {
             return new HashSet<>(0);
         }
 
-        Set<CaseData> cases = workstackRepository.findAllActiveByTeamUUID(teams);
-
-        updateStages(cases);
-
-        log.info("Returning {} Stages", cases.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
-        return cases.stream().flatMap(caseData -> caseData.getActiveStages().stream()).collect(Collectors.toSet());
+        try (Stream<CaseData> cases = workstackRepository.findAllActiveByTeamUUID(teams)) {
+            return cases.map(this::updateStages).flatMap(caseData -> caseData.getActiveStages().stream()).collect(Collectors.toSet());
+        }
     }
 
     Set<ActiveStage> getActiveUserStagesWithTeamsForUser(UUID userUuid) {
@@ -144,20 +143,19 @@ public class WorkstackService {
             return new HashSet<>(0);
         }
 
-        Set<CaseData> stages = workstackRepository.findAllActiveByUserUuidAndTeamUuid(userUuid, teams).stream().filter(
+        Set<CaseData> cases = workstackRepository.findAllActiveByUserUuidAndTeamUuid(userUuid, teams).stream().filter(
             c -> !Optional.ofNullable(c.getData("Unworkable")).orElse("").equalsIgnoreCase("true")).collect(
             Collectors.toSet());
 
-        updateStages(stages);
+        updateStages(cases);
 
-        log.info("Returning {} Stages", stages.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
-        return stages.stream().flatMap(caseData -> caseData.getActiveStages().stream()).collect(Collectors.toSet());
+        log.info("Returning {} Stages", cases.size(), value(EVENT, TEAMS_STAGE_LIST_RETRIEVED));
+        return cases.stream().flatMap(caseData -> caseData.getActiveStages().stream()).collect(Collectors.toSet());
     }
 
     private void updateStages(Set<CaseData> cases) {
-        updateContributions(cases);
-
         for (CaseData caseData : cases) {
+            updateContribution(caseData);
             stagePriorityCalculator.updatePriority(caseData, caseData.getType());
             daysElapsedCalculator.updateDaysElapsed(caseData.getDataMap(), caseData.getType());
 
@@ -168,4 +166,16 @@ public class WorkstackService {
         }
     }
 
+    private CaseData updateStages(CaseData caseData) {
+            updateContribution(caseData);
+
+            stagePriorityCalculator.updatePriority(caseData, caseData.getType());
+            daysElapsedCalculator.updateDaysElapsed(caseData.getDataMap(), caseData.getType());
+
+            //TODO: HOCS-5871 Remove after Workflow Implementation released
+            caseData.getActiveStages().forEach(stage -> {
+                caseData.appendTags(stageTagsDecorator.decorateTags(caseData.getDataMap(), stage.getStageType()));
+            });
+            return caseData;
+    }
 }

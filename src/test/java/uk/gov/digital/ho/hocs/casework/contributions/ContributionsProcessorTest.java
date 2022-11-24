@@ -68,24 +68,15 @@ public class ContributionsProcessorTest {
     }
 
     @Test
-    public void shouldReturnIfZeroSomuItems() {
-
-        contributionsProcessor.processContributionsForStages(Collections.emptySet());
-
-        verify(contributionsProcessor).processContributionsForStages(Collections.emptySet());
-        verifyNoMoreInteractions(contributionsProcessor);
-    }
-
-    @Test
     public void shouldNotReturnDataForNonContribution() {
         CaseData caseData = mock(CaseData.class);
 
         when(caseData.getType()).thenReturn("COMP");
         when(caseData.getSomu_items()).thenReturn(Collections.emptySet());
 
-        contributionsProcessor.processContributionsForStages(Set.of(caseData));
+        contributionsProcessor.processContributionsForCase(caseData);
 
-        verify(contributionsProcessor).processContributionsForStages(Set.of(caseData));
+        verify(contributionsProcessor).processContributionsForCase(caseData);
         verifyNoMoreInteractions(contributionsProcessor);
     }
 
@@ -106,9 +97,9 @@ public class ContributionsProcessorTest {
 
         when(infoClient.getStageContributions(activeStage.getStageType())).thenReturn(true);
 
-        contributionsProcessor.processContributionsForStages(Set.of(caseData));
+        contributionsProcessor.processContributionsForCase(caseData);
 
-        verify(contributionsProcessor).processContributionsForStages(Set.of(caseData));
+        verify(contributionsProcessor).processContributionsForCase(caseData);
         verify(contributionsProcessor).calculateDueContributionDate(any());
         verify(contributionsProcessor).highestContributionStatus(any());
         verify(contributionsProcessor).highestContributionStatus(any(), any());
@@ -136,9 +127,9 @@ public class ContributionsProcessorTest {
 
         when(infoClient.getStageContributions(activeStage.getStageType())).thenReturn(true);
 
-        contributionsProcessor.processContributionsForStages(Set.of(caseData));
+        contributionsProcessor.processContributionsForCase(caseData);
 
-        verify(contributionsProcessor).processContributionsForStages(Set.of(caseData));
+        verify(contributionsProcessor).processContributionsForCase(caseData);
         verify(contributionsProcessor).calculateDueContributionDate(any());
         verify(contributionsProcessor).highestContributionStatus(any());
         verify(contributionsProcessor).highestContributionStatus(any(), any());
@@ -166,9 +157,9 @@ public class ContributionsProcessorTest {
 
         when(infoClient.getStageContributions(activeStage.getStageType())).thenReturn(true);
 
-        contributionsProcessor.processContributionsForStages(Set.of(caseData));
+        contributionsProcessor.processContributionsForCase(caseData);
 
-        verify(contributionsProcessor).processContributionsForStages(Set.of(caseData));
+        verify(contributionsProcessor).processContributionsForCase(caseData);
         verify(contributionsProcessor).calculateDueContributionDate(any());
         verify(contributionsProcessor).highestContributionStatus(any());
         verify(contributionsProcessor).highestContributionStatus(any(), any());
@@ -196,9 +187,9 @@ public class ContributionsProcessorTest {
 
         when(infoClient.getStageContributions(activeStage.getStageType())).thenReturn(true);
 
-        contributionsProcessor.processContributionsForStages(Set.of(caseData));
+        contributionsProcessor.processContributionsForCase(caseData);
 
-        verify(contributionsProcessor).processContributionsForStages(Set.of(caseData));
+        verify(contributionsProcessor).processContributionsForCase(caseData);
         verify(contributionsProcessor).calculateDueContributionDate(any());
         verify(contributionsProcessor).highestContributionStatus(any());
         verify(contributionsProcessor).highestContributionStatus(any(), any());

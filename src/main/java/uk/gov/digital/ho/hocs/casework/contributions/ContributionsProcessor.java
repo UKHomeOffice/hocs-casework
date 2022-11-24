@@ -6,6 +6,6 @@ import java.util.Set;
 
 public interface ContributionsProcessor {
 
-    void processContributionsForStages(Set<CaseData> caseData);
+    void processContributionsForCase(CaseData caseData);
 
 }
