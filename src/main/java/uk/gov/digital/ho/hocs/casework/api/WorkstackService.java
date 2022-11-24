@@ -44,9 +44,6 @@ public class WorkstackService {
 
     private final StageService stageService;
 
-    @PersistenceContext
-    protected EntityManager entityManager;
-
     public WorkstackService(WorkstackStageRepository workstackRepository,
                             UserPermissionsService userPermissionsService,
                             StagePriorityCalculator stagePriorityCalculator,
@@ -172,10 +169,6 @@ public class WorkstackService {
     }
 
     private CaseData updateStages(CaseData caseData) {
-
-        if(entityManager != null) {
-            entityManager.detach(caseData);
-        }
 
         updateContribution(caseData);
 
