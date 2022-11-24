@@ -11,6 +11,8 @@ import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -41,6 +43,9 @@ public class WorkstackService {
     private final ContributionsProcessor contributionsProcessor;
 
     private final StageService stageService;
+
+    @PersistenceContext
+    protected EntityManager entityManager;
 
     public WorkstackService(WorkstackStageRepository workstackRepository,
                             UserPermissionsService userPermissionsService,
@@ -167,15 +172,17 @@ public class WorkstackService {
     }
 
     private CaseData updateStages(CaseData caseData) {
-            updateContribution(caseData);
 
-            stagePriorityCalculator.updatePriority(caseData, caseData.getType());
-            daysElapsedCalculator.updateDaysElapsed(caseData.getDataMap(), caseData.getType());
+        entityManager.detach(caseData);
+        updateContribution(caseData);
 
-            //TODO: HOCS-5871 Remove after Workflow Implementation released
-            caseData.getActiveStages().forEach(stage -> {
-                caseData.appendTags(stageTagsDecorator.decorateTags(caseData.getDataMap(), stage.getStageType()));
-            });
-            return caseData;
+        stagePriorityCalculator.updatePriority(caseData, caseData.getType());
+        daysElapsedCalculator.updateDaysElapsed(caseData.getDataMap(), caseData.getType());
+
+        //TODO: HOCS-5871 Remove after Workflow Implementation released
+        caseData.getActiveStages().forEach(stage -> {
+            caseData.appendTags(stageTagsDecorator.decorateTags(caseData.getDataMap(), stage.getStageType()));
+        });
+        return caseData;
     }
 }
