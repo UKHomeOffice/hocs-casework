@@ -12,7 +12,6 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CorrespondentType;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 
@@ -23,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -75,7 +73,7 @@ public class MigrationCaseServiceTest {
         when(migrationStageService.createStageForClosedCase(caseData.getUuid(), STAGE_TYPE)).thenReturn(stage);
 
         MigrationComplaintCorrespondent primaryCorrespondents =  createCorrespondent();
-        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate, primaryCorrespondents);
+        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate, primaryCorrespondents, Collections.emptyList());
 
         // then
         verify(migrationCaseDataService, times(1)).createCompletedCase(caseDataType.getDisplayName(), data,
@@ -98,8 +96,6 @@ public class MigrationCaseServiceTest {
                 "organisation",
                 "telephone",
                 "email",
-                "reference"
-            );
+                "reference");
     }
-
 }

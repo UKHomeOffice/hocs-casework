@@ -20,9 +20,10 @@ import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorre
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
-import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -118,6 +119,24 @@ public class MigrationCaseDataServiceTest {
         //then
         verify(correspondentRepository, times(1)).save(any());
         verify(caseDataRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void shouldCreatedAnAdditionalCorrespondent() {
+        // given
+        Set<Correspondent> correspondents = new HashSet<>();
+        correspondents.add(createCorrespondent());
+        when(correspondentRepository.findAllByCaseUUID(any())).thenReturn(correspondents);
+
+        List<MigrationComplaintCorrespondent> additionalCorrespondents = new ArrayList<>();
+        additionalCorrespondents.add(createMigrationComplaintCorrespondent());
+
+        // when
+        migrationCaseDataService.createAdditionalCorrespondent(additionalCorrespondents, UUID.randomUUID(), UUID.randomUUID());
+
+        //then
+        verify(correspondentRepository, times(1)).save(any());
+        //verify(caseDataRepository, times(1)).save(any());
     }
 
     MigrationComplaintCorrespondent createMigrationComplaintCorrespondent() {

@@ -17,6 +17,7 @@ import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorre
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -151,5 +152,35 @@ public class MigrationCaseDataService {
         auditClient.updateCaseAudit(caseData, stageUUID);
         log.info("Updated Primary Correspondent for Migrated Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID,
             value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
+    }
+
+    void createAdditionalCorrespondent(List<MigrationComplaintCorrespondent> additionalCorrespondents, UUID caseUUID, UUID stageUUID) {
+        for (MigrationComplaintCorrespondent additionalCorrespondent : additionalCorrespondents) {
+            log.debug("Creating Additional Correspondent of Type: {} for Migrated Case: {}", additionalCorrespondent.getCorrespondentType(), caseUUID);
+            Correspondent correspondent = new Correspondent(caseUUID,
+                additionalCorrespondent.getCorrespondentType().toString(),
+                additionalCorrespondent.getFullName(),
+                additionalCorrespondent.getOrganisation(),
+                new Address(additionalCorrespondent.getPostcode(),
+                    additionalCorrespondent.getAddress1(), additionalCorrespondent.getAddress2(), additionalCorrespondent.getAddress3(),
+                    additionalCorrespondent.getCountry()
+                ),
+                additionalCorrespondent.getTelephone(),
+                additionalCorrespondent.getEmail(),
+                additionalCorrespondent.getReference(),
+                additionalCorrespondent.getReference());
+
+            try {
+                correspondentRepository.save(correspondent);
+                auditClient.createCorrespondentAudit(correspondent);
+
+            } catch(DataIntegrityViolationException e) {
+                throw new ApplicationExceptions.EntityCreationException(
+                    String.format("Failed to create correspondent %s for Migrated Case: %s", correspondent.getUuid(), caseUUID),
+                    CORRESPONDENT_CREATE_FAILURE, e);
+            }
+            log.info("Created Correspondent: {} for Migrated Case: {}", correspondent.getUuid(), caseUUID,
+                value(EVENT, CORRESPONDENT_CREATED));
+        }
     }
 }
