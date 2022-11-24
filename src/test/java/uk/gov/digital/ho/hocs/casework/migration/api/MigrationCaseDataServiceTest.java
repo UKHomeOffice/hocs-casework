@@ -126,7 +126,6 @@ public class MigrationCaseDataServiceTest {
         // given
         Set<Correspondent> correspondents = new HashSet<>();
         correspondents.add(createCorrespondent());
-        when(correspondentRepository.findAllByCaseUUID(any())).thenReturn(correspondents);
 
         List<MigrationComplaintCorrespondent> additionalCorrespondents = new ArrayList<>();
         additionalCorrespondents.add(createMigrationComplaintCorrespondent());
