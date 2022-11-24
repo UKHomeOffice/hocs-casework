@@ -22,14 +22,18 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataTag;
+import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseTagRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -94,6 +98,8 @@ public class StageService {
 
     private final DeadlineService deadlineService;
 
+    private final CaseTagRepository caseTagRepository;
+
     private static final Comparator<StageWithCaseData> CREATED_COMPARATOR = Comparator.comparing(
         StageWithCaseData::getCreated);
 
@@ -111,7 +117,8 @@ public class StageService {
                         CaseNoteService caseNoteService,
                         ContributionsProcessor contributionsProcessor,
                         ActionDataDeadlineExtensionService extensionService,
-                        DeadlineService deadlineService) {
+                        DeadlineService deadlineService,
+                        CaseTagRepository caseTagRepository) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -126,6 +133,7 @@ public class StageService {
         this.contributionsProcessor = contributionsProcessor;
         this.extensionService = extensionService;
         this.deadlineService = deadlineService;
+        this.caseTagRepository = caseTagRepository;
     }
 
     /**
