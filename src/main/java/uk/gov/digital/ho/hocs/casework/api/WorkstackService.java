@@ -173,7 +173,10 @@ public class WorkstackService {
 
     private CaseData updateStages(CaseData caseData) {
 
-        entityManager.detach(caseData);
+        if(entityManager != null) {
+            entityManager.detach(caseData);
+        }
+
         updateContribution(caseData);
 
         stagePriorityCalculator.updatePriority(caseData, caseData.getType());
