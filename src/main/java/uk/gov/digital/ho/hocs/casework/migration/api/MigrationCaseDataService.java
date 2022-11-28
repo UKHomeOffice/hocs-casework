@@ -110,18 +110,7 @@ public class MigrationCaseDataService {
 
     void createPrimaryCorrespondent(MigrationComplaintCorrespondent primaryCorrespondent, UUID caseUUID, UUID stageUUID) {
         log.debug("Creating Correspondent of Type: {} for Migrated Case: {}", primaryCorrespondent.getCorrespondentType(), caseUUID);
-        Correspondent correspondent = new Correspondent(caseUUID,
-            primaryCorrespondent.getCorrespondentType().toString(),
-            primaryCorrespondent.getFullName(),
-            primaryCorrespondent.getOrganisation(),
-            new Address(primaryCorrespondent.getPostcode(),
-                primaryCorrespondent.getAddress1(), primaryCorrespondent.getAddress2(), primaryCorrespondent.getAddress3(),
-                primaryCorrespondent.getCountry()
-            ),
-            primaryCorrespondent.getTelephone(),
-            primaryCorrespondent.getEmail(),
-            primaryCorrespondent.getReference(),
-            primaryCorrespondent.getReference());
+        Correspondent correspondent = getCorrespondent(primaryCorrespondent, caseUUID);
 
         try {
             correspondentRepository.save(correspondent);
@@ -157,18 +146,7 @@ public class MigrationCaseDataService {
     void createAdditionalCorrespondent(List<MigrationComplaintCorrespondent> additionalCorrespondents, UUID caseUUID, UUID stageUUID) {
         for (MigrationComplaintCorrespondent additionalCorrespondent : additionalCorrespondents) {
             log.debug("Creating Additional Correspondent of Type: {} for Migrated Case: {}", additionalCorrespondent.getCorrespondentType(), caseUUID);
-            Correspondent correspondent = new Correspondent(caseUUID,
-                additionalCorrespondent.getCorrespondentType().toString(),
-                additionalCorrespondent.getFullName(),
-                additionalCorrespondent.getOrganisation(),
-                new Address(additionalCorrespondent.getPostcode(),
-                    additionalCorrespondent.getAddress1(), additionalCorrespondent.getAddress2(), additionalCorrespondent.getAddress3(),
-                    additionalCorrespondent.getCountry()
-                ),
-                additionalCorrespondent.getTelephone(),
-                additionalCorrespondent.getEmail(),
-                additionalCorrespondent.getReference(),
-                additionalCorrespondent.getReference());
+            Correspondent correspondent = getCorrespondent(additionalCorrespondent, caseUUID);
 
             try {
                 correspondentRepository.save(correspondent);
@@ -182,5 +160,21 @@ public class MigrationCaseDataService {
             log.info("Created Correspondent: {} for Migrated Case: {}", correspondent.getUuid(), caseUUID,
                 value(EVENT, CORRESPONDENT_CREATED));
         }
+    }
+
+    private Correspondent getCorrespondent(MigrationComplaintCorrespondent primaryCorrespondent, UUID caseUUID) {
+        Correspondent correspondent = new Correspondent(caseUUID,
+            primaryCorrespondent.getCorrespondentType().toString(),
+            primaryCorrespondent.getFullName(),
+            primaryCorrespondent.getOrganisation(),
+            new Address(primaryCorrespondent.getPostcode(),
+                primaryCorrespondent.getAddress1(), primaryCorrespondent.getAddress2(), primaryCorrespondent.getAddress3(),
+                primaryCorrespondent.getCountry()
+            ),
+            primaryCorrespondent.getTelephone(),
+            primaryCorrespondent.getEmail(),
+            primaryCorrespondent.getReference(),
+            primaryCorrespondent.getReference());
+        return correspondent;
     }
 }
