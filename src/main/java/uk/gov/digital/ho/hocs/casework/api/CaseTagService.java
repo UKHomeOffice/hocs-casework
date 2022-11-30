@@ -22,7 +22,11 @@ public class CaseTagService {
 
     public CaseDataTag addTagToCase(UUID caseUuid, String tag) {
         try {
-            return caseTagRepository.save(new CaseDataTag(caseUuid, tag));
+            CaseDataTag caseDataTag = caseTagRepository.findCaseDataTagByCaseUuid(caseUuid, tag);
+            if(caseDataTag == null) {
+                caseDataTag = caseTagRepository.save(new CaseDataTag(caseUuid, tag));
+            }
+            return caseDataTag;
         } catch (DataIntegrityViolationException ex) {
             throw new ApplicationExceptions.DatabaseConflictException("Failed to add data tag for case",
                 CASE_TAG_CONFLICT, ex);
