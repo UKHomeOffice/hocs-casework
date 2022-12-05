@@ -162,19 +162,19 @@ public class MigrationCaseDataService {
         }
     }
 
-    private Correspondent getCorrespondent(MigrationComplaintCorrespondent primaryCorrespondent, UUID caseUUID) {
+    private Correspondent getCorrespondent(MigrationComplaintCorrespondent complaintCorrespondent, UUID caseUUID) {
         Correspondent correspondent = new Correspondent(caseUUID,
-            primaryCorrespondent.getCorrespondentType().toString(),
-            primaryCorrespondent.getFullName(),
-            primaryCorrespondent.getOrganisation(),
-            new Address(primaryCorrespondent.getPostcode(),
-                primaryCorrespondent.getAddress1(), primaryCorrespondent.getAddress2(), primaryCorrespondent.getAddress3(),
-                primaryCorrespondent.getCountry()
+            complaintCorrespondent.getCorrespondentType().toString(),
+            complaintCorrespondent.getFullName(),
+            complaintCorrespondent.getOrganisation(),
+            new Address(complaintCorrespondent.getPostcode(),
+                complaintCorrespondent.getAddress1(), complaintCorrespondent.getAddress2(), complaintCorrespondent.getAddress3(),
+                complaintCorrespondent.getCountry()
             ),
-            primaryCorrespondent.getTelephone(),
-            primaryCorrespondent.getEmail(),
-            primaryCorrespondent.getReference(),
-            primaryCorrespondent.getReference());
+            complaintCorrespondent.getTelephone(),
+            complaintCorrespondent.getEmail(),
+            complaintCorrespondent.getReference(),
+            complaintCorrespondent.getReference());
         return correspondent;
     }
 }
