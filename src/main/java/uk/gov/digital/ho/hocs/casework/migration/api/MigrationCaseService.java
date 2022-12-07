@@ -8,6 +8,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -29,13 +30,13 @@ public class MigrationCaseService {
     }
 
     CaseData createMigrationCase(String caseType, String stageType, Map<String, String> data, LocalDate dateReceived,
-                                 MigrationComplaintCorrespondent primaryCorrespondent) {
+                                 MigrationComplaintCorrespondent primaryCorrespondent, List<MigrationComplaintCorrespondent> additionalCorrespondents) {
         log.debug("Migrating Case of type: {}", caseType);
 
         CaseData caseData = migrationCaseDataService.createCompletedCase(caseType, data, dateReceived);
         Stage stage = migrationStageService.createStageForClosedCase(caseData.getUuid(), stageType);
         migrationCaseDataService.createPrimaryCorrespondent(primaryCorrespondent, caseData.getUuid(), stage.getUuid());
-
+        migrationCaseDataService.createAdditionalCorrespondent(additionalCorrespondents, caseData.getUuid(), stage.getUuid());
         return caseData;
     }
 }
