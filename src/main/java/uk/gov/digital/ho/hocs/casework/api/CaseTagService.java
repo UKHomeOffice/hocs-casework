@@ -24,7 +24,8 @@ public class CaseTagService {
 
     public CaseDataTag addTagToCase(UUID caseUuid, String tag) {
         try {
-            CaseDataTag caseDataTag = caseTagRepository.findCaseDataTagByCaseUuid(caseUuid, tag);
+            CaseDataTag caseDataTag = caseTagRepository.findByCaseUuidAndTag(caseUuid, tag);
+
             if(caseDataTag == null) {
                 caseDataTag = caseTagRepository.save(new CaseDataTag(caseUuid, tag));
                 log.info("Case Data tag successfully created for case {} and tag - {}", caseUuid, tag);

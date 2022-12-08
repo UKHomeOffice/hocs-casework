@@ -18,8 +18,7 @@ public interface CaseTagRepository extends org.springframework.data.repository.R
     @Modifying
     CaseDataTag save(CaseDataTag entity);
 
-    @Query(value = "select  cdt.*  from  case_data_tag cdt where case_uuid = ?1  and tag = ?2", nativeQuery = true)
-    CaseDataTag findCaseDataTagByCaseUuid(UUID caseUuid, String tag);
+    CaseDataTag findByCaseUuidAndTag(UUID caseUuid, String tag);
 
     Set<CaseDataTag> findAllByCaseUuidIn(Set<UUID> caseUuids);
 
