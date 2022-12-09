@@ -41,6 +41,7 @@ public class CopyCompToComp2 extends AbstractCaseCopyStrategy implements CaseCop
         if (toCase.getPrimaryCorrespondentUUID()!=null) {
             toCase.update("Correspondents", toCase.getPrimaryCorrespondentUUID().toString());
         }
+        toCase.update("XOriginatedFrom", "Escalated");
         caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
     }
 
