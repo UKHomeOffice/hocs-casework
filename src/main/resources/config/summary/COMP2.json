@@ -440,6 +440,26 @@
       ],
       "name": "BusAreaBasedOnDirectorate",
       "label": "Business Area"
+    },
+    {
+      "choices": [
+        {
+          "label": "Sopra Steria",
+          "value": "YesSopraSteria"
+        },
+        {
+          "label": "Not applicable",
+          "value": "NoClose"
+        }
+      ],
+      "name": "CaseCreateContinue",
+      "label": "Complaint origin",
+      "visibilityConditions": [
+        {
+          "conditionPropertyName": "CaseCreateContinue",
+          "conditionPropertyValue": "YesSopraSteria"
+        }
+      ]
     }
   ]
 }
