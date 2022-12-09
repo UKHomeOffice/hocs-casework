@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -48,20 +49,38 @@ public class MigrationCaseResourceTest {
 
         //given
         CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
-        CreateMigrationCaseRequest request = new CreateMigrationCaseRequest(caseDataType.getDisplayCode(), data,
-            dateArg, null, STAGE_TYPE, null, null);
-        when(migrationCaseService.createMigrationCase(caseDataType.getDisplayCode(), STAGE_TYPE, data,
-            dateArg, null, null)).thenReturn(caseData);
+        CreateMigrationCaseRequest request = new CreateMigrationCaseRequest(
+            caseDataType.getDisplayCode(),
+            data,
+            dateArg,
+            null,
+            STAGE_TYPE,
+            null,
+            null,
+            emptyList());
+        when(migrationCaseService.createMigrationCase(
+            caseDataType.getDisplayCode(),
+            STAGE_TYPE,
+            data,
+            dateArg,
+            null,
+            null,
+            emptyList())).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = migrationCaseResource.createMigrationCase(request);
 
-        verify(migrationCaseService, times(1)).createMigrationCase(caseDataType.getDisplayCode(), STAGE_TYPE, data,
-            dateArg, null, null);
+        verify(migrationCaseService, times(1)).createMigrationCase(
+            caseDataType.getDisplayCode(),
+            STAGE_TYPE,
+            data,
+            dateArg,
+            null,
+            null,
+            emptyList());
 
         verifyNoMoreInteractions(migrationCaseService);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
-
 }

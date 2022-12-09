@@ -32,4 +32,7 @@ public class CreateMigrationCaseRequest {
 
     @JsonProperty("additionalCorrespondents")
     private List<MigrationComplaintCorrespondent> additionalCorrespondents;
+
+    @JsonProperty("caseAttachments")
+    private List<CaseAttachment> attachments;
 }

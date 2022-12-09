@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
+import uk.gov.digital.ho.hocs.casework.client.documentclient.dto.CreateCaseworkDocumentRequest;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
@@ -13,6 +15,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
@@ -45,7 +48,10 @@ public class MigrationCaseDataService {
 
     protected final InfoClient infoClient;
 
+    protected final DocumentClient documentClient;
+
     public MigrationCaseDataService(CaseDataRepository caseDataRepository,
+                                    DocumentClient documentClient,
                                     InfoClient infoClient,
                                     MigrationAuditClient migrationAuditClient,
                                     AuditClient auditClient,
@@ -55,6 +61,7 @@ public class MigrationCaseDataService {
         this.migrationAuditClient = migrationAuditClient;
         this.auditClient = auditClient;
         this.correspondentRepository = correspondentRepository;
+        this.documentClient = documentClient;
     }
 
     protected CaseData getCaseData(UUID caseUUID) {
@@ -159,6 +166,18 @@ public class MigrationCaseDataService {
             }
             log.info("Created Correspondent: {} for Migrated Case: {}", correspondent.getUuid(), caseUUID,
                 value(EVENT, CORRESPONDENT_CREATED));
+        }
+    }
+
+    void createCaseAttachments(UUID caseId, List<CaseAttachment> caseAttachemnts) {
+        for(CaseAttachment attachment : caseAttachemnts) {
+            CreateCaseworkDocumentRequest document =
+                new CreateCaseworkDocumentRequest(
+                    attachment.getDisplayName(),
+                    attachment.getType(),
+                    attachment.getDocumentPath(),
+                    caseId);
+            documentClient.createDocument(caseId, document);
         }
     }
 
