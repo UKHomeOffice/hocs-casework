@@ -2101,7 +2101,6 @@
         "label": "Port Reference"
       },
       {
-        "component": "radio",
         "props": {
           "choices": [
             {
@@ -2113,13 +2112,18 @@
               "value": "Ex-Gratia"
             },
             {
-              "label": "Minor Misconduct",
+              "label": "Minor misconduct",
               "value": "MinorMisconduct"
+            },
+            {
+              "label": "Serious misconduct",
+              "value": "SeriousMisconduct"
             }
           ]
         },
-        "name": "CompType",
-        "label": "Complaint Type"
+        "component": "radio",
+        "label": "Complaint type",
+        "name": "CompType"
       },
       {
         "component": "radio",
