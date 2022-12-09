@@ -11,10 +11,13 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseRequest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Collections.emptyList;
@@ -39,9 +42,14 @@ public class MigrationCaseResourceTest {
 
     private MigrationCaseResource migrationCaseResource;
 
+    private List<CaseAttachment> caseAttachments;
+
     @Before
     public void setUp() {
         migrationCaseResource = new MigrationCaseResource(migrationCaseService);
+        CaseAttachment caseAttachment1 = new CaseAttachment("","","");
+        CaseAttachment caseAttachment2 = new CaseAttachment("","","");
+        caseAttachments = new ArrayList<>(List.of(caseAttachment1,caseAttachment2));
     }
 
     @Test
@@ -57,7 +65,7 @@ public class MigrationCaseResourceTest {
             STAGE_TYPE,
             null,
             null,
-            emptyList());
+            caseAttachments);
         when(migrationCaseService.createMigrationCase(
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
@@ -65,7 +73,7 @@ public class MigrationCaseResourceTest {
             dateArg,
             null,
             null,
-            emptyList())).thenReturn(caseData);
+            caseAttachments)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = migrationCaseResource.createMigrationCase(request);
 
@@ -76,7 +84,7 @@ public class MigrationCaseResourceTest {
             dateArg,
             null,
             null,
-            emptyList());
+            caseAttachments);
 
         verifyNoMoreInteractions(migrationCaseService);
 
