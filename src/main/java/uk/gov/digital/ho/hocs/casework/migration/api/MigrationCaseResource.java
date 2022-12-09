@@ -27,7 +27,8 @@ public class MigrationCaseResource {
             request.getData(),
             request.getDateReceived(),
             request.getPrimaryCorrespondent(),
-            request.getAdditionalCorrespondents());
+            request.getAdditionalCorrespondents(),
+            request.getAttachments());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
 }
