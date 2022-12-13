@@ -78,7 +78,6 @@
         "label": "Port Reference"
       },
       {
-        "component": "radio",
         "props": {
           "choices": [
             {
@@ -90,13 +89,18 @@
               "value": "Ex-Gratia"
             },
             {
-              "label": "Minor Misconduct",
+              "label": "Minor misconduct",
               "value": "MinorMisconduct"
+            },
+            {
+              "label": "Serious misconduct",
+              "value": "SeriousMisconduct"
             }
           ]
         },
-        "name": "CompType",
-        "label": "Complaint Type"
+        "component": "radio",
+        "label": "Complaint type",
+        "name": "CompType"
       },
       {
         "component": "radio",
@@ -535,6 +539,25 @@
         },
         "name": "OwningCSU",
         "label": "Owning CSU"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Sopra Steria",
+              "value": "YesSopraSteria"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "CaseCreateContinue",
+              "conditionPropertyValue": "YesSopraSteria"
+            }
+          ]
+        },
+        "name": "CaseCreateContinue",
+        "label": "Compliant origin"
       }
     ],
     "COMP2_MINORMISCONDUCT_TRIAGE": [
