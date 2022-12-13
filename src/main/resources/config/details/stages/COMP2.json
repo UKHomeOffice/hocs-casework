@@ -539,6 +539,25 @@
         },
         "name": "OwningCSU",
         "label": "Owning CSU"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Sopra Steria",
+              "value": "YesSopraSteria"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "CaseCreateContinue",
+              "conditionPropertyValue": "YesSopraSteria"
+            }
+          ]
+        },
+        "name": "CaseCreateContinue",
+        "label": "Compliant origin"
       }
     ],
     "COMP2_MINORMISCONDUCT_TRIAGE": [
