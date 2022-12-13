@@ -44,6 +44,7 @@ public class MigrationCaseService {
         migrationCaseDataService.createCaseAttachments(caseData.getUuid(), caseAttachments);
         migrationCaseDataService.createPrimaryCorrespondent(primaryCorrespondent, caseData.getUuid(), stage.getUuid());
         migrationCaseDataService.createAdditionalCorrespondent(additionalCorrespondents, caseData.getUuid(), stage.getUuid());
+        log.debug("Migrated Case ID: {} at Stage ID: {} with Case Reference: {}", caseData.getUuid(), stage.getUuid(), caseData.getReference());
         return caseData;
     }
 }
