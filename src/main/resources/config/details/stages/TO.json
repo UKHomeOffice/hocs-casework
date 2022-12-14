@@ -144,16 +144,6 @@
         "props": {
           "conditionChoices": [
             {
-              "choices": "TO_ENQUIRY_REASON_COMP_HAND",
-              "conditionPropertyName": "EnquirySubject",
-              "conditionPropertyValue": "COMP_HAND"
-            },
-            {
-              "choices": "TO_ENQUIRY_REASON_COMP_REJ",
-              "conditionPropertyName": "EnquirySubject",
-              "conditionPropertyValue": "COMP_REJ"
-            },
-            {
               "choices": "TO_ENQUIRY_REASON_DOC",
               "conditionPropertyName": "EnquirySubject",
               "conditionPropertyValue": "DOCUMENTATION"
