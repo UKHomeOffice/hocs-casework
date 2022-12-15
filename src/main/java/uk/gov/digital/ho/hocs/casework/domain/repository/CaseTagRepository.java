@@ -18,6 +18,8 @@ public interface CaseTagRepository extends org.springframework.data.repository.R
     @Modifying
     CaseDataTag save(CaseDataTag entity);
 
+    CaseDataTag findByCaseUuidAndTag(UUID caseUuid, String tag);
+
     Set<CaseDataTag> findAllByCaseUuidIn(Set<UUID> caseUuids);
 
 }
