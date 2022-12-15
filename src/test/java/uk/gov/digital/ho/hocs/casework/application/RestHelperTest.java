@@ -25,13 +25,11 @@ public class RestHelperTest {
     @Mock
     private RequestData requestData;
 
-    private String basicAuth = "auth";
-
     private RestHelper restHelper;
 
     @Before
     public void setup() {
-        restHelper = new RestHelper(restTemplate, basicAuth, requestData);
+        restHelper = new RestHelper(restTemplate, requestData);
     }
 
     @Test
