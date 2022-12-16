@@ -31,11 +31,11 @@ dependencies {
     implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.13'
 
-    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.1'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.2'
     implementation 'org.json:json:20220924'
 
     implementation 'org.flywaydb:flyway-core:8.5.13'
-    runtimeOnly 'org.postgresql:postgresql:42.5.0'
+    runtimeOnly 'org.postgresql:postgresql:42.5.1'
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"

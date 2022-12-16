@@ -2101,7 +2101,6 @@
         "label": "Port Reference"
       },
       {
-        "component": "radio",
         "props": {
           "choices": [
             {
@@ -2113,13 +2112,18 @@
               "value": "Ex-Gratia"
             },
             {
-              "label": "Minor Misconduct",
+              "label": "Minor misconduct",
               "value": "MinorMisconduct"
+            },
+            {
+              "label": "Serious misconduct",
+              "value": "SeriousMisconduct"
             }
           ]
         },
-        "name": "CompType",
-        "label": "Complaint Type"
+        "component": "radio",
+        "label": "Complaint type",
+        "name": "CompType"
       },
       {
         "component": "radio",
@@ -2550,6 +2554,57 @@
           ]
         },
         "name": "CatRacism"
+      },
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault",
+              "name": "CatAssault"
+            },
+            {
+              "label": "Fraud / corruption",
+              "value": "Fraud",
+              "name": "CatFraud"
+            },
+            {
+              "label": "Other unprofessionalism",
+              "value": "OtherUnprof",
+              "name": "CatOtherUnprof"
+            },
+            {
+              "label": "Racism / discrimination",
+              "value": "Racism",
+              "name": "CatRacism"
+            },
+            {
+              "label": "Rudeness",
+              "value": "Rude",
+              "name": "CatRude"
+            },
+            {
+              "label": "Sexual assault",
+              "value": "SexAssault",
+              "name": "CatSexAssault"
+            },
+            {
+              "label": "Theft",
+              "value": "Theft",
+              "name": "CatTheft"
+            },
+            {
+              "label": "Unfair treatment",
+              "value": "Unfair",
+              "name": "CatUnfair"
+            }
+          ],
+          "showLabel": false,
+          "saveSeparately": true
+        },
+        "component": "checkbox-group",
+        "name": "CompCategoriesSerious",
+        "label": "Serious misconduct"
       },
       {
         "component": "dropdown",

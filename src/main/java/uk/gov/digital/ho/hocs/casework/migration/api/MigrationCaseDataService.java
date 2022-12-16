@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
+import uk.gov.digital.ho.hocs.casework.client.documentclient.dto.CreateCaseworkDocumentRequest;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
@@ -13,10 +15,12 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -44,7 +48,10 @@ public class MigrationCaseDataService {
 
     protected final InfoClient infoClient;
 
+    protected final DocumentClient documentClient;
+
     public MigrationCaseDataService(CaseDataRepository caseDataRepository,
+                                    DocumentClient documentClient,
                                     InfoClient infoClient,
                                     MigrationAuditClient migrationAuditClient,
                                     AuditClient auditClient,
@@ -54,6 +61,7 @@ public class MigrationCaseDataService {
         this.migrationAuditClient = migrationAuditClient;
         this.auditClient = auditClient;
         this.correspondentRepository = correspondentRepository;
+        this.documentClient = documentClient;
     }
 
     protected CaseData getCaseData(UUID caseUUID) {
@@ -109,18 +117,7 @@ public class MigrationCaseDataService {
 
     void createPrimaryCorrespondent(MigrationComplaintCorrespondent primaryCorrespondent, UUID caseUUID, UUID stageUUID) {
         log.debug("Creating Correspondent of Type: {} for Migrated Case: {}", primaryCorrespondent.getCorrespondentType(), caseUUID);
-        Correspondent correspondent = new Correspondent(caseUUID,
-            primaryCorrespondent.getCorrespondentType().toString(),
-            primaryCorrespondent.getFullName(),
-            primaryCorrespondent.getOrganisation(),
-            new Address(primaryCorrespondent.getPostcode(),
-                primaryCorrespondent.getAddress1(), primaryCorrespondent.getAddress2(), primaryCorrespondent.getAddress3(),
-                primaryCorrespondent.getCountry()
-            ),
-            primaryCorrespondent.getTelephone(),
-            primaryCorrespondent.getEmail(),
-            primaryCorrespondent.getReference(),
-            primaryCorrespondent.getReference());
+        Correspondent correspondent = getCorrespondent(primaryCorrespondent, caseUUID);
 
         try {
             correspondentRepository.save(correspondent);
@@ -151,5 +148,52 @@ public class MigrationCaseDataService {
         auditClient.updateCaseAudit(caseData, stageUUID);
         log.info("Updated Primary Correspondent for Migrated Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID,
             value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
+    }
+
+    void createAdditionalCorrespondent(List<MigrationComplaintCorrespondent> additionalCorrespondents, UUID caseUUID, UUID stageUUID) {
+        for (MigrationComplaintCorrespondent additionalCorrespondent : additionalCorrespondents) {
+            log.debug("Creating Additional Correspondent of Type: {} for Migrated Case: {}", additionalCorrespondent.getCorrespondentType(), caseUUID);
+            Correspondent correspondent = getCorrespondent(additionalCorrespondent, caseUUID);
+
+            try {
+                correspondentRepository.save(correspondent);
+                auditClient.createCorrespondentAudit(correspondent);
+
+            } catch(DataIntegrityViolationException e) {
+                throw new ApplicationExceptions.EntityCreationException(
+                    String.format("Failed to create correspondent %s for Migrated Case: %s", correspondent.getUuid(), caseUUID),
+                    CORRESPONDENT_CREATE_FAILURE, e);
+            }
+            log.info("Created Correspondent: {} for Migrated Case: {}", correspondent.getUuid(), caseUUID,
+                value(EVENT, CORRESPONDENT_CREATED));
+        }
+    }
+
+    void createCaseAttachments(UUID caseId, List<CaseAttachment> caseAttachemnts) {
+        for(CaseAttachment attachment : caseAttachemnts) {
+            CreateCaseworkDocumentRequest document =
+                new CreateCaseworkDocumentRequest(
+                    attachment.getDisplayName(),
+                    attachment.getType(),
+                    attachment.getDocumentPath(),
+                    caseId);
+            documentClient.createDocument(caseId, document);
+        }
+    }
+
+    private Correspondent getCorrespondent(MigrationComplaintCorrespondent complaintCorrespondent, UUID caseUUID) {
+        Correspondent correspondent = new Correspondent(caseUUID,
+            complaintCorrespondent.getCorrespondentType().toString(),
+            complaintCorrespondent.getFullName(),
+            complaintCorrespondent.getOrganisation(),
+            new Address(complaintCorrespondent.getPostcode(),
+                complaintCorrespondent.getAddress1(), complaintCorrespondent.getAddress2(), complaintCorrespondent.getAddress3(),
+                complaintCorrespondent.getCountry()
+            ),
+            complaintCorrespondent.getTelephone(),
+            complaintCorrespondent.getEmail(),
+            complaintCorrespondent.getReference(),
+            complaintCorrespondent.getReference());
+        return correspondent;
     }
 }

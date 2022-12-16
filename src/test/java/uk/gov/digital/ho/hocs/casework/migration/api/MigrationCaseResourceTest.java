@@ -11,12 +11,16 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseRequest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -38,9 +42,14 @@ public class MigrationCaseResourceTest {
 
     private MigrationCaseResource migrationCaseResource;
 
+    private List<CaseAttachment> caseAttachments;
+
     @Before
     public void setUp() {
         migrationCaseResource = new MigrationCaseResource(migrationCaseService);
+        CaseAttachment caseAttachment1 = new CaseAttachment("","","");
+        CaseAttachment caseAttachment2 = new CaseAttachment("","","");
+        caseAttachments = new ArrayList<>(List.of(caseAttachment1,caseAttachment2));
     }
 
     @Test
@@ -48,20 +57,38 @@ public class MigrationCaseResourceTest {
 
         //given
         CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
-        CreateMigrationCaseRequest request = new CreateMigrationCaseRequest(caseDataType.getDisplayCode(), data,
-            dateArg, null, STAGE_TYPE, null);
-        when(migrationCaseService.createMigrationCase(caseDataType.getDisplayCode(), STAGE_TYPE, data,
-            dateArg, null)).thenReturn(caseData);
+        CreateMigrationCaseRequest request = new CreateMigrationCaseRequest(
+            caseDataType.getDisplayCode(),
+            data,
+            dateArg,
+            null,
+            STAGE_TYPE,
+            null,
+            null,
+            caseAttachments);
+        when(migrationCaseService.createMigrationCase(
+            caseDataType.getDisplayCode(),
+            STAGE_TYPE,
+            data,
+            dateArg,
+            null,
+            null,
+            caseAttachments)).thenReturn(caseData);
 
         ResponseEntity<CreateCaseResponse> response = migrationCaseResource.createMigrationCase(request);
 
-        verify(migrationCaseService, times(1)).createMigrationCase(caseDataType.getDisplayCode(), STAGE_TYPE, data,
-            dateArg, null);
+        verify(migrationCaseService, times(1)).createMigrationCase(
+            caseDataType.getDisplayCode(),
+            STAGE_TYPE,
+            data,
+            dateArg,
+            null,
+            null,
+            caseAttachments);
 
         verifyNoMoreInteractions(migrationCaseService);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
-
 }

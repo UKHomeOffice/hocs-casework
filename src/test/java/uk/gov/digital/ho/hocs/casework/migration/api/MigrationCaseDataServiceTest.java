@@ -8,6 +8,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
+import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
+import uk.gov.digital.ho.hocs.casework.client.documentclient.dto.CreateCaseworkDocumentRequest;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
@@ -15,14 +17,16 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CorrespondentType;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
-import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -57,9 +61,19 @@ public class MigrationCaseDataServiceTest {
     @Mock
     private AuditClient auditClient;
 
+    @Mock
+    private DocumentClient documentClient;
+
     @Before
     public void setUp() {
-        this.migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, infoClient, migrationAuditClient, auditClient, correspondentRepository);
+        this.migrationCaseDataService = new MigrationCaseDataService(
+            caseDataRepository,
+            documentClient,
+            infoClient,
+            migrationAuditClient,
+            auditClient,
+            correspondentRepository
+            );
     }
 
     @Test
@@ -118,6 +132,33 @@ public class MigrationCaseDataServiceTest {
         //then
         verify(correspondentRepository, times(1)).save(any());
         verify(caseDataRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void shouldCreateAnAdditionalCorrespondent() {
+        // given
+        Set<Correspondent> correspondents = new HashSet<>();
+        correspondents.add(createCorrespondent());
+
+        List<MigrationComplaintCorrespondent> additionalCorrespondents = new ArrayList<>();
+        additionalCorrespondents.add(createMigrationComplaintCorrespondent());
+
+        // when
+        migrationCaseDataService.createAdditionalCorrespondent(additionalCorrespondents, UUID.randomUUID(), UUID.randomUUID());
+
+        //then
+        verify(correspondentRepository, times(1)).save(any());
+    }
+
+    @Test()
+    public void shouldAddCaseAttachments() {
+        UUID caseId = UUID.randomUUID();
+        CaseAttachment caseAttachment1 = new CaseAttachment("","","");
+        CaseAttachment caseAttachment2 = new CaseAttachment("","","");
+        List<CaseAttachment> caseAttachments = new ArrayList<>(List.of(caseAttachment1,caseAttachment2));
+        migrationCaseDataService.createCaseAttachments(caseId, caseAttachments);
+
+        verify(documentClient, times(2)).createDocument(any(UUID.class), any(CreateCaseworkDocumentRequest.class));
     }
 
     MigrationComplaintCorrespondent createMigrationComplaintCorrespondent() {
