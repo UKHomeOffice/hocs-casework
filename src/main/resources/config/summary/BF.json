@@ -292,6 +292,22 @@
     {
       "name": "TransferToCaseRef",
       "label": "Transferred to case reference"
+    },
+    {
+      "name": "ComplainantHORef",
+      "label": "Home Office Reference"
+    },
+    {
+      "name": "ComplainantPortRef",
+      "label": "Port Reference"
+    },
+    {
+      "name": "PrevCompRef",
+      "label": "Previous Complaint Reference"
+    },
+    {
+      "name": "3rdPartyRef",
+      "label": "Third Party Reference"
     }
   ]
 }
