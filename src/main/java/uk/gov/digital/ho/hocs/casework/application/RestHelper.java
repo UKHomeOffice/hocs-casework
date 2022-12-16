@@ -21,18 +21,14 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 @Component
 public class RestHelper {
 
-    private String basicAuth;
-
     private RestTemplate restTemplate;
 
     private RequestData requestData;
 
     @Autowired
     public RestHelper(RestTemplate restTemplate,
-                      @Value("${hocs.basicauth}") String basicAuth,
                       RequestData requestData) {
         this.restTemplate = restTemplate;
-        this.basicAuth = basicAuth;
         this.requestData = requestData;
     }
 
@@ -85,16 +81,10 @@ public class RestHelper {
     private HttpHeaders createAuthHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.add(AUTHORIZATION, getBasicAuth());
         headers.add(RequestData.GROUP_HEADER, requestData.groups());
         headers.add(RequestData.USER_ID_HEADER, requestData.userId());
         headers.add(RequestData.CORRELATION_ID_HEADER, requestData.correlationId());
         return headers;
-    }
-
-    private String getBasicAuth() {
-        return String.format("Basic %s",
-            Base64.getEncoder().encodeToString(basicAuth.getBytes(Charset.forName("UTF-8"))));
     }
 
     private String getFileExtension(String fileName) {

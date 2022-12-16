@@ -17,12 +17,17 @@
           "value": "Ex-Gratia"
         },
         {
-          "label": "Minor Misconduct",
+          "label": "Minor misconduct",
           "value": "MinorMisconduct"
+        },
+        {
+          "label": "Serious misconduct",
+          "value": "SeriousMisconduct"
         }
       ],
-      "name": "CompType",
-      "label": "Complaint Type"
+      "component": "radio",
+      "label": "Complaint type",
+      "name": "CompType"
     },
     {
       "choices": [
@@ -440,6 +445,26 @@
       ],
       "name": "BusAreaBasedOnDirectorate",
       "label": "Business Area"
+    },
+    {
+      "choices": [
+        {
+          "label": "Sopra Steria",
+          "value": "YesSopraSteria"
+        },
+        {
+          "label": "Not applicable",
+          "value": "NoClose"
+        }
+      ],
+      "name": "CaseCreateContinue",
+      "label": "Complaint origin",
+      "visibilityConditions": [
+        {
+          "conditionPropertyName": "CaseCreateContinue",
+          "conditionPropertyValue": "YesSopraSteria"
+        }
+      ]
     }
   ]
 }

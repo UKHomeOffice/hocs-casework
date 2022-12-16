@@ -16,7 +16,7 @@ public class CopyCompToComp2 extends AbstractCaseCopyStrategy implements CaseCop
         "CatDelay", "CatFraud", "CatTheft", "CompType", "Severity", "CatRacism", "CatUnfair", "EnqReason", "OwningCSU",
         "CatAssault", "CatCCAvail", "3rdPartyRef", "CaseSummary", "CatAdminErr", "CatCCHandle", "CatPoorComm",
         "LoaRequired", "PrevUkviRef", "CatCustodyBF", "CatWrongInfo", "CatSexAssault", "CatCCProvMinor",
-        "CatOtherUnprof", "ComplainantDOB", "ComplainantHORef", "ComplainantGender", "ComplainantPortRef",
+        "CatOtherUnprof", "ComplainantDOB", "ComplainantHORef", "ComplainantPortRef",
         "SeverityVulnerable", "SeveritySafeGuarding", "ComplainantCompanyName", "ComplainantNationality",
         "Directorate" };
 
@@ -41,6 +41,7 @@ public class CopyCompToComp2 extends AbstractCaseCopyStrategy implements CaseCop
         if (toCase.getPrimaryCorrespondentUUID()!=null) {
             toCase.update("Correspondents", toCase.getPrimaryCorrespondentUUID().toString());
         }
+        toCase.update("XOriginatedFrom", "Escalated");
         caseDataService.updateCaseData(toCase.getUuid(), null, toCase.getDataMap());
     }
 

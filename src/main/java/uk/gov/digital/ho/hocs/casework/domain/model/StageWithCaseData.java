@@ -23,8 +23,10 @@ import javax.persistence.Transient;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
@@ -82,10 +84,9 @@ public class StageWithCaseData extends BaseStage {
     private String somu;
 
     @Getter
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "case_uuid", referencedColumnName = "case_uuid")
-    @Where(clause = "deleted_on IS NULL")
-    private List<CaseDataTag> tag;
+    @Setter
+    @Transient
+    private Set<CaseDataTag> tag = new HashSet<>();
 
     @Getter
     @Setter
@@ -139,7 +140,7 @@ public class StageWithCaseData extends BaseStage {
         this.teamUUID = teamUUID;
         this.userUUID = userUUID;
         this.data = new HashMap<>();
-        this.tag = new ArrayList<>();
+        this.tag = new HashSet<>();
     }
 
     public StageWithCaseData() {
@@ -160,7 +161,7 @@ public class StageWithCaseData extends BaseStage {
 
     public void appendTags(List<String> tags) {
         if (tag == null) {
-            tag = new ArrayList<>();
+            tag = new HashSet<>();
         }
 
         tag.addAll(tags.stream().map(tagStr -> new CaseDataTag(this.caseUUID, tagStr)).toList());

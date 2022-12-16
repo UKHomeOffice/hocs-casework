@@ -63,13 +63,13 @@ public class CaseDataTagIntegrationTest {
     }
 
     @Test
-    public void shouldThrowExceptionForTagConflict() throws JsonProcessingException {
+    public void shouldReturnSuccessWhenForExistingTag() throws JsonProcessingException {
         var tag = new CaseTagRequest("TEST_TAG");
 
         ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/tag",
             POST, new HttpEntity<>(mapper.writeValueAsString(tag), createValidAuthHeaders()), String.class);
 
-        assertThat(result.getStatusCode()).isEqualByComparingTo(HttpStatus.CONFLICT);
+        assertThat(result.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
         assertThat(result.getBody()).isNotNull();
     }
 

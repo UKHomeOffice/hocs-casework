@@ -21,9 +21,14 @@ public class MigrationCaseResource {
 
     @PostMapping(value = "/migrate")
     public ResponseEntity<CreateCaseResponse> createMigrationCase(@RequestBody CreateMigrationCaseRequest request) {
-        CaseData caseData = migrationCaseService.createMigrationCase(request.getType(), request.getStageType(),
-            request.getData(), request.getDateReceived(), request.getPrimaryCorrespondent());
+        CaseData caseData = migrationCaseService.createMigrationCase(
+            request.getType(),
+            request.getStageType(),
+            request.getData(),
+            request.getDateReceived(),
+            request.getPrimaryCorrespondent(),
+            request.getAdditionalCorrespondents(),
+            request.getAttachments());
         return ResponseEntity.ok(CreateCaseResponse.from(caseData));
     }
-
 }

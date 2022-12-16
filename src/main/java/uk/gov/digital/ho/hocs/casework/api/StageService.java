@@ -23,8 +23,11 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataTag;
+import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseTagRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
@@ -32,6 +35,7 @@ import uk.gov.digital.ho.hocs.casework.security.UserPermissionsService;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -99,6 +103,8 @@ public class StageService {
 
     private final DeadlineService deadlineService;
 
+    private final CaseTagRepository caseTagRepository;
+
     private static final Comparator<StageWithCaseData> CREATED_COMPARATOR = Comparator.comparing(
         StageWithCaseData::getCreated);
 
@@ -116,7 +122,8 @@ public class StageService {
                         CaseNoteService caseNoteService,
                         ContributionsProcessor contributionsProcessor,
                         ActionDataDeadlineExtensionService extensionService,
-                        DeadlineService deadlineService) {
+                        DeadlineService deadlineService,
+                        CaseTagRepository caseTagRepository) {
         this.stageRepository = stageRepository;
         this.userPermissionsService = userPermissionsService;
         this.notifyClient = notifyClient;
@@ -131,6 +138,7 @@ public class StageService {
         this.contributionsProcessor = contributionsProcessor;
         this.extensionService = extensionService;
         this.deadlineService = deadlineService;
+        this.caseTagRepository = caseTagRepository;
     }
 
     /**
@@ -477,6 +485,22 @@ public class StageService {
         contributionsProcessor.processContributionsForStages(stage);
     }
 
+    void updateTags(Set<StageWithCaseData> stages) {
+        log.debug("Adding case data tags for stages");
+
+        Map<UUID, Set<CaseDataTag>> allCaseTags = caseTagRepository.findAllByCaseUuidIn(
+            stages.stream().map(BaseStage::getCaseUUID).collect(Collectors.toSet())).stream().collect(
+            Collectors.groupingBy(CaseDataTag::getCaseUuid, Collectors.toSet()));
+
+        if (allCaseTags.size() == 0) {
+            return;
+        }
+
+        for (StageWithCaseData stage : stages) {
+            stage.setTag(allCaseTags.getOrDefault(stage.getCaseUUID(), Collections.emptySet()));
+        }
+    }
+
     StageWithCaseData getUnassignedAndActiveStageByTeamUUID(UUID teamUUID, UUID userUUID) {
         log.debug("Getting unassigned cases for user: {} in team {}", userUUID, teamUUID);
         Set<StageWithCaseData> unassignedStages = stageRepository.findAllUnassignedAndActiveByTeamUUID(teamUUID);
@@ -545,6 +569,7 @@ public class StageService {
 
     private void updateStages(Set<StageWithCaseData> stages) {
         updateContributions(stages);
+        updateTags(stages);
 
         for (StageWithCaseData stage : stages) {
             stagePriorityCalculator.updatePriority(stage, stage.getCaseDataType());

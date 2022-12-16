@@ -28,6 +28,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataTag;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CaseTagRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 import uk.gov.digital.ho.hocs.casework.priority.StagePriorityCalculator;
 import uk.gov.digital.ho.hocs.casework.security.SecurityExceptions;
@@ -130,6 +131,9 @@ public class StageServiceTest {
     @Mock
     private ActionDataDeadlineExtensionService extensionService;
 
+    @Mock
+    private CaseTagRepository caseTagRepository;
+
     private String ALLOCATION_TYPE = "ALLOCATION_TYPE";
 
     private final Set<Stage> MOCK_STAGE_LIST = new HashSet<>();
@@ -148,7 +152,8 @@ public class StageServiceTest {
 
         this.stageService = new StageService(stageRepository, userPermissionsService, notifyClient, auditClient,
             searchClient, infoClient, caseDataService, stagePriorityCalculator, daysElapsedCalculator,
-            stageTagsDecorator, caseNoteService, contributionsProcessor, extensionService, deadlineService);
+            stageTagsDecorator, caseNoteService, contributionsProcessor, extensionService, deadlineService,
+            caseTagRepository);
 
         MOCK_STAGE_LIST.clear();
         MOCK_STAGE_LIST.add(stageDraft);
