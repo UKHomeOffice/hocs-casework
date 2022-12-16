@@ -292,7 +292,7 @@
       {
         "component": "text",
         "name": "PrevUkviRef",
-        "label": "Previous UKVI Complaint Ref"
+        "label": "Previous UKVI complaint reference"
       },
       {
         "component": "text",
@@ -2475,7 +2475,7 @@
       {
         "component": "text",
         "name": "PrevUkviRef",
-        "label": "Previous UKVI Complaint Ref"
+        "label": "Previous UKVI complaint reference"
       },
       {
         "component": "text",
