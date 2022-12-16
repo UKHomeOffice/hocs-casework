@@ -84,6 +84,7 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_DELETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CORRESPONDENT_UPDATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.DATA_FIELD_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.DOCUMENT_CREATED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.DOCUMENT_DELETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.EXTENSION_APPLIED;
@@ -160,7 +161,7 @@ public class CaseDataService {
         STAGE_ALLOCATED_TO_USER.toString(), CORRESPONDENT_DELETED.toString(), CORRESPONDENT_CREATED.toString(),
         CORRESPONDENT_UPDATED.toString(), DOCUMENT_CREATED.toString(), DOCUMENT_DELETED.toString(),
         APPEAL_UPDATED.toString(), APPEAL_CREATED.toString(), EXTENSION_APPLIED.toString(),
-        EXTERNAL_INTEREST_CREATED.toString(), EXTERNAL_INTEREST_UPDATED.toString()
+        EXTERNAL_INTEREST_CREATED.toString(), EXTERNAL_INTEREST_UPDATED.toString(), DATA_FIELD_UPDATED.toString()
 
                                                               );
 
