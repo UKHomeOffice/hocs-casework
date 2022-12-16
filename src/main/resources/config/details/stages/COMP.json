@@ -1,6 +1,13 @@
 {
   "type": "COMP",
   "groups": {
+    "COMP_PSU_REGISTRATION": [
+      {
+        "component": "text",
+        "name": "PsuReference",
+        "label": "PSU reference"
+      }
+    ],
     "COMP_MINORMISCONDUCT_SEND": [
       {
         "component": "entity-list",
