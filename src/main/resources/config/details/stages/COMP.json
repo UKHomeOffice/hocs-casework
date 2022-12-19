@@ -8,6 +8,29 @@
         "label": "PSU reference"
       }
     ],
+    "COMP_PSU_TRIAGE": [
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Accept"
+            },
+            {
+              "label": "No - send back to UKVI",
+              "value": "ReturnCase"
+            },
+            {
+              "label": "No - send to team not on DECS",
+              "value": "CloseCase"
+            }
+          ]
+        },
+        "component": "radio",
+        "name": "PsuTriageOutcome",
+        "label": "Is this serious misconduct case for PSU to investigate?"
+      }
+    ],
     "COMP_MINORMISCONDUCT_SEND": [
       {
         "component": "entity-list",
