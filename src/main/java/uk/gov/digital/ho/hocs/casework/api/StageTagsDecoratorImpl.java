@@ -33,8 +33,10 @@ public class StageTagsDecoratorImpl implements StageTagsDecorator {
     }
 
     private Boolean hasDataFieldAndValue(Map<String, String> data, String field, String value) {
-        if (data.containsKey(field)) {
-            return data.get(field).equals(value);
+        var dataValue = data.get(field);
+
+        if (dataValue != null) {
+            return dataValue.equals(value);
         }
 
         return false;
