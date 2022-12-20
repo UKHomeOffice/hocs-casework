@@ -69,8 +69,6 @@ public class CaseDataTimelineCaseIntegrationTest {
 
     private final UUID CASE_UUID = UUID.fromString("fbdbaeab-6719-4e3a-a221-d061dde469a1");
 
-    private final UUID INVALID_CASE_UUID = UUID.fromString("89334528-7769-2db4-b432-456091f132a1");
-
     private static final CaseDataType CASE_DATA_TYPE = CaseDataTypeFactory.from("TEST", "a1");
 
     @Before

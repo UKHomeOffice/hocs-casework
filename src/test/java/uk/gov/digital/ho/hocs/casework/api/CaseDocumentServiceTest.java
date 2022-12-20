@@ -80,14 +80,11 @@ public class CaseDocumentServiceTest {
     @MockBean
     private DocumentClient documentClient;
 
-    @MockBean
-    private InfoClient infoClient;
-
     private CaseDocumentService caseDocumentService;
 
     @Before
     public void setUp() {
-        caseDocumentService = new CaseDocumentService(caseDataRepository, caseTypeDocumentTagRepository, documentClient, infoClient);
+        caseDocumentService = new CaseDocumentService(caseDataRepository, caseTypeDocumentTagRepository, documentClient);
         documentDto = new DocumentDto(documentUUID, caseUUID, docType, docDisplayName, docStatus, docCreated,
             docUpdated, uploaderUUID, docDeleted, docLabels, true, true);
         s3Document = new S3Document(docDisplayName, docOriginalName, new byte[10], fileType, mimeType);

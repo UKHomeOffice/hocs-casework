@@ -54,8 +54,6 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @ActiveProfiles({ "local", "integration" })
 public class CaseDataDeleteCaseIntegrationTest {
 
-    private MockRestServiceServer mockAuditService;
-
     private MockRestServiceServer mockInfoService;
 
     TestRestTemplate testRestTemplate = new TestRestTemplate();

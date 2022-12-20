@@ -387,7 +387,6 @@ public class StageResourceTest {
 
     @Test
     public void testAllocateStageUser_withNoStage() {
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
         when(stageService.getUnassignedAndActiveStageByTeamUUID(teamUUID, userUUID)).thenReturn(null);
 
         ResponseEntity<GetStageResponse> response = stageResource.allocateStageUser(teamUUID, userUUID);

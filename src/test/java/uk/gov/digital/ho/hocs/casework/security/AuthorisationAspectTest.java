@@ -142,7 +142,6 @@ public class AuthorisationAspectTest {
         Object[] args = new Object[1];
         args[0] = caseUUID;
         UUID teamUUID = UUID.randomUUID();
-        CaseData caseData = mock(CaseData.class);
 
         when(userService.getUserTeams()).thenReturn(Set.of(teamUUID));
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.UNSET);
@@ -165,8 +164,6 @@ public class AuthorisationAspectTest {
         String type = "MIN";
         Object[] args = new Object[1];
         args[0] = caseUUID;
-
-        CaseData caseData = mock(CaseData.class);
 
         UUID teamUUID = UUID.randomUUID();
 
@@ -193,12 +190,6 @@ public class AuthorisationAspectTest {
         Object[] args = new Object[1];
         args[0] = caseUUID;
 
-        CaseData caseData = mock(CaseData.class);
-
-        UUID teamUUID = UUID.randomUUID();
-        ActiveStage activeStage = new ActiveStage(1L, UUID.randomUUID(), LocalDateTime.now(), "MIN", LocalDate.now(),
-            LocalDate.now(), UUID.randomUUID(), caseUUID, teamUUID, UUID.randomUUID());
-
         when(userService.getUserTeams()).thenReturn(Set.of(UUID.randomUUID()));
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.UNSET);
         when(caseService.getCaseType(any())).thenReturn(type);
@@ -221,8 +212,6 @@ public class AuthorisationAspectTest {
         String type = "MIN";
         Object[] args = new Object[1];
         args[0] = caseUUID;
-
-        CaseData caseData = mock(CaseData.class);
 
         when(userService.getMaxAccessLevel(any())).thenReturn(AccessLevel.UNSET);
         when(caseService.getCaseType(any())).thenReturn(type);

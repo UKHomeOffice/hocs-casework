@@ -79,8 +79,6 @@ public class CorrespondentResourceTest {
     @Test
     public void shouldAddCorrespondentToCase() {
 
-        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-
         doNothing().when(correspondentService).createCorrespondent(eq(caseUUID), eq(stageUUID), eq("any"),
             eq("anyFullName"), eq("organisation"), any(Address.class), eq("anyPhone"), eq("anyEmail"),
             eq("anyReference"), eq("external key"));
@@ -168,8 +166,6 @@ public class CorrespondentResourceTest {
 
     @Test
     public void shouldUpdateCorrespondentOnCase() {
-
-        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
 
         UpdateCorrespondentRequest updateCorrespondentRequest = new UpdateCorrespondentRequest("anyFullName",
             "organisation", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail",

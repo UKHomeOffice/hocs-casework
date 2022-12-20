@@ -83,8 +83,6 @@ public class StageServiceTest {
         // NXT can be reached through MIN
         caseDataType);
 
-    private final String userID = UUID.randomUUID().toString();
-
     private StageService stageService;
 
     private final StageTypeDto stageTypeDto = new StageTypeDto("DCU_MIN_MARKUP", null, "DCU_MIN_MARKUP", 20, 15, 1);
@@ -133,8 +131,6 @@ public class StageServiceTest {
 
     @Mock
     private CaseTagRepository caseTagRepository;
-
-    private String ALLOCATION_TYPE = "ALLOCATION_TYPE";
 
     private final Set<Stage> MOCK_STAGE_LIST = new HashSet<>();
 
@@ -1193,18 +1189,6 @@ public class StageServiceTest {
     }
 
     @Test
-    public void getAllStagesForCaseByUUID() {
-
-        StageWithCaseData stage = new StageWithCaseData(caseUUID, stageType, teamUUID, userUUID, transitionNoteUUID);
-        Set<StageWithCaseData> stages = Set.of(stage);
-
-        when(stageRepository.findAllByCaseUUID(caseUUID)).thenReturn(stages);
-
-        Set<StageWithCaseData> result = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
-        Assert.assertEquals(stages, result);
-    }
-
-    @Test
     public void shouldGetStageTypeFromStageData() {
         String stageType = "a-stage-type";
         Stage stage = new Stage(UUID.randomUUID(), stageType, teamUUID, null, null);
@@ -1235,16 +1219,6 @@ public class StageServiceTest {
 
         stageService.getStageType(caseUUID, stageUUID);
 
-        verify(stageRepository).findAllByCaseUUID(caseUUID);
-    }
-
-    @Test(expected = ApplicationExceptions.EntityNotFoundException.class)
-    public void getAllStagesForCaseByUuidThrowsExceptionIfEmpty() {
-        Set<StageWithCaseData> stages = Set.of();
-
-        when(stageRepository.findAllByCaseUUID(caseUUID)).thenReturn(stages);
-
-        stageService.getAllStagesForCaseByCaseUUID(caseUUID);
         verify(stageRepository).findAllByCaseUUID(caseUUID);
     }
 
@@ -1424,22 +1398,6 @@ public class StageServiceTest {
         when(stageRepository.findBasicStageByCaseUuidAndStageUuid(any(), any())).thenReturn(null);
 
         stageService.getStageTeam(caseUuid, stageUuid);
-    }
-
-    /**
-     * The stage cannot be an instance as it does not have a function to set data (in the Stage Class).
-     * I did not want to create a setData on the Stage class for testing only.
-     *
-     * @return Mocked Stage for setting and exposing the DATA with offline QA user.
-     */
-    private StageWithCaseData createStageOfflineQaData(UUID offlineQaUserUUID) {
-        StageWithCaseData mockStage = mock(StageWithCaseData.class);
-        when(mockStage.getUuid()).thenReturn(stageUUID);
-        when(mockStage.getCaseUUID()).thenReturn(caseUUID);
-        when(mockStage.getStageType()).thenReturn(StageWithCaseData.DCU_DTEN_INITIAL_DRAFT);
-        when(mockStage.getCaseReference()).thenReturn("MIN/1234567/19");
-        when(mockStage.getData(StageWithCaseData.OFFLINE_QA_USER)).thenReturn(offlineQaUserUUID.toString());
-        return mockStage;
     }
 
     private Set<GetAuditResponse> getAuditLines(StageWithCaseData stage) {

@@ -112,7 +112,6 @@ public class CorrespondentServiceTest {
     public void getAllActiveCorrespondentsThenFindAllActive() {
         Correspondent correspondent = getCorrespondent(false);
         Set<Correspondent> correspondentsExpected = Set.of(correspondent);
-        GetCorrespondentTypeResponse emptyCorrespondentSet = new GetCorrespondentTypeResponse(Collections.emptySet());
 
         when(correspondentRepository.findAllActive()).thenReturn(correspondentsExpected);
 
@@ -129,7 +128,6 @@ public class CorrespondentServiceTest {
         Correspondent correspondent = getCorrespondent(false);
         Correspondent correspondentDeleted = getCorrespondent(true);
         Set<Correspondent> correspondentsExpected = Set.of(correspondent, correspondentDeleted);
-        GetCorrespondentTypeResponse emptyCorrespondentSet = new GetCorrespondentTypeResponse(Collections.emptySet());
 
         when(correspondentRepository.findAll()).thenReturn(correspondentsExpected);
 
