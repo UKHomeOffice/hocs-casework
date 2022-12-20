@@ -77,10 +77,6 @@ public class TopicService {
         log.info("Deleted Topic: {}", caseUUID, value(EVENT, CASE_TOPIC_DELETED));
     }
 
-    void clearCachedStandardLineForTopic(UUID topicUUID) {
-        infoClient.clearCachedStandardLineForTopic(topicUUID);
-    }
-
     Set<Topic> getAllTopics() {
         log.debug("Getting all Topics allocated to cases");
         Set<Topic> topics = topicRepository.findAll();
