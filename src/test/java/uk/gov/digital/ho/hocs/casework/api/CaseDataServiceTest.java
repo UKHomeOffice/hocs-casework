@@ -25,7 +25,6 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveCaseViewData;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
-import uk.gov.digital.ho.hocs.casework.domain.model.BankHoliday;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseLink;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
@@ -117,11 +116,7 @@ public class CaseDataServiceTest {
 
     private final UUID primaryCorrespondentUUID = UUID.randomUUID();
 
-    private final String caseRef = "TestRef";
-
     private final LocalDate caseDeadline = LocalDate.now().plusDays(20);
-
-    private final LocalDate caseDeadlineWarning = LocalDate.now().plusDays(15);
 
     private final LocalDate deadlineDate = LocalDate.now();
 
@@ -160,15 +155,6 @@ public class CaseDataServiceTest {
 
     @Mock
     private CaseDataSummaryService caseDataSummaryService;
-
-    Set<LocalDate> englandAndWalesBankHolidays2020 = Set.of(LocalDate.parse("2020-01-01"),
-        LocalDate.parse("2020-04-10"), LocalDate.parse("2020-04-13"), LocalDate.parse("2020-05-08"),
-        LocalDate.parse("2020-05-25"), LocalDate.parse("2020-08-31"), LocalDate.parse("2020-12-25"),
-        LocalDate.parse("2020-12-28"));
-
-    Set<BankHoliday.BankHolidayRegion> bankHolidayRegions = Set.of(BankHoliday.BankHolidayRegion.ENGLAND_AND_WALES);
-
-    List<String> bankHolidayRegionsAsString = List.of("ENGLAND_AND_WALES");
 
     @Before
     public void setUp() {
@@ -795,7 +781,6 @@ public class CaseDataServiceTest {
         LocalDate expectedNewDeadline = LocalDate.parse("2020-02-17");
 
         CaseData caseData = new CaseData(caseType, caseID, originalReceivedDate);
-        CaseDataType caseDataType = new CaseDataType("MIN", "TT", "TEST_TYPE", null, 20, 15);
 
         when(caseDataRepository.findActiveByUuid(caseUUID)).thenReturn(caseData);
         when(deadlineService.calculateWorkingDaysForCaseType(caseData.getType(), caseData.getDateReceived(),
@@ -846,7 +831,6 @@ public class CaseDataServiceTest {
 
         CaseData caseData = new CaseData(caseType, caseID, deadlineDate);
         when(caseDataRepository.findActiveByUuid(caseData.getUuid())).thenReturn(caseData);
-        LocalDate caseDeadline = LocalDate.now();
 
         when(deadlineService.calculateWorkingDaysForCaseType(any(), any(), eq(7))).thenReturn(LocalDate.now());
 
@@ -1223,7 +1207,6 @@ public class CaseDataServiceTest {
         // WHEN
         caseDataService.mapCaseDataValues(caseUUID, keyMappings);
         // THEN
-        ArgumentCaptor<CaseData> argCapture = ArgumentCaptor.forClass(CaseData.class);
         verify(caseDataRepository).findActiveByUuid(caseUUID);
         verify(caseDataRepository, times(0)).save(any());
         verify(auditClient, times(0)).updateCaseAudit(any(), any());

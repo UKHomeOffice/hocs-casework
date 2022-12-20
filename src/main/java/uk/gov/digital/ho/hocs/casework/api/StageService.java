@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.RecreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.WithdrawCaseRequest;
@@ -64,7 +63,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_ASSIGNE
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_COMPLETED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_NOT_FOUND;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_RECREATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_TRANSITION_NOTE_UPDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_EMPTY;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TEAMS_STAGE_LIST_RETRIEVED;
@@ -334,44 +332,6 @@ public class StageService {
             }
         }
         log.info("Stage Deadline Updated; Case: {}, Stage: {}", stage.getCaseUUID(), stage.getUuid());
-    }
-
-    @Deprecated(forRemoval = true)
-    public void recreateStage(UUID caseUUID, RecreateStageRequest request) {
-        log.debug("Recreating Stage: {} for Case: {}", request, caseUUID);
-
-        // Get stage we want to recreate
-        Stage stageToRecreate = getBasicStage(caseUUID, request.getStageUUID());
-
-        Optional<Stage> maybeCurrentActiveStage = stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseUUID);
-
-        UUID currentUserUUID = null;
-
-        if (maybeCurrentActiveStage.isEmpty()) {
-            log.warn("No active stage for Case: {} discovered when try to recreate a stage. Recreation can continue.",
-                caseUUID);
-        } else {
-            currentUserUUID = maybeCurrentActiveStage.get().getUserUUID();
-        }
-
-        assignTeamAndMemberUserToStage(stageToRecreate, request.getTeamUUID(), request.getUserUUID());
-
-        CaseData caseData = caseDataService.getCaseData(caseUUID);
-        caseDataService.updateCaseData(caseData, request.getStageUUID(),
-            Map.of(CaseworkConstants.CURRENT_STAGE, request.getStageType()));
-
-        // Close if present and not the stage requested for recreation.
-        if (maybeCurrentActiveStage.isPresent() && !stageToRecreate.getUuid().equals(
-            maybeCurrentActiveStage.get().getUuid())) {
-            updateStageTeam(maybeCurrentActiveStage.get(), caseData.getDataMap(), caseData.getReference(), null, null);
-            auditClient.recreateStage(stageToRecreate);
-        }
-
-        log.info("Recreated Stage {} for Case: {}, event: {}", request.getStageUUID(), caseUUID,
-            value(EVENT, STAGE_RECREATED));
-
-        updateAssignmentAudit(stageToRecreate);
-        sendAssignmentNotifications(caseData, stageToRecreate, currentUserUUID);
     }
 
     void updateStageCurrentTransitionNote(UUID caseUUID, UUID stageUUID, UUID transitionNoteUUID) {
@@ -657,17 +617,6 @@ public class StageService {
         log.info("Returning {} Stages", stages.size(), value(EVENT, SEARCH_STAGE_LIST_RETRIEVED));
         return groupByCaseUUID(stages);
 
-    }
-
-    Set<StageWithCaseData> getAllStagesForCaseByCaseUUID(UUID caseUUID) {
-        log.debug("Getting all stages for case: {}", caseUUID);
-        Set<StageWithCaseData> caseStages = stageRepository.findAllByCaseUUID(caseUUID);
-        if (!caseStages.isEmpty()) {
-            return caseStages;
-        } else {
-            throw new ApplicationExceptions.EntityNotFoundException(
-                String.format("No stages found for caseUUID: %s", caseUUID), STAGES_NOT_FOUND);
-        }
     }
 
     Set<Stage> getAllStagesByCaseUUID(UUID caseUUID) {

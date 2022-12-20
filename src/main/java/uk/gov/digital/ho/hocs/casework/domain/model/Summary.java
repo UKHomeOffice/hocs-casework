@@ -13,14 +13,6 @@ public class Summary {
 
     private Integer count;
 
-    public void setTeamUuid(UUID teamUuid) {
-        this.teamUuid = teamUuid;
-    }
-
-    public void setCount(Integer count) {
-        this.count = count;
-    }
-
     public UUID getTeamUuid() {
         return teamUuid;
     }

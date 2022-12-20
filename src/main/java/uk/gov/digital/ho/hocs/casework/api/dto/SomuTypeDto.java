@@ -39,14 +39,6 @@ public class SomuTypeDto {
     @JsonProperty("schema")
     private Map<String, Object> schema;
 
-    public void setSchema(String schema) throws IOException {
-        if (schema!=null && !schema.isEmpty()) {
-            this.schema = new ObjectMapper().readValue(schema, new TypeReference<>() {});
-        } else {
-            this.schema = Map.of();
-        }
-    }
-
     private static class MapDeserializer extends JsonDeserializer<Map<String, Object>> {
 
         @Override

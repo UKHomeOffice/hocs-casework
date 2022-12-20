@@ -106,7 +106,7 @@ public class TopicsGetIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -116,7 +116,7 @@ public class TopicsGetIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "3")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -126,7 +126,7 @@ public class TopicsGetIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -135,7 +135,7 @@ public class TopicsGetIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -145,7 +145,7 @@ public class TopicsGetIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -155,7 +155,7 @@ public class TopicsGetIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -166,7 +166,7 @@ public class TopicsGetIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "0")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -177,7 +177,7 @@ public class TopicsGetIntegrationTest {
         setupMockTeams("TEST1", permissionLevel, 1);
 
         ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -188,7 +188,7 @@ public class TopicsGetIntegrationTest {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
             getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
     }
@@ -200,7 +200,7 @@ public class TopicsGetIntegrationTest {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
             getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "3")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
     }
@@ -212,7 +212,7 @@ public class TopicsGetIntegrationTest {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
             getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "2")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
 
@@ -225,7 +225,7 @@ public class TopicsGetIntegrationTest {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
             getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
     }
@@ -237,7 +237,7 @@ public class TopicsGetIntegrationTest {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
             getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "1")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
     }
@@ -250,7 +250,7 @@ public class TopicsGetIntegrationTest {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
             getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "0")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -262,7 +262,7 @@ public class TopicsGetIntegrationTest {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
             getBasePath() + "/case/" + INVALID_CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
     }
 
@@ -272,14 +272,14 @@ public class TopicsGetIntegrationTest {
         setupMockTeams("TEST", permissionLevel, 5);
 
         ResponseEntity<String> result1 = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result1.getStatusCode()).isEqualTo(HttpStatus.OK);
         ResponseEntity<String> result2 = testRestTemplate.exchange(
             getBasePath() + "/case/" + CASE_UUID + "/stage/" + STAGE_UUID + "/topic/" + TOPIC_UUID, DELETE,
-            new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result2.getStatusCode()).isEqualTo(HttpStatus.OK);
         ResponseEntity<String> result3 = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/topic", GET,
-            new HttpEntity(createValidAuthHeaders("TEST", "5")), String.class);
+            new HttpEntity(createValidAuthHeaders()), String.class);
         assertThat(result3.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result3.getBody()).isEqualTo(EMPTY_TOPICS_EXPECTED_RESULT);
     }
@@ -288,7 +288,7 @@ public class TopicsGetIntegrationTest {
         return "http://localhost:" + port;
     }
 
-    private HttpHeaders createValidAuthHeaders(String caseType, String permissionLevel) {
+    private HttpHeaders createValidAuthHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg");

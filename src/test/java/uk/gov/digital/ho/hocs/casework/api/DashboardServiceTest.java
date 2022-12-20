@@ -40,8 +40,6 @@ public class DashboardServiceTest {
 
     private final Set<UUID> setUserTeams = Set.of(userTeamUuid);
 
-    private final Set<String> caseTypes = Set.of("");
-
     private final Set<UUID> collatedUserTeams = Set.of(userTeamUuid);
 
     @Before

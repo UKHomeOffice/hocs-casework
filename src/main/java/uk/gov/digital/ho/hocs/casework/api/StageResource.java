@@ -15,7 +15,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStageResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStagesResponse;
-import uk.gov.digital.ho.hocs.casework.api.dto.RecreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.SearchRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageTeamRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateStageUserRequest;
@@ -59,16 +58,6 @@ class StageResource {
                                                     @RequestBody CreateStageRequest request) {
         Stage stage = stageService.createStage(caseUUID, request);
         return ResponseEntity.ok(CreateStageResponse.from(stage));
-    }
-
-    @Deprecated(forRemoval = true)
-    @Authorised(accessLevel = AccessLevel.READ)
-    @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/recreate")
-    ResponseEntity recreateStageTeam(@PathVariable UUID caseUUID,
-                                     @PathVariable UUID stageUUID,
-                                     @RequestBody RecreateStageRequest request) {
-        stageService.recreateStage(caseUUID, request);
-        return ResponseEntity.ok().build();
     }
 
     @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
@@ -173,13 +162,6 @@ class StageResource {
     @PostMapping(value = "/search")
     ResponseEntity<GetStagesResponse> search(@Valid @RequestBody SearchRequest request) {
         Set<StageWithCaseData> stages = stageService.search(request);
-        return ResponseEntity.ok(GetStagesResponse.from(stages));
-    }
-
-    @Deprecated(forRemoval = true)
-    @GetMapping(value = "/stage/case/{caseUUID}")
-    ResponseEntity<GetStagesResponse> getAllStagesByCase(@PathVariable UUID caseUUID) {
-        Set<StageWithCaseData> stages = stageService.getAllStagesForCaseByCaseUUID(caseUUID);
         return ResponseEntity.ok(GetStagesResponse.from(stages));
     }
 
