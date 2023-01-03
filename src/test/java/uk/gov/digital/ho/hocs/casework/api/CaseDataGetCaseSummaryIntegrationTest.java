@@ -62,11 +62,16 @@ public class CaseDataGetCaseSummaryIntegrationTest {
 
     private final UUID CASE_UUID = UUID.fromString("14915b78-6977-42db-b343-0915a7f412a1");
 
+    private final UUID INVALID_CASE_UUID = UUID.fromString("89334528-7769-2db4-b432-456091f132a1");
+
     private static final CaseDataType CASE_DATA_TYPE = CaseDataTypeFactory.from("TEST", "a1");
 
     private static final UUID EXTENSION_CASE_TYPE_ACTION_ID = UUID.fromString("a68b0ff2-a9fc-4312-8b28-504523d04026");
 
     private static final UUID APPEAL_CASE_TYPE_ACTION_ID = UUID.fromString("326eddb3-ba64-4253-ad39-916ccbb59f4e");
+
+    private final Map<String, Object> somuType = Map.of("uuid", "b124e71a-37be-410a-87a0-737be996d07e", "caseType",
+        "CaseType", "type", "SomuType1", "active", true, "schema", "{\"showInSummary\": true}");
 
     private static final CaseTypeActionDto MOCK_CASE_TYPE_ACTION_EXTENSION_DTO = new CaseTypeActionDto(
         EXTENSION_CASE_TYPE_ACTION_ID, UUID.randomUUID(), "CASE_TYPE", "EXTENSION", "TEST_EXTENSION", "PIT Extension",
@@ -144,6 +149,14 @@ public class CaseDataGetCaseSummaryIntegrationTest {
 
         mockInfoService.expect(requestTo("http://localhost:8085/team")).andExpect(method(GET)).andRespond(
             withSuccess(mapper.writeValueAsString(teamDtos), MediaType.APPLICATION_JSON));
+    }
+
+    private void setupEmptyMockAudit(UUID caseUUID) throws JsonProcessingException {
+        GetAuditListResponse restResponse = new GetAuditListResponse(new HashSet<>());
+
+        mockInfoService.expect(requestTo(
+            "http://localhost:8087/audit/case/" + caseUUID + "?types=STAGE_ALLOCATED_TO_TEAM,STAGE_CREATED")).andExpect(
+            method(GET)).andRespond(withSuccess(mapper.writeValueAsString(restResponse), MediaType.APPLICATION_JSON));
     }
 
 }

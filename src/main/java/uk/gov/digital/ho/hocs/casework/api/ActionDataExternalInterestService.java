@@ -79,6 +79,7 @@ public class ActionDataExternalInterestService implements ActionService {
 
         EntityDto<Map<String, String>> partyType = infoClient.getEntityBySimpleName(
             actionDataExternalInterest.getPartyType());
+        String partyTitle = partyType.getData().get("title");
 
         actionDataExternalInterestRepository.save(actionDataExternalInterest);
 
@@ -117,6 +118,10 @@ public class ActionDataExternalInterestService implements ActionService {
 
         existingExternalInterestData.setDetailsOfInterest(updateExternalInterestDto.getDetailsOfInterest());
         existingExternalInterestData.setPartyType(updateExternalInterestDto.getInterestedPartyType());
+
+        EntityDto<Map<String, String>> partyType = infoClient.getEntityBySimpleName(
+            existingExternalInterestData.getPartyType());
+        String partyTitle = partyType.getData().get("title");
 
         actionDataExternalInterestRepository.save(existingExternalInterestData);
 

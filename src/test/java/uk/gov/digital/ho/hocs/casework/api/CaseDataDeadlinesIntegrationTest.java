@@ -79,7 +79,7 @@ public class CaseDataDeadlinesIntegrationTest {
     public void shouldCreateACaseWithCorrectDeadlines() throws JsonProcessingException {
         setupMockTeams("TEST", AccessLevel.OWNER.getLevel());
 
-        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBody("TEST"));
+        ResponseEntity<CreateCaseResponse> result = getCreateCaseResponse(createBody("TEST"), "TEST", "5");
 
         CaseData caseData = caseDataRepository.findActiveByUuid(result.getBody().getUuid());
 
@@ -137,7 +137,9 @@ public class CaseDataDeadlinesIntegrationTest {
         assertThat(stage.getDeadline()).isEqualTo("2021-12-24");
     }
 
-    private ResponseEntity<CreateCaseResponse> getCreateCaseResponse(String body) {
+    private ResponseEntity<CreateCaseResponse> getCreateCaseResponse(String body,
+                                                                     String caseTypePermission,
+                                                                     String permissionLevel) {
         return testRestTemplate.exchange(getBasePath() + "/case", POST, new HttpEntity(body, createValidAuthHeaders()),
             CreateCaseResponse.class);
     }

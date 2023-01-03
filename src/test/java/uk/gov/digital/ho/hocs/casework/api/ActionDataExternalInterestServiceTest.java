@@ -205,6 +205,7 @@ public class ActionDataExternalInterestServiceTest {
             caseUUID)).thenReturn(existingExternalInterestEntity);
         when(mockExternalInterestRepository.save(any(ActionDataExternalInterest.class))).thenReturn(
             updatedExternalInterest);
+        when(mockInfoClient.getEntityBySimpleName(anyString())).thenReturn(mockSimpleNameResponse);
 
         // WHEN
         actionDataExternalInterestService.updateExternalInterest(caseUUID, actionEntityId,

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
-import uk.gov.digital.ho.hocs.casework.api.dto.AppealOfficerDto;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
@@ -43,6 +42,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.api.dto.AppealOfficerDto.OfficerData;
 
 @Slf4j
 @Component
@@ -623,7 +623,7 @@ public class AuditClient {
         }
 
         try {
-            AppealOfficerDto.OfficerData officerDetailsSchema = objectMapper.readValue(caseTypeActionDto.getProps(), AppealOfficerDto.OfficerData.class);
+            OfficerData officerDetailsSchema = objectMapper.readValue(caseTypeActionDto.getProps(), OfficerData.class);
             Map<String, String> appealOfficerDataMap = objectMapper.readValue(existingAppealData.getAppealOfficerData(),
                 new TypeReference<>() {});
 

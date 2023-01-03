@@ -68,6 +68,11 @@ public class ActionDataDeadlineExtensionServiceTest {
     private ArgumentCaptor<ActionDataDeadlineExtension> extensionArgumentCaptor = ArgumentCaptor.forClass(
         ActionDataDeadlineExtension.class);
 
+    Set<LocalDate> englandAndWalesBankHolidays2020 = Set.of(LocalDate.parse("2020-01-01"),
+        LocalDate.parse("2020-04-10"), LocalDate.parse("2020-04-13"), LocalDate.parse("2020-05-08"),
+        LocalDate.parse("2020-05-25"), LocalDate.parse("2020-08-31"), LocalDate.parse("2020-12-25"),
+        LocalDate.parse("2020-12-28"));
+
     public static final UUID PREVIOUS_CASE_UUID = UUID.randomUUID();
 
     public static final String TOPIC_NAME = "topic_name";
