@@ -96,7 +96,7 @@ public class CaseNoteIntegrationTest {
         setupMockTeams("TEST", permissionLevel.getLevel());
 
         ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/note", GET,
-            new HttpEntity(createValidAuthHeaders()), String.class);
+            new HttpEntity(createValidAuthHeaders("TEST", Integer.toString(permissionLevel.getLevel()))), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -107,7 +107,7 @@ public class CaseNoteIntegrationTest {
 
         ResponseEntity<String> result = testRestTemplate.exchange(
             getBasePath() + "/case/" + CASE_UUID + "/note/a2bb3622-b38a-479d-b390-f633bf15f329", GET,
-            new HttpEntity(createValidAuthHeaders()), String.class);
+            new HttpEntity(createValidAuthHeaders("TEST", Integer.toString(permissionLevel.getLevel()))), String.class);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
@@ -117,7 +117,8 @@ public class CaseNoteIntegrationTest {
         setupMockTeams("TEST", permissionLevel.getLevel());
 
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null);
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST",
+            Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -129,7 +130,8 @@ public class CaseNoteIntegrationTest {
         setupMockTeams("TEST", permissionLevel.getLevel());
 
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody());
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST",
+            Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -141,7 +143,8 @@ public class CaseNoteIntegrationTest {
         setupMockTeams("TEST", permissionLevel.getLevel());
 
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody());
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(createBody(), "TEST",
+            Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -153,7 +156,8 @@ public class CaseNoteIntegrationTest {
         setupMockTeams("TEST", permissionLevel.getLevel());
 
         long numberOfCasesBefore = caseNoteRepository.count();
-        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null);
+        ResponseEntity<Void> result = getCreateCaseNoteVoidResponse(null, "TEST",
+            Integer.toString(permissionLevel.getLevel()));
         long numberOfCasesAfter = caseNoteRepository.count();
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(numberOfCasesAfter).isEqualTo(numberOfCasesBefore);
@@ -192,19 +196,21 @@ public class CaseNoteIntegrationTest {
                                                            String caseTypePermission,
                                                            String permissionLevel) {
         return testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/note", POST,
-            new HttpEntity(body, createValidAuthHeaders()), UUID.class);
+            new HttpEntity(body, createValidAuthHeaders(caseTypePermission, permissionLevel)), UUID.class);
     }
 
-    private ResponseEntity<Void> getCreateCaseNoteVoidResponse(String body) {
+    private ResponseEntity<Void> getCreateCaseNoteVoidResponse(String body,
+                                                               String caseTypePermission,
+                                                               String permissionLevel) {
         return testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/note", POST,
-            new HttpEntity(body, createValidAuthHeaders()), Void.class);
+            new HttpEntity(body, createValidAuthHeaders(caseTypePermission, permissionLevel)), Void.class);
     }
 
     private ResponseEntity<Void> getCreateCaseNoteInavlidCaseUUIDResponse(String body,
                                                                           String caseTypePermission,
                                                                           String permissionLevel) {
         return testRestTemplate.exchange(getBasePath() + "/case/" + INVALID_CASE_UUID + "/note", POST,
-            new HttpEntity(body, createValidAuthHeaders()), Void.class);
+            new HttpEntity(body, createValidAuthHeaders(caseTypePermission, permissionLevel)), Void.class);
     }
 
     private String createBody() throws JsonProcessingException {
@@ -216,7 +222,7 @@ public class CaseNoteIntegrationTest {
         return "http://localhost:" + port;
     }
 
-    private HttpHeaders createValidAuthHeaders() {
+    private HttpHeaders createValidAuthHeaders(String caseType, String permissionLevel) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add("X-Auth-Groups", "/RERERCIiIiIiIiIiIiIiIg");

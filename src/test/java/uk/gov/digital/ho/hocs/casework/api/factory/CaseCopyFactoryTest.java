@@ -36,7 +36,7 @@ public class CaseCopyFactoryTest {
     public void shouldNotAcceptNullFromCase() {
 
         // when
-        factory.getStrategy(null, "B");
+        Optional<CaseCopyStrategy> strategy = factory.getStrategy(null, "B");
 
     }
 
@@ -44,7 +44,7 @@ public class CaseCopyFactoryTest {
     public void shouldNotAcceptNullToCase() {
 
         // when
-        factory.getStrategy("A", null);
+        Optional<CaseCopyStrategy> strategy = factory.getStrategy("A", null);
 
     }
 
@@ -52,7 +52,7 @@ public class CaseCopyFactoryTest {
     public void shouldNotAcceptBlankFromCase() {
 
         // when
-        factory.getStrategy("", "B");
+        Optional<CaseCopyStrategy> strategy = factory.getStrategy("", "B");
 
     }
 
@@ -60,7 +60,7 @@ public class CaseCopyFactoryTest {
     public void shouldNotAcceptBlankToCase() {
 
         // when
-        factory.getStrategy("A", "");
+        Optional<CaseCopyStrategy> strategy = factory.getStrategy("A", "");
 
     }
 

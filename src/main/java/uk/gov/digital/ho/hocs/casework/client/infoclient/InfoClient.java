@@ -3,12 +3,14 @@ package uk.gov.digital.ho.hocs.casework.client.infoclient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetStandardLineResponse;
+import uk.gov.digital.ho.hocs.casework.api.dto.SomuTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.TemplateDto;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
@@ -22,6 +24,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_TEMPLATE_CACHE_INVALIDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPES_SUCCESS;
@@ -34,13 +37,16 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_G
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_ENTITY_LIST;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_PROFILE_BY_CASE_TYPE_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_STANDARD_LINE_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEAMS_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEAM_FOR_STAGE_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEMPLATE_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TOPIC_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USER;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USERS_FOR_TEAM_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USER_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MISSING_TEAM_FOR_STAGE;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TOPIC_STANDARD_LINE_CACHE_INVALIDATED;
 
 @Slf4j
 @Component
@@ -154,6 +160,15 @@ public class InfoClient {
         return response;
     }
 
+    @Cacheable(value = "InfoAllSomuTypesForCaseTypeRequest", unless = "#result.size() == 0", key = "#caseType")
+    public Set<SomuTypeDto> getAllSomuTypesForCaseType(String caseType) {
+        Set<SomuTypeDto> response = restHelper.get(serviceBaseURL, String.format("/somuType/%s", caseType),
+            new ParameterizedTypeReference<Set<SomuTypeDto>>() {});
+        log.info("Got {} case summary fields for CaseType {}", response.size(), caseType,
+            value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
+        return response;
+    }
+
     @Cacheable(value = "InfoClientGetAllStagesForCaseType", unless = "#result.size() == 0", key = "{#caseType}")
     public Set<StageTypeDto> getAllStagesForCaseType(String caseType) {
         Set<StageTypeDto> response = restHelper.get(serviceBaseURL, String.format("/stages/caseType/%s", caseType),
@@ -179,6 +194,13 @@ public class InfoClient {
         log.info("Got Topic {} for Topic {}", infoTopic.getLabel(), topicUUID,
             value(EVENT, INFO_CLIENT_GET_TOPIC_SUCCESS));
         return infoTopic;
+    }
+
+    @Cacheable(value = "InfoClientGetUser", unless = "#result == null", key = "{ #userUUID}")
+    public UserDto getUser(UUID userUUID) {
+        UserDto userDto = restHelper.get(serviceBaseURL, String.format("/user/%s", userUUID), UserDto.class);
+        log.info("Got User UserUUID {}", userUUID, value(EVENT, INFO_CLIENT_GET_USER));
+        return userDto;
     }
 
     @Cacheable(value = "InfoClientGetEntityListDtos", unless = "#result == null", key = "#listName")

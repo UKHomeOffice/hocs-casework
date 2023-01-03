@@ -32,16 +32,20 @@ public class CaseDocumentService {
 
     private final CaseTypeDocumentTagRepository caseTypeDocumentTagRepository;
 
+    protected final InfoClient infoClient;
+
     private static final String DRAFT_DOCUMENT_FIELD_NAME = "DraftDocuments";
 
     private static final String PRIMARY_DRAFT_LABEL = "Primary Draft";
 
     public CaseDocumentService(CaseDataRepository caseDataRepository,
                                CaseTypeDocumentTagRepository caseTypeDocumentTagRepository,
-                               DocumentClient documentClient) {
+                               DocumentClient documentClient,
+                               InfoClient infoClient) {
         this.caseDataRepository = caseDataRepository;
         this.caseTypeDocumentTagRepository = caseTypeDocumentTagRepository;
         this.documentClient = documentClient;
+        this.infoClient = infoClient;
     }
 
     public GetDocumentsResponse getDocuments(UUID caseUUID, String type) {

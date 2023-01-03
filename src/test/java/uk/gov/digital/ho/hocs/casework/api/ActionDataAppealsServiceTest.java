@@ -53,6 +53,9 @@ public class ActionDataAppealsServiceTest {
     @Mock
     private AuditClient mockAuditClient;
 
+    @Mock
+    private CaseNoteService mockCaseNoteService;
+
     @Captor
     private ArgumentCaptor<ActionDataAppeal> appealArgumentCaptor = ArgumentCaptor.forClass(ActionDataAppeal.class);
 

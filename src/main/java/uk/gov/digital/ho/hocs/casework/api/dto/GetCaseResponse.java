@@ -125,4 +125,8 @@ public class GetCaseResponse {
         return caseData.getDataMap();
     }
 
+    protected void replaceDataMap(Map<String, String> dataMap) {
+        this.data = dataMap;
+    }
+
 }
