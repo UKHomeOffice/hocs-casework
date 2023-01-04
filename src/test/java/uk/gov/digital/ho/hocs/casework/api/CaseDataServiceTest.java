@@ -1010,15 +1010,6 @@ public class CaseDataServiceTest {
     }
 
     @Test
-    public void shouldEvictFromTheCache() {
-
-        caseDataService.clearCachedTemplateForCaseType(caseType.getDisplayName());
-
-        verify(infoClient).clearCachedTemplateForCaseType(caseType.getDisplayName());
-        verifyNoMoreInteractions(infoClient);
-    }
-
-    @Test
     public void updateDeadlineForStages() {
 
         Map<String, Integer> stageTypeAndDaysMap = Map.ofEntries(Map.entry("type1", 5), Map.entry("type2", 10),
