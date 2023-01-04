@@ -475,6 +475,10 @@
           "conditionPropertyValue": "YesSopraSteria"
         }
       ]
+    },
+    {
+      "name": "PsuReference",
+      "label": "PSU reference"
     }
   ]
 }

@@ -1,6 +1,13 @@
 {
   "type": "COMP2",
   "groups": {
+    "COMP2_PSU_REGISTRATION": [
+      {
+        "component": "text",
+        "name": "PsuReference",
+        "label": "PSU reference"
+      }
+    ],
     "COMP2_REGISTRATION": [
       {
         "component": "date",
