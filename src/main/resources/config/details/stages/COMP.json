@@ -142,6 +142,7 @@
         "label": "Final response sent"
       }
     ],
+
     "COMP_MINORMISCONDUCT_SEND": [
       {
         "component": "entity-list",

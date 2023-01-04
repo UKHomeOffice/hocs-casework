@@ -263,15 +263,6 @@ public class TopicServiceTest {
     }
 
     @Test
-    public void shouldEvictFromTheCache() {
-
-        topicService.clearCachedStandardLineForTopic(topicUUID);
-
-        verify(infoClient, times(1)).clearCachedStandardLineForTopic(topicUUID);
-        verifyNoMoreInteractions(infoClient);
-    }
-
-    @Test
     public void shouldGetAllTopics() {
         HashSet<Topic> topicData = new HashSet<>();
         topicData.add(new Topic(caseUUID, topicName, topicNameUUID));

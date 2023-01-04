@@ -114,7 +114,6 @@ public class InfoClient {
         return correspondentType;
     }
 
-    @Cacheable(value = "InfoClientGetStandardLine", unless = "#result == null", key = "#topicUUID")
     public GetStandardLineResponse getStandardLine(UUID topicUUID) {
         GetStandardLineResponse standardLine = restHelper.get(serviceBaseURL,
             String.format("/topic/%s/standardLine", topicUUID), GetStandardLineResponse.class);
@@ -123,7 +122,6 @@ public class InfoClient {
         return standardLine;
     }
 
-    @Cacheable(value = "InfoClientGetTemplatesByCaseType", unless = "#result == null", key = "#caseType")
     public List<TemplateDto> getTemplates(String caseType) {
         List<TemplateDto> templates = restHelper.get(serviceBaseURL, String.format("/caseType/%s/templates", caseType),
             new ParameterizedTypeReference<List<TemplateDto>>() {});
@@ -219,17 +217,6 @@ public class InfoClient {
             String.format("/entity/simpleName/%s", simpleName), EntityDto.class);
         log.info("Got Entity By Simple Name {} ", value(EVENT, INFO_CLIENT_GET_ENTITY_BY_SIMPLE_NAME));
         return entityDto;
-    }
-
-    @CacheEvict(value = "InfoClientGetStandardLine", key = "#topicUUID")
-    public void clearCachedStandardLineForTopic(UUID topicUUID) {
-        log.info("Cache invalidated for Topic: {}, {}", topicUUID, value(EVENT, TOPIC_STANDARD_LINE_CACHE_INVALIDATED));
-    }
-
-    @CacheEvict(value = "InfoClientGetTemplatesByCaseType", key = "#caseType")
-    public void clearCachedTemplateForCaseType(String caseType) {
-        log.info("Cache invalidated for Case Type: {}, {}", caseType,
-            value(EVENT, CASE_TYPE_TEMPLATE_CACHE_INVALIDATED));
     }
 
     @Cacheable(value = "InfoGetProfileByCaseType", unless = "#result == null")

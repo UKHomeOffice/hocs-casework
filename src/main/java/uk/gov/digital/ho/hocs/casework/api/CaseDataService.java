@@ -764,10 +764,6 @@ public class CaseDataService {
         }).filter(Objects::nonNull).collect(Collectors.toSet());
     }
 
-    public void clearCachedTemplateForCaseType(String caseType) {
-        infoClient.clearCachedTemplateForCaseType(caseType);
-    }
-
     public void mapCaseDataValues(UUID caseUUID, Map<String, String> keyMappings) {
 
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
