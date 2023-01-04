@@ -8,6 +8,140 @@
         "label": "PSU reference"
       }
     ],
+    "COMP2_PSU_TRIAGE": [
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Accept"
+            },
+            {
+              "label": "No - send back to UKVI",
+              "value": "ReturnCase"
+            },
+            {
+              "label": "No - send to team not on DECS",
+              "value": "CloseCase"
+            }
+          ]
+        },
+        "component": "radio",
+        "name": "PsuTriageOutcome",
+        "label": "Is this serious misconduct case for PSU to investigate?"
+      },
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault",
+              "name": "CatAssault"
+            },
+            {
+              "label": "Fraud / corruption",
+              "value": "Fraud",
+              "name": "CatFraud"
+            },
+            {
+              "label": "Other unprofessionalism",
+              "value": "OtherUnprof",
+              "name": "CatOtherUnprof"
+            },
+            {
+              "label": "Racism / discrimination",
+              "value": "Racism",
+              "name": "CatRacism"
+            },
+            {
+              "label": "Rudeness",
+              "value": "Rude",
+              "name": "CatRude"
+            },
+            {
+              "label": "Sexual assault",
+              "value": "SexAssault",
+              "name": "CatSexAssault"
+            },
+            {
+              "label": "Theft",
+              "value": "Theft",
+              "name": "CatTheft"
+            },
+            {
+              "label": "Unfair treatment",
+              "value": "Unfair",
+              "name": "CatUnfair"
+            }
+          ],
+          "showLabel": false,
+          "saveSeparately": true
+        },
+        "component": "checkbox-group",
+        "name": "PsuCompCategoriesSerious",
+        "label": "Serious misconduct"
+      }
+    ],
+    "COMP2_PSU_OUTCOME": [
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Substantiated",
+              "value": "Substantiated"
+            },
+            {
+              "label": "Partially substantiated",
+              "value": "Partially substantiated"
+            },
+            {
+              "label": "Unsubstantiated",
+              "value": "Unsubstantiated"
+            },
+            {
+              "label": "Withdrawn",
+              "value": "Withdrawn"
+            },
+            {
+              "label": "Not serious - send back to IE Detention",
+              "value": "ReturnCase"
+            }
+          ]
+        },
+        "component": "radio",
+        "name": "PsuComplaintOutcome",
+        "label": "Complaint outcome"
+      },
+      {
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "PsuComplaintOutcome",
+              "conditionPropertyValue": "Withdrawn"
+            }
+          ]
+        },
+        "component": "text-area",
+        "name": "WithdrawalReason",
+        "label": "Why has the complaint been withdrawn?"
+      },
+      {
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "component": "entity-list",
+        "name": "FinalResponseDocument",
+        "label": "Final response"
+      },
+      {
+        "component": "date",
+        "name": "DateOfResponse",
+        "label": "Final response sent"
+      }
+    ],
     "COMP2_REGISTRATION": [
       {
         "component": "date",
