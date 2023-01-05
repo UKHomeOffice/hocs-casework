@@ -819,6 +819,31 @@
         "props": {
           "choices": [
             {
+              "label": "Yes - accept the complaint",
+              "value": "Yes"
+            },
+            {
+              "label": "No - transfer the complaint",
+              "value": "No"
+            },
+            {
+              "label": "No - transfer the complaint to CCH",
+              "value": "CCH"
+            },
+            {
+              "label": "No - escalate to PSU",
+              "value": "PSU"
+            }
+          ]
+        },
+        "name": "CctTriageAccept",
+        "label": "Can your team respond to this complaint?"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
               "label": "Save changes",
               "value": "Pending"
             },
@@ -1318,6 +1343,14 @@
             {
               "label": "No - transfer the complaint",
               "value": "No"
+            },
+            {
+              "label": "No - transfer the complaint to CCH",
+              "value": "CCH"
+            },
+            {
+              "label": "No - escalate to PSU",
+              "value": "PSU"
             }
           ]
         },
