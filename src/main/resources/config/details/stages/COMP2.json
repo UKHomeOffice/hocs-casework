@@ -1353,6 +1353,29 @@
         "label": "Action"
       }
     ],
+    "COMP2_MINORMISCONDUCT_QA": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Accept - send response to complainant",
+              "value": "Accept"
+            },
+            {
+              "label": "Reject - return response to draft",
+              "value": "Reject"
+            },
+            {
+              "label": "Escalate case to PSU",
+              "value": "PSU"
+            }
+          ]
+        },
+        "name": "CctQaResult",
+        "label": "QA Result"
+      }
+    ],
     "COMP2_EXGRATIA_TRIAGE": [
       {
         "component": "text-area",
@@ -1680,6 +1703,29 @@
         },
         "name": "CctEscalateResult",
         "label": "Action"
+      }
+    ],
+    "COMP2_EXGRATIA_QA": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Accept - send response to complainant",
+              "value": "Accept"
+            },
+            {
+              "label": "Reject - return response to draft",
+              "value": "Reject"
+            },
+            {
+              "label": "Escalate case to PSU",
+              "value": "PSU"
+            }
+          ]
+        },
+        "name": "CctQaResult",
+        "label": "QA Result"
       }
     ],
     "COMP2_CCH_RETURNS": [
@@ -2518,6 +2564,10 @@
             {
               "label": "Reject - return response to draft",
               "value": "Reject"
+            },
+            {
+              "label": "Escalate case to PSU",
+              "value": "PSU"
             }
           ]
         },
