@@ -366,6 +366,10 @@
             {
               "label": "Reject - return response to draft",
               "value": "Reject"
+            },
+            {
+              "label": "Escalate case to PSU",
+              "value": "PSU"
             }
           ]
         },
@@ -1368,6 +1372,10 @@
             {
               "label": "Reject - return response to draft",
               "value": "Reject"
+            },
+            {
+              "label": "Escalate case to PSU",
+              "value": "PSU"
             }
           ]
         },
@@ -3674,6 +3682,10 @@
             {
               "label": "Reject - return response to draft",
               "value": "Reject"
+            },
+            {
+              "label": "Escalate case to PSU",
+              "value": "PSU"
             }
           ]
         },
