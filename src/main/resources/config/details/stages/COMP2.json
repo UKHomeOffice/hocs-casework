@@ -1326,6 +1326,33 @@
         "label": "Owning CSU"
       }
     ],
+    "COMP2_MINORMISCONDUCT_ESCALATE": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "Return case to Triage",
+              "value": "Triage"
+            },
+            {
+              "label": "Case ready for drafting",
+              "value": "Draft"
+            },
+            {
+              "label": "Escalate to PSU",
+              "value": "PSU"
+            }
+          ]
+        },
+        "name": "CctEscalateResult",
+        "label": "Action"
+      }
+    ],
     "COMP2_EXGRATIA_TRIAGE": [
       {
         "component": "text-area",
@@ -1626,6 +1653,33 @@
         },
         "name": "Comp2ExGratiaBusContributions",
         "label": "Business contributions"
+      }
+    ],
+    "COMP2_EXGRATIA_ESCALATE": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Save changes",
+              "value": "Pending"
+            },
+            {
+              "label": "Return case to Triage",
+              "value": "Triage"
+            },
+            {
+              "label": "Case ready for drafting",
+              "value": "Draft"
+            },
+            {
+              "label": "Escalate to PSU",
+              "value": "PSU"
+            }
+          ]
+        },
+        "name": "CctEscalateResult",
+        "label": "Action"
       }
     ],
     "COMP2_CCH_RETURNS": [
@@ -2411,6 +2465,10 @@
             {
               "label": "Case ready for drafting",
               "value": "Draft"
+            },
+            {
+              "label": "Escalate to PSU",
+              "value": "PSU"
             }
           ]
         },
