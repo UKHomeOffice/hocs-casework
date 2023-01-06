@@ -856,6 +856,10 @@
               "value": "Escalate"
             },
             {
+              "label": "Escalate case to PSU",
+              "value": "PSU"
+            },
+            {
               "label": "No response - complete the case (close permanently)",
               "value": "Complete"
             }
@@ -1514,6 +1518,10 @@
             {
               "label": "Escalate case to WFM",
               "value": "Escalate"
+            },
+            {
+              "label": "Escalate case to PSU",
+              "value": "PSU"
             },
             {
               "label": "No response - complete the case (close permanently)",
@@ -2250,6 +2258,10 @@
             {
               "label": "Escalate case to WFM",
               "value": "Escalate"
+            },
+            {
+              "label": "Escalate case to PSU",
+              "value": "PSU"
             },
             {
               "label": "No response - complete the case (close permanently)",
