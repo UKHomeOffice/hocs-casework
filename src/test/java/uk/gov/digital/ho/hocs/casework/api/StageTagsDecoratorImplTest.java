@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -37,6 +38,13 @@ public class StageTagsDecoratorImplTest {
     @Test
     public void addsNoTagsWhenNotAHomeSecReplyStage() {
         var tags = stageTagsDecorator.decorateTags(Map.of(HOME_SEC_REPLY_FIELD_NAME, "FALSE"), "AnyType");
+        assertEquals(0, tags.size());
+    }
+
+
+    @Test
+    public void addsNoTagsWhenNullInMapAtCorrectStage() {
+        var tags = stageTagsDecorator.decorateTags(Collections.singletonMap(HOME_SEC_REPLY_FIELD_NAME, null), "DCU_MIN_MARKUP");
         assertEquals(0, tags.size());
     }
 
