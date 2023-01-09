@@ -46,7 +46,6 @@ public class StageTagsDecoratorImplTest {
     public void addsNoTagsWhenNullInMapAtCorrectStage() {
         var tags = stageTagsDecorator.decorateTags(Collections.singletonMap(HOME_SEC_REPLY_FIELD_NAME, null), "DCU_MIN_MARKUP");
         assertEquals(0, tags.size());
-
     }
 
     @Test
