@@ -323,7 +323,7 @@ public class UpdateCorrespondentIntegrationTest {
     }
 
     private String createBody() {
-        return "{\n" + "  \"fullname\": \"Bob Bloggs\",\n" + "  \"postcode\":\"S1 1DJ\",\n" + "  \"address1\":\"1 Somewhere Street\",\n" + "  \"address2\":\"Sheffield\",\n" + "  \"address3\":\"\",\n" + "  \"country\":\"England\",\n" + "  \"telephone\":\"0115 2595959\",\n" + "  \"email\":\"a@a.com\",\n" + "  \"reference\":\"\"\n" + "}";
+        return "{\n" + "  \"type\": \"CORRESPONDENT\",\n" + "  \"fullname\": \"Bob Bloggs\",\n" + "  \"postcode\":\"S1 1DJ\",\n" + "  \"address1\":\"1 Somewhere Street\",\n" + "  \"address2\":\"Sheffield\",\n" + "  \"address3\":\"\",\n" + "  \"country\":\"England\",\n" + "  \"telephone\":\"0115 2595959\",\n" + "  \"email\":\"a@a.com\",\n" + "  \"reference\":\"\"\n" + "}";
     }
 
     private String createBodyNullCorrespondentType() {
