@@ -185,6 +185,7 @@ public class CorrespondentService {
                              UpdateCorrespondentRequest updateCorrespondentRequest) {
         log.debug("Updating Correspondent: {} for Case: {}", correspondentUUID, caseUUID);
         Correspondent correspondent = getCorrespondent(caseUUID, correspondentUUID);
+        correspondent.setCorrespondentType(updateCorrespondentRequest.getType());
         correspondent.setFullName(updateCorrespondentRequest.getFullname());
         correspondent.setOrganisation(updateCorrespondentRequest.getOrganisation());
         correspondent.setAddress1(updateCorrespondentRequest.getAddress1());

@@ -171,7 +171,7 @@ public class CorrespondentResourceTest {
 
         Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
 
-        UpdateCorrespondentRequest updateCorrespondentRequest = new UpdateCorrespondentRequest("anyFullName",
+        UpdateCorrespondentRequest updateCorrespondentRequest = new UpdateCorrespondentRequest("correspondentType", "anyFullName",
             "organisation", "anyPostcode", "any1", "any2", "any3", "anyCountry", "anyPhone", "anyEmail",
             "anyReference");
         doNothing().when(correspondentService).updateCorrespondent(eq(caseUUID), eq(correspondentUUID),

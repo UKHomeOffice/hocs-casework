@@ -239,6 +239,7 @@ public class CorrespondentServiceTest {
         // GIVEN
         UUID testCaseUUID = UUID.randomUUID();
         UUID testCorrespondenceUUID = UUID.randomUUID();
+        String testType = "CORRESPONDENT";
         @NotEmpty String testFullname = "test name";
         String testOrganisation = "Organisation";
         String testPostcode = "T3 5ST";
@@ -250,10 +251,10 @@ public class CorrespondentServiceTest {
         String testReference = "TestRef";
         String testEmail = "test@test.com";
 
-        UpdateCorrespondentRequest testRequest = new UpdateCorrespondentRequest(testFullname, testOrganisation,
+        UpdateCorrespondentRequest testRequest = new UpdateCorrespondentRequest(testType, testFullname, testOrganisation,
             testPostcode, testAdd1, testAdd2, testAdd3, testCountry, testTelephone, testEmail, testReference);
 
-        Correspondent mockDBResponse = new Correspondent(testCaseUUID, "SomeType", testFullname, null, null, null, null,
+        Correspondent mockDBResponse = new Correspondent(testCaseUUID, testType, testFullname, null, null, null, null,
             null, null);
         when(correspondentRepository.findByUUID(testCaseUUID, testCorrespondenceUUID)).thenReturn(mockDBResponse);
         when(caseDataRepository.getCaseType(testCaseUUID)).thenReturn("TEST");

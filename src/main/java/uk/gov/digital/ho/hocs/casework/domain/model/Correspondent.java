@@ -38,6 +38,7 @@ public class Correspondent implements Serializable {
     @Column(name = "created")
     protected LocalDateTime created;
 
+    @Setter
     @Getter
     @Column(name = "type")
     protected String correspondentType;

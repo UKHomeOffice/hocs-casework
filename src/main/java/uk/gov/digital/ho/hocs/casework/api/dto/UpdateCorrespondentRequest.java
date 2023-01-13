@@ -12,6 +12,10 @@ import javax.validation.constraints.NotEmpty;
 public class UpdateCorrespondentRequest {
 
     @NonNull
+    @JsonProperty(value = "type", required = true)
+    String type;
+
+    @NonNull
     @NotEmpty
     @JsonProperty(value = "fullname", required = true)
     String fullname;
