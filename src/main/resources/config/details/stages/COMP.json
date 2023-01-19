@@ -1,34 +1,303 @@
 {
   "type": "COMP",
   "groups": {
-    "COMP_PSU_REGISTRATION": [
+    "COMP_REGISTRATION": [
+      {
+        "component": "date",
+        "name": "DateReceived",
+        "label": "When was the correspondence received?"
+      },
       {
         "component": "text",
-        "name": "PsuReference",
-        "label": "PSU reference"
-      }
-    ],
-    "COMP_PSU_TRIAGE": [
+        "name": "Withdrawn",
+        "label": "Withdrawn"
+      },
+      {
+        "component": "text-area",
+        "name": "WithdrawalReason",
+        "label": "WithdrawalReason"
+      },
+      {
+        "component": "entity-list",
+        "props": {
+          "action": "CORRESPONDENT",
+          "entity": "correspondent",
+          "choices": "CASE_CORRESPONDENTS",
+          "addUrlPath": "addNoMp",
+          "hasAddLink": true,
+          "hasEditLink": true,
+          "hasRemoveLink": true,
+          "hideRemovePrimary": true
+        },
+        "name": "Correspondents",
+        "label": "Which is the primary correspondent?"
+      },
+      {
+        "component": "date",
+        "name": "ComplainantDOB",
+        "label": "Date of Birth"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Male",
+              "value": "Male"
+            },
+            {
+              "label": "Female",
+              "value": "Female"
+            }
+          ]
+        },
+        "name": "ComplainantGender",
+        "label": "Gender"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "COUNTRIES_CURRENT"
+        },
+        "name": "ComplainantNationality",
+        "label": "Nationality"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantCompanyName",
+        "label": "Company Name"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantHORef",
+        "label": "Home Office Reference"
+      },
+      {
+        "component": "text",
+        "name": "ComplainantPortRef",
+        "label": "Port Reference"
+      },
       {
         "props": {
           "choices": [
             {
-              "label": "Yes",
-              "value": "Accept"
+              "label": "Service",
+              "value": "Service"
             },
             {
-              "label": "No - send back to UKVI",
-              "value": "ReturnCase"
+              "label": "Ex-Gratia",
+              "value": "Ex-Gratia"
             },
             {
-              "label": "No - send to team not on DECS",
-              "value": "CloseCase"
+              "label": "Minor misconduct",
+              "value": "MinorMisconduct"
+            },
+            {
+              "label": "Serious misconduct",
+              "value": "SeriousMisconduct"
             }
           ]
         },
         "component": "radio",
-        "name": "PsuTriageOutcome",
-        "label": "Is this serious misconduct case for PSU to investigate?"
+        "label": "Complaint type",
+        "name": "CompType"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Not Applicable",
+              "value": "NA"
+            },
+            {
+              "label": "Telephone",
+              "value": "TELEPHONE"
+            },
+            {
+              "label": "Email",
+              "value": "EMAIL"
+            },
+            {
+              "label": "HMPOTRT",
+              "value": "HMPOTRT"
+            },
+            {
+              "label": "Letter",
+              "value": "Letter"
+            },
+            {
+              "label": "Face to Face",
+              "value": "FACE"
+            },
+            {
+              "label": "Webform",
+              "value": "Webform"
+            }
+          ],
+          "hideConditions": [
+            {
+              "conditionPropertyName": "XOriginatedFrom",
+              "conditionPropertyValue": "Webform"
+            }
+          ]
+        },
+        "name": "Channel",
+        "label": "Channel"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseSummary",
+        "label": "Case Summary"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Very High",
+              "value": "1 Very High"
+            },
+            {
+              "label": "High",
+              "value": "2 High"
+            },
+            {
+              "label": "Medium",
+              "value": "3 Medium"
+            },
+            {
+              "label": "Low",
+              "value": "4 Low"
+            },
+            {
+              "label": "Very Low",
+              "value": "5 Very Low"
+            }
+          ]
+        },
+        "name": "Severity",
+        "label": "Severity"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Safe Guarding",
+              "value": "SafeGuarding"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeveritySafeGuarding"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Vulnerable",
+              "value": "Vulnerable"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeverityVulnerable"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "MP’s Interest",
+              "value": "MPsInterest"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeverityMpsInterest"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Media Interest",
+              "value": "MediaInterest"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeverityMediaInterest"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Exceptional Circumstances",
+              "value": "ExceptionalCircumstances"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "1 Very High"
+            },
+            {
+              "conditionPropertyName": "Severity",
+              "conditionPropertyValue": "2 High"
+            }
+          ]
+        },
+        "name": "SeverityExceptionalCircumstances"
+      },
+      {
+        "component": "text",
+        "name": "PrevUkviRef",
+        "label": "Previous UKVI complaint reference"
+      },
+      {
+        "component": "text",
+        "name": "3rdPartyRef",
+        "label": "Third party reference"
       },
       {
         "props": {
@@ -78,303 +347,79 @@
           "saveSeparately": true
         },
         "component": "checkbox-group",
-        "name": "PsuCompCategoriesSerious",
+        "name": "CompCategoriesSerious",
         "label": "Serious misconduct"
-      }
-    ],
-    "COMP_PSU_OUTCOME": [
-      {
-        "props": {
-          "choices": [
-            {
-              "label": "Substantiated",
-              "value": "Substantiated"
-            },
-            {
-              "label": "Partially substantiated",
-              "value": "Partially substantiated"
-            },
-            {
-              "label": "Unsubstantiated",
-              "value": "Unsubstantiated"
-            },
-            {
-              "label": "Withdrawn",
-              "value": "Withdrawn"
-            },
-            {
-              "label": "Not serious - send back to IE Detention",
-              "value": "ReturnCase"
-            }
-          ]
-        },
-        "component": "radio",
-        "name": "PsuComplaintOutcome",
-        "label": "Complaint outcome"
-      },
-      {
-        "props": {
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "PsuComplaintOutcome",
-              "conditionPropertyValue": "Withdrawn"
-            }
-          ]
-        },
-        "component": "text-area",
-        "name": "WithdrawalReason",
-        "label": "Why has the complaint been withdrawn?"
-      },
-      {
-        "props": {
-          "entity": "document",
-          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
-          "hasAddLink": true,
-          "hasRemoveLink": true
-        },
-        "component": "entity-list",
-        "name": "FinalResponseDocument",
-        "label": "Final response"
-      },
-      {
-        "component": "date",
-        "name": "DateOfResponse",
-        "label": "Final response sent"
-      }
-    ],
-
-    "COMP_MINORMISCONDUCT_SEND": [
-      {
-        "component": "entity-list",
-        "props": {
-          "entity": "document",
-          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
-          "hasAddLink": true,
-          "hasRemoveLink": true
-        },
-        "name": "FinalResponseDocument",
-        "label": "Upload the Final Response"
       },
       {
         "component": "dropdown",
         "props": {
-          "choices": "S_COMP_CCT_CASE_OUTCOME"
+          "choices": "S_COMP_CSU_LIST"
         },
-        "name": "CctCaseOutcome",
-        "label": "Case Outcome"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": [
-            {
-              "label": "Telephone",
-              "value": "Telephone"
-            },
-            {
-              "label": "Email",
-              "value": "Email"
-            },
-            {
-              "label": "Letter",
-              "value": "Letter"
-            },
-            {
-              "label": "In Person",
-              "value": "InPerson"
-            }
-          ]
-        },
-        "name": "ResponseChannel",
-        "label": "Response Channel"
-      },
-      {
-        "component": "date",
-        "props": {
-          "autopopulate": true
-        },
-        "name": "DateResponded",
-        "label": "Date of Response"
-      }
-    ],
-    "COMP_MINORMISCONDUCT_ESCALATE": [
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
-          },
-          "somuType": {
-            "type": "COMPLAINANT_CONTRIB",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "COMP"
-          }
-        },
-        "name": "CompContributions",
-        "label": "Complainant additional information"
+        "name": "OwningCSU",
+        "label": "Owning CSU"
       },
       {
         "component": "checkbox",
         "props": {
           "choices": [
             {
-              "label": "Has Letter of Authority been received?",
+              "label": "Yes",
               "value": "Yes"
+            }
+          ],
+          "showLabel": true
+        },
+        "name": "WebformComplaintInvalid",
+        "label": "Is the complaint invalid?"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Invalid Complaint",
+              "value": "Invalid Complaint"
+            },
+            {
+              "label": "Duplicate Record",
+              "value": "Duplicate Record"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
             }
           ],
           "visibilityConditions": [
             {
-              "conditionPropertyName": "LoaRequired",
+              "conditionPropertyName": "WebformComplaintInvalid",
               "conditionPropertyValue": "Yes"
             }
           ]
         },
-        "name": "LoaReceived"
+        "name": "Close Reason",
+        "label": "Close Reason"
       },
       {
-        "component": "date",
+        "component": "text-area",
         "props": {
           "visibilityConditions": [
             {
-              "conditionPropertyName": "LoaReceived",
-              "conditionPropertyValue": "Yes"
+              "function": "hasAllValues",
+              "conditionArgs": {
+                "arg1": {
+                  "conditionPropertyName": "Close Reason",
+                  "conditionPropertyValue": "Other"
+                },
+                "arg2": {
+                  "conditionPropertyName": "WebformComplaintInvalid",
+                  "conditionPropertyValue": "Yes"
+                }
+              }
             }
           ]
         },
-        "name": "LoaDate",
-        "label": "Date of Letter of Authority"
-      },
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "EX_GRATIA_BUS_REPS"
-          },
-          "somuType": {
-            "type": "EXGRATIA_BUS_CONTRIB",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "COMP"
-          }
-        },
-        "name": "ExGratiaBusContributions",
-        "label": "Business contributions"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Save changes",
-              "value": "Pending"
-            },
-            {
-              "label": "Return case to Triage",
-              "value": "Triage"
-            },
-            {
-              "label": "Case ready for drafting",
-              "value": "Draft"
-            },
-            {
-              "label": "Escalate to PSU",
-              "value": "PSU"
-            }
-          ]
-        },
-        "name": "CctEscalateResult",
-        "label": "Action"
-      },
-      {
-        "component": "somu-list",
-        "props": {
-          "choices": {
-            "contributionBusinessArea": "S_COMP_CONTRIB_BUS_AREA"
-          },
-          "somuType": {
-            "type": "CCT_BUS_CONTRIB",
-            "choices": "S_MPAM_BUS_UNITS_ALL",
-            "caseType": "COMP"
-          }
-        },
-        "name": "BusContributions",
-        "label": "Business contributions"
-      }
-    ],
-    "COMP_EXGRATIA_SEND": [
-      {
-        "component": "entity-list",
-        "props": {
-          "entity": "document",
-          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
-          "hasAddLink": true,
-          "hasRemoveLink": true
-        },
-        "name": "FinalResponseDocument",
-        "label": "Upload the Final Response"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "S_COMP_CCT_CASE_OUTCOME"
-        },
-        "name": "CctCaseOutcome",
-        "label": "Case Outcome"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": [
-            {
-              "label": "Telephone",
-              "value": "Telephone"
-            },
-            {
-              "label": "Email",
-              "value": "Email"
-            },
-            {
-              "label": "Letter",
-              "value": "Letter"
-            },
-            {
-              "label": "In Person",
-              "value": "InPerson"
-            }
-          ]
-        },
-        "name": "ResponseChannel",
-        "label": "Response Channel"
-      },
-      {
-        "component": "date",
-        "props": {
-          "autopopulate": true
-        },
-        "name": "DateResponded",
-        "label": "Date of Response"
-      }
-    ],
-    "COMP_MINORMISCONDUCT_QA": [
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Accept - send response to complainant",
-              "value": "Accept"
-            },
-            {
-              "label": "Reject - return response to draft",
-              "value": "Reject"
-            },
-            {
-              "label": "Escalate case to PSU",
-              "value": "PSU"
-            }
-          ]
-        },
-        "name": "CctQaResult",
-        "label": "QA Result"
+        "name": "CloseReasonText",
+        "label": "Reason for closing"
       }
     ],
     "COMP_MINORMISCONDUCT_TRIAGE": [
@@ -1222,7 +1267,7 @@
         "label": "Owning CSU"
       }
     ],
-    "COMP_EXGRATIA_RESPONSE_DRAFT": [
+    "COMP_MINORMISCONDUCT_RESPONSE_DRAFT": [
       {
         "component": "entity-list",
         "props": {
@@ -1276,7 +1321,7 @@
         "label": "Enter reason for escalation"
       }
     ],
-    "COMP_EXGRATIA_ESCALATE": [
+    "COMP_MINORMISCONDUCT_ESCALATE": [
       {
         "component": "somu-list",
         "props": {
@@ -1362,9 +1407,24 @@
         },
         "name": "CctEscalateResult",
         "label": "Action"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_BUS_AREA"
+          },
+          "somuType": {
+            "type": "CCT_BUS_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "BusContributions",
+        "label": "Business contributions"
       }
     ],
-    "COMP_EXGRATIA_QA": [
+    "COMP_MINORMISCONDUCT_QA": [
       {
         "component": "radio",
         "props": {
@@ -1385,6 +1445,60 @@
         },
         "name": "CctQaResult",
         "label": "QA Result"
+      }
+    ],
+    "COMP_MINORMISCONDUCT_SEND": [
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "FinalResponseDocument",
+        "label": "Upload the Final Response"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CCT_CASE_OUTCOME"
+        },
+        "name": "CctCaseOutcome",
+        "label": "Case Outcome"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Telephone",
+              "value": "Telephone"
+            },
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Letter",
+              "value": "Letter"
+            },
+            {
+              "label": "In Person",
+              "value": "InPerson"
+            }
+          ]
+        },
+        "name": "ResponseChannel",
+        "label": "Response Channel"
+      },
+      {
+        "component": "date",
+        "props": {
+          "autopopulate": true
+        },
+        "name": "DateResponded",
+        "label": "Date of Response"
       }
     ],
     "COMP_EXGRATIA_TRIAGE": [
@@ -2206,428 +2320,7 @@
         "label": "Business Area"
       }
     ],
-    "COMP_REGISTRATION": [
-      {
-        "component": "date",
-        "name": "DateReceived",
-        "label": "When was the correspondence received?"
-      },
-      {
-        "component": "text",
-        "name": "Withdrawn",
-        "label": "Withdrawn"
-      },
-      {
-        "component": "text-area",
-        "name": "WithdrawalReason",
-        "label": "WithdrawalReason"
-      },
-      {
-        "component": "entity-list",
-        "props": {
-          "action": "CORRESPONDENT",
-          "entity": "correspondent",
-          "choices": "CASE_CORRESPONDENTS",
-          "addUrlPath": "addNoMp",
-          "hasAddLink": true,
-          "hasEditLink": true,
-          "hasRemoveLink": true,
-          "hideRemovePrimary": true
-        },
-        "name": "Correspondents",
-        "label": "Which is the primary correspondent?"
-      },
-      {
-        "component": "date",
-        "name": "ComplainantDOB",
-        "label": "Date of Birth"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Male",
-              "value": "Male"
-            },
-            {
-              "label": "Female",
-              "value": "Female"
-            }
-          ]
-        },
-        "name": "ComplainantGender",
-        "label": "Gender"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "COUNTRIES_CURRENT"
-        },
-        "name": "ComplainantNationality",
-        "label": "Nationality"
-      },
-      {
-        "component": "text",
-        "name": "ComplainantCompanyName",
-        "label": "Company Name"
-      },
-      {
-        "component": "text",
-        "name": "ComplainantHORef",
-        "label": "Home Office Reference"
-      },
-      {
-        "component": "text",
-        "name": "ComplainantPortRef",
-        "label": "Port Reference"
-      },
-      {
-        "props": {
-          "choices": [
-            {
-              "label": "Service",
-              "value": "Service"
-            },
-            {
-              "label": "Ex-Gratia",
-              "value": "Ex-Gratia"
-            },
-            {
-              "label": "Minor misconduct",
-              "value": "MinorMisconduct"
-            },
-            {
-              "label": "Serious misconduct",
-              "value": "SeriousMisconduct"
-            }
-          ]
-        },
-        "component": "radio",
-        "label": "Complaint type",
-        "name": "CompType"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Not Applicable",
-              "value": "NA"
-            },
-            {
-              "label": "Telephone",
-              "value": "TELEPHONE"
-            },
-            {
-              "label": "Email",
-              "value": "EMAIL"
-            },
-            {
-              "label": "HMPOTRT",
-              "value": "HMPOTRT"
-            },
-            {
-              "label": "Letter",
-              "value": "Letter"
-            },
-            {
-              "label": "Face to Face",
-              "value": "FACE"
-            },
-            {
-              "label": "Webform",
-              "value": "Webform"
-            }
-          ],
-          "hideConditions": [
-            {
-              "conditionPropertyName": "XOriginatedFrom",
-              "conditionPropertyValue": "Webform"
-            }
-          ]
-        },
-        "name": "Channel",
-        "label": "Channel"
-      },
-      {
-        "component": "text-area",
-        "name": "CaseSummary",
-        "label": "Case Summary"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Very High",
-              "value": "1 Very High"
-            },
-            {
-              "label": "High",
-              "value": "2 High"
-            },
-            {
-              "label": "Medium",
-              "value": "3 Medium"
-            },
-            {
-              "label": "Low",
-              "value": "4 Low"
-            },
-            {
-              "label": "Very Low",
-              "value": "5 Very Low"
-            }
-          ]
-        },
-        "name": "Severity",
-        "label": "Severity"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "Safe Guarding",
-              "value": "SafeGuarding"
-            }
-          ],
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "Severity",
-              "conditionPropertyValue": "1 Very High"
-            },
-            {
-              "conditionPropertyName": "Severity",
-              "conditionPropertyValue": "2 High"
-            }
-          ]
-        },
-        "name": "SeveritySafeGuarding"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "Vulnerable",
-              "value": "Vulnerable"
-            }
-          ],
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "Severity",
-              "conditionPropertyValue": "1 Very High"
-            },
-            {
-              "conditionPropertyName": "Severity",
-              "conditionPropertyValue": "2 High"
-            }
-          ]
-        },
-        "name": "SeverityVulnerable"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "MP’s Interest",
-              "value": "MPsInterest"
-            }
-          ],
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "Severity",
-              "conditionPropertyValue": "1 Very High"
-            },
-            {
-              "conditionPropertyName": "Severity",
-              "conditionPropertyValue": "2 High"
-            }
-          ]
-        },
-        "name": "SeverityMpsInterest"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "Media Interest",
-              "value": "MediaInterest"
-            }
-          ],
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "Severity",
-              "conditionPropertyValue": "1 Very High"
-            },
-            {
-              "conditionPropertyName": "Severity",
-              "conditionPropertyValue": "2 High"
-            }
-          ]
-        },
-        "name": "SeverityMediaInterest"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "Exceptional Circumstances",
-              "value": "ExceptionalCircumstances"
-            }
-          ],
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "Severity",
-              "conditionPropertyValue": "1 Very High"
-            },
-            {
-              "conditionPropertyName": "Severity",
-              "conditionPropertyValue": "2 High"
-            }
-          ]
-        },
-        "name": "SeverityExceptionalCircumstances"
-      },
-      {
-        "component": "text",
-        "name": "PrevUkviRef",
-        "label": "Previous UKVI complaint reference"
-      },
-      {
-        "component": "text",
-        "name": "3rdPartyRef",
-        "label": "Third party reference"
-      },
-      {
-        "props": {
-          "choices": [
-            {
-              "label": "Assault",
-              "value": "Assault",
-              "name": "CatAssault"
-            },
-            {
-              "label": "Fraud / corruption",
-              "value": "Fraud",
-              "name": "CatFraud"
-            },
-            {
-              "label": "Other unprofessionalism",
-              "value": "OtherUnprof",
-              "name": "CatOtherUnprof"
-            },
-            {
-              "label": "Racism / discrimination",
-              "value": "Racism",
-              "name": "CatRacism"
-            },
-            {
-              "label": "Rudeness",
-              "value": "Rude",
-              "name": "CatRude"
-            },
-            {
-              "label": "Sexual assault",
-              "value": "SexAssault",
-              "name": "CatSexAssault"
-            },
-            {
-              "label": "Theft",
-              "value": "Theft",
-              "name": "CatTheft"
-            },
-            {
-              "label": "Unfair treatment",
-              "value": "Unfair",
-              "name": "CatUnfair"
-            }
-          ],
-          "showLabel": false,
-          "saveSeparately": true
-        },
-        "component": "checkbox-group",
-        "name": "CompCategoriesSerious",
-        "label": "Serious misconduct"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": "S_COMP_CSU_LIST"
-        },
-        "name": "OwningCSU",
-        "label": "Owning CSU"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
-            {
-              "label": "Yes",
-              "value": "Yes"
-            }
-          ],
-          "showLabel": true
-        },
-        "name": "WebformComplaintInvalid",
-        "label": "Is the complaint invalid?"
-      },
-      {
-        "component": "dropdown",
-        "props": {
-          "choices": [
-            {
-              "label": "Invalid Complaint",
-              "value": "Invalid Complaint"
-            },
-            {
-              "label": "Duplicate Record",
-              "value": "Duplicate Record"
-            },
-            {
-              "label": "Other",
-              "value": "Other"
-            }
-          ],
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "WebformComplaintInvalid",
-              "conditionPropertyValue": "Yes"
-            }
-          ]
-        },
-        "name": "Close Reason",
-        "label": "Close Reason"
-      },
-      {
-        "component": "text-area",
-        "props": {
-          "visibilityConditions": [
-            {
-              "function": "hasAllValues",
-              "conditionArgs": {
-                "arg1": {
-                  "conditionPropertyName": "Close Reason",
-                  "conditionPropertyValue": "Other"
-                },
-                "arg2": {
-                  "conditionPropertyName": "WebformComplaintInvalid",
-                  "conditionPropertyValue": "Yes"
-                }
-              }
-            }
-          ]
-        },
-        "name": "CloseReasonText",
-        "label": "Reason for closing"
-      }
-    ],
-    "COMP_MINORMISCONDUCT_RESPONSE_DRAFT": [
+    "COMP_EXGRATIA_RESPONSE_DRAFT": [
       {
         "component": "entity-list",
         "props": {
@@ -2681,31 +2374,169 @@
         "label": "Enter reason for escalation"
       }
     ],
-    "COMP_CCH_RETURNS": [
+    "COMP_EXGRATIA_ESCALATE": [
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "S_COMP_CONTRIB_TYPE"
+          },
+          "somuType": {
+            "type": "COMPLAINANT_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "CompContributions",
+        "label": "Complainant additional information"
+      },
+      {
+        "component": "checkbox",
+        "props": {
+          "choices": [
+            {
+              "label": "Has Letter of Authority been received?",
+              "value": "Yes"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaRequired",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaReceived"
+      },
+      {
+        "component": "date",
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "LoaReceived",
+              "conditionPropertyValue": "Yes"
+            }
+          ]
+        },
+        "name": "LoaDate",
+        "label": "Date of Letter of Authority"
+      },
+      {
+        "component": "somu-list",
+        "props": {
+          "choices": {
+            "contributionBusinessArea": "EX_GRATIA_BUS_REPS"
+          },
+          "somuType": {
+            "type": "EXGRATIA_BUS_CONTRIB",
+            "choices": "S_MPAM_BUS_UNITS_ALL",
+            "caseType": "COMP"
+          }
+        },
+        "name": "ExGratiaBusContributions",
+        "label": "Business contributions"
+      },
       {
         "component": "radio",
         "props": {
           "choices": [
             {
-              "label": "CCT",
-              "value": "Service"
+              "label": "Save changes",
+              "value": "Pending"
             },
             {
-              "label": "Ex-Gratia",
-              "value": "Ex-Gratia"
+              "label": "Return case to Triage",
+              "value": "Triage"
             },
             {
-              "label": "Minor Misconduct",
-              "value": "MinorMisconduct"
+              "label": "Case ready for drafting",
+              "value": "Draft"
             },
             {
-              "label": "Complete the case (close permanently)",
-              "value": "Complete"
+              "label": "Escalate to PSU",
+              "value": "PSU"
             }
           ]
         },
-        "name": "CchCompType",
-        "label": "Transfer to"
+        "name": "CctEscalateResult",
+        "label": "Action"
+      }
+    ],
+    "COMP_EXGRATIA_QA": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Accept - send response to complainant",
+              "value": "Accept"
+            },
+            {
+              "label": "Reject - return response to draft",
+              "value": "Reject"
+            },
+            {
+              "label": "Escalate case to PSU",
+              "value": "PSU"
+            }
+          ]
+        },
+        "name": "CctQaResult",
+        "label": "QA Result"
+      }
+    ],
+    "COMP_EXGRATIA_SEND": [
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "FinalResponseDocument",
+        "label": "Upload the Final Response"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CCT_CASE_OUTCOME"
+        },
+        "name": "CctCaseOutcome",
+        "label": "Case Outcome"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Telephone",
+              "value": "Telephone"
+            },
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Letter",
+              "value": "Letter"
+            },
+            {
+              "label": "In Person",
+              "value": "InPerson"
+            }
+          ]
+        },
+        "name": "ResponseChannel",
+        "label": "Response Channel"
+      },
+      {
+        "component": "date",
+        "props": {
+          "autopopulate": true
+        },
+        "name": "DateResponded",
+        "label": "Date of Response"
       }
     ],
     "COMP_SERVICE_TRIAGE": [
@@ -3526,6 +3357,33 @@
         "label": "Date of Response"
       }
     ],
+    "COMP_CCH_RETURNS": [
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "CCT",
+              "value": "Service"
+            },
+            {
+              "label": "Ex-Gratia",
+              "value": "Ex-Gratia"
+            },
+            {
+              "label": "Minor Misconduct",
+              "value": "MinorMisconduct"
+            },
+            {
+              "label": "Complete the case (close permanently)",
+              "value": "Complete"
+            }
+          ]
+        },
+        "name": "CchCompType",
+        "label": "Transfer to"
+      }
+    ],
     "COMP_CLOSED": [
       {
         "component": "radio",
@@ -3969,6 +3827,147 @@
         },
         "name": "ComplaintType",
         "label": "Complaint Reason"
+      }
+    ],
+    "COMP_PSU_REGISTRATION": [
+      {
+        "component": "text",
+        "name": "PsuReference",
+        "label": "PSU reference"
+      }
+    ],
+    "COMP_PSU_TRIAGE": [
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Accept"
+            },
+            {
+              "label": "No - send back to UKVI",
+              "value": "ReturnCase"
+            },
+            {
+              "label": "No - send to team not on DECS",
+              "value": "CloseCase"
+            }
+          ]
+        },
+        "component": "radio",
+        "name": "PsuTriageOutcome",
+        "label": "Is this serious misconduct case for PSU to investigate?"
+      },
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault",
+              "name": "CatAssault"
+            },
+            {
+              "label": "Fraud / corruption",
+              "value": "Fraud",
+              "name": "CatFraud"
+            },
+            {
+              "label": "Other unprofessionalism",
+              "value": "OtherUnprof",
+              "name": "CatOtherUnprof"
+            },
+            {
+              "label": "Racism / discrimination",
+              "value": "Racism",
+              "name": "CatRacism"
+            },
+            {
+              "label": "Rudeness",
+              "value": "Rude",
+              "name": "CatRude"
+            },
+            {
+              "label": "Sexual assault",
+              "value": "SexAssault",
+              "name": "CatSexAssault"
+            },
+            {
+              "label": "Theft",
+              "value": "Theft",
+              "name": "CatTheft"
+            },
+            {
+              "label": "Unfair treatment",
+              "value": "Unfair",
+              "name": "CatUnfair"
+            }
+          ],
+          "showLabel": false,
+          "saveSeparately": true
+        },
+        "component": "checkbox-group",
+        "name": "PsuCompCategoriesSerious",
+        "label": "Serious misconduct"
+      }
+    ],
+    "COMP_PSU_OUTCOME": [
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Substantiated",
+              "value": "Substantiated"
+            },
+            {
+              "label": "Partially substantiated",
+              "value": "Partially substantiated"
+            },
+            {
+              "label": "Unsubstantiated",
+              "value": "Unsubstantiated"
+            },
+            {
+              "label": "Withdrawn",
+              "value": "Withdrawn"
+            },
+            {
+              "label": "Not serious - send back to IE Detention",
+              "value": "ReturnCase"
+            }
+          ]
+        },
+        "component": "radio",
+        "name": "PsuComplaintOutcome",
+        "label": "Complaint outcome"
+      },
+      {
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "PsuComplaintOutcome",
+              "conditionPropertyValue": "Withdrawn"
+            }
+          ]
+        },
+        "component": "text-area",
+        "name": "WithdrawalReason",
+        "label": "Why has the complaint been withdrawn?"
+      },
+      {
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "component": "entity-list",
+        "name": "FinalResponseDocument",
+        "label": "Final response"
+      },
+      {
+        "component": "date",
+        "name": "DateOfResponse",
+        "label": "Final response sent"
       }
     ]
   }
