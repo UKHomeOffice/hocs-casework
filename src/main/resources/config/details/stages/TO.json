@@ -273,6 +273,10 @@
             {
               "conditionPropertyName": "BusinessArea",
               "conditionPropertyValue": "HMPO"
+            },
+            {
+              "conditionPropertyName": "BusinessArea",
+              "conditionPropertyValue": "BF"
             }
           ]
         },
