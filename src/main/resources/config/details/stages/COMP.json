@@ -297,7 +297,7 @@
       {
         "component": "text",
         "name": "3rdPartyRef",
-        "label": "Third party Reference"
+        "label": "Third Party Reference"
       },
       {
         "props": {
