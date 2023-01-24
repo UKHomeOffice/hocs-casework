@@ -218,6 +218,10 @@
     {
       "name": "3rdPartyRef",
       "label": "Third Party Reference"
+    },
+    {
+      "name": "PsuReference",
+      "label": "PSU reference"
     }
   ]
 }
