@@ -863,6 +863,13 @@
         "name": "DateResponded",
         "label": "Date of Response"
       }
+    ],
+    "BF2_PSU_REGISTRATION" : [
+      {
+        "component": "text",
+        "name": "PsuReference",
+        "label": "PSU reference"
+      }
     ]
   }
 }
