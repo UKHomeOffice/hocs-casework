@@ -108,32 +108,94 @@
       },
       "name" : "Channel",
       "label" : "Channel"
-    }, {
-      "component" : "text-area",
-      "name" : "CaseSummary",
-      "label" : "Case Summary"
-    }, {
-      "component" : "text",
-      "name" : "PrevCompRef",
-      "label" : "Previous Complaint Reference"
-    }, {
-      "component" : "text",
-      "name" : "3rdPartyRef",
-      "label" : "Third Party Reference"
-    }, {
-      "component" : "radio",
-      "props" : {
-        "choices" : [ {
-          "label" : "Service",
-          "value" : "Service"
-        }, {
-          "label" : "Minor Misconduct",
-          "value" : "MinorMisconduct"
-        } ]
+    },
+      {
+        "component" : "text-area",
+        "name" : "CaseSummary",
+        "label" : "Case Summary"
       },
-      "name" : "CompType",
-      "label" : "Complaint Type"
-    } ],
+      {
+        "component" : "text",
+        "name" : "PrevCompRef",
+        "label" : "Previous Complaint Reference"
+      },
+      {
+        "component" : "text",
+        "name" : "3rdPartyRef",
+        "label" : "Third Party Reference"
+      },
+      {
+        "component" : "radio",
+        "props" : {
+          "choices" : [
+            {
+              "label" : "Service",
+              "value" : "Service"
+            },
+            {
+              "label" : "Minor Misconduct",
+              "value" : "MinorMisconduct"
+            },
+            {
+              "label": "Serious misconduct",
+              "value": "SeriousMisconduct"
+            }
+          ]
+        },
+        "name" : "CompType",
+        "label" : "Complaint Type"
+      },
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault",
+              "name": "CatAssault"
+            },
+            {
+              "label": "Fraud / corruption",
+              "value": "Fraud",
+              "name": "CatFraud"
+            },
+            {
+              "label": "Other unprofessionalism",
+              "value": "OtherUnprof",
+              "name": "CatOtherUnprof"
+            },
+            {
+              "label": "Racism / discrimination",
+              "value": "Racism",
+              "name": "CatRacism"
+            },
+            {
+              "label": "Rudeness",
+              "value": "Rude",
+              "name": "CatRude"
+            },
+            {
+              "label": "Sexual assault",
+              "value": "SexAssault",
+              "name": "CatSexAssault"
+            },
+            {
+              "label": "Theft",
+              "value": "Theft",
+              "name": "CatTheft"
+            },
+            {
+              "label": "Unfair treatment",
+              "value": "Unfair",
+              "name": "CatUnfair"
+            }
+          ],
+          "saveSeparately": true
+        },
+        "component": "checkbox-group",
+        "name": "CompCategoriesSerious",
+        "label": "Serious misconduct"
+      }
+    ],
     "BF_QA" : [ {
       "component" : "radio",
       "props" : {
