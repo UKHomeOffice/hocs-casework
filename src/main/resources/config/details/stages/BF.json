@@ -818,6 +818,29 @@
         "name": "PsuReference",
         "label": "PSU reference"
       }
+    ],
+    "BF_PSU_TRIAGE" : [
+      {
+        "props" : {
+          "choices" : [
+            {
+              "label" : "Yes",
+              "value" : "Accept"
+            },
+            {
+              "label" : "No - send back to Border Force",
+              "value" : "ReturnCase"
+            },
+            {
+              "label" : "No - send to team not on DECS",
+              "value" : "CloseCase"
+            }
+          ]
+        },
+        "component" : "radio",
+        "name" : "PsuTriageOutcome",
+        "label" : "Is this serious misconduct case for PSU to investigate?"
+      }
     ]
   }
 }
