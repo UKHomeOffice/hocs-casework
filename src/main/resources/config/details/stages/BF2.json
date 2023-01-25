@@ -944,6 +944,50 @@
         "name" : "PsuTriageOutcome",
         "label" : "Is this serious misconduct case for PSU to investigate?"
       }
+    ],
+    "BF2_PSU_OUTCOME" : [
+      {
+        "props" : {
+          "choices" : [
+            {
+              "label" : "Substantiated",
+              "value" : "Substantiated"
+            },
+            {
+              "label": "Partially substantiated",
+              "value": "Partially substantiated"
+            },
+            {
+              "label": "Unsubstantiated",
+              "value": "Unsubstantiated"
+            },
+            {
+              "label": "Withdrawn",
+              "value": "Withdrawn"
+            },
+            {
+              "label": "Not serious - send back to Border Force",
+              "value": "ReturnCase"
+            }
+          ]
+        },
+        "component": "radio",
+        "name": "PsuComplaintOutcome",
+        "label": "Complaint outcome"
+      },
+      {
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "PsuComplaintOutcome",
+              "conditionPropertyValue": "Withdrawn"
+            }
+          ]
+        },
+        "component": "text-area",
+        "name": "WithdrawalReason",
+        "label": "Why has the complaint been withdrawn?"
+      }
     ]
   }
 }
