@@ -987,6 +987,22 @@
         "component": "text-area",
         "name": "WithdrawalReason",
         "label": "Why has the complaint been withdrawn?"
+      },
+      {
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_IEDET_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "component": "entity-list",
+        "name": "FinalResponseDocument",
+        "label": "Final response"
+      },
+      {
+        "component": "date",
+        "name": "DateOfResponse",
+        "label": "Final response sent"
       }
     ]
   }
