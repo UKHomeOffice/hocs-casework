@@ -966,27 +966,6 @@
         "label": "Reason for closing"
       },
       {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Save changes",
-              "value": "Pending"
-            },
-            {
-              "label": "Return case to Triage",
-              "value": "Triage"
-            },
-            {
-              "label": "Case ready for drafting",
-              "value": "Draft"
-            }
-          ]
-        },
-        "name": "CctEscalateResult",
-        "label": "Action"
-      },
-      {
         "component": "text-area",
         "name": "CaseSummary",
         "label": "Case Summary"
