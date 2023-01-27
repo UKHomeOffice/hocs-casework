@@ -189,7 +189,13 @@
               "name": "CatUnfair"
             }
           ],
-          "saveSeparately": true
+          "saveSeparately": true,
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "CompType",
+              "conditionPropertyValue": "SeriousMisconduct"
+            }
+          ]
         },
         "component": "checkbox-group",
         "name": "CompCategoriesSerious",
@@ -641,6 +647,62 @@
         },
         "name" : "TotalOfferSentToComplainant",
         "label" : "Total payment offer sent to the complainant"
+      },
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault",
+              "name": "CatAssault"
+            },
+            {
+              "label": "Fraud / corruption",
+              "value": "Fraud",
+              "name": "CatFraud"
+            },
+            {
+              "label": "Other unprofessionalism",
+              "value": "OtherUnprof",
+              "name": "CatOtherUnprof"
+            },
+            {
+              "label": "Racism / discrimination",
+              "value": "Racism",
+              "name": "CatRacism"
+            },
+            {
+              "label": "Rudeness",
+              "value": "Rude",
+              "name": "CatRude"
+            },
+            {
+              "label": "Sexual assault",
+              "value": "SexAssault",
+              "name": "CatSexAssault"
+            },
+            {
+              "label": "Theft",
+              "value": "Theft",
+              "name": "CatTheft"
+            },
+            {
+              "label": "Unfair treatment",
+              "value": "Unfair",
+              "name": "CatUnfair"
+            }
+          ],
+          "saveSeparately": true,
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "BfTriageAccept",
+              "conditionPropertyValue": "PSU"
+            }
+          ]
+        },
+        "component": "checkbox-group",
+        "name": "CompCategoriesSerious",
+        "label": "Serious misconduct"
       }
     ],
     "BF_DRAFT" : [
