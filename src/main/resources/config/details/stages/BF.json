@@ -713,6 +713,29 @@
         "label": "Serious misconduct"
       }
     ],
+    "BF_ESCALATE": [
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Return to triage",
+              "value": "SendToTriage"
+            },
+            {
+              "label": "Case ready for drafting",
+              "value": "SendToDraft"
+            },
+            {
+              "label": "Escalate to PSU",
+              "value": "PSU"
+            }
+          ]
+        },
+        "component": "radio",
+        "name": "BfEscalationResult",
+        "label": "Action"
+      }
+    ],
     "BF_DRAFT" : [
       {
         "component" : "entity-list",
