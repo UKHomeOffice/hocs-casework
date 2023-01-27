@@ -655,6 +655,29 @@
         "label": "Serious misconduct"
       }
     ],
+    "BF2_ESCALATE": [
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Return to triage",
+              "value": "SendToTriage"
+            },
+            {
+              "label": "Case ready for drafting",
+              "value": "SendToDraft"
+            },
+            {
+              "label": "Escalate to PSU",
+              "value": "PSU"
+            }
+          ]
+        },
+        "component": "radio",
+        "name": "BfEscalationResult",
+        "label": "Action"
+      }
+    ],
     "BF2_DRAFT": [
       {
         "component": "text-area",
