@@ -331,7 +331,7 @@
           "choices": "S_BF_COMPLAINT_REASON_FULL"
         },
         "name" : "ComplaintReason1",
-        "label" : "Reason for Complaint 1"
+        "label" : "Complaint reason 1"
       },
       {
         "component" : "text-area",
@@ -343,7 +343,7 @@
           } ]
         },
         "name" : "ComplaintReason1_Other",
-        "label" : "Other - Details (Complaint Reason 1)"
+        "label" : "Other - details (complaint reason 1)"
       },
       {
         "component" : "dropdown",
@@ -351,7 +351,7 @@
           "choices": "S_BF_COMPLAINT_REASON_FULL"
         },
         "name" : "ComplaintReason2",
-        "label" : "Reason for Complaint 2"
+        "label" : "Complaint reason 2"
       },
       {
         "component" : "text-area",
@@ -363,7 +363,7 @@
           } ]
         },
         "name" : "ComplaintReason2_Other",
-        "label" : "Other - Details (Complaint Reason 2)"
+        "label" : "Other - details (complaint reason 2)"
       },
       {
         "component" : "dropdown",
@@ -371,7 +371,7 @@
           "choices": "S_BF_COMPLAINT_REASON_FULL"
         },
         "name" : "ComplaintReason3",
-        "label" : "Reason for Complaint 3"
+        "label" : "Complaint reason 3"
       },
       {
         "component" : "text-area",
@@ -383,7 +383,7 @@
           } ]
         },
         "name" : "ComplaintReason3_Other",
-        "label" : "Other - Details (Complaint Reason 3)"
+        "label" : "Other - details (complaint reason 3)"
       },
       {
         "component" : "dropdown",
@@ -391,7 +391,7 @@
           "choices": "S_BF_COMPLAINT_REASON_FULL"
         },
         "name" : "ComplaintReason4",
-        "label" : "Reason for Complaint 4"
+        "label" : "Complaint reason 4"
       },
       {
         "component" : "text-area",
@@ -403,7 +403,7 @@
           } ]
         },
         "name" : "ComplaintReason4_Other",
-        "label" : "Other - Details (Complaint Reason 4)"
+        "label" : "Other - details (complaint reason 4)"
       },
       {
         "component" : "dropdown",
@@ -411,7 +411,7 @@
           "choices": "S_BF_COMPLAINT_REASON_FULL"
         },
         "name" : "ComplaintReason5",
-        "label" : "Reason for Complaint 5"
+        "label" : "Complaint reason 5"
       },
       {
         "component" : "text-area",
@@ -423,7 +423,7 @@
           } ]
         },
         "name" : "ComplaintReason5_Other",
-        "label" : "Other - Details (Complaint Reason 5)"
+        "label" : "Other - details (complaint reason 5)"
       },
       {
         "component" : "radio",
@@ -456,6 +456,10 @@
             {
               "label": "Escalate case to WFM",
               "value": "Escalate"
+            },
+            {
+              "label": "Escalate case to PSU",
+              "value": "PSU"
             },
             {
               "label": "No response - complete the case (close permanently)",
