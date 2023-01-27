@@ -643,6 +643,10 @@
             {
               "conditionPropertyName": "BfTriageAccept",
               "conditionPropertyValue": "PSU"
+            },
+            {
+              "conditionPropertyName": "BFTriageResult",
+              "conditionPropertyValue": "PSU"
             }
           ]
         },
