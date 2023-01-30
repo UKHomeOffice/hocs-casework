@@ -474,6 +474,45 @@
     {
       "name": "PsuReference",
       "label": "PSU reference"
+    },
+    {
+      "choices": [
+        {
+          "label": "Substantiated",
+          "value": "Substantiated"
+        },
+        {
+          "label": "Partially substantiated",
+          "value": "Partially substantiated"
+        },
+        {
+          "label": "Unsubstantiated",
+          "value": "Unsubstantiated"
+        },
+        {
+          "label": "Withdrawn",
+          "value": "Withdrawn"
+        }
+      ],
+      "name": "PsuComplaintOutcome",
+      "label": "Complaint outcome"
+    },
+    {
+      "props": {
+        "visibilityConditions": [
+          {
+            "conditionPropertyName": "PsuComplaintOutcome",
+            "conditionPropertyValue": "Withdrawn"
+          }
+        ]
+      },
+      "name": "WithdrawalReason",
+      "label": "Why has the complaint been withdrawn?"
+    },
+    {
+      "type": "date",
+      "name": "DateOfResponse",
+      "label": "Final response sent"
     }
   ]
 }
