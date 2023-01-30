@@ -1014,6 +1014,29 @@
         "label" : "Primary draft document"
       }
     ],
+    "BF_RECATEGORISE": [
+      {
+        "component" : "radio",
+        "props" : {
+          "choices" : [
+            {
+              "label" : "Service",
+              "value" : "Service"
+            },
+            {
+              "label" : "Minor Misconduct",
+              "value" : "MinorMisconduct"
+            },
+            {
+              "label": "Serious misconduct",
+              "value": "SeriousMisconduct"
+            }
+          ]
+        },
+        "name" : "CompType",
+        "label" : "Complaint Type"
+      }
+    ],
     "BF_PSU_REGISTRATION" : [
       {
         "component": "text",
