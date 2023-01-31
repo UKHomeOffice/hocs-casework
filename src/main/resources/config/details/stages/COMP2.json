@@ -148,7 +148,7 @@
       {
         "component": "text-area",
         "name": "CaseSummary",
-        "label": "Case Summary"
+        "label": "Case summary"
       },
       {
         "component": "radio",
@@ -297,7 +297,7 @@
       {
         "component": "text",
         "name": "3rdPartyRef",
-        "label": "Third Party Reference"
+        "label": "Third party reference"
       },
       {
         "props": {
@@ -2308,7 +2308,7 @@
           ]
         },
         "name": "CctQaResult",
-        "label": "QA Result"
+        "label": "QA result"
       }
     ],
     "COMP2_SERVICE_SEND": [
@@ -2533,7 +2533,7 @@
       {
         "component": "text",
         "name": "3rdPartyRef",
-        "label": "Third Party Reference"
+        "label": "Third party reference"
       },
       {
         "component": "entity-list",

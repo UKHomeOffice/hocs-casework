@@ -98,12 +98,12 @@
     {
       "component": "text",
       "name": "PrevUkviRef",
-      "label": "Previous UKVI complaint Ref"
+      "label": "Previous UKVI complaint reference"
     },
     {
       "component": "text",
       "name": "3rdPartyRef",
-      "label": "Third Party Reference"
+      "label": "Third party reference"
     },
     {
       "choices": "S_COMP_CCT_BUS_AREA",
