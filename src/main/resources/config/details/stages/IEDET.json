@@ -403,6 +403,27 @@
         "props": {
           "choices": [
             {
+              "label": "Yes",
+              "value": "Accept"
+            },
+            {
+              "label": "No - send back to IE Detention",
+              "value": "ReturnCase"
+            },
+            {
+              "label": "No - send to team not on DECS",
+              "value": "CloseCase"
+            }
+          ]
+        },
+        "component": "radio",
+        "name": "PsuTriageOutcome",
+        "label": "Is this serious misconduct case for PSU to investigate?"
+      },
+      {
+        "props": {
+          "choices": [
+            {
               "label": "Assault",
               "value": "Assault",
               "name": "CatAssault"
