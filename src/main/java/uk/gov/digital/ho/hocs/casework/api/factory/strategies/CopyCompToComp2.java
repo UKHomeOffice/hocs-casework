@@ -18,7 +18,7 @@ public class CopyCompToComp2 extends AbstractCaseCopyStrategy implements CaseCop
         "LoaRequired", "PrevUkviRef", "CatCustodyBF", "CatWrongInfo", "CatSexAssault", "CatCCProvMinor",
         "CatOtherUnprof", "ComplainantDOB", "ComplainantHORef", "ComplainantPortRef",
         "SeverityVulnerable", "SeveritySafeGuarding", "ComplainantCompanyName", "ComplainantNationality",
-        "Directorate" };
+        "Directorate", "BusAreaBasedOnDirectorate" };
 
     private final CaseDataService caseDataService;
 
