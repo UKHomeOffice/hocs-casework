@@ -497,6 +497,10 @@
         {
           "label": "Withdrawn",
           "value": "Withdrawn"
+        },
+        {
+          "label": "Not serious - send back to UKVI",
+          "value": "ReturnCase"
         }
       ],
       "name": "PsuComplaintOutcome",
