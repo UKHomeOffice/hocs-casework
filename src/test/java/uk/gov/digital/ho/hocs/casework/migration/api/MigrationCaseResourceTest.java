@@ -8,19 +8,19 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseRequest;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseResponse;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
-import static java.util.Collections.emptyList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
@@ -62,29 +62,20 @@ public class MigrationCaseResourceTest {
             data,
             dateArg,
             null,
-            STAGE_TYPE,
-            null,
-            null,
-            caseAttachments);
+            STAGE_TYPE);
         when(migrationCaseService.createMigrationCase(
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
-            dateArg,
-            null,
-            null,
-            caseAttachments)).thenReturn(caseData);
+            dateArg)).thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
 
-        ResponseEntity<CreateCaseResponse> response = migrationCaseResource.createMigrationCase(request);
+        ResponseEntity<CreateMigrationCaseResponse> response = migrationCaseResource.createMigrationCase(request);
 
         verify(migrationCaseService, times(1)).createMigrationCase(
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
-            dateArg,
-            null,
-            null,
-            caseAttachments);
+            dateArg);
 
         verifyNoMoreInteractions(migrationCaseService);
 
