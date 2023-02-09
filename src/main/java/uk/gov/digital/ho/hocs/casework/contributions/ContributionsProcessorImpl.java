@@ -50,6 +50,8 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
             return;
         }
 
+        log.info(String.format("Processing contributions for %s stages with %s somu items", stages.size(), allSomuItems.size()));
+
         for (StageWithCaseData stage : stages) {
             if (infoClient.getStageContributions(stage.getStageType())) {
                 Set<Contribution> contributions = allSomuItems.stream().filter(
@@ -68,12 +70,12 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
                 }
 
                 calculateDueContributionDate(contributions).ifPresent(ld -> {
-                    log.info("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
+                    log.debug("Setting contribution date {}, for caseId {}", ld, stage.getCaseUUID());
                     stage.setDueContribution(ld.toString());
                 });
 
                 highestContributionStatus(contributions).ifPresent(cs -> {
-                    log.info("Setting contribution status {}, for caseId {}", cs.getDisplayedStatus(),
+                    log.debug("Setting contribution status {}, for caseId {}", cs.getDisplayedStatus(),
                         stage.getCaseUUID());
                     stage.setContributions(cs.getDisplayedStatus());
                 });
