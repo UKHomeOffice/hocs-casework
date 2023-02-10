@@ -1106,7 +1106,7 @@
               "name": "CatUnfair"
             },
             {
-              "label": "Other unprofessionalism",
+              "label": "Other Unprofessional",
               "value": "OtherUnprof",
               "name": "CatOtherUnprof"
             }
@@ -3675,7 +3675,7 @@
               "value": "Withdrawn"
             },
             {
-              "label": "Not serious - send back to IE Detention",
+              "label": "Not serious - send back to UKVI",
               "value": "ReturnCase"
             }
           ]

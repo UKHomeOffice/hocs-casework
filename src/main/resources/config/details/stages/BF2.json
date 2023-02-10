@@ -162,6 +162,10 @@
             {
               "label": "No - transfer offline and close the case",
               "value": "No"
+            },
+            {
+              "label": "No - escalate to PSU",
+              "value": "PSU"
             }
           ]
         },
@@ -274,7 +278,7 @@
           "choices": "S_BF_COMPLAINT_REASON_FULL"
         },
         "name": "ComplaintReason1",
-        "label": "Reason for Complaint 1"
+        "label": "Complaint reason 1"
       },
       {
         "component": "text-area",
@@ -288,7 +292,7 @@
           ]
         },
         "name": "ComplaintReason1_Other",
-        "label": "Other - Details (Complaint Reason 1)"
+        "label": "Other - details (complaint reason 1)"
       },
       {
         "component": "dropdown",
@@ -296,7 +300,7 @@
           "choices": "S_BF_COMPLAINT_REASON_FULL"
         },
         "name": "ComplaintReason2",
-        "label": "Reason for Complaint 2"
+        "label": "Complaint reason 2"
       },
       {
         "component": "text-area",
@@ -310,7 +314,7 @@
           ]
         },
         "name": "ComplaintReason2_Other",
-        "label": "Other - Details (Complaint Reason 2)"
+        "label": "Other - details (complaint reason 2)"
       },
       {
         "component": "dropdown",
@@ -318,7 +322,7 @@
           "choices": "S_BF_COMPLAINT_REASON_FULL"
         },
         "name": "ComplaintReason3",
-        "label": "Reason for Complaint 3"
+        "label": "Complaint reason 3"
       },
       {
         "component": "text-area",
@@ -332,7 +336,7 @@
           ]
         },
         "name": "ComplaintReason3_Other",
-        "label": "Other - Details (Complaint Reason 3)"
+        "label": "Other - details (complaint reason 3)"
       },
       {
         "component": "dropdown",
@@ -340,7 +344,7 @@
           "choices": "S_BF_COMPLAINT_REASON_FULL"
         },
         "name": "ComplaintReason4",
-        "label": "Reason for Complaint 4"
+        "label": "Complaint reason 4"
       },
       {
         "component": "text-area",
@@ -354,7 +358,7 @@
           ]
         },
         "name": "ComplaintReason4_Other",
-        "label": "Other - Details (Complaint Reason 4)"
+        "label": "Other - details (complaint reason 4)"
       },
       {
         "component": "dropdown",
@@ -362,7 +366,7 @@
           "choices": "S_BF_COMPLAINT_REASON_FULL"
         },
         "name": "ComplaintReason5",
-        "label": "Reason for Complaint 5"
+        "label": "Complaint reason 5"
       },
       {
         "component": "text-area",
@@ -376,7 +380,7 @@
           ]
         },
         "name": "ComplaintReason5_Other",
-        "label": "Other - Details (Complaint Reason 5)"
+        "label": "Other - details (complaint reason 5)"
       },
       {
         "component": "radio",
@@ -578,6 +582,10 @@
               "value": "Escalate"
             },
             {
+              "label": "Escalate case to PSU",
+              "value": "PSU"
+            },
+            {
               "label": "No response - complete the case (close permanently)",
               "value": "Complete"
             }
@@ -585,6 +593,145 @@
         },
         "name": "BFTriageResult",
         "label": "Action"
+      },
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault",
+              "name": "CatAssault"
+            },
+            {
+              "label": "Fraud / corruption",
+              "value": "Fraud",
+              "name": "CatFraud"
+            },
+            {
+              "label": "Other unprofessionalism",
+              "value": "OtherUnprof",
+              "name": "CatOtherUnprof"
+            },
+            {
+              "label": "Racism / discrimination",
+              "value": "Racism",
+              "name": "CatRacism"
+            },
+            {
+              "label": "Rudeness",
+              "value": "Rude",
+              "name": "CatRude"
+            },
+            {
+              "label": "Sexual assault",
+              "value": "SexAssault",
+              "name": "CatSexAssault"
+            },
+            {
+              "label": "Theft",
+              "value": "Theft",
+              "name": "CatTheft"
+            },
+            {
+              "label": "Unfair treatment",
+              "value": "Unfair",
+              "name": "CatUnfair"
+            }
+          ],
+          "saveSeparately": true,
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "BfTriageAccept",
+              "conditionPropertyValue": "PSU"
+            },
+            {
+              "conditionPropertyName": "BFTriageResult",
+              "conditionPropertyValue": "PSU"
+            }
+          ]
+        },
+        "component": "checkbox-group",
+        "name": "CompCategoriesSerious",
+        "label": "Serious misconduct"
+      }
+    ],
+    "BF2_ESCALATE": [
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Return to triage",
+              "value": "SendToTriage"
+            },
+            {
+              "label": "Case ready for drafting",
+              "value": "SendToDraft"
+            },
+            {
+              "label": "Escalate to PSU",
+              "value": "PSU"
+            }
+          ]
+        },
+        "component": "radio",
+        "name": "BfEscalationResult",
+        "label": "Action"
+      },
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault",
+              "name": "CatAssault"
+            },
+            {
+              "label": "Fraud / corruption",
+              "value": "Fraud",
+              "name": "CatFraud"
+            },
+            {
+              "label": "Other unprofessionalism",
+              "value": "OtherUnprof",
+              "name": "CatOtherUnprof"
+            },
+            {
+              "label": "Racism / discrimination",
+              "value": "Racism",
+              "name": "CatRacism"
+            },
+            {
+              "label": "Rudeness",
+              "value": "Rude",
+              "name": "CatRude"
+            },
+            {
+              "label": "Sexual assault",
+              "value": "SexAssault",
+              "name": "CatSexAssault"
+            },
+            {
+              "label": "Theft",
+              "value": "Theft",
+              "name": "CatTheft"
+            },
+            {
+              "label": "Unfair treatment",
+              "value": "Unfair",
+              "name": "CatUnfair"
+            }
+          ],
+          "saveSeparately": true,
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "BfEscalationResult",
+              "conditionPropertyValue": "PSU"
+            }
+          ]
+        },
+        "component": "checkbox-group",
+        "name": "CompCategoriesSerious",
+        "label": "Serious misconduct"
       }
     ],
     "BF2_DRAFT": [
@@ -862,6 +1009,147 @@
         },
         "name": "DateResponded",
         "label": "Date of Response"
+      }
+    ],
+    "BF2_PSU_REGISTRATION" : [
+      {
+        "component": "text",
+        "name": "PsuReference",
+        "label": "PSU reference"
+      }
+    ],
+    "BF2_PSU_TRIAGE" : [
+      {
+        "props": {
+          "choices": [
+            {
+              "label": "Assault",
+              "value": "Assault",
+              "name": "CatAssault"
+            },
+            {
+              "label": "Fraud / corruption",
+              "value": "Fraud",
+              "name": "CatFraud"
+            },
+            {
+              "label": "Other unprofessionalism",
+              "value": "OtherUnprof",
+              "name": "CatOtherUnprof"
+            },
+            {
+              "label": "Racism / discrimination",
+              "value": "Racism",
+              "name": "CatRacism"
+            },
+            {
+              "label": "Rudeness",
+              "value": "Rude",
+              "name": "CatRude"
+            },
+            {
+              "label": "Sexual assault",
+              "value": "SexAssault",
+              "name": "CatSexAssault"
+            },
+            {
+              "label": "Theft",
+              "value": "Theft",
+              "name": "CatTheft"
+            },
+            {
+              "label": "Unfair treatment",
+              "value": "Unfair",
+              "name": "CatUnfair"
+            }
+          ],
+          "showLabel": false,
+          "saveSeparately": true
+        },
+        "component": "checkbox-group",
+        "name": "PsuCompCategoriesSerious",
+        "label": "Serious misconduct"
+      },
+      {
+        "props" : {
+          "choices" : [
+            {
+              "label" : "Yes",
+              "value" : "Accept"
+            },
+            {
+              "label" : "No - send back to Border Force",
+              "value" : "ReturnCase"
+            },
+            {
+              "label" : "No - send to team not on DECS",
+              "value" : "CloseCase"
+            }
+          ]
+        },
+        "component" : "radio",
+        "name" : "PsuTriageOutcome",
+        "label" : "Is this serious misconduct case for PSU to investigate?"
+      }
+    ],
+    "BF2_PSU_OUTCOME" : [
+      {
+        "props" : {
+          "choices" : [
+            {
+              "label" : "Substantiated",
+              "value" : "Substantiated"
+            },
+            {
+              "label": "Partially substantiated",
+              "value": "Partially substantiated"
+            },
+            {
+              "label": "Unsubstantiated",
+              "value": "Unsubstantiated"
+            },
+            {
+              "label": "Withdrawn",
+              "value": "Withdrawn"
+            },
+            {
+              "label": "Not serious - send back to Border Force",
+              "value": "ReturnCase"
+            }
+          ]
+        },
+        "component": "radio",
+        "name": "PsuComplaintOutcome",
+        "label": "Complaint outcome"
+      },
+      {
+        "props": {
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "PsuComplaintOutcome",
+              "conditionPropertyValue": "Withdrawn"
+            }
+          ]
+        },
+        "component": "text-area",
+        "name": "WithdrawalReason",
+        "label": "Why has the complaint been withdrawn?"
+      },
+      {
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_IEDET_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "component": "entity-list",
+        "name": "FinalResponseDocument",
+        "label": "Final response"
+      },
+      {
+        "component": "date",
+        "name": "DateOfResponse",
+        "label": "Final response sent"
       }
     ]
   }
