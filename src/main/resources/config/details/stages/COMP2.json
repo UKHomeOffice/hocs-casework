@@ -960,7 +960,7 @@
           ]
         },
         "name": "CctQaResult",
-        "label": "QA Result"
+        "label": "QA result"
       }
     ],
     "COMP2_EXGRATIA_TRIAGE": [
@@ -1484,7 +1484,7 @@
           ]
         },
         "name": "CctQaResult",
-        "label": "QA Result"
+        "label": "QA result"
       }
     ],
     "COMP2_SERVICE_TRIAGE": [
