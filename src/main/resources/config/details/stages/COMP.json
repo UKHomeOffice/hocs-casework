@@ -1401,7 +1401,7 @@
           ]
         },
         "name": "CctQaResult",
-        "label": "QA Result"
+        "label": "QA result"
       }
     ],
     "COMP_MINORMISCONDUCT_SEND": [
@@ -2270,7 +2270,7 @@
           ]
         },
         "name": "CctQaResult",
-        "label": "QA Result"
+        "label": "QA result"
       }
     ],
     "COMP_EXGRATIA_SEND": [
