@@ -384,7 +384,7 @@
           },
           {
             "label": "Other",
-            "value": "other"
+            "value": "Other"
           }
         ],
         "name": "CaseOutcome",
@@ -396,7 +396,7 @@
           "visibilityConditions": [
             {
               "conditionPropertyName": "CaseOutcome",
-              "conditionPropertyValue": "other"
+              "conditionPropertyValue": "Other"
             }
           ]
         },

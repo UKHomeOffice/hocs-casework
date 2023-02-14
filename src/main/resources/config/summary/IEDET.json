@@ -64,7 +64,7 @@
           },
           {
             "label": "Other",
-            "value": "other"
+            "value": "Other"
           }
         ],
       "name": "CaseOutcome",
