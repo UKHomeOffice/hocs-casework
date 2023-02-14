@@ -184,7 +184,7 @@
         "props": {
           "choices": [
             {
-              "label": "Safe Guarding",
+              "label": "Safe guarding",
               "value": "SafeGuarding"
             }
           ],
@@ -228,7 +228,7 @@
         "props": {
           "choices": [
             {
-              "label": "MP’s Interest",
+              "label": "MP’s interest",
               "value": "MPsInterest"
             }
           ],
@@ -250,7 +250,7 @@
         "props": {
           "choices": [
             {
-              "label": "Media Interest",
+              "label": "Media interest",
               "value": "MediaInterest"
             }
           ],
@@ -272,7 +272,7 @@
         "props": {
           "choices": [
             {
-              "label": "Exceptional Circumstances",
+              "label": "Exceptional circumstances",
               "value": "ExceptionalCircumstances"
             }
           ],
