@@ -94,8 +94,7 @@
               "label": "Send to CCH",
               "value": "CCH"
             }
-          ],
-          "className": "govuk-radios--small"
+          ]
         },
         "name": "TriageAssign",
         "label": "Who will investigate the complaint?"
