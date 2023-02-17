@@ -515,7 +515,11 @@
         "props": {
           "choices": [
             {
-              "label": "Sopra Steria",
+              "label": "Yes - it’s a complaint about an external contractor",
+              "value": "YesExternalContractor"
+            },
+            {
+              "label": "Yes - it’s a further stage 2 case",
               "value": "YesSopraSteria"
             }
           ],
@@ -523,11 +527,38 @@
             {
               "conditionPropertyName": "CaseCreateContinue",
               "conditionPropertyValue": "YesSopraSteria"
+            },
+            {
+              "conditionPropertyName": "CaseCreateContinue",
+              "conditionPropertyValue": "YesExternalContractor"
             }
           ]
         },
         "name": "CaseCreateContinue",
         "label": "Complaint origin"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Sopra Steria",
+              "value": "SopraSteria"
+            },
+            {
+              "label": "Migrant Help",
+              "value": "MigrantHelp"
+            }
+          ],
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "CaseCreateContinue",
+              "conditionPropertyValue": "YesExternalContractor"
+            }
+          ]
+        },
+        "name": "ChooseExternalContractor",
+        "label": "External contractor the complaint is about"
       }
     ],
     "COMP2_MINORMISCONDUCT_TRIAGE": [

@@ -459,7 +459,11 @@
     {
       "choices": [
         {
-          "label": "Sopra Steria",
+          "label": "Yes - it’s a complaint about an external contractor",
+          "value": "YesExternalContractor"
+        },
+        {
+          "label": "Yes - it’s a further stage 2 case",
           "value": "YesSopraSteria"
         },
         {
@@ -473,6 +477,10 @@
         {
           "conditionPropertyName": "CaseCreateContinue",
           "conditionPropertyValue": "YesSopraSteria"
+        },
+        {
+          "conditionPropertyName": "CaseCreateContinue",
+          "conditionPropertyValue": "YesExternalContractor"
         }
       ]
     },
@@ -522,6 +530,26 @@
       "type": "date",
       "name": "DateOfResponse",
       "label": "Final response sent"
+    },
+    {
+      "name": "ChooseExternalContractor",
+      "label": "External contractor the complaint is about",
+      "choices": [
+        {
+          "label": "Sopra Steria",
+          "value": "SopraSteria"
+        },
+        {
+          "label": "Migrant Help",
+          "value": "MigrantHelp"
+        }
+      ],
+      "visibilityConditions": [
+        {
+          "conditionPropertyName": "CaseCreateContinue",
+          "conditionPropertyValue": "YesExternalContractor"
+        }
+      ]
     }
   ]
 }
