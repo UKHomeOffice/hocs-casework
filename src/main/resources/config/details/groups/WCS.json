@@ -138,52 +138,35 @@
         "name": "BFDate"
       },
       {
-        "component": "checkbox",
         "props": {
           "choices": [
             {
               "label": "With claimant",
-              "value": "True"
-            }
-          ]
-        },
-        "name": "BF_WithClaimant"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "True",
+              "name": "BF_WithClaimant"
+            },
             {
               "label": "OGDs and/or third parties",
-              "value": "True"
-            }
-          ]
-        },
-        "name": "BF_ODGorThirdParty"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "True",
+              "name": "BF_ODGorThirdParty"
+            },
             {
               "label": "Policy",
-              "value": "True"
-            }
-          ]
-        },
-        "name": "BF_Policy"
-      },
-      {
-        "component": "checkbox",
-        "props": {
-          "choices": [
+              "value": "True",
+              "name": "BF_Policy"
+            },
             {
               "label": "Unworkable",
-              "value": "True"
+              "value": "True",
+              "name": "Unworkable"
             }
-          ]
+          ],
+          "showLabel": false,
+          "saveSeparately": true
         },
-        "name": "Unworkable"
+        "component": "checkbox",
+        "name": "AdditionalInformation",
+        "label": "Additional Information"
       },
       {
         "component": "inset",
