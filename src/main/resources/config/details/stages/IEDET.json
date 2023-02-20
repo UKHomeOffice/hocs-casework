@@ -94,8 +94,7 @@
               "label": "Send to CCH",
               "value": "CCH"
             }
-          ],
-          "className": "govuk-radios--small"
+          ]
         },
         "name": "TriageAssign",
         "label": "Who will investigate the complaint?"
@@ -103,21 +102,7 @@
       {
         "component": "dropdown",
         "props": {
-          "choices": "IEDET_BUSINESS_AREAS",
-          "visibilityConditions": [
-            {
-              "conditionPropertyName": "TriageAssign",
-              "conditionPropertyValue": "ThirdParty"
-            },
-            {
-              "conditionPropertyName": "TriageAssign",
-              "conditionPropertyValue": "IedetCompliance"
-            },
-            {
-              "conditionPropertyName": "TriageAssign",
-              "conditionPropertyValue": "DEPMU"
-            }
-          ]
+          "choices": "IEDET_BUSINESS_AREAS"
         },
         "name": "BusinessArea",
         "label": "Business area"
@@ -228,7 +213,6 @@
               "name": "CatWrongInfo"
             }
           ],
-          "className": "govuk-checkboxes--small",
           "showLabel": true,
           "saveSeparately": true
         },
@@ -260,7 +244,6 @@
               "name": "CatUnfair"
             }
           ],
-          "className": "govuk-checkboxes--small",
           "showLabel": true,
           "saveSeparately": true
         },
@@ -297,7 +280,6 @@
               "name": "CatTheft"
             }
           ],
-          "className": "govuk-checkboxes--small",
           "showLabel": true,
           "saveSeparately": true
         },
