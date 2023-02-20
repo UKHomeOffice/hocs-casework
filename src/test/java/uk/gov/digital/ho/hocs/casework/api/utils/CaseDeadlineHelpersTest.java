@@ -86,7 +86,7 @@ public class CaseDeadlineHelpersTest {
         EXISTING_CASE = new CaseData(1L, CASE_UUID, LocalDateTime.of(2020, Month.APRIL, 1, 0, 0), CASE_TYPE,
             CASE_REFERENCE, false, DATA_CLOB, TOPIC_NAME_UUID, new Topic(CASE_UUID, TOPIC_NAME, TOPIC_NAME_UUID),
             primaryCorrespondent.getUuid(), primaryCorrespondent, ORIGINAL_CASE_DEADLINE,
-            ORIGINAL_CASE_DEADLINE_WARNING, ORIGINAL_CASE_DEADLINE.minusDays(CASE_TYPE_SLA), false, activeStages,
+            ORIGINAL_CASE_DEADLINE_WARNING, ORIGINAL_CASE_DEADLINE.minusDays(CASE_TYPE_SLA), false, null, activeStages,
             Set.of(new CaseNote(CASE_UUID, "type", "text", "author")));
     }
 

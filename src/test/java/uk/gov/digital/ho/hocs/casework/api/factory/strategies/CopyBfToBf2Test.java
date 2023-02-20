@@ -60,7 +60,7 @@ public class CopyBfToBf2Test {
 
     private static final CaseData FROM_CASE = new CaseData(1L, FROM_CASE_UUID, null, null, "BF/12345678/01", false,
         FROM_CLOB, null, null, PRIMARY_CORRESPONDENT.getUuid(), PRIMARY_CORRESPONDENT, null, null, null, false, null,
-        null);
+        null, null);
 
     @Mock
     private CaseDataService caseDataService;
@@ -73,7 +73,7 @@ public class CopyBfToBf2Test {
     @Before
     public void setUp() {
         toCase = new CaseData(2L, TO_CASE_UUID, null, null, null, false, new HashMap<>(Map.of()), null, null, UUID.randomUUID(),
-            null, null, null, null, false, null, null);
+            null, null, null, null, false, null, null, null);
 
         FROM_CLOB.put("OwningCSU", "csu");
         FROM_CLOB.put("ComplainantDOB", "1-1-1980");
@@ -126,7 +126,7 @@ public class CopyBfToBf2Test {
         var bfToBf2 = new CopyBfToBf2(caseDataService, correspondentService);
 
         toCase = new CaseData(2L, TO_CASE_UUID, null, null, null, false, new HashMap<>(Map.of()), null, null, null,
-            null, null, null, null, false, null, null);
+            null, null, null, null, false, null, null, null);
 
         // when
         bfToBf2.copyCase(FROM_CASE, toCase);

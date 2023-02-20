@@ -67,7 +67,7 @@ public class CopyBFToSMCTest {
 
     private static final CaseData FROM_CASE = new CaseData(1L, FROM_CASE_UUID, null, null, "BF/12345678/01", false,
         FROM_CLOB, null, null, PRIMARY_CORRESPONDENT.getUuid(), PRIMARY_CORRESPONDENT, null, null, null, false, null,
-        null);
+        null, null);
 
     @Mock
     private CaseDataService caseDataService;
@@ -85,7 +85,7 @@ public class CopyBFToSMCTest {
     @Before
     public void setUp() {
         toCase = new CaseData(2L, TO_CASE_UUID, null, null, "SMC/12345678/01", false, new HashMap<>(), null, null, null,
-            null, null, null, null, false, null, null);
+            null, null, null, null, false, null, null, null);
 
         bfToSmc = new CopyBFToSMC(caseDataService, correspondentService, caseDocumentService);
     }
@@ -116,7 +116,7 @@ public class CopyBFToSMCTest {
         Map<String, String> fromClob = new HashMap<>(Map.of("CaseSummary", "TestValue"));
 
         CaseData oldCase = new CaseData(1L, FROM_CASE_UUID, null, null, "BF/12345678/01", false, fromClob, null, null,
-            PRIMARY_CORRESPONDENT.getUuid(), PRIMARY_CORRESPONDENT, null, null, null, false, null, null);
+            PRIMARY_CORRESPONDENT.getUuid(), PRIMARY_CORRESPONDENT, null, null, null, false, null, null, null);
 
         // when
         bfToSmc.copyCase(oldCase, toCase);

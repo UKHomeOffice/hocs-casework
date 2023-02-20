@@ -133,7 +133,7 @@ public class ActionDataExternalInterestServiceTest {
             new Correspondent(PREVIOUS_CASE_UUID, PREV_CORRESPONDENT_TYPE, PREV_FULLNAME, PREV_ORGANISATION,
                 new Address(PREV_ADDR_1, PREV_ADDR_2, PREV_ADDR_3, PREV_ADDR_4, PREV_ADDR_5), PREV_TELEPHONE,
                 PREV_EMAIL, PREV_REFERENCE, PREV_EXTERNAL_KEY), originalCaseDeadline, originalDeadlineWarning,
-            LocalDate.now().minusDays(10), false, Set.of(new ActiveStage(), new ActiveStage()),
+            LocalDate.now().minusDays(10), false, null, Set.of(new ActiveStage(), new ActiveStage()),
             Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(actionTypeUuid, null, "TEST_EXTERNAL_INTEREST",
@@ -181,7 +181,7 @@ public class ActionDataExternalInterestServiceTest {
             new Correspondent(PREVIOUS_CASE_UUID, PREV_CORRESPONDENT_TYPE, PREV_FULLNAME, PREV_ORGANISATION,
                 new Address(PREV_ADDR_1, PREV_ADDR_2, PREV_ADDR_3, PREV_ADDR_4, PREV_ADDR_5), PREV_TELEPHONE,
                 PREV_EMAIL, PREV_REFERENCE, PREV_EXTERNAL_KEY), originalCaseDeadline, originalDeadlineWarning,
-            LocalDate.now().minusDays(10), false, Set.of(new ActiveStage(), new ActiveStage()),
+            LocalDate.now().minusDays(10), false, null, Set.of(new ActiveStage(), new ActiveStage()),
             Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
 
         CaseTypeActionDto mockCaseTypeActionDto = new CaseTypeActionDto(actionTypeUuid, null, caseType,
