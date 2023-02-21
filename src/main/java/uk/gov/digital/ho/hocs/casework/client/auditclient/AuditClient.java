@@ -210,40 +210,6 @@ public class AuditClient {
             requestData.correlationId(), requestData.userId(), requestData.username(), requestData.groups());
     }
 
-    public void viewAllSomuItemsAudit(UUID caseUUID) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-        sendAuditMessage(localDateTime, caseUUID, "", EventType.SOMU_ITEMS_VIEWED, null, requestData.correlationId(),
-            requestData.userId(), requestData.username(), requestData.groups());
-    }
-
-    public void viewAllSomuItemsForCasesAudit(Set<UUID> caseUuids) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-
-        String data = "{}";
-        try {
-            data = objectMapper.writeValueAsString(caseUuids);
-        } catch (JsonProcessingException e) {
-            logFailedToParseDataPayload(e);
-        }
-
-        sendAuditMessage(localDateTime, null, data, EventType.SOMU_ITEMS_VIEWED, null, requestData.correlationId(),
-            requestData.userId(), requestData.username(), requestData.groups());
-    }
-
-    public void viewCaseSomuItemsBySomuTypeAudit(UUID caseUUID, UUID somuTypeUUID) {
-        LocalDateTime localDateTime = LocalDateTime.now();
-
-        String data = "{}";
-        try {
-            data = objectMapper.writeValueAsString(new AuditPayload.SomuItem(somuTypeUUID));
-        } catch (JsonProcessingException e) {
-            logFailedToParseDataPayload(e);
-        }
-
-        sendAuditMessage(localDateTime, caseUUID, data, EventType.SOMU_ITEM_VIEWED, null, requestData.correlationId(),
-            requestData.userId(), requestData.username(), requestData.groups());
-    }
-
     public void createCaseSomuItemAudit(SomuItem somuItem) {
         LocalDateTime localDateTime = LocalDateTime.now();
         String data = "{}";

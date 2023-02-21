@@ -217,7 +217,7 @@ public class StageService {
         log.info("Created Stage: {}, Type: {}, Case: {}", stageToActivate.get().getUuid(),
             stageToActivate.get().getStageType(), stageToActivate.get().getCaseUUID(), value(EVENT, STAGE_CREATED));
 
-        caseDataService.updateCaseData(caseData, stageToActivate.get().getUuid(),
+        caseDataService.updateCaseDataInternal(caseData, stageToActivate.get().getUuid(),
             Map.of(CaseworkConstants.CURRENT_STAGE, stageToActivate.get().getStageType()));
 
         List<UUID> assignedUserUUIDList = activeStages.stream().map(BaseStage::getUserUUID).collect(
@@ -357,7 +357,7 @@ public class StageService {
         assignTeamAndMemberUserToStage(stageToRecreate, request.getTeamUUID(), request.getUserUUID());
 
         CaseData caseData = caseDataService.getCaseData(caseUUID);
-        caseDataService.updateCaseData(caseData, request.getStageUUID(),
+        caseDataService.updateCaseDataInternal(caseData, request.getStageUUID(),
             Map.of(CaseworkConstants.CURRENT_STAGE, request.getStageType()));
 
         // Close if present and not the stage requested for recreation.
@@ -724,7 +724,7 @@ public class StageService {
         data.put("WithdrawalReason", request.getNotes());
         data.put(CaseworkConstants.CURRENT_STAGE, "");
 
-        caseDataService.updateCaseData(caseUUID, stageUUID, data);
+        caseDataService.updateCaseDataInternal(caseUUID, stageUUID, data);
         caseDataService.completeCase(caseUUID, true);
 
         caseNoteService.createCaseNote(caseUUID, "WITHDRAW", request.getNotes());

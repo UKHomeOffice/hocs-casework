@@ -398,6 +398,12 @@ public class CaseDataService {
     }
 
     public void updateCaseData(CaseData caseData, UUID stageUUID, Map<String, String> data) {
+        updateCaseDataInternal(caseData, stageUUID, data);
+        auditClient.updateCaseAudit(caseData, stageUUID);
+        log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
+    }
+
+    public void updateCaseDataInternal(CaseData caseData, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseData.getUuid());
         if (data==null) {
             log.warn("Data was null for Case: {} Stage: {}", caseData.getUuid(), stageUUID,
@@ -408,8 +414,6 @@ public class CaseDataService {
         log.debug("Data size {}", data.size());
         caseData.update(data);
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData, stageUUID);
-        log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID, value(EVENT, CASE_UPDATED));
     }
 
     void updateDateReceived_defaultSla(UUID caseUUID, UUID stageUUID, LocalDate dateReceived) {
@@ -592,7 +596,6 @@ public class CaseDataService {
             caseData.update(CaseworkConstants.CURRENT_STAGE, "");
         }
         caseDataRepository.save(caseData);
-        auditClient.updateCaseAudit(caseData, null);
         auditClient.completeCaseAudit(caseData);
         log.info("Updated Case: {} completed {}", caseUUID, completed, value(EVENT, CASE_COMPLETED));
     }

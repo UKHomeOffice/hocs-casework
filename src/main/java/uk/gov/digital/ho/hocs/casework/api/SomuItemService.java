@@ -38,8 +38,6 @@ public class SomuItemService {
         log.info("Got {} Somu Item for {} cases, Event {}", somuItems.size(), caseUuids.size(),
             value(EVENT, SOMU_ITEM_RETRIEVED));
 
-        auditClient.viewAllSomuItemsForCasesAudit(caseUuids);
-
         return somuItems;
     }
 
@@ -48,7 +46,6 @@ public class SomuItemService {
         Set<SomuItem> somuItems = somuItemRepository.findAllByCaseUuid(caseUUID);
         log.info("Got {} Somu Item for Case: {}, Event {}", somuItems.size(), caseUUID,
             value(EVENT, SOMU_ITEM_RETRIEVED));
-        auditClient.viewAllSomuItemsAudit(caseUUID);
 
         return somuItems;
     }
