@@ -521,6 +521,10 @@
             {
               "label": "Yes - it’s a further stage 2 case",
               "value": "YesSopraSteria"
+            },
+            {
+              "label": "No - close the case",
+              "value": "NoClose"
             }
           ],
           "visibilityConditions": [
@@ -531,6 +535,10 @@
             {
               "conditionPropertyName": "CaseCreateContinue",
               "conditionPropertyValue": "YesExternalContractor"
+            },
+            {
+              "conditionPropertyName": "CaseCreateContinue",
+              "conditionPropertyValue": "NoClose"
             }
           ]
         },
