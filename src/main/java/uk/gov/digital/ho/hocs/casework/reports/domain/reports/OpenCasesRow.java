@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import uk.gov.digital.ho.hocs.casework.reports.dto.ReportRow;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class OpenCasesRow implements ReportRow, Serializable {
     @Id
     @JsonProperty("case_uuid")
+    @Column(name = "case_uuid")
     private UUID caseUUID;
 
     @JsonProperty("business_area")

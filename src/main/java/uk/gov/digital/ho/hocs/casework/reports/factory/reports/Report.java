@@ -7,5 +7,5 @@ import java.util.stream.Stream;
 
 public interface Report<T extends ReportRow> {
     String getSlug();
-    Stream<T> getReport();
+    Stream<T> getRows();
 }

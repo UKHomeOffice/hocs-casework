@@ -35,7 +35,7 @@ public class ReportResource {
 
     @GetMapping("/report/{slug}")
     ResponseEntity<StreamingResponseBody> getReport(@PathVariable String slug) {
-        Report<?> report = reportFactory.getReport(slug);
+        Report<?> report = reportFactory.getReportForSlug(slug);
 
         StreamingResponseBody body = outputStream -> {
             JsonFactory factory = new JsonFactory();
@@ -45,7 +45,7 @@ public class ReportResource {
             generator.writeStartArray();
 
             transactionTemplate.execute(status -> {
-                report.getReport().forEach(row -> {
+                report.getRows().forEach(row -> {
                     try {
                         generator.writeObject(row);
                     } catch (IOException e) {

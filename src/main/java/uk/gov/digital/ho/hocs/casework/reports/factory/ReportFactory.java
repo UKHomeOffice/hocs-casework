@@ -16,7 +16,7 @@ public class ReportFactory {
     @Autowired
     public ReportFactory(@Lazy List<Report<?>> reports) {this.reports = reports;}
 
-    public Report<?> getReport(String slug) {
+    public Report<?> getReportForSlug(String slug) {
         return reports.stream()
                       .filter(r -> Objects.equals(r.getSlug(), slug))
                       .findFirst()
