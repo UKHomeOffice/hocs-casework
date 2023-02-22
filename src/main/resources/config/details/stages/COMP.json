@@ -127,7 +127,7 @@
               "value": "Letter"
             },
             {
-              "label": "Face to Face",
+              "label": "Face to face",
               "value": "FACE"
             },
             {
@@ -155,7 +155,7 @@
         "props": {
           "choices": [
             {
-              "label": "Very High",
+              "label": "Very high",
               "value": "1 Very High"
             },
             {
@@ -171,7 +171,7 @@
               "value": "4 Low"
             },
             {
-              "label": "Very Low",
+              "label": "Very low",
               "value": "5 Very Low"
             }
           ]
@@ -2363,7 +2363,7 @@
         "props": {
           "choices": [
             {
-              "label": "Very High",
+              "label": "Very high",
               "value": "1 Very High"
             },
             {
@@ -2379,7 +2379,7 @@
               "value": "4 Low"
             },
             {
-              "label": "Very Low",
+              "label": "Very low",
               "value": "5 Very Low"
             }
           ]
@@ -3253,7 +3253,7 @@
               "value": "Letter"
             },
             {
-              "label": "Face to Face",
+              "label": "Face to face",
               "value": "FACE"
             },
             {
@@ -3281,7 +3281,7 @@
         "props": {
           "choices": [
             {
-              "label": "Very High",
+              "label": "Very high",
               "value": "1 Very High"
             },
             {
@@ -3297,7 +3297,7 @@
               "value": "4 Low"
             },
             {
-              "label": "Very Low",
+              "label": "Very low",
               "value": "5 Very Low"
             }
           ]
