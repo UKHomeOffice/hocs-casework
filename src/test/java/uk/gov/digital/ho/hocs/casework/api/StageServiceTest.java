@@ -1358,7 +1358,7 @@ public class StageServiceTest {
 
         when(userPermissionsService.getExpandedUserTeams()).thenReturn(teams);
         when(stageRepository.findAllActiveByUserUuidAndTeamUuid(userUUID, teams)).thenReturn(Set.of(stage));
-        when(stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType())).thenReturn(tags);
+        when(stageTagsDecorator.decorateTags(stage.getData())).thenReturn(tags);
 
         var result = stageService.getActiveUserStagesWithTeamsForUser(userUUID);
 
@@ -1366,7 +1366,7 @@ public class StageServiceTest {
         verify(stageRepository).findAllActiveByUserUuidAndTeamUuid(userUUID, teams);
         verify(stagePriorityCalculator).updatePriority(stage, stage.getCaseDataType());
         verify(daysElapsedCalculator).updateDaysElapsed(stage.getData(), stage.getCaseDataType());
-        verify(stageTagsDecorator).decorateTags(stage.getData(), stage.getStageType());
+        verify(stageTagsDecorator).decorateTags(stage.getData());
 
         assertThat(result.iterator().next().getTag()).containsExactly(new CaseDataTag(caseUUID, "HS"));
 
