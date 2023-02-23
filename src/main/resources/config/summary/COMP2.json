@@ -467,7 +467,7 @@
           "value": "YesSopraSteria"
         },
         {
-          "label": "Not applicable",
+          "label": "No - close the case",
           "value": "NoClose"
         }
       ],
@@ -481,6 +481,10 @@
         {
           "conditionPropertyName": "CaseCreateContinue",
           "conditionPropertyValue": "YesExternalContractor"
+        },
+        {
+          "conditionPropertyName": "CaseCreateContinue",
+          "conditionPropertyValue": "NoClose"
         }
       ]
     },
