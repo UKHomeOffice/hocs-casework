@@ -536,8 +536,8 @@
       "label": "Final response sent"
     },
     {
-      "name": "ChooseExternalContractor",
-      "label": "External contractor the complaint is about",
+      "name": "ExternalContractor",
+      "label": "External contract",
       "choices": [
         {
           "label": "Sopra Steria",

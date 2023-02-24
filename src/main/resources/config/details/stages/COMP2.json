@@ -565,8 +565,8 @@
             }
           ]
         },
-        "name": "ChooseExternalContractor",
-        "label": "External contractor the complaint is about"
+        "name": "ExternalContractor",
+        "label": "External contract"
       }
     ],
     "COMP2_MINORMISCONDUCT_TRIAGE": [
