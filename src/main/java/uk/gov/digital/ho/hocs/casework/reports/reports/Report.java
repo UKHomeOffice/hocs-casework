@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.reports.factory.reports;
+package uk.gov.digital.ho.hocs.casework.reports.reports;
 
 import uk.gov.digital.ho.hocs.casework.reports.dto.ReportRow;
 

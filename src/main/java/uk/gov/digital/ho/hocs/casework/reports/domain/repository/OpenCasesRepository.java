@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.reports.domain.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
-import uk.gov.digital.ho.hocs.casework.reports.domain.reports.OpenCasesRow;
+import uk.gov.digital.ho.hocs.casework.reports.domain.reports.OpenCasesData;
 
 import javax.persistence.QueryHint;
 import java.util.UUID;
@@ -13,7 +13,7 @@ import static org.hibernate.annotations.QueryHints.READ_ONLY;
 import static org.hibernate.jpa.QueryHints.HINT_CACHEABLE;
 import static org.hibernate.jpa.QueryHints.HINT_FETCH_SIZE;
 
-public interface OpenCasesRepository extends JpaRepository<OpenCasesRow, UUID> {
+public interface OpenCasesRepository extends JpaRepository<OpenCasesData, UUID> {
 
     @QueryHints(value = {
         @QueryHint(name = HINT_FETCH_SIZE, value = "50000"),
@@ -24,6 +24,6 @@ public interface OpenCasesRepository extends JpaRepository<OpenCasesRow, UUID> {
         value = "SELECT * FROM report_open_cases",
         nativeQuery = true
     )
-    Stream<OpenCasesRow> getReportRows();
+    Stream<OpenCasesData> getReportData();
 
 }
