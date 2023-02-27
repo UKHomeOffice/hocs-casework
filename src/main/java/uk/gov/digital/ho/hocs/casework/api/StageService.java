@@ -323,14 +323,10 @@ public class StageService {
                 LocalDate deadlineWarning = caseData.getCaseDeadlineWarning();
                 stage.setDeadlineWarning(deadlineWarning);
             }
-        }
-
-        if (overrideDeadline!=null) {
+        } else if (overrideDeadline != null) {
             LocalDate deadline = LocalDate.parse(overrideDeadline);
-            if (stage.getDeadline()==null || stage.getDeadline().isBefore(deadline)) {
-                stage.setDeadline(deadline);
-                stage.setDeadlineWarning(null);
-            }
+            stage.setDeadline(deadline);
+            stage.setDeadlineWarning(null);
         }
         log.info("Stage Deadline Updated; Case: {}, Stage: {}", stage.getCaseUUID(), stage.getUuid());
     }
