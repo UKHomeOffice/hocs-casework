@@ -347,28 +347,30 @@
         "label": "Upload the Final Response"
       },
       {
-        "choices": [
-          {
-            "label": "Substantiated",
-            "value": "Substantiated"
-          },
-          {
-            "label": "Unsubstantiated",
-            "value": "Unsubstantiated"
-          },
-          {
-            "label": "Partially Substantiated",
-            "value": "PartiallySubstantiated"
-          },
-          {
-            "label": "Withdrawn",
-            "value": "Withdrawn"
-          },
-          {
-            "label": "Other",
-            "value": "Other"
-          }
-        ],
+        "props": {
+          "choices": [
+            {
+              "label": "Substantiated",
+              "value": "Substantiated"
+            },
+            {
+              "label": "Unsubstantiated",
+              "value": "Unsubstantiated"
+            },
+            {
+              "label": "Partially substantiated",
+              "value": "PartiallySubstantiated"
+            },
+            {
+              "label": "Withdrawn",
+              "value": "Withdrawn"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            }
+          ]
+        },
         "name": "CaseOutcome",
         "label": "Case outcome"
       },
