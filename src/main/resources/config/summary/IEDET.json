@@ -111,6 +111,11 @@
       "label": "Complaint origin"
     },
     {
+      "choices": "IEDET_BUSINESS_AREAS",
+      "name": "BusinessArea",
+      "label": "Business area"
+    },
+    {
       "name": "OutcomeOther",
       "label": "Please provide further details"
     },
