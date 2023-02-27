@@ -952,6 +952,60 @@
         "label": "Owning CSU"
       }
     ],
+    "COMP2_MINORMISCONDUCT_RESPONSE_DRAFT": [
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_DRAFT",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "DraftDocuments",
+        "label": "Primary draft document"
+      },
+      {
+        "component": "entity-manager",
+        "props": {
+          "entity": "template",
+          "choices": "CASE_TEMPLATES",
+          "hasTemplateLink": true
+        },
+        "name": "Complaint_Response",
+        "label": "Available Template"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Response is ready to send",
+              "value": "Send"
+            },
+            {
+              "label": "Send case to QA",
+              "value": "QA"
+            },
+            {
+              "label": "Escalate case to WFM",
+              "value": "Escalate"
+            }
+          ]
+        },
+        "name": "CctDraftResult",
+        "label": "Action"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_DraftReturn",
+        "label": "Enter reason for returning"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_DraftEscalate",
+        "label": "Enter reason for escalation"
+      }
+    ],
     "COMP2_MINORMISCONDUCT_ESCALATE": [
       {
         "component": "radio",
@@ -1000,6 +1054,60 @@
         },
         "name": "CctQaResult",
         "label": "QA result"
+      }
+    ],
+    "COMP2_MINORMISCONDUCT_SEND": [
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "FinalResponseDocument",
+        "label": "Upload the Final Response"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CCT_CASE_OUTCOME"
+        },
+        "name": "CctCaseOutcome",
+        "label": "Case Outcome"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Telephone",
+              "value": "Telephone"
+            },
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Letter",
+              "value": "Letter"
+            },
+            {
+              "label": "In Person",
+              "value": "InPerson"
+            }
+          ]
+        },
+        "name": "ResponseChannel",
+        "label": "Response Channel"
+      },
+      {
+        "component": "date",
+        "props": {
+          "autopopulate": true
+        },
+        "name": "DateResponded",
+        "label": "Date of Response"
       }
     ],
     "COMP2_EXGRATIA_TRIAGE": [
@@ -1476,6 +1584,60 @@
         "label": "Business contributions"
       }
     ],
+    "COMP2_EXGRATIA_RESPONSE_DRAFT": [
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_DRAFT",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "DraftDocuments",
+        "label": "Primary draft document"
+      },
+      {
+        "component": "entity-manager",
+        "props": {
+          "entity": "template",
+          "choices": "CASE_TEMPLATES",
+          "hasTemplateLink": true
+        },
+        "name": "Complaint_Response",
+        "label": "Available Template"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Response is ready to send",
+              "value": "Send"
+            },
+            {
+              "label": "Send case to QA",
+              "value": "QA"
+            },
+            {
+              "label": "Escalate case to WFM",
+              "value": "Escalate"
+            }
+          ]
+        },
+        "name": "CctDraftResult",
+        "label": "Action"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_DraftReturn",
+        "label": "Enter reason for returning"
+      },
+      {
+        "component": "text-area",
+        "name": "CaseNote_DraftEscalate",
+        "label": "Enter reason for escalation"
+      }
+    ],
     "COMP2_EXGRATIA_ESCALATE": [
       {
         "component": "radio",
@@ -1524,6 +1686,60 @@
         },
         "name": "CctQaResult",
         "label": "QA result"
+      }
+    ],
+    "COMP2_EXGRATIA_SEND": [
+      {
+        "component": "entity-list",
+        "props": {
+          "entity": "document",
+          "choices": "CASE_DOCUMENT_LIST_FINAL_RESPONSE",
+          "hasAddLink": true,
+          "hasRemoveLink": true
+        },
+        "name": "FinalResponseDocument",
+        "label": "Upload the Final Response"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": "S_COMP_CCT_CASE_OUTCOME"
+        },
+        "name": "CctCaseOutcome",
+        "label": "Case Outcome"
+      },
+      {
+        "component": "dropdown",
+        "props": {
+          "choices": [
+            {
+              "label": "Telephone",
+              "value": "Telephone"
+            },
+            {
+              "label": "Email",
+              "value": "Email"
+            },
+            {
+              "label": "Letter",
+              "value": "Letter"
+            },
+            {
+              "label": "In Person",
+              "value": "InPerson"
+            }
+          ]
+        },
+        "name": "ResponseChannel",
+        "label": "Response Channel"
+      },
+      {
+        "component": "date",
+        "props": {
+          "autopopulate": true
+        },
+        "name": "DateResponded",
+        "label": "Date of Response"
       }
     ],
     "COMP2_SERVICE_TRIAGE": [
