@@ -188,7 +188,7 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetStageTypeByTypeString", unless = "#result == null", key = "#typeString")
     public StageTypeDto getStageTypeByTypeString(String typeString) {
-        StageTypeDto response = restHelper.get(serviceBaseURL, String.format("/stageType/typeName/%s", typeString), StageTypeDto.class);
+        StageTypeDto response = restHelper.get(serviceBaseURL, String.format("/stageType/type/%s", typeString), StageTypeDto.class);
 
         log.info("Got stage type {}", typeString, value(EVENT, INFO_CLIENT_GET_STAGE_TYPE_BY_TYPE_STRING));
         return response;
