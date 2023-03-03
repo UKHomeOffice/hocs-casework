@@ -459,11 +459,11 @@
     {
       "choices": [
         {
-          "label": "Yes - it’s a complaint about an external contractor",
+          "label": "external contractor",
           "value": "YesExternalContractor"
         },
         {
-          "label": "Yes - it’s a further stage 2 case",
+          "label": "further stage 2 case",
           "value": "YesFurtherStage2"
         },
         {
