@@ -18,6 +18,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class OpenCasesDataMapperTest {
 
+    private static final UUID SAMPLE_STAGE_UUID = UUID.fromString("ae2008cc-b51c-4811-bf59-9582561a38f6");
+
     private static final UUID SAMPLE_USER_UUID = UUID.fromString("26c70d22-7921-4700-8cd6-5a55ac2b3ffd");
 
     private static final String SAMPLE_STAGE_TYPE = "STAGE_TYPE";
@@ -26,9 +28,11 @@ public class OpenCasesDataMapperTest {
 
     public final static OpenCasesData SAMPLE_DATA = new OpenCasesData(
         UUID.fromString("a6a19b12-a8a3-4bfd-878e-248f00585974"),
+        "COMP/319244/23",
         "UKVI",
         123,
         LocalDate.parse("2023-02-26"),
+        SAMPLE_STAGE_UUID,
         SAMPLE_STAGE_TYPE,
         SAMPLE_USER_UUID,
         SAMPLE_TEAM_UUID,
@@ -73,9 +77,11 @@ public class OpenCasesDataMapperTest {
     private OpenCasesRow getExpectedRow(String mappedUser, String mappedTeam, String mappedStage) {
         return new OpenCasesRow(
             SAMPLE_DATA.getCaseUUID(),
+            SAMPLE_DATA.getCaseReference(),
             SAMPLE_DATA.getBusinessArea(),
             SAMPLE_DATA.getAge(),
             SAMPLE_DATA.getCaseDeadline(),
+            SAMPLE_DATA.getStageUUID(),
             SAMPLE_DATA.getStageType(),
             SAMPLE_DATA.getAssignedUserUUID(),
             SAMPLE_DATA.getAssignedTeamUUID(),
