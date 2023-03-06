@@ -3,10 +3,12 @@ package uk.gov.digital.ho.hocs.casework.reports.factory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import uk.gov.digital.ho.hocs.casework.reports.dto.ReportMetadataDto;
 import uk.gov.digital.ho.hocs.casework.reports.reports.Report;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ReportFactory {
@@ -17,10 +19,14 @@ public class ReportFactory {
     public ReportFactory(@Lazy List<Report<?>> reports) {this.reports = reports;}
 
     public Report<?> getReportForSlug(String slug) {
-        return reports.stream()
-                      .filter(r -> Objects.equals(r.getSlug(), slug))
-                      .findFirst()
-                      .orElseThrow();
+        return reports.stream().filter(r -> Objects.equals(r.getSlug(), slug)).findFirst().orElseThrow();
+    }
+
+    public List<ReportMetadataDto> listAvailableReports() {
+        return reports
+            .stream()
+            .map(Report::getReportMetadata)
+            .collect(Collectors.toList());
     }
 
 }

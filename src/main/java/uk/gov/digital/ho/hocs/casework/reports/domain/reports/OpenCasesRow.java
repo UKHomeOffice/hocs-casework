@@ -6,8 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.reports.dto.ReportRow;
 
-import javax.persistence.Column;
-import javax.persistence.Id;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -16,10 +14,12 @@ import java.util.UUID;
 @Getter
 @EqualsAndHashCode
 public class OpenCasesRow implements ReportRow, Serializable {
-    @Id
+
     @JsonProperty("case_uuid")
-    @Column(name = "case_uuid")
     private UUID caseUUID;
+
+    @JsonProperty("case_reference")
+    private String caseReference;
 
     @JsonProperty("business_area")
     private String businessArea;
@@ -29,6 +29,9 @@ public class OpenCasesRow implements ReportRow, Serializable {
 
     @JsonProperty("case_deadline")
     private LocalDate caseDeadline;
+
+    @JsonProperty("stage_uuid")
+    private UUID stageUUID;
 
     @JsonProperty("stage_type")
     private String stageType;

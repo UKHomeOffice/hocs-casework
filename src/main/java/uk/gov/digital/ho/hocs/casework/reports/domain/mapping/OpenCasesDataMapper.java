@@ -15,18 +15,21 @@ public class OpenCasesDataMapper {
     private final StageNameValueMapper stageNameValueMapper;
 
     @Autowired
-    public OpenCasesDataMapper(UserNameValueMapper userNameValueMapper,
-                               TeamNameValueMapper teamNameValueMapper,
-                               StageNameValueMapper stageNameValueMapper) {
+    public OpenCasesDataMapper(
+        UserNameValueMapper userNameValueMapper,
+        TeamNameValueMapper teamNameValueMapper,
+        StageNameValueMapper stageNameValueMapper
+                              ) {
         this.userNameValueMapper = userNameValueMapper;
         this.teamNameValueMapper = teamNameValueMapper;
         this.stageNameValueMapper = stageNameValueMapper;
     }
 
     public OpenCasesRow mapDataToRow(OpenCasesData data) {
-        return new OpenCasesRow(data.getCaseUUID(), data.getBusinessArea(), data.getAge(), data.getCaseDeadline(),
-            data.getStageType(), data.getAssignedUserUUID(), data.getAssignedTeamUUID(), data.getUserGroup(),
-            data.getOutsideServiceStandard(), userNameValueMapper.map(data.getAssignedUserUUID()).orElse(null),
+        return new OpenCasesRow(data.getCaseUUID(), data.getCaseReference(), data.getBusinessArea(), data.getAge(),
+            data.getCaseDeadline(), data.getStageUUID(), data.getStageType(), data.getAssignedUserUUID(),
+            data.getAssignedTeamUUID(), data.getUserGroup(), data.getOutsideServiceStandard(),
+            userNameValueMapper.map(data.getAssignedUserUUID()).orElse(null),
             teamNameValueMapper.map(data.getAssignedTeamUUID()).orElse(null),
             stageNameValueMapper.map(data.getStageType()).orElse(data.getStageType())
         );

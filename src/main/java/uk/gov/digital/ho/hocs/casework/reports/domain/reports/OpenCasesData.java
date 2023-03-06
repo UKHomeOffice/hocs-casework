@@ -23,11 +23,16 @@ public class OpenCasesData implements Serializable {
     @Column(name = "case_uuid")
     private UUID caseUUID;
 
+    private String caseReference;
+
     private String businessArea;
 
     private Integer age;
 
     private LocalDate caseDeadline;
+
+    @Column(name = "stage_uuid")
+    private UUID stageUUID;
 
     private String stageType;
 

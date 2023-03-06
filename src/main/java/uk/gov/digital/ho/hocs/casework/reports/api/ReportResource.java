@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import uk.gov.digital.ho.hocs.casework.reports.dto.ReportMetadataDto;
 import uk.gov.digital.ho.hocs.casework.reports.factory.ReportFactory;
 import uk.gov.digital.ho.hocs.casework.reports.reports.Report;
 
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 public class ReportResource {
@@ -31,6 +33,11 @@ public class ReportResource {
         this.reportFactory = reportFactory;
         this.objectMapper = objectMapper;
         this.transactionTemplate = transactionTemplate;
+    }
+
+    @GetMapping("/report")
+    List<ReportMetadataDto> getAvailableReports() {
+        return reportFactory.listAvailableReports();
     }
 
     @GetMapping("/report/{slug}")
@@ -68,5 +75,12 @@ public class ReportResource {
             responseHeaders,
             HttpStatus.OK
         );
+    }
+
+    @GetMapping("/report/{slug}/metadata")
+    ReportMetadataDto getReportMetadata(@PathVariable String slug) {
+        Report<?> report = reportFactory.getReportForSlug(slug);
+
+        return report.getReportMetadata();
     }
 }
