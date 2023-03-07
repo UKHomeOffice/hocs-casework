@@ -1,11 +1,13 @@
 package uk.gov.digital.ho.hocs.casework.reports.domain.mapping;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.reports.domain.reports.OpenCasesData;
 import uk.gov.digital.ho.hocs.casework.reports.domain.reports.OpenCasesRow;
 
 @Service
+@Profile("reports")
 public class OpenCasesDataMapper {
 
     private final UserNameValueMapper userNameValueMapper;

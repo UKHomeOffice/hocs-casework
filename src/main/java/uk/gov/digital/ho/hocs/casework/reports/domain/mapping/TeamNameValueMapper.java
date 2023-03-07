@@ -4,6 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.TeamDto;
@@ -16,6 +17,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.*;
 
 @Slf4j
 @Service
+@Profile("reports")
 public class TeamNameValueMapper implements ReportValueMapper<UUID, String> {
 
     private final InfoClient infoServiceClient;

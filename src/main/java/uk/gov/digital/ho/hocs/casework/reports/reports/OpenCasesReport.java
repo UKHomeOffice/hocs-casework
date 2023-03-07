@@ -1,5 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.reports.reports;
 
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import uk.gov.digital.ho.hocs.casework.reports.domain.mapping.OpenCasesDataMapper;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 @Component
+@Profile("reports")
 public class OpenCasesReport implements Report<OpenCasesRow> {
 
     private final OpenCasesRepository openCasesRepository;
@@ -37,7 +39,7 @@ public class OpenCasesReport implements Report<OpenCasesRow> {
 
     @Override
     public String getDisplayName() {
-        return "Open Cases Report";
+        return "Open cases report";
     }
 
     @Override
@@ -49,16 +51,16 @@ public class OpenCasesReport implements Report<OpenCasesRow> {
     public List<ReportColumnDto> getColumnMetadata() {
         return List.of(
             new ReportColumnDto("case_uuid", "Case UUID", ColumnType.STRING, false, true),
-            new ReportColumnDto("case_reference", "Case Reference", ColumnType.LINK, true, true, Map.of("link_pattern", "/case/${case_uuid}/stage/${stage_uuid}")),
-            new ReportColumnDto("business_area", "Business Area", ColumnType.STRING, true, true),
+            new ReportColumnDto("case_reference", "Reference", ColumnType.LINK, true, true, Map.of("link_pattern", "/case/${case_uuid}/stage/${stage_uuid}")),
+            new ReportColumnDto("business_area", "Business area", ColumnType.STRING, true, true),
             new ReportColumnDto("age", "Age", ColumnType.NUMBER, true, true),
-            new ReportColumnDto("case_deadline", "Case Deadline", ColumnType.DATE, true, true),
+            new ReportColumnDto("case_deadline", "Deadline", ColumnType.DATE, true, true),
             new ReportColumnDto("stage_uuid", "Stage UUID", ColumnType.STRING, false, false),
             new ReportColumnDto("stage_type", "Stage Type", ColumnType.STRING, false, true),
-            new ReportColumnDto("assigned_user_uuid", "Assigned User UUID", ColumnType.STRING, false, true),
-            new ReportColumnDto("assigned_team_uuid", "Assigned Team UUID", ColumnType.STRING, false, true),
-            new ReportColumnDto("user_group", "User Group", ColumnType.STRING, true, true),
-            new ReportColumnDto("outside_service_standard", "Outside Service Standard", ColumnType.BOOLEAN, true, true),
+            new ReportColumnDto("assigned_user_uuid", "Assigned user UUID", ColumnType.STRING, false, true),
+            new ReportColumnDto("assigned_team_uuid", "Assigned team UUID", ColumnType.STRING, false, true),
+            new ReportColumnDto("user_group", "User group", ColumnType.STRING, true, true),
+            new ReportColumnDto("outside_service_standard", "Outside service standard", ColumnType.BOOLEAN, true, true),
             new ReportColumnDto("user_name", "User", ColumnType.STRING, false, true),
             new ReportColumnDto("team_name", "Team", ColumnType.STRING, false, true),
             new ReportColumnDto("stage_name", "Stage", ColumnType.STRING, false, true)

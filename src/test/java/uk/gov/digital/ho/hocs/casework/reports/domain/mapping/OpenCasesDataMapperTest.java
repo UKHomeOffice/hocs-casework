@@ -5,6 +5,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.context.ActiveProfiles;
 import uk.gov.digital.ho.hocs.casework.reports.domain.reports.OpenCasesData;
 import uk.gov.digital.ho.hocs.casework.reports.domain.reports.OpenCasesRow;
 
@@ -16,6 +17,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
+@ActiveProfiles("reports")
 public class OpenCasesDataMapperTest {
 
     private static final UUID SAMPLE_STAGE_UUID = UUID.fromString("ae2008cc-b51c-4811-bf59-9582561a38f6");
