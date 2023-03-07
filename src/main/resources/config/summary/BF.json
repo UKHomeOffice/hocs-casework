@@ -9,40 +9,6 @@
     {
       "choices": [
         {
-          "label": "Not Applicable",
-          "value": "NA"
-        },
-        {
-          "label": "Telephone",
-          "value": "TELEPHONE"
-        },
-        {
-          "label": "Email",
-          "value": "EMAIL"
-        },
-        {
-          "label": "HMPOTRT",
-          "value": "HMPOTRT"
-        },
-        {
-          "label": "Letter",
-          "value": "Letter"
-        },
-        {
-          "label": "Face to Face",
-          "value": "FACE"
-        },
-        {
-          "label": "Webform",
-          "value": "Webform"
-        }
-      ],
-      "name": "Channel",
-      "label": "Channel"
-    },
-    {
-      "choices": [
-        {
           "label": "Service",
           "value": "Service"
         },
@@ -295,19 +261,23 @@
     },
     {
       "name": "ComplainantHORef",
-      "label": "Home Office Reference"
+      "label": "Home Office reference"
     },
     {
       "name": "ComplainantPortRef",
-      "label": "Port Reference"
+      "label": "Port reference"
     },
     {
       "name": "PrevCompRef",
-      "label": "Previous Complaint Reference"
+      "label": "Previous complaint reference"
     },
     {
       "name": "3rdPartyRef",
-      "label": "Third Party Reference"
+      "label": "Third party reference"
+    },
+    {
+      "name": "ComplainantCompanyName",
+      "label": "Company name"
     },
     {
       "name": "PsuReference",
