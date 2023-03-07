@@ -143,7 +143,7 @@
           ]
         },
         "name" : "CompType",
-        "label" : "Complaint Type"
+        "label" : "Complaint type"
       },
       {
         "props": {
@@ -312,7 +312,7 @@
           } ]
         },
         "name" : "BusArea",
-        "label" : "Business Area"
+        "label" : "Business area"
       },
       {
         "component" : "text-area",
@@ -495,7 +495,7 @@
           ]
         },
         "name": "CompType",
-        "label": "Complaint Type"
+        "label": "Complaint type"
       },
       {
         "component": "accordion",
@@ -1034,7 +1034,7 @@
           ]
         },
         "name" : "CompType",
-        "label" : "Complaint Type"
+        "label" : "Complaint type"
       },
       {
         "props": {
