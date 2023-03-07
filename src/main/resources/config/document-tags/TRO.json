@@ -5,6 +5,7 @@
     "DRAFT",
     "FINAL",
     "CONTRIBUTION",
-    "BACKGROUND NOTE"
+    "BACKGROUND NOTE",
+    "Migration document"
   ]
 }

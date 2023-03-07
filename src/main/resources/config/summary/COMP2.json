@@ -52,7 +52,7 @@
           "value": "Letter"
         },
         {
-          "label": "Face to Face",
+          "label": "Face to face",
           "value": "FACE"
         },
         {
@@ -72,7 +72,7 @@
     {
       "choices": [
         {
-          "label": "Very High",
+          "label": "Very high",
           "value": "1 Very High"
         },
         {
@@ -88,7 +88,7 @@
           "value": "4 Low"
         },
         {
-          "label": "Very Low",
+          "label": "Very low",
           "value": "5 Very Low"
         }
       ],
@@ -459,11 +459,15 @@
     {
       "choices": [
         {
-          "label": "Sopra Steria",
-          "value": "YesSopraSteria"
+          "label": "external contractor",
+          "value": "YesExternalContractor"
         },
         {
-          "label": "Not applicable",
+          "label": "further stage 2 case",
+          "value": "YesFurtherStage2"
+        },
+        {
+          "label": "No - close the case",
           "value": "NoClose"
         }
       ],
@@ -472,7 +476,15 @@
       "visibilityConditions": [
         {
           "conditionPropertyName": "CaseCreateContinue",
-          "conditionPropertyValue": "YesSopraSteria"
+          "conditionPropertyValue": "YesFurtherStage2"
+        },
+        {
+          "conditionPropertyName": "CaseCreateContinue",
+          "conditionPropertyValue": "YesExternalContractor"
+        },
+        {
+          "conditionPropertyName": "CaseCreateContinue",
+          "conditionPropertyValue": "NoClose"
         }
       ]
     },
@@ -522,6 +534,26 @@
       "type": "date",
       "name": "DateOfResponse",
       "label": "Final response sent"
+    },
+    {
+      "name": "ExternalContractor",
+      "label": "External contract",
+      "choices": [
+        {
+          "label": "Sopra Steria",
+          "value": "SopraSteria"
+        },
+        {
+          "label": "Migrant Help",
+          "value": "MigrantHelp"
+        }
+      ],
+      "visibilityConditions": [
+        {
+          "conditionPropertyName": "CaseCreateContinue",
+          "conditionPropertyValue": "YesExternalContractor"
+        }
+      ]
     }
   ]
 }

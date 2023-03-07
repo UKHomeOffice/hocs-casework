@@ -28,11 +28,11 @@ dependencies {
 
     implementation 'com.vladmihalcea:hibernate-types-55:2.21.1'
 
-    implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.3'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.14'
 
-    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.3'
-    implementation 'org.json:json:20220924'
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.5'
+    implementation 'org.json:json:20230227'
 
     implementation 'org.flywaydb:flyway-core:8.5.13'
     runtimeOnly 'org.postgresql:postgresql:42.5.4'

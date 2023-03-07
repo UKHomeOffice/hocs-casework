@@ -24,7 +24,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataTag;
-import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
 import uk.gov.digital.ho.hocs.casework.domain.model.StageWithCaseData;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseTagRepository;
@@ -324,14 +323,10 @@ public class StageService {
                 LocalDate deadlineWarning = caseData.getCaseDeadlineWarning();
                 stage.setDeadlineWarning(deadlineWarning);
             }
-        }
-
-        if (overrideDeadline!=null) {
+        } else if (overrideDeadline != null) {
             LocalDate deadline = LocalDate.parse(overrideDeadline);
-            if (stage.getDeadline()==null || stage.getDeadline().isBefore(deadline)) {
-                stage.setDeadline(deadline);
-                stage.setDeadlineWarning(null);
-            }
+            stage.setDeadline(deadline);
+            stage.setDeadlineWarning(null);
         }
         log.info("Stage Deadline Updated; Case: {}, Stage: {}", stage.getCaseUUID(), stage.getUuid());
     }
@@ -576,7 +571,7 @@ public class StageService {
             daysElapsedCalculator.updateDaysElapsed(stage.getData(), stage.getCaseDataType());
 
             //TODO: HOCS-5871 Remove after Workflow Implementation released
-            stage.appendTags(stageTagsDecorator.decorateTags(stage.getData(), stage.getStageType()));
+            stage.appendTags(stageTagsDecorator.decorateTags(stage.getData()));
         }
     }
 

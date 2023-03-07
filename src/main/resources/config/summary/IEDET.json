@@ -40,11 +40,6 @@
       "label": "Channel"
     },
     {
-      "choices": "S_IEDET_CASE_OUTCOME",
-      "name": "CaseOutcome",
-      "label": "Case Outcome"
-    },
-    {
       "choices": [
           {
             "label": "Substantiated",
@@ -55,7 +50,7 @@
             "value": "Unsubstantiated"
           },
           {
-            "label": "Partially Substantiated",
+            "label": "Partially substantiated",
             "value": "PartiallySubstantiated"
           },
           {
@@ -109,6 +104,11 @@
       "choices": "S_IEDET_COMP_ORIGIN",
       "name": "CompOrigin",
       "label": "Complaint origin"
+    },
+    {
+      "choices": "IEDET_BUSINESS_AREAS",
+      "name": "BusinessArea",
+      "label": "Business area"
     },
     {
       "name": "OutcomeOther",
