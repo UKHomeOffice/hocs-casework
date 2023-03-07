@@ -17,6 +17,7 @@ import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -134,6 +135,9 @@ public class InfoClient {
     @Cacheable(value = "InfoClientGetTeams", unless = "#result.size() == 0")
     public Set<TeamDto> getTeams() {
         Set<TeamDto> teams = restHelper.get(serviceBaseURL, "/team", new ParameterizedTypeReference<Set<TeamDto>>() {});
+        if(teams == null) {
+            teams = Collections.emptySet();
+        }
         log.info("Got {} teams", teams.size(), value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
         return teams;
     }
@@ -181,6 +185,10 @@ public class InfoClient {
     public Set<StageTypeDto> getAllStageTypes() {
         Set<StageTypeDto> response = restHelper.get(serviceBaseURL, "/stageType",
             new ParameterizedTypeReference<>() {});
+
+        if(response == null) {
+            response = Collections.emptySet();
+        }
 
         log.info("Got {} stage types", response.size(), value(EVENT, INFO_CLIENT_GET_ALL_STAGE_TYPES));
         return response;
@@ -231,6 +239,10 @@ public class InfoClient {
     @Cacheable(value = "InfoClientGetUsers", unless = "#result == null || #result.size() == 0")
     public Set<UserDto> getAllUsers() {
         Set<UserDto> userDtos = restHelper.get(serviceBaseURL, "/users", new ParameterizedTypeReference<>() {});
+        if(userDtos == null) {
+            userDtos = Collections.emptySet();
+        }
+
         log.info("Got {} users", userDtos.size(), value(EVENT, INFO_CLIENT_GET_ALL_USERS));
         return userDtos;
     }
