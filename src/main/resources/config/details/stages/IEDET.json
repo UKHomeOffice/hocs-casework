@@ -344,7 +344,7 @@
           "hasRemoveLink": true
         },
         "name": "FinalResponseDocument",
-        "label": "Upload the Final Response"
+        "label": "Upload the final response"
       },
       {
         "props": {
