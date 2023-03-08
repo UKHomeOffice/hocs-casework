@@ -76,6 +76,7 @@ public class MigrationCaseDataService {
         return caseData;
     }
 
+    @Transactional
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         if (data==null) {
             log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID,
@@ -85,6 +86,7 @@ public class MigrationCaseDataService {
         updateCaseData(getCaseData(caseUUID), stageUUID, data);
     }
 
+    @Transactional
     public void updateCaseData(CaseData caseData, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseData.getUuid());
         if (data==null) {
@@ -115,6 +117,7 @@ public class MigrationCaseDataService {
         return caseData;
     }
 
+    @Transactional
     void createPrimaryCorrespondent(MigrationComplaintCorrespondent primaryCorrespondent, UUID caseUUID, UUID stageUUID) {
         log.debug("Creating Correspondent of Type: {} for Migrated Case: {}", primaryCorrespondent.getCorrespondentType(), caseUUID);
         Correspondent correspondent = getCorrespondent(primaryCorrespondent, caseUUID);
@@ -140,6 +143,7 @@ public class MigrationCaseDataService {
             value(EVENT, CORRESPONDENT_CREATED));
     }
 
+    @Transactional
     public void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) {
         log.debug("Updating Primary Correspondent for Migrated Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID);
         CaseData caseData = getCaseData(caseUUID);
@@ -150,6 +154,7 @@ public class MigrationCaseDataService {
             value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
     }
 
+    @Transactional
     void createAdditionalCorrespondent(List<MigrationComplaintCorrespondent> additionalCorrespondents, UUID caseUUID, UUID stageUUID) {
         for (MigrationComplaintCorrespondent additionalCorrespondent : additionalCorrespondents) {
             log.debug("Creating Additional Correspondent of Type: {} for Migrated Case: {}", additionalCorrespondent.getCorrespondentType(), caseUUID);
