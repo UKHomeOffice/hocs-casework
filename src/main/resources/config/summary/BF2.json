@@ -170,7 +170,6 @@
       "label": "Complaint type"
     },
     {
-      "choices": "COUNTRIES_CURRENT",
       "name": "ComplainantNationality",
       "label": "Complainant's nationality"
     },
