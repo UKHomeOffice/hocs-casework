@@ -52,7 +52,7 @@
         }
       ],
       "name": "CompType",
-      "label": "Complaint Type"
+      "label": "Complaint type"
     },
     {
       "choices": "S_BF_REGION",
@@ -113,7 +113,7 @@
         }
       ],
       "name": "BusArea",
-      "label": "Business Area"
+      "label": "Business area"
     },
     {
       "conditionChoices": [

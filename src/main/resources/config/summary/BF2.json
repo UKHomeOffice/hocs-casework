@@ -99,7 +99,7 @@
         }
       ],
       "name": "BusArea",
-      "label": "Business Area"
+      "label": "Business area"
     },
     {
       "choices": [
@@ -201,7 +201,7 @@
     },
     {
       "name": "CompType",
-      "label": "Complaint Type"
+      "label": "Complaint type"
     },
     {
       "name": "ComplainantHORef",
