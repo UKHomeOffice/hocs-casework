@@ -280,6 +280,10 @@
       "label": "Company name"
     },
     {
+      "name": "ComplainantNationality",
+      "label": "Complainant's nationality"
+    },
+    {
       "name": "PsuReference",
       "label": "PSU reference"
     }
