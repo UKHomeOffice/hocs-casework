@@ -76,12 +76,10 @@ public class CopyBfToBf2Test {
             null, null, null, null, false, null, null);
 
         FROM_CLOB.put("OwningCSU", "csu");
-        FROM_CLOB.put("ComplainantDOB", "1-1-1980");
         FROM_CLOB.put("ComplainantHORef", "12345678");
         FROM_CLOB.put("ComplainantPortRef", "12345678");
         FROM_CLOB.put("ComplainantCompanyName", "company name");
         FROM_CLOB.put("ComplainantNationality", "United Kingdom");
-        FROM_CLOB.put("ComplainantGender", "gender");
         FROM_CLOB.put("Region", "region");
         FROM_CLOB.put("BusArea", "businessarea");
         FROM_CLOB.put("ComplaintReason1", "reason one");
