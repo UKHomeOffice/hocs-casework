@@ -13,8 +13,12 @@
           "value": "Service"
         },
         {
-          "label": "Minor Misconduct",
+          "label": "Minor misconduct",
           "value": "MinorMisconduct"
+        },
+        {
+          "label": "Serious misconduct",
+          "value": "SeriousMisconduct"
         }
       ],
       "name": "CompType",
