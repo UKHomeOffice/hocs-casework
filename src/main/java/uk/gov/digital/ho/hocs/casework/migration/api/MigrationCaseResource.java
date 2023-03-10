@@ -41,13 +41,4 @@ public class MigrationCaseResource {
 
         return ResponseEntity.ok().build();
     }
-
-    @PostMapping(value = "/migrate/caseAttachment")
-    public ResponseEntity createCaseAttachment(@RequestBody CreateMigrationCaseAttachmentRequest request) {
-        migrationCaseService.createCaseAttachments(
-            request.getCaseId(),
-            request.getAttachments());
-
-        return ResponseEntity.ok().build();
-    }
 }
