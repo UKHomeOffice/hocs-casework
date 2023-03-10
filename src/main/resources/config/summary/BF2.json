@@ -7,40 +7,6 @@
       "label": "When was the correspondence received?"
     },
     {
-      "choices": [
-        {
-          "label": "Not Applicable",
-          "value": "NA"
-        },
-        {
-          "label": "Telephone",
-          "value": "TELEPHONE"
-        },
-        {
-          "label": "Email",
-          "value": "EMAIL"
-        },
-        {
-          "label": "HMPOTRT",
-          "value": "HMPOTRT"
-        },
-        {
-          "label": "Letter",
-          "value": "Letter"
-        },
-        {
-          "label": "Face to Face",
-          "value": "FACE"
-        },
-        {
-          "label": "Webform",
-          "value": "Webform"
-        }
-      ],
-      "name": "Channel",
-      "label": "Channel"
-    },
-    {
       "choices": "S_BF_REGION",
       "name": "Region",
       "label": "Region"
@@ -214,20 +180,28 @@
       "label": "Complaint type"
     },
     {
+      "name": "ComplainantNationality",
+      "label": "Complainant's nationality"
+    },
+    {
+      "name": "ComplainantCompanyName",
+      "label": "Company name"
+    },
+    {
       "name": "ComplainantHORef",
-      "label": "Home Office Reference"
+      "label": "Home Office reference"
     },
     {
       "name": "ComplainantPortRef",
-      "label": "Port Reference"
+      "label": "Port reference"
     },
     {
       "name": "PrevCompRef",
-      "label": "Previous Complaint Reference"
+      "label": "Previous complaint reference"
     },
     {
       "name": "3rdPartyRef",
-      "label": "Third Party Reference"
+      "label": "Third party reference"
     },
     {
       "name": "PsuReference",

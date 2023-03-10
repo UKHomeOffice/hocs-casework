@@ -60,74 +60,32 @@
           "choices": "COUNTRIES_CURRENT"
         },
         "name": "ComplainantNationality",
-        "label": "Nationality"
+        "label": "Complainant's nationality"
       },
       {
         "component": "text",
         "name": "ComplainantCompanyName",
-        "label": "Company Name"
+        "label": "Company name"
       },
       {
         "component": "text",
         "name": "ComplainantHORef",
-        "label": "Home Office Reference"
+        "label": "Home Office reference"
       },
       {
         "component": "text",
         "name": "ComplainantPortRef",
-        "label": "Port Reference"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Not Applicable",
-              "value": "NA"
-            },
-            {
-              "label": "Telephone",
-              "value": "TELEPHONE"
-            },
-            {
-              "label": "Email",
-              "value": "EMAIL"
-            },
-            {
-              "label": "HMPOTRT",
-              "value": "HMPOTRT"
-            },
-            {
-              "label": "Letter",
-              "value": "Letter"
-            },
-            {
-              "label": "Face to Face",
-              "value": "FACE"
-            },
-            {
-              "label": "Webform",
-              "value": "Webform"
-            }
-          ]
-        },
-        "name": "Channel",
-        "label": "Channel"
-      },
-      {
-        "component": "text-area",
-        "name": "CaseSummary",
-        "label": "Case Summary"
+        "label": "Port reference"
       },
       {
         "component": "text",
         "name": "PrevCompRef",
-        "label": "Previous Complaint Reference"
+        "label": "Previous complaint reference"
       },
       {
         "component": "text",
         "name": "3rdPartyRef",
-        "label": "Third Party Reference"
+        "label": "Third party reference"
       },
       {
         "component": "hidden",
