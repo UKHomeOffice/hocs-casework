@@ -55,9 +55,4 @@ public class MigrationCaseService {
         migrationCaseDataService.createPrimaryCorrespondent(primaryCorrespondent, caseId, stageId);
         migrationCaseDataService.createAdditionalCorrespondent(additionalCorrespondents, caseId, stageId);
     }
-
-    public void createCaseAttachments(UUID caseId, List<CaseAttachment> caseAttachments) {
-        migrationCaseDataService.createCaseAttachments(caseId, caseAttachments);
-    }
-
 }
