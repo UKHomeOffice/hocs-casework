@@ -111,7 +111,7 @@
               "value" : "Service"
             },
             {
-              "label" : "Minor Misconduct",
+              "label" : "Minor misconduct",
               "value" : "MinorMisconduct"
             },
             {
@@ -467,7 +467,7 @@
               "value": "Service"
             },
             {
-              "label": "Minor Misconduct",
+              "label": "Minor misconduct",
               "value": "MinorMisconduct"
             }
           ]
@@ -1002,7 +1002,7 @@
               "value" : "Service"
             },
             {
-              "label" : "Minor Misconduct",
+              "label" : "Minor misconduct",
               "value" : "MinorMisconduct"
             },
             {
