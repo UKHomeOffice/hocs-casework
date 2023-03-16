@@ -73,7 +73,6 @@ public class MigrationCaseServiceTest {
 
         when(migrationStageService.createStageForClosedCase(caseData.getUuid(), STAGE_TYPE)).thenReturn(stage);
 
-//        MigrationComplaintCorrespondent primaryCorrespondents =  createCorrespondent();
         List<MigrationComplaintCorrespondent> additionalCorrespondents = new ArrayList<>();
         additionalCorrespondents.add(createCorrespondent());
         migrationCaseService.createMigrationCase(
@@ -82,15 +81,10 @@ public class MigrationCaseServiceTest {
             data,
             originalReceivedDate);
 
-//        List<CaseAttachment> caseAttachments = new ArrayList<>();
-
         // then
         verify(migrationCaseDataService, times(1)).createCompletedCase(caseDataType.getDisplayName(), data,
             originalReceivedDate);
         verify(migrationStageService, times(1)).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
-//        verify(migrationCaseDataService, times(1)).createPrimaryCorrespondent(createCorrespondent(), caseData.getUuid(), stage.getUuid());
-//        verify(migrationCaseDataService, times(1)).createAdditionalCorrespondent(additionalCorrespondents, caseData.getUuid(), stage.getUuid());
-//        verify(migrationCaseDataService, times(1)).createCaseAttachments(caseData.getUuid(), caseAttachments);
 
         verifyNoMoreInteractions(migrationCaseDataService);
         verifyNoMoreInteractions(migrationStageService);
