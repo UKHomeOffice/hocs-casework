@@ -12,7 +12,7 @@ hocs-generic-service:
 
   app:
     env:
-      searchService: https://hocs-search-opensearch.{{ .Release.Namespace }}.svc.cluster.local
+      searchService: https://hocs-search-multiple.{{ .Release.Namespace }}.svc.cluster.local
     resources:
       limits:
         memory: 768Mi
