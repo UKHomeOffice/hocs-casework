@@ -390,7 +390,7 @@
       {
         "component": "date",
         "name": "ResponseDate",
-        "label": "Response date"
+        "label": "Response sent"
       }
     ],
     "IEDET_PSU_REGISTRATION": [
