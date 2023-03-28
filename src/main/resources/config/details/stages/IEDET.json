@@ -344,7 +344,7 @@
           "hasRemoveLink": true
         },
         "name": "FinalResponseDocument",
-        "label": "Upload the Final Response"
+        "label": "Upload the final response"
       },
       {
         "props": {
@@ -390,7 +390,7 @@
       {
         "component": "date",
         "name": "ResponseDate",
-        "label": "Response date"
+        "label": "Response sent"
       }
     ],
     "IEDET_PSU_REGISTRATION": [

@@ -515,15 +515,15 @@
         "props": {
           "choices": [
             {
-              "label": "external contractor",
+              "label": "External contractor",
               "value": "YesExternalContractor"
             },
             {
-              "label": "further stage 2 case",
+              "label": "Further stage 2 case",
               "value": "YesFurtherStage2"
             },
             {
-              "label": "No - close the case",
+              "label": "Closed",
               "value": "NoClose"
             }
           ],
@@ -566,7 +566,7 @@
           ]
         },
         "name": "ExternalContractor",
-        "label": "External contract"
+        "label": "External contractor"
       }
     ],
     "COMP2_MINORMISCONDUCT_TRIAGE": [

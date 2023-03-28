@@ -11,7 +11,6 @@ import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CorrespondentType;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 
@@ -24,7 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static java.util.Collections.emptyList;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -75,26 +73,18 @@ public class MigrationCaseServiceTest {
 
         when(migrationStageService.createStageForClosedCase(caseData.getUuid(), STAGE_TYPE)).thenReturn(stage);
 
-        MigrationComplaintCorrespondent primaryCorrespondents =  createCorrespondent();
         List<MigrationComplaintCorrespondent> additionalCorrespondents = new ArrayList<>();
         additionalCorrespondents.add(createCorrespondent());
         migrationCaseService.createMigrationCase(
             caseDataType.getDisplayName(),
             STAGE_TYPE,
             data,
-            originalReceivedDate,
-            primaryCorrespondents,
-            additionalCorrespondents,
-            emptyList());
-        List<CaseAttachment> caseAttachments = new ArrayList<>();
+            originalReceivedDate);
 
         // then
         verify(migrationCaseDataService, times(1)).createCompletedCase(caseDataType.getDisplayName(), data,
             originalReceivedDate);
         verify(migrationStageService, times(1)).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
-        verify(migrationCaseDataService, times(1)).createPrimaryCorrespondent(createCorrespondent(), caseData.getUuid(), stage.getUuid());
-        verify(migrationCaseDataService, times(1)).createAdditionalCorrespondent(additionalCorrespondents, caseData.getUuid(), stage.getUuid());
-        verify(migrationCaseDataService, times(1)).createCaseAttachments(caseData.getUuid(), caseAttachments);
 
         verifyNoMoreInteractions(migrationCaseDataService);
         verifyNoMoreInteractions(migrationStageService);

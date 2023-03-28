@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -27,12 +26,4 @@ public class CreateMigrationCaseRequest {
     @JsonProperty("stageType")
     private String stageType;
 
-    @JsonProperty("primaryCorrespondent")
-    private MigrationComplaintCorrespondent primaryCorrespondent;
-
-    @JsonProperty("additionalCorrespondents")
-    private List<MigrationComplaintCorrespondent> additionalCorrespondents;
-
-    @JsonProperty("caseAttachments")
-    private List<CaseAttachment> attachments;
 }

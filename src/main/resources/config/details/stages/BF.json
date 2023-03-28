@@ -33,49 +33,27 @@
         "label": "Which is the primary correspondent?"
       },
       {
-        "component": "date",
-        "name": "ComplainantDOB",
-        "label": "Date of Birth"
-      },
-      {
-        "component": "radio",
-        "props": {
-          "choices": [
-            {
-              "label": "Male",
-              "value": "Male"
-            },
-            {
-              "label": "Female",
-              "value": "Female"
-            }
-          ]
-        },
-        "name": "ComplainantGender",
-        "label": "Gender"
-      },
-      {
         "component": "dropdown",
         "props": {
           "choices": "COUNTRIES_CURRENT"
         },
         "name": "ComplainantNationality",
-        "label": "Nationality"
+        "label": "Complainant's nationality"
       },
       {
         "component": "text",
         "name": "ComplainantCompanyName",
-        "label": "Company Name"
+        "label": "Company name"
       },
       {
         "component": "text",
         "name": "ComplainantHORef",
-        "label": "Home Office Reference"
+        "label": "Home Office reference"
       },
       {
         "component": "text",
         "name": "ComplainantPortRef",
-        "label": "Port Reference"
+        "label": "Port reference"
       },
       {
         "component": "radio",
@@ -117,12 +95,12 @@
       {
         "component" : "text",
         "name" : "PrevCompRef",
-        "label" : "Previous Complaint Reference"
+        "label" : "Previous complaint reference"
       },
       {
         "component" : "text",
         "name" : "3rdPartyRef",
-        "label" : "Third Party Reference"
+        "label" : "Third party reference"
       },
       {
         "component" : "radio",
@@ -133,7 +111,7 @@
               "value" : "Service"
             },
             {
-              "label" : "Minor Misconduct",
+              "label" : "Minor misconduct",
               "value" : "MinorMisconduct"
             },
             {
@@ -143,7 +121,7 @@
           ]
         },
         "name" : "CompType",
-        "label" : "Complaint Type"
+        "label" : "Complaint type"
       },
       {
         "props": {
@@ -312,7 +290,7 @@
           } ]
         },
         "name" : "BusArea",
-        "label" : "Business Area"
+        "label" : "Business area"
       },
       {
         "component" : "text-area",
@@ -489,13 +467,13 @@
               "value": "Service"
             },
             {
-              "label": "Minor Misconduct",
+              "label": "Minor misconduct",
               "value": "MinorMisconduct"
             }
           ]
         },
         "name": "CompType",
-        "label": "Complaint Type"
+        "label": "Complaint type"
       },
       {
         "component": "accordion",
@@ -1024,7 +1002,7 @@
               "value" : "Service"
             },
             {
-              "label" : "Minor Misconduct",
+              "label" : "Minor misconduct",
               "value" : "MinorMisconduct"
             },
             {
@@ -1034,7 +1012,7 @@
           ]
         },
         "name" : "CompType",
-        "label" : "Complaint Type"
+        "label" : "Complaint type"
       },
       {
         "props": {
