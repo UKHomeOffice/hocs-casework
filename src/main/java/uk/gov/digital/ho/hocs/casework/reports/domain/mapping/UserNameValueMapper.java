@@ -14,8 +14,8 @@ import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REPORT_MAPPER_CACHE_USER_ERROR;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REPORT_MAPPER_REFRESH_USER_CACHE;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REPORT_MAPPER_USER_CACHE_ERROR;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REPORT_MAPPER_USER_CACHE_REFRESH;
 
 @Slf4j
 @Service
@@ -38,7 +38,7 @@ public class UserNameValueMapper implements ReportValueMapper<UUID, String> {
             UserDto user = infoServiceClient.getUser(userUUID);
             return formatUsername(user);
         } catch (Exception e) {
-            log.warn("Failed to fetch user with UUID {}", userUUID, REPORT_MAPPER_CACHE_USER_ERROR);
+            log.warn("Failed to fetch user with UUID {}", userUUID, REPORT_MAPPER_USER_CACHE_ERROR);
             return null;
         }
     }
@@ -51,7 +51,7 @@ public class UserNameValueMapper implements ReportValueMapper<UUID, String> {
 
     @Override
     public void refreshCache() {
-        log.info("Refreshing cache", value(EVENT, REPORT_MAPPER_REFRESH_USER_CACHE));
+        log.info("Refreshing cache", value(EVENT, REPORT_MAPPER_USER_CACHE_REFRESH));
         uuidToUserNameCache.invalidateAll();
         infoServiceClient.getAllUsers()
                          .forEach(user -> uuidToUserNameCache.put(UUID.fromString(user.getId()), formatUsername(user)));

@@ -3,6 +3,8 @@ package uk.gov.digital.ho.hocs.casework.reports.domain.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.QueryHints;
+import org.springframework.data.repository.query.Param;
+import uk.gov.digital.ho.hocs.casework.reports.domain.CaseType;
 import uk.gov.digital.ho.hocs.casework.reports.domain.reports.OpenCasesData;
 
 import javax.persistence.QueryHint;
@@ -21,9 +23,9 @@ public interface OpenCasesRepository extends JpaRepository<OpenCasesData, UUID> 
         @QueryHint(name = READ_ONLY, value = "true")
     })
     @Query(
-        value = "SELECT * FROM report_open_cases",
+        value = "SELECT * FROM report_open_cases WHERE case_type = :#{#caseType?.name()}",
         nativeQuery = true
     )
-    Stream<OpenCasesData> getReportData();
+    Stream<OpenCasesData> getReportData(@Param("caseType") CaseType caseType);
 
 }

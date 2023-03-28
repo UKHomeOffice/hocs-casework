@@ -36,14 +36,14 @@ public class TeamNameValueMapper implements ReportValueMapper<UUID, String> {
             TeamDto team = infoServiceClient.getTeamByUUID(userUUID);
             return team.getDisplayName();
         } catch (Exception e) {
-            log.warn("Failed to fetch team with UUID {}", userUUID, REPORT_MAPPER_CACHE_USER_ERROR);
+            log.warn("Failed to fetch team with UUID {}", userUUID, REPORT_MAPPER_TEAM_CACHE_ERROR);
             return null;
         }
     }
 
     @Override
     public void refreshCache() {
-        log.info("Refreshing cache", value(EVENT, REPORT_MAPPER_REFRESH_USER_CACHE));
+        log.info("Refreshing cache", value(EVENT, REPORT_MAPPER_TEAM_CACHE_REFRESH));
         infoServiceClient.getTeams().forEach(team -> uuidToTeamNameCache.put(team.getUuid(), team.getDisplayName()));
     }
 

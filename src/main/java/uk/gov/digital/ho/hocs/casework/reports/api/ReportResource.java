@@ -14,7 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-import uk.gov.digital.ho.hocs.casework.reports.dto.ReportMetadataDto;
+import uk.gov.digital.ho.hocs.casework.reports.api.dto.ReportMetadataDto;
+import uk.gov.digital.ho.hocs.casework.reports.domain.CaseType;
 import uk.gov.digital.ho.hocs.casework.reports.factory.ReportFactory;
 import uk.gov.digital.ho.hocs.casework.reports.reports.Report;
 
@@ -42,8 +43,8 @@ public class ReportResource {
         return reportFactory.listAvailableReports();
     }
 
-    @GetMapping("/report/{slug}")
-    ResponseEntity<StreamingResponseBody> getReport(@PathVariable String slug) {
+    @GetMapping("/report/{caseType}/{slug}")
+    ResponseEntity<StreamingResponseBody> getReport(@PathVariable CaseType caseType, @PathVariable String slug) {
         Report<?> report = reportFactory.getReportForSlug(slug);
 
         StreamingResponseBody body = outputStream -> {
@@ -51,10 +52,13 @@ public class ReportResource {
             JsonGenerator generator = factory.createGenerator(outputStream, JsonEncoding.UTF8);
             generator.setCodec(objectMapper);
 
-            generator.writeStartArray();
+            generator.writeStartObject();
+            generator.writeObjectField("metadata", report.getReportMetadata());
+            generator.writeStringField("case_type", caseType.toString());
+            generator.writeArrayFieldStart("data");
 
             transactionTemplate.execute(status -> {
-                report.getRows().forEach(row -> {
+                report.getRows(caseType).forEach(row -> {
                     try {
                         generator.writeObject(row);
                     } catch (IOException e) {
@@ -66,6 +70,7 @@ public class ReportResource {
             });
 
             generator.writeEndArray();
+            generator.writeEndObject();
             generator.close();
         };
 
@@ -77,12 +82,5 @@ public class ReportResource {
             responseHeaders,
             HttpStatus.OK
         );
-    }
-
-    @GetMapping("/report/{slug}/metadata")
-    ReportMetadataDto getReportMetadata(@PathVariable String slug) {
-        Report<?> report = reportFactory.getReportForSlug(slug);
-
-        return report.getReportMetadata();
     }
 }

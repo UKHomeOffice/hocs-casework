@@ -1,4 +1,4 @@
-package uk.gov.digital.ho.hocs.casework.reports.dto;
+package uk.gov.digital.ho.hocs.casework.reports.api.dto;
 
 public enum ColumnType {
     STRING,

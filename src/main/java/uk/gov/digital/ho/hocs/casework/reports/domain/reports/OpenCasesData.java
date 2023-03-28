@@ -27,6 +27,8 @@ public class OpenCasesData implements Serializable {
 
     private String businessArea;
 
+    private LocalDate dateCreated;
+
     private Integer age;
 
     private LocalDate caseDeadline;
@@ -42,7 +44,7 @@ public class OpenCasesData implements Serializable {
     @Column(name = "assigned_team_uuid")
     private UUID assignedTeamUUID;
 
-    private String userGroup;
+    private String caseType;
 
     private Boolean outsideServiceStandard;
 

@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import uk.gov.digital.ho.hocs.casework.reports.dto.ReportRow;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -24,6 +23,9 @@ public class OpenCasesRow implements ReportRow, Serializable {
     @JsonProperty("business_area")
     private String businessArea;
 
+    @JsonProperty("date_created")
+    private LocalDate dateCreated;
+
     @JsonProperty("age")
     private Integer age;
 
@@ -41,9 +43,6 @@ public class OpenCasesRow implements ReportRow, Serializable {
 
     @JsonProperty("assigned_team_uuid")
     private UUID assignedTeamUUID;
-
-    @JsonProperty("user_group")
-    private String userGroup;
 
     @JsonProperty("outside_service_standard")
     private Boolean outsideServiceStandard;
