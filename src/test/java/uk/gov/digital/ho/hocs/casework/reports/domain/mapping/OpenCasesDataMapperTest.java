@@ -28,6 +28,8 @@ public class OpenCasesDataMapperTest {
 
     private static final UUID SAMPLE_TEAM_UUID = UUID.fromString("715d6ec2-208c-4e90-b1f7-16ab2d455625");
 
+    private static final int EXEMPTION_DAYS = 3;
+
     public final static OpenCasesData SAMPLE_DATA = new OpenCasesData(
         UUID.fromString("a6a19b12-a8a3-4bfd-878e-248f00585974"),
         "COMP/319244/23",
@@ -52,6 +54,9 @@ public class OpenCasesDataMapperTest {
     @Mock
     private StageNameValueMapper stageNameValueMapper;
 
+    @Mock
+    private ExemptionDatesAgeAdjustmentLookup exemptionDatesAgeAdjustmentLookup;
+
     @InjectMocks
     private OpenCasesDataMapper underTest;
 
@@ -64,8 +69,10 @@ public class OpenCasesDataMapperTest {
         when(userNameValueMapper.map(SAMPLE_USER_UUID)).thenReturn(Optional.of(mappedUser));
         when(teamNameValueMapper.map(SAMPLE_TEAM_UUID)).thenReturn(Optional.of(mappedTeam));
         when(stageNameValueMapper.map(SAMPLE_STAGE_TYPE)).thenReturn(Optional.of(mappedStage));
+        when(exemptionDatesAgeAdjustmentLookup.getExemptionDatesForCaseTypeSince(SAMPLE_DATA.getCaseType(), SAMPLE_DATA.getDateCreated()))
+            .thenReturn(EXEMPTION_DAYS);
 
-        assertThat(underTest.mapDataToRow(SAMPLE_DATA)).isEqualTo(getExpectedRow(mappedUser, mappedTeam, mappedStage));
+        assertThat(underTest.mapDataToRow(SAMPLE_DATA)).isEqualTo(getExpectedRow(EXEMPTION_DAYS, mappedUser, mappedTeam, mappedStage));
     }
 
     @Test
@@ -73,17 +80,19 @@ public class OpenCasesDataMapperTest {
         when(userNameValueMapper.map(SAMPLE_USER_UUID)).thenReturn(Optional.empty());
         when(teamNameValueMapper.map(SAMPLE_TEAM_UUID)).thenReturn(Optional.empty());
         when(stageNameValueMapper.map(SAMPLE_STAGE_TYPE)).thenReturn(Optional.empty());
+        when(exemptionDatesAgeAdjustmentLookup.getExemptionDatesForCaseTypeSince(SAMPLE_DATA.getCaseType(), SAMPLE_DATA.getDateCreated()))
+            .thenReturn(0);
 
-        assertThat(underTest.mapDataToRow(SAMPLE_DATA)).isEqualTo(getExpectedRow(null, null, SAMPLE_STAGE_TYPE));
+        assertThat(underTest.mapDataToRow(SAMPLE_DATA)).isEqualTo(getExpectedRow(0, null, null, SAMPLE_STAGE_TYPE));
     }
 
-    private OpenCasesRow getExpectedRow(String mappedUser, String mappedTeam, String mappedStage) {
+    private OpenCasesRow getExpectedRow(int exemptionDays, String mappedUser, String mappedTeam, String mappedStage) {
         return new OpenCasesRow(
             SAMPLE_DATA.getCaseUUID(),
             SAMPLE_DATA.getCaseReference(),
             SAMPLE_DATA.getBusinessArea(),
             SAMPLE_DATA.getDateCreated(),
-            SAMPLE_DATA.getAge(),
+            SAMPLE_DATA.getAge() - exemptionDays,
             SAMPLE_DATA.getCaseDeadline(),
             SAMPLE_DATA.getStageUUID(),
             SAMPLE_DATA.getStageType(),
