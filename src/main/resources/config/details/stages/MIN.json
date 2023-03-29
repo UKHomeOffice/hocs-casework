@@ -448,15 +448,19 @@
         "props": {
           "choices": [
             {
-              "label": "Yes",
-              "value": "ACCEPT"
+              "label": "Yes - with a wet signature",
+              "value": "ACCEPT_WET"
             },
             {
-              "label": "No",
+              "label": "Yes - with a digital signature",
+              "value": "ACCEPT_DIGITAL"
+            },
+            {
+              "label": " No - return to Initial Draft",
               "value": "REJECT"
             },
             {
-              "label": "Not applicable",
+              "label": " No - return to Private Office Approval",
               "value": "NOT_APPLICABLE"
             }
           ]
