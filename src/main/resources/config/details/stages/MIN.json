@@ -466,7 +466,7 @@
           ]
         },
         "name": "MinisterSignOffDecision",
-        "label": "Do you approve the response?"
+        "label": "Has the Minister approved the response?"
       },
       {
         "component": "text-area",
