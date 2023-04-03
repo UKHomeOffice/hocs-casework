@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.reports.domain.mapping;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
@@ -30,8 +29,6 @@ public class ExemptionDatesAgeAdjustmentLookup {
 
     private Map<String, TreeSet<LocalDate>> exceptionDatesByCaseType = Collections.emptyMap();
 
-
-    @Autowired
     public ExemptionDatesAgeAdjustmentLookup(InfoClient infoServiceClient, Clock clock) {
         this.infoServiceClient = infoServiceClient;
         this.clock = clock;
