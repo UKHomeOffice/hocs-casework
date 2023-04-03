@@ -28,7 +28,7 @@ public class StageNameValueMapper implements ReportValueMapper<String, String> {
     @Autowired
     public StageNameValueMapper(InfoClient infoServiceClient) {
         this.infoServiceClient = infoServiceClient;
-        this.uuidToStageNameCache = Caffeine.newBuilder().maximumSize(10_000).build(this::fetchStageNameByUUID);
+        this.uuidToStageNameCache = Caffeine.newBuilder().build(this::fetchStageNameByUUID);
         refreshCache();
     }
 
@@ -40,13 +40,14 @@ public class StageNameValueMapper implements ReportValueMapper<String, String> {
             log.warn("Failed to fetch stage type with stageTypeString {}", stageTypeString,
                 REPORT_MAPPER_STAGE_CACHE_ERROR
                     );
-            return null;
+            return stageTypeString;
         }
     }
 
     @Override
     public void refreshCache() {
         log.info("Refreshing cache", value(EVENT, REPORT_MAPPER_STAGE_CACHE_REFRESH));
+        uuidToStageNameCache.invalidateAll();
         infoServiceClient.getAllStageTypes()
                          .forEach(stageType -> uuidToStageNameCache.put(stageType.getType(), stageType.getDisplayName()));
     }

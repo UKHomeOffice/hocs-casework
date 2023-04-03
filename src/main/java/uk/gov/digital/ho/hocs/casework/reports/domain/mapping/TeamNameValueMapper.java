@@ -27,23 +27,24 @@ public class TeamNameValueMapper implements ReportValueMapper<UUID, String> {
     @Autowired
     public TeamNameValueMapper(InfoClient infoServiceClient) {
         this.infoServiceClient = infoServiceClient;
-        this.uuidToTeamNameCache = Caffeine.newBuilder().maximumSize(10_000).build(this::fetchTeamNameByUUID);
+        this.uuidToTeamNameCache = Caffeine.newBuilder().build(this::fetchTeamNameByUUID);
         refreshCache();
     }
 
-    private String fetchTeamNameByUUID(UUID userUUID) {
+    private String fetchTeamNameByUUID(UUID teamUUID) {
         try {
-            TeamDto team = infoServiceClient.getTeamByUUID(userUUID);
+            TeamDto team = infoServiceClient.getTeamByUUID(teamUUID);
             return team.getDisplayName();
         } catch (Exception e) {
-            log.warn("Failed to fetch team with UUID {}", userUUID, REPORT_MAPPER_TEAM_CACHE_ERROR);
-            return null;
+            log.warn("Failed to fetch team with UUID {}", teamUUID, REPORT_MAPPER_TEAM_CACHE_ERROR);
+            return teamUUID.toString();
         }
     }
 
     @Override
     public void refreshCache() {
         log.info("Refreshing cache", value(EVENT, REPORT_MAPPER_TEAM_CACHE_REFRESH));
+        uuidToTeamNameCache.invalidateAll();
         infoServiceClient.getTeams().forEach(team -> uuidToTeamNameCache.put(team.getUuid(), team.getDisplayName()));
     }
 

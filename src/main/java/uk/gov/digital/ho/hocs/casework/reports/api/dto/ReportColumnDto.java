@@ -4,13 +4,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Getter
 public class ReportColumnDto {
     @JsonProperty("key")
@@ -33,11 +31,23 @@ public class ReportColumnDto {
     @JsonProperty("filter_type")
     private FilterType filterType;
 
-    public ReportColumnDto withAdditionalField(String key, String value) {
-        if(additionalFields == null) {
-            additionalFields = new HashMap<>();
-        }
+    public ReportColumnDto(
+        @NonNull String key,
+        @NonNull String displayName,
+        @NonNull ColumnType type,
+        @NonNull Boolean renderOnDashboard,
+        @NonNull Boolean renderInCSV
+                          ) {
+        this.key = key;
+        this.displayName = displayName;
+        this.type = type;
+        this.renderOnDashboard = renderOnDashboard;
+        this.renderInCSV = renderInCSV;
 
+        this.additionalFields = new HashMap<>();
+    }
+
+    public ReportColumnDto withAdditionalField(String key, String value) {
         additionalFields.put(key, value);
         return this;
     }

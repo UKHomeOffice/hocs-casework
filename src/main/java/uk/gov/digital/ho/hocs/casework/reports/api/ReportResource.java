@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import uk.gov.digital.ho.hocs.casework.application.LogEvent;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.reports.api.dto.ReportMetadataDto;
 import uk.gov.digital.ho.hocs.casework.reports.domain.CaseType;
 import uk.gov.digital.ho.hocs.casework.reports.factory.ReportFactory;
@@ -47,6 +49,15 @@ public class ReportResource {
     ResponseEntity<StreamingResponseBody> getReport(@PathVariable CaseType caseType, @PathVariable String slug) {
         Report<?> report = reportFactory.getReportForSlug(slug);
 
+        if(!report.getAvailableCaseTypes().contains(caseType)) {
+            throw new ApplicationExceptions.ReportCaseTypeNotSupportedException(
+                "The \"%s\" report does not support the \"%s\" case type",
+                LogEvent.REPORT_RESOURCE_UNSUPPORTED_CASE_TYPE,
+                report.getDisplayName(),
+                caseType
+            );
+        }
+
         StreamingResponseBody body = outputStream -> {
             JsonFactory factory = new JsonFactory();
             JsonGenerator generator = factory.createGenerator(outputStream, JsonEncoding.UTF8);
@@ -62,7 +73,13 @@ public class ReportResource {
                     try {
                         generator.writeObject(row);
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        throw new ApplicationExceptions.ReportBodyStreamingException(
+                            "Failed to write streaming response body for slug: \"%s\", caseType:\"%s\", cause: \"%s\"",
+                            LogEvent.REPORT_RESOURCE_FAILED_TO_STREAM_BODY,
+                            slug,
+                            caseType,
+                            e.getMessage()
+                        );
                     }
                 });
 

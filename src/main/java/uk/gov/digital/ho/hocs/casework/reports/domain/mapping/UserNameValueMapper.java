@@ -39,7 +39,7 @@ public class UserNameValueMapper implements ReportValueMapper<UUID, String> {
             return formatUsername(user);
         } catch (Exception e) {
             log.warn("Failed to fetch user with UUID {}", userUUID, REPORT_MAPPER_USER_CACHE_ERROR);
-            return null;
+            return userUUID.toString();
         }
     }
 

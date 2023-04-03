@@ -138,7 +138,7 @@ public class InfoClient {
         return teams;
     }
 
-    @Cacheable(value = "InfoClientGetTeamForUUID", unless = "#result.size() == 0", key = "#teamUUID")
+    @Cacheable(value = "InfoClientGetTeamForUUID", unless = "#result == null", key = "#teamUUID")
     public TeamDto getTeamByUUID(UUID teamUUID) {
         TeamDto team = restHelper.get(serviceBaseURL, String.format("/team/%s", teamUUID), TeamDto.class);
         log.info("Got team TeamUUID {}", teamUUID, value(EVENT, INFO_CLIENT_GET_TEAM_BY_UUID_SUCCESS));

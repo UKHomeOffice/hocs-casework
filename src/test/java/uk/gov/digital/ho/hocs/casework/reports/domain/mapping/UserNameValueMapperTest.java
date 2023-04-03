@@ -94,7 +94,7 @@ public class UserNameValueMapperTest {
         UserNameValueMapper underTest = new UserNameValueMapper(infoClient);
         Optional<String> mappedName = underTest.map(USER_ID_MISSING);
 
-        assertThat(mappedName).isEqualTo(Optional.empty());
+        assertThat(mappedName).isEqualTo(Optional.of(USER_ID_MISSING.toString()));
         verify(infoClient).getUser(USER_ID_MISSING);
     }
 

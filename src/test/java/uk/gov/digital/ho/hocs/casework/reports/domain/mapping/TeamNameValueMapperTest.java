@@ -74,7 +74,7 @@ public class TeamNameValueMapperTest {
         TeamNameValueMapper underTest = new TeamNameValueMapper(infoClient);
         Optional<String> mappedName = underTest.map(TEAM_ID_MISSING);
 
-        assertThat(mappedName).isEqualTo(Optional.empty());
+        assertThat(mappedName).isEqualTo(Optional.of(TEAM_ID_MISSING.toString()));
         verify(infoClient).getTeamByUUID(TEAM_ID_MISSING);
     }
 

@@ -74,7 +74,7 @@ public class StageNameValueMapperTest {
         StageNameValueMapper underTest = new StageNameValueMapper(infoClient);
         Optional<String> mappedName = underTest.map(STAGE_NAME_MISSING);
 
-        assertThat(mappedName).isEqualTo(Optional.empty());
+        assertThat(mappedName).isEqualTo(Optional.of(STAGE_NAME_MISSING));
         verify(infoClient).getStageTypeByTypeString(STAGE_NAME_MISSING);
     }
 

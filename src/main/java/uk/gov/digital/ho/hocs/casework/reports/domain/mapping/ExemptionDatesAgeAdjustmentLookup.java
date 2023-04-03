@@ -59,7 +59,6 @@ public class ExemptionDatesAgeAdjustmentLookup {
 
     public int getExemptionDatesForCaseTypeBetween(String caseType, LocalDate fromDate, LocalDate toDate) {
         if (!exceptionDatesByCaseType.containsKey(caseType)) {
-
             log.warn("No cached exemption dates for case type {}", caseType,
                 value(EVENT, REPORT_MAPPER_EXEMPTION_DATE_CACHE_ERROR)
                     );
