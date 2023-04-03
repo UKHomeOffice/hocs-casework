@@ -49,6 +49,8 @@ public class TeamNameValueMapperTest {
         givenInfoServiceTeams();
 
         TeamNameValueMapper underTest = new TeamNameValueMapper(infoClient);
+        underTest.refreshCache();
+
         Optional<String> mappedName = underTest.map(TEAM_ID_IN_CACHE);
 
         assertThat(mappedName).isEqualTo(Optional.of("In Cache"));

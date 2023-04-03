@@ -1,7 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.reports.domain.mapping;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.reports.domain.reports.OpenCasesData;
@@ -20,7 +19,6 @@ public class OpenCasesDataMapper {
 
     private final ExemptionDatesAgeAdjustmentLookup exemptionDatesAgeAdjustmentLookup;
 
-    @Autowired
     public OpenCasesDataMapper(
         UserNameValueMapper userNameValueMapper,
         TeamNameValueMapper teamNameValueMapper,

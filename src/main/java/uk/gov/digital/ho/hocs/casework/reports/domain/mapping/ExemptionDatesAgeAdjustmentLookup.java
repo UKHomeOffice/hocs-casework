@@ -1,7 +1,10 @@
 package uk.gov.digital.ho.hocs.casework.reports.domain.mapping;
 
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -21,7 +24,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REPORT_MAPPER
 @Slf4j
 @Service
 @Profile("reports")
-public class ExemptionDatesAgeAdjustmentLookup {
+public class ExemptionDatesAgeAdjustmentLookup implements ApplicationListener<ContextRefreshedEvent> {
 
     private final InfoClient infoServiceClient;
 
@@ -32,7 +35,10 @@ public class ExemptionDatesAgeAdjustmentLookup {
     public ExemptionDatesAgeAdjustmentLookup(InfoClient infoServiceClient, Clock clock) {
         this.infoServiceClient = infoServiceClient;
         this.clock = clock;
+    }
 
+    @Override
+    public void onApplicationEvent(@NonNull ContextRefreshedEvent contextRefreshedEvent) {
         refreshCache();
     }
 

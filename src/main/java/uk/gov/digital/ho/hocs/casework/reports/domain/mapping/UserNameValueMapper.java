@@ -2,9 +2,11 @@ package uk.gov.digital.ho.hocs.casework.reports.domain.mapping;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.UserDto;
@@ -20,16 +22,20 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REPORT_MAPPER
 @Slf4j
 @Service
 @Profile("reports")
-public class UserNameValueMapper implements ReportValueMapper<UUID, String> {
+public class UserNameValueMapper
+    implements ReportValueMapper<UUID, String>, ApplicationListener<ContextRefreshedEvent> {
 
     private final InfoClient infoServiceClient;
 
     private final LoadingCache<UUID, String> uuidToUserNameCache;
 
-    @Autowired
     public UserNameValueMapper(InfoClient infoServiceClient) {
         this.infoServiceClient = infoServiceClient;
         this.uuidToUserNameCache = Caffeine.newBuilder().build(this::fetchUserNameByUUID);
+    }
+
+    @Override
+    public void onApplicationEvent(@NonNull ContextRefreshedEvent contextRefreshedEvent) {
         refreshCache();
     }
 
@@ -53,8 +59,9 @@ public class UserNameValueMapper implements ReportValueMapper<UUID, String> {
     public void refreshCache() {
         log.info("Refreshing cache", value(EVENT, REPORT_MAPPER_USER_CACHE_REFRESH));
         uuidToUserNameCache.invalidateAll();
-        infoServiceClient.getAllUsers()
-                         .forEach(user -> uuidToUserNameCache.put(UUID.fromString(user.getId()), formatUsername(user)));
+        infoServiceClient
+            .getAllUsers()
+            .forEach(user -> uuidToUserNameCache.put(UUID.fromString(user.getId()), formatUsername(user)));
     }
 
     @Override

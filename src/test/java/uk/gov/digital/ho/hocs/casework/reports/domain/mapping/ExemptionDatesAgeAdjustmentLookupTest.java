@@ -15,7 +15,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ExemptionDatesAgeAdjustmentLookupTest {
@@ -57,6 +59,7 @@ public class ExemptionDatesAgeAdjustmentLookupTest {
     public void whenQueryingExemptionDatesSinceADate_thenTheExpectedCountForTheCaseTypeIsReturned() {
         givenExampleExemptionDates();
         ExemptionDatesAgeAdjustmentLookup underTest = new ExemptionDatesAgeAdjustmentLookup(infoClient, clock);
+        underTest.refreshCache();
 
         assertThat(underTest.getExemptionDatesForCaseTypeSince(COMP, LocalDate.of(2022, 12, 1))).isEqualTo(3);
         assertThat(underTest.getExemptionDatesForCaseTypeSince(OTHER, LocalDate.of(2022, 12, 1))).isEqualTo( 2);
@@ -70,6 +73,7 @@ public class ExemptionDatesAgeAdjustmentLookupTest {
     public void whenQueryingExemptionDatesInARange_thenTheExpectedCountForTheCaseTypeIsReturned() {
         givenExampleExemptionDates();
         ExemptionDatesAgeAdjustmentLookup underTest = new ExemptionDatesAgeAdjustmentLookup(infoClient, clock);
+        underTest.refreshCache();
 
         assertThat(underTest.getExemptionDatesForCaseTypeBetween(
             COMP, LocalDate.of(2022, 12, 1), LocalDate.of(2023, 1, 31))).isEqualTo(3);
@@ -90,6 +94,7 @@ public class ExemptionDatesAgeAdjustmentLookupTest {
     public void whenQueryingAnUncachedCaseType_theDatesAreLookedUpAndCached() {
         givenExampleExemptionDates();
         ExemptionDatesAgeAdjustmentLookup underTest = new ExemptionDatesAgeAdjustmentLookup(infoClient, clock);
+        underTest.refreshCache();
 
         verify(infoClient, times(0)).getExemptionDatesForType(UNCACHED);
 

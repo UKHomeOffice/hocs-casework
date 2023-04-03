@@ -59,6 +59,8 @@ public class UserNameValueMapperTest {
         givenInfoServiceUsers();
 
         UserNameValueMapper underTest = new UserNameValueMapper(infoClient);
+        underTest.refreshCache();
+
         Optional<String> mappedName = underTest.map(USER_ID_ALL_DETAILS);
 
         assertThat(mappedName).isEqualTo(Optional.of("Firstname Surname"));
@@ -70,6 +72,8 @@ public class UserNameValueMapperTest {
         givenInfoServiceUsers();
 
         UserNameValueMapper underTest = new UserNameValueMapper(infoClient);
+        underTest.refreshCache();
+
         Optional<String> mappedName = underTest.map(USER_ID_ONLY_USERNAME);
 
         assertThat(mappedName).isEqualTo(Optional.of("username_only"));

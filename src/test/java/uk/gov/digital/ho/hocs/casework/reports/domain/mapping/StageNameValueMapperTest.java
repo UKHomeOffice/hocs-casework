@@ -49,6 +49,8 @@ public class StageNameValueMapperTest {
         givenInfoServiceStageTypes();
 
         StageNameValueMapper underTest = new StageNameValueMapper(infoClient);
+        underTest.refreshCache();
+
         Optional<String> mappedName = underTest.map(STAGE_NAME_IN_CACHE);
 
         assertThat(mappedName).isEqualTo(Optional.of("In Cache"));

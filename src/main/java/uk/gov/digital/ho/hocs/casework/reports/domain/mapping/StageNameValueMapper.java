@@ -2,9 +2,11 @@ package uk.gov.digital.ho.hocs.casework.reports.domain.mapping;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Profile;
+import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.StageTypeDto;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
@@ -19,16 +21,20 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REPORT_MAPPER
 @Slf4j
 @Service
 @Profile("reports")
-public class StageNameValueMapper implements ReportValueMapper<String, String> {
+public class StageNameValueMapper
+    implements ReportValueMapper<String, String>, ApplicationListener<ContextRefreshedEvent> {
 
     private final InfoClient infoServiceClient;
 
     private final LoadingCache<String, String> uuidToStageNameCache;
 
-    @Autowired
     public StageNameValueMapper(InfoClient infoServiceClient) {
         this.infoServiceClient = infoServiceClient;
         this.uuidToStageNameCache = Caffeine.newBuilder().build(this::fetchStageNameByUUID);
+    }
+
+    @Override
+    public void onApplicationEvent(@NonNull ContextRefreshedEvent contextRefreshedEvent) {
         refreshCache();
     }
 
@@ -48,8 +54,9 @@ public class StageNameValueMapper implements ReportValueMapper<String, String> {
     public void refreshCache() {
         log.info("Refreshing cache", value(EVENT, REPORT_MAPPER_STAGE_CACHE_REFRESH));
         uuidToStageNameCache.invalidateAll();
-        infoServiceClient.getAllStageTypes()
-                         .forEach(stageType -> uuidToStageNameCache.put(stageType.getType(), stageType.getDisplayName()));
+        infoServiceClient
+            .getAllStageTypes()
+            .forEach(stageType -> uuidToStageNameCache.put(stageType.getType(), stageType.getDisplayName()));
     }
 
     @Override
