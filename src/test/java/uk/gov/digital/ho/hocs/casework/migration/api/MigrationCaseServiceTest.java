@@ -61,7 +61,7 @@ public class MigrationCaseServiceTest {
         originalReceivedDate = LocalDate.parse("2020-02-01");
         data = Collections.emptyMap();
         caseData = new CaseData(1L, UUID.randomUUID(), LocalDateTime.now(), "COMP", null, false, data, null,
-            null, null, null, LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(10), false, null, null);
+            null, null, null, LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(10), false, null, null, null);
         stage = new Stage(caseData.getUuid(), STAGE_TYPE, null, null, null);
     }
 

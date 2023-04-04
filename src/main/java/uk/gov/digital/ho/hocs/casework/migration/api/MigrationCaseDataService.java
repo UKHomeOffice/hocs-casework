@@ -18,6 +18,7 @@ import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorre
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -109,6 +110,7 @@ public class MigrationCaseDataService {
         LocalDate deadline = LocalDate.now();
         caseData.setCaseDeadline(deadline);
         caseData.setCompleted(true);
+        caseData.setDateCompleted(LocalDateTime.now());
         caseDataRepository.save(caseData);
         migrationAuditClient.createCaseAudit(caseData);
         migrationAuditClient.completeCaseAudit(caseData);

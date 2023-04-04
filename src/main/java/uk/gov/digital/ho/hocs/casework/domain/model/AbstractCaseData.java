@@ -101,6 +101,11 @@ public class AbstractCaseData implements Serializable {
     @Column(name = "completed")
     private boolean completed;
 
+    @Setter
+    @Getter
+    @Column(name = "date_completed")
+    private LocalDateTime dateCompleted;
+
     @Getter
     @Setter
     @OneToMany(fetch = FetchType.LAZY)

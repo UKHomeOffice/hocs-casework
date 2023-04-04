@@ -66,7 +66,7 @@ public class CopyCompToComp2Test {
             COUNTRY).build(), TELEPHONE, EMAIL, REFERENCE, EXTERNAL_KEY);
 
     private static final CaseData FROM_CASE = new CaseData(1L, FROM_CASE_UUID, null, null, null, false, FROM_CLOB, null,
-        null, PRIMARY_CORRESPONDENT.getUuid(), PRIMARY_CORRESPONDENT, null, null, null, false, null, null);
+        null, PRIMARY_CORRESPONDENT.getUuid(), PRIMARY_CORRESPONDENT, null, null, null, false, null, null, null);
 
     @Mock
     private CaseDataService caseDataService;
@@ -79,7 +79,7 @@ public class CopyCompToComp2Test {
     @Before
     public void setUp() {
         toCase = new CaseData(2L, TO_CASE_UUID, null, null, null, false, new HashMap<>(Map.of()), null, null, UUID.randomUUID(),
-            null, null, null, null, false, null, null);
+            null, null, null, null, false, null, null, null);
     }
 
     @Test
@@ -108,7 +108,7 @@ public class CopyCompToComp2Test {
         var compToComp2 = new CopyCompToComp2(caseDataService, correspondentService);
 
         toCase = new CaseData(2L, TO_CASE_UUID, null, null, null, false, new HashMap<>(Map.of()), null, null, null,
-            null, null, null, null, false, null, null);
+            null, null, null, null, false, null, null, null);
 
         // when
         compToComp2.copyCase(FROM_CASE, toCase);
