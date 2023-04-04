@@ -117,17 +117,23 @@ public class MigrationCaseDataServiceTest {
     @Test
     public void shouldCreatedAPrimaryCorrespondent() {
         // given
-        CaseData caseData = new CaseData();
+        Set<Correspondent> correspondents = new HashSet<>();
+        Correspondent correspondent = createCorrespondent();
+        correspondents.add(correspondent);
+
+        CaseData caseData = mock(CaseData.class);
+        when(caseData.getUuid()).thenReturn(UUID.randomUUID());
+        doNothing().when(caseData).setPrimaryCorrespondentUUID(correspondent.getUuid());
         when(caseDataRepository.findActiveByUuid(any())).thenReturn(caseData);
 
-        Set<Correspondent> correspondents = new HashSet<>();
-        correspondents.add(createCorrespondent());
-        when(correspondentRepository.findAllByCaseUUID(any())).thenReturn(correspondents);
+
+        when(correspondentRepository.findAllByCaseUUID(caseData.getUuid())).thenReturn(correspondents);
 
         // when
-        migrationCaseDataService.createPrimaryCorrespondent(createMigrationComplaintCorrespondent(), UUID.randomUUID(), UUID.randomUUID());
+        migrationCaseDataService.createPrimaryCorrespondent(createMigrationComplaintCorrespondent(), caseData.getUuid(), UUID.randomUUID());
 
         //then
+        verify(caseData, times(1)).setPrimaryCorrespondentUUID(correspondent.getUuid());
         verify(correspondentRepository, times(1)).save(any());
         verify(caseDataRepository, times(1)).save(any());
     }

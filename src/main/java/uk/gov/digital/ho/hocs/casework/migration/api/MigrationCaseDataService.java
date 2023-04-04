@@ -131,7 +131,7 @@ public class MigrationCaseDataService {
             if (caseCorrespondents.size()==1) {
                 updatePrimaryCorrespondent(caseUUID,
                     stageUUID,
-                    caseCorrespondents.stream().findFirst().get().getCaseUUID());
+                    caseCorrespondents.stream().findFirst().get().getUuid());
             }
 
         } catch(DataIntegrityViolationException e) {
