@@ -89,6 +89,18 @@
       },
       {
         "component": "hidden",
+        "props" : {
+          "choices" : [
+            {
+              "label" : "Service",
+              "value" : "Service"
+            },
+            {
+              "label": "Serious misconduct",
+              "value": "SeriousMisconduct"
+            }
+          ]
+        },
         "name": "CompType",
         "label": "Complaint type"
       }
