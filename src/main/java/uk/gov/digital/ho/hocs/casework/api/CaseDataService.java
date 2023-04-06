@@ -40,6 +40,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.StageRepository;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -574,9 +575,14 @@ public class CaseDataService {
     }
 
     void completeCase(UUID caseUUID, boolean completed) {
+        completeCase(caseUUID, completed, completed ? LocalDateTime.now() : null);
+    }
+
+    void completeCase(UUID caseUUID, boolean completed, LocalDateTime dateCompleted) {
         log.debug("Updating completed status Case: {} completed {}", caseUUID, completed);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setCompleted(completed);
+        caseData.setDateCompleted(dateCompleted);
 
         // Complete final stage if active stage exists
         Optional<Stage> maybeFinalStage = stageRepository.findFirstByTeamUUIDIsNotNullAndCaseUUID(caseUUID);

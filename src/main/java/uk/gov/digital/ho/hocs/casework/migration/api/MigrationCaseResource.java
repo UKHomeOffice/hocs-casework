@@ -5,9 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseResponse;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseAttachmentRequest;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseRequest;
-import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseResponse;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCorrespondentRequest;
 
 @RestController
 @Slf4j
@@ -19,16 +20,25 @@ public class MigrationCaseResource {
         this.migrationCaseService = migrationCaseService;
     }
 
-    @PostMapping(value = "/migrate")
-    public ResponseEntity<CreateCaseResponse> createMigrationCase(@RequestBody CreateMigrationCaseRequest request) {
-        CaseData caseData = migrationCaseService.createMigrationCase(
+    @PostMapping(value = "/migrate/case")
+    public ResponseEntity<CreateMigrationCaseResponse> createMigrationCase(@RequestBody CreateMigrationCaseRequest request) {
+        CreateMigrationCaseResponse response = migrationCaseService.createMigrationCase(
             request.getType(),
             request.getStageType(),
             request.getData(),
-            request.getDateReceived(),
+            request.getDateReceived());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(value = "/migrate/correspondent")
+    public ResponseEntity createMigrationCorrespondent(@RequestBody CreateMigrationCorrespondentRequest request) {
+        migrationCaseService.createCorrespondents(
+            request.getCaseId(),
+            request.getStageId(),
             request.getPrimaryCorrespondent(),
-            request.getAdditionalCorrespondents(),
-            request.getAttachments());
-        return ResponseEntity.ok(CreateCaseResponse.from(caseData));
+            request.getAdditionalCorrespondents());
+
+        return ResponseEntity.ok().build();
     }
 }

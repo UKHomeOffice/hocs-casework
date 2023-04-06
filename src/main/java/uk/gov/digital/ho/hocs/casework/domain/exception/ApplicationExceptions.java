@@ -156,4 +156,42 @@ public interface ApplicationExceptions {
 
     }
 
+    class ReportBodyStreamingException extends RuntimeException {
+
+        private final LogEvent event;
+        private final LogEvent exception;
+
+        public ReportBodyStreamingException(String msg, LogEvent event, Object... args) {
+            super(String.format(msg, args));
+            this.event = event;
+            this.exception = null;
+        }
+
+        public LogEvent getEvent() {
+            return event;
+        }
+
+        public LogEvent getException() {return exception;}
+
+    }
+
+    class ReportCaseTypeNotSupportedException extends RuntimeException {
+
+        private final LogEvent event;
+        private final LogEvent exception;
+
+        public ReportCaseTypeNotSupportedException(String msg, LogEvent event, Object... args) {
+            super(String.format(msg, args));
+            this.event = event;
+            this.exception = null;
+        }
+
+        public LogEvent getEvent() {
+            return event;
+        }
+
+        public LogEvent getException() {return exception;}
+
+    }
+
 }

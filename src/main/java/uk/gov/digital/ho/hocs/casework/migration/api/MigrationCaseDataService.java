@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
-import uk.gov.digital.ho.hocs.casework.client.documentclient.dto.CreateCaseworkDocumentRequest;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
@@ -15,11 +14,11 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
-import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -76,6 +75,7 @@ public class MigrationCaseDataService {
         return caseData;
     }
 
+    @Transactional
     public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
         if (data==null) {
             log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID,
@@ -85,6 +85,7 @@ public class MigrationCaseDataService {
         updateCaseData(getCaseData(caseUUID), stageUUID, data);
     }
 
+    @Transactional
     public void updateCaseData(CaseData caseData, UUID stageUUID, Map<String, String> data) {
         log.debug("Updating data for Case: {}", caseData.getUuid());
         if (data==null) {
@@ -109,12 +110,14 @@ public class MigrationCaseDataService {
         LocalDate deadline = LocalDate.now();
         caseData.setCaseDeadline(deadline);
         caseData.setCompleted(true);
+        caseData.setDateCompleted(LocalDateTime.now());
         caseDataRepository.save(caseData);
         migrationAuditClient.createCaseAudit(caseData);
         migrationAuditClient.completeCaseAudit(caseData);
         return caseData;
     }
 
+    @Transactional
     void createPrimaryCorrespondent(MigrationComplaintCorrespondent primaryCorrespondent, UUID caseUUID, UUID stageUUID) {
         log.debug("Creating Correspondent of Type: {} for Migrated Case: {}", primaryCorrespondent.getCorrespondentType(), caseUUID);
         Correspondent correspondent = getCorrespondent(primaryCorrespondent, caseUUID);
@@ -128,7 +131,7 @@ public class MigrationCaseDataService {
             if (caseCorrespondents.size()==1) {
                 updatePrimaryCorrespondent(caseUUID,
                     stageUUID,
-                    caseCorrespondents.stream().findFirst().get().getCaseUUID());
+                    caseCorrespondents.stream().findFirst().get().getUuid());
             }
 
         } catch(DataIntegrityViolationException e) {
@@ -140,6 +143,7 @@ public class MigrationCaseDataService {
             value(EVENT, CORRESPONDENT_CREATED));
     }
 
+    @Transactional
     public void updatePrimaryCorrespondent(UUID caseUUID, UUID stageUUID, UUID primaryCorrespondentUUID) {
         log.debug("Updating Primary Correspondent for Migrated Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID);
         CaseData caseData = getCaseData(caseUUID);
@@ -150,6 +154,7 @@ public class MigrationCaseDataService {
             value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
     }
 
+    @Transactional
     void createAdditionalCorrespondent(List<MigrationComplaintCorrespondent> additionalCorrespondents, UUID caseUUID, UUID stageUUID) {
         for (MigrationComplaintCorrespondent additionalCorrespondent : additionalCorrespondents) {
             log.debug("Creating Additional Correspondent of Type: {} for Migrated Case: {}", additionalCorrespondent.getCorrespondentType(), caseUUID);
@@ -166,18 +171,6 @@ public class MigrationCaseDataService {
             }
             log.info("Created Correspondent: {} for Migrated Case: {}", correspondent.getUuid(), caseUUID,
                 value(EVENT, CORRESPONDENT_CREATED));
-        }
-    }
-
-    void createCaseAttachments(UUID caseId, List<CaseAttachment> caseAttachemnts) {
-        for(CaseAttachment attachment : caseAttachemnts) {
-            CreateCaseworkDocumentRequest document =
-                new CreateCaseworkDocumentRequest(
-                    attachment.getDisplayName(),
-                    attachment.getType(),
-                    attachment.getDocumentPath(),
-                    caseId);
-            documentClient.createDocument(caseId, document);
         }
     }
 

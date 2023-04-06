@@ -124,6 +124,18 @@ public class RestResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), CONFLICT);
     }
 
+    @ExceptionHandler(ApplicationExceptions.ReportBodyStreamingException.class)
+    public ResponseEntity<String> handle(ApplicationExceptions.ReportBodyStreamingException e) {
+        log.error("ReportBodyStreamingException: {}", e.getMessage(), value(EVENT, INTERNAL_SERVER_ERROR));
+        return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler(ApplicationExceptions.ReportCaseTypeNotSupportedException.class)
+    public ResponseEntity<String> handle(ApplicationExceptions.ReportCaseTypeNotSupportedException e) {
+        log.warn("ReportCaseTypeNotSupportedException: {}", e.getMessage(), value(EVENT, NOT_FOUND));
+        return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity handle(Exception e) {
         Writer stackTraceWriter = new StringWriter();

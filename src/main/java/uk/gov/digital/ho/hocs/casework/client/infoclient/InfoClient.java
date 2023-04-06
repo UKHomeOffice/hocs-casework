@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.client.infoclient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Component;
@@ -24,9 +23,10 @@ import java.util.Set;
 import java.util.UUID;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TYPE_TEMPLATE_CACHE_INVALIDATED;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EVENT;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.EXCEPTION;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_ALL_STAGE_TYPES;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_ALL_USERS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPES_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPE_SHORT_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_CASE_TYPE_SUCCESS;
@@ -36,9 +36,11 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_G
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_ENTITY_BY_SIMPLE_NAME;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_ENTITY_LIST;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_PROFILE_BY_CASE_TYPE_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_STAGE_TYPE_BY_TYPE_STRING;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_STANDARD_LINE_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEAMS_SUCCESS;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEAM_BY_UUID_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEAM_FOR_STAGE_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TEMPLATE_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_TOPIC_SUCCESS;
@@ -46,7 +48,6 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_G
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USERS_FOR_TEAM_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.INFO_CLIENT_GET_USER_SUCCESS;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.MISSING_TEAM_FOR_STAGE;
-import static uk.gov.digital.ho.hocs.casework.application.LogEvent.TOPIC_STANDARD_LINE_CACHE_INVALIDATED;
 
 @Slf4j
 @Component
@@ -124,7 +125,7 @@ public class InfoClient {
 
     public List<TemplateDto> getTemplates(String caseType) {
         List<TemplateDto> templates = restHelper.get(serviceBaseURL, String.format("/caseType/%s/templates", caseType),
-            new ParameterizedTypeReference<List<TemplateDto>>() {});
+            new ParameterizedTypeReference<>() {});
         log.info("Got Templates {} for CaseType {}, event {}", templates.size(), caseType,
             value(EVENT, INFO_CLIENT_GET_TEMPLATE_SUCCESS));
         return templates;
@@ -132,16 +133,23 @@ public class InfoClient {
 
     @Cacheable(value = "InfoClientGetTeams", unless = "#result.size() == 0")
     public Set<TeamDto> getTeams() {
-        Set<TeamDto> teams = restHelper.get(serviceBaseURL, "/team", new ParameterizedTypeReference<Set<TeamDto>>() {});
+        Set<TeamDto> teams = restHelper.get(serviceBaseURL, "/team", new ParameterizedTypeReference<>() {});
         log.info("Got {} teams", teams.size(), value(EVENT, INFO_CLIENT_GET_TEAMS_SUCCESS));
         return teams;
+    }
+
+    @Cacheable(value = "InfoClientGetTeamForUUID", unless = "#result == null", key = "#teamUUID")
+    public TeamDto getTeamByUUID(UUID teamUUID) {
+        TeamDto team = restHelper.get(serviceBaseURL, String.format("/team/%s", teamUUID), TeamDto.class);
+        log.info("Got team TeamUUID {}", teamUUID, value(EVENT, INFO_CLIENT_GET_TEAM_BY_UUID_SUCCESS));
+        return team;
     }
 
     @Cacheable(value = "InfoClientGetTeamForStageType", unless = "#result == null", key = "#stageType")
     public TeamDto getTeamForStageType(String stageType) {
         TeamDto response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/team", stageType),
             TeamDto.class);
-        if (response==null) {
+        if (response == null) {
             String msg = String.format("There is no team defined for stage type: %s", stageType);
             log.error(msg, value(EXCEPTION, MISSING_TEAM_FOR_STAGE));
             throw new ApplicationExceptions.TeamAllocationException(msg, LogEvent.MISSING_TEAM_FOR_STAGE);
@@ -163,9 +171,25 @@ public class InfoClient {
     @Cacheable(value = "InfoAllSomuTypesForCaseTypeRequest", unless = "#result.size() == 0", key = "#caseType")
     public Set<SomuTypeDto> getAllSomuTypesForCaseType(String caseType) {
         Set<SomuTypeDto> response = restHelper.get(serviceBaseURL, String.format("/somuType/%s", caseType),
-            new ParameterizedTypeReference<Set<SomuTypeDto>>() {});
+            new ParameterizedTypeReference<>() {});
         log.info("Got {} case summary fields for CaseType {}", response.size(), caseType,
             value(EVENT, INFO_CLIENT_GET_SUMMARY_FIELDS_SUCCESS));
+        return response;
+    }
+
+    @Cacheable(value = "InfoClientGetAllStages", unless = "#result.size() == 0")
+    public Set<StageTypeDto> getAllStageTypes() {
+        Set<StageTypeDto> response = restHelper.get(serviceBaseURL, "/stageType",
+            new ParameterizedTypeReference<>() {});
+        log.info("Got {} stage types", response.size(), value(EVENT, INFO_CLIENT_GET_ALL_STAGE_TYPES));
+        return response;
+    }
+
+    @Cacheable(value = "InfoClientGetStageTypeByTypeString", unless = "#result == null", key = "#typeString")
+    public StageTypeDto getStageTypeByTypeString(String typeString) {
+        StageTypeDto response = restHelper.get(serviceBaseURL, String.format("/stageType/type/%s", typeString), StageTypeDto.class);
+
+        log.info("Got stage type {}", typeString, value(EVENT, INFO_CLIENT_GET_STAGE_TYPE_BY_TYPE_STRING));
         return response;
     }
 
@@ -182,7 +206,7 @@ public class InfoClient {
     @Cacheable(value = "InfoClientGetStageContributions", unless = "#result == null", key = "{#stageType}")
     public Boolean getStageContributions(String stageType) {
         Boolean response = restHelper.get(serviceBaseURL, String.format("/stageType/%s/contributions", stageType),
-            new ParameterizedTypeReference<Boolean>() {});
+            new ParameterizedTypeReference<>() {});
         log.info("Got {} as contributions for StageType {}", response.toString(), stageType,
             value(EVENT, INFO_CLIENT_GET_CONTRIBUTIONS_SUCCESS));
         return response;
@@ -203,11 +227,17 @@ public class InfoClient {
         return userDto;
     }
 
+    @Cacheable(value = "InfoClientGetUsers", unless = "#result == null || #result.size() == 0")
+    public Set<UserDto> getAllUsers() {
+        Set<UserDto> userDtos = restHelper.get(serviceBaseURL, "/users", new ParameterizedTypeReference<>() {});
+        log.info("Got {} users", userDtos.size(), value(EVENT, INFO_CLIENT_GET_ALL_USERS));
+        return userDtos;
+    }
+
     @Cacheable(value = "InfoClientGetEntityListDtos", unless = "#result == null", key = "#listName")
     public List<EntityDto<EntityTotalDto>> getEntityListTotals(String listName) {
         List<EntityDto<EntityTotalDto>> entityListDtos = restHelper.get(serviceBaseURL,
-            String.format("/entity/list/%s", listName),
-            new ParameterizedTypeReference<List<EntityDto<EntityTotalDto>>>() {});
+            String.format("/entity/list/%s", listName), new ParameterizedTypeReference<>() {});
         log.info("Got Entity List By List Name {} ", value(EVENT, INFO_CLIENT_GET_ENTITY_LIST));
         return entityListDtos;
     }
@@ -238,7 +268,7 @@ public class InfoClient {
 
     public List<UserDto> getUsersForTeam(UUID teamUUID) {
         List<UserDto> response = restHelper.get(serviceBaseURL, String.format("/teams/%s/members", teamUUID),
-            new ParameterizedTypeReference<List<UserDto>>() {});
+            new ParameterizedTypeReference<>() {});
         log.info("Got {} users for team {}", response.size(), teamUUID,
             value(EVENT, INFO_CLIENT_GET_USERS_FOR_TEAM_SUCCESS));
         return response;
@@ -246,8 +276,7 @@ public class InfoClient {
 
     public List<UserDto> getUsersForTeamByStage(UUID caseUUID, UUID stageUUID) {
         List<UserDto> response = restHelper.get(serviceBaseURL,
-            String.format("/case/%s/stage/%s/team/members", caseUUID, stageUUID),
-            new ParameterizedTypeReference<List<UserDto>>() {});
+            String.format("/case/%s/stage/%s/team/members", caseUUID, stageUUID), new ParameterizedTypeReference<>() {});
         log.info("Got {} default users by stage {}", response.size(), stageUUID,
             value(EVENT, INFO_CLIENT_GET_DEFAULT_USERS_FOR_STAGE_SUCCESS));
         return response;

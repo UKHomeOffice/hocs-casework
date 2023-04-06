@@ -9,7 +9,6 @@ import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
-import uk.gov.digital.ho.hocs.casework.client.documentclient.dto.CreateCaseworkDocumentRequest;
 import uk.gov.digital.ho.hocs.casework.client.infoclient.InfoClient;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
@@ -17,7 +16,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
-import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CorrespondentType;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
@@ -119,17 +117,23 @@ public class MigrationCaseDataServiceTest {
     @Test
     public void shouldCreatedAPrimaryCorrespondent() {
         // given
-        CaseData caseData = new CaseData();
+        Set<Correspondent> correspondents = new HashSet<>();
+        Correspondent correspondent = createCorrespondent();
+        correspondents.add(correspondent);
+
+        CaseData caseData = mock(CaseData.class);
+        when(caseData.getUuid()).thenReturn(UUID.randomUUID());
+        doNothing().when(caseData).setPrimaryCorrespondentUUID(correspondent.getUuid());
         when(caseDataRepository.findActiveByUuid(any())).thenReturn(caseData);
 
-        Set<Correspondent> correspondents = new HashSet<>();
-        correspondents.add(createCorrespondent());
-        when(correspondentRepository.findAllByCaseUUID(any())).thenReturn(correspondents);
+
+        when(correspondentRepository.findAllByCaseUUID(caseData.getUuid())).thenReturn(correspondents);
 
         // when
-        migrationCaseDataService.createPrimaryCorrespondent(createMigrationComplaintCorrespondent(), UUID.randomUUID(), UUID.randomUUID());
+        migrationCaseDataService.createPrimaryCorrespondent(createMigrationComplaintCorrespondent(), caseData.getUuid(), UUID.randomUUID());
 
         //then
+        verify(caseData, times(1)).setPrimaryCorrespondentUUID(correspondent.getUuid());
         verify(correspondentRepository, times(1)).save(any());
         verify(caseDataRepository, times(1)).save(any());
     }
@@ -148,17 +152,6 @@ public class MigrationCaseDataServiceTest {
 
         //then
         verify(correspondentRepository, times(1)).save(any());
-    }
-
-    @Test()
-    public void shouldAddCaseAttachments() {
-        UUID caseId = UUID.randomUUID();
-        CaseAttachment caseAttachment1 = new CaseAttachment("","","");
-        CaseAttachment caseAttachment2 = new CaseAttachment("","","");
-        List<CaseAttachment> caseAttachments = new ArrayList<>(List.of(caseAttachment1,caseAttachment2));
-        migrationCaseDataService.createCaseAttachments(caseId, caseAttachments);
-
-        verify(documentClient, times(2)).createDocument(any(UUID.class), any(CreateCaseworkDocumentRequest.class));
     }
 
     MigrationComplaintCorrespondent createMigrationComplaintCorrespondent() {

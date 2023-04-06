@@ -403,7 +403,7 @@ public class StageRepositoryTest {
     }
 
     private Stage createActiveStageWithActiveCase() {
-        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("TEST", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         LocalDate caseReceived = LocalDate.now();
@@ -418,7 +418,7 @@ public class StageRepositoryTest {
     }
 
     private Stage createInactiveStageWithActiveCase() {
-        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("TEST", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         LocalDate caseReceived = LocalDate.now();
@@ -432,7 +432,7 @@ public class StageRepositoryTest {
     }
 
     private Stage createActiveStageWithDeletedCase() {
-        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
+        CaseDataType type = CaseDataTypeFactory.from("TEST", "a1");
         Long caseNumber = 1234L;
         Map<String, String> data = new HashMap<>();
         LocalDate caseReceived = LocalDate.now();
