@@ -95,6 +95,7 @@ import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_ALLOCATED_TO_USER;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_COMPLETED;
 import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.STAGE_RECREATED;
+import static uk.gov.digital.ho.hocs.casework.client.auditclient.EventType.CASE_REOPENED;
 
 @Service
 @Slf4j
@@ -162,8 +163,8 @@ public class CaseDataService {
         STAGE_ALLOCATED_TO_USER.toString(), CORRESPONDENT_DELETED.toString(), CORRESPONDENT_CREATED.toString(),
         CORRESPONDENT_UPDATED.toString(), DOCUMENT_CREATED.toString(), DOCUMENT_DELETED.toString(),
         APPEAL_UPDATED.toString(), APPEAL_CREATED.toString(), EXTENSION_APPLIED.toString(),
-        EXTERNAL_INTEREST_CREATED.toString(), EXTERNAL_INTEREST_UPDATED.toString(), DATA_FIELD_UPDATED.toString()
-
+        EXTERNAL_INTEREST_CREATED.toString(), EXTERNAL_INTEREST_UPDATED.toString(), DATA_FIELD_UPDATED.toString(),
+        CASE_REOPENED.toString()
                                                               );
 
     public CaseData getCase(UUID caseUUID) {
