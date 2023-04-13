@@ -93,7 +93,7 @@
     {
       "type": "date",
       "name": "ResponseDate",
-      "label": "Response date"
+      "label": "Response sent"
     },
     {
       "choices": "S_IEDET_BUS_AREA",
