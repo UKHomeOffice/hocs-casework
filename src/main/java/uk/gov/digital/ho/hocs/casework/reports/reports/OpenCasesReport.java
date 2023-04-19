@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 @Component
-@Profile("reports")
+@Profile("reporting")
 public class OpenCasesReport implements Report<OpenCasesRow> {
 
     private final OpenCasesRepository openCasesRepository;

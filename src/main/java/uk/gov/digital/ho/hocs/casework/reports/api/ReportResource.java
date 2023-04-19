@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@Profile("reports")
+@Profile("reporting")
 public class ReportResource {
 
     private final ReportFactory reportFactory;

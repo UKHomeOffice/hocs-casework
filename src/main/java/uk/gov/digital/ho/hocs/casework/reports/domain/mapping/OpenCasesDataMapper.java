@@ -8,7 +8,7 @@ import uk.gov.digital.ho.hocs.casework.reports.domain.reports.OpenCasesRow;
 
 @Service
 @Slf4j
-@Profile("reports")
+@Profile("reporting")
 public class OpenCasesDataMapper {
 
     private final UserNameValueMapper userNameValueMapper;
