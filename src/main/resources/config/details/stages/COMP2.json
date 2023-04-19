@@ -629,6 +629,24 @@
         "label": "Can your team respond to this complaint?"
       },
       {
+        "component": "text-area",
+        "name": "CaseNote_TriageTransfer",
+        "label": "Enter reason for transfer"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "CCH",
+              "value": "CCH"
+            }
+          ]
+        },
+        "name": "CctCompType",
+        "label": "Transfer to"
+      },
+      {
         "component": "radio",
         "props": {
           "choices": [
