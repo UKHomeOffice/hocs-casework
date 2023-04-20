@@ -427,13 +427,13 @@
           "visibilityConditions": [
             {
               "conditionPropertyName": "CompType",
-              "conditionPropertyValue": "Service misconduct"
+              "conditionPropertyValue": "Service"
             }
           ]
         },
         "component": "checkbox-group",
         "name": "CategoriesSerious",
-        "label": "Serious"
+        "label": "Serious misconduct"
       },
       {
         "props": {
