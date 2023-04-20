@@ -492,7 +492,7 @@ public class StageService {
         }
 
         for (StageWithCaseData stage : stages) {
-            stage.setTag(allCaseTags.getOrDefault(stage.getCaseUUID(), Collections.emptySet()));
+            stage.setTag(allCaseTags.getOrDefault(stage.getCaseUUID(), new HashSet<>()));
         }
     }
 
