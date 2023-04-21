@@ -1496,7 +1496,7 @@
           "choices": "S_COMP_CCT_BUS_AREA"
         },
         "name": "BusArea",
-        "label": "Business Area"
+        "label": "Business area"
       },
       {
         "component": "dropdown",
@@ -2104,7 +2104,7 @@
           ]
         },
         "name": "BusAreaBasedOnDirectorate",
-        "label": "Business Area"
+        "label": "Business area"
       },
       {
         "component": "dropdown",

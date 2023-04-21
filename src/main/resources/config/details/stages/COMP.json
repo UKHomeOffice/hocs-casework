@@ -769,7 +769,7 @@
           ]
         },
         "name": "BusAreaBasedOnDirectorate",
-        "label": "Business Area"
+        "label": "Business area"
       },
       {
         "component": "dropdown",
@@ -1643,7 +1643,7 @@
           ]
         },
         "name": "BusAreaBasedOnDirectorate",
-        "label": "Business Area"
+        "label": "Business area"
       },
       {
         "component": "dropdown",
@@ -2075,7 +2075,7 @@
           "choices": "S_COMP_CCT_BUS_AREA"
         },
         "name": "BusArea",
-        "label": "Business Area"
+        "label": "Business area"
       }
     ],
     "COMP_EXGRATIA_RESPONSE_DRAFT": [
@@ -2689,7 +2689,7 @@
           ]
         },
         "name": "BusAreaBasedOnDirectorate",
-        "label": "Business Area"
+        "label": "Business area"
       },
       {
         "component": "dropdown",
