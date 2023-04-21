@@ -21,7 +21,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.REPORT_MAPPER
 
 @Slf4j
 @Service
-@Profile("reports")
+@Profile("reporting")
 public class TeamNameValueMapper implements ReportValueMapper<UUID, String>, ApplicationListener<ContextRefreshedEvent> {
 
     private final InfoClient infoServiceClient;

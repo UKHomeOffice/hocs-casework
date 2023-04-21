@@ -56,7 +56,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @Sql(scripts = "classpath:reports/afterTest.sql",
      config = @SqlConfig(transactionMode = ISOLATED),
      executionPhase = AFTER_TEST_METHOD)
-@ActiveProfiles({ "local", "integration", "reports" })
+@ActiveProfiles({ "local", "integration", "reporting" })
 public class ReportResourceIntegrationTest {
 
     @TestConfiguration

@@ -17,7 +17,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-@ActiveProfiles("reports")
+@ActiveProfiles("reporting")
 public class OpenCasesDataMapperTest {
 
     private static final UUID SAMPLE_STAGE_UUID = UUID.fromString("ae2008cc-b51c-4811-bf59-9582561a38f6");
