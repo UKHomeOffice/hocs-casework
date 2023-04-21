@@ -369,7 +369,7 @@
               "name": "CatRude"
             },
             {
-              "label": "Unfair Treatment",
+              "label": "Unfair treatment",
               "value": "Unfair",
               "name": "CatUnfair"
             }
@@ -629,6 +629,24 @@
         "label": "Can your team respond to this complaint?"
       },
       {
+        "component": "text-area",
+        "name": "CaseNote_TriageTransfer",
+        "label": "Enter reason for transfer"
+      },
+      {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "CCH",
+              "value": "CCH"
+            }
+          ]
+        },
+        "name": "CctCompType",
+        "label": "Transfer to"
+      },
+      {
         "component": "radio",
         "props": {
           "choices": [
@@ -796,7 +814,7 @@
               "name": "CatRude"
             },
             {
-              "label": "Unfair Treatment",
+              "label": "Unfair treatment",
               "value": "Unfair",
               "name": "CatUnfair"
             }
@@ -1363,7 +1381,7 @@
               "name": "CatRude"
             },
             {
-              "label": "Unfair Treatment",
+              "label": "Unfair treatment",
               "value": "Unfair",
               "name": "CatUnfair"
             }
@@ -1478,7 +1496,7 @@
           "choices": "S_COMP_CCT_BUS_AREA"
         },
         "name": "BusArea",
-        "label": "Business Area"
+        "label": "Business area"
       },
       {
         "component": "dropdown",
@@ -2086,7 +2104,7 @@
           ]
         },
         "name": "BusAreaBasedOnDirectorate",
-        "label": "Business Area"
+        "label": "Business area"
       },
       {
         "component": "dropdown",
@@ -2823,7 +2841,7 @@
               "name": "CatRude"
             },
             {
-              "label": "Unfair Treatment",
+              "label": "Unfair treatment",
               "value": "Unfair",
               "name": "CatUnfair"
             }

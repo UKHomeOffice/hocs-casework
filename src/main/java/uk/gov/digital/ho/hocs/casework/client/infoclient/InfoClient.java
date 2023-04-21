@@ -311,7 +311,7 @@ public class InfoClient {
         Set<LocalDate> exemptionDates = restHelper.get(serviceBaseURL,
             String.format("/caseType/%s/exemptionDates", caseType), typeRef);
 
-        log.info("Received {} CaseTypeActions", exemptionDates.size(), caseType);
+        log.info("Received {} exemption dates", exemptionDates.size(), caseType);
         return exemptionDates;
     }
 

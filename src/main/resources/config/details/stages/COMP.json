@@ -427,13 +427,13 @@
           "visibilityConditions": [
             {
               "conditionPropertyName": "CompType",
-              "conditionPropertyValue": "Service misconduct"
+              "conditionPropertyValue": "Service"
             }
           ]
         },
         "component": "checkbox-group",
         "name": "CategoriesSerious",
-        "label": "Serious"
+        "label": "Serious misconduct"
       },
       {
         "props": {
@@ -769,7 +769,7 @@
           ]
         },
         "name": "BusAreaBasedOnDirectorate",
-        "label": "Business Area"
+        "label": "Business area"
       },
       {
         "component": "dropdown",
@@ -1643,7 +1643,7 @@
           ]
         },
         "name": "BusAreaBasedOnDirectorate",
-        "label": "Business Area"
+        "label": "Business area"
       },
       {
         "component": "dropdown",
@@ -1960,7 +1960,7 @@
               "name": "CatRude"
             },
             {
-              "label": "Unfair Treatment",
+              "label": "Unfair treatment",
               "value": "Unfair",
               "name": "CatUnfair"
             }
@@ -2075,7 +2075,7 @@
           "choices": "S_COMP_CCT_BUS_AREA"
         },
         "name": "BusArea",
-        "label": "Business Area"
+        "label": "Business area"
       }
     ],
     "COMP_EXGRATIA_RESPONSE_DRAFT": [
@@ -2689,7 +2689,7 @@
           ]
         },
         "name": "BusAreaBasedOnDirectorate",
-        "label": "Business Area"
+        "label": "Business area"
       },
       {
         "component": "dropdown",
@@ -3366,7 +3366,7 @@
               "name": "CatRude"
             },
             {
-              "label": "Unfair Treatment",
+              "label": "Unfair treatment",
               "value": "Unfair",
               "name": "CatUnfair"
             }
