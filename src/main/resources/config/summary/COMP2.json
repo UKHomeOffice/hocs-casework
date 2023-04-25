@@ -108,7 +108,7 @@
     {
       "choices": "S_COMP_CCT_BUS_AREA",
       "name": "BusArea",
-      "label": "Business Area"
+      "label": "Business area"
     },
     {
       "choices": "S_COMP_CCT_ENQ_REASON",
@@ -454,7 +454,7 @@
         }
       ],
       "name": "BusAreaBasedOnDirectorate",
-      "label": "Business Area"
+      "label": "Business area"
     },
     {
       "choices": [
