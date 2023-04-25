@@ -1504,7 +1504,7 @@
           "choices": "S_COMP_CCT_ENQ_REASON"
         },
         "name": "EnqReason",
-        "label": "Enquiry Reason"
+        "label": "Enquiry reason"
       },
       {
         "component": "radio",
@@ -2112,7 +2112,7 @@
           "choices": "S_COMP_CCT_ENQ_REASON"
         },
         "name": "EnqReason",
-        "label": "Enquiry Reason"
+        "label": "Enquiry reason"
       },
       {
         "component": "radio",
