@@ -631,7 +631,7 @@
       {
         "component": "text-area",
         "name": "CaseNote_TriageTransfer",
-        "label": "Enter reason for transfer"
+        "label": "Reason for transfer"
       },
       {
         "component": "radio",
@@ -1137,7 +1137,7 @@
       {
         "component": "text-area",
         "name": "CaseNote_TriageTransfer",
-        "label": "Enter reason for transfer"
+        "label": "Reason for transfer"
       },
       {
         "component": "radio",
@@ -1885,7 +1885,7 @@
       {
         "component": "text-area",
         "name": "CaseNote_TriageTransfer",
-        "label": "Enter reason for transfer"
+        "label": "Reason for transfer"
       },
       {
         "component": "radio",
