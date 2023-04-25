@@ -469,7 +469,7 @@
         }
       ],
       "name": "BusAreaBasedOnDirectorate",
-      "label": "Business Area"
+      "label": "Business area"
     },
     {
       "name": "PsuReference",
