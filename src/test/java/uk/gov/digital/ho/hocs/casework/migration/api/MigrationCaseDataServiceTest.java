@@ -107,7 +107,7 @@ public class MigrationCaseDataServiceTest {
 
         // then
         assertThat(caseData.isCompleted()).isEqualTo(false);
-        assertThat(caseData.getDateCompleted()).isEqualTo(null);
+        assertThat(caseData.getDateCompleted()).isNull();
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);

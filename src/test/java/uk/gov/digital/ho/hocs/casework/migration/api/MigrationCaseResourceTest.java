@@ -100,7 +100,8 @@ public class MigrationCaseResourceTest {
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
-            dateArg, null))
+            dateArg,
+            dateArg))
             .thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
 
         ResponseEntity<CreateMigrationCaseResponse> response = migrationCaseResource.createMigrationCase(request);
