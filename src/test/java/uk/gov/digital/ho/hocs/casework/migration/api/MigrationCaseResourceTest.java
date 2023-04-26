@@ -96,6 +96,7 @@ public class MigrationCaseResourceTest {
             dateArg,
             null,
             STAGE_TYPE);
+
         when(migrationCaseService.createMigrationCase(
             caseDataType.getDisplayCode(),
             STAGE_TYPE,

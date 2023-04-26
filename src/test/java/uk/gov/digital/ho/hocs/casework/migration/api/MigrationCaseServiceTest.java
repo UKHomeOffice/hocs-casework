@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -99,8 +100,6 @@ public class MigrationCaseServiceTest {
         when(migrationCaseDataService.createCase(caseDataType.getDisplayName(), data,
             originalReceivedDate, null)).thenReturn(caseData);
 
-        when(migrationStageService.createStageForClosedCase(caseData.getUuid(), STAGE_TYPE)).thenReturn(stage);
-
         migrationCaseService.createMigrationCase(
             caseDataType.getDisplayName(),
             STAGE_TYPE,
@@ -112,6 +111,7 @@ public class MigrationCaseServiceTest {
         verify(migrationCaseDataService, times(1)).createCase(caseDataType.getDisplayName(), data,
             originalReceivedDate, null);
 
+        verify(migrationStageService, never()).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
         verifyNoMoreInteractions(migrationCaseDataService);
         verifyNoMoreInteractions(migrationStageService);
     }
