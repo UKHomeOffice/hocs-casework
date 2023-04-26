@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import uk.gov.digital.ho.hocs.casework.api.DeadlineService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
 import uk.gov.digital.ho.hocs.casework.client.documentclient.DocumentClient;
@@ -18,7 +19,6 @@ import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorre
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +39,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.PRIMARY_CORRE
 public class MigrationCaseDataService {
 
     protected final CaseDataRepository caseDataRepository;
+
     private final CorrespondentRepository correspondentRepository;
 
     protected final MigrationAuditClient migrationAuditClient;
@@ -49,18 +50,24 @@ public class MigrationCaseDataService {
 
     protected final DocumentClient documentClient;
 
-    public MigrationCaseDataService(CaseDataRepository caseDataRepository,
-                                    DocumentClient documentClient,
-                                    InfoClient infoClient,
-                                    MigrationAuditClient migrationAuditClient,
-                                    AuditClient auditClient,
-                                    CorrespondentRepository correspondentRepository) {
+    private final DeadlineService deadlineService;
+
+    public MigrationCaseDataService(
+        CaseDataRepository caseDataRepository,
+        DocumentClient documentClient,
+        InfoClient infoClient,
+        MigrationAuditClient migrationAuditClient,
+        AuditClient auditClient,
+        CorrespondentRepository correspondentRepository,
+        DeadlineService deadlineService)
+    {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
         this.migrationAuditClient = migrationAuditClient;
         this.auditClient = auditClient;
         this.correspondentRepository = correspondentRepository;
         this.documentClient = documentClient;
+        this.deadlineService = deadlineService;
     }
 
     protected CaseData getCaseData(UUID caseUUID) {
@@ -102,23 +109,39 @@ public class MigrationCaseDataService {
     }
 
     @Transactional
-    CaseData createCompletedCase(String caseType, Map<String, String> data, LocalDate dateReceived) {
+    public CaseData createCase(
+        String caseType,
+        Map<String, String> data,
+        LocalDate dateReceived,
+        LocalDate dateCompleted
+                              ) {
         log.debug("Creating Case of type: {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
         CaseDataType caseDataType = infoClient.getCaseType(caseType);
         CaseData caseData = new CaseData(caseDataType, caseNumber, data, dateReceived);
-        LocalDate deadline = LocalDate.now();
+
+        LocalDate deadline = deadlineService.calculateWorkingDaysForCaseType(
+            caseType, dateReceived, caseDataType.getSla());
         caseData.setCaseDeadline(deadline);
-        caseData.setCompleted(true);
-        caseData.setDateCompleted(LocalDateTime.now());
+
+        if(dateCompleted != null) {
+            caseData.setCompleted(true);
+            caseData.setDateCompleted(dateCompleted.atStartOfDay());
+        }
+
         caseDataRepository.save(caseData);
+
         migrationAuditClient.createCaseAudit(caseData);
-        migrationAuditClient.completeCaseAudit(caseData);
+
+        if(dateCompleted != null) {
+            migrationAuditClient.completeCaseAudit(caseData);
+        }
+
         return caseData;
     }
 
     @Transactional
-    void createPrimaryCorrespondent(MigrationComplaintCorrespondent primaryCorrespondent, UUID caseUUID, UUID stageUUID) {
+    public void createPrimaryCorrespondent(MigrationComplaintCorrespondent primaryCorrespondent, UUID caseUUID, UUID stageUUID) {
         log.debug("Creating Correspondent of Type: {} for Migrated Case: {}", primaryCorrespondent.getCorrespondentType(), caseUUID);
         Correspondent correspondent = getCorrespondent(primaryCorrespondent, caseUUID);
 
@@ -155,7 +178,7 @@ public class MigrationCaseDataService {
     }
 
     @Transactional
-    void createAdditionalCorrespondent(List<MigrationComplaintCorrespondent> additionalCorrespondents, UUID caseUUID, UUID stageUUID) {
+    public void createAdditionalCorrespondent(List<MigrationComplaintCorrespondent> additionalCorrespondents, UUID caseUUID, UUID stageUUID) {
         for (MigrationComplaintCorrespondent additionalCorrespondent : additionalCorrespondents) {
             log.debug("Creating Additional Correspondent of Type: {} for Migrated Case: {}", additionalCorrespondent.getCorrespondentType(), caseUUID);
             Correspondent correspondent = getCorrespondent(additionalCorrespondent, caseUUID);

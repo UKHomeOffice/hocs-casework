@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import uk.gov.digital.ho.hocs.casework.api.DeadlineService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.AuditClient;
@@ -29,6 +30,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -37,8 +39,6 @@ public class MigrationCaseDataServiceTest {
     private static final long caseID = 12345L;
 
     private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
-
-    private final String STAGE_TYPE = "Migration";
 
     private MigrationCaseDataService migrationCaseDataService;
 
@@ -62,20 +62,39 @@ public class MigrationCaseDataServiceTest {
     @Mock
     private DocumentClient documentClient;
 
+    @Mock
+    private DeadlineService deadlineService;
+
     @Before
     public void setUp() {
-        this.migrationCaseDataService = new MigrationCaseDataService(
-            caseDataRepository,
-            documentClient,
-            infoClient,
-            migrationAuditClient,
-            auditClient,
-            correspondentRepository
-            );
+        this.migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, documentClient, infoClient,
+            migrationAuditClient, auditClient, correspondentRepository, deadlineService
+        );
     }
 
     @Test
-    public void shouldCreateMigrationCase() throws ApplicationExceptions.EntityCreationException {
+    public void shouldCreateCompletedMigrationCase() throws ApplicationExceptions.EntityCreationException {
+        // given
+        LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
+        LocalDate originalCompletedDate = LocalDate.parse("2020-03-01");
+
+        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+
+        // when
+        CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
+            originalReceivedDate, originalCompletedDate);
+
+        // then
+        assertThat(caseData.getDateCompleted()).isEqualTo(originalCompletedDate.atStartOfDay());
+
+        verify(caseDataRepository, times(1)).getNextSeriesId();
+        verify(caseDataRepository, times(1)).save(caseData);
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
+    public void shouldCreateOpenMigrationCase() throws ApplicationExceptions.EntityCreationException {
         // given
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
 
@@ -83,10 +102,13 @@ public class MigrationCaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         // when
-        CaseData caseData = migrationCaseDataService.createCompletedCase(caseType.getDisplayCode(), data,
-            originalReceivedDate);
+        CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
+            originalReceivedDate, null);
 
         // then
+        assertThat(caseData.isCompleted()).isEqualTo(false);
+        assertThat(caseData.getDateCompleted()).isEqualTo(null);
+
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
         verifyNoMoreInteractions(caseDataRepository);
@@ -95,16 +117,18 @@ public class MigrationCaseDataServiceTest {
     @Test(expected = ApplicationExceptions.EntityCreationException.class)
     public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
-        migrationCaseDataService.createCompletedCase(null, new HashMap<>(), originalReceivedDate);
+        LocalDate originalCompletedDate = LocalDate.parse("2020-03-01");
+        migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, originalCompletedDate);
     }
 
     @Test()
     public void shouldNotCreateCaseMissingType() {
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
+        LocalDate originalCompletedDate = LocalDate.parse("2020-03-01");
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         try {
-            migrationCaseDataService.createCompletedCase(null, new HashMap<>(), originalReceivedDate);
+            migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, originalCompletedDate);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
@@ -126,11 +150,11 @@ public class MigrationCaseDataServiceTest {
         doNothing().when(caseData).setPrimaryCorrespondentUUID(correspondent.getUuid());
         when(caseDataRepository.findActiveByUuid(any())).thenReturn(caseData);
 
-
         when(correspondentRepository.findAllByCaseUUID(caseData.getUuid())).thenReturn(correspondents);
 
         // when
-        migrationCaseDataService.createPrimaryCorrespondent(createMigrationComplaintCorrespondent(), caseData.getUuid(), UUID.randomUUID());
+        migrationCaseDataService.createPrimaryCorrespondent(
+            createMigrationComplaintCorrespondent(), caseData.getUuid(), UUID.randomUUID());
 
         //then
         verify(caseData, times(1)).setPrimaryCorrespondentUUID(correspondent.getUuid());
@@ -141,52 +165,28 @@ public class MigrationCaseDataServiceTest {
     @Test
     public void shouldCreateAnAdditionalCorrespondent() {
         // given
-        Set<Correspondent> correspondents = new HashSet<>();
-        correspondents.add(createCorrespondent());
-
         List<MigrationComplaintCorrespondent> additionalCorrespondents = new ArrayList<>();
         additionalCorrespondents.add(createMigrationComplaintCorrespondent());
 
         // when
-        migrationCaseDataService.createAdditionalCorrespondent(additionalCorrespondents, UUID.randomUUID(), UUID.randomUUID());
+        migrationCaseDataService.createAdditionalCorrespondent(
+            additionalCorrespondents, UUID.randomUUID(), UUID.randomUUID());
 
         //then
         verify(correspondentRepository, times(1)).save(any());
     }
 
     MigrationComplaintCorrespondent createMigrationComplaintCorrespondent() {
-        return new MigrationComplaintCorrespondent(
-            "fullName",
-            CorrespondentType.COMPLAINANT,
-            "address1",
-            "address2",
-            "address3",
-            "postcode",
-            "country",
-            "organisation",
-            "telephone",
-            "email",
-            "reference"
+        return new MigrationComplaintCorrespondent("fullName", CorrespondentType.COMPLAINANT, "address1", "address2",
+            "address3", "postcode", "country", "organisation", "telephone", "email", "reference"
         );
     }
 
     Correspondent createCorrespondent() {
-        return new Correspondent(
-            UUID.randomUUID(),
-            "correspondentType",
-            "fullName",
-            "organisation",
-            new Address(
-                "postcode",
-                "address1",
-                "address2",
-                "address3",
-                "country"
-            ),
-            "telephone",
-            "email",
-            "reference",
+        return new Correspondent(UUID.randomUUID(), "correspondentType", "fullName", "organisation",
+            new Address("postcode", "address1", "address2", "address3", "country"), "telephone", "email", "reference",
             "reference"
         );
     }
+
 }

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseResponse;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 
@@ -24,35 +23,44 @@ public class MigrationCaseService {
 
     private final CorrespondentService correspondentService;
 
-    public MigrationCaseService(MigrationCaseDataService migrationCaseDataService,
-                                MigrationStageService migrationStageService,
-                                CorrespondentService correspondentService) {
+    public MigrationCaseService(
+        MigrationCaseDataService migrationCaseDataService,
+        MigrationStageService migrationStageService,
+        CorrespondentService correspondentService
+                               ) {
         this.migrationCaseDataService = migrationCaseDataService;
         this.migrationStageService = migrationStageService;
         this.correspondentService = correspondentService;
     }
 
-    CreateMigrationCaseResponse createMigrationCase(String caseType,
-                                                    String stageType,
-                                                    Map<String, String> data,
-                                                    LocalDate dateReceived)
- {
+    CreateMigrationCaseResponse createMigrationCase(
+        String caseType, String stageType, Map<String, String> data, LocalDate dateReceived, LocalDate dateCompleted
+                                                   ) {
         log.debug("Migrating Case of type: {}", caseType);
 
-        CaseData caseData = migrationCaseDataService.createCompletedCase(caseType, data, dateReceived);
-        Stage stage = migrationStageService.createStageForClosedCase(caseData.getUuid(), stageType);
+        CaseData caseData = migrationCaseDataService.createCase(caseType, data, dateReceived, dateCompleted);
+        Stage stage = null;
+        if(dateCompleted != null) {
+            stage = migrationStageService.createStageForClosedCase(caseData.getUuid(), stageType);
+        }
 
-        log.debug("Migrated Case ID: {} at Stage ID: {} with Case Reference: {}", caseData.getUuid(), stage.getUuid(), caseData.getReference());
+        log.debug(
+            "Migrated Case ID: {} at Stage ID: {} with Case Reference: {}", caseData.getUuid(), stage != null ? stage.getUuid() : null,
+            caseData.getReference()
+                 );
 
-        return CreateMigrationCaseResponse.from(caseData, stage.getUuid());
+        return CreateMigrationCaseResponse.from(caseData, stage != null ? stage.getUuid() : null);
     }
 
-    public void createCorrespondents(UUID caseId,
-                                      UUID stageId,
-                                      MigrationComplaintCorrespondent primaryCorrespondent,
-                                      List<MigrationComplaintCorrespondent> additionalCorrespondents) {
+    public void createCorrespondents(
+        UUID caseId,
+        UUID stageId,
+        MigrationComplaintCorrespondent primaryCorrespondent,
+        List<MigrationComplaintCorrespondent> additionalCorrespondents
+                                    ) {
 
         migrationCaseDataService.createPrimaryCorrespondent(primaryCorrespondent, caseId, stageId);
         migrationCaseDataService.createAdditionalCorrespondent(additionalCorrespondents, caseId, stageId);
     }
+
 }
