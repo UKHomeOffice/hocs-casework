@@ -53,7 +53,7 @@ public class MigrationCaseResourceTest {
     }
 
     @Test
-    public void shouldCreateCase() {
+    public void shouldCreateAnOpenCase() {
 
         //given
         CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
@@ -62,12 +62,13 @@ public class MigrationCaseResourceTest {
             data,
             dateArg,
             null,
+            null,
             STAGE_TYPE);
         when(migrationCaseService.createMigrationCase(
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
-            dateArg)).thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
+            dateArg, null)).thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
 
         ResponseEntity<CreateMigrationCaseResponse> response = migrationCaseResource.createMigrationCase(request);
 
@@ -75,6 +76,40 @@ public class MigrationCaseResourceTest {
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
+            dateArg, null);
+
+        verifyNoMoreInteractions(migrationCaseService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldCreateAClosedCase() {
+
+        //given
+        CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
+        CreateMigrationCaseRequest request = new CreateMigrationCaseRequest(
+            caseDataType.getDisplayCode(),
+            data,
+            dateArg,
+            dateArg,
+            null,
+            STAGE_TYPE);
+        when(migrationCaseService.createMigrationCase(
+            caseDataType.getDisplayCode(),
+            STAGE_TYPE,
+            data,
+            dateArg, null))
+            .thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
+
+        ResponseEntity<CreateMigrationCaseResponse> response = migrationCaseResource.createMigrationCase(request);
+
+        verify(migrationCaseService, times(1)).createMigrationCase(
+            caseDataType.getDisplayCode(),
+            STAGE_TYPE,
+            data,
+            dateArg,
             dateArg);
 
         verifyNoMoreInteractions(migrationCaseService);

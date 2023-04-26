@@ -57,8 +57,7 @@ public class MigrationAuditClient {
                                 RequestData requestData,
                                 @Value("${migration.userid}") String userId,
                                 @Value("${migration.username}") String userName,
-                                @Value("${migration.group}") String group,
-                                @Value("${hocs.audit-service}") String auditService) {
+                                @Value("${migration.group}") String group) {
         this.auditSearchSnsClient = auditSearchSnsClient;
         this.auditQueue = auditQueue;
         this.raisingService = raisingService;
@@ -85,26 +84,24 @@ public class MigrationAuditClient {
     }
 
     public void completeCaseAudit(CaseData caseData) {
-        LocalDateTime localDateTime = LocalDateTime.now();
         String data = "{}";
         try {
             data = objectMapper.writeValueAsString(new AuditPayload.Case(caseData.getUuid()));
         } catch (JsonProcessingException e) {
             logFailedToParseDataPayload(e);
         }
-        sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_COMPLETED, null, data,
+        sendAuditMessage(caseData.getDateCompleted(), caseData.getUuid(), data, EventType.CASE_COMPLETED, null, data,
             requestData.correlationId(), userId);
     }
 
     public void createCaseAudit(CaseData caseData) {
-        LocalDateTime localDateTime = LocalDateTime.now();
         String data = "{}";
         try {
             data = objectMapper.writeValueAsString(AuditPayload.CreateCaseRequest.from(caseData));
         } catch (JsonProcessingException e) {
             logFailedToParseDataPayload(e);
         }
-        sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_CREATED, null, data,
+        sendAuditMessage(caseData.getCreated(), caseData.getUuid(), data, EventType.CASE_CREATED, null, data,
             requestData.correlationId(), userId);
     }
 
