@@ -357,4 +357,15 @@ public class CaseDataTest {
 
     }
 
+    @Test(expected = ApplicationExceptions.EntityCreationException.class)
+    public void getShouldEnforceMigratedReferenceForMigrationCases() {
+
+        Long caseNumber = 1234L;
+        Map<String, String> data = new HashMap<>();
+        LocalDate caseReceived = LocalDate.now();
+        LocalDateTime caseCreated= LocalDateTime.now();
+        CaseDataType type = CaseDataTypeFactory.from("MIN", "a1");
+        new CaseData(type, caseNumber,data, caseReceived, caseCreated, null);
+    }
+
 }

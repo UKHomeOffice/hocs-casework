@@ -115,13 +115,14 @@ public class MigrationCaseDataService {
                                Map<String, String> data,
                                LocalDate dateReceived,
                                LocalDate dateCompleted,
-                               LocalDate dateCreated) {
+                               LocalDate dateCreated,
+                               String migratedReference) {
 
         log.debug("Creating Case of type: {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
         CaseDataType caseDataType = infoClient.getCaseType(caseType);
         CaseData caseData = new CaseData(caseDataType, caseNumber, data, dateReceived,
-            LocalDateTime.of(dateCreated, LocalTime.MIN));
+            LocalDateTime.of(dateCreated, LocalTime.MIN), migratedReference);
 
         LocalDate deadline = deadlineService.calculateWorkingDaysForCaseType(caseType, dateReceived,
             caseDataType.getSla());

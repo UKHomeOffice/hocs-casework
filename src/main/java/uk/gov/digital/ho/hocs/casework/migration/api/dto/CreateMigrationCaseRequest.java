@@ -33,4 +33,7 @@ public class CreateMigrationCaseRequest {
     @JsonProperty("stageType")
     private String stageType;
 
+    @JsonProperty("migratedReference")
+    private String migratedReference;
+
 }

@@ -42,6 +42,8 @@ public class MigrationCaseDataServiceTest {
 
     private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
 
+    private final String migratedReference = "12345";
+
     private MigrationCaseDataService migrationCaseDataService;
 
     private final Map<String, String> data = new HashMap<>(0);
@@ -86,7 +88,7 @@ public class MigrationCaseDataServiceTest {
 
         // when
         CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
-            originalReceivedDate, originalCompletedDate, originalCreatedDate);
+            originalReceivedDate, originalCompletedDate, originalCreatedDate, migratedReference);
 
         // then
         assertThat(caseData.getDateCompleted()).isEqualTo(originalCompletedDate.atStartOfDay());
@@ -108,7 +110,7 @@ public class MigrationCaseDataServiceTest {
 
         // when
         CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
-            originalReceivedDate, null, originalCreatedDate);
+            originalReceivedDate, null, originalCreatedDate, migratedReference);
 
         // then
         assertThat(caseData.isCompleted()).isEqualTo(false);
@@ -125,7 +127,7 @@ public class MigrationCaseDataServiceTest {
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
         LocalDate originalCompletedDate = LocalDate.parse("2020-03-01");
         LocalDate originalCreatedDate = LocalDate.parse("2020-02-01");
-        migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, originalCompletedDate, originalCreatedDate);
+        migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, originalCompletedDate, originalCreatedDate, migratedReference);
     }
 
     @Test()
@@ -136,7 +138,7 @@ public class MigrationCaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         try {
-            migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, originalCompletedDate, originalCreatedDate);
+            migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, originalCompletedDate, originalCreatedDate, migratedReference);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }

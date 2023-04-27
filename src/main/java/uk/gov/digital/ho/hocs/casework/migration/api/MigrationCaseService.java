@@ -35,10 +35,10 @@ public class MigrationCaseService {
     }
 
     CreateMigrationCaseResponse createMigrationCase(
-        String caseType, String stageType, Map<String, String> data, LocalDate dateReceived, LocalDate dateCompleted, LocalDate dateCreated) {
+        String caseType, String stageType, Map<String, String> data, LocalDate dateReceived, LocalDate dateCompleted, LocalDate dateCreated, String migratedCaseReference) {
         log.debug("Migrating Case of type: {}", caseType);
 
-        CaseData caseData = migrationCaseDataService.createCase(caseType, data, dateReceived, dateCompleted, dateCreated);
+        CaseData caseData = migrationCaseDataService.createCase(caseType, data, dateReceived, dateCompleted, dateCreated, migratedCaseReference);
         Stage stage = null;
         if(dateCompleted != null) {
             stage = migrationStageService.createStageForClosedCase(caseData.getUuid(), stageType);
