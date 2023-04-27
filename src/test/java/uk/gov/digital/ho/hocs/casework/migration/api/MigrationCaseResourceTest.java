@@ -61,6 +61,7 @@ public class MigrationCaseResourceTest {
             caseDataType.getDisplayCode(),
             data,
             dateArg,
+            dateArg,
             null,
             null,
             STAGE_TYPE);
@@ -68,7 +69,7 @@ public class MigrationCaseResourceTest {
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
-            dateArg, null)).thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
+            dateArg, null, dateArg)).thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
 
         ResponseEntity<CreateMigrationCaseResponse> response = migrationCaseResource.createMigrationCase(request);
 
@@ -76,7 +77,8 @@ public class MigrationCaseResourceTest {
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
-            dateArg, null);
+            dateArg,
+            null, dateArg);
 
         verifyNoMoreInteractions(migrationCaseService);
 
@@ -94,6 +96,7 @@ public class MigrationCaseResourceTest {
             data,
             dateArg,
             dateArg,
+            dateArg,
             null,
             STAGE_TYPE);
 
@@ -101,6 +104,7 @@ public class MigrationCaseResourceTest {
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
+            dateArg,
             dateArg,
             dateArg))
             .thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
@@ -111,6 +115,7 @@ public class MigrationCaseResourceTest {
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
+            dateArg,
             dateArg,
             dateArg);
 

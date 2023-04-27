@@ -20,6 +20,10 @@ public class CaseData extends AbstractCaseData implements Serializable {
         super(type, caseNumber, data, dateReceived);
     }
 
+    public CaseData(CaseDataType type, Long caseNumber, Map<String, String> data, LocalDate dateReceived, LocalDateTime dateCreated) {
+        super(type, caseNumber, data, dateReceived, dateCreated);
+    }
+
     public CaseData(CaseDataType type, Long caseNumber, LocalDate dateReceived) {
         super(type, caseNumber, dateReceived);
     }

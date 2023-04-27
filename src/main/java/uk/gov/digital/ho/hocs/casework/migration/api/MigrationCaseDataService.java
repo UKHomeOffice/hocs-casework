@@ -19,6 +19,8 @@ import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorre
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -109,22 +111,23 @@ public class MigrationCaseDataService {
     }
 
     @Transactional
-    public CaseData createCase(
-        String caseType,
-        Map<String, String> data,
-        LocalDate dateReceived,
-        LocalDate dateCompleted
-                              ) {
+    public CaseData createCase(String caseType,
+                               Map<String, String> data,
+                               LocalDate dateReceived,
+                               LocalDate dateCompleted,
+                               LocalDate dateCreated) {
+
         log.debug("Creating Case of type: {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
         CaseDataType caseDataType = infoClient.getCaseType(caseType);
-        CaseData caseData = new CaseData(caseDataType, caseNumber, data, dateReceived);
+        CaseData caseData = new CaseData(caseDataType, caseNumber, data, dateReceived,
+            LocalDateTime.of(dateCreated, LocalTime.MIN));
 
-        LocalDate deadline = deadlineService.calculateWorkingDaysForCaseType(
-            caseType, dateReceived, caseDataType.getSla());
+        LocalDate deadline = deadlineService.calculateWorkingDaysForCaseType(caseType, dateReceived,
+            caseDataType.getSla());
         caseData.setCaseDeadline(deadline);
 
-        if(dateCompleted != null) {
+        if (dateCompleted!=null) {
             caseData.setCompleted(true);
             caseData.setDateCompleted(dateCompleted.atStartOfDay());
         }
