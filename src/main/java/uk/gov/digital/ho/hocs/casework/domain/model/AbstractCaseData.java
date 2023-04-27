@@ -151,6 +151,7 @@ public class AbstractCaseData implements Serializable {
         this.uuid = randomUUID(type.getShortCode());
         this.dateReceived = dateReceived;
         this.created = dateCreated;
+        update(data);
     }
 
     private static UUID randomUUID(String shortCode) {
