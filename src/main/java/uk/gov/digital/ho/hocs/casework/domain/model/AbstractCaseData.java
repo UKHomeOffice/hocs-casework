@@ -135,6 +135,24 @@ public class AbstractCaseData implements Serializable {
         this.dateReceived = dateReceived;
     }
 
+
+    //For migrating cases to set created date only
+    public AbstractCaseData(CaseDataType type,
+                            Long caseNumber,
+                            Map<String, String> data,
+                            LocalDate dateReceived,
+                            LocalDateTime dateCreated) {
+        if (type==null || caseNumber==null) {
+            throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
+        }
+
+        this.type = type.getDisplayCode();
+        this.reference = CaseReferenceGenerator.generateCaseReference(this.type, caseNumber, this.created);
+        this.uuid = randomUUID(type.getShortCode());
+        this.dateReceived = dateReceived;
+        this.created = dateCreated;
+    }
+
     private static UUID randomUUID(String shortCode) {
         if (shortCode!=null) {
             String uuid = UUID.randomUUID().toString().substring(0, 33);

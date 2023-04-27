@@ -26,7 +26,8 @@ public class MigrationCaseResource {
             request.getStageType(),
             request.getData(),
             request.getDateReceived(),
-            request.getDateCompleted()
+            request.getDateCompleted(),
+            request.getDateCreated()
             );
 
         return ResponseEntity.ok(response);

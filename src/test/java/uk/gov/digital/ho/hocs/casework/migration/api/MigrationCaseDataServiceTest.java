@@ -22,6 +22,8 @@ import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorre
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -77,16 +79,18 @@ public class MigrationCaseDataServiceTest {
         // given
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
         LocalDate originalCompletedDate = LocalDate.parse("2020-03-01");
+        LocalDate originalCreatedDate = LocalDate.parse("2020-02-01");
 
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         // when
         CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
-            originalReceivedDate, originalCompletedDate);
+            originalReceivedDate, originalCompletedDate, originalCreatedDate);
 
         // then
         assertThat(caseData.getDateCompleted()).isEqualTo(originalCompletedDate.atStartOfDay());
+        assertThat(caseData.getCreated()).isEqualTo(LocalDateTime.of(originalCreatedDate, LocalTime.MIN));
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
@@ -97,17 +101,19 @@ public class MigrationCaseDataServiceTest {
     public void shouldCreateOpenMigrationCase() throws ApplicationExceptions.EntityCreationException {
         // given
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
+        LocalDate originalCreatedDate = LocalDate.parse("2020-02-01");
 
         when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         // when
         CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
-            originalReceivedDate, null);
+            originalReceivedDate, null, originalCreatedDate);
 
         // then
         assertThat(caseData.isCompleted()).isEqualTo(false);
         assertThat(caseData.getDateCompleted()).isNull();
+        assertThat(caseData.getCreated()).isEqualTo(LocalDateTime.of(originalCreatedDate, LocalTime.MIN));
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
         verify(caseDataRepository, times(1)).save(caseData);
@@ -118,17 +124,19 @@ public class MigrationCaseDataServiceTest {
     public void shouldNotCreateCaseMissingTypeException() throws ApplicationExceptions.EntityCreationException {
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
         LocalDate originalCompletedDate = LocalDate.parse("2020-03-01");
-        migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, originalCompletedDate);
+        LocalDate originalCreatedDate = LocalDate.parse("2020-02-01");
+        migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, originalCompletedDate, originalCreatedDate);
     }
 
     @Test()
     public void shouldNotCreateCaseMissingType() {
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
         LocalDate originalCompletedDate = LocalDate.parse("2020-03-01");
+        LocalDate originalCreatedDate = LocalDate.parse("2020-02-01");
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         try {
-            migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, originalCompletedDate);
+            migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, originalCompletedDate, originalCreatedDate);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
