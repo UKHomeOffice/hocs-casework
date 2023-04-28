@@ -5,7 +5,7 @@ DROP VIEW IF EXISTS active_case;
 CREATE VIEW active_case
             (id, uuid, created, type, reference, data, primary_topic_uuid, primary_correspondent_uuid, case_deadline,
              date_received, deleted, completed, date_completed, case_deadline_warning, secondary_case_uuid, secondary_case_reference,
-             secondary_stage_uuid, primary_case_uuid, primary_case_reference, primary_stage_uuid)
+             secondary_stage_uuid, primary_case_uuid, primary_case_reference, primary_stage_uuid, migrated_reference)
 AS
 SELECT case_data.id,
        case_data.uuid,
@@ -20,6 +20,7 @@ SELECT case_data.id,
        case_data.deleted,
        case_data.completed,
        case_data.date_completed,
+       case_data.migrated_reference,
        case_data.case_deadline_warning,
        secondary_case.uuid       AS secondary_case_uuid,
        secondary_case.reference  AS secondary_case_reference,
