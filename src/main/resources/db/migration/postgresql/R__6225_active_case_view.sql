@@ -20,14 +20,14 @@ SELECT case_data.id,
        case_data.deleted,
        case_data.completed,
        case_data.date_completed,
-       case_data.migrated_reference,
        case_data.case_deadline_warning,
        secondary_case.uuid       AS secondary_case_uuid,
        secondary_case.reference  AS secondary_case_reference,
        secondary_case.stage_uuid AS secondary_stage_uuid,
        primary_case.uuid         AS primary_case_uuid,
        primary_case.reference    AS primary_case_reference,
-       primary_case.stage_uuid   AS primary_stage_uuid
+       primary_case.stage_uuid   AS primary_stage_uuid,
+       case_data.migrated_reference
 FROM casework.case_data
          LEFT JOIN LATERAL ( SELECT c.reference,
                                     c.uuid,
