@@ -5,7 +5,7 @@ DROP VIEW IF EXISTS active_case;
 CREATE VIEW active_case
             (id, uuid, created, type, reference, data, primary_topic_uuid, primary_correspondent_uuid, case_deadline,
              date_received, deleted, completed, date_completed, case_deadline_warning, secondary_case_uuid, secondary_case_reference,
-             secondary_stage_uuid, primary_case_uuid, primary_case_reference, primary_stage_uuid)
+             secondary_stage_uuid, primary_case_uuid, primary_case_reference, primary_stage_uuid, migrated_reference)
 AS
 SELECT case_data.id,
        case_data.uuid,
@@ -26,7 +26,8 @@ SELECT case_data.id,
        secondary_case.stage_uuid AS secondary_stage_uuid,
        primary_case.uuid         AS primary_case_uuid,
        primary_case.reference    AS primary_case_reference,
-       primary_case.stage_uuid   AS primary_stage_uuid
+       primary_case.stage_uuid   AS primary_stage_uuid,
+       case_data.migrated_reference
 FROM casework.case_data
          LEFT JOIN LATERAL ( SELECT c.reference,
                                     c.uuid,

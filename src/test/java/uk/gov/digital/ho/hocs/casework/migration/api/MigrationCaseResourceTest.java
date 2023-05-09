@@ -35,6 +35,8 @@ public class MigrationCaseResourceTest {
 
     private final Map<String, String> data = new HashMap<>(0);
 
+    private static final String migratedReference = "12345";
+
     @Mock
     private MigrationCaseService migrationCaseService;
 
@@ -64,12 +66,17 @@ public class MigrationCaseResourceTest {
             dateArg,
             null,
             null,
-            STAGE_TYPE);
+            STAGE_TYPE,
+            migratedReference);
         when(migrationCaseService.createMigrationCase(
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
-            dateArg, null, dateArg)).thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
+            dateArg,
+            null,
+            dateArg,
+            migratedReference
+            )).thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
 
         ResponseEntity<CreateMigrationCaseResponse> response = migrationCaseResource.createMigrationCase(request);
 
@@ -78,7 +85,9 @@ public class MigrationCaseResourceTest {
             STAGE_TYPE,
             data,
             dateArg,
-            null, dateArg);
+            null,
+            dateArg,
+            migratedReference);
 
         verifyNoMoreInteractions(migrationCaseService);
 
@@ -98,7 +107,8 @@ public class MigrationCaseResourceTest {
             dateArg,
             dateArg,
             null,
-            STAGE_TYPE);
+            STAGE_TYPE,
+            migratedReference);
 
         when(migrationCaseService.createMigrationCase(
             caseDataType.getDisplayCode(),
@@ -106,7 +116,8 @@ public class MigrationCaseResourceTest {
             data,
             dateArg,
             dateArg,
-            dateArg))
+            dateArg,
+            migratedReference))
             .thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
 
         ResponseEntity<CreateMigrationCaseResponse> response = migrationCaseResource.createMigrationCase(request);
@@ -117,7 +128,8 @@ public class MigrationCaseResourceTest {
             data,
             dateArg,
             dateArg,
-            dateArg);
+            dateArg,
+            migratedReference);
 
         verifyNoMoreInteractions(migrationCaseService);
 
