@@ -238,7 +238,7 @@
             },
             {
               "label": "EUSS FP",
-              "value": "EUSSFP"
+              "value": "EUSS FP"
             }
           ],
           "conditionPropertyName": "OwningCSU",

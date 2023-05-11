@@ -593,7 +593,7 @@
                 },
                 {
                   "label": "EUSS FP",
-                  "value": "EUSSFP"
+                  "value": "EUSS FP"
                 }
               ],
               "conditionPropertyName": "OwningCSU",
@@ -1467,7 +1467,7 @@
                 },
                 {
                   "label": "EUSS FP",
-                  "value": "EUSSFP"
+                  "value": "EUSS FP"
                 }
               ],
               "conditionPropertyName": "OwningCSU",
@@ -2513,7 +2513,7 @@
                 },
                 {
                   "label": "EUSS FP",
-                  "value": "EUSSFP"
+                  "value": "EUSS FP"
                 }
               ],
               "conditionPropertyName": "OwningCSU",
