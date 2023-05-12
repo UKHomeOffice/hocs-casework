@@ -986,7 +986,30 @@ public class StageServiceTest {
 
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, allocationType);
+        stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, allocationType, false, null);
+
+        verify(caseDataService, times(0)).updateCaseData(any(UUID.class), any(), any());
+        verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
+        verify(stageRepository).save(stage);
+        verify(auditClient).updateStageTeam(stage);
+        verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null),
+            eq(allocationType.toString()));
+
+        checkNoMoreInteraction();
+
+    }
+
+    @Test
+    public void testShouldUpdateStageTeamAndStorePrevious() {
+
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID,
+            transitionNoteUUID);
+
+        when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+
+        stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, allocationType, true, "TESTFIELD");
+
+        verify(caseDataService).updateCaseData(caseUUID, stageUUID, Map.of("TESTFIELD", teamUUID.toString()));
 
         verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository).save(stage);
@@ -999,6 +1022,27 @@ public class StageServiceTest {
     }
 
     @Test
+    public void testShouldUpdateStageTeamAndClearPrevious() {
+
+        StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID,
+            transitionNoteUUID);
+
+        when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
+
+        stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, allocationType, false, "TESTFIELD");
+
+        verify(caseDataService).updateCaseData(caseUUID, stageUUID, Map.of("TESTFIELD", ""));
+
+        verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
+        verify(stageRepository).save(stage);
+        verify(auditClient).updateStageTeam(stage);
+        verify(notifyClient).sendTeamEmail(eq(caseUUID), any(UUID.class), eq(teamUUID), eq(null),
+            eq(allocationType.toString()));
+
+        checkNoMoreInteraction();
+    }
+
+    @Test
     public void testShouldAuditUpdateStageTeam() {
 
         StageWithCaseData stage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID,
@@ -1006,7 +1050,7 @@ public class StageServiceTest {
 
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, "ALLOCATE_TEAM");
+        stageService.updateStageTeam(caseUUID, stageUUID, teamUUID, "ALLOCATE_TEAM", false, null);
 
         verify(auditClient).updateStageTeam(stage);
         verify(stageRepository).findByCaseUuidStageUUID(eq(caseUUID), any());
@@ -1024,7 +1068,7 @@ public class StageServiceTest {
 
         when(stageRepository.findByCaseUuidStageUUID(caseUUID, stageUUID)).thenReturn(stage);
 
-        stageService.updateStageTeam(caseUUID, stageUUID, null, allocationType);
+        stageService.updateStageTeam(caseUUID, stageUUID, null, allocationType, false, null);
 
         verify(stageRepository).findByCaseUuidStageUUID(caseUUID, stageUUID);
         verify(stageRepository).save(stage);

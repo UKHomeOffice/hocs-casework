@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageRequest;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateStageResponse;
@@ -107,8 +108,15 @@ class StageResource {
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/team")
     ResponseEntity updateStageTeam(@PathVariable UUID caseUUID,
                                    @PathVariable UUID stageUUID,
+                                   @RequestParam(value = "saveLast", defaultValue = "false") boolean saveLast,
+                                   @RequestParam(value = "saveLastFieldName", required = false) String lastFieldName,
                                    @RequestBody UpdateStageTeamRequest request) {
-        stageService.updateStageTeam(caseUUID, stageUUID, request.getTeamUUID(), request.getAllocationType());
+        stageService.updateStageTeam(caseUUID,
+            stageUUID,
+            request.getTeamUUID(),
+            request.getAllocationType(),
+            saveLast,
+            lastFieldName);
         return ResponseEntity.ok().build();
     }
 
