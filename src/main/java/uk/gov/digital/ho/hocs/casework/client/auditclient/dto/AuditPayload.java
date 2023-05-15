@@ -259,11 +259,15 @@ public interface AuditPayload {
         @JsonProperty("dateReceived")
         private LocalDate dateReceived;
 
+        @JsonProperty("migratedReference")
+        private String migratedReference;
+
         public static UpdateCaseRequest from(CaseData caseData) {
 
             return new UpdateCaseRequest(caseData.getUuid(), caseData.getCreated(), caseData.getType(),
                 caseData.getReference(), caseData.getDataMap(), caseData.getPrimaryTopicUUID(),
-                caseData.getPrimaryCorrespondentUUID(), caseData.getCaseDeadline(), caseData.getDateReceived());
+                caseData.getPrimaryCorrespondentUUID(), caseData.getCaseDeadline(), caseData.getDateReceived(),
+                caseData.getMigratedReference());
         }
 
     }
