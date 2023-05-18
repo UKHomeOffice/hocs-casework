@@ -19,6 +19,7 @@ import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CorrespondentType;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
+import uk.gov.digital.ho.hocs.casework.migration.api.exception.MigrationExceptions;
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
@@ -29,10 +30,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -72,7 +75,7 @@ public class MigrationCaseDataServiceTest {
     @Before
     public void setUp() {
         this.migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, documentClient, infoClient,
-            migrationAuditClient, auditClient, correspondentRepository, deadlineService
+            migrationAuditClient, auditClient, correspondentRepository, deadlineService, true
         );
     }
 
@@ -145,6 +148,56 @@ public class MigrationCaseDataServiceTest {
 
         verify(caseDataRepository, times(1)).getNextSeriesId();
 
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
+    public void createCaseThrowsExceptionWhenADuplicateMigratedReferenceIsFound() {
+        migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, documentClient, infoClient,
+            migrationAuditClient, auditClient, correspondentRepository, deadlineService, false
+        );
+
+        final String migratedReference = "MigratedReference";
+        final UUID existingCaseUUID = UUID.randomUUID();
+
+        final LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
+        final LocalDate originalCompletedDate = LocalDate.parse("2020-03-01");
+        final LocalDate originalCreatedDate = LocalDate.parse("2020-02-01");
+
+        when(caseDataRepository.findUUIDByMigratedReference(migratedReference)).thenReturn(
+            Optional.of(existingCaseUUID));
+
+        assertThatThrownBy(() -> migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
+            originalReceivedDate, originalCompletedDate, originalCreatedDate, migratedReference))
+            .isInstanceOf(MigrationExceptions.DuplicateMigratedReferenceException.class)
+            .hasMessage("Existing case with migrated reference %s found, existing case UUID: %s", migratedReference, existingCaseUUID);
+
+        verify(caseDataRepository, times(1)).findUUIDByMigratedReference(migratedReference);
+        verifyNoMoreInteractions(caseDataRepository);
+    }
+
+    @Test
+    public void createCaseSavesTheCaseWhenTheMigratedReferenceIsNotADuplicate() {
+        migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, documentClient, infoClient,
+            migrationAuditClient, auditClient, correspondentRepository, deadlineService, false
+        );
+
+        final String migratedReference = "MigratedReference";
+
+        final LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
+        final LocalDate originalCompletedDate = LocalDate.parse("2020-03-01");
+        final LocalDate originalCreatedDate = LocalDate.parse("2020-02-01");
+
+        when(caseDataRepository.findUUIDByMigratedReference(migratedReference)).thenReturn(Optional.empty());
+        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+
+        CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
+            originalReceivedDate, originalCompletedDate, originalCreatedDate, migratedReference);
+
+        verify(caseDataRepository, times(1)).findUUIDByMigratedReference(migratedReference);
+        verify(caseDataRepository, times(1)).getNextSeriesId();
+        verify(caseDataRepository, times(1)).save(caseData);
         verifyNoMoreInteractions(caseDataRepository);
     }
 
