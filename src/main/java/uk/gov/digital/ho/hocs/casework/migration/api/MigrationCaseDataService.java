@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.migration.api;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
+import uk.gov.digital.ho.hocs.casework.migration.api.exception.MigrationExceptions;
 import uk.gov.digital.ho.hocs.casework.migration.client.auditclient.MigrationAuditClient;
 
 import java.time.LocalDate;
@@ -23,6 +25,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -54,6 +57,8 @@ public class MigrationCaseDataService {
 
     private final DeadlineService deadlineService;
 
+    private final boolean allowDuplicateMigratedReferences;
+
     public MigrationCaseDataService(
         CaseDataRepository caseDataRepository,
         DocumentClient documentClient,
@@ -61,7 +66,9 @@ public class MigrationCaseDataService {
         MigrationAuditClient migrationAuditClient,
         AuditClient auditClient,
         CorrespondentRepository correspondentRepository,
-        DeadlineService deadlineService)
+        DeadlineService deadlineService,
+        @Value("${migration.allow-duplicate-migrated-references:false}") boolean allowDuplicateMigratedReferences
+        )
     {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
@@ -70,6 +77,7 @@ public class MigrationCaseDataService {
         this.correspondentRepository = correspondentRepository;
         this.documentClient = documentClient;
         this.deadlineService = deadlineService;
+        this.allowDuplicateMigratedReferences = allowDuplicateMigratedReferences;
     }
 
     protected CaseData getCaseData(UUID caseUUID) {
@@ -117,6 +125,15 @@ public class MigrationCaseDataService {
                                LocalDate dateCompleted,
                                LocalDate dateCreated,
                                String migratedReference) {
+        if(!allowDuplicateMigratedReferences) {
+            Optional<UUID> existingUUID = caseDataRepository.findUUIDByMigratedReference(migratedReference);
+            if(existingUUID.isPresent()) {
+                throw new MigrationExceptions.DuplicateMigratedReferenceException(
+                    migratedReference,
+                    existingUUID.get()
+                );
+            }
+        }
 
         log.debug("Creating Case of type: {}", caseType);
         Long caseNumber = caseDataRepository.getNextSeriesId();
