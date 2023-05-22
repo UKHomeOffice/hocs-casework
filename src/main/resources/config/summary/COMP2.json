@@ -213,74 +213,62 @@
       "label": "Date of Response"
     },
     {
-      "conditionChoices": [
+      "choices": [
         {
-          "choices": [
-            {
-              "label": "IandP",
-              "value": "IandP"
-            },
-            {
-              "label": "RASI",
-              "value": "RASI"
-            },
-            {
-              "label": "VCIC",
-              "value": "VCIC"
-            },
-            {
-              "label": "VCOS",
-              "value": "VCOS"
-            },
-            {
-              "label": "Other",
-              "value": "Other"
-            },
-            {
-              "label": "EUSS FP",
-              "value": "EUSSFP"
-            }
-          ],
-          "conditionPropertyName": "OwningCSU",
-          "conditionPropertyValue": "UKVI"
+          "label": "IandP",
+          "value": "IandP"
         },
         {
-          "choices": [
-            {
-              "label": "CI",
-              "value": "CI"
-            },
-            {
-              "label": "FNORC",
-              "value": "FNORC"
-            },
-            {
-              "label": "Detention",
-              "value": "Detention"
-            },
-            {
-              "label": "ICE Teams",
-              "value": "ICETeams"
-            },
-            {
-              "label": "Other",
-              "value": "Other"
-            },
-            {
-              "label": "NRC",
-              "value": "NRC"
-            },
-            {
-              "label": "Reporting Centres",
-              "value": "ReportingCentres"
-            },
-            {
-              "label": "Returns Preparation",
-              "value": "ReturnsPreparation"
-            }
-          ],
-          "conditionPropertyName": "OwningCSU",
-          "conditionPropertyValue": "IE"
+          "label": "RASI",
+          "value": "RASI"
+        },
+        {
+          "label": "VCIC",
+          "value": "VCIC"
+        },
+        {
+          "label": "VCOS",
+          "value": "VCOS"
+        },
+        {
+          "label": "Other",
+          "value": "Other"
+        },
+        {
+          "label": "EUSS FP",
+          "value": "EUSSFP"
+        },
+        {
+          "label": "CI",
+          "value": "CI"
+        },
+        {
+          "label": "FNORC",
+          "value": "FNORC"
+        },
+        {
+          "label": "Detention",
+          "value": "Detention"
+        },
+        {
+          "label": "ICE Teams",
+          "value": "ICETeams"
+        },
+        {
+          "label": "Other",
+          "value": "Other"
+        },
+        {
+          "label": "NRC",
+          "value": "NRC"
+        },
+        {
+          "label": "Reporting Centres",
+          "value": "ReportingCentres"
+        },
+        {
+          "label": "Returns Preparation",
+          "value": "ReturnsPreparation"
         }
       ],
       "name": "Directorate",
