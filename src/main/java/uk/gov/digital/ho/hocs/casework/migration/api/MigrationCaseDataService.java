@@ -122,6 +122,7 @@ public class MigrationCaseDataService {
     public CaseData createCase(String caseType,
                                Map<String, String> data,
                                LocalDate dateReceived,
+                               LocalDate caseDeadline,
                                LocalDate dateCompleted,
                                LocalDate dateCreated,
                                String migratedReference) {
@@ -141,9 +142,9 @@ public class MigrationCaseDataService {
         CaseData caseData = new CaseData(caseDataType, caseNumber, data, dateReceived,
             LocalDateTime.of(dateCreated, LocalTime.MIN), migratedReference);
 
-        LocalDate deadline = deadlineService.calculateWorkingDaysForCaseType(caseType, dateReceived,
-            caseDataType.getSla());
-        caseData.setCaseDeadline(deadline);
+        caseData.setCaseDeadline(caseDeadline != null
+            ? caseDeadline
+            : deadlineService.calculateWorkingDaysForCaseType(caseType, dateReceived, caseDataType.getSla()));
 
         if (dateCompleted!=null) {
             caseData.setCompleted(true);
