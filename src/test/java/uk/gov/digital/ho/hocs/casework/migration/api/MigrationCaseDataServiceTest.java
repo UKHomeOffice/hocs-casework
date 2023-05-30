@@ -91,7 +91,7 @@ public class MigrationCaseDataServiceTest {
 
         // when
         CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
-            originalReceivedDate, originalCompletedDate, originalCreatedDate, migratedReference);
+            originalReceivedDate, null, originalCompletedDate, originalCreatedDate, migratedReference);
 
         // then
         assertThat(caseData.getDateCompleted()).isEqualTo(originalCompletedDate.atStartOfDay());
@@ -113,7 +113,7 @@ public class MigrationCaseDataServiceTest {
 
         // when
         CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
-            originalReceivedDate, null, originalCreatedDate, migratedReference);
+            originalReceivedDate, null, null, originalCreatedDate, migratedReference);
 
         // then
         assertThat(caseData.isCompleted()).isEqualTo(false);
@@ -130,7 +130,7 @@ public class MigrationCaseDataServiceTest {
         LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
         LocalDate originalCompletedDate = LocalDate.parse("2020-03-01");
         LocalDate originalCreatedDate = LocalDate.parse("2020-02-01");
-        migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, originalCompletedDate, originalCreatedDate, migratedReference);
+        migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, null, originalCompletedDate, originalCreatedDate, migratedReference);
     }
 
     @Test()
@@ -141,7 +141,7 @@ public class MigrationCaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         try {
-            migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, originalCompletedDate, originalCreatedDate, migratedReference);
+            migrationCaseDataService.createCase(null, new HashMap<>(), originalReceivedDate, null, originalCompletedDate, originalCreatedDate, migratedReference);
         } catch (ApplicationExceptions.EntityCreationException e) {
             // Do nothing.
         }
@@ -168,7 +168,7 @@ public class MigrationCaseDataServiceTest {
             Optional.of(existingCaseUUID));
 
         assertThatThrownBy(() -> migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
-            originalReceivedDate, originalCompletedDate, originalCreatedDate, migratedReference))
+            originalReceivedDate, null, originalCompletedDate, originalCreatedDate, migratedReference))
             .isInstanceOf(MigrationExceptions.DuplicateMigratedReferenceException.class)
             .hasMessage("Existing case with migrated reference %s found, existing case UUID: %s", migratedReference, existingCaseUUID);
 
@@ -193,7 +193,7 @@ public class MigrationCaseDataServiceTest {
         when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
 
         CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
-            originalReceivedDate, originalCompletedDate, originalCreatedDate, migratedReference);
+            originalReceivedDate, null, originalCompletedDate, originalCreatedDate, migratedReference);
 
         verify(caseDataRepository, times(1)).findUUIDByMigratedReference(migratedReference);
         verify(caseDataRepository, times(1)).getNextSeriesId();
@@ -237,6 +237,52 @@ public class MigrationCaseDataServiceTest {
 
         //then
         verify(correspondentRepository, times(1)).save(any());
+    }
+
+    @Test
+    public void shouldUseProvidedDeadlineWhenMigratingACase() {
+        // given
+        LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
+        LocalDate originalDeadline = LocalDate.parse("2020-02-28");
+        LocalDate originalCompletedDate = LocalDate.parse("2020-03-01");
+        LocalDate originalCreatedDate = LocalDate.parse("2020-02-01");
+
+        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+
+        // when
+        CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
+            originalReceivedDate, originalDeadline, originalCompletedDate, originalCreatedDate, migratedReference);
+
+        // then
+        assertThat(caseData.getCaseDeadline()).isEqualTo(originalDeadline);
+
+        verifyNoMoreInteractions(deadlineService);
+    }
+
+    @Test
+    public void shouldCalculateDeadlineWhenNoDeadlineIsProvided() {
+        // given
+        LocalDate originalReceivedDate = LocalDate.parse("2020-02-01");
+        LocalDate originalCompletedDate = LocalDate.parse("2020-03-01");
+        LocalDate originalCreatedDate = LocalDate.parse("2020-02-01");
+
+        LocalDate exampleDeadline = LocalDate.parse("2020-02-28");
+
+        when(infoClient.getCaseType(caseType.getDisplayCode())).thenReturn(caseType);
+        when(caseDataRepository.getNextSeriesId()).thenReturn(caseID);
+        when(deadlineService.calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla()))
+            .thenReturn(exampleDeadline);
+
+        // when
+        CaseData caseData = migrationCaseDataService.createCase(caseType.getDisplayCode(), data,
+            originalReceivedDate, null, originalCompletedDate, originalCreatedDate, migratedReference);
+
+        // then
+        assertThat(caseData.getCaseDeadline()).isEqualTo(exampleDeadline);
+
+        verify(deadlineService, times(1)).calculateWorkingDaysForCaseType(caseType.getDisplayCode(), originalReceivedDate, caseType.getSla());
+        verifyNoMoreInteractions(deadlineService);
     }
 
     MigrationComplaintCorrespondent createMigrationComplaintCorrespondent() {

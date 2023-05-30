@@ -46,6 +46,8 @@ public class MigrationCaseServiceTest {
 
     LocalDate originalReceivedDate;
 
+    LocalDate originalDeadline;
+
     LocalDate originalCompletedDate;
 
     LocalDate originalCreatedDate;
@@ -60,6 +62,7 @@ public class MigrationCaseServiceTest {
     public void setUp() {
         this.migrationCaseService = new MigrationCaseService(migrationCaseDataService, migrationStageService,  correspondentService);
         originalReceivedDate = LocalDate.parse("2020-02-01");
+        originalDeadline = LocalDate.parse("2020-02-28");
         originalCompletedDate = LocalDate.parse("2020-03-01");
         originalCreatedDate = LocalDate.parse("2020-02-01");
         migratedReference = "123456";
@@ -79,7 +82,7 @@ public class MigrationCaseServiceTest {
         //when
         CaseData caseData = getCaseData(true);
         when(migrationCaseDataService.createCase(caseDataType.getDisplayName(), data,
-            originalReceivedDate, originalCompletedDate, originalCreatedDate, migratedReference)).thenReturn(caseData);
+            originalReceivedDate, originalDeadline, originalCompletedDate, originalCreatedDate, migratedReference)).thenReturn(caseData);
 
         when(migrationStageService.createStageForClosedCase(caseData.getUuid(), STAGE_TYPE)).thenReturn(stage);
 
@@ -88,13 +91,14 @@ public class MigrationCaseServiceTest {
             STAGE_TYPE,
             data,
             originalReceivedDate,
+            originalDeadline,
             originalCompletedDate,
             originalCreatedDate,
             migratedReference);
 
         // then
         verify(migrationCaseDataService, times(1)).createCase(caseDataType.getDisplayName(), data,
-            originalReceivedDate, originalCompletedDate, originalCreatedDate, migratedReference);
+            originalReceivedDate, originalDeadline, originalCompletedDate, originalCreatedDate, migratedReference);
         verify(migrationStageService, times(1)).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
 
         verifyNoMoreInteractions(migrationCaseDataService);
@@ -106,18 +110,14 @@ public class MigrationCaseServiceTest {
         //when
         CaseData caseData = getCaseData(false);
         when(migrationCaseDataService.createCase(caseDataType.getDisplayName(), data,
-            originalReceivedDate, null, originalCreatedDate, migratedReference)).thenReturn(caseData);
+            originalReceivedDate, originalDeadline,null, originalCreatedDate, migratedReference)).thenReturn(caseData);
 
-        migrationCaseService.createMigrationCase(
-            caseDataType.getDisplayName(),
-            STAGE_TYPE,
-            data,
-            originalReceivedDate,
-            null, originalCreatedDate, migratedReference);
+        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate,
+            originalDeadline, null, originalCreatedDate, migratedReference);
 
         // then
         verify(migrationCaseDataService, times(1)).createCase(caseDataType.getDisplayName(), data,
-            originalReceivedDate, null, originalCreatedDate, migratedReference);
+            originalReceivedDate, originalDeadline, null, originalCreatedDate, migratedReference);
 
         verify(migrationStageService, never()).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
         verifyNoMoreInteractions(migrationCaseDataService);

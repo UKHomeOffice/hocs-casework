@@ -26,6 +26,7 @@ public class MigrationCaseResource {
             request.getStageType(),
             request.getData(),
             request.getDateReceived(),
+            request.getCaseDeadline(),
             request.getDateCompleted(),
             request.getDateCreated(),
             request.getMigratedReference()
