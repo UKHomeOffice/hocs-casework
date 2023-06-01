@@ -66,6 +66,7 @@ public class MigrationCaseResourceTest {
             dateArg,
             null,
             null,
+            null,
             STAGE_TYPE,
             migratedReference);
         when(migrationCaseService.createMigrationCase(
@@ -73,6 +74,7 @@ public class MigrationCaseResourceTest {
             STAGE_TYPE,
             data,
             dateArg,
+            null,
             null,
             dateArg,
             migratedReference
@@ -85,6 +87,7 @@ public class MigrationCaseResourceTest {
             STAGE_TYPE,
             data,
             dateArg,
+            null,
             null,
             dateArg,
             migratedReference);
@@ -106,6 +109,7 @@ public class MigrationCaseResourceTest {
             dateArg,
             dateArg,
             dateArg,
+            dateArg,
             null,
             STAGE_TYPE,
             migratedReference);
@@ -114,6 +118,7 @@ public class MigrationCaseResourceTest {
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
+            dateArg,
             dateArg,
             dateArg,
             dateArg,
@@ -126,6 +131,7 @@ public class MigrationCaseResourceTest {
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
+            dateArg,
             dateArg,
             dateArg,
             dateArg,

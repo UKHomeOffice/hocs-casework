@@ -26,7 +26,7 @@ public interface CaseDataRepository extends CrudRepository<CaseData, Long> {
     @Query(value = "SELECT cd.* FROM case_data cd WHERE cd.uuid = ?1", nativeQuery = true)
     CaseData findAnyByUuid(UUID uuid);
 
-    @Query(value="SELECT cast(cd.uuid as text) FROM case_data cd WHERE cd.migrated_reference = ?1 LIMIT 1", nativeQuery = true)
+    @Query(value="SELECT cast(cd.uuid as text) FROM case_data cd WHERE cd.migrated_reference = ?1 AND cd.deleted = false LIMIT 1", nativeQuery = true)
     Optional<UUID> findUUIDByMigratedReference(String migratedReference);
 
 }

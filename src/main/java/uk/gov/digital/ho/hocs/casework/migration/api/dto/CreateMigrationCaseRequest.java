@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
 
@@ -23,6 +22,9 @@ public class CreateMigrationCaseRequest {
 
     @JsonProperty("dateReceived")
     private LocalDate dateReceived;
+
+    @JsonProperty("caseDeadline")
+    private LocalDate caseDeadline;
 
     @JsonProperty("dateCompleted")
     private LocalDate dateCompleted;
