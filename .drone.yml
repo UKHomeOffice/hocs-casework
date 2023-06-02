@@ -17,7 +17,7 @@ steps:
       - git submodule update --init --recursive
 
   - &deploy
-    name: cs-dev
+    name: cs-dev casework
     image: quay.io/ukhomeofficedigital/hocs-helm-kubectl:1.1.1
     environment:
       CHART_NAME: hocs-casework
