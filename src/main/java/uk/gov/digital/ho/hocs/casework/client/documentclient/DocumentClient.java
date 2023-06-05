@@ -52,6 +52,7 @@ public class DocumentClient {
         log.info("Document deleted {}", documentUUID, value(EVENT, DOCUMENT_CLIENT_DELETE_DOCUMENT_SUCCESS));
     }
 
+    @Deprecated(forRemoval = true)
     public S3Document getDocumentFile(UUID documentUUID) {
         S3Document document = restHelper.getFile(serviceBaseURL, String.format("/document/%s/file", documentUUID));
         log.info("Got document with length {} for id {}", document.getData().length, documentUUID,
@@ -59,6 +60,7 @@ public class DocumentClient {
         return document;
     }
 
+    @Deprecated(forRemoval = true)
     public S3Document getDocumentPdf(UUID documentUUID) {
         S3Document document = restHelper.getFile(serviceBaseURL, String.format("/document/%s/pdf", documentUUID));
         log.info("Got document with length {} for id {}", document.getData().length, documentUUID,

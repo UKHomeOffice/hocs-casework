@@ -74,6 +74,7 @@ public class CaseDocumentService {
         log.debug("Document deleted id: {}", documentUUID);
     }
 
+    @Deprecated(forRemoval = true)
     public S3Document getDocumentFile(UUID documentUUID) {
         log.debug("Getting case document for id {}", documentUUID);
         S3Document document = documentClient.getDocumentFile(documentUUID);
@@ -81,6 +82,7 @@ public class CaseDocumentService {
         return document;
     }
 
+    @Deprecated(forRemoval = true)
     public S3Document getDocumentPdf(UUID documentUUID) {
         log.debug("Getting case document pdf for id {}", documentUUID);
         S3Document document = documentClient.getDocumentPdf(documentUUID);
