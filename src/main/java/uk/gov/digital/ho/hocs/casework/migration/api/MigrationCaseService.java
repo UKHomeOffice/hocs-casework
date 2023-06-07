@@ -66,7 +66,6 @@ public class MigrationCaseService {
         MigrationComplaintCorrespondent primaryCorrespondent,
         List<MigrationComplaintCorrespondent> additionalCorrespondents
                                     ) {
-
         migrationCaseDataService.createPrimaryCorrespondent(primaryCorrespondent, caseId, stageId);
         migrationCaseDataService.createAdditionalCorrespondent(additionalCorrespondents, caseId, stageId);
     }

@@ -169,7 +169,8 @@ public class MigrationCaseDataService {
 
         try {
             correspondentRepository.save(correspondent);
-
+            CaseData caseData = getCaseData(caseUUID);
+            migrationAuditClient.createCorrespondentAudit(caseData, correspondent);
             Set<Correspondent> caseCorrespondents = correspondentRepository.findAllByCaseUUID(caseUUID);
 
             if (caseCorrespondents.size()==1) {
@@ -193,6 +194,7 @@ public class MigrationCaseDataService {
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryCorrespondentUUID(primaryCorrespondentUUID);
         caseDataRepository.save(caseData);
+        migrationAuditClient.updateCaseAudit(caseData, stageUUID);
         log.info("Updated Primary Correspondent for Migrated Case: {} Correspondent: {}", caseUUID, primaryCorrespondentUUID,
             value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
     }
@@ -205,6 +207,8 @@ public class MigrationCaseDataService {
 
             try {
                 correspondentRepository.save(correspondent);
+                CaseData caseData = getCaseData(caseUUID);
+                migrationAuditClient.createCorrespondentAudit(caseData, correspondent);
 
             } catch(DataIntegrityViolationException e) {
                 throw new ApplicationExceptions.EntityCreationException(
