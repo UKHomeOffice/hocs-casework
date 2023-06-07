@@ -228,8 +228,11 @@ public class MigrationCaseDataServiceTest {
     @Test
     public void shouldCreateAnAdditionalCorrespondent() {
         // given
+        CaseData caseData = mock(CaseData.class);
+        when(caseData.getUuid()).thenReturn(UUID.randomUUID());
         List<MigrationComplaintCorrespondent> additionalCorrespondents = new ArrayList<>();
         additionalCorrespondents.add(createMigrationComplaintCorrespondent());
+        when(caseDataRepository.findActiveByUuid(any())).thenReturn(caseData);
 
         // when
         migrationCaseDataService.createAdditionalCorrespondent(
