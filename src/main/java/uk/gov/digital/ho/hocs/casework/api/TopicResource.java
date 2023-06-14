@@ -30,11 +30,11 @@ public class TopicResource {
 
     @Allocated(allocatedTo = AllocationLevel.USER)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/topic")
-    ResponseEntity addTopicToCase(@PathVariable UUID caseUUID,
+    ResponseEntity<GetTopicResponse> addTopicToCase(@PathVariable UUID caseUUID,
                                   @PathVariable UUID stageUUID,
                                   @Valid @RequestBody CreateTopicRequest request) {
-        topicService.createTopic(caseUUID, request.getTopicUUID());
-        return ResponseEntity.ok().build();
+        Topic topic = topicService.createTopic(caseUUID, request.getTopicUUID());
+        return ResponseEntity.ok(GetTopicResponse.from(topic));
     }
 
     @Authorised(accessLevel = AccessLevel.READ)
@@ -53,7 +53,7 @@ public class TopicResource {
 
     @Allocated(allocatedTo = AllocationLevel.USER)
     @DeleteMapping(value = "/case/{caseUUID}/stage/{stageUUID}/topic/{topicUUID}")
-    ResponseEntity deleteTopic(@PathVariable UUID caseUUID,
+    ResponseEntity<Void> deleteTopic(@PathVariable UUID caseUUID,
                                @PathVariable UUID stageUUID,
                                @PathVariable UUID topicUUID) {
         topicService.deleteTopic(caseUUID, topicUUID);

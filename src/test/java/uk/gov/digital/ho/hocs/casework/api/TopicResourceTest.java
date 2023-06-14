@@ -13,6 +13,7 @@ import uk.gov.digital.ho.hocs.casework.api.dto.GetTopicsResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,11 +42,13 @@ public class TopicResourceTest {
 
     @Test
     public void shouldAddTopicToCase() {
+        Topic createdTopic = new Topic(caseUUID, topicName, topicUUID);
 
-        doNothing().when(topicService).createTopic(caseUUID, topicUUID);
+        when(topicService.createTopic(caseUUID, topicUUID)).thenReturn(createdTopic);
 
         CreateTopicRequest createTopicRequest = new CreateTopicRequest(topicUUID);
-        ResponseEntity response = topicResource.addTopicToCase(caseUUID, stageUUID, createTopicRequest);
+        ResponseEntity<GetTopicResponse> response =
+            topicResource.addTopicToCase(caseUUID, stageUUID, createTopicRequest);
 
         verify(topicService, times(1)).createTopic(caseUUID, topicUUID);
 
@@ -53,6 +56,7 @@ public class TopicResourceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(Objects.requireNonNull(response.getBody()).getUuid()).isEqualTo(createdTopic.getUuid());
     }
 
     @Test
@@ -90,7 +94,7 @@ public class TopicResourceTest {
 
         doNothing().when(topicService).deleteTopic(caseUUID, topicUUID);
 
-        ResponseEntity response = topicResource.deleteTopic(caseUUID, stageUUID, topicUUID);
+        ResponseEntity<Void> response = topicResource.deleteTopic(caseUUID, stageUUID, topicUUID);
 
         verify(topicService, times(1)).deleteTopic(caseUUID, topicUUID);
 
