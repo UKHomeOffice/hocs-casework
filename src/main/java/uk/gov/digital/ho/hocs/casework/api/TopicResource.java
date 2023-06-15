@@ -30,7 +30,7 @@ public class TopicResource {
 
     @Allocated(allocatedTo = AllocationLevel.USER)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/topic")
-    ResponseEntity addTopicToCase(@PathVariable UUID caseUUID,
+    ResponseEntity<Void> addTopicToCase(@PathVariable UUID caseUUID,
                                   @PathVariable UUID stageUUID,
                                   @Valid @RequestBody CreateTopicRequest request) {
         topicService.createTopic(caseUUID, request.getTopicUUID());
@@ -53,7 +53,7 @@ public class TopicResource {
 
     @Allocated(allocatedTo = AllocationLevel.USER)
     @DeleteMapping(value = "/case/{caseUUID}/stage/{stageUUID}/topic/{topicUUID}")
-    ResponseEntity deleteTopic(@PathVariable UUID caseUUID,
+    ResponseEntity<Void> deleteTopic(@PathVariable UUID caseUUID,
                                @PathVariable UUID stageUUID,
                                @PathVariable UUID topicUUID) {
         topicService.deleteTopic(caseUUID, topicUUID);

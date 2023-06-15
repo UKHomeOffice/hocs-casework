@@ -2,9 +2,11 @@ package uk.gov.digital.ho.hocs.casework.migration.api;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.api.TopicService;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
+import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseResponse;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 
@@ -21,16 +23,20 @@ public class MigrationCaseService {
 
     protected final MigrationStageService migrationStageService;
 
-    private final CorrespondentService correspondentService;
+    private final TopicService topicService;
+
+    private final CaseDataService caseDataService;
 
     public MigrationCaseService(
         MigrationCaseDataService migrationCaseDataService,
         MigrationStageService migrationStageService,
-        CorrespondentService correspondentService
-                               ) {
+        TopicService topicService,
+        CaseDataService caseDataService
+    ) {
         this.migrationCaseDataService = migrationCaseDataService;
         this.migrationStageService = migrationStageService;
-        this.correspondentService = correspondentService;
+        this.topicService = topicService;
+        this.caseDataService = caseDataService;
     }
 
     CreateMigrationCaseResponse createMigrationCase(
@@ -68,6 +74,11 @@ public class MigrationCaseService {
                                     ) {
         migrationCaseDataService.createPrimaryCorrespondent(primaryCorrespondent, caseId, stageId);
         migrationCaseDataService.createAdditionalCorrespondent(additionalCorrespondents, caseId, stageId);
+    }
+
+    public void createPrimaryTopic(UUID caseId, UUID stageId, UUID topicId) {
+        Topic topic = topicService.createTopic(caseId, topicId);
+        caseDataService.updatePrimaryTopic(caseId, stageId, topic.getUuid());
     }
 
 }

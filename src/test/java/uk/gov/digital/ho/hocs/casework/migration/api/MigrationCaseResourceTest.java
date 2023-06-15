@@ -13,6 +13,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseRequest;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseResponse;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreatePrimaryTopicRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -137,6 +138,29 @@ public class MigrationCaseResourceTest {
             dateArg,
             migratedReference);
 
+        verifyNoMoreInteractions(migrationCaseService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldSetAPrimaryTopic() {
+        UUID caseUUID = UUID.randomUUID();
+        UUID stageUUID = UUID.randomUUID();
+        UUID topicUUID = UUID.randomUUID();
+
+        doNothing().when(migrationCaseService).createPrimaryTopic(caseUUID, stageUUID, topicUUID);
+
+        CreatePrimaryTopicRequest request = new CreatePrimaryTopicRequest(
+            caseUUID,
+            stageUUID,
+            topicUUID
+        );
+
+        ResponseEntity<Void> response = migrationCaseResource.createMigrationPrimaryTopic(request);
+
+        verify(migrationCaseService, times(1)).createPrimaryTopic(caseUUID, stageUUID, topicUUID);
         verifyNoMoreInteractions(migrationCaseService);
 
         assertThat(response).isNotNull();
