@@ -108,12 +108,12 @@
     {
       "choices": "S_COMP_CCT_BUS_AREA",
       "name": "BusArea",
-      "label": "Business Area"
+      "label": "Business area"
     },
     {
       "choices": "S_COMP_CCT_ENQ_REASON",
       "name": "EnqReason",
-      "label": "Enquiry Reason"
+      "label": "Enquiry reason"
     },
     {
       "choices": [
@@ -213,74 +213,62 @@
       "label": "Date of Response"
     },
     {
-      "conditionChoices": [
+      "choices": [
         {
-          "choices": [
-            {
-              "label": "IandP",
-              "value": "IandP"
-            },
-            {
-              "label": "RASI",
-              "value": "RASI"
-            },
-            {
-              "label": "VCIC",
-              "value": "VCIC"
-            },
-            {
-              "label": "VCOS",
-              "value": "VCOS"
-            },
-            {
-              "label": "Other",
-              "value": "Other"
-            },
-            {
-              "label": "EUSS FP",
-              "value": "EUSSFP"
-            }
-          ],
-          "conditionPropertyName": "OwningCSU",
-          "conditionPropertyValue": "UKVI"
+          "label": "IandP",
+          "value": "IandP"
         },
         {
-          "choices": [
-            {
-              "label": "CI",
-              "value": "CI"
-            },
-            {
-              "label": "FNORC",
-              "value": "FNORC"
-            },
-            {
-              "label": "Detention",
-              "value": "Detention"
-            },
-            {
-              "label": "ICE Teams",
-              "value": "ICETeams"
-            },
-            {
-              "label": "Other",
-              "value": "Other"
-            },
-            {
-              "label": "NRC",
-              "value": "NRC"
-            },
-            {
-              "label": "Reporting Centres",
-              "value": "ReportingCentres"
-            },
-            {
-              "label": "Returns Preparation",
-              "value": "ReturnsPreparation"
-            }
-          ],
-          "conditionPropertyName": "OwningCSU",
-          "conditionPropertyValue": "IE"
+          "label": "RASI",
+          "value": "RASI"
+        },
+        {
+          "label": "VCIC",
+          "value": "VCIC"
+        },
+        {
+          "label": "VCOS",
+          "value": "VCOS"
+        },
+        {
+          "label": "Other",
+          "value": "Other"
+        },
+        {
+          "label": "EUSS FP",
+          "value": "EUSSFP"
+        },
+        {
+          "label": "CI",
+          "value": "CI"
+        },
+        {
+          "label": "FNORC",
+          "value": "FNORC"
+        },
+        {
+          "label": "Detention",
+          "value": "Detention"
+        },
+        {
+          "label": "ICE Teams",
+          "value": "ICETeams"
+        },
+        {
+          "label": "Other",
+          "value": "Other"
+        },
+        {
+          "label": "NRC",
+          "value": "NRC"
+        },
+        {
+          "label": "Reporting Centres",
+          "value": "ReportingCentres"
+        },
+        {
+          "label": "Returns Preparation",
+          "value": "ReturnsPreparation"
         }
       ],
       "name": "Directorate",
@@ -469,7 +457,7 @@
         }
       ],
       "name": "BusAreaBasedOnDirectorate",
-      "label": "Business Area"
+      "label": "Business area"
     },
     {
       "name": "PsuReference",

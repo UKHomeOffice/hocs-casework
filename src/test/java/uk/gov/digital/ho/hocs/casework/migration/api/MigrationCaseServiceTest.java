@@ -5,32 +5,30 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import uk.gov.digital.ho.hocs.casework.api.CorrespondentService;
+import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
+import uk.gov.digital.ho.hocs.casework.api.TopicService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
-import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.migration.api.dto.CorrespondentType;
-import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
+import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MigrationCaseServiceTest {
-
-    private static final long caseID = 12345L;
-
-    private final CaseDataType caseType = CaseDataTypeFactory.from("MIN", "a1");
 
     private final String STAGE_TYPE = "Migration";
 
@@ -47,61 +45,105 @@ public class MigrationCaseServiceTest {
     private MigrationCaseDataService migrationCaseDataService;
 
     @Mock
-    private CorrespondentService correspondentService;
+    private TopicService topicService;
+
+    @Mock
+    private CaseDataService caseDataService;
 
     LocalDate originalReceivedDate;
 
-    CaseData caseData;
+    LocalDate originalDeadline;
+
+    LocalDate originalCompletedDate;
+
+    LocalDate originalCreatedDate;
+
+    String migratedReference;
+
+    UUID caseUUID;
 
     Stage stage;
 
     @Before
     public void setUp() {
-        this.migrationCaseService = new MigrationCaseService(migrationCaseDataService, migrationStageService,  correspondentService);
+        this.migrationCaseService = new MigrationCaseService(migrationCaseDataService, migrationStageService, topicService, caseDataService);
         originalReceivedDate = LocalDate.parse("2020-02-01");
+        originalDeadline = LocalDate.parse("2020-02-28");
+        originalCompletedDate = LocalDate.parse("2020-03-01");
+        originalCreatedDate = LocalDate.parse("2020-02-01");
+        migratedReference = "123456";
         data = Collections.emptyMap();
-        caseData = new CaseData(1L, UUID.randomUUID(), LocalDateTime.now(), "COMP", null, false, data, null,
-            null, null, null, LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(10), false, null, null, null);
-        stage = new Stage(caseData.getUuid(), STAGE_TYPE, null, null, null);
+        caseUUID = UUID.randomUUID();
+        stage = new Stage(caseUUID, STAGE_TYPE, null, null, null);
+    }
+
+    private CaseData getCaseData(boolean completed) {
+        return new CaseData(1L, caseUUID, LocalDateTime.now(), "COMP", null, false, data, null, null, null,
+            null, LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(10), completed, completed ? originalCompletedDate.atStartOfDay() : null, null, null
+        );
     }
 
     @Test
-    public void shouldCreateMigrationCase() throws ApplicationExceptions.EntityCreationException {
+    public void shouldCreateCompletedMigrationCase() throws ApplicationExceptions.EntityCreationException {
         //when
-        when(migrationCaseDataService.createCompletedCase(caseDataType.getDisplayName(), data,
-            originalReceivedDate)).thenReturn(caseData);
+        CaseData caseData = getCaseData(true);
+        when(migrationCaseDataService.createCase(caseDataType.getDisplayName(), data,
+            originalReceivedDate, originalDeadline, originalCompletedDate, originalCreatedDate, migratedReference)).thenReturn(caseData);
 
         when(migrationStageService.createStageForClosedCase(caseData.getUuid(), STAGE_TYPE)).thenReturn(stage);
 
-        List<MigrationComplaintCorrespondent> additionalCorrespondents = new ArrayList<>();
-        additionalCorrespondents.add(createCorrespondent());
         migrationCaseService.createMigrationCase(
             caseDataType.getDisplayName(),
             STAGE_TYPE,
             data,
-            originalReceivedDate);
+            originalReceivedDate,
+            originalDeadline,
+            originalCompletedDate,
+            originalCreatedDate,
+            migratedReference);
 
         // then
-        verify(migrationCaseDataService, times(1)).createCompletedCase(caseDataType.getDisplayName(), data,
-            originalReceivedDate);
+        verify(migrationCaseDataService, times(1)).createCase(caseDataType.getDisplayName(), data,
+            originalReceivedDate, originalDeadline, originalCompletedDate, originalCreatedDate, migratedReference);
         verify(migrationStageService, times(1)).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
 
         verifyNoMoreInteractions(migrationCaseDataService);
         verifyNoMoreInteractions(migrationStageService);
     }
 
-    MigrationComplaintCorrespondent createCorrespondent() {
-        return new MigrationComplaintCorrespondent(
-                "fullName",
-                CorrespondentType.COMPLAINANT,
-                "address1",
-                "address2",
-                "address3",
-                "postcode",
-                "country",
-                "organisation",
-                "telephone",
-                "email",
-                "reference");
+    @Test
+    public void shouldCreateOpenMigrationCase() throws ApplicationExceptions.EntityCreationException {
+        //when
+        CaseData caseData = getCaseData(false);
+        when(migrationCaseDataService.createCase(caseDataType.getDisplayName(), data,
+            originalReceivedDate, originalDeadline,null, originalCreatedDate, migratedReference)).thenReturn(caseData);
+
+        migrationCaseService.createMigrationCase(caseDataType.getDisplayName(), STAGE_TYPE, data, originalReceivedDate,
+            originalDeadline, null, originalCreatedDate, migratedReference);
+
+        // then
+        verify(migrationCaseDataService, times(1)).createCase(caseDataType.getDisplayName(), data,
+            originalReceivedDate, originalDeadline, null, originalCreatedDate, migratedReference);
+
+        verify(migrationStageService, never()).createStageForClosedCase(caseData.getUuid(), STAGE_TYPE);
+        verifyNoMoreInteractions(migrationCaseDataService);
+        verifyNoMoreInteractions(migrationStageService);
+    }
+
+    @Test
+    public void shouldSetPrimaryTopic() {
+        UUID topicUUID = UUID.randomUUID();
+        Topic createdTopic = new Topic(caseUUID, "topicName", topicUUID);
+
+        when(topicService.createTopic(caseUUID, topicUUID)).thenReturn(createdTopic);
+        doNothing().when(caseDataService).updatePrimaryTopic(caseUUID, stage.getUuid(), createdTopic.getUuid());
+
+        migrationCaseService.createPrimaryTopic(caseUUID, stage.getUuid(), topicUUID);
+
+        verify(topicService, times(1)).createTopic(caseUUID, topicUUID);
+        verify(caseDataService, times(1)).updatePrimaryTopic(caseUUID, stage.getUuid(), createdTopic.getUuid());
+
+        verifyNoMoreInteractions(topicService);
+        verifyNoMoreInteractions(caseDataService);
     }
 }

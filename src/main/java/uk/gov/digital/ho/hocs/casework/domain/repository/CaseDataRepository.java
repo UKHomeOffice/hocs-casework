@@ -5,6 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -24,5 +25,8 @@ public interface CaseDataRepository extends CrudRepository<CaseData, Long> {
 
     @Query(value = "SELECT cd.* FROM case_data cd WHERE cd.uuid = ?1", nativeQuery = true)
     CaseData findAnyByUuid(UUID uuid);
+
+    @Query(value="SELECT cast(cd.uuid as text) FROM case_data cd WHERE cd.migrated_reference = ?1 AND cd.deleted = false LIMIT 1", nativeQuery = true)
+    Optional<UUID> findUUIDByMigratedReference(String migratedReference);
 
 }

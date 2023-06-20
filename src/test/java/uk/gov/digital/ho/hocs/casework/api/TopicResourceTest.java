@@ -42,10 +42,10 @@ public class TopicResourceTest {
     @Test
     public void shouldAddTopicToCase() {
 
-        doNothing().when(topicService).createTopic(caseUUID, topicUUID);
+        when(topicService.createTopic(caseUUID, topicUUID)).thenReturn(new Topic(caseUUID, topicName, topicUUID));
 
         CreateTopicRequest createTopicRequest = new CreateTopicRequest(topicUUID);
-        ResponseEntity response = topicResource.addTopicToCase(caseUUID, stageUUID, createTopicRequest);
+        ResponseEntity<Void> response = topicResource.addTopicToCase(caseUUID, stageUUID, createTopicRequest);
 
         verify(topicService, times(1)).createTopic(caseUUID, topicUUID);
 
@@ -90,7 +90,7 @@ public class TopicResourceTest {
 
         doNothing().when(topicService).deleteTopic(caseUUID, topicUUID);
 
-        ResponseEntity response = topicResource.deleteTopic(caseUUID, stageUUID, topicUUID);
+        ResponseEntity<Void> response = topicResource.deleteTopic(caseUUID, stageUUID, topicUUID);
 
         verify(topicService, times(1)).deleteTopic(caseUUID, topicUUID);
 

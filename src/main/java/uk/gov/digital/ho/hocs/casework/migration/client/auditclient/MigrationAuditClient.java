@@ -16,6 +16,7 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
+import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 
 import java.time.LocalDateTime;
@@ -57,8 +58,7 @@ public class MigrationAuditClient {
                                 RequestData requestData,
                                 @Value("${migration.userid}") String userId,
                                 @Value("${migration.username}") String userName,
-                                @Value("${migration.group}") String group,
-                                @Value("${hocs.audit-service}") String auditService) {
+                                @Value("${migration.group}") String group) {
         this.auditSearchSnsClient = auditSearchSnsClient;
         this.auditQueue = auditQueue;
         this.raisingService = raisingService;
@@ -71,7 +71,6 @@ public class MigrationAuditClient {
     }
 
     public void updateCaseAudit(CaseData caseData, UUID stageUUID) {
-        LocalDateTime localDateTime = LocalDateTime.now();
 
         String data = "{}";
         try {
@@ -79,57 +78,42 @@ public class MigrationAuditClient {
         } catch (JsonProcessingException e) {
             logFailedToParseDataPayload(e);
         }
-        sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_UPDATED, stageUUID, data,
+        sendAuditMessage(caseData.getCreated(), caseData.getUuid(), data, EventType.CASE_UPDATED, stageUUID, data,
             requestData.correlationId(), userId);
 
     }
 
     public void completeCaseAudit(CaseData caseData) {
-        LocalDateTime localDateTime = LocalDateTime.now();
         String data = "{}";
         try {
             data = objectMapper.writeValueAsString(new AuditPayload.Case(caseData.getUuid()));
         } catch (JsonProcessingException e) {
             logFailedToParseDataPayload(e);
         }
-        sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_COMPLETED, null, data,
+        sendAuditMessage(caseData.getDateCompleted(), caseData.getUuid(), data, EventType.CASE_COMPLETED, null, data,
             requestData.correlationId(), userId);
     }
 
     public void createCaseAudit(CaseData caseData) {
-        LocalDateTime localDateTime = LocalDateTime.now();
         String data = "{}";
         try {
             data = objectMapper.writeValueAsString(AuditPayload.CreateCaseRequest.from(caseData));
         } catch (JsonProcessingException e) {
             logFailedToParseDataPayload(e);
         }
-        sendAuditMessage(localDateTime, caseData.getUuid(), data, EventType.CASE_CREATED, null, data,
+        sendAuditMessage(caseData.getCreated(), caseData.getUuid(), data, EventType.CASE_CREATED, null, data,
             requestData.correlationId(), userId);
     }
 
-    public void createStage(BaseStage stage) {
-        LocalDateTime localDateTime = LocalDateTime.now();
+    public void createCorrespondentAudit(CaseData caseData, Correspondent correspondent) {
+        String data = "{}";
         try {
-            sendAuditMessage(localDateTime, stage.getCaseUUID(), objectMapper.writeValueAsString(
-                    new AuditPayload.StageAllocation(stage.getUuid(), stage.getTeamUUID(), stage.getStageType(),
-                        stage.getDeadline(), stage.getDeadlineWarning())), EventType.STAGE_CREATED, stage.getUuid(),
-                        requestData.correlationId(), userId, userName, null);
+            data = objectMapper.writeValueAsString(AuditPayload.CreateCorrespondentRequest.from(correspondent));
         } catch (JsonProcessingException e) {
-            logFailedToParseAuditPayload(e);
+            logFailedToParseDataPayload(e);
         }
-    }
-
-    private void sendAuditMessage(LocalDateTime localDateTime,
-                                  UUID caseUUID,
-                                  String payload,
-                                  EventType eventType,
-                                  UUID stageUUID,
-                                  String correlationId,
-                                  String userId,
-                                  String username,
-                                  String groups) {
-        sendAuditMessage(localDateTime, caseUUID, payload, eventType, stageUUID, "{}", correlationId, userId);
+        sendAuditMessage(caseData.getCreated(), correspondent.getCaseUUID(), data, EventType.CORRESPONDENT_CREATED, null, data,
+            requestData.correlationId(), requestData.userId());
     }
 
     private void sendAuditMessage(LocalDateTime localDateTime,
@@ -162,11 +146,6 @@ public class MigrationAuditClient {
             RequestData.USER_ID_HEADER, new SnsStringMessageAttributeValue(userId),
             RequestData.USERNAME_HEADER, new SnsStringMessageAttributeValue(userName),
             RequestData.GROUP_HEADER, new SnsStringMessageAttributeValue(group));
-    }
-
-    private void logFailedToParseAuditPayload(JsonProcessingException e) {
-        log.error("Failed to parse audit payload, event {}, exception: {}",
-            value(LogEvent.EVENT, LogEvent.UNCAUGHT_EXCEPTION), value(LogEvent.EXCEPTION, e));
     }
 
     private void logFailedToParseDataPayload(JsonProcessingException e) {

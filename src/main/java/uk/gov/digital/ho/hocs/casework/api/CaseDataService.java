@@ -564,7 +564,7 @@ public class CaseDataService {
             value(EVENT, PRIMARY_CORRESPONDENT_UPDATED));
     }
 
-    void updatePrimaryTopic(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID) {
+    public void updatePrimaryTopic(UUID caseUUID, UUID stageUUID, UUID primaryTopicUUID) {
         log.debug("Updating Primary Topic for Case: {} Topic: {}", caseUUID, primaryTopicUUID);
         CaseData caseData = getCaseData(caseUUID);
         caseData.setPrimaryTopicUUID(primaryTopicUUID);

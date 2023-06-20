@@ -11,7 +11,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-@Profile("reports")
+@Profile("reporting")
 public class ReportFactory {
 
     private final List<Report<?>> reports;

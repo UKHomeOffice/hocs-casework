@@ -13,6 +13,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CaseAttachment;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseRequest;
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseResponse;
+import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreatePrimaryTopicRequest;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,6 +36,8 @@ public class MigrationCaseResourceTest {
 
     private final Map<String, String> data = new HashMap<>(0);
 
+    private static final String migratedReference = "12345";
+
     @Mock
     private MigrationCaseService migrationCaseService;
 
@@ -53,7 +56,7 @@ public class MigrationCaseResourceTest {
     }
 
     @Test
-    public void shouldCreateCase() {
+    public void shouldCreateAnOpenCase() {
 
         //given
         CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
@@ -61,13 +64,22 @@ public class MigrationCaseResourceTest {
             caseDataType.getDisplayCode(),
             data,
             dateArg,
+            dateArg,
             null,
-            STAGE_TYPE);
+            null,
+            null,
+            STAGE_TYPE,
+            migratedReference);
         when(migrationCaseService.createMigrationCase(
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
-            dateArg)).thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
+            dateArg,
+            null,
+            null,
+            dateArg,
+            migratedReference
+            )).thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
 
         ResponseEntity<CreateMigrationCaseResponse> response = migrationCaseResource.createMigrationCase(request);
 
@@ -75,8 +87,80 @@ public class MigrationCaseResourceTest {
             caseDataType.getDisplayCode(),
             STAGE_TYPE,
             data,
-            dateArg);
+            dateArg,
+            null,
+            null,
+            dateArg,
+            migratedReference);
 
+        verifyNoMoreInteractions(migrationCaseService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldCreateAClosedCase() {
+
+        //given
+        CaseData caseData = new CaseData(caseDataType, caseID, data, dateArg);
+        CreateMigrationCaseRequest request = new CreateMigrationCaseRequest(
+            caseDataType.getDisplayCode(),
+            data,
+            dateArg,
+            dateArg,
+            dateArg,
+            dateArg,
+            null,
+            STAGE_TYPE,
+            migratedReference);
+
+        when(migrationCaseService.createMigrationCase(
+            caseDataType.getDisplayCode(),
+            STAGE_TYPE,
+            data,
+            dateArg,
+            dateArg,
+            dateArg,
+            dateArg,
+            migratedReference))
+            .thenReturn(CreateMigrationCaseResponse.from(caseData, UUID.randomUUID()));
+
+        ResponseEntity<CreateMigrationCaseResponse> response = migrationCaseResource.createMigrationCase(request);
+
+        verify(migrationCaseService, times(1)).createMigrationCase(
+            caseDataType.getDisplayCode(),
+            STAGE_TYPE,
+            data,
+            dateArg,
+            dateArg,
+            dateArg,
+            dateArg,
+            migratedReference);
+
+        verifyNoMoreInteractions(migrationCaseService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldSetAPrimaryTopic() {
+        UUID caseUUID = UUID.randomUUID();
+        UUID stageUUID = UUID.randomUUID();
+        UUID topicUUID = UUID.randomUUID();
+
+        doNothing().when(migrationCaseService).createPrimaryTopic(caseUUID, stageUUID, topicUUID);
+
+        CreatePrimaryTopicRequest request = new CreatePrimaryTopicRequest(
+            caseUUID,
+            stageUUID,
+            topicUUID
+        );
+
+        ResponseEntity<Void> response = migrationCaseResource.createMigrationPrimaryTopic(request);
+
+        verify(migrationCaseService, times(1)).createPrimaryTopic(caseUUID, stageUUID, topicUUID);
         verifyNoMoreInteractions(migrationCaseService);
 
         assertThat(response).isNotNull();

@@ -55,6 +55,7 @@ public class CaseDocumentResource {
         return ResponseEntity.ok(caseDocumentService.getDocument(documentUUID));
     }
 
+    @Deprecated(forRemoval = true)
     @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
     @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}/file", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ByteArrayResource> getCaseDocumentFile(@PathVariable UUID caseUUID,
@@ -69,6 +70,7 @@ public class CaseDocumentResource {
             document.getData().length).body(resource);
     }
 
+    @Deprecated(forRemoval = true)
     @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
     @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}/pdf", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ByteArrayResource> getCaseDocumentPdf(@PathVariable UUID caseUUID,

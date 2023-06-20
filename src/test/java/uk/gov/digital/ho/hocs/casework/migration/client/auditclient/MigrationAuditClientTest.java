@@ -99,18 +99,6 @@ public class MigrationAuditClientTest extends BaseAwsTest {
     }
 
     @Test
-    public void auditStageCreated() throws IOException {
-        var caseUUID = UUID.randomUUID();
-        var stage = new Stage(caseUUID, "SOME_STAGE", null, null, null);
-
-        migrationAuditClient.createStage(stage);
-
-        verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
-
-        assertSnsValues(stage.getCaseUUID(), EventType.STAGE_CREATED);
-    }
-
-    @Test
     public void shouldSetHeaders() {
         var caseID = 12345L;
         var caseType = CaseDataTypeFactory.from("TEST", "F0");

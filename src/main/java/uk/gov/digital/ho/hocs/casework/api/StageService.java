@@ -378,9 +378,15 @@ public class StageService {
             value(EVENT, STAGE_TRANSITION_NOTE_UPDATED));
     }
 
-    void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID, String emailType) {
+    void updateStageTeam(UUID caseUUID, UUID stageUUID, UUID newTeamUUID, String emailType, boolean saveLast, String lastFieldName) {
         log.debug("Updating Team: {} for Stage: {}", newTeamUUID, stageUUID);
+
         StageWithCaseData stage = getStageWithCaseData(caseUUID, stageUUID);
+        if (lastFieldName != null) {
+            caseDataService.updateCaseData(caseUUID, stageUUID, Map.of(lastFieldName,
+                saveLast ? stage.getTeamUUID().toString() : ""));
+        }
+
         updateStageTeam(stage, stage.getData(), stage.getCaseReference(), newTeamUUID, emailType);
     }
 
@@ -492,7 +498,7 @@ public class StageService {
         }
 
         for (StageWithCaseData stage : stages) {
-            stage.setTag(allCaseTags.getOrDefault(stage.getCaseUUID(), Collections.emptySet()));
+            stage.setTag(allCaseTags.getOrDefault(stage.getCaseUUID(), new HashSet<>()));
         }
     }
 
@@ -710,7 +716,7 @@ public class StageService {
         CaseData caseData = caseDataService.getCaseData(caseUUID);
 
         for (ActiveStage activeStage : caseData.getActiveStages()) {
-            updateStageTeam(caseUUID, activeStage.getUuid(), null, null);
+            updateStageTeam(caseUUID, activeStage.getUuid(), null, null, false, null);
         }
 
         Map<String, String> data = new HashMap<>();

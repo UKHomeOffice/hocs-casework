@@ -47,6 +47,10 @@ public class AbstractCaseData implements Serializable {
     @Column(name = "reference")
     private String reference;
 
+    @Getter
+    @Column(name = "migrated_reference")
+    private String migratedReference;
+
     @Setter
     @Getter
     @Column(name = "deleted")
@@ -133,6 +137,27 @@ public class AbstractCaseData implements Serializable {
         this.reference = CaseReferenceGenerator.generateCaseReference(this.type, caseNumber, this.created);
         this.uuid = randomUUID(type.getShortCode());
         this.dateReceived = dateReceived;
+    }
+
+
+    //Specific constructor for migrating cases to set created and migrated reference
+    public AbstractCaseData(CaseDataType type,
+                            Long caseNumber,
+                            Map<String, String> data,
+                            LocalDate dateReceived,
+                            LocalDateTime dateCreated,
+                            String migratedReference) {
+        if (type==null || caseNumber==null || migratedReference==null || dateCreated==null) {
+            throw new ApplicationExceptions.EntityCreationException("Cannot create CaseData", CASE_CREATE_FAILURE);
+        }
+
+        this.type = type.getDisplayCode();
+        this.reference = CaseReferenceGenerator.generateCaseReference(this.type, caseNumber, this.created);
+        this.uuid = randomUUID(type.getShortCode());
+        this.dateReceived = dateReceived;
+        this.created = dateCreated;
+        this.migratedReference = migratedReference;
+        update(data);
     }
 
     private static UUID randomUUID(String shortCode) {

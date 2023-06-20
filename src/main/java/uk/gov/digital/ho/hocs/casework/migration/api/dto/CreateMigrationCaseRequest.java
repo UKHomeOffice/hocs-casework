@@ -17,13 +17,25 @@ public class CreateMigrationCaseRequest {
     @JsonProperty("data")
     private Map<String, String> data;
 
+    @JsonProperty("dateCreated")
+    private LocalDate dateCreated;
+
     @JsonProperty("dateReceived")
     private LocalDate dateReceived;
+
+    @JsonProperty("caseDeadline")
+    private LocalDate caseDeadline;
+
+    @JsonProperty("dateCompleted")
+    private LocalDate dateCompleted;
 
     @JsonProperty("fromCaseUUID")
     private UUID fromCaseUUID;
 
     @JsonProperty("stageType")
     private String stageType;
+
+    @JsonProperty("migratedReference")
+    private String migratedReference;
 
 }
