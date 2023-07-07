@@ -57,6 +57,8 @@ public class MigrationCaseDataService {
 
     private final DeadlineService deadlineService;
 
+    private final MigrationStageService migrationStageService;
+
     private final boolean allowDuplicateMigratedReferences;
 
     public MigrationCaseDataService(
@@ -67,8 +69,9 @@ public class MigrationCaseDataService {
         AuditClient auditClient,
         CorrespondentRepository correspondentRepository,
         DeadlineService deadlineService,
+        MigrationStageService migrationStageService,
         @Value("${migration.allow-duplicate-migrated-references:false}") boolean allowDuplicateMigratedReferences
-        )
+                                   )
     {
         this.caseDataRepository = caseDataRepository;
         this.infoClient = infoClient;
@@ -77,45 +80,85 @@ public class MigrationCaseDataService {
         this.correspondentRepository = correspondentRepository;
         this.documentClient = documentClient;
         this.deadlineService = deadlineService;
+        this.migrationStageService = migrationStageService;
         this.allowDuplicateMigratedReferences = allowDuplicateMigratedReferences;
     }
 
     protected CaseData getCaseData(UUID caseUUID) {
         log.debug("Getting Case: {}", caseUUID);
         CaseData caseData = caseDataRepository.findActiveByUuid(caseUUID);
-        if (caseData==null) {
+        if (caseData == null) {
             log.error("Migration Case: {}, not found!", caseUUID, value(EVENT, MIGRATION_CASE_NOT_FOUND));
             throw new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseUUID),
-                MIGRATION_CASE_NOT_FOUND);
+                MIGRATION_CASE_NOT_FOUND
+            );
         }
         log.info("Got Migration Case: {}", caseData.getUuid(), value(EVENT, MIGRATION_CASE_RETRIEVED));
         return caseData;
     }
 
-    @Transactional
-    public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
-        if (data==null) {
-            log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID,
-                value(EVENT, MIGRATION_CASE_NOT_UPDATED_NULL_DATA));
-            return;
+    protected CaseData getCaseData(String migratedReference) {
+        log.debug("Getting Migrated Case: {}", migratedReference);
+        Optional<UUID> caseUUID = caseDataRepository.findUUIDByMigratedReference(migratedReference);
+        if (caseUUID.isEmpty()) {
+            log.error("Migration Case: {}, not found!", migratedReference, value(EVENT, MIGRATION_CASE_NOT_FOUND));
+            throw new ApplicationExceptions.EntityNotFoundException(String.format("Migrated Case: %s, not found!", migratedReference),
+                MIGRATION_CASE_NOT_FOUND
+            );
         }
-        updateCaseData(getCaseData(caseUUID), stageUUID, data);
+
+        return getCaseData(caseUUID.get());
     }
 
     @Transactional
-    public void updateCaseData(CaseData caseData, UUID stageUUID, Map<String, String> data) {
+    public void updateCaseData(String migratedReference, LocalDateTime auditEventTimestamp, Map<String, String> data) {
+        if (data == null) {
+            log.warn("Data was null for Migrated Case: {}", migratedReference,
+                value(EVENT, MIGRATION_CASE_NOT_UPDATED_NULL_DATA)
+                    );
+            return;
+        }
+        CaseData caseData = getCaseData(migratedReference);
+        UUID stageUUID = migrationStageService
+            .getStageForCaseUUID(caseData.getUuid())
+            .orElseThrow(() -> new MigrationExceptions.ValidStageNotFoundException(migratedReference,
+                caseData.getUuid().toString()
+            ))
+            .getUuid();
+
+        updateCaseData(caseData, stageUUID, data, auditEventTimestamp);
+    }
+
+    @Transactional
+    public void updateCaseData(UUID caseUUID, UUID stageUUID, Map<String, String> data) {
+        if (data == null) {
+            log.warn("Data was null for Case: {} Stage: {}", caseUUID, stageUUID,
+                value(EVENT, MIGRATION_CASE_NOT_UPDATED_NULL_DATA)
+                    );
+            return;
+        }
+        CaseData caseData = getCaseData(caseUUID);
+        updateCaseData(caseData, stageUUID, data, caseData.getCreated());
+    }
+
+    @Transactional
+    public void updateCaseData(
+        CaseData caseData, UUID stageUUID, Map<String, String> data, LocalDateTime auditEventTimestamp
+                              ) {
         log.debug("Updating data for Case: {}", caseData.getUuid());
-        if (data==null) {
+        if (data == null) {
             log.warn("Data was null for Case: {} Stage: {}", caseData.getUuid(), stageUUID,
-                value(EVENT, MIGRATION_CASE_NOT_UPDATED_NULL_DATA));
+                value(EVENT, MIGRATION_CASE_NOT_UPDATED_NULL_DATA)
+                    );
             return;
         }
         log.debug("Data size {}", data.size());
         caseData.update(data);
         caseDataRepository.save(caseData);
-        migrationAuditClient.updateCaseAudit(caseData, stageUUID);
+        migrationAuditClient.updateCaseAudit(caseData, stageUUID, auditEventTimestamp);
         log.info("Updated Case Data for Case: {} Stage: {}", caseData.getUuid(), stageUUID,
-            value(EVENT, MIGRATION_CASE_UPDATED));
+            value(EVENT, MIGRATION_CASE_UPDATED)
+                );
     }
 
     @Transactional
@@ -221,18 +264,13 @@ public class MigrationCaseDataService {
     }
 
     private Correspondent getCorrespondent(MigrationComplaintCorrespondent complaintCorrespondent, UUID caseUUID) {
-        Correspondent correspondent = new Correspondent(caseUUID,
-            complaintCorrespondent.getCorrespondentType().toString(),
-            complaintCorrespondent.getFullName(),
-            complaintCorrespondent.getOrganisation(),
-            new Address(complaintCorrespondent.getPostcode(),
-                complaintCorrespondent.getAddress1(), complaintCorrespondent.getAddress2(), complaintCorrespondent.getAddress3(),
+        return new Correspondent(caseUUID, complaintCorrespondent.getCorrespondentType().toString(),
+            complaintCorrespondent.getFullName(), complaintCorrespondent.getOrganisation(),
+            new Address(complaintCorrespondent.getPostcode(), complaintCorrespondent.getAddress1(),
+                complaintCorrespondent.getAddress2(), complaintCorrespondent.getAddress3(),
                 complaintCorrespondent.getCountry()
-            ),
-            complaintCorrespondent.getTelephone(),
-            complaintCorrespondent.getEmail(),
+            ), complaintCorrespondent.getTelephone(), complaintCorrespondent.getEmail(),
             complaintCorrespondent.getReference(),
             complaintCorrespondent.getReference());
-        return correspondent;
     }
 }
