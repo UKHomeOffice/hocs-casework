@@ -23,4 +23,24 @@ public interface MigrationExceptions {
         }
 
     }
+
+    class ValidStageNotFoundException extends RuntimeException {
+        private final String migratedReference;
+        private final String caseUUID;
+
+        public ValidStageNotFoundException(String migratedReference, String caseUUID) {
+            super("Could not find a stage when updating migrated reference %s found and case UUID: %s".formatted(migratedReference, caseUUID));
+            this.migratedReference = migratedReference;
+            this.caseUUID = caseUUID;
+        }
+
+        public String getMigratedReference() {
+            return migratedReference;
+        }
+
+        public String getCaseUUID() {
+            return caseUUID;
+        }
+
+    }
 }

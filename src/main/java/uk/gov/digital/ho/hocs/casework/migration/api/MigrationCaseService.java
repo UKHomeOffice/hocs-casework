@@ -11,6 +11,7 @@ import uk.gov.digital.ho.hocs.casework.migration.api.dto.CreateMigrationCaseResp
 import uk.gov.digital.ho.hocs.casework.migration.api.dto.MigrationComplaintCorrespondent;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -79,6 +80,12 @@ public class MigrationCaseService {
     public void createPrimaryTopic(UUID caseId, UUID stageId, UUID topicId) {
         Topic topic = topicService.createTopic(caseId, topicId);
         caseDataService.updatePrimaryTopic(caseId, stageId, topic.getUuid());
+    }
+
+    public void updateCaseData(
+        String migratedReference, LocalDateTime updateEventTimestamp, Map<String, String> data
+                              ) {
+        migrationCaseDataService.updateCaseData(migratedReference, updateEventTimestamp, data);
     }
 
 }
