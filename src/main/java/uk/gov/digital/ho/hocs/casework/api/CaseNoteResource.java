@@ -26,21 +26,21 @@ public class CaseNoteResource {
         this.caseNoteService = caseNoteService;
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/{caseUUID}/note")
     ResponseEntity<GetCaseNotesResponse> getCaseNotesForCase(@PathVariable UUID caseUUID) {
         Set<CaseNote> caseNoteData = caseNoteService.getCaseNotes(caseUUID);
         return ResponseEntity.ok(GetCaseNotesResponse.from(caseNoteData));
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/{caseUUID}/note/{noteUUID}")
     ResponseEntity<GetCaseNoteResponse> getCaseNote(@PathVariable UUID caseUUID, @PathVariable UUID noteUUID) {
         CaseNote caseNoteData = caseNoteService.getCaseNote(noteUUID);
         return ResponseEntity.ok(GetCaseNoteResponse.from(caseNoteData));
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.READ)
     @PostMapping(value = "/case/{caseUUID}/note")
     public ResponseEntity<UUID> createCaseNote(@PathVariable UUID caseUUID,
                                                @Valid @RequestBody CreateCaseNoteRequest createCaseNoteRequest) {

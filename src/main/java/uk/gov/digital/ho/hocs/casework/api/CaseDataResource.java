@@ -65,7 +65,7 @@ class CaseDataResource {
         this.infoClient = infoClient;
     }
 
-    @Authorised(accessLevel = AccessLevel.OWNER, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @PostMapping(value = "/case")
     public ResponseEntity<CreateCaseResponse> createCase(@RequestBody CreateCaseRequest request) {
         CaseData caseData = caseDataService.createCase(request.getType(), request.getData(), request.getDateRecieved(),
@@ -81,7 +81,7 @@ class CaseDataResource {
         return ResponseEntity.ok(migrateCaseResponse);
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/{caseUUID}")
     public ResponseEntity<GetCaseResponse> getCase(@PathVariable UUID caseUUID,
                                                    @RequestParam("full") Optional<Boolean> full) {
@@ -96,14 +96,14 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/timeline")
     public ResponseEntity<Set<TimelineItemDto>> getCaseTimeline(@PathVariable UUID caseUUID) {
         Stream<TimelineItem> timeline = caseDataService.getCaseTimeline(caseUUID);
         return ResponseEntity.ok(timeline.map(TimelineItemDto::from).collect(Collectors.toSet()));
     }
 
-    @Authorised(accessLevel = AccessLevel.SUMMARY, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.SUMMARY)
     @GetMapping(value = "/case/{caseUUID}/summary")
     public ResponseEntity<GetCaseSummaryResponse> getCaseSummary(@PathVariable UUID caseUUID) {
         CaseSummary caseSummary = caseDataService.getCaseSummary(caseUUID);
@@ -126,7 +126,7 @@ class CaseDataResource {
         return ResponseEntity.ok(totals);
     }
 
-    @Authorised(accessLevel = AccessLevel.WRITE, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.WRITE)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/data")
     public ResponseEntity<Void> updateCaseData(@PathVariable UUID caseUUID,
                                                @PathVariable UUID stageUUID,
@@ -204,7 +204,7 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.OWNER, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/teamTexts")
     public ResponseEntity<UpdateTeamByStageAndTextsResponse> updateTeamByStageAndTexts(@PathVariable UUID caseUUID,
                                                                                        @PathVariable UUID stageUUID,

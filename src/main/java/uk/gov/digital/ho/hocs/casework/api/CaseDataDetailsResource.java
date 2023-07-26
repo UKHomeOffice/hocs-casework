@@ -20,7 +20,7 @@ class CaseDataDetailsResource {
         this.caseDataDetailsService = caseDataDetailsService;
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping("/case/{caseUUID}/details")
     public ResponseEntity<CaseDataDetailsDto> getCaseDataDetails(@PathVariable UUID caseUUID) {
         return ResponseEntity.ok(caseDataDetailsService.getCaseDataDetails(caseUUID));
