@@ -42,7 +42,7 @@ dependencies {
     annotationProcessor 'org.springframework:spring-context-indexer:5.3.24'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
-    testImplementation 'com.google.guava:guava:32.1.1-jre'
+    testImplementation 'com.google.guava:guava:32.1.2-jre'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.assertj:assertj-core'
     testImplementation 'junit:junit:4.13.2'
