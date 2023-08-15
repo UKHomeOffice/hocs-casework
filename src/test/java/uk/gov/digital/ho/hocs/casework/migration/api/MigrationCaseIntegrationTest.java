@@ -144,7 +144,7 @@ public class MigrationCaseIntegrationTest {
 
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(result.getBody()).isEqualTo(
-            "Could not find a stage when updating migrated reference %s found and case UUID: %s".formatted(
+            "Could not find a stage when updating migrated reference %s, case UUID: %s".formatted(
                 MISSING_STAGE_MIGRATED_REFERENCE, MISSING_STAGE_CASE_UUID));
         verifyNoInteractions(migrationAuditClient);
     }
