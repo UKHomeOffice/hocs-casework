@@ -152,8 +152,6 @@ public class AuthorisationAspectTest {
             new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseReference), CASE_NOT_FOUND);
         when(caseService.getCaseDataByReference(caseReference)).thenThrow(exception);
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
-        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
-        when(proceedingJoinPoint.proceed()).thenReturn(new Object());
 
         assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint, annotation))
             .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
