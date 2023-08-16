@@ -5,7 +5,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
@@ -69,6 +68,8 @@ public class CaseDataResourceTest {
     private final Map<String, String> data = new HashMap<>(0);
 
     private final UUID uuid = UUID.randomUUID();
+
+    private static final String CASE_REFERENCE = "WCS/87654321/23";
 
     @Mock
     private CaseDataService caseDataService;
@@ -165,6 +166,23 @@ public class CaseDataResourceTest {
 
         ResponseEntity<Void> response = caseDataResource.deleteCase(uuid, true);
 
+        verify(caseDataService, times(1)).deleteCase(uuid, true);
+
+        verifyNoMoreInteractions(caseDataService);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void shouldDeleteCaseByReference() {
+
+        doNothing().when(caseDataService).deleteCase(uuid, true);
+        when(caseDataService.getCaseDataByReference(CASE_REFERENCE)).thenReturn(buildStubCaseData(uuid));
+
+        ResponseEntity<Void> response = caseDataResource.deleteCaseByReference(CASE_REFERENCE, true);
+
+        verify(caseDataService, times(1)).getCaseDataByReference(CASE_REFERENCE);
         verify(caseDataService, times(1)).deleteCase(uuid, true);
 
         verifyNoMoreInteractions(caseDataService);
@@ -437,6 +455,10 @@ public class CaseDataResourceTest {
         verifyNoMoreInteractions(caseDataService);
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+    private CaseData buildStubCaseData(UUID uuid) {
+        return new CaseData(null, uuid, null, null, null, false, null, null, null, null, null, null, null, null, false, null, null, null);
     }
 
 }
