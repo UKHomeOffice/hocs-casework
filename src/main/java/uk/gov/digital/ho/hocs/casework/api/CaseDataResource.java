@@ -39,7 +39,6 @@ import uk.gov.digital.ho.hocs.casework.security.Allocated;
 import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
@@ -93,6 +92,16 @@ class CaseDataResource {
     @DeleteMapping(value = "/case/{caseUUID}/{deleted}")
     public ResponseEntity<Void> deleteCase(@PathVariable UUID caseUUID, @PathVariable Boolean deleted) {
         caseDataService.deleteCase(caseUUID, deleted);
+        return ResponseEntity.ok().build();
+    }
+
+    @Authorised(accessLevel = AccessLevel.CASE_ADMIN)
+    @DeleteMapping(value = "/case/ref/{reference}/{deleted}")
+    public ResponseEntity<Void> deleteCaseByReference(@PathVariable String reference, @PathVariable Boolean deleted)
+    {
+        String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8);
+        CaseData caseData = caseDataService.getCaseDataByReference(decodedRef);
+        caseDataService.deleteCase(caseData.getUuid(), deleted);
         return ResponseEntity.ok().build();
     }
 
@@ -257,9 +266,8 @@ class CaseDataResource {
     }
 
     @GetMapping(value = "/case/data/{reference}")
-    public ResponseEntity<GetCaseResponse> getCaseDataByReference(
-        @PathVariable String reference) throws UnsupportedEncodingException {
-        String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8.name());
+    public ResponseEntity<GetCaseResponse> getCaseDataByReference(@PathVariable String reference) {
+        String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8);
         CaseData caseData = caseDataService.getCaseDataByReference(decodedRef);
         return ResponseEntity.ok(GetCaseResponse.from(caseData, true));
     }
