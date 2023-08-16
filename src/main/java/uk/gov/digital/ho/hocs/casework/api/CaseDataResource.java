@@ -105,16 +105,6 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.CASE_ADMIN)
-    @DeleteMapping(value = "/case/ref/{reference}/{deleted}")
-    public ResponseEntity<Void> deleteCaseByReference(@PathVariable String reference, @PathVariable Boolean deleted)
-    {
-        String decodedRef = URLDecoder.decode(reference, StandardCharsets.UTF_8);
-        CaseData caseData = caseDataService.getCaseDataByReference(decodedRef);
-        caseDataService.deleteCase(caseData.getUuid(), deleted);
-        return ResponseEntity.ok().build();
-    }
-
     @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/timeline")
     public ResponseEntity<Set<TimelineItemDto>> getCaseTimeline(@PathVariable UUID caseUUID) {
