@@ -270,12 +270,12 @@ public class AuthorisationAspectTest {
     public void shouldThrowExceptionOnError() throws Throwable {
 
         Object[] args = new Object[1];
-        args[0] = "bad UUID";
+        args[0] = 1;
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         assertThatThrownBy(() -> {aspect.validateUserAccess(proceedingJoinPoint, annotation);}).isInstanceOf(
             SecurityExceptions.PermissionCheckException.class).hasMessageContaining(
-            "Unable parse method parameters for type java.lang.String");
+            "Unable parse method parameters for type java.lang.Integer");
 
         verify(proceedingJoinPoint, never()).proceed();
     }
