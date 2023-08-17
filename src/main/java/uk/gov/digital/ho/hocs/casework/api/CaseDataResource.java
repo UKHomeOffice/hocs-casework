@@ -95,7 +95,7 @@ class CaseDataResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.CASE_ADMIN)
+    @Authorised(accessLevel = AccessLevel.OWNER)
     @DeleteMapping(value = "/case/ref/{reference}/{deleted}")
     public ResponseEntity<Void> deleteCaseByReference(@PathVariable String reference, @PathVariable Boolean deleted)
     {

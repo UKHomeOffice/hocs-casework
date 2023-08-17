@@ -13,6 +13,7 @@ import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCaseRequest;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
+import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.ActiveStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_NOT_FOUND;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AuthorisationAspectTest {
@@ -44,7 +46,9 @@ public class AuthorisationAspectTest {
 
     private AuthorisationAspect aspect;
 
-    private UUID caseUUID = UUID.randomUUID();
+    private final UUID caseUUID = UUID.randomUUID();
+
+    private final String caseReference = "COMP/12345678/23";
 
     @Mock
     private ProceedingJoinPoint proceedingJoinPoint;
@@ -113,6 +117,48 @@ public class AuthorisationAspectTest {
 
         verify(proceedingJoinPoint, times(1)).proceed();
         verify(caseService, times(1)).getCaseType(caseUUID);
+
+        verifyNoMoreInteractions(caseService);
+    }
+
+    @Test
+    public void shouldProceedIfUserHasPermissionBasedOnCaseReference() throws Throwable {
+        String type = "COMP";
+        Object[] args = new Object[1];
+        args[0] = caseReference;
+        CaseData caseData = mock(CaseData.class);
+
+        when(caseService.getCaseDataByReference(caseReference)).thenReturn(caseData);
+        when(caseData.getType()).thenReturn(type);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+        when(annotation.accessLevel()).thenReturn(AccessLevel.OWNER);
+        when(proceedingJoinPoint.proceed()).thenReturn(new Object());
+
+        aspect.validateUserAccess(proceedingJoinPoint, annotation);
+
+        verify(proceedingJoinPoint, times(1)).proceed();
+        verify(caseService, times(1)).getCaseDataByReference(caseReference);
+        verify(userService, times(1)).getMaxAccessLevel(type);
+
+        verifyNoMoreInteractions(caseService);
+    }
+
+    @Test
+    public void shouldNotProceedIfCaseReferenceIsNotValid() throws Throwable {
+        Object[] args = new Object[1];
+        args[0] = caseReference;
+
+        ApplicationExceptions.EntityNotFoundException exception =
+            new ApplicationExceptions.EntityNotFoundException(String.format("Case: %s, not found!", caseReference), CASE_NOT_FOUND);
+        when(caseService.getCaseDataByReference(caseReference)).thenThrow(exception);
+        when(proceedingJoinPoint.getArgs()).thenReturn(args);
+
+        assertThatThrownBy(() -> aspect.validateUserAccess(proceedingJoinPoint, annotation))
+            .isInstanceOf(SecurityExceptions.PermissionCheckException.class)
+            .hasMessageContaining("Reference is not a valid case: %s".formatted(caseReference));
+
+        verify(proceedingJoinPoint, never()).proceed();
+        verify(caseService, times(1)).getCaseDataByReference(caseReference);
 
         verifyNoMoreInteractions(caseService);
     }
@@ -222,12 +268,12 @@ public class AuthorisationAspectTest {
     public void shouldThrowExceptionOnError() throws Throwable {
 
         Object[] args = new Object[1];
-        args[0] = "bad UUID";
+        args[0] = 1;
         when(proceedingJoinPoint.getArgs()).thenReturn(args);
 
         assertThatThrownBy(() -> {aspect.validateUserAccess(proceedingJoinPoint, annotation);}).isInstanceOf(
             SecurityExceptions.PermissionCheckException.class).hasMessageContaining(
-            "Unable parse method parameters for type java.lang.String");
+            "Unable parse method parameters for type java.lang.Integer");
 
         verify(proceedingJoinPoint, never()).proceed();
     }
