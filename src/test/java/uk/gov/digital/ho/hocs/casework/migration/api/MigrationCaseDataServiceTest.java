@@ -36,7 +36,13 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MigrationCaseDataServiceTest {
@@ -72,10 +78,13 @@ public class MigrationCaseDataServiceTest {
     @Mock
     private DeadlineService deadlineService;
 
+    @Mock
+    private MigrationStageService migrationStageService;
+
     @Before
     public void setUp() {
         this.migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, documentClient, infoClient,
-            migrationAuditClient, auditClient, correspondentRepository, deadlineService, true
+            migrationAuditClient, auditClient, correspondentRepository, deadlineService, migrationStageService, true
         );
     }
 
@@ -154,7 +163,7 @@ public class MigrationCaseDataServiceTest {
     @Test
     public void createCaseThrowsExceptionWhenADuplicateMigratedReferenceIsFound() {
         migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, documentClient, infoClient,
-            migrationAuditClient, auditClient, correspondentRepository, deadlineService, false
+            migrationAuditClient, auditClient, correspondentRepository, deadlineService, migrationStageService, false
         );
 
         final String migratedReference = "MigratedReference";
@@ -179,7 +188,7 @@ public class MigrationCaseDataServiceTest {
     @Test
     public void createCaseSavesTheCaseWhenTheMigratedReferenceIsNotADuplicate() {
         migrationCaseDataService = new MigrationCaseDataService(caseDataRepository, documentClient, infoClient,
-            migrationAuditClient, auditClient, correspondentRepository, deadlineService, false
+            migrationAuditClient, auditClient, correspondentRepository, deadlineService, migrationStageService, false
         );
 
         final String migratedReference = "MigratedReference";

@@ -14,7 +14,6 @@ import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.EventType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
-import uk.gov.digital.ho.hocs.casework.domain.model.BaseStage;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
@@ -71,16 +70,18 @@ public class MigrationAuditClient {
     }
 
     public void updateCaseAudit(CaseData caseData, UUID stageUUID) {
+        updateCaseAudit(caseData, stageUUID, caseData.getCreated());
+    }
 
+    public void updateCaseAudit(CaseData caseData, UUID stageUUID, LocalDateTime auditEventTimestamp) {
         String data = "{}";
         try {
             data = objectMapper.writeValueAsString(AuditPayload.UpdateCaseRequest.from(caseData));
         } catch (JsonProcessingException e) {
             logFailedToParseDataPayload(e);
         }
-        sendAuditMessage(caseData.getCreated(), caseData.getUuid(), data, EventType.CASE_UPDATED, stageUUID, data,
+        sendAuditMessage(auditEventTimestamp, caseData.getUuid(), data, EventType.CASE_UPDATED, stageUUID, data,
             requestData.correlationId(), userId);
-
     }
 
     public void completeCaseAudit(CaseData caseData) {

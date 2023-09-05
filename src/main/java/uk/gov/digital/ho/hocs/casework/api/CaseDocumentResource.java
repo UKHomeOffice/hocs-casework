@@ -33,7 +33,7 @@ public class CaseDocumentResource {
         this.caseDocumentService = caseDocumentService;
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/document/reference/{caseUUID}", produces = APPLICATION_JSON_VALUE)
     ResponseEntity<GetDocumentsResponse> getDocumentsForCase(@PathVariable UUID caseUUID,
                                                              @RequestParam(name = "type", required = false)
@@ -48,7 +48,7 @@ public class CaseDocumentResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<DocumentDto> getDocumentResourceLocation(@PathVariable UUID caseUUID,
                                                                    @PathVariable UUID documentUUID) {
@@ -56,7 +56,7 @@ public class CaseDocumentResource {
     }
 
     @Deprecated(forRemoval = true)
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}/file", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ByteArrayResource> getCaseDocumentFile(@PathVariable UUID caseUUID,
                                                                  @PathVariable UUID documentUUID) {
@@ -71,7 +71,7 @@ public class CaseDocumentResource {
     }
 
     @Deprecated(forRemoval = true)
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/document/{documentUUID}/pdf", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<ByteArrayResource> getCaseDocumentPdf(@PathVariable UUID caseUUID,
                                                                 @PathVariable UUID documentUUID) {
@@ -85,7 +85,7 @@ public class CaseDocumentResource {
             document.getData().length).body(resource);
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/documentTags", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> getDocumentTags(@PathVariable UUID caseUUID) {
         return ResponseEntity.ok(caseDocumentService.getDocumentTags(caseUUID));

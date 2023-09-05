@@ -62,14 +62,14 @@ public class CorrespondentResource {
         return ResponseEntity.ok().build();
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/correspondent")
     ResponseEntity<GetCorrespondentsResponse> getCorrespondents(@PathVariable UUID caseUUID) {
         Set<CorrespondentWithPrimaryFlag> correspondents = correspondentService.getCorrespondents(caseUUID);
         return ResponseEntity.ok(GetCorrespondentsResponse.from(correspondents));
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/correspondent/{correspondentUUID}")
     ResponseEntity<GetCorrespondentResponse> getCorrespondent(@PathVariable UUID caseUUID,
                                                               @PathVariable UUID correspondentUUID) {
@@ -84,7 +84,7 @@ public class CorrespondentResource {
         return ResponseEntity.ok(GetCorrespondentTypeResponse.from(correspondentTypes));
     }
 
-    @Authorised(accessLevel = AccessLevel.READ, permittedLowerLevels = { AccessLevel.RESTRICTED_OWNER })
+    @Authorised(accessLevel = AccessLevel.READ)
     @GetMapping(value = "/case/{caseUUID}/correspondentType/selectable")
     ResponseEntity<GetCorrespondentTypeResponse> getSelectableCorrespondentTypes(@PathVariable UUID caseUUID) {
         Set<CorrespondentTypeDto> correspondentTypes = correspondentService.getSelectableCorrespondentTypes(caseUUID);
