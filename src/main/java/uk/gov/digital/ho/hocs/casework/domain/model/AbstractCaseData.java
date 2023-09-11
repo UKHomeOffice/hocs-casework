@@ -100,10 +100,6 @@ public class AbstractCaseData implements Serializable {
     @Column(name = "date_received")
     private LocalDate dateReceived;
 
-    @Setter
-    @Getter
-    @Column(name = "completed")
-    private boolean completed;
 
     @Setter
     @Getter

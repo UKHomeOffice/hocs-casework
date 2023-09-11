@@ -79,7 +79,7 @@ public class MigrationCaseServiceTest {
 
     private CaseData getCaseData(boolean completed) {
         return new CaseData(1L, caseUUID, LocalDateTime.now(), "COMP", null, false, data, null, null, null,
-            null, LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(10), completed, completed ? originalCompletedDate.atStartOfDay() : null, null, null
+            null, LocalDate.now(), LocalDate.now(), LocalDate.now().minusDays(10), completed ? originalCompletedDate.atStartOfDay() : null, null, null
         );
     }
 

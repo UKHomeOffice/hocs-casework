@@ -125,7 +125,6 @@ public class MigrationCaseDataServiceTest {
             originalReceivedDate, null, null, originalCreatedDate, migratedReference);
 
         // then
-        assertThat(caseData.isCompleted()).isEqualTo(false);
         assertThat(caseData.getDateCompleted()).isNull();
         assertThat(caseData.getCreated()).isEqualTo(LocalDateTime.of(originalCreatedDate, LocalTime.MIN));
 
