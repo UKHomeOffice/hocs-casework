@@ -1,6 +1,6 @@
 SET search_path TO casework;
 
-DROP VIEW IF EXISTS report_open_cases;
+--DROP VIEW IF EXISTS report_open_cases;
 
 CREATE OR REPLACE VIEW report_open_cases AS
     SELECT cd.uuid                        AS case_uuid,
