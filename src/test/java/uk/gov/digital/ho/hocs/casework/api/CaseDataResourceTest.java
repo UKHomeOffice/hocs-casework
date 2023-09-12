@@ -458,7 +458,7 @@ public class CaseDataResourceTest {
     }
 
     private CaseData buildStubCaseData(UUID uuid) {
-        return new CaseData(null, uuid, null, null, null, false, null, null, null, null, null, null, null, null, null, null, null);
+        return new CaseData(null, uuid, null, null, null, false, null, null, null, null, null, null, null, null, false, null, null, null);
     }
 
 }

@@ -24,7 +24,7 @@ public class AbstractCaseCopyStrategyTest {
     }
 
     private static final CaseData FROM_CASE = new CaseData(1L, null, null, null, null, false, FROM_CLOB, null, null,
-        null, null, null, null, null, null,null, null);
+        null, null, null, null, null, false, null,null, null);
 
     private CaseData toCase;
 
@@ -34,7 +34,7 @@ public class AbstractCaseCopyStrategyTest {
     public void setUp() {
         abstractStrategy = new AbstractCaseCopyStrategy() {};
         toCase = new CaseData(2L, null, null, null, null, false, EXISTING_CLOB, null, null, null, null, null, null,
-            null, null, null, null);
+            null, false, null, null, null);
     }
 
     @Test

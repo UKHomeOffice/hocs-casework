@@ -12,6 +12,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -62,6 +63,9 @@ public class GetCaseResponse {
     @JsonProperty("stages")
     private List<SimpleStageDto> stages;
 
+    @JsonProperty("dateCompleted")
+    private LocalDateTime dateCompleted;
+
     public static GetCaseResponse from(CaseData caseData, boolean full) {
 
         List<SimpleStageDto> stages = new ArrayList<>();
@@ -75,7 +79,7 @@ public class GetCaseResponse {
             caseData.getType(), caseData.getReference(), populateFields(caseData, full), caseData.getPrimaryTopicUUID(),
             populateTopic(caseData.getPrimaryTopic(), full), caseData.getPrimaryCorrespondentUUID(),
             populateCorrespondent(caseData.getPrimaryCorrespondent(), full), caseData.getCaseDeadline(),
-            caseData.getCaseDeadlineWarning(), caseData.getDateReceived(), stages);
+            caseData.getCaseDeadlineWarning(), caseData.getDateReceived(), stages, caseData.getDateCompleted());
     }
 
     private static GetTopicResponse populateTopic(Topic topic, boolean full) {

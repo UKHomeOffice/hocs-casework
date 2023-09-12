@@ -42,12 +42,13 @@ public class CaseData extends AbstractCaseData implements Serializable {
                     LocalDate caseDeadline,
                     LocalDate caseDeadlineWarning,
                     LocalDate dateReceived,
+                    boolean completed,
                     LocalDateTime dateCompleted,
                     Set<ActiveStage> activeStages,
                     Set<CaseNote> caseNotes) {
         super(id, uuid, created, type, reference, null, deleted, data, primaryTopicUUID, primaryTopic,
             primaryCorrespondentUUID, primaryCorrespondent, caseDeadline, caseDeadlineWarning, dateReceived,
-            dateCompleted,activeStages, caseNotes);
+            completed, dateCompleted,activeStages, caseNotes);
     }
 
 }
