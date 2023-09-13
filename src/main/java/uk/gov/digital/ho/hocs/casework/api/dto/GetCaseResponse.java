@@ -17,6 +17,7 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
 
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 import static uk.gov.digital.ho.hocs.casework.api.CaseDataService.CASE_UUID_PATTERN;
 
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -63,7 +64,7 @@ public class GetCaseResponse {
     @JsonProperty("stages")
     private List<SimpleStageDto> stages;
 
-    @JsonProperty("dateCompleted")
+    @JsonProperty(value="completed", access=READ_ONLY)
     private LocalDateTime dateCompleted;
 
     public static GetCaseResponse from(CaseData caseData, boolean full) {
