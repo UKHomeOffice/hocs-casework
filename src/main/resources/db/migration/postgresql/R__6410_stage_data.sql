@@ -59,6 +59,3 @@ FROM casework.stage s
                              LIMIT 1) sc ON true
          LEFT JOIN casework.topic t ON c.primary_topic_uuid = t.uuid
 WHERE NOT c.deleted;
-
-alter table stage_data
-    owner to root;

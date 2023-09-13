@@ -22,6 +22,3 @@ FROM (SELECT correspondent.fullname,
       WHERE correspondent.deleted = false) correspondents_by_case
 GROUP BY correspondents_by_case.case_uuid;
 
-alter table correspondents_json_by_case
-    owner to root;
-
