@@ -512,6 +512,7 @@
           "defaultValue": "Phone",
           "populateFromCaseData": false
         },
+        "label": "Response channel",
         "name": "ChannelOut"
       },
       {
@@ -1130,6 +1131,7 @@
           "defaultValue": "Phone",
           "populateFromCaseData": false
         },
+        "label": "Response channel",
         "name": "ChannelOut"
       },
       {
