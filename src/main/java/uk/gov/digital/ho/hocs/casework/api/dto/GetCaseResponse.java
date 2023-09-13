@@ -64,8 +64,13 @@ public class GetCaseResponse {
     @JsonProperty("stages")
     private List<SimpleStageDto> stages;
 
-    @JsonProperty(value="completed", access=READ_ONLY)
+    @JsonProperty("dateCompleted")
     private LocalDateTime dateCompleted;
+
+    @JsonProperty(value="completed", access=READ_ONLY)
+    public Boolean getCompleted() {
+        return dateCompleted != null;
+    }
 
     public static GetCaseResponse from(CaseData caseData, boolean full) {
 
