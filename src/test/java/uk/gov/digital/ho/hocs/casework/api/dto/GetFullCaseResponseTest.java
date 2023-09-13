@@ -5,6 +5,7 @@ import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public class GetFullCaseResponseTest {
         LocalDate caseReceived = LocalDate.now();
         CaseData caseData = new CaseData(type, caseNumber, data, caseReceived);
         caseData.setCaseDeadline(caseDeadline);
+        caseData.setDateCompleted(LocalDateTime.now());
 
         GetCaseResponse getCaseResponse = GetCaseResponse.from(caseData, true);
 
@@ -34,6 +36,7 @@ public class GetFullCaseResponseTest {
         assertThat(getCaseResponse.getPrimaryCorrespondent()).isEqualTo(caseData.getPrimaryCorrespondentUUID());
         assertThat(getCaseResponse.getPrimaryCorrespondent()).isEqualTo(caseData.getPrimaryCorrespondentUUID());
         assertThat(getCaseResponse.getCaseDeadline()).isEqualTo(caseData.getCaseDeadline());
+        assertThat(getCaseResponse.getCompleted()).isEqualTo(true);
 
     }
 

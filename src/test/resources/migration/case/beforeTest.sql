@@ -9,7 +9,6 @@ INSERT INTO case_data (
     case_deadline,
     date_received,
     deleted,
-    completed,
     case_deadline_warning,
     date_completed,
     migrated_reference
@@ -24,7 +23,6 @@ INSERT INTO case_data (
    '2020-01-30',
    '2020-01-01 00:00:00',
    FALSE,
-   TRUE,
    NULL,
    '2021-02-01 00:00:00',
    'ClosedMigratedRef123'
@@ -39,7 +37,6 @@ INSERT INTO case_data (
    '2020-01-30',
    '2020-01-01 00:00:00',
    FALSE,
-   FALSE,
    NULL,
    NULL,
    'OpenMigratedRef123'
@@ -53,7 +50,6 @@ INSERT INTO case_data (
    NULL,
    '2020-01-30',
    '2020-01-01 00:00:00',
-   FALSE,
    FALSE,
    NULL,
    NULL,

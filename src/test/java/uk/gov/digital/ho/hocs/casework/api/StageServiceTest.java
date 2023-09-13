@@ -1192,7 +1192,9 @@ public class StageServiceTest {
         Set<UUID> caseUUIDS = Set.of(caseUUID);
         StageWithCaseData repositoryStage = new StageWithCaseData(caseUUID, "DCU_MIN_MARKUP", teamUUID, userUUID,
             transitionNoteUUID);
-        repositoryStage.setCompleted(completeCase);
+        if(completeCase) {
+            repositoryStage.setDateCompleted(LocalDateTime.now());
+        }
         repositoryStage.setCaseDataType("MIN");
 
         SearchRequest searchRequest = new SearchRequest();

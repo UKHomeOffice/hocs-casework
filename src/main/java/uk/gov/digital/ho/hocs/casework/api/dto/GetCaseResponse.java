@@ -12,10 +12,12 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.*;
 
+import static com.fasterxml.jackson.annotation.JsonProperty.Access.READ_ONLY;
 import static uk.gov.digital.ho.hocs.casework.api.CaseDataService.CASE_UUID_PATTERN;
 
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
@@ -62,8 +64,13 @@ public class GetCaseResponse {
     @JsonProperty("stages")
     private List<SimpleStageDto> stages;
 
-    @JsonProperty("completed")
-    private Boolean completed;
+    @JsonProperty("dateCompleted")
+    private LocalDateTime dateCompleted;
+
+    @JsonProperty(value="completed", access=READ_ONLY)
+    public Boolean getCompleted() {
+        return dateCompleted != null;
+    }
 
     public static GetCaseResponse from(CaseData caseData, boolean full) {
 
@@ -78,7 +85,7 @@ public class GetCaseResponse {
             caseData.getType(), caseData.getReference(), populateFields(caseData, full), caseData.getPrimaryTopicUUID(),
             populateTopic(caseData.getPrimaryTopic(), full), caseData.getPrimaryCorrespondentUUID(),
             populateCorrespondent(caseData.getPrimaryCorrespondent(), full), caseData.getCaseDeadline(),
-            caseData.getCaseDeadlineWarning(), caseData.getDateReceived(), stages, caseData.isCompleted());
+            caseData.getCaseDeadlineWarning(), caseData.getDateReceived(), stages, caseData.getDateCompleted());
     }
 
     private static GetTopicResponse populateTopic(Topic topic, boolean full) {

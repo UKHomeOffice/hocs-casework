@@ -581,7 +581,6 @@ public class CaseDataService {
     void completeCase(UUID caseUUID, boolean completed, LocalDateTime dateCompleted) {
         log.debug("Updating completed status Case: {} completed {}", caseUUID, completed);
         CaseData caseData = getCaseData(caseUUID);
-        caseData.setCompleted(completed);
         caseData.setDateCompleted(dateCompleted);
 
         // Complete final stage if active stage exists

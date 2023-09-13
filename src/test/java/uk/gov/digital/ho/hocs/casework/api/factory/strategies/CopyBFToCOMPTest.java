@@ -66,7 +66,7 @@ public class CopyBFToCOMPTest {
             COUNTRY).build(), TELEPHONE, EMAIL, REFERENCE, EXTERNAL_KEY);
 
     private static final CaseData FROM_CASE = new CaseData(1L, FROM_CASE_UUID, null, null, "BF/12345678/01", false,
-        FROM_CLOB, null, null, PRIMARY_CORRESPONDENT.getUuid(), PRIMARY_CORRESPONDENT, null, null, null, false,null, null,
+        FROM_CLOB, null, null, PRIMARY_CORRESPONDENT.getUuid(), PRIMARY_CORRESPONDENT, null, null, null,false, null, null,
         null);
 
     @Mock
