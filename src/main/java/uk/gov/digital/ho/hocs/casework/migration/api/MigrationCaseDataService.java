@@ -190,7 +190,6 @@ public class MigrationCaseDataService {
             : deadlineService.calculateWorkingDaysForCaseType(caseType, dateReceived, caseDataType.getSla()));
 
         if (dateCompleted!=null) {
-            caseData.setCompleted(true);
             caseData.setDateCompleted(dateCompleted.atStartOfDay());
         }
 

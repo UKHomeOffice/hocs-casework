@@ -902,7 +902,6 @@ public class CaseDataServiceTest {
         verify(stageRepository).save(any(Stage.class));
         verify(auditClient).updateStageTeam(any(Stage.class));
 
-        assertThat(caseData.isCompleted()).isEqualTo(true);
         assertThat(caseData.getDateCompleted()).isCloseTo(LocalDateTime.now(), within(1, ChronoUnit.SECONDS));
 
         verifyNoMoreInteractions(caseDataRepository, stageRepository);

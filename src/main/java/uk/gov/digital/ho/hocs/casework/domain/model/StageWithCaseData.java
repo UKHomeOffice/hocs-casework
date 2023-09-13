@@ -122,8 +122,8 @@ public class StageWithCaseData extends BaseStage {
     @Setter
     @Getter
     @JsonInclude
-    @Column(name = "completed", insertable = false, updatable = false)
-    private Boolean completed;
+    @Column(name = "date_completed", insertable = false, updatable = false)
+    private LocalDateTime dateCompleted;
 
     public StageWithCaseData(UUID caseUUID, String stageType, UUID teamUUID, UUID userUUID, UUID transitionNoteUUID) {
         if (caseUUID == null || stageType == null) {
@@ -136,7 +136,6 @@ public class StageWithCaseData extends BaseStage {
         this.caseUUID = caseUUID;
         this.stageType = stageType;
         this.transitionNoteUUID = transitionNoteUUID;
-        this.completed = Boolean.FALSE;
         this.teamUUID = teamUUID;
         this.userUUID = userUUID;
         this.data = new HashMap<>();

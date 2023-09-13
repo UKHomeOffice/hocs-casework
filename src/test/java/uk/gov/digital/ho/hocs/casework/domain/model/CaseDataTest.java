@@ -32,7 +32,7 @@ public class CaseDataTest {
         assertThat(caseData.getPrimaryTopicUUID()).isNull();
         assertThat(caseData.getCaseDeadline()).isNull();
         assertThat(caseData.getDateReceived()).isEqualTo(caseReceived);
-        assertThat(caseData.isCompleted()).isEqualTo(false);
+        assertThat(caseData.getDateCompleted()).isNull();
     }
 
     @Test
@@ -243,9 +243,9 @@ public class CaseDataTest {
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
         assertThat(caseData.getCaseDeadline()).isNull();
-        assertThat(caseData.isCompleted()).isEqualTo(false);
+        assertThat(caseData.getDateCompleted()).isNull();
 
-        caseData.setCompleted(true);
+        caseData.setDateCompleted(LocalDateTime.now());
 
         assertThat(caseData.getUuid()).isOfAnyClassIn(UUID.randomUUID().getClass());
         assertThat(caseData.getCreated()).isOfAnyClassIn(LocalDateTime.now().getClass());
@@ -255,7 +255,7 @@ public class CaseDataTest {
         assertThat(caseData.getPrimaryCorrespondentUUID()).isEqualTo(null);
         assertThat(caseData.getPrimaryTopicUUID()).isEqualTo(null);
         assertThat(caseData.getCaseDeadline()).isNull();
-        assertThat(caseData.isCompleted()).isTrue();
+        assertThat(caseData.getDateCompleted()).isNotNull();
     }
 
     @Test
