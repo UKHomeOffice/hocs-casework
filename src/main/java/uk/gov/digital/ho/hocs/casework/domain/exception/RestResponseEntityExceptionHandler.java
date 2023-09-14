@@ -38,7 +38,7 @@ import static uk.gov.digital.ho.hocs.casework.application.LogEvent.UNCAUGHT_EXCE
 public class RestResponseEntityExceptionHandler {
 
     @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity handle(HttpClientErrorException e) {
+    public ResponseEntity<String> handle(HttpClientErrorException e) {
         String message = "HttpClientErrorException: {}";
         switch (e.getStatusCode()) {
             case UNAUTHORIZED:
@@ -57,57 +57,57 @@ public class RestResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(HttpServerErrorException.class)
-    public ResponseEntity handle(HttpServerErrorException e) {
+    public ResponseEntity<String> handle(HttpServerErrorException e) {
         log.error("HttpServerErrorException: {}", e.getMessage(), value(EVENT, REST_HELPER_POST_FAILURE));
         return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ApplicationExceptions.EntityCreationException.class)
-    public ResponseEntity handle(ApplicationExceptions.EntityCreationException e) {
+    public ResponseEntity<String> handle(ApplicationExceptions.EntityCreationException e) {
         log.error("ApplicationExceptions.EntityCreationException: {}", e.getMessage(), value(EVENT, e.getEvent()),
             value(EXCEPTION, e.getException()));
         return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ApplicationExceptions.EntityNotFoundException.class)
-    public ResponseEntity handle(ApplicationExceptions.EntityNotFoundException e) {
+    public ResponseEntity<String> handle(ApplicationExceptions.EntityNotFoundException e) {
         log.error("ApplicationExceptions.EntityNotFoundException: {}", e.getMessage(), value(EVENT, e.getEvent()),
             value(EXCEPTION, e.getException()));
         return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity handle(MethodArgumentNotValidException e) {
+    public ResponseEntity<String> handle(MethodArgumentNotValidException e) {
         log.error("MethodArgumentNotValidException: {}", e.getMessage(), value(EVENT, BAD_REQUEST));
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageConversionException.class)
-    public ResponseEntity handle(HttpMessageConversionException e) {
+    public ResponseEntity<String> handle(HttpMessageConversionException e) {
         log.error("HttpMessageConversionException: {}", e.getMessage(), value(EVENT, BAD_REQUEST));
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity handle(HttpMessageNotReadableException e) {
+    public ResponseEntity<String> handle(HttpMessageNotReadableException e) {
         log.error("HttpMessageNotReadableException: {}", e.getMessage(), value(EVENT, BAD_REQUEST));
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(UnsupportedOperationException.class)
-    public ResponseEntity handle(UnsupportedOperationException e) {
+    public ResponseEntity<String> handle(UnsupportedOperationException e) {
         log.error("UnsupportedOperationException: {}", e.getMessage(), value(EVENT, METHOD_NOT_ALLOWED));
         return new ResponseEntity<>(e.getMessage(), METHOD_NOT_ALLOWED);
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity handle(MethodArgumentTypeMismatchException e) {
+    public ResponseEntity<String> handle(MethodArgumentTypeMismatchException e) {
         log.error("ConversionFailedException: {}", e.getMessage(), value(EVENT, METHOD_NOT_ALLOWED));
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(ApplicationExceptions.DataMappingException.class)
-    public ResponseEntity handle(ApplicationExceptions.DataMappingException e) {
+    public ResponseEntity<String> handle(ApplicationExceptions.DataMappingException e) {
         log.error("DataMappingException: {}", e.getMessage(), value(EVENT, DATA_MAPPING_EXCEPTION));
         return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
@@ -136,8 +136,14 @@ public class RestResponseEntityExceptionHandler {
         return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
     }
 
+    @ExceptionHandler(ApplicationExceptions.StreamingResponseBodyException.class)
+    public ResponseEntity<String> handle(ApplicationExceptions.StreamingResponseBodyException e) {
+        log.error("StreamingResponseBodyException: {}", e.getMessage(), value(EVENT, INTERNAL_SERVER_ERROR));
+        return new ResponseEntity<>(e.getMessage(), INTERNAL_SERVER_ERROR);
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity handle(Exception e) {
+    public ResponseEntity<String> handle(Exception e) {
         Writer stackTraceWriter = new StringWriter();
         PrintWriter printWriter = new PrintWriter(stackTraceWriter);
         e.printStackTrace(printWriter);

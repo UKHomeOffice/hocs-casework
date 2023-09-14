@@ -7,6 +7,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Repository
 public interface CorrespondentRepository extends CrudRepository<Correspondent, Long> {
@@ -27,4 +28,16 @@ public interface CorrespondentRepository extends CrudRepository<Correspondent, L
            nativeQuery = true)
     Set<Correspondent> findAll();
 
+    @Query(value = "SELECT CAST(c.uuid AS text), c.fullname FROM correspondent c JOIN case_data cd on c.case_uuid = cd.uuid AND NOT cd.deleted",
+           nativeQuery = true)
+    Stream<UuidToNamePair> findUuidToNameMapping();
+
+    @Query(value = "SELECT CAST(c.uuid AS text), c.fullname FROM correspondent c JOIN case_data cd on c.case_uuid = cd.uuid AND NOT cd.deleted AND NOT c.deleted",
+           nativeQuery = true)
+    Stream<UuidToNamePair> findActiveUuidToNameMapping();
+
+    interface UuidToNamePair {
+        UUID getUuid();
+        String getFullname();
+    }
 }

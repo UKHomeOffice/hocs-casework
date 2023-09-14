@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
+import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
 import java.util.UUID;
 
@@ -20,6 +21,9 @@ public class GetCorrespondentOutlineResponse {
 
     public static GetCorrespondentOutlineResponse from(Correspondent correspondent) {
         return new GetCorrespondentOutlineResponse(correspondent.getUuid(), correspondent.getFullName());
+    }
+    public static GetCorrespondentOutlineResponse from(CorrespondentRepository.UuidToNamePair correspondent) {
+        return new GetCorrespondentOutlineResponse(correspondent.getUuid(), correspondent.getFullname());
     }
 
 }
