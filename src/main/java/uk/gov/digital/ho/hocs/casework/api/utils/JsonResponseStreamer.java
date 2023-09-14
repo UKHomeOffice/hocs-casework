@@ -69,7 +69,13 @@ public class JsonResponseStreamer {
                         try {
                             generator.writeObject(streamItem);
                         } catch (IOException e) {
-                            throw new ApplicationExceptions.ReportBodyStreamingException("Failed to write streaming response body for item: {}", LogEvent.CORRESPONDENT_SERIALISATION_EXCEPTION, streamItem);
+                            throw new ApplicationExceptions.ReportBodyStreamingException(
+                                String.format(
+                                    "Failed to write streaming response body for item: %s",
+                                    streamItem
+                                ),
+                                LogEvent.CORRESPONDENT_SERIALISATION_EXCEPTION
+                            );
                         }
                     });
 

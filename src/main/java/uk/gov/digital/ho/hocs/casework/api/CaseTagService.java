@@ -32,8 +32,10 @@ public class CaseTagService {
             }
             return caseDataTag;
         } catch (DataIntegrityViolationException ex) {
-            throw new ApplicationExceptions.DatabaseConflictException("Failed to add data tag for case",
-                CASE_TAG_CONFLICT, ex);
+            throw new ApplicationExceptions.DatabaseConflictException(
+                String.format("Failed to add data tag for case - %s", ex.getMessage()),
+                CASE_TAG_CONFLICT
+            );
         }
     }
 

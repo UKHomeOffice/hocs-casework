@@ -41,10 +41,12 @@ public class ReportResource {
 
         if(!report.getAvailableCaseTypes().contains(caseType)) {
             throw new ApplicationExceptions.ReportCaseTypeNotSupportedException(
-                "The \"%s\" report does not support the \"%s\" case type",
-                LogEvent.REPORT_RESOURCE_UNSUPPORTED_CASE_TYPE,
-                report.getDisplayName(),
-                caseType
+                String.format(
+                    "The \"%s\" report does not support the \"%s\" case type",
+                    report.getDisplayName(),
+                    caseType
+                ),
+                LogEvent.REPORT_RESOURCE_UNSUPPORTED_CASE_TYPE
             );
         }
 
