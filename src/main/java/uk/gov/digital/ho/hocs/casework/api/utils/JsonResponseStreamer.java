@@ -34,16 +34,38 @@ public class JsonResponseStreamer {
         this.transactionTemplate = transactionTemplate;
     }
 
-    public <T> ResponseEntity<StreamingResponseBody> jsonWrappedTransactionalStreamingResponseBody(
+    /**
+     * Convert a stream of objects that can be serialised to JSON by the default ObjectMapper into a json object
+     * containing an array field with the serialised contents of the stream as the array's items. The stream will be
+     * consumed within a transaction to prevent issues with the database query closing before the stream is closed.
+     *
+     * @param fieldName The field name attached to the array of streamed items
+     * @param streamSupplier A callback that will supply the stream of items to serialise. This will be run within a
+     *                       transaction
+     * @return StreamingResponseBody producing a root json object with the stream items in an array field
+     */
+    public ResponseEntity<StreamingResponseBody> jsonWrappedTransactionalStreamingResponseBody(
         String fieldName,
-        Supplier<Stream<T>> streamSupplier)
+        Supplier<Stream<?>> streamSupplier)
     {
         return jsonWrappedTransactionalStreamingResponseBody(fieldName, streamSupplier, Map.of());
     }
 
-    public <T> ResponseEntity<StreamingResponseBody> jsonWrappedTransactionalStreamingResponseBody(
+    /**
+     * Convert a stream of objects that can be serialised to JSON by the default ObjectMapper into a json object
+     * containing an array field with the serialised contents of the stream as the array's items. The stream will be
+     * consumed within a transaction to prevent issues with the database query closing before the stream is closed.
+     *
+     * @param fieldName The field name attached to the array of streamed items
+     * @param streamSupplier A callback that will supply the stream of items to serialise. This will be run within a
+     *                       transaction
+     * @param additionalFields These will be added as fields to the root JSON object. The keys will be used as the field
+     *                         names and the values will be serialised to JSON
+     * @return StreamingResponseBody producing a root json object with the stream items in an array field
+     */
+    public ResponseEntity<StreamingResponseBody> jsonWrappedTransactionalStreamingResponseBody(
         String fieldName,
-        Supplier<Stream<T>> streamSupplier,
+        Supplier<Stream<?>> streamSupplier,
         Map<String, Object> additionalFields)
     {
         StreamingResponseBody body = outputStream -> {
@@ -102,6 +124,35 @@ public class JsonResponseStreamer {
         );
     }
 
+    /**
+     * Convert a stream of json strings into a json object containing an array field with the raw strings from the
+     * stream as the array's items. The stream will be consumed within a transaction to prevent issues with the database
+     * query closing before the stream is closed.
+     *
+     * @param fieldName The field name attached to the array of streamed items
+     * @param streamSupplier A callback that will supply a stream of valid JSON Strings. This will be run within a
+     *                       transaction.
+     * @return StreamingResponseBody producing a root json object with the stream items in an array field
+     */
+    public  ResponseEntity<StreamingResponseBody> jsonStringsWrappedTransactionalStreamingResponseBody(
+        String fieldName,
+        Supplier<Stream<String>> streamSupplier)
+    {
+        return jsonStringsWrappedTransactionalStreamingResponseBody(fieldName, streamSupplier, Map.of());
+    }
+
+    /**
+     * Convert a stream of json strings into a json object containing an array field with the raw strings from the
+     * stream as the array's items. The stream will be consumed within a transaction to prevent issues with the database
+     * query closing before the stream is closed.
+     *
+     * @param fieldName The field name attached to the array of streamed items
+     * @param streamSupplier A callback that will supply a stream of valid JSON Strings. This will be run within a
+     *                       transaction.
+     * @param additionalFields These will be added as fields to the root JSON object. The keys will be used as the field
+     *                         names and the values will be serialised to JSON
+     * @return StreamingResponseBody producing a root json object with the stream items in an array field
+     */
     public ResponseEntity<StreamingResponseBody> jsonStringsWrappedTransactionalStreamingResponseBody(
         String fieldName,
         Supplier<Stream<String>> streamSupplier,

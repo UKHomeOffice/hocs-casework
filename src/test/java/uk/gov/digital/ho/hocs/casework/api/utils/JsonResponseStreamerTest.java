@@ -83,4 +83,39 @@ public class JsonResponseStreamerTest {
         );
     }
 
+    @Test
+    public void jsonStringWrappedTransactionalStreamingResponseBody_transformsStreamIntoStreamingJsonBody() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ResponseEntity<StreamingResponseBody> response = jsonResponseStreamer.jsonStringsWrappedTransactionalStreamingResponseBody(
+            "field_name",
+            () -> Stream.of("{\"value\":\"One\"}","{\"value\":\"Two\"}")
+        );
+
+        Objects.requireNonNull(response.getBody()).writeTo(out);
+
+        assertThat(out.toString()).isEqualTo("{\"field_name\":[{\"value\":\"One\"},{\"value\":\"Two\"}]}");
+    }
+
+    @Test
+    public void jsonStringWrappedTransactionalStreamingResponseBody_transformsStreamIntoStreamingJsonBodyWithExtraFields() throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        ResponseEntity<StreamingResponseBody> response = jsonResponseStreamer.jsonWrappedTransactionalStreamingResponseBody(
+            "field_name",
+            () -> Stream.of("{\"value\":\"One\"}","{\"value\":\"Two\"}"),
+            Map.of(
+                "extra_string", "A String",
+                "extra_object", new TestObject("Extra")
+            )
+        );
+
+        Objects.requireNonNull(response.getBody()).writeTo(out);
+
+        assertThat(out.toString()).isEqualTo(
+            "{" +
+            "\"extra_string\":\"A String\"," +
+            "\"extra_object\":{\"value\":\"Extra\"}," +
+            "\"field_name\":[{\"value\":\"One\"},{\"value\":\"Two\"}]}"
+        );
+    }
+
 }

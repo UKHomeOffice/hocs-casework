@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentOutlineResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
 import uk.gov.digital.ho.hocs.casework.api.utils.CorrespondentTypeNameDecorator;
@@ -77,17 +76,6 @@ public class CorrespondentService {
 
         log.info("Got {} all active Correspondents", correspondents.size(), value(EVENT, CORRESPONDENTS_RETRIEVED));
         return correspondents;
-    }
-
-    Stream<GetCorrespondentOutlineResponse> streamAllCorrespondentOutlines(boolean includeDeleted) {
-        log.debug("Getting all active Correspondents");
-
-        Stream<CorrespondentRepository.UuidToNamePair> correspondentMapping = includeDeleted
-            ? correspondentRepository.findUuidToNameMapping()
-            : correspondentRepository.findActiveUuidToNameMapping();
-
-        log.info("Got stream of all active Correspondents' names", value(EVENT, CORRESPONDENTS_RETRIEVED));
-        return correspondentMapping.map(GetCorrespondentOutlineResponse::from);
     }
 
     Stream<String> streamCorrespondentOutlineJson(boolean includeDeleted) {

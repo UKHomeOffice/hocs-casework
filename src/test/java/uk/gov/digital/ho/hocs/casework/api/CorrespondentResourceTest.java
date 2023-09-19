@@ -66,33 +66,30 @@ public class CorrespondentResourceTest {
 
     @Test
     public void getAllActiveCorrespondents() {
-        when(correspondentService.streamAllCorrespondentOutlines(false)).thenReturn(Stream.of());
+        when(correspondentService.streamCorrespondentOutlineJson(false)).thenReturn(Stream.of());
 
         ResponseEntity<StreamingResponseBody> response = correspondentResource.getAllActiveCorrespondents(false);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        verify(correspondentService).streamAllCorrespondentOutlines(false);
+        verify(correspondentService).streamCorrespondentOutlineJson(false);
         verifyNoMoreInteractions(correspondentService);
     }
 
     @Test
     public void getAllCorrespondents() {
-        when(correspondentService.streamAllCorrespondentOutlines(true)).thenReturn(Stream.of());
+        when(correspondentService.streamCorrespondentOutlineJson(true)).thenReturn(Stream.of());
 
         ResponseEntity<StreamingResponseBody> response = correspondentResource.getAllActiveCorrespondents(true);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        verify(correspondentService).streamAllCorrespondentOutlines(true);
+        verify(correspondentService).streamCorrespondentOutlineJson(true);
         verifyNoMoreInteractions(correspondentService);
     }
 
     @Test
     public void shouldAddCorrespondentToCase() {
-
-        Address address = new Address("anyPostcode", "any1", "any2", "any3", "anyCountry");
-
         doNothing().when(correspondentService).createCorrespondent(eq(caseUUID), eq(stageUUID), eq("any"),
             eq("anyFullName"), eq("organisation"), any(Address.class), eq("anyPhone"), eq("anyEmail"),
             eq("anyReference"), eq("external key"));

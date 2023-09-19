@@ -50,15 +50,6 @@ public class CorrespondentResource {
     ResponseEntity<StreamingResponseBody> getAllActiveCorrespondents(
         @RequestParam(value = "includeDeleted", defaultValue = "false") Boolean includeDeleted) {
 
-        return jsonResponseStreamer.jsonWrappedTransactionalStreamingResponseBody(
-            "correspondents",
-            () -> correspondentService.streamAllCorrespondentOutlines(includeDeleted));
-    }
-
-    @GetMapping(value = "/correspondents-json")
-    ResponseEntity<StreamingResponseBody> getAllActiveCorrespondentsJson(
-        @RequestParam(value = "includeDeleted", defaultValue = "false") Boolean includeDeleted) {
-
         return jsonResponseStreamer.jsonStringsWrappedTransactionalStreamingResponseBody(
             "correspondents",
             () -> correspondentService.streamCorrespondentOutlineJson(includeDeleted),
