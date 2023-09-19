@@ -57,7 +57,7 @@ public class CorrespondentResourceTest {
         correspondentResource = new CorrespondentResource(correspondentService, jsonResponseStreamer);
 
         // Ensure stream supplier is invoked
-        when(jsonResponseStreamer.jsonWrappedTransactionalStreamingResponseBody(eq("correspondents"), any()))
+        when(jsonResponseStreamer.jsonStringsWrappedTransactionalStreamingResponseBody(eq("correspondents"), any()))
             .thenAnswer(invocation -> {
                 invocation.<Supplier<?>>getArgument(1).get();
                 return ResponseEntity.ok().build();
