@@ -40,4 +40,13 @@ public interface CorrespondentRepository extends CrudRepository<Correspondent, L
         UUID getUuid();
         String getFullname();
     }
+
+    @Query(value = "SELECT CAST(json_build_object('uuid', CAST(c.uuid AS text), 'fullname', c.fullname) as text) FROM correspondent c JOIN case_data cd on c.case_uuid = cd.uuid AND NOT cd.deleted",
+           nativeQuery = true)
+    Stream<String> findAllUuidToNameMappingJson();
+
+    @Query(value = "SELECT CAST(json_build_object('uuid', CAST(c.uuid AS text), 'fullname', c.fullname) as text) FROM correspondent c JOIN case_data cd on c.case_uuid = cd.uuid AND NOT cd.deleted AND NOT c.deleted",
+           nativeQuery = true)
+    Stream<String> findActiveUuidToNameMappingJson();
+
 }

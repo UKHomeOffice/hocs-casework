@@ -90,6 +90,14 @@ public class CorrespondentService {
         return correspondentMapping.map(GetCorrespondentOutlineResponse::from);
     }
 
+    Stream<String> streamCorrespondentOutlineJson(boolean includeDeleted) {
+        log.debug("Getting all active Correspondents");
+
+        return includeDeleted
+            ? correspondentRepository.findAllUuidToNameMappingJson()
+            : correspondentRepository.findActiveUuidToNameMappingJson();
+    }
+
     Set<CorrespondentWithPrimaryFlag> getCorrespondents(UUID caseUUID) {
         log.debug("Getting all Correspondents for Case: {}", caseUUID);
 
@@ -256,9 +264,9 @@ public class CorrespondentService {
         // save the primary first and the existing logic will assign it within the case
         Optional<CorrespondentWithPrimaryFlag> primaryCorrespondent = correspondents.stream().filter(
             CorrespondentWithPrimaryFlag::getIsPrimary).findFirst();
-        if (primaryCorrespondent.isPresent()) {
-            createCorrespondent(toCase, primaryCorrespondent.get());
-        }
+        primaryCorrespondent.ifPresent(
+            correspondentWithPrimaryFlag -> createCorrespondent(toCase, correspondentWithPrimaryFlag)
+        );
 
         // save the rest
         correspondents.stream().filter(correspondent -> !correspondent.getIsPrimary()).forEach(
