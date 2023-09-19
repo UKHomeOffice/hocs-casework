@@ -10,14 +10,18 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -68,59 +72,27 @@ public class JsonResponseStreamer {
         Supplier<Stream<?>> streamSupplier,
         Map<String, Object> additionalFields)
     {
-        StreamingResponseBody body = outputStream -> {
-            try {
-                JsonFactory factory = new JsonFactory();
-
-                JsonGenerator generator = factory.createGenerator(outputStream, JsonEncoding.UTF8);
-                generator.setCodec(objectMapper);
-
-                generator.writeStartObject();
-
-                additionalFields.forEach((nestedFieldName, object) -> {
-                    try {
-                        generator.writeObjectField(nestedFieldName, object);
-                    } catch (IOException e) {
-                        log.error("Failed to write {} to json response: {}", nestedFieldName, e.getMessage());
-                    }
-                });
-
-                generator.writeArrayFieldStart(fieldName);
-
-                transactionTemplate.execute(status -> {
+        return wrapStream(
+            fieldName,
+            (generator, outputStream) -> status -> {
                     streamSupplier.get().forEach(streamItem -> {
                         try {
                             generator.writeObject(streamItem);
                         } catch (IOException e) {
                             throw new ApplicationExceptions.ReportBodyStreamingException(
                                 String.format(
-                                    "Failed to write streaming response body for item: %s",
-                                    streamItem
+                                    "Failed to write streaming response body for item: %s - %s",
+                                    streamItem,
+                                    e
                                 ),
-                                LogEvent.CORRESPONDENT_SERIALISATION_EXCEPTION
+                                LogEvent.STREAMING_JSON_SERIALISATION_EXCEPTION
                             );
                         }
                     });
 
                     return null;
-                });
-
-                generator.writeEndArray();
-                generator.writeEndObject();
-                generator.close();
-            }
-            catch (Exception e) {
-                log.error("Failed to write streaming response body");
-            }
-        };
-
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.add(HttpHeaders.CONTENT_TYPE, ContentType.APPLICATION_JSON.getMimeType());
-
-        return new ResponseEntity<>(
-            body,
-            responseHeaders,
-            HttpStatus.OK
+            },
+            additionalFields
         );
     }
 
@@ -158,6 +130,39 @@ public class JsonResponseStreamer {
         Supplier<Stream<String>> streamSupplier,
         Map<String, Object> additionalFields
     ) {
+        return wrapStream(
+            fieldName,
+            (generator, outputStream) -> status -> {
+                // Needs to be final to be used in stream.
+                AtomicBoolean prefixComma = new AtomicBoolean(false);
+
+                streamSupplier.get().forEach(
+                    (streamItem) -> {
+                        try {
+                            if (prefixComma.get()) {
+                                outputStream.write(',');
+                            } else {
+                                prefixComma.set(true);
+                            }
+
+                            outputStream.write(streamItem.getBytes());
+                        } catch (IOException e) {
+                            log.error("Failed to write {} to json response - {}", streamItem, e);
+                        }
+                    }
+                );
+
+                return null;
+            },
+            additionalFields
+        );
+    }
+
+    private ResponseEntity<StreamingResponseBody> wrapStream(
+        String fieldName,
+        BiFunction<JsonGenerator, OutputStream, TransactionCallback<TransactionStatus>> transactionCallbackSupplier,
+        Map<String, Object> additionalFields
+    ) {
         StreamingResponseBody body = outputStream -> {
             try {
                 JsonFactory factory = new JsonFactory();
@@ -171,46 +176,22 @@ public class JsonResponseStreamer {
                     try {
                         generator.writeObjectField(nestedFieldName, object);
                     } catch (IOException e) {
-                        log.error("Failed to write {} to json response: {}", nestedFieldName, e.getMessage());
+                        log.error("Failed to write {} to json response - {}", nestedFieldName, e);
                     }
                 });
 
                 generator.writeArrayFieldStart(fieldName);
+                // jsonStringsWrappedTransactionalStreamingResponseBody writes JSON strings directly to the output
+                // stream, so flush current json first
                 generator.flush();
 
-                AtomicBoolean prefixComma = new AtomicBoolean(false);
-
-                transactionTemplate.execute(status -> {
-                    streamSupplier.get().forEach(
-                        (streamItem) -> {
-                            try {
-                                if (prefixComma.get()) {
-                                    outputStream.write(',');
-                                } else {
-                                    prefixComma.set(true);
-                                }
-
-                                outputStream.write(streamItem.getBytes());
-                            } catch (IOException e) {
-                                throw new ApplicationExceptions.ReportBodyStreamingException(
-                                    String.format(
-                                        "Failed to write streaming response body for item: %s",
-                                        streamItem
-                                    ),
-                                    LogEvent.CORRESPONDENT_SERIALISATION_EXCEPTION
-                                );
-                            }
-                        }
-                    );
-
-                    return null;
-                });
+                transactionTemplate.execute(transactionCallbackSupplier.apply(generator, outputStream));
 
                 generator.writeEndArray();
                 generator.writeEndObject();
                 generator.close();
             } catch (Exception e) {
-                log.error("Failed to write streaming response body");
+                log.error("Failed to write streaming response body - {}", e);
             }
         };
 

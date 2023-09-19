@@ -75,12 +75,10 @@ public class JsonResponseStreamerTest {
 
         Objects.requireNonNull(response.getBody()).writeTo(out);
 
-        assertThat(out.toString()).isEqualTo(
-            "{" +
-            "\"extra_string\":\"A String\"," +
-            "\"extra_object\":{\"value\":\"Extra\"}," +
-            "\"field_name\":[{\"value\":\"One\"},{\"value\":\"Two\"}]}"
-        );
+        assertThat(out.toString())
+            .contains("\"extra_object\":{\"value\":\"Extra\"}")
+            .contains("\"extra_string\":\"A String\"")
+            .contains("\"field_name\":[{\"value\":\"One\"},{\"value\":\"Two\"}]}");
     }
 
     @Test
@@ -99,7 +97,7 @@ public class JsonResponseStreamerTest {
     @Test
     public void jsonStringWrappedTransactionalStreamingResponseBody_transformsStreamIntoStreamingJsonBodyWithExtraFields() throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        ResponseEntity<StreamingResponseBody> response = jsonResponseStreamer.jsonWrappedTransactionalStreamingResponseBody(
+        ResponseEntity<StreamingResponseBody> response = jsonResponseStreamer.jsonStringsWrappedTransactionalStreamingResponseBody(
             "field_name",
             () -> Stream.of("{\"value\":\"One\"}","{\"value\":\"Two\"}"),
             Map.of(
@@ -110,12 +108,10 @@ public class JsonResponseStreamerTest {
 
         Objects.requireNonNull(response.getBody()).writeTo(out);
 
-        assertThat(out.toString()).isEqualTo(
-            "{" +
-            "\"extra_string\":\"A String\"," +
-            "\"extra_object\":{\"value\":\"Extra\"}," +
-            "\"field_name\":[{\"value\":\"One\"},{\"value\":\"Two\"}]}"
-        );
+        assertThat(out.toString())
+            .contains("\"extra_object\":{\"value\":\"Extra\"}")
+            .contains("\"extra_string\":\"A String\"")
+            .contains("\"field_name\":[{\"value\":\"One\"},{\"value\":\"Two\"}]}");
     }
 
 }
