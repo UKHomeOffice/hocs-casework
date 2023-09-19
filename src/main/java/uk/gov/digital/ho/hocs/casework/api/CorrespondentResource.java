@@ -28,7 +28,6 @@ import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import javax.validation.Valid;
-import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -52,8 +51,7 @@ public class CorrespondentResource {
 
         return jsonResponseStreamer.jsonStringsWrappedTransactionalStreamingResponseBody(
             "correspondents",
-            () -> correspondentService.streamCorrespondentOutlineJson(includeDeleted),
-            Map.of()
+            () -> correspondentService.streamCorrespondentOutlineJson(includeDeleted)
         );
     }
 
