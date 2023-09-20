@@ -56,7 +56,7 @@ public class CaseDataDetailsServiceTest {
     private void setupCaseData(String type) {
         CaseData caseData = new CaseData(1L, UUID.randomUUID(), LocalDateTime.now(), type, null, false,
             Map.of("TestField", "TestValue"), UUID.randomUUID(), null, UUID.randomUUID(), null, LocalDate.now(),
-            LocalDate.now(), LocalDate.now(), false, null, Set.of(), Set.of());
+            LocalDate.now(), LocalDate.now(), null, Set.of(), Set.of());
 
         when(caseDataService.getCaseData(any())).thenReturn(caseData);
     }
