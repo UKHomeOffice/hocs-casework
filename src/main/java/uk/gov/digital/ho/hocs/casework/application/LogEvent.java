@@ -159,6 +159,7 @@ public enum LogEvent {
     STAGE_NOT_FOUND,
     STAGE_RECREATED,
     STAGE_TRANSITION_NOTE_UPDATED,
+    STREAMING_JSON_SERIALISATION_EXCEPTION,
     TEAMS_STAGE_LIST_EMPTY,
     TEAMS_STAGE_LIST_RETRIEVED,
     TEAM_EMAIL_SENT,
@@ -172,5 +173,6 @@ public enum LogEvent {
 
     public static final String EXCEPTION = "exception";
 
+    @SuppressWarnings("unused")
     public static final String STACKTRACE = "stacktrace";
 }

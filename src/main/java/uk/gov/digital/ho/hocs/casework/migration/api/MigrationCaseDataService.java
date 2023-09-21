@@ -223,8 +223,14 @@ public class MigrationCaseDataService {
 
         } catch(DataIntegrityViolationException e) {
             throw new ApplicationExceptions.EntityCreationException(
-                String.format("Failed to create correspondent %s for Migrated Case: %s", correspondent.getUuid(), caseUUID),
-                CORRESPONDENT_CREATE_FAILURE, e);
+                String.format(
+                    "Failed to create correspondent %s for Migrated Case: %s - %s",
+                    correspondent.getUuid(),
+                    caseUUID,
+                    e.getMessage()
+                ),
+                CORRESPONDENT_CREATE_FAILURE
+            );
         }
         log.info("Created Correspondent: {} for Migrated Case: {}", correspondent.getUuid(), caseUUID,
             value(EVENT, CORRESPONDENT_CREATED));
@@ -254,8 +260,14 @@ public class MigrationCaseDataService {
 
             } catch(DataIntegrityViolationException e) {
                 throw new ApplicationExceptions.EntityCreationException(
-                    String.format("Failed to create correspondent %s for Migrated Case: %s", correspondent.getUuid(), caseUUID),
-                    CORRESPONDENT_CREATE_FAILURE, e);
+                    String.format(
+                        "Failed to create correspondent %s for Migrated Case: %s - %s",
+                        correspondent.getUuid(),
+                        caseUUID,
+                        e.getMessage()
+                    ),
+                    CORRESPONDENT_CREATE_FAILURE
+                );
             }
             log.info("Created Correspondent: {} for Migrated Case: {}", correspondent.getUuid(), caseUUID,
                 value(EVENT, CORRESPONDENT_CREATED));

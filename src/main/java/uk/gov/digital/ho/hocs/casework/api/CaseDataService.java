@@ -775,10 +775,13 @@ public class CaseDataService {
         Map<String, String> updatedCaseDataMap = new HashMap<>(caseData.getDataMap());
 
         if (!updatedCaseDataMap.keySet().containsAll(keyMappings.keySet())) {
-            String msg = "Requested keys to map do not exist in case data for caseUUID %s, requested mapping: %s";
+            String msg = String.format(
+                "Requested keys to map do not exist in case data for caseUUID %s, requested mapping: %s",
+                caseUUID,
+                keyMappings.keySet()
+            );
             log.error(String.format(msg, caseUUID, keyMappings));
-            throw new ApplicationExceptions.DataMappingException(msg, null, DATA_MAPPING_EXCEPTION, caseUUID,
-                keyMappings.keySet());
+            throw new ApplicationExceptions.DataMappingException(msg, null, DATA_MAPPING_EXCEPTION);
         }
 
         keyMappings.forEach((String fromKey, String toKey) -> {
