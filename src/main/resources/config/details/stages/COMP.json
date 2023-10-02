@@ -609,10 +609,6 @@
               "value": "ICETeams"
             },
             {
-              "label": "Other",
-              "value": "Other"
-            },
-            {
               "label": "NRC",
               "value": "NRC"
             },
@@ -634,7 +630,7 @@
             },
             {
               "label": "Other",
-              "value": "OtherNew"
+              "value": "Other"
             },
             {
               "label": "PCCR",
@@ -743,11 +739,6 @@
               "conditionPropertyValue": "ICETeams"
             },
             {
-              "choices": "COMP_OTHER_BUS_AREA",
-              "conditionPropertyName": "Directorate",
-              "conditionPropertyValue": "Other"
-            },
-            {
               "choices": [
                 {
                   "label": "NRC (detained removal casework)",
@@ -798,9 +789,9 @@
               "conditionPropertyValue": "ImmigrationEnforcement"
             },
             {
-              "choices": "COMP_OTHER_NEW_BUS_AREA",
+              "choices": "COMP_OTHER_BUS_AREA",
               "conditionPropertyName": "Directorate",
-              "conditionPropertyValue": "OtherNew"
+              "conditionPropertyValue": "Other"
             },
             {
               "choices": "COMP_PCCR_BUS_AREA",
@@ -2375,10 +2366,6 @@
               "value": "ICETeams"
             },
             {
-              "label": "Other",
-              "value": "Other"
-            },
-            {
               "label": "NRC",
               "value": "NRC"
             },
@@ -2408,7 +2395,7 @@
             },
             {
               "label": "Other",
-              "value": "OtherNew"
+              "value": "Other"
             },
             {
               "label": "PCCR",
@@ -2517,11 +2504,6 @@
               "conditionPropertyValue": "ICETeams"
             },
             {
-              "choices": "COMP_OTHER_BUS_AREA",
-              "conditionPropertyName": "Directorate",
-              "conditionPropertyValue": "Other"
-            },
-            {
               "choices": [
                 {
                   "label": "NRC (detained removal casework)",
@@ -2572,9 +2554,9 @@
               "conditionPropertyValue": "ImmigrationEnforcement"
             },
             {
-              "choices": "COMP_OTHER_NEW_BUS_AREA",
+              "choices": "COMP_OTHER_BUS_AREA",
               "conditionPropertyName": "Directorate",
-              "conditionPropertyValue": "OtherNew"
+              "conditionPropertyValue": "Other"
             },
             {
               "choices": "COMP_PCCR_BUS_AREA",
