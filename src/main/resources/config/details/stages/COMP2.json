@@ -675,6 +675,11 @@
               "conditionPropertyValue": "AsylumSupport"
             },
             {
+              "choices": "COMP_BORDER_FORCE_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "BorderForce"
+            },
+            {
               "choices": "COMP_COSS_BUS_AREA",
               "conditionPropertyName": "Directorate",
               "conditionPropertyValue": "COSS"
@@ -2132,6 +2137,10 @@
               "value": "AsylumSupport"
             },
             {
+              "label": "Border Force",
+              "value": "BorderForce"
+            },
+            {
               "label": "COSS",
               "value": "COSS"
             },
@@ -2289,6 +2298,11 @@
               "choices": "COMP_ASYLUM_AND_SUPPORT_BUS_AREA",
               "conditionPropertyName": "Directorate",
               "conditionPropertyValue": "AsylumSupport"
+            },
+            {
+              "choices": "COMP_BORDER_FORCE_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "BorderForce"
             },
             {
               "choices": "COMP_COSS_BUS_AREA",
