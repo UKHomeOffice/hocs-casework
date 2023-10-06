@@ -566,10 +566,6 @@
               "value": "VCOS"
             },
             {
-              "label": "Other",
-              "value": "Other"
-            },
-            {
               "label": "EUSS FP",
               "value": "EUSSFP"
             },
@@ -590,10 +586,6 @@
               "value": "ICETeams"
             },
             {
-              "label": "Other",
-              "value": "Other"
-            },
-            {
               "label": "NRC",
               "value": "NRC"
             },
@@ -604,6 +596,42 @@
             {
               "label": "Returns Preparation",
               "value": "ReturnsPreparation"
+            },
+            {
+              "label": "Asylum & Human Rights",
+              "value": "AsylumandHumanRights"
+            },
+            {
+              "label": "Asylum Support",
+              "value": "AsylumSupport"
+            },
+            {
+              "label": "Border Force",
+              "value": "BorderForce"
+            },
+            {
+              "label": "COSS",
+              "value": "COSS"
+            },
+            {
+              "label": "Immigration Enforcement",
+              "value": "ImmigrationEnforcement"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            },
+            {
+              "label": "PCCR",
+              "value": "PCCR"
+            },
+            {
+              "label": "Resettlement",
+              "value": "Resettlement"
+            },
+            {
+              "label": "VSI",
+              "value": "VSI"
             }
           ]
         },
