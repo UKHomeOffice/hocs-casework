@@ -547,6 +547,98 @@
     ],
     "COMP2_MINORMISCONDUCT_TRIAGE": [
       {
+        "props": {
+          "choices": [
+            {
+              "label": "IandP",
+              "value": "IandP"
+            },
+            {
+              "label": "RASI",
+              "value": "RASI"
+            },
+            {
+              "label": "VCIC",
+              "value": "VCIC"
+            },
+            {
+              "label": "VCOS",
+              "value": "VCOS"
+            },
+            {
+              "label": "EUSS FP",
+              "value": "EUSSFP"
+            },
+            {
+              "label": "CI",
+              "value": "CI"
+            },
+            {
+              "label": "FNORC",
+              "value": "FNORC"
+            },
+            {
+              "label": "Detention",
+              "value": "Detention"
+            },
+            {
+              "label": "ICE Teams",
+              "value": "ICETeams"
+            },
+            {
+              "label": "NRC",
+              "value": "NRC"
+            },
+            {
+              "label": "Reporting Centres",
+              "value": "ReportingCentres"
+            },
+            {
+              "label": "Returns Preparation",
+              "value": "ReturnsPreparation"
+            },
+            {
+              "label": "Asylum & Human Rights",
+              "value": "AsylumandHumanRights"
+            },
+            {
+              "label": "Asylum Support",
+              "value": "AsylumSupport"
+            },
+            {
+              "label": "Border Force",
+              "value": "BorderForce"
+            },
+            {
+              "label": "COSS",
+              "value": "COSS"
+            },
+            {
+              "label": "Immigration Enforcement",
+              "value": "ImmigrationEnforcement"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            },
+            {
+              "label": "PCCR",
+              "value": "PCCR"
+            },
+            {
+              "label": "Resettlement",
+              "value": "Resettlement"
+            },
+            {
+              "label": "VSI",
+              "value": "VSI"
+            }
+          ]
+        },
+        "name": "Directorate",
+        "label": "Directorate"
+      },
+      {
         "component": "dropdown",
         "props": {
           "conditionChoices": [
@@ -636,11 +728,6 @@
               "conditionPropertyValue": "ICETeams"
             },
             {
-              "choices": "COMP_OTHER_BUS_AREA",
-              "conditionPropertyName": "Directorate",
-              "conditionPropertyValue": "Other"
-            },
-            {
               "choices": [
                 {
                   "label": "NRC (detained removal casework)",
@@ -669,9 +756,55 @@
               ],
               "conditionPropertyName": "Directorate",
               "conditionPropertyValue": "ReturnsPreparation"
+            },
+            {
+              "choices": "COMP_ASYLUM_AND_HUMAN_RIGHTS_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "AsylumandHumanRights"
+            },
+            {
+              "choices": "COMP_ASYLUM_AND_SUPPORT_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "AsylumSupport"
+            },
+            {
+              "choices": "COMP_BORDER_FORCE_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "BorderForce"
+            },
+            {
+              "choices": "COMP_COSS_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "COSS"
+            },
+            {
+              "choices": "COMP_IMMIGRATION_ENFORCEMENT_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "ImmigrationEnforcement"
+            },
+            {
+              "choices": "COMP_OTHER_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "Other"
+            },
+            {
+              "choices": "COMP_PCCR_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "PCCR"
+            },
+            {
+              "choices": "COMP_RESETTLEMENT_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "Resettlement"
+            },
+            {
+              "choices": "COMP_VSI_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "VSI"
             }
           ]
         },
+        "component": "dropdown",
         "name": "BusAreaBasedOnDirectorate",
         "label": "Business area"
       },
@@ -2034,7 +2167,6 @@
         "label": "Transfer to"
       },
       {
-        "component": "dropdown",
         "props": {
           "choices": [
             {
@@ -2078,10 +2210,6 @@
               "value": "ICETeams"
             },
             {
-              "label": "Other",
-              "value": "Other"
-            },
-            {
               "label": "NRC",
               "value": "NRC"
             },
@@ -2092,9 +2220,46 @@
             {
               "label": "Returns Preparation",
               "value": "ReturnsPreparation"
+            },
+            {
+              "label": "Asylum & Human Rights",
+              "value": "AsylumandHumanRights"
+            },
+            {
+              "label": "Asylum Support",
+              "value": "AsylumSupport"
+            },
+            {
+              "label": "Border Force",
+              "value": "BorderForce"
+            },
+            {
+              "label": "COSS",
+              "value": "COSS"
+            },
+            {
+              "label": "Immigration Enforcement",
+              "value": "ImmigrationEnforcement"
+            },
+            {
+              "label": "Other",
+              "value": "Other"
+            },
+            {
+              "label": "PCCR",
+              "value": "PCCR"
+            },
+            {
+              "label": "Resettlement",
+              "value": "Resettlement"
+            },
+            {
+              "label": "VSI",
+              "value": "VSI"
             }
           ]
         },
+        "component": "dropdown",
         "name": "Directorate",
         "label": "Directorate"
       },
@@ -2188,11 +2353,6 @@
               "conditionPropertyValue": "ICETeams"
             },
             {
-              "choices": "COMP_OTHER_BUS_AREA",
-              "conditionPropertyName": "Directorate",
-              "conditionPropertyValue": "Other"
-            },
-            {
               "choices": [
                 {
                   "label": "NRC (detained removal casework)",
@@ -2221,6 +2381,51 @@
               ],
               "conditionPropertyName": "Directorate",
               "conditionPropertyValue": "ReturnsPreparation"
+            },
+            {
+              "choices": "COMP_ASYLUM_AND_HUMAN_RIGHTS_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "AsylumandHumanRights"
+            },
+            {
+              "choices": "COMP_ASYLUM_AND_SUPPORT_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "AsylumSupport"
+            },
+            {
+              "choices": "COMP_BORDER_FORCE_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "BorderForce"
+            },
+            {
+              "choices": "COMP_COSS_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "COSS"
+            },
+            {
+              "choices": "COMP_IMMIGRATION_ENFORCEMENT_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "ImmigrationEnforcement"
+            },
+            {
+              "choices": "COMP_OTHER_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "Other"
+            },
+            {
+              "choices": "COMP_PCCR_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "PCCR"
+            },
+            {
+              "choices": "COMP_RESETTLEMENT_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "Resettlement"
+            },
+            {
+              "choices": "COMP_VSI_BUS_AREA",
+              "conditionPropertyName": "Directorate",
+              "conditionPropertyValue": "VSI"
             }
           ]
         },
