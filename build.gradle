@@ -32,7 +32,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
 
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
-    implementation 'org.json:json:20230618'
+    implementation 'org.json:json:20231013'
 
     implementation 'org.flywaydb:flyway-core:8.5.13'
     runtimeOnly 'org.postgresql:postgresql:42.6.0'
