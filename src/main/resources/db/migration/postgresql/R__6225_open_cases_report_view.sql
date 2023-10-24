@@ -1,7 +1,5 @@
 SET search_path TO casework;
 
-DROP VIEW IF EXISTS report_open_cases;
-
 CREATE OR REPLACE VIEW report_open_cases AS
     SELECT cd.uuid                        AS case_uuid,
            cd.reference                   AS case_reference,
@@ -21,5 +19,5 @@ CREATE OR REPLACE VIEW report_open_cases AS
            case_deadline < now()::date    AS outside_service_standard
     FROM case_data cd
     LEFT JOIN active_stage ast ON cd.uuid = ast.case_uuid
-    WHERE NOT completed;
+    WHERE date_completed is null;
 

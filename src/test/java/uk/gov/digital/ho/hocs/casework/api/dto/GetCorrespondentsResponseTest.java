@@ -39,10 +39,8 @@ public class GetCorrespondentsResponseTest {
         GetCorrespondentsResponse getCorrespondentsResponse = GetCorrespondentsResponse.from(correspondents);
 
         assertThat(getCorrespondentsResponse.getCorrespondents()).hasSize(1);
-        //noinspection OptionalGetWithoutIsPresent
-        assertThat(
-            getCorrespondentsResponse.getCorrespondents().stream().findFirst().get().getTypeDisplayName()).isEqualTo(
-            displayName);
+        assertThat(getCorrespondentsResponse.getCorrespondents().stream().findFirst().get().getTypeDisplayName())
+            .isEqualTo(displayName);
     }
 
     @Test

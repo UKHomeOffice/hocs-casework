@@ -222,7 +222,7 @@ public class CaseDataServiceTest {
             new Correspondent(PREVIOUS_CASE_UUID, PREV_CORRESPONDENT_TYPE, PREV_FULLNAME, PREV_ORGANISATION,
                 new Address(PREV_ADDR_1, PREV_ADDR_2, PREV_ADDR_3, PREV_ADDR_4, PREV_ADDR_5), PREV_TELEPHONE,
                 PREV_EMAIL, PREV_REFERENCE, PREV_EXTERNAL_KEY), LocalDate.now(), LocalDate.now(),
-            LocalDate.now().minusDays(10), false, null, Set.of(new ActiveStage(), new ActiveStage()),
+            LocalDate.now().minusDays(10), null, Set.of(new ActiveStage(), new ActiveStage()),
             Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
 
         when(caseDataRepository.findActiveByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);
@@ -343,7 +343,7 @@ public class CaseDataServiceTest {
             new Correspondent(PREVIOUS_CASE_UUID, PREV_CORRESPONDENT_TYPE, PREV_FULLNAME, PREV_ORGANISATION,
                 new Address(PREV_ADDR_1, PREV_ADDR_2, PREV_ADDR_3, PREV_ADDR_4, PREV_ADDR_5), PREV_TELEPHONE,
                 PREV_EMAIL, PREV_REFERENCE, PREV_EXTERNAL_KEY), LocalDate.now(), LocalDate.now(), originalReceivedDate,
-            false, null, Set.of(new ActiveStage(), new ActiveStage()),
+            null, Set.of(new ActiveStage(), new ActiveStage()),
             Set.of(new CaseNote(UUID.randomUUID(), "type", "text", "author")));
 
         when(caseDataRepository.findActiveByUuid(PREVIOUS_CASE_UUID)).thenReturn(previousCaseData);
@@ -902,7 +902,6 @@ public class CaseDataServiceTest {
         verify(stageRepository).save(any(Stage.class));
         verify(auditClient).updateStageTeam(any(Stage.class));
 
-        assertThat(caseData.isCompleted()).isEqualTo(true);
         assertThat(caseData.getDateCompleted()).isCloseTo(LocalDateTime.now(), within(1, ChronoUnit.SECONDS));
 
         verifyNoMoreInteractions(caseDataRepository, stageRepository);

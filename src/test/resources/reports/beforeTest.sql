@@ -1,11 +1,11 @@
-INSERT INTO casework.case_data (uuid, created, type, reference, data, primary_topic_uuid, primary_correspondent_uuid, case_deadline, date_received, deleted, completed)
+INSERT INTO casework.case_data (uuid, created, type, reference, data, primary_topic_uuid, primary_correspondent_uuid, case_deadline, date_received, deleted, date_completed)
 VALUES
-    ('a00f2b19-afc8-4e4e-9b9b-ead14eb8e026', now() - INTERVAL '1 week',  'COMP', 'COMP/123450/23', '{"BusArea": "UKVI"}', NULL, NULL, now() - INTERVAL '1 week' + INTERVAL '30' DAY, now() - INTERVAL '1 week', FALSE, false),
-    ('addf9415-bde8-465f-b5ac-e93f460f2ed3', now() - INTERVAL '2 week',  'COMP', 'COMP/123451/23', '{"BusArea": "UKVI"}', NULL, NULL, now() - INTERVAL '2 week' + INTERVAL '30' DAY, now() - INTERVAL '2 week', FALSE, true),
-    ('9e3392ff-b502-4352-8889-d6b1ce3e9a07', now() - INTERVAL '3 week',  'COMP2', 'COMP2/123452/23', '{"BusArea": "UKVI"}', NULL, NULL, now() - INTERVAL '3 week' + INTERVAL '30' DAY, now() - INTERVAL '3 week', FALSE, false),
-    ('6c9800d4-5cb2-409a-ab81-10cf862ae144', now() - INTERVAL '4 week',  'COMP', 'COMP/123453/23', '{"BusArea": "UKVI"}', NULL, NULL, now() - INTERVAL '4 week' + INTERVAL '30' DAY, now() - INTERVAL '4 week', FALSE, false),
-    ('e7051e71-0778-4197-a063-93c768c8a5ad', now() - INTERVAL '5 week',  'COMP', 'COMP/123454/23', '{"BusArea": "UKVI"}', NULL, NULL, now() - INTERVAL '5 week' + INTERVAL '30' DAY, now() - INTERVAL '5 week', FALSE, false),
-    ('1750a235-1157-4141-a270-a3f46d1db7fa', now() - INTERVAL '6 week',  'COMP', 'COMP/123455/23', '{"BusArea": "UKVI"}', NULL, NULL, now() - INTERVAL '6 week' + INTERVAL '30' DAY, now() - INTERVAL '6 week', FALSE, false);
+    ('a00f2b19-afc8-4e4e-9b9b-ead14eb8e026', now() - INTERVAL '1 week',  'COMP', 'COMP/123450/23', '{"BusArea": "UKVI"}', NULL, NULL, now() - INTERVAL '1 week' + INTERVAL '30' DAY, now() - INTERVAL '1 week', FALSE, null),
+    ('addf9415-bde8-465f-b5ac-e93f460f2ed3', now() - INTERVAL '2 week',  'COMP', 'COMP/123451/23', '{"BusArea": "UKVI"}', NULL, NULL, now() - INTERVAL '2 week' + INTERVAL '30' DAY, now() - INTERVAL '2 week', FALSE, now()),
+    ('9e3392ff-b502-4352-8889-d6b1ce3e9a07', now() - INTERVAL '3 week',  'COMP2', 'COMP2/123452/23', '{"BusArea": "UKVI"}', NULL, NULL, now() - INTERVAL '3 week' + INTERVAL '30' DAY, now() - INTERVAL '3 week', FALSE, null),
+    ('6c9800d4-5cb2-409a-ab81-10cf862ae144', now() - INTERVAL '4 week',  'COMP', 'COMP/123453/23', '{"BusArea": "UKVI"}', NULL, NULL, now() - INTERVAL '4 week' + INTERVAL '30' DAY, now() - INTERVAL '4 week', FALSE, null),
+    ('e7051e71-0778-4197-a063-93c768c8a5ad', now() - INTERVAL '5 week',  'COMP', 'COMP/123454/23', '{"BusArea": "UKVI"}', NULL, NULL, now() - INTERVAL '5 week' + INTERVAL '30' DAY, now() - INTERVAL '5 week', FALSE, null),
+    ('1750a235-1157-4141-a270-a3f46d1db7fa', now() - INTERVAL '6 week',  'COMP', 'COMP/123455/23', '{"BusArea": "UKVI"}', NULL, NULL, now() - INTERVAL '6 week' + INTERVAL '30' DAY, now() - INTERVAL '6 week', FALSE, null);
 
 INSERT INTO casework.correspondent (uuid, created, type, case_uuid, fullname, postcode, address1, address2, address3, country, telephone, email, reference, deleted, external_key)
 VALUES

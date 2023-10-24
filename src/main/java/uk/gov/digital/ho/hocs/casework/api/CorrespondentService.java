@@ -23,6 +23,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static net.logstash.logback.argument.StructuredArguments.value;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CORRESPONDENTS_RETRIEVED;
@@ -75,6 +76,14 @@ public class CorrespondentService {
 
         log.info("Got {} all active Correspondents", correspondents.size(), value(EVENT, CORRESPONDENTS_RETRIEVED));
         return correspondents;
+    }
+
+    Stream<String> streamCorrespondentOutlineJson(boolean includeDeleted) {
+        log.debug("Getting all active Correspondents");
+
+        return includeDeleted
+            ? correspondentRepository.findAllUuidToNameMappingJson()
+            : correspondentRepository.findActiveUuidToNameMappingJson();
     }
 
     Set<CorrespondentWithPrimaryFlag> getCorrespondents(UUID caseUUID) {
@@ -163,8 +172,14 @@ public class CorrespondentService {
             }
         } catch (DataIntegrityViolationException e) {
             throw new ApplicationExceptions.EntityCreationException(
-                String.format("Failed to create correspondent %s for Case: %s", correspondent.getUuid(), caseUUID),
-                CORRESPONDENT_CREATE_FAILURE, e);
+                String.format(
+                    "Failed to create correspondent %s for Case: %s - %s",
+                    correspondent.getUuid(),
+                    caseUUID,
+                    e.getMessage()
+                ),
+                CORRESPONDENT_CREATE_FAILURE
+            );
         }
         log.info("Created Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID,
             value(EVENT, CORRESPONDENT_CREATED));
@@ -201,8 +216,14 @@ public class CorrespondentService {
             auditClient.updateCorrespondentAudit(correspondent);
         } catch (DataIntegrityViolationException e) {
             throw new ApplicationExceptions.EntityCreationException(
-                String.format("Failed to update correspondent %s for Case: %s", correspondent.getUuid(), caseUUID),
-                CORRESPONDENT_UPDATE_FAILURE, e);
+                String.format(
+                    "Failed to update correspondent %s for Case: %s - %s",
+                    correspondent.getUuid(),
+                    caseUUID,
+                    e.getMessage()
+                ),
+                CORRESPONDENT_UPDATE_FAILURE
+            );
         }
         log.info("Updated Correspondent: {} for Case: {}", correspondent.getUuid(), caseUUID,
             value(EVENT, CORRESPONDENT_UPDATED));
@@ -231,9 +252,9 @@ public class CorrespondentService {
         // save the primary first and the existing logic will assign it within the case
         Optional<CorrespondentWithPrimaryFlag> primaryCorrespondent = correspondents.stream().filter(
             CorrespondentWithPrimaryFlag::getIsPrimary).findFirst();
-        if (primaryCorrespondent.isPresent()) {
-            createCorrespondent(toCase, primaryCorrespondent.get());
-        }
+        primaryCorrespondent.ifPresent(
+            correspondentWithPrimaryFlag -> createCorrespondent(toCase, correspondentWithPrimaryFlag)
+        );
 
         // save the rest
         correspondents.stream().filter(correspondent -> !correspondent.getIsPrimary()).forEach(

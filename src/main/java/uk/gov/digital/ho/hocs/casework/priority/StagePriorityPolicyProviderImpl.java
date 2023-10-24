@@ -84,8 +84,8 @@ public class StagePriorityPolicyProviderImpl implements StagePriorityPolicyProvi
             case POLICY_TYPE_DEADLINE:
                 return new DeadlinePolicy();
             default:
-                throw new ApplicationExceptions.InvalidPriorityTypeException("Cannot map %s priority policy type",
-                    policyDto.getType());
+                throw new ApplicationExceptions.InvalidPriorityTypeException(
+                    String.format("Cannot map %s priority policy type", policyDto.getType()));
         }
     }
 
