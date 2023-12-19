@@ -800,6 +800,23 @@
         "label": "Business area"
       },
       {
+        "component": "radio",
+        "props": {
+          "choices": [
+            {
+              "label": "Yes",
+              "value": "Yes"
+            },
+            {
+              "label": "No",
+              "value": "No"
+            }
+          ]
+        },
+        "name": "LoaRequired",
+        "label": "Is a Letter of Authority required?"
+      },
+      {
         "component": "somu-list",
         "props": {
           "choices": {
