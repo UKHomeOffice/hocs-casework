@@ -11,13 +11,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import uk.gov.digital.ho.hocs.casework.api.dto.CorrespondentTypeDto;
 import uk.gov.digital.ho.hocs.casework.api.dto.CreateCorrespondentRequest;
-import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentOutlinesResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentTypeResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.GetCorrespondentsResponse;
 import uk.gov.digital.ho.hocs.casework.api.dto.UpdateCorrespondentRequest;
+import uk.gov.digital.ho.hocs.casework.api.utils.JsonResponseStreamer;
 import uk.gov.digital.ho.hocs.casework.domain.model.Address;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag;
@@ -27,7 +28,6 @@ import uk.gov.digital.ho.hocs.casework.security.AllocationLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
 import javax.validation.Valid;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -37,21 +37,27 @@ public class CorrespondentResource {
 
     private final CorrespondentService correspondentService;
 
+    private final JsonResponseStreamer jsonResponseStreamer;
+
     @Autowired
-    public CorrespondentResource(CorrespondentService correspondentService) {
+    public CorrespondentResource(CorrespondentService correspondentService, JsonResponseStreamer jsonResponseStreamer) {
         this.correspondentService = correspondentService;
+        this.jsonResponseStreamer = jsonResponseStreamer;
     }
 
     @GetMapping(value = "/correspondents")
-    ResponseEntity<GetCorrespondentOutlinesResponse> getAllActiveCorrespondents(
-        @RequestParam(value = "includeDeleted", required = false) Optional<Boolean> includeDeleted) {
-        Set<Correspondent> correspondents = correspondentService.getAllCorrespondents(includeDeleted.orElse(false));
-        return ResponseEntity.ok(GetCorrespondentOutlinesResponse.from(correspondents));
+    ResponseEntity<StreamingResponseBody> getAllActiveCorrespondents(
+        @RequestParam(value = "includeDeleted", defaultValue = "false") Boolean includeDeleted) {
+
+        return jsonResponseStreamer.jsonStringsWrappedTransactionalStreamingResponseBody(
+            "correspondents",
+            () -> correspondentService.streamCorrespondentOutlineJson(includeDeleted)
+        );
     }
 
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PostMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent")
-    ResponseEntity addCorrespondentToCase(@PathVariable UUID caseUUID,
+    ResponseEntity<Void> addCorrespondentToCase(@PathVariable UUID caseUUID,
                                           @PathVariable UUID stageUUID,
                                           @Valid @RequestBody CreateCorrespondentRequest request) {
         Address address = new Address(request.getPostcode(), request.getAddress1(), request.getAddress2(),
@@ -102,10 +108,10 @@ public class CorrespondentResource {
 
     @Allocated(allocatedTo = AllocationLevel.USER_OR_TEAM)
     @PutMapping(value = "/case/{caseUUID}/stage/{stageUUID}/correspondent/{correspondentUUID}")
-    ResponseEntity updateCorrespondent(@PathVariable UUID caseUUID,
-                                       @PathVariable UUID stageUUID,
-                                       @PathVariable UUID correspondentUUID,
-                                       @Valid @RequestBody UpdateCorrespondentRequest request) {
+    ResponseEntity<Void> updateCorrespondent(@PathVariable UUID caseUUID,
+                                             @SuppressWarnings("unused") @PathVariable UUID stageUUID,
+                                             @PathVariable UUID correspondentUUID,
+                                             @Valid @RequestBody UpdateCorrespondentRequest request) {
         correspondentService.updateCorrespondent(caseUUID, correspondentUUID, request);
         return ResponseEntity.ok().build();
     }
