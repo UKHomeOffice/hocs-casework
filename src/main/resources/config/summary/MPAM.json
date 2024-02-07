@@ -195,7 +195,7 @@
         }
       ],
       "name": "BusUnit",
-      "label": "Business unitA"
+      "label": "Business unit"
     },
     {
       "type": "date",
