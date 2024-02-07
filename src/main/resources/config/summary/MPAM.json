@@ -116,14 +116,86 @@
       "label": "Enquiry subject"
     },
     {
-      "choices": "MPAM_ENQUIRY_REASONS_ALL",
+      "conditionChoices": [
+        {
+          "choices": "MPAM_ENQUIRY_REASONS_PER",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "Person_Specific"
+        },
+        {
+          "choices": "MPAM_ENQUIRY_REASONS_GUI",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "Guidance_Policy"
+        },
+        {
+          "choices": "MPAM_ENQUIRY_REASONS_DOC",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "Documentation"
+        },
+        {
+          "choices": "MPAM_ENQUIRY_REASONS_TECH",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "Technical"
+        },
+        {
+          "choices": "MPAM_ENQUIRY_REASONS_DET",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "Detention"
+        },
+        {
+          "choices": "MPAM_ENQUIRY_REASONS_HMPO",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "HMPO_Specific"
+        },
+        {
+          "choices": "MPAM_ENQUIRY_REASONS_OTHER",
+          "conditionPropertyName": "EnquirySubject",
+          "conditionPropertyValue": "Other"
+        }
+      ],
       "name": "EnquiryReason",
       "label": "Enquiry reason"
     },
     {
-      "choices": "S_MPAM_BUS_UNITS_ALL",
+      "conditionChoices": [
+        {
+          "choices": "S_MPAM_BUS_UNITS_1",
+          "conditionPropertyName": "BusArea",
+          "conditionPropertyValue": "UKVI"
+        },
+        {
+          "choices": "S_MPAM_BUS_UNITS_2",
+          "conditionPropertyName": "BusArea",
+          "conditionPropertyValue": "BF"
+        },
+        {
+          "choices": "S_MPAM_BUS_UNITS_3",
+          "conditionPropertyName": "BusArea",
+          "conditionPropertyValue": "IE"
+        },
+        {
+          "choices": "S_MPAM_BUS_UNITS_4",
+          "conditionPropertyName": "BusArea",
+          "conditionPropertyValue": "EUSS"
+        },
+        {
+          "choices": "S_MPAM_BUS_UNITS_5",
+          "conditionPropertyName": "BusArea",
+          "conditionPropertyValue": "HMPO"
+        },
+        {
+          "choices": "S_MPAM_BUS_UNITS_6",
+          "conditionPropertyName": "BusArea",
+          "conditionPropertyValue": "Windrush"
+        },
+        {
+          "choices": "S_MPAM_BUS_UNITS_7",
+          "conditionPropertyName": "BusArea",
+          "conditionPropertyValue": "Coronavirus"
+        }
+      ],
       "name": "BusUnit",
-      "label": "Business unit"
+      "label": "Business unitA"
     },
     {
       "type": "date",
