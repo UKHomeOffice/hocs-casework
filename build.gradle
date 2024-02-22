@@ -26,20 +26,23 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'com.amazonaws:aws-java-sdk-sns:1.12.661'
 
-    implementation 'com.vladmihalcea:hibernate-types-55:2.21.1'
+   // implementation 'com.vladmihalcea:hibernate-types-55:2.21.1'
+    // https://mvnrepository.com/artifact/com.vladmihalcea/hibernate-types-60
+    implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
+    runtimeOnly 'org.jetbrains.kotlin:kotlin-reflect:2.0.0-Beta4'
 
     implementation 'net.logstash.logback:logstash-logback-encoder:7.3'
     implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
 
     implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
-    implementation 'org.json:json:20230618'
+    implementation 'org.json:json:20231013'
 
     implementation 'org.flywaydb:flyway-core:9.16.0'
     runtimeOnly 'org.postgresql:postgresql:42.6.0'
 
     compileOnly "org.projectlombok:lombok:${lombokVersion}"
     annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
-    annotationProcessor 'org.springframework:spring-context-indexer:5.3.24'
+    annotationProcessor 'org.springframework:spring-context-indexer:6.0.6'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 
     testImplementation 'com.google.guava:guava:33.0.0-jre'
