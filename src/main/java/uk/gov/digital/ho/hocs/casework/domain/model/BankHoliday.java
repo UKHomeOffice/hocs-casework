@@ -4,7 +4,6 @@ import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import jakarta.persistence.*;
 import org.hibernate.type.SqlTypes;
@@ -27,7 +26,6 @@ public class BankHoliday {
     @Getter
     @Enumerated(EnumType.STRING)
     @Column(name = "region")
-    //@Type(type = "pgsql_enum")
     @JdbcTypeCode(SqlTypes.ENUM)
     private BankHolidayRegion region;
 
