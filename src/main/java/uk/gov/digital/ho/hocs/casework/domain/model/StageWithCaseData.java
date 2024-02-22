@@ -4,14 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Converter;
+import jakarta.persistence.Converts;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+//import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.Where;
 import org.hibernate.type.SqlTypes;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
@@ -36,11 +36,11 @@ import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
 
-//@TypeDefs({ @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class) })
-@TypeDefs({ @Convert(attributeName = "jsonb", converter = JsonBinaryType.class) })
-
+//@TypeDefs({ @Convert(attributeName = "jsonb", converter = JsonBinaryType.class) })
+@Converts({ @Convert(attributeName = "jsonb", converter = JsonBinaryType.class)})
 @Entity
 @Table(name = "stage")
+@SuppressWarnings("JpaAttributeTypeInspection")
 public class StageWithCaseData extends BaseStage {
 
     public static final String DCU_MIN_INITIAL_DRAFT = "DCU_MIN_INITIAL_DRAFT";
@@ -67,7 +67,8 @@ public class StageWithCaseData extends BaseStage {
 
     @Getter
     @Setter(value = AccessLevel.PROTECTED)
-    @Type(type = "jsonb")
+    //@Type(type = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "data", columnDefinition = "jsonb", insertable = false, updatable = false)
     private Map<String, String> data;
 

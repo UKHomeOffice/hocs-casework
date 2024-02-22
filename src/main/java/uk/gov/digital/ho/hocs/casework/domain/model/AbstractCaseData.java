@@ -2,10 +2,11 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
+//import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.Where;
+import org.hibernate.type.SqlTypes;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
@@ -21,9 +22,10 @@ import java.util.UUID;
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_CREATE_FAILURE;
 
 @MappedSuperclass
-@TypeDefs({ @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class) })
+@Convert(attributeName = "pgsql_enum", converter = JsonBinaryType.class)
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SuppressWarnings("JpaAttributeTypeInspection")
 public class AbstractCaseData implements Serializable {
 
     @Id
@@ -58,7 +60,8 @@ public class AbstractCaseData implements Serializable {
 
     @Getter
     @Setter(value = AccessLevel.PROTECTED)
-    @Type(type = "jsonb")
+    //@Type(type = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "data", columnDefinition = "jsonb")
     private Map<String, String> dataMap = new HashMap<>(0);
 
