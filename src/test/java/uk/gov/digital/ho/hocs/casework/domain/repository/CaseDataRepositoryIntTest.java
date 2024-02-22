@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 
-import javax.persistence.PersistenceException;
+import jakarta.persistence.PersistenceException;
 import java.time.LocalDate;
 import java.util.UUID;
 

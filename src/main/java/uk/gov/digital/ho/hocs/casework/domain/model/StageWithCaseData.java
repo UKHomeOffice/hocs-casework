@@ -8,11 +8,7 @@ import jakarta.persistence.Converts;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.JdbcType;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.Type;
-//import org.hibernate.annotations.TypeDefs;
-import org.hibernate.annotations.Where;
 import org.hibernate.type.SqlTypes;
 import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 
@@ -36,7 +32,6 @@ import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.STAGE_CREATE_FAILURE;
 
-//@TypeDefs({ @Convert(attributeName = "jsonb", converter = JsonBinaryType.class) })
 @Converts({ @Convert(attributeName = "jsonb", converter = JsonBinaryType.class)})
 @Entity
 @Table(name = "stage")

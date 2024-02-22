@@ -31,7 +31,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.*;
 import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 import uk.gov.digital.ho.hocs.casework.utils.BaseAwsTest;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;

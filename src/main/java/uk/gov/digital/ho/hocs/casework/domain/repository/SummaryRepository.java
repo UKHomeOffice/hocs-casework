@@ -2,8 +2,7 @@ package uk.gov.digital.ho.hocs.casework.domain.repository;
 
 import org.hibernate.query.NativeQuery;
 import org.hibernate.transform.Transformers;
-import org.hibernate.type.IntegerType;
-import org.hibernate.type.UUIDCharType;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Component;
 import uk.gov.digital.ho.hocs.casework.domain.model.Summary;
 
@@ -78,7 +77,7 @@ public class SummaryRepository {
     }
 
     private void extracted(Query query) {
-        query.unwrap(NativeQuery.class).addScalar(TEAM_UUID_COLUMN_NAME, UUIDCharType.INSTANCE).addScalar(
-            COUNT_COLUMN_NAME, IntegerType.INSTANCE).setResultTransformer(Transformers.aliasToBean(Summary.class));
+        query.unwrap(NativeQuery.class).addScalar(TEAM_UUID_COLUMN_NAME, StandardBasicTypes.UUID).addScalar(
+            COUNT_COLUMN_NAME, StandardBasicTypes.INTEGER).setResultTransformer(Transformers.aliasToBean(Summary.class));
     }
 }

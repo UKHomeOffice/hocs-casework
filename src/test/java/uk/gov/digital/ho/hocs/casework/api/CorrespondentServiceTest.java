@@ -23,7 +23,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CorrespondentWithPrimaryFlag
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseDataRepository;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CorrespondentRepository;
 
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
