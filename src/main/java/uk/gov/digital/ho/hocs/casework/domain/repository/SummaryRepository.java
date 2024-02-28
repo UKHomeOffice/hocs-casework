@@ -28,7 +28,7 @@ public class SummaryRepository {
             "SELECT st.team_uuid as teamUuid, count(*) FROM stage st INNER JOIN case_data cd ON st.case_uuid = cd.uuid WHERE NOT cd.deleted AND st.team_uuid IS NOT NULL AND st.team_uuid IN ?1 AND NOT cd.data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) GROUP BY st.team_uuid");
         query.setParameter(1, teamUuidSet);
 
-        extracted(query);
+        extractQueryExecution(query);
 
         return query.getResultList();
     }
@@ -39,7 +39,7 @@ public class SummaryRepository {
             "SELECT st.team_uuid as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid in ?1 AND st.user_uuid IS NULL AND NOT cd.deleted AND NOT cd.data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) GROUP BY st.team_uuid");
         query.setParameter(1, teamUuidSet);
 
-        extracted(query);
+        extractQueryExecution(query);
 
         return query.getResultList();
     }
@@ -49,7 +49,7 @@ public class SummaryRepository {
             "SELECT st.team_uuid as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid IN ?1 AND st.deadline < CURRENT_DATE AND NOT cd.deleted AND NOT cd.data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) GROUP BY st.team_uuid");
         query.setParameter(1, teamUuidSet);
 
-        extracted(query);
+        extractQueryExecution(query);
 
         return query.getResultList();
     }
@@ -60,7 +60,7 @@ public class SummaryRepository {
         query.setParameter(1, teamUuidSet);
         query.setParameter(2, userUuid);
 
-        extracted(query);
+        extractQueryExecution(query);
 
         return query.getResultList();
     }
@@ -71,12 +71,12 @@ public class SummaryRepository {
         query.setParameter(1, teamUuidSet);
         query.setParameter(2, userUuid);
 
-        extracted(query);
+        extractQueryExecution(query);
 
         return query.getResultList();
     }
 
-    private void extracted(Query query) {
+    private void extractQueryExecution(Query query) {
         query.unwrap(NativeQuery.class).addScalar(TEAM_UUID_COLUMN_NAME, StandardBasicTypes.UUID).addScalar(
             COUNT_COLUMN_NAME, StandardBasicTypes.INTEGER).setResultTransformer(Transformers.aliasToBean(Summary.class));
     }

@@ -1,6 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
-import com.vladmihalcea.hibernate.type.basic.PostgreSQLEnumType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

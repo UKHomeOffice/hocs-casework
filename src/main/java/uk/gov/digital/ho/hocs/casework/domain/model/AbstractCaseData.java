@@ -3,8 +3,6 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.Type;
-//import org.hibernate.annotations.TypeDefs;
 import org.hibernate.annotations.Where;
 import org.hibernate.type.SqlTypes;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
@@ -60,7 +58,6 @@ public class AbstractCaseData implements Serializable {
 
     @Getter
     @Setter(value = AccessLevel.PROTECTED)
-    //@Type(type = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "data", columnDefinition = "jsonb")
     private Map<String, String> dataMap = new HashMap<>(0);

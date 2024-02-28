@@ -3,7 +3,6 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Convert;
-import jakarta.persistence.Converter;
 import jakarta.persistence.Converts;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,12 +16,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -62,7 +59,6 @@ public class StageWithCaseData extends BaseStage {
 
     @Getter
     @Setter(value = AccessLevel.PROTECTED)
-    //@Type(type = "jsonb")
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "data", columnDefinition = "jsonb", insertable = false, updatable = false)
     private Map<String, String> data;
