@@ -76,7 +76,7 @@ public class NotifyClient {
             var messageRequest = new SendMessageRequest(notifyQueueUrl,
                 objectMapper.writeValueAsString(command)).withMessageAttributes(getQueueHeaders(event.toString()));
 
-            notifyAsyncClient.sendMessage(messageRequest);
+            //notifyAsyncClient.sendMessage(messageRequest);
             log.info("Sent email message of type {}", command.getCommand(), value(LogEvent.EVENT, event));
         } catch (JsonProcessingException e) {
             log.error("Failed to send email message of type {}", command.getCommand(),
