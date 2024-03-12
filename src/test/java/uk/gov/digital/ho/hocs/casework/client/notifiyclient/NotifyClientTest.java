@@ -15,6 +15,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import software.amazon.awssdk.services.sqs.SqsAsyncClient;
 import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
@@ -50,7 +51,7 @@ public class NotifyClientTest extends BaseAwsTest {
     @MockBean(name = "requestData")
     private RequestData requestData;
 
-    private ResultCaptor<SendMessageResult> sqsMessageResult;
+    private ResultCaptor<SendMessageResponse> sqsMessageResult;
 
     @Autowired
     private NotifyClient notifyClient;
@@ -63,7 +64,8 @@ public class NotifyClientTest extends BaseAwsTest {
         when(requestData.username()).thenReturn("some username");
 
         sqsMessageResult = new ResultCaptor<>();
-        doAnswer(sqsMessageResult).when(notifySqsClient).sendMessage(any());
+       // doAnswer(sqsMessageResult).when(notifySqsClient).sendMessage(any());
+        doAnswer(sqsMessageResult).when(notifySqsClient).sendMessage((SendMessageRequest) any());
     }
 
     @Test
@@ -113,14 +115,16 @@ public class NotifyClientTest extends BaseAwsTest {
         notifyClient.sendUserEmail(caseUUID, stageUUID, currentUser, newUser, caseRef);
 
         verify(notifySqsClient).sendMessage(messageCaptor.capture());
-        Assertions.assertEquals(messageCaptor.getValue().getMessageAttributes(), expectedHeaders);
+        Assertions.assertEquals(messageCaptor.getValue().messageAttributes(), expectedHeaders);
+
     }
 
     private void assertSqsValue(Object command) {
         Assertions.assertNotNull(sqsMessageResult);
 
         // getMessageMd5 - toString strips leading zeros, 31/32 matched is close enough in this instance
-        Assertions.assertTrue(sqsMessageResult.getResult().getMD5OfMessageBody().contains(getMessageMd5(command)));
+        Assertions.assertTrue(sqsMessageResult.getResult().md5OfMessageBody().contains(getMessageMd5(command)));
+
     }
 
 }
