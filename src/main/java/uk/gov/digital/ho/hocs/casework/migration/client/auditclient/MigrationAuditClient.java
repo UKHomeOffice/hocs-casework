@@ -1,14 +1,12 @@
 package uk.gov.digital.ho.hocs.casework.migration.client.auditclient;
 
-import com.amazonaws.services.sns.AmazonSNSAsync;
-import com.amazonaws.services.sns.model.MessageAttributeValue;
-import com.amazonaws.services.sns.model.PublishRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.services.sns.SnsAsyncClient;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.EventType;
@@ -42,14 +40,14 @@ public class MigrationAuditClient {
 
     private final String group;
 
-    private final AmazonSNSAsync auditSearchSnsClient;
+    private final SnsAsyncClient auditSearchSnsClient;
 
     private final ObjectMapper objectMapper;
 
     private final RequestData requestData;
 
     @Autowired
-    public MigrationAuditClient(AmazonSNSAsync auditSearchSnsClient,
+    public MigrationAuditClient(SnsAsyncClient auditSearchSnsClient,
                                 @Value("${aws.sns.audit-search.arn}") String auditQueue,
                                 @Value("${auditing.deployment.name}") String raisingService,
                                 @Value("${auditing.deployment.namespace}") String namespace,
@@ -141,7 +139,7 @@ public class MigrationAuditClient {
         }
     }
 
-    private Map<String, MessageAttributeValue> getQueueHeaders(String eventType) {
+    private Map<String, SnsStringMessageAttributeValue> getQueueHeaders(String eventType) {
         return Map.of(EVENT_TYPE_HEADER, new SnsStringMessageAttributeValue(eventType),
             RequestData.CORRELATION_ID_HEADER, new SnsStringMessageAttributeValue(requestData.correlationId()),
             RequestData.USER_ID_HEADER, new SnsStringMessageAttributeValue(userId),

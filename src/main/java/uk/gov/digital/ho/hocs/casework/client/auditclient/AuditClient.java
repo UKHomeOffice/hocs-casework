@@ -1,8 +1,6 @@
 package uk.gov.digital.ho.hocs.casework.client.auditclient;
 
-import com.amazonaws.services.sns.AmazonSNSAsync;
-import com.amazonaws.services.sns.model.MessageAttributeValue;
-import com.amazonaws.services.sns.model.PublishRequest;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
+import software.amazon.awssdk.services.sns.SnsAsyncClient;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
@@ -56,7 +55,7 @@ public class AuditClient {
 
     private final String namespace;
 
-    private final AmazonSNSAsync auditSearchSnsClient;
+    private final SnsAsyncClient auditSearchSnsClient;
 
     private final ObjectMapper objectMapper;
 
@@ -67,7 +66,7 @@ public class AuditClient {
     private final String serviceBaseURL;
 
     @Autowired
-    public AuditClient(AmazonSNSAsync auditSearchSnsClient,
+    public AuditClient(SnsAsyncClient auditSearchSnsClient,
                        @Value("${aws.sns.audit-search.arn}") String auditQueue,
                        @Value("${auditing.deployment.name}") String raisingService,
                        @Value("${auditing.deployment.namespace}") String namespace,
@@ -583,7 +582,7 @@ public class AuditClient {
     }
 
     private Map<String, MessageAttributeValue> getQueueHeaders(String eventType) {
-        return Map.of(EVENT_TYPE_HEADER, new SnsStringMessageAttributeValue(eventType),
+        return Map.of(EVENT_TYPE_HEADER, new MessageAttributeValue(eventType),
             RequestData.CORRELATION_ID_HEADER, new SnsStringMessageAttributeValue(requestData.correlationId()),
             RequestData.USER_ID_HEADER, new SnsStringMessageAttributeValue(requestData.userId()),
             RequestData.USERNAME_HEADER, new SnsStringMessageAttributeValue(requestData.username()),

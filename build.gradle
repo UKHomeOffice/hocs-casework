@@ -24,12 +24,14 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-json'
     implementation 'org.springframework.boot:spring-boot-starter-cache'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-    implementation 'com.amazonaws:aws-java-sdk-sns:1.12.661'
+    implementation 'software.amazon.awssdk:sqs:2.24.12'
+    implementation group: 'io.awspring.cloud', name: 'spring-cloud-aws-starter-sqs', version: '3.1.0'
+    implementation group: 'io.awspring.cloud', name: 'spring-cloud-aws-starter-sns', version: '3.1.0'
 
     implementation 'com.vladmihalcea:hibernate-types-60:2.21.1'
-    runtimeOnly 'org.jetbrains.kotlin:kotlin-reflect:2.0.0-Beta4'
+   // runtimeOnly 'org.jetbrains.kotlin:kotlin-reflect:2.0.0-Beta4'
     implementation 'javax.annotation:javax.annotation-api:1.3.2'
-    implementation 'org.apache.httpcomponents.client5:httpclient5'
+    //implementation 'org.apache.httpcomponents.client5:httpclient5'
 
     implementation 'net.logstash.logback:logstash-logback-encoder:7.3'
     implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'

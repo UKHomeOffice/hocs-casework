@@ -1,9 +1,10 @@
 package uk.gov.digital.ho.hocs.casework.util;
 
-import com.amazonaws.services.sns.model.MessageAttributeValue;
+import software.amazon.awssdk.services.sns.model.MessageAttributeValue;
 import org.springframework.util.StringUtils;
 
-public class SnsStringMessageAttributeValue extends MessageAttributeValue {
+public class SnsStringMessageAttributeValue {
+    //extends MessageAttributeValue {
 
     private static final String type = "String";
 
@@ -12,8 +13,10 @@ public class SnsStringMessageAttributeValue extends MessageAttributeValue {
             throw new IllegalArgumentException("Value should be a non-empty String");
         }
 
-        this.setDataType(type);
-        this.setStringValue(value);
+
+        this.dataType(type);
+        this.stringValue(value);
+
     }
 
 }
