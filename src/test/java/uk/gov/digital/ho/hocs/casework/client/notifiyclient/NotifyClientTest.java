@@ -1,9 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.client.notifiyclient;
 
-import com.amazonaws.services.sqs.AmazonSQSAsync;
-import com.amazonaws.services.sqs.model.MessageAttributeValue;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.amazonaws.services.sqs.model.SendMessageResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -16,6 +12,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import software.amazon.awssdk.services.sqs.SqsAsyncClient;
+import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
@@ -46,7 +45,7 @@ public class NotifyClientTest extends BaseAwsTest {
     ArgumentCaptor<SendMessageRequest> messageCaptor;
 
     @SpyBean
-    private AmazonSQSAsync notifySqsClient;
+    private SqsAsyncClient notifySqsClient;
 
     @MockBean(name = "requestData")
     private RequestData requestData;
@@ -102,11 +101,11 @@ public class NotifyClientTest extends BaseAwsTest {
     @Test
     public void shouldSetHeaders() {
         Map<String, MessageAttributeValue> expectedHeaders = Map.of("event_type",
-            new SqsStringMessageAttributeValue(LogEvent.USER_EMAIL_SENT.toString()), RequestData.CORRELATION_ID_HEADER,
-            new SqsStringMessageAttributeValue(requestData.correlationId()), RequestData.USER_ID_HEADER,
-            new SqsStringMessageAttributeValue(requestData.userId()), RequestData.USERNAME_HEADER,
-            new SqsStringMessageAttributeValue(requestData.username()), RequestData.GROUP_HEADER,
-            new SqsStringMessageAttributeValue(requestData.groups()));
+            MessageAttributeValue.builder().stringValue(LogEvent.USER_EMAIL_SENT.toString()).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.userId()).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.username()).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.groups()).build());
 
         UUID currentUser = UUID.randomUUID();
         UUID newUser = UUID.randomUUID();

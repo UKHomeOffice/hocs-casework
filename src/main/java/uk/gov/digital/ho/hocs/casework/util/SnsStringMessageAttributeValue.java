@@ -14,8 +14,8 @@ public class SnsStringMessageAttributeValue {
         }
 
 
-        this.dataType(type);
-        this.stringValue(value);
+//        this.dataType(type);
+//        this.stringValue(value);
 
     }
 
