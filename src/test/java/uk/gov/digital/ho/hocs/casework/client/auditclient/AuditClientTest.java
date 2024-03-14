@@ -84,7 +84,7 @@ public class AuditClientTest extends BaseAwsTest {
         when(requestData.username()).thenReturn("some username");
 
         snsPublishResult = new ResultCaptor<>();
-        doAnswer(snsPublishResult).when(auditSearchSnsClient).publish(any());
+        doAnswer(snsPublishResult).when(auditSearchSnsClient).publish((PublishRequest) any());
     }
 
     @Test
@@ -449,7 +449,7 @@ public class AuditClientTest extends BaseAwsTest {
         var stageUUID = UUID.randomUUID();
         var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
 
-        doThrow(new RuntimeException("An error occurred")).when(auditSearchSnsClient).publish(any());
+        doThrow(new RuntimeException("An error occurred")).when(auditSearchSnsClient).publish((PublishRequest) any());
 
         assertThatCode(() -> auditClient.updateCaseAudit(caseData, stageUUID)).doesNotThrowAnyException();
     }

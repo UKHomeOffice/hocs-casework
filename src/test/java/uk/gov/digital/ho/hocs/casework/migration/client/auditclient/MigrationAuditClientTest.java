@@ -80,7 +80,7 @@ public class MigrationAuditClientTest extends BaseAwsTest {
         when(requestData.username()).thenReturn("some username");
 
         snsPublishResult = new ResultCaptor<>();
-        doAnswer(snsPublishResult).when(auditSearchSnsClient).publish(any());
+        doAnswer(snsPublishResult).when(auditSearchSnsClient).publish((PublishRequest) any());
     }
 
     @Test
@@ -101,6 +101,7 @@ public class MigrationAuditClientTest extends BaseAwsTest {
         var caseID = 12345L;
         var caseType = CaseDataTypeFactory.from("TEST", "F0");
         var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
+        Map<String, MessageAttributeValue> expectedHeaders =
             Map.of("event_type", MessageAttributeValue.builder().stringValue(EventType.CASE_CREATED.toString()).build(),
             RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
             RequestData.USER_ID_HEADER, MessageAttributeValue.builder().stringValue(userId).build(),
@@ -121,7 +122,7 @@ public class MigrationAuditClientTest extends BaseAwsTest {
         var stageUUID = UUID.randomUUID();
         var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
 
-        doThrow(new RuntimeException("An error occurred")).when(auditSearchSnsClient).publish(any());
+        doThrow(new RuntimeException("An error occurred")).when(auditSearchSnsClient).publish((PublishRequest) any());
 
         assertThatCode(() -> migrationAuditClient.updateCaseAudit(caseData, stageUUID)).doesNotThrowAnyException();
     }
