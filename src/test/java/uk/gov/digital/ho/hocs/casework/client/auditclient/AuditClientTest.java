@@ -1,9 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.client.auditclient;
 
-import com.amazonaws.services.sns.AmazonSNSAsync;
-import com.amazonaws.services.sns.model.MessageAttributeValue;
-import com.amazonaws.services.sns.model.PublishRequest;
-import com.amazonaws.services.sns.model.PublishResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,6 +15,10 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestClientException;
+import software.amazon.awssdk.services.sns.SnsAsyncClient;
+import software.amazon.awssdk.services.sns.model.MessageAttributeValue;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
+import software.amazon.awssdk.services.sns.model.PublishResponse;
 import uk.gov.digital.ho.hocs.casework.api.CaseDataService;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
@@ -59,10 +59,10 @@ public class AuditClientTest extends BaseAwsTest {
     @Captor
     private ArgumentCaptor<PublishRequest> publicRequestCaptor;
 
-    private ResultCaptor<PublishResult> snsPublishResult;
+    private ResultCaptor<PublishResponse> snsPublishResult;
 
     @SpyBean
-    private AmazonSNSAsync auditSearchSnsClient;
+    private SnsAsyncClient auditSearchSnsClient;
 
     @MockBean(name = "requestData")
     private RequestData requestData;
@@ -427,19 +427,19 @@ public class AuditClientTest extends BaseAwsTest {
         var caseID = 12345L;
         var caseType = CaseDataTypeFactory.from("TEST", "F0");
         var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
-        Map<String, MessageAttributeValue> expectedHeaders = Map.of("event_type",
-            new SnsStringMessageAttributeValue(EventType.CASE_CREATED.toString()), RequestData.CORRELATION_ID_HEADER,
-            new SnsStringMessageAttributeValue(requestData.correlationId()), RequestData.USER_ID_HEADER,
-            new SnsStringMessageAttributeValue(requestData.userId()), RequestData.USERNAME_HEADER,
-            new SnsStringMessageAttributeValue(requestData.username()), RequestData.GROUP_HEADER,
-            new SnsStringMessageAttributeValue(requestData.groups()));
+        Map<String, MessageAttributeValue> expectedHeaders =
+            Map.of("event_type", MessageAttributeValue.builder().stringValue(EventType.CASE_CREATED.toString()).build(),
+                RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
+                RequestData.USER_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.userId()).build(),
+                RequestData.USERNAME_HEADER, MessageAttributeValue.builder().stringValue(requestData.username()).build(),
+                RequestData.GROUP_HEADER, MessageAttributeValue.builder().stringValue(requestData.groups()).build());
 
         auditClient.createCaseAudit(caseData);
 
         verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
 
         Assertions.assertTrue(
-            publicRequestCaptor.getValue().getMessageAttributes().entrySet().containsAll(expectedHeaders.entrySet()));
+            publicRequestCaptor.getValue().messageAttributes().entrySet().containsAll(expectedHeaders.entrySet()));
     }
 
     @Test
@@ -557,11 +557,11 @@ public class AuditClientTest extends BaseAwsTest {
     private void assertSnsValues(UUID caseUuid,
                                  EventType event,
                                  @NotNull Map<String, String> otherValues) throws JsonProcessingException {
-        var caseCreated = objectMapper.readValue(publicRequestCaptor.getValue().getMessage(), CreateAuditRequest.class);
+        var caseCreated = objectMapper.readValue(publicRequestCaptor.getValue().message(), CreateAuditRequest.class);
 
         Assertions.assertNotNull(snsPublishResult.getResult());
-        Assertions.assertNotNull(snsPublishResult.getResult().getMessageId());
-        Assertions.assertEquals(snsPublishResult.getResult().getSdkHttpMetadata().getHttpStatusCode(), 200);
+        Assertions.assertNotNull(snsPublishResult.getResult().messageId());
+        Assertions.assertEquals(snsPublishResult.getResult().sdkHttpResponse().statusCode(), 200);
         Assertions.assertEquals(caseCreated.getCaseUUID(), caseUuid);
         Assertions.assertEquals(caseCreated.getType(), event);
 

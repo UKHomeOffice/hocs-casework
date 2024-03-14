@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.services.sns.SnsAsyncClient;
+import software.amazon.awssdk.services.sns.model.MessageAttributeValue;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.EventType;
@@ -127,8 +129,11 @@ public class MigrationAuditClient {
             data, namespace, localDateTime, eventType, userId);
 
         try {
-            var publishRequest = new PublishRequest(auditQueue,
-                objectMapper.writeValueAsString(request)).withMessageAttributes(getQueueHeaders(eventType.toString()));
+            /*var publishRequest = new PublishRequest(auditQueue,
+                objectMapper.writeValueAsString(request)).withMessageAttributes(getQueueHeaders(eventType.toString()));*/
+
+            var publishRequest =  PublishRequest.builder().messageAttributes(getQueueHeaders(eventType.toString())).build();
+
 
             auditSearchSnsClient.publish(publishRequest);
             log.info("Create audit of type {} for Case UUID: {}, correlationID: {}, UserID: {}, event: {}", eventType,
@@ -139,12 +144,12 @@ public class MigrationAuditClient {
         }
     }
 
-    private Map<String, SnsStringMessageAttributeValue> getQueueHeaders(String eventType) {
-        return Map.of(EVENT_TYPE_HEADER, new SnsStringMessageAttributeValue(eventType),
-            RequestData.CORRELATION_ID_HEADER, new SnsStringMessageAttributeValue(requestData.correlationId()),
-            RequestData.USER_ID_HEADER, new SnsStringMessageAttributeValue(userId),
-            RequestData.USERNAME_HEADER, new SnsStringMessageAttributeValue(userName),
-            RequestData.GROUP_HEADER, new SnsStringMessageAttributeValue(group));
+    private Map<String, MessageAttributeValue> getQueueHeaders(String eventType) {
+        return Map.of(EVENT_TYPE_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(eventType).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.userId()).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.username()).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.groups()).build());
     }
 
     private void logFailedToParseDataPayload(JsonProcessingException e) {

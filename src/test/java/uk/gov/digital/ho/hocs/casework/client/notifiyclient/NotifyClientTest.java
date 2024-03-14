@@ -102,12 +102,12 @@ public class NotifyClientTest extends BaseAwsTest {
 
     @Test
     public void shouldSetHeaders() {
-        Map<String, MessageAttributeValue> expectedHeaders = Map.of("event_type",
-            MessageAttributeValue.builder().stringValue(LogEvent.USER_EMAIL_SENT.toString()).build(),
+        Map<String, MessageAttributeValue> expectedHeaders = Map.of(
+            "event_type", MessageAttributeValue.builder().stringValue(LogEvent.USER_EMAIL_SENT.toString()).build(),
             RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
-            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.userId()).build(),
-            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.username()).build(),
-            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.groups()).build());
+            RequestData.USER_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.userId()).build(),
+            RequestData.USERNAME_HEADER, MessageAttributeValue.builder().stringValue(requestData.username()).build(),
+            RequestData.GROUP_HEADER, MessageAttributeValue.builder().stringValue(requestData.groups()).build());
 
         UUID currentUser = UUID.randomUUID();
         UUID newUser = UUID.randomUUID();
