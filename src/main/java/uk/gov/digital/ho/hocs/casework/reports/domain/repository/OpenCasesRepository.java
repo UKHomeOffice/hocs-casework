@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 import uk.gov.digital.ho.hocs.casework.reports.domain.CaseType;
 import uk.gov.digital.ho.hocs.casework.reports.domain.reports.OpenCasesData;
 
-import javax.persistence.QueryHint;
+import jakarta.persistence.QueryHint;
 import java.util.UUID;
 import java.util.stream.Stream;
 

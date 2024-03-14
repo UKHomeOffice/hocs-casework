@@ -11,7 +11,7 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.security.AccessLevel;
 import uk.gov.digital.ho.hocs.casework.security.Authorised;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.Set;
 import java.util.UUID;
 

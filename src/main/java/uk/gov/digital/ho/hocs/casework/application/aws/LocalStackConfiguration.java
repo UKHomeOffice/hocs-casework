@@ -1,48 +1,46 @@
 package uk.gov.digital.ho.hocs.casework.application.aws;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.sns.AmazonSNS;
-import com.amazonaws.services.sns.AmazonSNSAsync;
-import com.amazonaws.services.sns.AmazonSNSAsyncClientBuilder;
-import com.amazonaws.services.sns.AmazonSNSClientBuilder;
-import com.amazonaws.services.sqs.AmazonSQSAsync;
-import com.amazonaws.services.sqs.AmazonSQSAsyncClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.sns.SnsAsyncClient;
+import software.amazon.awssdk.services.sqs.SqsAsyncClient;
+
+import java.net.URI;
 
 @Configuration
 @Profile({ "local" })
 public class LocalStackConfiguration {
+    private final AwsCredentialsProvider awsCredentialsProvider;
 
-    private final AWSCredentialsProvider awsCredentialsProvider;
-
-    private final AwsClientBuilder.EndpointConfiguration endpoint;
-
-    public LocalStackConfiguration(@Value("${localstack.base-url}") String baseUrl,
-                                   @Value("${localstack.config.region}") String region) {
-        this.awsCredentialsProvider = new AWSStaticCredentialsProvider(new BasicAWSCredentials("test", "test"));
-        this.endpoint = new AwsClientBuilder.EndpointConfiguration(baseUrl, region);
+    public LocalStackConfiguration() {
+        this.awsCredentialsProvider = StaticCredentialsProvider.create(AwsBasicCredentials.create("test", "test"));
     }
 
     @Primary
     @Bean
-    public AmazonSQSAsync sqsClient() {
-        return AmazonSQSAsyncClientBuilder.standard().withCredentials(awsCredentialsProvider).withEndpointConfiguration(
-            endpoint).build();
+    public SqsAsyncClient sqsClient(@Value("${localstack.base-url}") String baseUrl, @Value("${localstack.config.region}") String region) {
+        return SqsAsyncClient.builder()
+            .region(Region.of(region))
+            .credentialsProvider(awsCredentialsProvider)
+            .endpointOverride(URI.create(baseUrl))
+            .build();
     }
 
     @Primary
     @Bean
-    public AmazonSNSAsync snsClient() {
-        return AmazonSNSAsyncClientBuilder.standard().withCredentials(awsCredentialsProvider).withEndpointConfiguration(
-            endpoint).build();
+    public SnsAsyncClient snsClient(@Value("${localstack.base-url}") String baseUrl, @Value("${localstack.config.region}") String region) {
+        return SnsAsyncClient.builder()
+            .region(Region.of(region))
+            .credentialsProvider(awsCredentialsProvider)
+            .endpointOverride(URI.create(baseUrl))
+            .build();
     }
 
 }

@@ -1,9 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.client.notifiyclient;
 
-import com.amazonaws.services.sqs.AmazonSQSAsync;
-import com.amazonaws.services.sqs.model.MessageAttributeValue;
-import com.amazonaws.services.sqs.model.SendMessageRequest;
-import com.amazonaws.services.sqs.model.SendMessageResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -16,6 +12,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import software.amazon.awssdk.services.sqs.SqsAsyncClient;
+import software.amazon.awssdk.services.sqs.model.MessageAttributeValue;
+import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
+import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
@@ -46,12 +46,12 @@ public class NotifyClientTest extends BaseAwsTest {
     ArgumentCaptor<SendMessageRequest> messageCaptor;
 
     @SpyBean
-    private AmazonSQSAsync notifySqsClient;
+    private SqsAsyncClient notifySqsClient;
 
     @MockBean(name = "requestData")
     private RequestData requestData;
 
-    private ResultCaptor<SendMessageResult> sqsMessageResult;
+    private ResultCaptor<SendMessageResponse> sqsMessageResult;
 
     @Autowired
     private NotifyClient notifyClient;
@@ -64,7 +64,8 @@ public class NotifyClientTest extends BaseAwsTest {
         when(requestData.username()).thenReturn("some username");
 
         sqsMessageResult = new ResultCaptor<>();
-        doAnswer(sqsMessageResult).when(notifySqsClient).sendMessage(any());
+       // doAnswer(sqsMessageResult).when(notifySqsClient).sendMessage(any());
+        doAnswer(sqsMessageResult).when(notifySqsClient).sendMessage((SendMessageRequest) any());
     }
 
     @Test
@@ -101,12 +102,12 @@ public class NotifyClientTest extends BaseAwsTest {
 
     @Test
     public void shouldSetHeaders() {
-        Map<String, MessageAttributeValue> expectedHeaders = Map.of("event_type",
-            new SqsStringMessageAttributeValue(LogEvent.USER_EMAIL_SENT.toString()), RequestData.CORRELATION_ID_HEADER,
-            new SqsStringMessageAttributeValue(requestData.correlationId()), RequestData.USER_ID_HEADER,
-            new SqsStringMessageAttributeValue(requestData.userId()), RequestData.USERNAME_HEADER,
-            new SqsStringMessageAttributeValue(requestData.username()), RequestData.GROUP_HEADER,
-            new SqsStringMessageAttributeValue(requestData.groups()));
+        Map<String, MessageAttributeValue> expectedHeaders = Map.of(
+            "event_type", MessageAttributeValue.builder().stringValue(LogEvent.USER_EMAIL_SENT.toString()).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
+            RequestData.USER_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.userId()).build(),
+            RequestData.USERNAME_HEADER, MessageAttributeValue.builder().stringValue(requestData.username()).build(),
+            RequestData.GROUP_HEADER, MessageAttributeValue.builder().stringValue(requestData.groups()).build());
 
         UUID currentUser = UUID.randomUUID();
         UUID newUser = UUID.randomUUID();
@@ -114,14 +115,16 @@ public class NotifyClientTest extends BaseAwsTest {
         notifyClient.sendUserEmail(caseUUID, stageUUID, currentUser, newUser, caseRef);
 
         verify(notifySqsClient).sendMessage(messageCaptor.capture());
-        Assertions.assertEquals(messageCaptor.getValue().getMessageAttributes(), expectedHeaders);
+        Assertions.assertEquals(messageCaptor.getValue().messageAttributes(), expectedHeaders);
+
     }
 
     private void assertSqsValue(Object command) {
         Assertions.assertNotNull(sqsMessageResult);
 
         // getMessageMd5 - toString strips leading zeros, 31/32 matched is close enough in this instance
-        Assertions.assertTrue(sqsMessageResult.getResult().getMD5OfMessageBody().contains(getMessageMd5(command)));
+        Assertions.assertTrue(sqsMessageResult.getResult().md5OfMessageBody().contains(getMessageMd5(command)));
+
     }
 
 }
