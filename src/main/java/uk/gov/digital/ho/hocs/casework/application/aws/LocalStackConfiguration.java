@@ -35,7 +35,7 @@ public class LocalStackConfiguration {
 
     @Primary
     @Bean
-    public SnsAsyncClient snsClient(@Value("${localstack.base-url}") String baseUrl, @Value("${localstack.config.region}") String region) {
+    public SnsAsyncClient snsAsyncClient(@Value("${localstack.base-url}") String baseUrl, @Value("${localstack.config.region}") String region) {
         return SnsAsyncClient.builder()
             .region(Region.of(region))
             .credentialsProvider(awsCredentialsProvider)

@@ -1,7 +1,8 @@
 package uk.gov.digital.ho.hocs.casework.domain.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+//import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Converts;
 import lombok.AccessLevel;
