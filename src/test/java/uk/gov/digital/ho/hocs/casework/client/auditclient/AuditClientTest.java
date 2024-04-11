@@ -28,7 +28,6 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.DeleteCaseAuditRes
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditListResponse;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.GetAuditResponse;
 import uk.gov.digital.ho.hocs.casework.domain.model.*;
-import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 import uk.gov.digital.ho.hocs.casework.utils.BaseAwsTest;
 
 import jakarta.validation.constraints.NotNull;

@@ -15,9 +15,7 @@ import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.NotifyCommand;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.OfflineQaUserCommand;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.TeamAssignChangeCommand;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.UserAssignChangeCommand;
-import uk.gov.digital.ho.hocs.casework.util.SqsStringMessageAttributeValue;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -84,6 +82,8 @@ public class NotifyClient {
         } catch (JsonProcessingException e) {
             log.error("Failed to send email message of type {}", command.getCommand(),
                 value(LogEvent.EVENT, LogEvent.NOTIFY_EMAIL_FAILED), value(LogEvent.EXCEPTION, e));
+        } catch(Exception ex) {
+            ex.printStackTrace();
         }
     }
 

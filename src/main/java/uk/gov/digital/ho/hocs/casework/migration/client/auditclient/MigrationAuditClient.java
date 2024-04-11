@@ -16,7 +16,6 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 
 import java.time.LocalDateTime;
 import java.util.Map;

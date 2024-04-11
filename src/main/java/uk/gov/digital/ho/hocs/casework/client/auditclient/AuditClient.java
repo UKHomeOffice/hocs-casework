@@ -32,7 +32,6 @@ import uk.gov.digital.ho.hocs.casework.domain.model.CaseNote;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
 import uk.gov.digital.ho.hocs.casework.domain.model.SomuItem;
 import uk.gov.digital.ho.hocs.casework.domain.model.Topic;
-import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
