@@ -25,7 +25,7 @@ public class LocalStackConfiguration {
 
     @Primary
     @Bean
-    public SqsAsyncClient sqsClient(@Value("${localstack.base-url}") String baseUrl, @Value("${localstack.config.region}") String region) {
+    public SqsAsyncClient sqsAsyncClient(@Value("${localstack.base-url}") String baseUrl, @Value("${localstack.config.region}") String region) {
         return SqsAsyncClient.builder()
             .region(Region.of(region))
             .credentialsProvider(awsCredentialsProvider)
@@ -35,7 +35,7 @@ public class LocalStackConfiguration {
 
     @Primary
     @Bean
-    public SnsAsyncClient snsAyncClient(@Value("${localstack.base-url}") String baseUrl, @Value("${localstack.config.region}") String region) {
+    public SnsAsyncClient snsAsyncClient(@Value("${localstack.base-url}") String baseUrl, @Value("${localstack.config.region}") String region) {
         return SnsAsyncClient.builder()
             .region(Region.of(region))
             .credentialsProvider(awsCredentialsProvider)

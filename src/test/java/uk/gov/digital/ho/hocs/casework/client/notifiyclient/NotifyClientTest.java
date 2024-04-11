@@ -22,7 +22,6 @@ import uk.gov.digital.ho.hocs.casework.client.notifyclient.NotifyClient;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.OfflineQaUserCommand;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.TeamAssignChangeCommand;
 import uk.gov.digital.ho.hocs.casework.client.notifyclient.dto.UserAssignChangeCommand;
-import uk.gov.digital.ho.hocs.casework.util.SqsStringMessageAttributeValue;
 import uk.gov.digital.ho.hocs.casework.utils.BaseAwsTest;
 
 import java.util.Map;

@@ -92,9 +92,9 @@ public class NotifyClient {
         return Map.of(EVENT_TYPE_HEADER,
             MessageAttributeValue.builder()
                 .dataType(RequestData.CORRELATION_ID_HEADER).stringValue(requestData.correlationId())
-                .dataType(RequestData.CORRELATION_ID_HEADER).stringValue(requestData.userId())
-                .dataType(RequestData.CORRELATION_ID_HEADER).stringValue(requestData.username())
-                .dataType(RequestData.CORRELATION_ID_HEADER).stringValue(requestData.groups())
+                .dataType(RequestData.USER_ID_HEADER).stringValue(requestData.userId())
+                .dataType(RequestData.USERNAME_HEADER).stringValue(requestData.username())
+                .dataType(RequestData.GROUP_HEADER).stringValue(requestData.groups())
                 .build());
 
         /*return Map.of(EVENT_TYPE_HEADER, new MessageAttributeValue(eventType),
