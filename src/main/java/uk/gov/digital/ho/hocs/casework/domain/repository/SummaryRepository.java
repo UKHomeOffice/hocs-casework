@@ -67,7 +67,7 @@ public class SummaryRepository {
 
     public List<Summary> findUserCasesInTeams(Set<UUID> teamUuidSet, String userUuid) {
         Query query = entityManager.createNativeQuery(
-            "SELECT CAST(st.team_uuid as varchar) as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid in ?1 AND st.user_uuid = ?2 AND NOT cd.deleted AND NOT cd.data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) GROUP BY st.team_uuid");
+            "SELECT st.team_uuid as teamUuid, COUNT(*) FROM casework.stage st INNER JOIN casework.case_data cd ON st.case_uuid = cd.uuid WHERE st.team_uuid in ?1 AND st.user_uuid = ?2 AND NOT cd.deleted AND NOT cd.data @> CAST('{\"Unworkable\":\"True\"}' AS JSONB) GROUP BY st.team_uuid");
         query.setParameter(1, teamUuidSet);
         query.setParameter(2, userUuid);
 
@@ -77,7 +77,9 @@ public class SummaryRepository {
     }
 
     private void extractQueryExecution(Query query) {
-        query.unwrap(NativeQuery.class).addScalar(TEAM_UUID_COLUMN_NAME, StandardBasicTypes.UUID).addScalar(
-            COUNT_COLUMN_NAME, StandardBasicTypes.INTEGER).setResultTransformer(Transformers.aliasToBean(Summary.class));
+        query.unwrap(NativeQuery.class)
+            .addScalar(TEAM_UUID_COLUMN_NAME, StandardBasicTypes.UUID)
+            .addScalar(COUNT_COLUMN_NAME, StandardBasicTypes.INTEGER)
+            .setResultTransformer(Transformers.aliasToBean(Summary.class));
     }
 }
