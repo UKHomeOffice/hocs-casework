@@ -44,8 +44,7 @@ public class ContributionsProcessorImpl implements ContributionsProcessor {
     @Override
     public void processContributionsForStages(Set<StageWithCaseData> stages) {
         Set<SomuItem> allSomuItems = somuItemService.getCaseItemsByCaseUuids(
-            stages.stream().map(
-                BaseStage::getCaseUUID).collect(Collectors.toSet()));
+            stages.stream().map(BaseStage::getCaseUUID).collect(Collectors.toSet()));
 
         if (allSomuItems.size()==0) {
             return;
