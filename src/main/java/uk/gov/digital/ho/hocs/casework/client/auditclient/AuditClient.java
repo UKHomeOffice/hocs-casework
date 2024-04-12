@@ -587,10 +587,10 @@ public class AuditClient {
 
     private Map<String, MessageAttributeValue> getQueueHeaders(String eventType) {
         return Map.of(EVENT_TYPE_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(eventType).build(),
-            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
-            RequestData.USER_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.userId()).build(),
-            RequestData.USERNAME_HEADER, MessageAttributeValue.builder().stringValue(requestData.username()).build(),
-            RequestData.GROUP_HEADER, MessageAttributeValue.builder().stringValue(requestData.groups()).build());
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.correlationId()).build(),
+            RequestData.USER_ID_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.userId()).build(),
+            RequestData.USERNAME_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.username()).build(),
+            RequestData.GROUP_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.groups()).build());
     }
 
     private void logFailedToParseAuditPayload(JsonProcessingException e) {

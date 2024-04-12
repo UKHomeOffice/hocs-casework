@@ -33,6 +33,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
@@ -49,7 +51,7 @@ public class MigrationAuditClientTest extends BaseAwsTest {
     @Captor
     private ArgumentCaptor<PublishRequest> publicRequestCaptor;
 
-    private ResultCaptor<PublishResponse> snsPublishResult;
+    private ResultCaptor<CompletableFuture<PublishResponse>> snsPublishResult;
 
     @SpyBean
     private SnsAsyncClient auditSearchSnsClient;
@@ -84,7 +86,7 @@ public class MigrationAuditClientTest extends BaseAwsTest {
     }
 
     @Test
-    public void shouldSendCaseCreateEvent() throws JsonProcessingException {
+    public void shouldSendCaseCreateEvent() throws JsonProcessingException, ExecutionException, InterruptedException {
         var caseID = 12345L;
         var caseType = CaseDataTypeFactory.from("TEST", "F0");
         var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
@@ -102,10 +104,11 @@ public class MigrationAuditClientTest extends BaseAwsTest {
         var caseType = CaseDataTypeFactory.from("TEST", "F0");
         var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
         Map<String, MessageAttributeValue> expectedHeaders =
-            Map.of("event_type", MessageAttributeValue.builder().stringValue(EventType.CASE_CREATED.toString()).build(),
-                RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
-                RequestData.USER_ID_HEADER, MessageAttributeValue.builder().stringValue(userId).build(),
-                RequestData.USERNAME_HEADER, MessageAttributeValue.builder().stringValue(userName).build()
+            Map.of("event_type", MessageAttributeValue.builder().dataType("String").stringValue(EventType.CASE_CREATED.toString()).build(),
+                RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.correlationId()).build(),
+                RequestData.USER_ID_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.userId()).build(),
+                RequestData.USERNAME_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.username()).build(),
+                RequestData.GROUP_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.groups()).build()
             );
 
         migrationAuditClient.createCaseAudit(caseData);
@@ -128,18 +131,18 @@ public class MigrationAuditClientTest extends BaseAwsTest {
         assertThatCode(() -> migrationAuditClient.updateCaseAudit(caseData, stageUUID)).doesNotThrowAnyException();
     }
 
-    private void assertSnsValues(UUID caseUuid, EventType event) throws JsonProcessingException {
+    private void assertSnsValues(UUID caseUuid, EventType event) throws JsonProcessingException, ExecutionException, InterruptedException {
         assertSnsValues(caseUuid, event, Collections.emptyMap());
     }
 
     private void assertSnsValues(UUID caseUuid,
                                  EventType event,
-                                 @NotNull Map<String, String> otherValues) throws JsonProcessingException {
+                                 @NotNull Map<String, String> otherValues) throws JsonProcessingException, ExecutionException, InterruptedException {
         var caseCreated = objectMapper.readValue(publicRequestCaptor.getValue().message(), CreateAuditRequest.class);
 
         Assertions.assertNotNull(snsPublishResult.getResult());
-        Assertions.assertNotNull(snsPublishResult.getResult().messageId());
-        Assertions.assertEquals(snsPublishResult.getResult().sdkHttpResponse().statusCode(), 200);
+        Assertions.assertNotNull(snsPublishResult.getResult().get().messageId());
+        Assertions.assertEquals(snsPublishResult.getResult().get().sdkHttpResponse().statusCode(), 200);
         Assertions.assertEquals(caseCreated.getCaseUUID(), caseUuid);
         Assertions.assertEquals(caseCreated.getType(), event);
 

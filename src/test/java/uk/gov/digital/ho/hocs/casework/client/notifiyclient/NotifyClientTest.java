@@ -26,6 +26,8 @@ import uk.gov.digital.ho.hocs.casework.utils.BaseAwsTest;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static java.util.UUID.randomUUID;
 import static org.mockito.Mockito.*;
@@ -50,7 +52,7 @@ public class NotifyClientTest extends BaseAwsTest {
     @MockBean(name = "requestData")
     private RequestData requestData;
 
-    private ResultCaptor<SendMessageResponse> sqsMessageResult;
+    private ResultCaptor<CompletableFuture<SendMessageResponse>> sqsMessageResult;
 
     @Autowired
     private NotifyClient notifyClient;
@@ -67,7 +69,7 @@ public class NotifyClientTest extends BaseAwsTest {
     }
 
     @Test
-    public void shouldSendUserAssignedCommand() {
+    public void shouldSendUserAssignedCommand() throws ExecutionException, InterruptedException {
         UUID currentUser = UUID.randomUUID();
         UUID newUser = UUID.randomUUID();
 
@@ -78,7 +80,7 @@ public class NotifyClientTest extends BaseAwsTest {
     }
 
     @Test
-    public void shouldSendTeamAssignedCommand() {
+    public void shouldSendTeamAssignedCommand() throws ExecutionException, InterruptedException {
         UUID teamUuid = UUID.randomUUID();
 
         var teamAssignChangeCommand = new TeamAssignChangeCommand(caseUUID, stageUUID, caseRef, teamUuid, "TEST");
@@ -88,7 +90,7 @@ public class NotifyClientTest extends BaseAwsTest {
     }
 
     @Test
-    public void shouldSendOfflineQAUserCommand() {
+    public void shouldSendOfflineQAUserCommand() throws ExecutionException, InterruptedException {
         UUID currentUser = UUID.randomUUID();
         UUID offlineUser = UUID.randomUUID();
 
@@ -101,11 +103,11 @@ public class NotifyClientTest extends BaseAwsTest {
     @Test
     public void shouldSetHeaders() {
         Map<String, MessageAttributeValue> expectedHeaders = Map.of(
-            "event_type", MessageAttributeValue.builder().stringValue(LogEvent.USER_EMAIL_SENT.toString()).build(),
-            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
-            RequestData.USER_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.userId()).build(),
-            RequestData.USERNAME_HEADER, MessageAttributeValue.builder().stringValue(requestData.username()).build(),
-            RequestData.GROUP_HEADER, MessageAttributeValue.builder().stringValue(requestData.groups()).build());
+            "event_type", MessageAttributeValue.builder().dataType("String").stringValue(LogEvent.USER_EMAIL_SENT.toString()).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.correlationId()).build(),
+            RequestData.USER_ID_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.userId()).build(),
+            RequestData.USERNAME_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.username()).build(),
+            RequestData.GROUP_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.groups()).build());
 
         UUID currentUser = UUID.randomUUID();
         UUID newUser = UUID.randomUUID();
@@ -117,11 +119,11 @@ public class NotifyClientTest extends BaseAwsTest {
 
     }
 
-    private void assertSqsValue(Object command) {
+    private void assertSqsValue(Object command) throws ExecutionException, InterruptedException {
         Assertions.assertNotNull(sqsMessageResult);
 
         // getMessageMd5 - toString strips leading zeros, 31/32 matched is close enough in this instance
-        Assertions.assertTrue(sqsMessageResult.getResult().md5OfMessageBody().contains(getMessageMd5(command)));
+        Assertions.assertTrue(sqsMessageResult.getResult().get().md5OfMessageBody().contains(getMessageMd5(command)));
 
     }
 

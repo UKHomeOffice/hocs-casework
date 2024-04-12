@@ -134,7 +134,8 @@ public class MigrationAuditClient {
             var publishRequest =  PublishRequest.builder()
                         .topicArn(auditQueue)
                         .message(objectMapper.writeValueAsString(request))
-                        .messageAttributes(getQueueHeaders(eventType.toString())).build();
+                        .messageAttributes(getQueueHeaders(eventType.toString()))
+                        .build();
 
             auditSearchSnsClient.publish(publishRequest);
             log.info("Create audit of type {} for Case UUID: {}, correlationID: {}, UserID: {}, event: {}", eventType,
@@ -146,11 +147,12 @@ public class MigrationAuditClient {
     }
 
     private Map<String, MessageAttributeValue> getQueueHeaders(String eventType) {
-        return Map.of(EVENT_TYPE_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(eventType).build(),
-            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
-            RequestData.USER_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.userId()).build(),
-            RequestData.USERNAME_HEADER, MessageAttributeValue.builder().stringValue(requestData.username()).build(),
-            RequestData.GROUP_HEADER, MessageAttributeValue.builder().stringValue(requestData.groups()).build());
+        return Map.of
+            (EVENT_TYPE_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(eventType).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.correlationId()).build(),
+            RequestData.USER_ID_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.userId()).build(),
+            RequestData.USERNAME_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.username()).build(),
+            RequestData.GROUP_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.groups()).build());
     }
 
     private void logFailedToParseDataPayload(JsonProcessingException e) {
