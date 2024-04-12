@@ -87,13 +87,12 @@ public class NotifyClient {
 
     private Map<String, MessageAttributeValue> getQueueHeaders(String eventType) {
 
-        return Map.of(EVENT_TYPE_HEADER,
-            MessageAttributeValue.builder()
-                .dataType(RequestData.CORRELATION_ID_HEADER).stringValue(requestData.correlationId())
-                .dataType(RequestData.USER_ID_HEADER).stringValue(requestData.userId())
-                .dataType(RequestData.USERNAME_HEADER).stringValue(requestData.username())
-                .dataType(RequestData.GROUP_HEADER).stringValue(requestData.groups())
-                .build());
+        return Map.of(
+            EVENT_TYPE_HEADER, MessageAttributeValue.builder().stringValue(eventType).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
+            RequestData.USER_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.userId()).build(),
+            RequestData.USERNAME_HEADER, MessageAttributeValue.builder().stringValue(requestData.username()).build(),
+            RequestData.GROUP_HEADER, MessageAttributeValue.builder().stringValue(requestData.groups()).build());
 
         /*return Map.of(EVENT_TYPE_HEADER, new MessageAttributeValue(eventType),
             RequestData.CORRELATION_ID_HEADER, new SqsStringMessageAttributeValue(requestData.correlationId()),
