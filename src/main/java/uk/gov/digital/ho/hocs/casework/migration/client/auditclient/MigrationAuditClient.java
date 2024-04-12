@@ -131,10 +131,9 @@ public class MigrationAuditClient {
             /*var publishRequest = new PublishRequest(auditQueue,
                 objectMapper.writeValueAsString(request)).withMessageAttributes(getQueueHeaders(eventType.toString()));*/
 
-            //log.info("auditSearchSnsClient.listTopics(): ", auditSearchSnsClient.listTopics());
-
             var publishRequest =  PublishRequest.builder()
                         .topicArn(auditQueue)
+                        .message(objectMapper.writeValueAsString(request))
                         .messageAttributes(getQueueHeaders(eventType.toString())).build();
 
             auditSearchSnsClient.publish(publishRequest);

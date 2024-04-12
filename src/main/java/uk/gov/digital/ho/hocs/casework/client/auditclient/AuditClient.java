@@ -523,7 +523,11 @@ public class AuditClient {
             data, namespace, localDateTime, eventType, userId);
 
         try {
-            var publishRequest =  PublishRequest.builder().topicArn(auditQueue).messageAttributes(getQueueHeaders(eventType.toString())).build();
+            var publishRequest =  PublishRequest.builder()
+                .topicArn(auditQueue)
+                .message(objectMapper.writeValueAsString(request))
+                .messageAttributes(getQueueHeaders(eventType.toString()))
+                .build();
 
             auditSearchSnsClient.publish(publishRequest);
             log.info("Create audit of type {} for Case UUID: {}, correlationID: {}, UserID: {}, event: {}", eventType,
