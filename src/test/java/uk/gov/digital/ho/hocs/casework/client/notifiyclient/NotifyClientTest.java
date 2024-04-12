@@ -63,7 +63,6 @@ public class NotifyClientTest extends BaseAwsTest {
         when(requestData.username()).thenReturn("some username");
 
         sqsMessageResult = new ResultCaptor<>();
-       // doAnswer(sqsMessageResult).when(notifySqsClient).sendMessage(any());
         doAnswer(sqsMessageResult).when(notifySqsClient).sendMessage((SendMessageRequest) any());
     }
 

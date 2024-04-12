@@ -82,8 +82,6 @@ public class NotifyClient {
         } catch (JsonProcessingException e) {
             log.error("Failed to send email message of type {}", command.getCommand(),
                 value(LogEvent.EVENT, LogEvent.NOTIFY_EMAIL_FAILED), value(LogEvent.EXCEPTION, e));
-        } catch(Exception ex) {
-            ex.printStackTrace();
         }
     }
 

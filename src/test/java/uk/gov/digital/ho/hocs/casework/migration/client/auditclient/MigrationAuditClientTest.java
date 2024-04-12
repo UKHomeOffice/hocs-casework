@@ -103,9 +103,10 @@ public class MigrationAuditClientTest extends BaseAwsTest {
         var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
         Map<String, MessageAttributeValue> expectedHeaders =
             Map.of("event_type", MessageAttributeValue.builder().stringValue(EventType.CASE_CREATED.toString()).build(),
-            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
-            RequestData.USER_ID_HEADER, MessageAttributeValue.builder().stringValue(userId).build(),
-            RequestData.USERNAME_HEADER, MessageAttributeValue.builder().stringValue(userName).build());
+                RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().stringValue(requestData.correlationId()).build(),
+                RequestData.USER_ID_HEADER, MessageAttributeValue.builder().stringValue(userId).build(),
+                RequestData.USERNAME_HEADER, MessageAttributeValue.builder().stringValue(userName).build()
+            );
 
         migrationAuditClient.createCaseAudit(caseData);
 
