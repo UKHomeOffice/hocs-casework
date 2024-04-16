@@ -459,42 +459,42 @@
           "conditionChoices": [
             {
               "choices": "MPAM_ENQUIRY_REASONS_PER",
-              "conditionPropertyName": "tempEnquirySubject",
+              "conditionPropertyName": "EnquirySubject",
               "conditionPropertyValue": "Person_Specific"
             },
             {
               "choices": "MPAM_ENQUIRY_REASONS_GUI",
-              "conditionPropertyName": "tempEnquirySubject",
+              "conditionPropertyName": "EnquirySubject",
               "conditionPropertyValue": "Guidance_Policy"
             },
             {
               "choices": "MPAM_ENQUIRY_REASONS_DOC",
-              "conditionPropertyName": "tempEnquirySubject",
+              "conditionPropertyName": "EnquirySubject",
               "conditionPropertyValue": "Documentation"
             },
             {
               "choices": "MPAM_ENQUIRY_REASONS_TECH",
-              "conditionPropertyName": "tempEnquirySubject",
+              "conditionPropertyName": "EnquirySubject",
               "conditionPropertyValue": "Technical"
             },
             {
               "choices": "MPAM_ENQUIRY_REASONS_DET",
-              "conditionPropertyName": "tempEnquirySubject",
+              "conditionPropertyName": "EnquirySubject",
               "conditionPropertyValue": "Detention"
             },
             {
               "choices": "MPAM_ENQUIRY_REASONS_HMPO",
-              "conditionPropertyName": "tempEnquirySubject",
+              "conditionPropertyName": "EnquirySubject",
               "conditionPropertyValue": "HMPO_Specific"
             },
             {
               "choices": "MPAM_ENQUIRY_REASONS_OTHER",
-              "conditionPropertyName": "tempEnquirySubject",
+              "conditionPropertyName": "EnquirySubject",
               "conditionPropertyValue": "Other"
             }
           ]
         },
-        "name": "tempEnquiryReason",
+        "name": "EnquiryReason",
         "label": "Enquiry reason"
       },
       {
@@ -657,14 +657,6 @@
         },
         "name": "EnquirySubject",
         "label": "Enquiry subject"
-      },
-      {
-        "component": "mapped-text",
-        "props": {
-          "choices": "MPAM_ENQUIRY_REASONS_ALL"
-        },
-        "name": "EnquiryReason",
-        "label": "Enquiry reason"
       },
       {
         "component": "radio",
@@ -963,17 +955,99 @@
         "label": "Enquiry subject"
       },
       {
-        "component": "mapped-text",
+        "component": "dropdown",
         "props": {
-          "choices": "MPAM_ENQUIRY_REASONS_ALL"
+          "conditionChoices": [
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_PER",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Person_Specific"
+            },
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_GUI",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Guidance_Policy"
+            },
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_DOC",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Documentation"
+            },
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_TECH",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Technical"
+            },
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_DET",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Detention"
+            },
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_HMPO",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "HMPO_Specific"
+            },
+            {
+              "choices": "MPAM_ENQUIRY_REASONS_OTHER",
+              "conditionPropertyName": "EnquirySubject",
+              "conditionPropertyValue": "Other"
+            }
+          ]
         },
         "name": "EnquiryReason",
         "label": "Enquiry reason"
       },
       {
-        "component": "mapped-text",
+        "component": "dropdown",
         "props": {
-          "choices": "S_MPAM_BUS_UNITS_ALL"
+          "hideConditions": [
+            {
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "TransferToOgd"
+            },
+            {
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "TransferToOther"
+            }
+          ],
+          "conditionChoices": [
+            {
+              "choices": "S_MPAM_BUS_UNITS_1",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "UKVI"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_2",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "BF"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_3",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "IE"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_4",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "EUSS"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_5",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "HMPO"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_6",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "Windrush"
+            },
+            {
+              "choices": "S_MPAM_BUS_UNITS_7",
+              "conditionPropertyName": "BusArea",
+              "conditionPropertyValue": "Coronavirus"
+            }
+          ]
         },
         "name": "BusUnit",
         "label": "Business unit"
