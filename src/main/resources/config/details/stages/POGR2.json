@@ -162,6 +162,11 @@
               "conditionPropertyValue": "Digital Application Channels"
             },
             {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_DIGITAL_FAST_TRACK",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Digital Fast Track"
+            },
+            {
               "choices": "HMPO_COMPLAINT_CATEGORIES_PAPER",
               "conditionPropertyName": "ComplainantCategory",
               "conditionPropertyValue": "Paper Application Form"
@@ -205,6 +210,16 @@
               "choices": "HMPO_COMPLAINT_CATEGORIES_SVS",
               "conditionPropertyName": "ComplainantCategory",
               "conditionPropertyValue": "SVS"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_DOCUMENT_HANDLING",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Document Handling Unit (DHU)"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_TP_ADVICELINE",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Serco - Passport Adviceline"
             }
           ]
         },
@@ -474,6 +489,11 @@
               "conditionPropertyValue": "Digital Application Channels"
             },
             {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_DIGITAL_FAST_TRACK",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Digital Fast Track"
+            },
+            {
               "choices": "HMPO_COMPLAINT_CATEGORIES_PAPER",
               "conditionPropertyName": "ComplainantCategory",
               "conditionPropertyValue": "Paper Application Form"
@@ -517,6 +537,16 @@
               "choices": "HMPO_COMPLAINT_CATEGORIES_SVS",
               "conditionPropertyName": "ComplainantCategory",
               "conditionPropertyValue": "SVS"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_DOCUMENT_HANDLING",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Document Handling Unit (DHU)"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_TP_ADVICELINE",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Serco - Passport Adviceline"
             }
           ]
         },
@@ -1670,6 +1700,11 @@
               "choices": "HMPO_COMPLAINT_CATEGORIES_DIGITAL",
               "conditionPropertyName": "ComplainantCategory",
               "conditionPropertyValue": "Digital Application Channels"
+            },
+            {
+              "choices": "HMPO_COMPLAINT_CATEGORIES_DIGITAL_FAST_TRACK",
+              "conditionPropertyName": "ComplainantCategory",
+              "conditionPropertyValue": "Digital Fast Track"
             },
             {
               "choices": "HMPO_COMPLAINT_CATEGORIES_PAPER",
