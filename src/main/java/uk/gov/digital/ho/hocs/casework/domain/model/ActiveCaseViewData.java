@@ -3,7 +3,7 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import lombok.*;
 import uk.gov.digital.ho.hocs.casework.api.dto.CaseDataType;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Map;
