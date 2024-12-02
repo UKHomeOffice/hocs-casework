@@ -56,7 +56,6 @@ To see the correct blame information, you need to add the following to your git 
 git config blame.ignoreRevsFile .git-blame-ignore-revs
 ```
 
-
 If you are using an IDE, such as IntelliJ, this service can be started by running the ```HocsCaseServiceApplication```
 main class.
 The service can then be accessed at ```http://localhost:8082```.
