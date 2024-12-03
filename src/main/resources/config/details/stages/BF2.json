@@ -796,12 +796,16 @@
               "value": "Upheld"
             },
             {
-              "label": "Not Upheld",
+              "label": "Not upheld",
               "value": "Not Upheld"
             },
             {
-              "label": "Partially Upheld",
+              "label": "Partially upheld",
               "value": "Partially Upheld"
+            },
+            {
+              "label": "Unable to reach a finding",
+              "value": "Unable to reach a finding"
             },
             {
               "label": "Withdrawn",
@@ -829,12 +833,16 @@
               "value": "Upheld"
             },
             {
-              "label": "Not Upheld",
+              "label": "Not upheld",
               "value": "Not Upheld"
             },
             {
-              "label": "Partially Upheld",
+              "label": "Partially upheld",
               "value": "Partially Upheld"
+            },
+            {
+              "label": "Unable to reach a finding",
+              "value": "Unable to reach a finding"
             },
             {
               "label": "Withdrawn",
@@ -862,12 +870,16 @@
               "value": "Upheld"
             },
             {
-              "label": "Not Upheld",
+              "label": "Not upheld",
               "value": "Not Upheld"
             },
             {
-              "label": "Partially Upheld",
+              "label": "Partially upheld",
               "value": "Partially Upheld"
+            },
+            {
+              "label": "Unable to reach a finding",
+              "value": "Unable to reach a finding"
             },
             {
               "label": "Withdrawn",
@@ -895,12 +907,16 @@
               "value": "Upheld"
             },
             {
-              "label": "Not Upheld",
+              "label": "Not upheld",
               "value": "Not Upheld"
             },
             {
-              "label": "Partially Upheld",
+              "label": "Partially upheld",
               "value": "Partially Upheld"
+            },
+            {
+              "label": "Unable to reach a finding",
+              "value": "Unable to reach a finding"
             },
             {
               "label": "Withdrawn",
@@ -928,12 +944,16 @@
               "value": "Upheld"
             },
             {
-              "label": "Not Upheld",
+              "label": "Not upheld",
               "value": "Not Upheld"
             },
             {
-              "label": "Partially Upheld",
+              "label": "Partially upheld",
               "value": "Partially Upheld"
+            },
+            {
+              "label": "Unable to reach a finding",
+              "value": "Unable to reach a finding"
             },
             {
               "label": "Withdrawn",
