@@ -1,9 +1,5 @@
 package uk.gov.digital.ho.hocs.casework.migration.client.auditclient;
 
-import com.amazonaws.services.sns.AmazonSNSAsync;
-import com.amazonaws.services.sns.model.MessageAttributeValue;
-import com.amazonaws.services.sns.model.PublishRequest;
-import com.amazonaws.services.sns.model.PublishResult;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,23 +14,27 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import software.amazon.awssdk.services.sns.SnsAsyncClient;
+import software.amazon.awssdk.services.sns.model.MessageAttributeValue;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
+import software.amazon.awssdk.services.sns.model.PublishResponse;
 import uk.gov.digital.ho.hocs.casework.api.utils.CaseDataTypeFactory;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.application.RestHelper;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.EventType;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
-import uk.gov.digital.ho.hocs.casework.domain.model.Stage;
-import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 import uk.gov.digital.ho.hocs.casework.utils.BaseAwsTest;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.mockito.ArgumentMatchers.any;
@@ -51,10 +51,10 @@ public class MigrationAuditClientTest extends BaseAwsTest {
     @Captor
     private ArgumentCaptor<PublishRequest> publicRequestCaptor;
 
-    private ResultCaptor<PublishResult> snsPublishResult;
+    private ResultCaptor<CompletableFuture<PublishResponse>> snsPublishResult;
 
     @SpyBean
-    private AmazonSNSAsync auditSearchSnsClient;
+    private SnsAsyncClient auditSearchSnsClient;
 
     @MockBean(name = "requestData")
     private RequestData requestData;
@@ -82,11 +82,11 @@ public class MigrationAuditClientTest extends BaseAwsTest {
         when(requestData.username()).thenReturn("some username");
 
         snsPublishResult = new ResultCaptor<>();
-        doAnswer(snsPublishResult).when(auditSearchSnsClient).publish(any());
+        doAnswer(snsPublishResult).when(auditSearchSnsClient).publish((PublishRequest) any());
     }
 
     @Test
-    public void shouldSendCaseCreateEvent() throws JsonProcessingException {
+    public void shouldSendCaseCreateEvent() throws JsonProcessingException, ExecutionException, InterruptedException {
         var caseID = 12345L;
         var caseType = CaseDataTypeFactory.from("TEST", "F0");
         var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
@@ -103,18 +103,20 @@ public class MigrationAuditClientTest extends BaseAwsTest {
         var caseID = 12345L;
         var caseType = CaseDataTypeFactory.from("TEST", "F0");
         var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
-        Map<String, MessageAttributeValue> expectedHeaders = Map.of("event_type",
-            new SnsStringMessageAttributeValue(EventType.CASE_CREATED.toString()), RequestData.CORRELATION_ID_HEADER,
-            new SnsStringMessageAttributeValue(requestData.correlationId()), RequestData.USER_ID_HEADER,
-            new SnsStringMessageAttributeValue(userId), RequestData.USERNAME_HEADER,
-            new SnsStringMessageAttributeValue(userName));
+        Map<String, MessageAttributeValue> expectedHeaders =
+            Map.of("event_type", MessageAttributeValue.builder().dataType("String").stringValue(EventType.CASE_CREATED.toString()).build(),
+                RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.correlationId()).build(),
+                RequestData.USER_ID_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.userId()).build(),
+                RequestData.USERNAME_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.username()).build(),
+                RequestData.GROUP_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.groups()).build()
+            );
 
         migrationAuditClient.createCaseAudit(caseData);
 
         verify(auditSearchSnsClient).publish(publicRequestCaptor.capture());
 
         Assertions.assertTrue(
-            publicRequestCaptor.getValue().getMessageAttributes().entrySet().containsAll(expectedHeaders.entrySet()));
+            publicRequestCaptor.getValue().messageAttributes().entrySet().containsAll(expectedHeaders.entrySet()));
     }
 
     @Test
@@ -124,23 +126,23 @@ public class MigrationAuditClientTest extends BaseAwsTest {
         var stageUUID = UUID.randomUUID();
         var caseData = new CaseData(caseType, caseID, new HashMap<>(), LocalDate.now());
 
-        doThrow(new RuntimeException("An error occurred")).when(auditSearchSnsClient).publish(any());
+        doThrow(new RuntimeException("An error occurred")).when(auditSearchSnsClient).publish((PublishRequest) any());
 
         assertThatCode(() -> migrationAuditClient.updateCaseAudit(caseData, stageUUID)).doesNotThrowAnyException();
     }
 
-    private void assertSnsValues(UUID caseUuid, EventType event) throws JsonProcessingException {
+    private void assertSnsValues(UUID caseUuid, EventType event) throws JsonProcessingException, ExecutionException, InterruptedException {
         assertSnsValues(caseUuid, event, Collections.emptyMap());
     }
 
     private void assertSnsValues(UUID caseUuid,
                                  EventType event,
-                                 @NotNull Map<String, String> otherValues) throws JsonProcessingException {
-        var caseCreated = objectMapper.readValue(publicRequestCaptor.getValue().getMessage(), CreateAuditRequest.class);
+                                 @NotNull Map<String, String> otherValues) throws JsonProcessingException, ExecutionException, InterruptedException {
+        var caseCreated = objectMapper.readValue(publicRequestCaptor.getValue().message(), CreateAuditRequest.class);
 
         Assertions.assertNotNull(snsPublishResult.getResult());
-        Assertions.assertNotNull(snsPublishResult.getResult().getMessageId());
-        Assertions.assertEquals(snsPublishResult.getResult().getSdkHttpMetadata().getHttpStatusCode(), 200);
+        Assertions.assertNotNull(snsPublishResult.getResult().get().messageId());
+        Assertions.assertEquals(snsPublishResult.getResult().get().sdkHttpResponse().statusCode(), 200);
         Assertions.assertEquals(caseCreated.getCaseUUID(), caseUuid);
         Assertions.assertEquals(caseCreated.getType(), event);
 

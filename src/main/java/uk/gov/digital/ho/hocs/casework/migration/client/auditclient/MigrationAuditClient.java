@@ -1,14 +1,14 @@
 package uk.gov.digital.ho.hocs.casework.migration.client.auditclient;
 
-import com.amazonaws.services.sns.AmazonSNSAsync;
-import com.amazonaws.services.sns.model.MessageAttributeValue;
-import com.amazonaws.services.sns.model.PublishRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import software.amazon.awssdk.services.sns.SnsAsyncClient;
+import software.amazon.awssdk.services.sns.model.MessageAttributeValue;
+import software.amazon.awssdk.services.sns.model.PublishRequest;
 import uk.gov.digital.ho.hocs.casework.application.LogEvent;
 import uk.gov.digital.ho.hocs.casework.application.RequestData;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.EventType;
@@ -16,7 +16,6 @@ import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.AuditPayload;
 import uk.gov.digital.ho.hocs.casework.client.auditclient.dto.CreateAuditRequest;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseData;
 import uk.gov.digital.ho.hocs.casework.domain.model.Correspondent;
-import uk.gov.digital.ho.hocs.casework.util.SnsStringMessageAttributeValue;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -42,14 +41,14 @@ public class MigrationAuditClient {
 
     private final String group;
 
-    private final AmazonSNSAsync auditSearchSnsClient;
+    private final SnsAsyncClient auditSearchSnsClient;
 
     private final ObjectMapper objectMapper;
 
     private final RequestData requestData;
 
     @Autowired
-    public MigrationAuditClient(AmazonSNSAsync auditSearchSnsClient,
+    public MigrationAuditClient(SnsAsyncClient auditSearchSnsClient,
                                 @Value("${aws.sns.audit-search.arn}") String auditQueue,
                                 @Value("${auditing.deployment.name}") String raisingService,
                                 @Value("${auditing.deployment.namespace}") String namespace,
@@ -129,8 +128,14 @@ public class MigrationAuditClient {
             data, namespace, localDateTime, eventType, userId);
 
         try {
-            var publishRequest = new PublishRequest(auditQueue,
-                objectMapper.writeValueAsString(request)).withMessageAttributes(getQueueHeaders(eventType.toString()));
+            /*var publishRequest = new PublishRequest(auditQueue,
+                objectMapper.writeValueAsString(request)).withMessageAttributes(getQueueHeaders(eventType.toString()));*/
+
+            var publishRequest =  PublishRequest.builder()
+                        .topicArn(auditQueue)
+                        .message(objectMapper.writeValueAsString(request))
+                        .messageAttributes(getQueueHeaders(eventType.toString()))
+                        .build();
 
             auditSearchSnsClient.publish(publishRequest);
             log.info("Create audit of type {} for Case UUID: {}, correlationID: {}, UserID: {}, event: {}", eventType,
@@ -142,11 +147,12 @@ public class MigrationAuditClient {
     }
 
     private Map<String, MessageAttributeValue> getQueueHeaders(String eventType) {
-        return Map.of(EVENT_TYPE_HEADER, new SnsStringMessageAttributeValue(eventType),
-            RequestData.CORRELATION_ID_HEADER, new SnsStringMessageAttributeValue(requestData.correlationId()),
-            RequestData.USER_ID_HEADER, new SnsStringMessageAttributeValue(userId),
-            RequestData.USERNAME_HEADER, new SnsStringMessageAttributeValue(userName),
-            RequestData.GROUP_HEADER, new SnsStringMessageAttributeValue(group));
+        return Map.of
+            (EVENT_TYPE_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(eventType).build(),
+            RequestData.CORRELATION_ID_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.correlationId()).build(),
+            RequestData.USER_ID_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.userId()).build(),
+            RequestData.USERNAME_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.username()).build(),
+            RequestData.GROUP_HEADER, MessageAttributeValue.builder().dataType("String").stringValue(requestData.groups()).build());
     }
 
     private void logFailedToParseDataPayload(JsonProcessingException e) {

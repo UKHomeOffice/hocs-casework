@@ -7,7 +7,7 @@ import uk.gov.digital.ho.hocs.casework.domain.exception.ApplicationExceptions;
 import uk.gov.digital.ho.hocs.casework.domain.model.CaseDataTag;
 import uk.gov.digital.ho.hocs.casework.domain.repository.CaseTagRepository;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.util.UUID;
 
 import static uk.gov.digital.ho.hocs.casework.application.LogEvent.CASE_TAG_CONFLICT;
