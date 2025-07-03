@@ -391,6 +391,26 @@
         "label": "Are you able to dispatch this?"
       },
       {
+        "component": "checkbox",
+        "name": "confirmEmailedDCU",
+        "label": "Confirm that you have emailed the response",
+        "props": {
+          "choices": [
+            {
+              "label": "I confirm that I have emailed my response to DCU Public Responses for dispatch.",
+              "value": "CONFIRMED"
+            }
+          ],
+          "showLabel": true,
+          "visibilityConditions": [
+            {
+              "conditionPropertyName": "DispatchDecision",
+              "conditionPropertyValue": "ACCEPT"
+            }
+          ]
+        }
+      },
+      {
         "component": "text-area",
         "name": "CaseNote_DispatchDecisionReject",
         "label": "Why are you unable to dispatch this?"
