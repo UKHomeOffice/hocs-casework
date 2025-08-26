@@ -1,6 +1,7 @@
 package uk.gov.digital.ho.hocs.casework.domain.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -40,20 +41,19 @@ public class RestResponseEntityExceptionHandler {
     @ExceptionHandler(HttpClientErrorException.class)
     public ResponseEntity<String> handle(HttpClientErrorException e) {
         String message = "HttpClientErrorException: {}";
-        switch (e.getStatusCode()) {
-            case UNAUTHORIZED:
-                log.error(message, e.getMessage(), value(EVENT, REST_HELPER_GET_UNAUTHORIZED));
-                return new ResponseEntity<>(e.getMessage(), UNAUTHORIZED);
-            case FORBIDDEN:
-                log.error(message, e.getMessage(), value(EVENT, REST_HELPER_GET_FORBIDDEN));
-                return new ResponseEntity<>(e.getMessage(), FORBIDDEN);
-            case NOT_FOUND:
-                log.error(message, e.getMessage(), value(EVENT, REST_HELPER_GET_NOT_FOUND));
-                return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
-            default:
-                log.error(message, e.getMessage(), value(EVENT, REST_HELPER_GET_BAD_REQUEST));
-                return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
+        HttpStatusCode statusCode = e.getStatusCode();
+        if (UNAUTHORIZED.equals(statusCode)) {
+            log.error(message, e.getMessage(), value(EVENT, REST_HELPER_GET_UNAUTHORIZED));
+            return new ResponseEntity<>(e.getMessage(), UNAUTHORIZED);
+        } else if (FORBIDDEN.equals(statusCode)) {
+            log.error(message, e.getMessage(), value(EVENT, REST_HELPER_GET_FORBIDDEN));
+            return new ResponseEntity<>(e.getMessage(), FORBIDDEN);
+        } else if (NOT_FOUND.equals(statusCode)) {
+            log.error(message, e.getMessage(), value(EVENT, REST_HELPER_GET_NOT_FOUND));
+            return new ResponseEntity<>(e.getMessage(), NOT_FOUND);
         }
+        log.error(message, e.getMessage(), value(EVENT, REST_HELPER_GET_BAD_REQUEST));
+        return new ResponseEntity<>(e.getMessage(), BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpServerErrorException.class)

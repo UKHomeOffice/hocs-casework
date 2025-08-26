@@ -69,7 +69,7 @@ public class CaseDataTagIntegrationTest {
         ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/tag",
             POST, new HttpEntity<>(mapper.writeValueAsString(tag), createValidAuthHeaders()), String.class);
 
-        assertThat(result.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isNotNull();
     }
 
@@ -78,7 +78,7 @@ public class CaseDataTagIntegrationTest {
         ResponseEntity<String> result = testRestTemplate.exchange(getBasePath() + "/case/" + CASE_UUID + "/tag/TEST_TAG",
             DELETE, new HttpEntity<>(createValidAuthHeaders()), String.class);
 
-        assertThat(result.getStatusCode()).isEqualByComparingTo(HttpStatus.NO_CONTENT);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
     }
 
     private String getBasePath() {

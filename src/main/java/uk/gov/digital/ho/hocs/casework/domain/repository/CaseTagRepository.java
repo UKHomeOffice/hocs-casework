@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface CaseTagRepository extends org.springframework.data.repository.Repository<CaseDataTag, UUID> {
 
     @Modifying
-    @Query("UPDATE CaseDataTag caseDataTag SET deleted_on = CURRENT_TIMESTAMP WHERE case_uuid = ?1 AND tag = ?2")
+    @Query("UPDATE CaseDataTag caseDataTag SET caseDataTag.deletedOnDate= CURRENT_TIMESTAMP WHERE caseDataTag.caseUuid = ?1 AND caseDataTag.tag = ?2")
     void deleteByCaseUuidAndTag(UUID caseUuid, String tag);
 
     @Modifying

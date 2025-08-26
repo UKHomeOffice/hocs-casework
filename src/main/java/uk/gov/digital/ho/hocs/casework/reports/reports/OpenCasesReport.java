@@ -11,7 +11,7 @@ import uk.gov.digital.ho.hocs.casework.reports.domain.repository.OpenCasesReposi
 import uk.gov.digital.ho.hocs.casework.reports.api.dto.ColumnType;
 import uk.gov.digital.ho.hocs.casework.reports.api.dto.ReportColumnDto;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.Stream;
 

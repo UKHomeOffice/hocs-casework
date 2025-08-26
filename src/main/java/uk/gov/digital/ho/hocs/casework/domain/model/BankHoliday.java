@@ -3,16 +3,16 @@ package uk.gov.digital.ho.hocs.casework.domain.model;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.JdbcTypeCode;
+import jakarta.persistence.*;
+import org.hibernate.type.SqlTypes;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Objects;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@TypeDef(name = "pgsql_enum", typeClass = org.hibernate.type.EnumType.class)
+@Convert(attributeName = "pgsql_enum", converter = org.hibernate.type.EnumType.class)
 @Table(name = "bank_holiday")
 public class BankHoliday {
 
@@ -25,7 +25,7 @@ public class BankHoliday {
     @Getter
     @Enumerated(EnumType.STRING)
     @Column(name = "region")
-    @Type(type = "pgsql_enum")
+    @JdbcTypeCode(SqlTypes.ENUM)
     private BankHolidayRegion region;
 
     @Getter
